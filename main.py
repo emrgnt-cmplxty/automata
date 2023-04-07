@@ -243,7 +243,7 @@ def create_pull_request(body) -> str:
     # get current branch name
     current_branch = local_repo.git.branch("--show-current")
     title="Fix for issue #" + str(issue.number)
-    repo.create_pull(title=title, body=body, head=current_branch, base=repo.default_branch)
+    repo.create_pull(title=title, body=body, head=current_branch, base=repo.default_branch, issue=issue)
     return f"Created pull request for  {title} in {repo.name} repository."
 llm = OpenAIChat(temperature=0, model='gpt-3.5-turbo')
 tools = load_tools(["python_repl", "terminal", "serpapi"], llm=llm)
