@@ -4,3 +4,4 @@ This repository contains an autonomous LLM-powered software development agent th
 
 Automate the world.
 
+To install dependencies, create a virtual environment and run 'pip install -r requirements.txt'
