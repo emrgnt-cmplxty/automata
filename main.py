@@ -5,12 +5,9 @@ from langchain.llms import OpenAIChat
 
 from config import *
 
-# Use GPT-3 model
 from custom_tools import GitToolBuilder
 from utils import login_github, choose_issue, list_issues, list_repositories
 
-# Main loop
-task_id_counter = 1
 # Log into GitHub
 print("Logging into github")
 github = login_github(GITHUB_API_KEY)
