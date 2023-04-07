@@ -11,6 +11,10 @@ import openai
 import pinecone
 from dotenv import load_dotenv
 from github import Github
+from git import Repo
+from langchain.llms import OpenAI, OpenAIChat
+from langchain.agents import initialize_agent, Tool, tool, load_tools, AgentType
+
 
 # Set Variables
 load_dotenv()
@@ -183,44 +187,6 @@ def choose_issue(issues):
     return issues[choice]
 
 
-def plan_issue_address(issue):
-    task_description = f"Plan how to address the following GitHub issue: {issue.title}\n\n{issue.body}"
-    new_tasks = task_creation_agent(OBJECTIVE, {}, task_description, [t["task_name"] for t in task_list])
-    for new_task in new_tasks:
-        global task_id_counter
-        task_id_counter += 1
-        new_task.update({"task_id": task_id_counter})
-        add_task(new_task)
-    prioritization_agent(task_id_counter)
-
-
-def execute_issue_plan(issue, repo):
-    branch_name = f"issue-{issue.number}-fix"
-    base_ref = repo.get_git_ref("heads/main")
-    repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=base_ref.object.sha)
-
-    while task_list:
-        # Pull the first task
-        task = task_list.popleft()
-        print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
-        print(str(task['task_id']) + ": " + task['task_name'])
-
-        # Execute the task
-        result = execution_agent(OBJECTIVE, task["task_name"])
-
-        # Update the file, commit changes, and create a pull request based on the task
-        if result.startswith("Update"):
-            file_path = result.split(" ")[1]
-            new_file_content = result.split(" ")[3:]
-            file_content = repo.get_contents(file_path, ref=branch_name)
-            new_file_content = base64.b64encode(" ".join(new_file_content).encode("utf-8")).decode("utf-8")
-            repo.update_file(file_path, f"Fix issue #{issue.number}: {issue.title}", new_file_content, file_content.sha,
-                             branch=branch_name)
-            pr = repo.create_pull(title=f"Fix issue #{issue.number}: {issue.title}",
-                                  body=f"Fixes issue #{issue.number}: {issue.title}\n\n{result}", head=branch_name,
-                                  base="main")
-
-
 
 # Log into GitHub
 print('Logging into github')
@@ -241,40 +207,49 @@ issues = list_issues(repo)
 # Let user choose an issue
 issue = choose_issue(issues)
 
-# Plan how to address the issue
-plan_issue_address(issue)
+# create a repo object which represents the repository we are inside of
+local_repo = Repo(os.getcwd())
 
-while True:
-    if task_list:
-        # Print the task list
-        print("\033[95m\033[1m" + "\n*****TASK LIST*****\n" + "\033[0m\033[0m")
-        for t in task_list:
-            print(str(t['task_id']) + ": " + t['task_name'])
+@tool("git-branch")
+def create_new_branch(branch_name: str) -> str:
+    """
+    Creates and checks out a new branch in the specified repository.
+    """
+    # Create branch
+    local_repo.git.branch(branch_name)
+    # Checkout branch
+    local_repo.git.checkout(branch_name)
 
-        # Step 1: Pull the first task
-        task = task_list.popleft()
-        print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
-        print(str(task['task_id']) + ": " + task['task_name'])
+    return f"Created and checked out branch {branch_name} in {repo.name} repository."
 
-        # Send to execution function to complete the task based on the context
-        result = execution_agent(OBJECTIVE, task["task_name"])
-        this_task_id = int(task["task_id"])
-        print("\033[93m\033[1m" + "\n*****TASK RESULT*****\n" + "\033[0m\033[0m")
-        print(result)
+@tool("git-commit")
+def commit_to_git(file_names: str) -> str:
+    """
+    Takes a string of comma-separated file names and commits them to git. For example "file1.py,file2.py"
+    """
+    file_names = file_names.split(",")
+    for file_name in file_names:
+        local_repo.git.add(file_name)
 
-        # Step 2: Enrich result and store in Pinecone
-        enriched_result = {'data': result}  # This is where you should enrich the result if needed
-        result_id = f"result_{task['task_id']}"
-        vector = enriched_result['data']  # extract the actual result from the dictionary
-        index.upsert([(result_id, get_ada_embedding(vector), {"task": task['task_name'], "result": result})])
+    local_repo.git.commit(m="Committing changes")
+    local_repo.git.push("--set-upstream", "origin", local_repo.git.branch("--show-current"))
+    return f"Committed {file_names} to {repo.name} repository."
 
-    # Step 3: Create new tasks and reprioritize task list
-    new_tasks = task_creation_agent(OBJECTIVE, enriched_result, task["task_name"], [t["task_name"] for t in task_list])
+@tool("git-create-pull-request")
+def create_pull_request(body) -> str:
+    """
+    Creates a pull request in the specified repository.
+    """
+    # get current branch name
+    current_branch = local_repo.git.branch("--show-current")
+    title="Fix for issue #" + str(issue.number)
+    repo.create_pull(title=title, body=body, head=current_branch, base=repo.default_branch)
+    return f"Created pull request for  {title} in {repo.name} repository."
+llm = OpenAIChat(temperature=0, model='gpt-3.5-turbo')
+tools = load_tools(["python_repl", "terminal", "serpapi"], llm=llm)
+tools += [create_new_branch, commit_to_git, create_pull_request]
+exec_agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
 
-    for new_task in new_tasks:
-        task_id_counter += 1
-        new_task.update({"task_id": task_id_counter})
-        add_task(new_task)
-    prioritization_agent(this_task_id)
-
-    time.sleep(1)  # Sleep before checking the task list again
+task = f"You are an AI software engineer. You are working in {os.getcwd()} on {repo.name} repository." \
+       f" You must create a new branch, implement a solution and submit a pull request to address the following issue: {issue.title}.\n\n {issue.body}"
+exec_agent.run(task)
