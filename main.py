@@ -29,13 +29,19 @@ assert GITHUB_API_KEY, "GITHUB_API_KEY environment variable is missing from .env
 # Use GPT-3 model
 USE_GPT4 = False
 if USE_GPT4:
-    print("\033[91m\033[1m" + "\n*****USING GPT-4. POTENTIALLY EXPENSIVE. MONITOR YOUR COSTS*****" + "\033[0m\033[0m")
+    print(
+        "\033[91m\033[1m"
+        + "\n*****USING GPT-4. POTENTIALLY EXPENSIVE. MONITOR YOUR COSTS*****"
+        + "\033[0m\033[0m"
+    )
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
 assert PINECONE_API_KEY, "PINECONE_API_KEY environment variable is missing from .env"
 
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT", "us-east1-gcp")
-assert PINECONE_ENVIRONMENT, "PINECONE_ENVIRONMENT environment variable is missing from .env"
+assert (
+    PINECONE_ENVIRONMENT
+), "PINECONE_ENVIRONMENT environment variable is missing from .env"
 
 # Table config
 YOUR_TABLE_NAME = os.getenv("TABLE_NAME", "")
@@ -62,7 +68,9 @@ dimension = 1536
 metric = "cosine"
 pod_type = "p1"
 if table_name not in pinecone.list_indexes():
-    pinecone.create_index(table_name, dimension=dimension, metric=metric, pod_type=pod_type)
+    pinecone.create_index(
+        table_name, dimension=dimension, metric=metric, pod_type=pod_type
+    )
 
 # Connect to the index
 index = pinecone.Index(table_name)
@@ -77,20 +85,24 @@ def add_task(task: Dict):
 
 def get_ada_embedding(text):
     text = text.replace("\n", " ")
-    return openai.Embedding.create(input=[text], model="text-embedding-ada-002")["data"][0]["embedding"]
+    return openai.Embedding.create(input=[text], model="text-embedding-ada-002")[
+        "data"
+    ][0]["embedding"]
 
 
-def openai_call(prompt: str, use_gpt4: bool = False, temperature: float = 0.5, max_tokens: int = 100):
+def openai_call(
+    prompt: str, use_gpt4: bool = False, temperature: float = 0.5, max_tokens: int = 100
+):
     if not use_gpt4:
         # Call GPT-3 DaVinci model
         response = openai.Completion.create(
-            engine='text-davinci-003',
+            engine="text-davinci-003",
             prompt=prompt,
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=1,
             frequency_penalty=0,
-            presence_penalty=0
+            presence_penalty=0,
         )
         return response.choices[0].text.strip()
     else:
@@ -107,15 +119,20 @@ def openai_call(prompt: str, use_gpt4: bool = False, temperature: float = 0.5, m
         return response.choices[0].message.content.strip()
 
 
-def task_creation_agent(objective: str, result: Dict, task_description: str, task_list: List[str],
-                        gpt_version: str = 'gpt-3'):
+def task_creation_agent(
+    objective: str,
+    result: Dict,
+    task_description: str,
+    task_list: List[str],
+    gpt_version: str = "gpt-3",
+):
     prompt = f"You are an task creation AI that uses the result of an execution agent to create new tasks with the following objective: {objective}, The last completed task has the result: {result}. This result was based on this task description: {task_description}. These are incomplete tasks: {', '.join(task_list)}. Based on the result, create new tasks to be completed by the AI system that do not overlap with incomplete tasks. Return the tasks as an array."
     response = openai_call(prompt, USE_GPT4)
-    new_tasks = response.split('\n')
+    new_tasks = response.split("\n")
     return [{"task_name": task_name} for task_name in new_tasks]
 
 
-def prioritization_agent(this_task_id: int, gpt_version: str = 'gpt-3'):
+def prioritization_agent(this_task_id: int, gpt_version: str = "gpt-3"):
     global task_list
     task_names = [t["task_name"] for t in task_list]
     next_task_id = int(this_task_id) + 1
@@ -124,7 +141,7 @@ def prioritization_agent(this_task_id: int, gpt_version: str = 'gpt-3'):
     #. Second task
     Start the task list with number {next_task_id}."""
     response = openai_call(prompt, USE_GPT4)
-    new_tasks = response.split('\n')
+    new_tasks = response.split("\n")
     task_list = deque()
     for task_string in new_tasks:
         task_parts = task_string.strip().split(".", 1)
@@ -134,7 +151,7 @@ def prioritization_agent(this_task_id: int, gpt_version: str = 'gpt-3'):
             task_list.append({"task_id": task_id, "task_name": task_name})
 
 
-def execution_agent(objective: str, task: str, gpt_version: str = 'gpt-3') -> str:
+def execution_agent(objective: str, task: str, gpt_version: str = "gpt-3") -> str:
     context = context_agent(query=objective, n=5)
     # print("\n*******RELEVANT CONTEXT******\n")
     # print(context)
@@ -148,7 +165,8 @@ def context_agent(query: str, n: int):
     # print("***** RESULTS *****")
     # print(results)
     sorted_results = sorted(results.matches, key=lambda x: x.score, reverse=True)
-    return [(str(item.metadata['task'])) for item in sorted_results]
+    return [(str(item.metadata["task"])) for item in sorted_results]
+
 
 # Main loop
 task_id_counter = 1
@@ -174,28 +192,27 @@ def list_repositories(github):
 
 def list_issues(repo):
     issues = []
-    for issue in repo.get_issues(state='open'):
+    for issue in repo.get_issues(state="open"):
         issues.append(issue)
     return issues
 
 
 def choose_issue(issues):
-    print('Issues:')
+    print("Issues:")
     for i, issue in enumerate(issues):
         print(f"{i + 1}. {issue.title}")
     choice = int(input("Choose an issue by its number: ")) - 1
     return issues[choice]
 
 
-
 # Log into GitHub
-print('Logging into github')
+print("Logging into github")
 github = login_github(GITHUB_API_KEY)
 
 # List repositories
 
 repositories = list_repositories(github)
-print('Found repositories:', repositories)
+print("Found repositories:", repositories)
 # Let user choose a repository
 repository_name = input("Enter the name of the repository you want to work with:")
 
@@ -210,10 +227,15 @@ issue = choose_issue(issues)
 # create a repo object which represents the repository we are inside of
 local_repo = Repo(os.getcwd())
 
+# reset to default branch if necessary
+if local_repo.active_branch.name != "main":
+    local_repo.git.checkout("main")
+
+
 @tool("git-branch")
 def create_new_branch(branch_name: str) -> str:
     """
-    Creates and checks out a new branch in the specified repository.
+    Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: "my-branch"
     """
     # Create branch
     local_repo.git.branch(branch_name)
@@ -221,6 +243,7 @@ def create_new_branch(branch_name: str) -> str:
     local_repo.git.checkout(branch_name)
 
     return f"Created and checked out branch {branch_name} in {repo.name} repository."
+
 
 @tool("git-commit")
 def commit_to_git(file_names: str) -> str:
@@ -232,8 +255,11 @@ def commit_to_git(file_names: str) -> str:
         local_repo.git.add(file_name)
 
     local_repo.git.commit(m="Committing changes")
-    local_repo.git.push("--set-upstream", "origin", local_repo.git.branch("--show-current"))
+    local_repo.git.push(
+        "--set-upstream", "origin", local_repo.git.branch("--show-current")
+    )
     return f"Committed {file_names} to {repo.name} repository."
+
 
 @tool("git-create-pull-request")
 def create_pull_request(body) -> str:
@@ -242,14 +268,35 @@ def create_pull_request(body) -> str:
     """
     # get current branch name
     current_branch = local_repo.git.branch("--show-current")
-    title="Fix for issue #" + str(issue.number)
+    title = "Fix for issue #" + str(issue.number)
     repo.create_pull(head=current_branch, base=repo.default_branch, issue=issue)
     return f"Created pull request for  {title} in {repo.name} repository."
-llm = OpenAIChat(temperature=0, model='gpt-3.5-turbo')
-tools = load_tools(["python_repl", "terminal", "serpapi"], llm=llm)
-tools += [create_new_branch, commit_to_git, create_pull_request]
-exec_agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
 
-task = f"You are an AI software engineer. You are working in {os.getcwd()} on {repo.name} repository." \
-       f" You must create a new branch, implement a solution and submit a pull request to address the following issue: {issue.title}.\n\n {issue.body}"
+
+@tool("explain-file")
+def explain_file(file_name: str) -> str:
+    """
+    Takes a file name and returns a description of the file's contents.
+    """
+    with open(file_name, "r") as f:
+        file_contents = f.read()
+    prompt = f"Explain the contents of {file_name}:\n\n{file_contents}. \n\nResponse:"
+    return llm(prompt)
+
+
+llm = OpenAIChat(temperature=0, model="gpt-3.5-turbo")
+tools = load_tools(["python_repl", "terminal", "serpapi"], llm=llm)
+tools += [create_new_branch, commit_to_git, create_pull_request, explain_file]
+
+
+exec_agent = initialize_agent(
+    tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+)
+
+task = (
+    f"You are an AI software engineer. You contribute clean, high-quality code to the given codebase to close issues. "
+    f" You are working in {os.getcwd()} on {repo.name} repository."
+    f" You must create a new branch, implement a solution and submit a pull request to address the following issue: {issue.title}.\n\n {issue.body}."
+    f" Don't use nano or other text editors, but rather modify directly"
+)
 exec_agent.run(task)
