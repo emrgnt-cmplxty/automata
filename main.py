@@ -4,6 +4,7 @@ from langchain.agents import initialize_agent, load_tools, AgentType
 from langchain.llms import OpenAIChat
 
 from config import *
+
 # Use GPT-3 model
 from custom_tools import GitToolBuilder
 from utils import login_github, choose_issue, list_issues, list_repositories
@@ -35,9 +36,6 @@ pygit_repo = Repo(os.getcwd())
 # reset to default branch if necessary
 if pygit_repo.active_branch.name != "main":
     pygit_repo.git.checkout("main")
-
-
-
 
 
 llm = OpenAIChat(temperature=0, model="gpt-3.5-turbo")
