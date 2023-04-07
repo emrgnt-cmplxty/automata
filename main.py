@@ -45,9 +45,10 @@ exec_agent = initialize_agent(
 )
 
 task = (
-    f"You are an AI software engineer. You contribute clean, high-quality code to the given codebase to close issues. "
+    f"You are an AI software engineer. You contribute clean, high-quality code to the given codebase to close issues."
     f" You are working in {os.getcwd()} on {github_repo.name} repository."
+    f" You may need to create, modify, or delete one or more files in this repository."
     f" You must create a new branch, implement a solution and submit a pull request to address the following issue: {issue.title}.\n\n {issue.body}."
-    f" Don't use nano or other text editors, but rather modify directly"
+    f" Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal"
 )
 exec_agent.run(task)
