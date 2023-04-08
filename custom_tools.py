@@ -68,3 +68,11 @@ class GitToolBuilder:
         return (
             f"Created pull request for  {title} in {self.github_repo.name} repository."
         )
+
+import requests
+
+def read_link(link):
+    response = requests.get(link)
+    content = response.text
+    return content
+

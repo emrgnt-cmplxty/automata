@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from git import Repo
+from langchain import OpenAI
 from langchain.agents import initialize_agent, load_tools, AgentType
-from langchain.llms import OpenAIChat
-
+from langchain.chat_models import ChatOpenAI
 from config import *
 
 from custom_tools import GitToolBuilder
@@ -35,13 +35,14 @@ if pygit_repo.active_branch.name != "main":
     pygit_repo.git.checkout("main")
 
 
-llm = OpenAIChat(temperature=0, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0, model="gpt-4")
+# llm1 = OpenAI(temperature=0)
 tools = load_tools(["python_repl", "terminal", "serpapi"], llm=llm)
 tools += GitToolBuilder(github_repo, pygit_repo, issue).build_tools()
 
 
 exec_agent = initialize_agent(
-    tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+    tools, llm, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True
 )
 
 task = (
@@ -52,3 +53,9 @@ task = (
     f" Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal"
 )
 exec_agent.run(task)
+
+from custom_tools import read_link
+
+link_content = read_link("https://example.com")
+print(link_content)
+
