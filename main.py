@@ -37,7 +37,7 @@ if pygit_repo.active_branch.name != "main":
 
 llm = ChatOpenAI(temperature=0, model="gpt-4")
 # llm1 = OpenAI(temperature=0)
-tools = load_tools(["python_repl", "terminal", "serpapi"], llm=llm)
+tools = load_tools(["python_repl", "terminal", "serpapi", "requests-get"], llm=llm)
 tools += GitToolBuilder(github_repo, pygit_repo, issue).build_tools()
 
 
@@ -54,8 +54,5 @@ task = (
 )
 exec_agent.run(task)
 
-from custom_tools import read_link
 
-link_content = read_link("https://example.com")
-print(link_content)
 

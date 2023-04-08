@@ -1,5 +1,5 @@
+from langchain import requests
 from langchain.agents import Tool
-
 
 class GitToolBuilder:
     def __init__(self, github_repo, pygit_repo, issue):
@@ -68,11 +68,3 @@ class GitToolBuilder:
         return (
             f"Created pull request for  {title} in {self.github_repo.name} repository."
         )
-
-import requests
-
-def read_link(link):
-    response = requests.get(link)
-    content = response.text
-    return content
-
