@@ -1,5 +1,4 @@
-from bokeh.models import Tool
-from langchain.agents import tool
+from langchain.agents import Tool
 
 
 class GitToolBuilder:
