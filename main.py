@@ -63,5 +63,3 @@ except ValueError as e:
         exec_agent.run(task)
 finally:
     pygit_repo.git.checkout("main")
-
-
