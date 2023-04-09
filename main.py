@@ -34,6 +34,9 @@ pygit_repo = Repo(os.getcwd())
 if pygit_repo.active_branch.name != "main":
     pygit_repo.git.checkout("main")
 
+# checkout default branch and pull
+pygit_repo.git.checkout("main")
+pygit_repo.git.pull()
 
 llm = ChatOpenAI(temperature=0, model="gpt-4")
 # llm1 = OpenAI(temperature=0)
@@ -50,9 +53,13 @@ task = (
     f" You are working in {os.getcwd()} on {github_repo.name} repository."
     f" You may need to create, modify, or delete one or more files in this repository."
     f" You must create a new branch, implement a solution and submit a pull request to address the following issue: {issue.title}.\n\n {issue.body}."
-    f" Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal"
+    f" Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal."
 )
-exec_agent.run(task)
-
-
-
+try:
+    exec_agent.run(task)
+except ValueError as e:
+    if DO_RETRY:
+        task += f" This is your second attempt. During the previous attempt, you crashed with the following error: {e}. Let's try again."
+        exec_agent.run(task)
+finally:
+    pygit_repo.git.checkout("main")

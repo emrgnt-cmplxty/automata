@@ -1,6 +1,7 @@
 from langchain import requests
 from langchain.agents import Tool
 
+
 class GitToolBuilder:
     def __init__(self, github_repo, pygit_repo, issue):
         self.github_repo = github_repo
