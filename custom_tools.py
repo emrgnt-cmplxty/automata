@@ -1,12 +1,10 @@
-from ctypes import Union
-from typing import List
+from typing import List, Union
 
 import git
 import github
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from langchain import requests
 from langchain.agents import Tool
 
 

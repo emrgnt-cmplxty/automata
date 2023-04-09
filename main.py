@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from git import Repo
+from github.Issue import Issue
+from github.PullRequest import PullRequest
 from langchain.agents import initialize_agent, load_tools, AgentType
 from langchain.chat_models import ChatOpenAI
 
@@ -9,16 +11,16 @@ from utils import login_github, list_repositories, choose_work_item
 
 # Log into GitHub
 print("Logging into github")
-github = login_github(GITHUB_API_KEY)
+github_client = login_github(GITHUB_API_KEY)
 
 # List repositories
 
-repositories = list_repositories(github)
-print("Found repositories:", repositories)
+repositories = list_repositories(github_client)
+print("Found recent repos:", repositories)
 # Let user choose a repository
 repository_name = input("Enter the name of the repository you want to work with:")
 
-github_repo = github.get_repo(repository_name)
+github_repo = github_client.get_repo(repository_name)
 
 
 # create a repo object which represents the repository we are inside of
@@ -56,9 +58,9 @@ task = (
     f" You may need to create, modify, or delete one or more files in this repository."
 )
 
-if type(work_item) == github.Issue.Issue:
+if type(work_item) == Issue:
     task += f" You must create a new branch, implement a solution and submit a pull request to address the following issue: \n\n Title: {work_item.title}.\n\n Body: {work_item.body}."
-if type(work_item) == github.PullRequest.PullRequest:
+if type(work_item) == PullRequest:
     task += (
         f" You must checkout the branch, understand the following pull request feedback make a commit with changes to address it:"
         f" \n\n Title: {work_item.title}.\n\n Body: {work_item.body}. \n\n Files: {[f.filename for f in work_item.get_files()]}:"
@@ -77,10 +79,14 @@ task += f" Don't use nano, vim or other text editors, but rather modify files di
 
 
 try:
+    print("Task:", task)
     exec_agent.run(task)
 except ValueError as e:
     if DO_RETRY:
         task += f" This is your second attempt. During the previous attempt, you crashed with the following error: {e}. Let's try again."
+        print("Failed to complete task with following error:", e)
+        print("New task:", task)
+        print("Retrying...")
         exec_agent.run(task)
 finally:
     pygit_repo.git.checkout("main")
