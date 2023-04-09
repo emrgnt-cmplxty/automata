@@ -22,4 +22,5 @@ To run the code, follow these steps:
 
 1. Clone the repository on your local machine.
 2. Navigate to the project directory.
-3. Run `python file1.py` to execute the main script.
+3. Install required dependencies by running `pip install -r requirements.txt`
+3. Run `python main.py` to execute the main script.
