@@ -1,5 +1,10 @@
 # New functions
+import enum
+from ctypes import Union
+
 from github import Github
+
+from main import github
 
 
 def login_github(token):
@@ -14,15 +19,26 @@ def list_repositories(github):
 
 
 def list_issues(repo):
-    issues = []
-    for issue in repo.get_issues(state="open"):
-        issues.append(issue)
-    return issues
+    return repo.get_issues(state="open")
 
 
-def choose_issue(issues):
-    print("Issues:")
-    for i, issue in enumerate(issues):
-        print(f"{i + 1}. {issue.title}")
-    choice = int(input("Choose an issue by its number: ")) - 1
-    return issues[choice]
+def list_pulls(repo):
+    return repo.get_pulls(state="open")
+
+def choose_work_item(github_repo) -> Union[github.Issue.Issue, github.PullRequest.PullRequest]:
+    choice = input("Do you want to work on issues or pull requests? (i/p)")
+    if choice == "i":
+        work_items = list_issues(github_repo)
+        print("Issues:")
+    elif choice == "p":
+        work_items = list_pulls(github_repo)
+        print("Pull requests:")
+    else:
+        print("Invalid choice.")
+        return choose_work_item(github_repo)
+
+    for i, work_item in work_items:
+        print(f"{i + 1}. {work_item.title}")
+
+    choice = int(input("Choose a work item by its number: ")) - 1
+    return work_items[choice]
