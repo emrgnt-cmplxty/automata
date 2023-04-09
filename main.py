@@ -90,5 +90,3 @@ except ValueError as e:
         exec_agent.run(task)
 finally:
     pygit_repo.git.checkout("main")
-from custom_tools import read_readme
-tools.update({"readme": read_readme})

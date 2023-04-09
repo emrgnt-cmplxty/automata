@@ -1,10 +1,7 @@
 # New functions
-import enum
-from ctypes import Union
-
+from typing import Union
+import github
 from github import Github
-
-from main import github
 
 
 def login_github(token):
@@ -13,9 +10,9 @@ def login_github(token):
 
 def list_repositories(github):
     repos = []
-    for repo in github.get_user().get_repos():
+    for repo in github.get_user().get_repos(sort="updated", direction="desc"):
         repos.append(repo.full_name)
-    return repos
+    return repos[:5]
 
 
 def list_issues(repo):
@@ -40,7 +37,7 @@ def choose_work_item(
         print("Invalid choice.")
         return choose_work_item(github_repo)
 
-    for i, work_item in work_items:
+    for i, work_item in enumerate(work_items):
         print(f"{i + 1}. {work_item.title}")
 
     choice = int(input("Choose a work item by its number: ")) - 1

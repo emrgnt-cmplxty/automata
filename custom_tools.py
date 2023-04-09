@@ -100,7 +100,8 @@ class GitToolBuilder:
         return (
             f"Created pull request for  {title} in {self.github_repo.name} repository."
         )
+
+
 def read_readme():
     with open("README.md", "r") as f:
         return f.read()
-
