@@ -1,12 +1,10 @@
-from ctypes import Union
-from typing import List
+from typing import List, Union
 
 import git
 import github
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from langchain import requests
 from langchain.agents import Tool
 
 
@@ -102,3 +100,7 @@ class GitToolBuilder:
         return (
             f"Created pull request for  {title} in {self.github_repo.name} repository."
         )
+def read_readme():
+    with open("README.md", "r") as f:
+        return f.read()
+
