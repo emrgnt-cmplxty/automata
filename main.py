@@ -59,8 +59,10 @@ task = (
 if type(work_item) == github.Issue.Issue:
     task += f" You must create a new branch, implement a solution and submit a pull request to address the following issue: \n\n Title: {work_item.title}.\n\n Body: {work_item.body}."
 if type(work_item) == github.PullRequest.PullRequest:
-    task += f" You must checkout the branch, understand the following pull request feedback make a commit with changes to address it:" \
-            f" \n\n Title: {work_item.title}.\n\n Body: {work_item.body}. \n\n Files: {[f.filename for f in work_item.get_files()]}:"
+    task += (
+        f" You must checkout the branch, understand the following pull request feedback make a commit with changes to address it:"
+        f" \n\n Title: {work_item.title}.\n\n Body: {work_item.body}. \n\n Files: {[f.filename for f in work_item.get_files()]}:"
+    )
 
 
 comments = work_item.get_comments()

@@ -25,7 +25,10 @@ def list_issues(repo):
 def list_pulls(repo):
     return repo.get_pulls(state="open")
 
-def choose_work_item(github_repo) -> Union[github.Issue.Issue, github.PullRequest.PullRequest]:
+
+def choose_work_item(
+    github_repo,
+) -> Union[github.Issue.Issue, github.PullRequest.PullRequest]:
     choice = input("Do you want to work on issues or pull requests? (i/p)")
     if choice == "i":
         work_items = list_issues(github_repo)

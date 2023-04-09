@@ -48,7 +48,7 @@ class GitToolBuilder:
                 func=lambda input_str: self.checkout_branch(input_str),
                 description="Checks out an existing branch in the specified repository. The only input is the branch name. For exmpale: 'my-branch'",
                 return_direct=False,
-            )
+            ),
         ]
         return tools
 
