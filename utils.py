@@ -43,10 +43,11 @@ def choose_work_item(
     choice = int(input("Choose a work item by its number: ")) - 1
     return work_items[choice]
 
+
 # this is probably not a good idea but it works for now
 class PassThroughBuffer:
     def __init__(self, buffer):
-        self.saved_output = ''
+        self.saved_output = ""
         self.original_buffer = buffer
 
     def write(self, message):

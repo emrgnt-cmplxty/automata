@@ -16,7 +16,7 @@ class GitToolBuilder:
         github_repo: github.Repository,
         pygit_repo: git.Repo,
         work_item: Union[Issue, PullRequest],
-        logger: Optional[PassThroughBuffer] = None
+        logger: Optional[PassThroughBuffer] = None,
     ):
         # we need a github repo object to interact with the github API
         # we need pygit repo object to do actual git things

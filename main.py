@@ -92,7 +92,7 @@ except ValueError as e:
     if DO_RETRY:
         tb = traceback.format_exc()
         task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
-        pass_through_buffer.saved_output = ''
+        pass_through_buffer.saved_output = ""
         print("Failed to complete task with following error:", e, tb)
         print("New task:", task)
         print("Retrying...")
