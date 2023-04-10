@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import sys
+import traceback
+
 from git import Repo
 from github.Issue import Issue
 from github.PullRequest import PullRequest
@@ -7,7 +10,7 @@ from langchain.chat_models import ChatOpenAI
 
 from config import *
 from custom_tools import GitToolBuilder
-from utils import login_github, list_repositories, choose_work_item
+from utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
 
 # Log into GitHub
 print("Logging into github")
@@ -37,11 +40,13 @@ pygit_repo.git.pull()
 work_item = choose_work_item(github_repo)
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-4")
+llm = ChatOpenAI(temperature=0.01, model="gpt-4")
 # llm1 = OpenAI(temperature=0)
+pass_through_buffer = PassThroughBuffer(sys.stdout)
+assert pass_through_buffer.saved_output == ""
+sys.stdout = pass_through_buffer
 tools = load_tools(["python_repl", "terminal", "serpapi", "requests_get"], llm=llm)
 tools += GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
-
 
 exec_agent = initialize_agent(
     tools, llm, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True
@@ -69,24 +74,29 @@ if type(work_item) == PullRequest:
 
 comments = work_item.get_comments()
 
-if comments:
+if list(comments):
     task += f" Comments:"
     for comment in comments:
         task += f" {comment.body}"
 
 
-task += f" Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal."
-
+task += (
+    f"\n\nUseful tips: Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
+    f" Before creating a new branch, make sure to pick a name that is not taken."
+)
 
 try:
     print("Task:", task)
-    exec_agent.run(task)
+    x = exec_agent.run(task)
 except ValueError as e:
     if DO_RETRY:
-        task += f" This is your second attempt. During the previous attempt, you crashed with the following error: {e}. Let's try again."
-        print("Failed to complete task with following error:", e)
+        tb = traceback.format_exc()
+        task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
+        pass_through_buffer.saved_output = ''
+        print("Failed to complete task with following error:", e, tb)
         print("New task:", task)
         print("Retrying...")
-        exec_agent.run(task)
+        x = exec_agent.run(task)
 finally:
+    sys.stdout = pass_through_buffer.original_buffer
     pygit_repo.git.checkout("main")
