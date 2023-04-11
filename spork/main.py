@@ -68,7 +68,7 @@ exec_agent = initialize_agent(
 instructions_list = [
     c.body for c in work_item.get_comments() if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
 ]
-instructions = ''
+instructions = ""
 if instructions_list:
     instructions = instructions_list.pop()
     instructions.replace(PLANNER_AGENT_OUTPUT_STRING, "")
