@@ -11,3 +11,5 @@ YOUR_TABLE_NAME = os.getenv("TABLE_NAME", "")
 OBJECTIVE = os.getenv("OBJECTIVE", "")
 DO_RETRY = bool(os.getenv("DO_RETRY", 1))
 PLANNER_AGENT_OUTPUT_STRING = "Planner Agent Output: "
+
+WORKING_DIRECTORY = os.getenv('WORKING_DIRECTORY', '/path/to/working/directory')
