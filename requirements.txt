@@ -22,6 +22,7 @@ langchain==0.0.137
 marshmallow==3.19.0
 marshmallow-enum==1.5.1
 multidict==6.0.4
+mypy==1.2.0
 mypy-extensions==1.0.0
 nodeenv==1.7.0
 numpy==1.24.2
@@ -49,9 +50,14 @@ smmap==5.0.0
 soupsieve==2.4
 SQLAlchemy==1.4.47
 tenacity==8.2.2
+tomli==2.0.1
 tqdm==4.65.0
+types-beautifulsoup4==4.12.0.3
+types-html5lib==1.1.11.13
 types-pytz==2023.3.0.0
+types-regex==2023.3.23.1
 types-requests==2.28.11.17
+types-setuptools==67.6.0.7
 types-urllib3==1.26.25.10
 typing-inspect==0.8.0
 typing_extensions==4.5.0
