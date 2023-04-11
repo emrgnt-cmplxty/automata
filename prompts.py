@@ -13,6 +13,7 @@ def make_planning_task(
     exec_tools: List[BaseTool],
     github_repo_name: str,
 ):
+    pr_or_issue_str = " submit a pull request" if isinstance(work_item, Issue) else " make a commit "
     return (
         f"You are a GPT-4 software engineering lead agent."
         f" You are built with langchain, a framework for building language-based agents. "
@@ -24,10 +25,7 @@ def make_planning_task(
         f" \n\nBody: {work_item.body}"
         f" \n\nComments: {[c.body for c in work_item.get_comments() if not c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]}"
         f" \n\n The developer will use your instructions to make changes to the repository and"
-        f" submit a pull request"
-        if isinstance(work_item, Issue)
-        else "make a commit "
-        f" with working, clean, and documented code."
+        f" {pr_or_issue_str} with working, clean, and documented code."
         f" Your developer is also a GPT-4-powered agent, so keep that in mind when creating instructions."
         f" You should acquire an excellent understanding of the current state of the repository and the code within it."
         f" You should also look up documentation on the internet whenever necessary."
@@ -46,6 +44,7 @@ def make_execution_task(
     solution_instructions: str,
     github_repo_name: str,
 ):
+    pr_or_issue_str = " create a pull request with your changes." if isinstance(work_item, Issue) else f" make a commit with your changes to the appropriate branch."
     return (
         f"You are a GPT-4-powered software engineer agent."
         f" You are built with langchain, a framework for building language-based agents. "
@@ -58,10 +57,8 @@ def make_execution_task(
         f"\n\nComments: {[c.body for c in work_item.get_comments() if not c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]};"
         f"\n\n A planning agent has created the following step-by-step instructions for you: <instructions>{solution_instructions}</instructions>"
         f" Execute the instructions and"
-        f" create a pull request with your changes."
-        if isinstance(work_item, Issue)
-        else f" make a commit with your changes to the appropriate branch."
-        f" make sure not to regress any existing functionality."
+        f" {pr_or_issue_str}"
+        f" Make sure not to regress any existing functionality."
         f"\n\nUseful tips: Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
-        f" Improtant: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
+        f" Important: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
     )
