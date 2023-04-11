@@ -4,3 +4,4 @@
 # Local Cruft
 improved_spork.egg-info/*
 **/**/.DS_Store
+local_env/*
