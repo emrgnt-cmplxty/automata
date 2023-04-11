@@ -106,4 +106,3 @@ class GitToolBuilder:
         return (
             f"Created pull request for  {title} in {self.github_repo.name} repository."
         )
-

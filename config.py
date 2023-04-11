@@ -10,4 +10,3 @@ PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT", "us-east1-gcp")
 YOUR_TABLE_NAME = os.getenv("TABLE_NAME", "")
 OBJECTIVE = os.getenv("OBJECTIVE", "")
 DO_RETRY = bool(os.getenv("DO_RETRY", 1))
-
