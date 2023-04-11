@@ -59,50 +59,63 @@ class GitToolBuilder:
         Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: "my-branch". Before creating a new branch, make sure to pick a name that is not taken."
         """
         # Create branch
-        self.pygit_repo.git.branch(branch_name)
-        # Checkout branch
-        self.pygit_repo.git.checkout(branch_name)
+        try:
+            self.pygit_repo.git.branch(branch_name)
+            # Checkout branch
+            self.pygit_repo.git.checkout(branch_name)
+            return f"Created and checked out branch {branch_name} in {self.github_repo.name} repository."
 
-        return f"Created and checked out branch {branch_name} in {self.github_repo.name} repository."
+        except Exception as e:
+            return f"Error: {e}"
+
 
     def checkout_branch(self, branch_name: str) -> str:
         """
         Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: "my-branch"
         """
         # Checkout branch
-        self.pygit_repo.git.checkout(branch_name)
-        self.pygit_repo.git.pull()
-        return f"Checked out an existing branch {branch_name} in {self.github_repo.name} repository."
+        try:
+            self.pygit_repo.git.checkout(branch_name)
+            self.pygit_repo.git.pull()
+            return f"Checked out an existing branch {branch_name} in {self.github_repo.name} repository."
+        except Exception as e:
+            return f"Error: {e}"
 
     def commit_to_git(self, file_names: str) -> str:
         """
         Takes a string of comma-separated file names and commits them to git. For example "file1.py,file2.py"
         """
-        file_names = file_names.split(",")
-        for file_name in file_names:
-            self.pygit_repo.git.add(file_name)
+        try:
+            file_names = file_names.split(",")
+            for file_name in file_names:
+                self.pygit_repo.git.add(file_name)
 
-        self.pygit_repo.git.commit(m="Committing changes")
-        self.pygit_repo.git.push(
-            "--set-upstream", "origin", self.pygit_repo.git.branch("--show-current")
-        )
-        return f"Committed {file_names} to {self.github_repo.name} repository."
+            self.pygit_repo.git.commit(m="Committing changes")
+            self.pygit_repo.git.push(
+                "--set-upstream", "origin", self.pygit_repo.git.branch("--show-current")
+            )
+            return f"Committed {file_names} to {self.github_repo.name} repository."
+        except Exception as e:
+            return f"Error: {e}"
 
     def create_pull_request(self, body) -> str:
         """
         Creates a pull request in the specified repository.
         """
         # get current branch name
-        assert type(self.work_item) == Issue
-        current_branch = self.pygit_repo.git.branch("--show-current")
-        title = "Fix for issue #" + str(self.work_item.number)
-        pull: github.PullRequest.PullRequest = self.github_repo.create_pull(
-            head=current_branch,
-            base=self.github_repo.default_branch_name,
-            issue=self.work_item,
-        )
-        if self.logger:
-            pull.create_issue_comment(self.logger.saved_output)
-        return (
-            f"Created pull request for  {title} in {self.github_repo.name} repository."
-        )
+        try:
+            assert type(self.work_item) == Issue
+            current_branch = self.pygit_repo.git.branch("--show-current")
+            title = "Fix for issue #" + str(self.work_item.number)
+            pull: github.PullRequest.PullRequest = self.github_repo.create_pull(
+                head=current_branch,
+                base=self.github_repo.default_branch_name,
+                issue=self.work_item,
+            )
+            if self.logger:
+                pull.create_issue_comment(self.logger.saved_output)
+            return (
+                f"Created pull request for  {title} in {self.github_repo.name} repository."
+            )
+        except Exception as e:
+            return f"Error: {e}"
