@@ -91,13 +91,13 @@ if do_plan == "y":
         plan_task = feedback
 
     # save instructions to issue
-    work_item.create_comment(PLANNER_AGENT_OUTPUT_STRING + cast(str, instructions))
+    work_item.create_comment(PLANNER_AGENT_OUTPUT_STRING + instructions)
 
 
 # ask user if they want to run exec agent
 do_exec = input("Do you want to run the EXECUTION agent? (y/n)")
 if do_exec == "y":
-    exec_task = make_execution_task(work_item, cast(str, instructions), github_repo.name)
+    exec_task = make_execution_task(work_item, instructions, github_repo.name)
     print("Execution task:", exec_task)
     try:
         exec_agent.run(exec_task)
