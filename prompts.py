@@ -65,6 +65,6 @@ def make_execution_task(
         f" Execute the instructions and"
         f" {pr_or_issue_str}"
         f" Make sure not to regress any existing functionality."
-        f"\n\nUseful tips: Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
+        f"\n\nUseful tips: Do NOT use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
         f" Important: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
     )
