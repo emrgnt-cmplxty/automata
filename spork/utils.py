@@ -1,33 +1,86 @@
-# New functions
-from typing import Union
+"""
+This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
+choose a work item to work on, and remove HTML tags from text.
+"""
+
+from typing import Union, List
 import github
 from bs4 import BeautifulSoup
 from github import Github
 import regex as re
 
 
-def login_github(token):
+def login_github(token: str) -> Github:
+    """
+    Logs in to the GitHub API using a token.
+
+    Args:
+    - token: A GitHub access token.
+
+    Returns:
+    - A Github object representing the authenticated user.
+    """
     return Github(token)
 
 
-def list_repositories(github):
+def list_repositories(github: Github) -> List[Github.Repository.Repository]:
+    """
+    Lists the five most recently updated repositories for the authenticated user.
+    Args:
+    - github: A Github object representing the authenticated user.
+
+    Returns:
+    - A list of strings, each string representing a repository's full name.
+    """
+
     repos = []
     for repo in github.get_user().get_repos(sort="updated", direction="desc"):
         repos.append(repo.full_name)
     return repos[:5]
 
 
-def list_issues(repo):
+def list_issues(repo: Github.Repository.Repository) -> List[Github.Issue.Issue]:
+    """
+    Lists the open issues for a given repository.
+
+    Args:
+    - repo: A Github repository object.
+
+    Returns:
+    - A list of Github Issue objects representing the open issues for the repository.
+    """
+
     return repo.get_issues(state="open")
 
 
-def list_pulls(repo):
+def list_pulls(repo: Github.Repository.Repository) -> List[Github.PullRequest.PullRequest]:
+    """
+    Lists the open pull requests for a given repository.
+
+    Args:
+    - repo: A Github repository object.
+
+    Returns:
+    - A list of Github PullRequest objects representing the open pull requests for the repository.
+    """
+
     return repo.get_pulls(state="open")
 
 
 def choose_work_item(
-    github_repo,
-) -> Union[github.Issue.Issue, github.PullRequest.PullRequest]:
+    github_repo: Github.Repository.Repository,
+) -> Union[Github.Issue.Issue, Github.PullRequest.PullRequest]:
+    """
+    Asks the user whether they want to work on issues or pull requests for a given repository, lists the available
+    work items, and prompts the user to choose one to work on.
+
+    Args:
+    - github_repo: A Github repository object.
+
+    Returns:
+    - A Github Issue object or PullRequest object representing the user's chosen work item.
+    """
+
     choice = input("Do you want to work on issues or pull requests? (i/p)")
     if choice == "i":
         work_items = list_issues(github_repo)
@@ -60,7 +113,17 @@ class PassThroughBuffer:
         return getattr(self.original_buffer, attr)
 
 
-def remove_html_tags(text) -> str:
+def remove_html_tags(text: str) -> str:
+    """
+    Removes HTML tags from a given string of text.
+
+    Args:
+    - text: A string of text that may contain HTML tags.
+
+    Returns:
+    - A string of text with all HTML tags removed.
+    """
+
     clean = re.compile("<.*?>")
     soup = BeautifulSoup(text, "html.parser")
     raw_text = soup.get_text(strip=True, separator="\n")
