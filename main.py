@@ -86,7 +86,7 @@ if do_plan == "y":
         instructions = plan_agent.run(plan_task)
         print("Created new Instructions:", instructions)
         feedback = input(
-            "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again"
+            "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again: "
         )
         approved = feedback == "y"
         plan_task = feedback
