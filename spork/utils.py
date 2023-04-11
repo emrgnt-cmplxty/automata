@@ -9,6 +9,7 @@ import regex as re
 from bs4 import BeautifulSoup
 from github import Github
 from github.Issue import Issue
+from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.Repository import Repository
 
@@ -26,7 +27,7 @@ def login_github(token: str) -> Github:
     return Github(token)
 
 
-def list_repositories(github: Github) -> List[Repository]:
+def list_repositories(github: Github) -> List[str]:
     """
     Lists the five most recently updated repositories for the authenticated user.
     Args:
@@ -42,7 +43,7 @@ def list_repositories(github: Github) -> List[Repository]:
     return repos[:5]
 
 
-def list_issues(repo: Repository) -> List[Issue]:
+def list_issues(repo: Repository) -> PaginatedList[Issue]:
     """
     Lists the open issues for a given repository.
 
@@ -56,7 +57,7 @@ def list_issues(repo: Repository) -> List[Issue]:
     return repo.get_issues(state="open")
 
 
-def list_pulls(repo: Repository) -> List[PullRequest]:
+def list_pulls(repo: Repository) -> PaginatedList[PullRequest]:
     """
     Lists the open pull requests for a given repository.
 
@@ -85,7 +86,7 @@ def choose_work_item(
     """
 
     choice = input("Do you want to work on issues or pull requests? (i/p)")
-    work_items: List[Union[Issue, PullRequest]] = []
+    work_items: PaginatedList[Union[Issue, PullRequest]] = []
 
     if choice == "i":
         work_items = list_issues(github_repo)
