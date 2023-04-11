@@ -10,7 +10,7 @@ from langchain.memory import ConversationBufferMemory
 from config import *
 from custom_tools import GitToolBuilder, requests_get_clean
 from prompts import make_planning_task, make_execution_task
-from utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
+from spork.utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
 
 # Log into GitHub
 print("Logging into github")
@@ -45,9 +45,7 @@ assert pass_through_buffer.saved_output == ""
 sys.stdout = pass_through_buffer
 base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
 base_tools += [requests_get_clean]
-exec_tools = (
-    base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
-)
+exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
@@ -65,9 +63,7 @@ exec_agent = initialize_agent(
 
 # check if instrutions are already attached to the issue
 instructions = [
-    c.body
-    for c in work_item.get_comments()
-    if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
+    c.body for c in work_item.get_comments() if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
 ]
 if instructions:
     instructions = instructions.pop()

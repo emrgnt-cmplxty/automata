@@ -1,2 +1,6 @@
 /.idea/
 .env
+
+# Local Cruft
+improved_spork.egg-info/*
+**/**/.DS_Store

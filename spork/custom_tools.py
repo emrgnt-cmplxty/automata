@@ -1,3 +1,15 @@
+"""
+custom_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
+
+This module contains a GitToolBuilder class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
+
+Classes:
+- GitToolBuilder: A class for interacting with Git repositories.
+
+Functions:
+- requests_get_clean: A function for sending GET requests and returning clean text.
+"""
+
 from typing import List, Union, Optional
 
 import git
@@ -8,7 +20,7 @@ from github.Repository import Repository
 from langchain.agents import Tool, tool
 import requests
 
-from utils import PassThroughBuffer, remove_html_tags
+from spork.utils import PassThroughBuffer, remove_html_tags
 
 
 class GitToolBuilder:
@@ -26,18 +38,53 @@ class GitToolBuilder:
         self.work_item = work_item
         self.logger = logger
 
+
+class GitToolBuilder:
+    def __init__(
+        self,
+        github_repo: github.Repository,
+        pygit_repo: git.Repo,
+        work_item: Union[Issue, PullRequest],
+        logger: Optional[PassThroughBuffer] = None,
+    ):
+        """
+        Initializes a GitToolBuilder object with the given inputs.
+
+        Args:
+        - github_repo (github.Repository): A github.Repository object representing the repository to work on.
+        - pygit_repo (git.Repo): A git.Repo object representing the local copy of the repository to work on.
+        - work_item (Union[Issue, PullRequest]): An Issue or PullRequest object representing the work item to work on.
+        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
+
+        Returns:
+        - None
+        """
+        self.github_repo = github_repo
+        self.pygit_repo = pygit_repo
+        self.work_item = work_item
+        self.logger = logger
+
     def build_tools(self) -> List[Tool]:
+        """
+        Builds a list of Tool objects for interacting with Git.
+
+        Args:
+        - None
+
+        Returns:
+        - tools (List[Tool]): A list of Tool objects representing Git commands.
+        """
         tools = [
             Tool(
                 name="git-new-branch",
                 func=lambda input_str: self.create_new_branch(input_str),
-                description="Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: 'my-branch'",
+                description="Creates and checks out a new branch in the specified repository. The only input is the branch name. For example: 'my-branch'.",
                 return_direct=False,
             ),
             Tool(
                 name="git-commit",
                 func=lambda input_str: self.commit_to_git(input_str),
-                description="Takes a string of comma-separated file names and commits them to git. For example 'file1.py,file2.py'",
+                description="Takes a string of comma-separated file names and commits them to git. For example: 'file1.py,file2.py'.",
                 return_direct=False,
             ),
             Tool(
@@ -49,7 +96,7 @@ class GitToolBuilder:
             Tool(
                 name="git-checkout-existing-branch",
                 func=lambda input_str: self.checkout_branch(input_str),
-                description="Checks out an existing branch in the specified repository. The only input is the branch name. For exmpale: 'my-branch'",
+                description="Checks out an existing branch in the specified repository. The only input is the branch name. For example: 'my-branch'.",
                 return_direct=False,
             ),
         ]
@@ -57,12 +104,16 @@ class GitToolBuilder:
 
     def create_new_branch(self, branch_name: str) -> str:
         """
-        Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: "my-branch". Before creating a new branch, make sure to pick a name that is not taken."
+        Creates and checks out a new branch in the specified repository.
+
+        Args:
+        - branch_name (str): A string representing the name of the new branch to create.
+
+        Returns:
+        - output (str): A string representing the output of the Git command.
         """
-        # Create branch
         try:
             self.pygit_repo.git.branch(branch_name)
-            # Checkout branch
             self.pygit_repo.git.checkout(branch_name)
             return f"Created and checked out branch {branch_name} in {self.github_repo.name} repository."
 
@@ -71,8 +122,15 @@ class GitToolBuilder:
 
     def checkout_branch(self, branch_name: str) -> str:
         """
-        Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: "my-branch"
+        Checks out an existing branch in the specified repository.
+
+        Args:
+        - branch_name (str): A string representing the name of the existing branch to checkout.
+
+        Returns:
+        - output (str): A string representing the output of the Git command.
         """
+
         # Checkout branch
         try:
             self.pygit_repo.git.checkout(branch_name)
@@ -83,7 +141,13 @@ class GitToolBuilder:
 
     def commit_to_git(self, file_names: str) -> str:
         """
-        Takes a string of comma-separated file names and commits them to git. For example "file1.py,file2.py"
+        Commits specified files to Git.
+
+        Args:
+        - file_names (str): A string representing comma-separated file names to commit.
+
+        Returns:
+        - output (str): A string representing the output of the Git command.
         """
         try:
             file_names = file_names.split(",")
@@ -101,6 +165,12 @@ class GitToolBuilder:
     def create_pull_request(self, body) -> str:
         """
         Creates a pull request in the specified repository.
+
+        Args:
+        - body: A string representing the body of the pull request.
+
+        Returns:
+        - output (str): A string representing the output of the Git command.
         """
         # get current branch name
         try:
@@ -122,8 +192,14 @@ class GitToolBuilder:
 @tool
 def requests_get_clean(url: str) -> str:
     """
-    Sends a get request to a specified URL and returns clean text in the response.
+    Sends a GET request to a specified URL and returns the clean text in the response.
+    Args:
+    - url (str): A string representing the URL to send a GET request to.
+
+    Returns:
+    - output (str): A string representing the clean text in the response.
     """
+
     response = requests.get(url)
     try:
         if response.status_code == 200:
