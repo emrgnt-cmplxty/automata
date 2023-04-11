@@ -76,7 +76,7 @@ if instructions:
 
 # ask user if they want to run planner agent, default is yes if no instructions
 
-do_plan = input("Do you want to run the planning agent? (y/n)")
+do_plan = input("Do you want to run the PLANNING agent? (y/n)")
 
 if do_plan == "y":
     plan_task = make_planning_task(work_item, exec_tools, github_repo.name)
@@ -96,7 +96,7 @@ if do_plan == "y":
 
 
 # ask user if they want to run exec agent
-do_exec = input("Do you want to run the execution agent? (y/n)")
+do_exec = input("Do you want to run the EXECUTION agent? (y/n)")
 if do_exec == "y":
     exec_task = make_execution_task(work_item, instructions, github_repo.name)
     print("Execution task:", exec_task)
