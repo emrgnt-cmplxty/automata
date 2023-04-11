@@ -100,3 +100,4 @@ except ValueError as e:
 finally:
     sys.stdout = pass_through_buffer.original_buffer
     pygit_repo.git.checkout("main")
+
