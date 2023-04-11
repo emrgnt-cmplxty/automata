@@ -1,3 +1,15 @@
+"""
+task_generators.py - a module containing task generators for planning and execution agents.
+
+This module contains two functions for generating planning and execution tasks for agents. These functions are:
+- make_planning_task: A function for generating a planning task for an agent.
+- make_execution_task: A function for generating an execution task for an agent.
+
+Functions:
+- make_planning_task: A function for generating a planning task for an agent.
+- make_execution_task: A function for generating an execution task for an agent.
+"""
+
 import os
 from typing import List, Union
 
@@ -5,7 +17,7 @@ from github.Issue import Issue
 from github.PullRequest import PullRequest
 from langchain.tools import BaseTool
 
-from config import PLANNER_AGENT_OUTPUT_STRING
+from .config import PLANNER_AGENT_OUTPUT_STRING
 
 
 def make_planning_task(
@@ -13,6 +25,17 @@ def make_planning_task(
     exec_tools: List[BaseTool],
     github_repo_name: str,
 ):
+    """
+    Generates a planning task for an agent.
+
+    Args:
+    - work_item (Union[Issue, PullRequest]): An object representing the work item to generate a planning task for.
+    - exec_tools (List[BaseTool]): A list of tools that the execution agent has access to.
+    - github_repo_name (str): The name of the GitHub repository the work item belongs to.
+
+    Returns:
+    - task_instructions (str): A string containing the instructions for the planning task.
+    """
     pr_or_issue_str = (
         " submit a pull request" if isinstance(work_item, Issue) else " make a commit "
     )
@@ -49,10 +72,22 @@ def make_execution_task(
     solution_instructions: str,
     github_repo_name: str,
 ):
+    """
+    Generates an execution task for an agent.
+
+    Args:
+    - work_item (Union[Issue, PullRequest]): An object representing the work item to generate an execution task for.
+    - solution_instructions (str): A string containing the solution instructions for the work item.
+    - github_repo_name (str): The name of the GitHub repository the work item belongs to.
+
+    Returns:
+    - task_instructions (str): A string containing the instructions for the execution task.
+    """
+
     pr_or_issue_str = (
         " create a pull request with your changes."
         if isinstance(work_item, Issue)
-        else f" make a commit with your changes to the appropriate branch."
+        else " make a commit with your changes to the appropriate branch."
     )
     return (
         f"You are a GPT-4-powered coding agent."

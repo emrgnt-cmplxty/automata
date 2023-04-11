@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
+import os
 import sys
 import traceback
+from typing import TextIO, cast
 
 from git import Repo
-from langchain.agents import initialize_agent, load_tools, AgentType
+from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
-from config import *
-from custom_tools import GitToolBuilder, requests_get_clean
-from prompts import make_planning_task, make_execution_task
-from utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
+from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
+
+from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
+from .custom_tools import GitToolBuilder, requests_get_clean
+from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
 print("Logging into github")
@@ -42,12 +45,10 @@ llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
-sys.stdout = pass_through_buffer
+sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
 base_tools += [requests_get_clean]
-exec_tools = (
-    base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
-)
+exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
@@ -64,13 +65,12 @@ exec_agent = initialize_agent(
 )
 
 # check if instrutions are already attached to the issue
-instructions = [
-    c.body
-    for c in work_item.get_comments()
-    if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
+instructions_list = [
+    c.body for c in work_item.get_comments() if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
 ]
-if instructions:
-    instructions = instructions.pop()
+instructions = ""
+if instructions_list:
+    instructions = instructions_list.pop()
     instructions.replace(PLANNER_AGENT_OUTPUT_STRING, "")
     print("Found instructions:", instructions)
 
@@ -107,7 +107,7 @@ if do_exec == "y":
             tb = traceback.format_exc()
             exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
             pass_through_buffer.saved_output = ""
-            print("Failed to complete execution task")
+            print(f"Failed to complete execution task with {e}")
             print("New task:", exec_task)
             print("Retrying...")
             exec_agent.run(exec_task)
