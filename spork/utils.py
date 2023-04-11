@@ -43,7 +43,7 @@ def list_repositories(github: Github) -> List[str]:
     return repos[:5]
 
 
-def list_issues(repo: Repository) -> List[Repository]:
+def list_issues(repo: Repository) -> PaginatedList:
     """
     Lists the open issues for a given repository.
 
@@ -54,10 +54,10 @@ def list_issues(repo: Repository) -> List[Repository]:
     - A list of Github Issue objects representing the open issues for the repository.
     """
 
-    return list(repo.get_issues(state="open"))
+    return repo.get_issues(state="open")
 
 
-def list_pulls(repo: Repository) -> List[PullRequest]:
+def list_pulls(repo: Repository) -> PaginatedList:
     """
     Lists the open pull requests for a given repository.
 
@@ -68,7 +68,7 @@ def list_pulls(repo: Repository) -> List[PullRequest]:
     - A list of Github PullRequest objects representing the open pull requests for the repository.
     """
 
-    return list(repo.get_pulls(state="open"))
+    return repo.get_pulls(state="open")
 
 
 def choose_work_item(
@@ -86,7 +86,7 @@ def choose_work_item(
     """
 
     choice = input("Do you want to work on issues or pull requests? (i/p)")
-    work_items: PaginatedList = []
+    work_items = []
 
     if choice == "i":
         work_items = list_issues(github_repo)
