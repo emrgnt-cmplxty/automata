@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
+import io
+import os
 import sys
 import traceback
-
+from typing import cast, TextIO
 from git import Repo
 from langchain.agents import initialize_agent, load_tools, AgentType
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
-from config import *
+from config import GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING, DO_RETRY
 from custom_tools import GitToolBuilder, requests_get_clean
 from prompts import make_planning_task, make_execution_task
 from spork.utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
@@ -42,7 +44,7 @@ llm = ChatOpenAI(temperature=0.01, model="gpt-3.5-turbo")
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
-sys.stdout = pass_through_buffer
+sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
@@ -66,9 +68,9 @@ instructions = [
     c.body for c in work_item.get_comments() if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
 ]
 if instructions:
-    instructions = instructions.pop()
-    instructions.replace(PLANNER_AGENT_OUTPUT_STRING, "")
-    print("Found instructions:", instructions)
+    instruction = instructions.pop()
+    instruction.replace(PLANNER_AGENT_OUTPUT_STRING, "")
+    print("Found instructions:", instruction)
 
 # ask user if they want to run planner agent, default is yes if no instructions
 

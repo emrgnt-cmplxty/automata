@@ -26,23 +26,7 @@ from spork.utils import PassThroughBuffer, remove_html_tags
 class GitToolBuilder:
     def __init__(
         self,
-        github_repo: github.Repository,
-        pygit_repo: git.Repo,
-        work_item: Union[Issue, PullRequest],
-        logger: Optional[PassThroughBuffer] = None,
-    ):
-        # we need a github repo object to interact with the github API
-        # we need pygit repo object to do actual git things
-        self.github_repo = github_repo
-        self.pygit_repo = pygit_repo
-        self.work_item = work_item
-        self.logger = logger
-
-
-class GitToolBuilder:
-    def __init__(
-        self,
-        github_repo: github.Repository,
+        github_repo: Repository,
         pygit_repo: git.Repo,
         work_item: Union[Issue, PullRequest],
         logger: Optional[PassThroughBuffer] = None,
@@ -150,8 +134,8 @@ class GitToolBuilder:
         - output (str): A string representing the output of the Git command.
         """
         try:
-            file_names = file_names.split(",")
-            for file_name in file_names:
+            file_names_list = file_names.split(",")
+            for file_name in file_names_list:
                 self.pygit_repo.git.add(file_name)
 
             self.pygit_repo.git.commit(m="Committing changes")

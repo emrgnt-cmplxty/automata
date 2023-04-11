@@ -4,7 +4,9 @@ choose a work item to work on, and remove HTML tags from text.
 """
 
 from typing import Union, List
-import github
+from github.Issue import Issue
+from github.PullRequest import PullRequest
+from github.Repository import Repository
 from bs4 import BeautifulSoup
 from github import Github
 import regex as re
@@ -23,7 +25,7 @@ def login_github(token: str) -> Github:
     return Github(token)
 
 
-def list_repositories(github: Github) -> List[Github.Repository.Repository]:
+def list_repositories(github: Github) -> List[Repository]:
     """
     Lists the five most recently updated repositories for the authenticated user.
     Args:
@@ -39,7 +41,7 @@ def list_repositories(github: Github) -> List[Github.Repository.Repository]:
     return repos[:5]
 
 
-def list_issues(repo: Github.Repository.Repository) -> List[Github.Issue.Issue]:
+def list_issues(repo: Repository) -> List[Issue]:
     """
     Lists the open issues for a given repository.
 
@@ -53,7 +55,7 @@ def list_issues(repo: Github.Repository.Repository) -> List[Github.Issue.Issue]:
     return repo.get_issues(state="open")
 
 
-def list_pulls(repo: Github.Repository.Repository) -> List[Github.PullRequest.PullRequest]:
+def list_pulls(repo: Repository) -> List[PullRequest]:
     """
     Lists the open pull requests for a given repository.
 
@@ -68,8 +70,8 @@ def list_pulls(repo: Github.Repository.Repository) -> List[Github.PullRequest.Pu
 
 
 def choose_work_item(
-    github_repo: Github.Repository.Repository,
-) -> Union[Github.Issue.Issue, Github.PullRequest.PullRequest]:
+    github_repo: Repository,
+) -> Union[Issue, PullRequest]:
     """
     Asks the user whether they want to work on issues or pull requests for a given repository, lists the available
     work items, and prompts the user to choose one to work on.
@@ -82,6 +84,8 @@ def choose_work_item(
     """
 
     choice = input("Do you want to work on issues or pull requests? (i/p)")
+    work_items: List[Union[Issue, PullRequest]] = []
+
     if choice == "i":
         work_items = list_issues(github_repo)
         print("Issues:")
@@ -95,8 +99,8 @@ def choose_work_item(
     for i, work_item in enumerate(work_items):
         print(f"{i + 1}. {work_item.title}")
 
-    choice = int(input("Choose a work item by its number: ")) - 1
-    return work_items[choice]
+    choice_index = int(input("Choose a work item by its number: ")) - 1
+    return work_items[choice_index]
 
 
 # this is probably not a good idea but it works for now
