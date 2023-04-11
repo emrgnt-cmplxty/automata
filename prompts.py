@@ -55,7 +55,7 @@ def make_execution_task(
         else f" make a commit with your changes to the appropriate branch."
     )
     return (
-        f"You are a GPT-4-powered software engineer agent."
+        f"You are a GPT-4-powered coding agent."
         f" You are built with langchain, a framework for building language-based agents. "
         f" You can read about it here: https://python.langchain.com/en/latest/modules/agents.html"
         f" Your task is to contribute clean, high-quality code to the given codebase."
@@ -65,8 +65,9 @@ def make_execution_task(
         f"\n\nBody: {work_item.body};"
         f"\n\nComments: {[c.body for c in work_item.get_comments() if not c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]};"
         f"\n\n A planning agent has created the following step-by-step instructions for you: <instructions>{solution_instructions}</instructions>"
-        f" Execute the instructions and"
+        f" Execute the instructions thoroughly and"
         f" {pr_or_issue_str}"
+        f" Some of the instructions may be high level, so it's up to you to understand what exactly needs to be done."
         f" Make sure not to regress any existing functionality."
         f"\n\nUseful tips: Do NOT use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
         f" Important: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
