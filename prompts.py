@@ -63,5 +63,5 @@ def make_execution_task(
         else f" make a commit with your changes to the appropriate branch."
         f" make sure not to regress any existing functionality."
         f"\n\nUseful tips: Don't use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
-        f" Before creating a new branch, make sure to pick a name that is not taken."
+        f" Improtant: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
     )
