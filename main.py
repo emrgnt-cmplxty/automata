@@ -31,10 +31,13 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
+default_branch_name = "babyagi-architecture"
 # reset to default branch if necessary
-if pygit_repo.active_branch.name != "babyagi-architecture":
-    pygit_repo.git.checkout("babyagi-architecture")
+if pygit_repo.active_branch.name != default_branch_name:
+    pygit_repo.git.checkout(default_branch_name)
 
+# checkout default branch and pull
+pygit_repo.git.checkout("main")
 pygit_repo.git.pull()
 
 work_item = choose_work_item(github_repo)
@@ -114,4 +117,4 @@ if do_exec == "y":
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer
-        pygit_repo.git.checkout("main")
+        pygit_repo.git.checkout(default_branch_name)

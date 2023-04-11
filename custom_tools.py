@@ -98,7 +98,7 @@ class GitToolBuilder:
         title = "Fix for issue #" + str(self.work_item.number)
         pull: github.PullRequest.PullRequest = self.github_repo.create_pull(
             head=current_branch,
-            base=self.github_repo.default_branch,
+            base=self.github_repo.default_branch_name,
             issue=self.work_item,
         )
         if self.logger:
