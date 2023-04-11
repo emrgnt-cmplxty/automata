@@ -55,7 +55,7 @@ skip_glob = "local_env/*"
 [tool.mypy]
 # other mypy configurations go here
 # uncomment if this is being really annoying again
-ignore_missing_imports = true
+# ignore_missing_imports = true
 exclude = '(random|local_env|data|results|notebooks)/'
 
 [[tool.mypy.overrides]]
