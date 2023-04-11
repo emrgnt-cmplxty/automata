@@ -74,8 +74,9 @@ if instructions:
     instructions.replace(PLANNER_AGENT_OUTPUT_STRING, "")
     print("Found instructions:", instructions)
 
-# ask user if they want to run planner agent
-do_plan = input("Do you want to run the planner agent? (y/n)")
+# ask user if they want to run planner agent, default is yes if no instructions
+
+do_plan = input("Do you want to run the planning agent? (y/n)")
 
 if do_plan == "y":
     plan_task = make_planning_task(work_item, exec_tools, github_repo.name)
