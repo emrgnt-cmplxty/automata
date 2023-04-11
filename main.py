@@ -36,9 +36,6 @@ default_branch_name = "babyagi-architecture"
 if pygit_repo.active_branch.name != default_branch_name:
     pygit_repo.git.checkout(default_branch_name)
 
-# checkout default branch and pull
-pygit_repo.git.checkout("main")
-pygit_repo.git.pull()
 
 work_item = choose_work_item(github_repo)
 
