@@ -3,8 +3,6 @@ import sys
 import traceback
 
 from git import Repo
-from github.Issue import Issue
-from github.PullRequest import PullRequest
 from langchain.agents import initialize_agent, load_tools, AgentType
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
