@@ -68,7 +68,6 @@ class GitToolBuilder:
         except Exception as e:
             return f"Error: {e}"
 
-
     def checkout_branch(self, branch_name: str) -> str:
         """
         Creates and checks out a new branch in the specified repository. The only input is the branch name. For exmpale: "my-branch"
@@ -114,8 +113,6 @@ class GitToolBuilder:
             )
             if self.logger:
                 pull.create_issue_comment(self.logger.saved_output)
-            return (
-                f"Created pull request for  {title} in {self.github_repo.name} repository."
-            )
+            return f"Created pull request for  {title} in {self.github_repo.name} repository."
         except Exception as e:
             return f"Error: {e}"
