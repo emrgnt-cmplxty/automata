@@ -13,11 +13,10 @@ Functions:
 import os
 from typing import List, Union
 
+from config import PLANNER_AGENT_OUTPUT_STRING
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from langchain.tools import BaseTool
-
-from config import PLANNER_AGENT_OUTPUT_STRING
 
 
 def make_planning_task(
@@ -87,7 +86,7 @@ def make_execution_task(
     pr_or_issue_str = (
         " create a pull request with your changes."
         if isinstance(work_item, Issue)
-        else f" make a commit with your changes to the appropriate branch."
+        else " make a commit with your changes to the appropriate branch."
     )
     return (
         f"You are a GPT-4-powered coding agent."

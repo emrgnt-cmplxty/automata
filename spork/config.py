@@ -18,6 +18,7 @@ Note that the environment variables are loaded from a .env file using the `load_
 """
 
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()

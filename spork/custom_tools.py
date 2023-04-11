@@ -10,15 +10,15 @@ Functions:
 - requests_get_clean: A function for sending GET requests and returning clean text.
 """
 
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 import git
 import github
+import requests
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from github.Repository import Repository
 from langchain.agents import Tool, tool
-import requests
 
 from spork.utils import PassThroughBuffer, remove_html_tags
 

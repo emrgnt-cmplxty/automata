@@ -3,13 +3,14 @@ This module provides functions to interact with the GitHub API, specifically to 
 choose a work item to work on, and remove HTML tags from text.
 """
 
-from typing import Union, List
+from typing import List, Union
+
+import regex as re
+from bs4 import BeautifulSoup
+from github import Github
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from bs4 import BeautifulSoup
-from github import Github
-import regex as re
 
 
 def login_github(token: str) -> Github:

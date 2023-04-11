@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-import io
 import os
 import sys
 import traceback
-from typing import cast, TextIO
+from typing import TextIO, cast
+
+from config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
+from custom_tools import GitToolBuilder, requests_get_clean
 from git import Repo
-from langchain.agents import initialize_agent, load_tools, AgentType
+from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
+from prompts import make_execution_task, make_planning_task
 
-from config import GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING, DO_RETRY
-from custom_tools import GitToolBuilder, requests_get_clean
-from prompts import make_planning_task, make_execution_task
-from spork.utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
+from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 # Log into GitHub
 print("Logging into github")
@@ -105,7 +105,7 @@ if do_exec == "y":
             tb = traceback.format_exc()
             exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
             pass_through_buffer.saved_output = ""
-            print("Failed to complete execution task")
+            print(f"Failed to complete execution task with {e}")
             print("New task:", exec_task)
             print("Retrying...")
             exec_agent.run(exec_task)

@@ -25,4 +25,5 @@ To run the code, follow these steps:
 3. Create and activate a virtual environment by running `python3 -m venv local_env && source local_env/bin/activate`
 4. Upgrade to the latest pip by running `python3 -m pip install --upgrade pip`
 5. Install the project in editable mode by running `pip3 install -e .`
-6. Execute the mains cript by running `python -m spork.main`
+6. Install pre-commit hooks by running `pre-commit install`
+7. Execute the main script by running `python -m spork.main`

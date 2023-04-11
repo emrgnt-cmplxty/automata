@@ -15,9 +15,7 @@ python = "^3.9"
 pytest = "^6.0"
 
 [tool.pytest.ini_options]
-filterwarnings = [
-    "ignore::DeprecationWarning:jsonspec.*",
-]
+filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
 addopts = "-m 'not regression'"
 markers = ["regression: marks tests as regression tests"]
 
@@ -78,3 +76,6 @@ directory = "htmlcov/"
 
 [tool.codecov]
 require_ci_to_pass = true
+
+[tool.flake8]
+ignore = ["E501", "W503"]
