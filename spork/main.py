@@ -31,7 +31,7 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "babyagi-architecture"
+default_branch_name = "main"
 # reset to default branch if necessary
 if pygit_repo.active_branch.name != default_branch_name:
     pygit_repo.git.checkout(default_branch_name)
@@ -40,7 +40,7 @@ if pygit_repo.active_branch.name != default_branch_name:
 work_item = choose_work_item(github_repo)
 
 
-llm = ChatOpenAI(temperature=0.01, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
@@ -74,7 +74,7 @@ if instructions:
 
 # ask user if they want to run planner agent, default is yes if no instructions
 
-do_plan = input("Do you want to run the planning agent? (y/n)")
+do_plan = input("Do you want to run the PLANNING agent? (y/n)")
 
 if do_plan == "y":
     plan_task = make_planning_task(work_item, exec_tools, github_repo.name)
@@ -94,7 +94,7 @@ if do_plan == "y":
 
 
 # ask user if they want to run exec agent
-do_exec = input("Do you want to run the execution agent? (y/n)")
+do_exec = input("Do you want to run the EXECUTION agent? (y/n)")
 if do_exec == "y":
     exec_task = make_execution_task(work_item, instructions, github_repo.name)
     print("Execution task:", exec_task)

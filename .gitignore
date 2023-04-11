@@ -5,3 +5,5 @@
 improved_spork.egg-info/*
 **/**/.DS_Store
 local_env/*
+__pycache__/
+*.pyc
