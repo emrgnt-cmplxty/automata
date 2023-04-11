@@ -13,7 +13,9 @@ def make_planning_task(
     exec_tools: List[BaseTool],
     github_repo_name: str,
 ):
-    pr_or_issue_str = " submit a pull request" if isinstance(work_item, Issue) else " make a commit "
+    pr_or_issue_str = (
+        " submit a pull request" if isinstance(work_item, Issue) else " make a commit "
+    )
     return (
         f"You are a GPT-4 software engineering lead agent."
         f" You are built with langchain, a framework for building language-based agents. "
@@ -44,7 +46,11 @@ def make_execution_task(
     solution_instructions: str,
     github_repo_name: str,
 ):
-    pr_or_issue_str = " create a pull request with your changes." if isinstance(work_item, Issue) else f" make a commit with your changes to the appropriate branch."
+    pr_or_issue_str = (
+        " create a pull request with your changes."
+        if isinstance(work_item, Issue)
+        else f" make a commit with your changes to the appropriate branch."
+    )
     return (
         f"You are a GPT-4-powered software engineer agent."
         f" You are built with langchain, a framework for building language-based agents. "
