@@ -9,7 +9,9 @@ from config import PLANNER_AGENT_OUTPUT_STRING
 
 
 def make_planning_task(
-    work_item: Union[Issue, PullRequest], exec_tools: List[BaseTool], github_repo_name: str
+    work_item: Union[Issue, PullRequest],
+    exec_tools: List[BaseTool],
+    github_repo_name: str,
 ):
     return (
         f"You are a GPT-4 software engineering lead agent."

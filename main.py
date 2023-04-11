@@ -31,12 +31,10 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-# # reset to default branch if necessary
-# if pygit_repo.active_branch.name != "main":
-#     pygit_repo.git.checkout("main")
+# reset to default branch if necessary
+if pygit_repo.active_branch.name != "babyagi-architecture":
+    pygit_repo.git.checkout("babyagi-architecture")
 
-# checkout default branch and pull
-pygit_repo.git.checkout("main")
 pygit_repo.git.pull()
 
 work_item = choose_work_item(github_repo)
@@ -56,7 +54,11 @@ memory = ConversationBufferMemory(memory_key="chat_history")
 
 
 plan_agent = initialize_agent(
-    base_tools, llm, agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION, verbose=True, memory=memory
+    base_tools,
+    llm,
+    agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+    verbose=True,
+    memory=memory,
 )
 
 exec_agent = initialize_agent(
@@ -64,7 +66,11 @@ exec_agent = initialize_agent(
 )
 
 # check if instrutions are already attached to the issue
-instructions = [c.body for c in work_item.get_comments() if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]
+instructions = [
+    c.body
+    for c in work_item.get_comments()
+    if c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)
+]
 if instructions:
     instructions = instructions.pop()
     instructions.replace(PLANNER_AGENT_OUTPUT_STRING, "")
@@ -80,13 +86,14 @@ if do_plan == "y":
     while not approved:
         instructions = plan_agent.run(plan_task)
         print("Created new Instructions:", instructions)
-        feedback = input("Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again")
+        feedback = input(
+            "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again"
+        )
         approved = feedback == "y"
         plan_task = feedback
 
     # save instructions to issue
     work_item.create_comment(PLANNER_AGENT_OUTPUT_STRING + instructions)
-
 
 
 # ask user if they want to run exec agent
