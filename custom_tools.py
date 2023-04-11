@@ -13,11 +13,11 @@ from utils import PassThroughBuffer, remove_html_tags
 
 class GitToolBuilder:
     def __init__(
-            self,
-            github_repo: github.Repository,
-            pygit_repo: git.Repo,
-            work_item: Union[Issue, PullRequest],
-            logger: Optional[PassThroughBuffer] = None,
+        self,
+        github_repo: github.Repository,
+        pygit_repo: git.Repo,
+        work_item: Union[Issue, PullRequest],
+        logger: Optional[PassThroughBuffer] = None,
     ):
         # we need a github repo object to interact with the github API
         # we need pygit repo object to do actual git things
@@ -121,9 +121,9 @@ class GitToolBuilder:
 
 @tool
 def requests_get_clean(url: str) -> str:
-    '''
+    """
     Sends a get request to a specified URL and returns clean text in the response.
-    '''
+    """
     response = requests.get(url)
     try:
         if response.status_code == 200:
