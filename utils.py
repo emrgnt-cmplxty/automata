@@ -1,7 +1,9 @@
 # New functions
 from typing import Union
 import github
+from bs4 import BeautifulSoup
 from github import Github
+import regex as re
 
 
 def login_github(token):
@@ -56,3 +58,11 @@ class PassThroughBuffer:
 
     def __getattr__(self, attr):
         return getattr(self.original_buffer, attr)
+
+
+def remove_html_tags(text) -> str:
+    clean = re.compile("<.*?>")
+    soup = BeautifulSoup(text, "html.parser")
+    raw_text = soup.get_text(strip=True, separator="\n")
+    clean_text = re.sub(clean, "", raw_text)
+    return clean_text
