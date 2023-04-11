@@ -8,7 +8,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
 from config import *
-from custom_tools import GitToolBuilder
+from custom_tools import GitToolBuilder, requests_get_clean
 from prompts import make_planning_task, make_execution_task
 from utils import login_github, list_repositories, choose_work_item, PassThroughBuffer
 
@@ -38,18 +38,18 @@ if pygit_repo.active_branch.name != default_branch_name:
 work_item = choose_work_item(github_repo)
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-4")
+llm = ChatOpenAI(temperature=0.01, model="gpt-4")
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = pass_through_buffer
-base_tools = load_tools(["python_repl", "terminal", "serpapi", "requests_get"], llm=llm)
+base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
+base_tools += [requests_get_clean]
 exec_tools = (
     base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 )
 
-memory = ConversationBufferMemory(memory_key="chat_history")
-
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 plan_agent = initialize_agent(
     base_tools,

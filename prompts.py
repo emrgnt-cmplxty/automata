@@ -18,11 +18,14 @@ def make_planning_task(
     )
     return (
         f"You are a GPT-4 software engineering lead agent."
-        f" You are built with langchain, a framework for building language-based agents. "
+        f" You plan out software engineering work for developer agents."
+        f" You are built with langchain, a framework for building language-based agents."
         f" You can read about it here: https://python.langchain.com/en/latest/modules/agents.html"
+        f" Assume you have the code locally on your machine." # todo
         f" You are working in {os.getcwd()} on {github_repo_name} repository."
         f" Your task is to thoroughly understand the following work item and "
         f" create simple and thorough step-by-step instructions for a developer to implement the solution."
+        f" You should not make the changes yourself, but rather output instructions for a developer to make the changes."
         f" \n\nTitle: {work_item.title}"
         f" \n\nBody: {work_item.body}"
         f" \n\nComments: {[c.body for c in work_item.get_comments() if not c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]}"

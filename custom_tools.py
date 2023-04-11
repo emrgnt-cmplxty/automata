@@ -5,18 +5,19 @@ import github
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from langchain.agents import Tool
+from langchain.agents import Tool, tool
+import requests
 
-from utils import PassThroughBuffer
+from utils import PassThroughBuffer, remove_html_tags
 
 
 class GitToolBuilder:
     def __init__(
-        self,
-        github_repo: github.Repository,
-        pygit_repo: git.Repo,
-        work_item: Union[Issue, PullRequest],
-        logger: Optional[PassThroughBuffer] = None,
+            self,
+            github_repo: github.Repository,
+            pygit_repo: git.Repo,
+            work_item: Union[Issue, PullRequest],
+            logger: Optional[PassThroughBuffer] = None,
     ):
         # we need a github repo object to interact with the github API
         # we need pygit repo object to do actual git things
@@ -116,3 +117,18 @@ class GitToolBuilder:
             return f"Created pull request for  {title} in {self.github_repo.name} repository."
         except Exception as e:
             return f"Error: {e}"
+
+
+@tool
+def requests_get_clean(url: str) -> str:
+    '''
+    Sends a get request to a specified URL and returns clean text in the response.
+    '''
+    response = requests.get(url)
+    try:
+        if response.status_code == 200:
+            return remove_html_tags(response.text)
+        else:
+            raise Exception(f"Error: {response.status_code} {response.text}")
+    except Exception as e:
+        return f"Error: {e}"
