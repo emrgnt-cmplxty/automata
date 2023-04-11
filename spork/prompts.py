@@ -13,10 +13,11 @@ Functions:
 import os
 from typing import List, Union
 
-from config import PLANNER_AGENT_OUTPUT_STRING
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from langchain.tools import BaseTool
+
+from .config import PLANNER_AGENT_OUTPUT_STRING
 
 
 def make_planning_task(

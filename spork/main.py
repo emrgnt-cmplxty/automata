@@ -4,15 +4,16 @@ import sys
 import traceback
 from typing import TextIO, cast
 
-from config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
-from custom_tools import GitToolBuilder, requests_get_clean
 from git import Repo
 from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from prompts import make_execution_task, make_planning_task
 
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
+
+from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
+from .custom_tools import GitToolBuilder, requests_get_clean
+from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
 print("Logging into github")
@@ -90,13 +91,13 @@ if do_plan == "y":
         plan_task = feedback
 
     # save instructions to issue
-    work_item.create_comment(PLANNER_AGENT_OUTPUT_STRING + instructions)
+    work_item.create_comment(PLANNER_AGENT_OUTPUT_STRING + cast(str, instructions))
 
 
 # ask user if they want to run exec agent
 do_exec = input("Do you want to run the EXECUTION agent? (y/n)")
 if do_exec == "y":
-    exec_task = make_execution_task(work_item, instructions, github_repo.name)
+    exec_task = make_execution_task(work_item, cast(str, instructions), github_repo.name)
     print("Execution task:", exec_task)
     try:
         exec_agent.run(exec_task)

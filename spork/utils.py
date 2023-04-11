@@ -43,7 +43,7 @@ def list_repositories(github: Github) -> List[str]:
     return repos[:5]
 
 
-def list_issues(repo: Repository) -> PaginatedList[Issue]:
+def list_issues(repo: Repository) -> PaginatedList:
     """
     Lists the open issues for a given repository.
 
@@ -57,7 +57,7 @@ def list_issues(repo: Repository) -> PaginatedList[Issue]:
     return repo.get_issues(state="open")
 
 
-def list_pulls(repo: Repository) -> PaginatedList[PullRequest]:
+def list_pulls(repo: Repository) -> PaginatedList:
     """
     Lists the open pull requests for a given repository.
 
