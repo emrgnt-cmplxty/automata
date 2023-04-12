@@ -7,7 +7,7 @@ class that can be used to get the source code, docstrings, and list of functions
 or classes within a specific file.
 
 Example usage:
-    code_get = CodeParser(os.path.join(home_path(), "spork"))
+    code_get = CodeParser()
 
     print("Docstring of a class or function:")
     print(code_get.get_docstring('module_dir.module_name.ClassName_Or_function_name'))
@@ -440,6 +440,6 @@ class CodeParser:
 
 
 if __name__ == "__main__":
-    code_parser = CodeParser(os.path.join(home_path(), "spork"))
+    code_parser = CodeParser()
     print("Done loading the Code Parser")
     print("Code Parser Raw Code:\n%s" % (code_parser.get_raw_code("spork.tools.code.parser")))
