@@ -43,32 +43,33 @@ if pygit_repo.active_branch.name != default_branch_name:
 work_item = choose_work_item(github_repo)
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-4")
+llm1 = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+llm2 = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
-base_tools = load_tools(["python_repl", "terminal", "human", "serpapi"], llm=llm)
+base_tools = load_tools(["python_repl", "terminal", "human", "serpapi"], llm=llm2)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
-planning_tools = load_tools(["serpapi"], llm=llm)
-planning_tools += [requests_get_clean]
-
-planning_tools += [CodebaseQAToolBuilder(os.getcwd(), llm).build()]
+# planning_tools += [requests_get_clean]
+planning_tools = load_tools(["terminal"], llm=llm2)
+planning_tools += [CodebaseQAToolBuilder(os.getcwd() + "/spork", llm2).build()]
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 plan_agent = initialize_agent(
-    base_tools,
-    llm,
-    agent=AgentType.SELF_ASK_WITH_SEARCH,
+    planning_tools,
+    llm1,
+    agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True,
     memory=memory,
 )
 
 exec_agent = initialize_agent(
-    exec_tools, llm, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+    exec_tools, llm1, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True
 )
 
 # check if instrutions are already attached to the issue
