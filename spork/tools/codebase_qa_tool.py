@@ -39,7 +39,7 @@ class CodebaseQAToolBuilder:
                 except Exception as e:
                     print(dirpath, file, e)
 
-        text_splitter = CharacterTextSplitter(chunk_size=10000, chunk_overlap=0)
+        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         texts = text_splitter.split_documents(docs)
         print(
             "CodeQATool: Running Chroma using direct local API. Using DuckDB in-memory for database. Data will be transient."
