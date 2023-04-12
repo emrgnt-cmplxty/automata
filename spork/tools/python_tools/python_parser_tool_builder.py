@@ -1,19 +1,19 @@
 """
-CodeParserToolBuilder
+PythonParserToolBuilder
 
-A class for interacting with the CodeParser API, which provides functionality to extract
+A class for interacting with the PythonParser API, which provides functionality to extract
 information about classes, functions, and their docstrings from a given directory of Python files.
 
-The CodeParserToolBuilder class builds a list of Tool PythonObjects, each representing a specific
-command to interact with the CodeParser API.
+The PythonParserToolBuilder class builds a list of Tool PythonObjects, each representing a specific
+command to interact with the PythonParser API.
 
 Attributes:
-- code_parser (CodeParser): A CodeParser PythonObject representing the code parser to work with.
+- code_parser (PythonParser): A PythonParser PythonObject representing the code parser to work with.
 - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObject to log output.
 
 Example usage:
-    code_parser = CodeParser(os.path.join(home_path(), "your_directory"))
-    code_parser_tool_builder = CodeParserToolBuilder(code_parser)
+    code_parser = PythonParser(os.path.join(home_path(), "your_directory"))
+    code_parser_tool_builder = PythonParserToolBuilder(code_parser)
     tools = code_parser_tool_builder.build_tools()
 
 """
@@ -23,16 +23,16 @@ from typing import List, Optional
 from langchain.agents import Tool
 
 from ..utils import PassThroughBuffer
-from .parser import CodeParser
+from .python_parser import PythonParser
 
 
-class CodeParserToolBuilder:
-    def __init__(self, code_parser: CodeParser, logger: Optional[PassThroughBuffer] = None):
+class PythonParserToolBuilder:
+    def __init__(self, code_parser: PythonParser, logger: Optional[PassThroughBuffer] = None):
         """
-        Initializes a CodeParserToolBuilder PythonObject with the given inputs.
+        Initializes a PythonParserToolBuilder PythonObject with the given inputs.
 
         Args:
-        - code_parser (CodeParser): A CodeParser PythonObject representing the code parser to work with.
+        - code_parser (PythonParser): A PythonParser PythonObject representing the code parser to work with.
         - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObject to log output.
 
         Returns:
@@ -43,13 +43,13 @@ class CodeParserToolBuilder:
 
     def build_tools(self) -> List[Tool]:
         """
-        Builds a list of Tool PythonObjects for interacting with CodeParser.
+        Builds a list of Tool PythonObjects for interacting with PythonParser.
 
         Args:
         - None
 
         Returns:
-        - tools (List[Tool]): A list of Tool PythonObjects representing CodeParser commands.
+        - tools (List[Tool]): A list of Tool PythonObjects representing PythonParser commands.
         """
         tools = [
             Tool(

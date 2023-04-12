@@ -11,10 +11,9 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
-from .tools.code.parser import CodeParser
-from .tools.code.parser_tool_builder import CodeParserToolBuilder
-from .tools.github.tool_builder import GithubToolBuilder, requests_get_clean
+from .tools.github import GithubToolBuilder, requests_get_clean
 from .tools.prompts import make_execution_task, make_planning_task
+from .tools.python_tools import PythonParser, PythonParserToolBuilder
 from .tools.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 # Create argument parser and define arguments
@@ -92,8 +91,8 @@ if args.load_github_tools:
     exec_tools += GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
 if args.load_code_tools:
-    code_parser = CodeParser()
-    exec_tools += CodeParserToolBuilder(code_parser).build_tools()
+    code_parser = PythonParser()
+    exec_tools += PythonParserToolBuilder(code_parser).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 

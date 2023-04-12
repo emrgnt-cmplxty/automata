@@ -1,13 +1,13 @@
 """
-CodeParser
+PythonParser
 
 This module provides functionality to extract information about classes, functions,
-and their docstrings from a given directory of Python files. It defines the `CodeParser`
+and their docstrings from a given directory of Python files. It defines the `PythonParser`
 class that can be used to get the source code, docstrings, and list of functions
 or classes within a specific file.
 
 Example usage:
-    code_get = CodeParser()
+    code_get = PythonParser()
 
     print("Fetch the doc strings of a package, module, class, method or function:")
     print(code_get.get_docstring('module_dir.module_name.ClassName_Or_function_name'))
@@ -20,12 +20,18 @@ import os
 from typing import Dict
 
 from ..utils import home_path
-from .types import RESULT_NOT_FOUND, CodePackageType, PythonClass, PythonFunction, PythonModule
+from .python_types import (
+    RESULT_NOT_FOUND,
+    PythonClass,
+    PythonFunction,
+    PythonModule,
+    PythonPackageType,
+)
 
 
-class CodeParser:
+class PythonParser:
     """
-    The CodeParser class provides functionality to extract and access information about
+    The PythonParser class provides functionality to extract and access information about
     classes, functions, and their docstrings from a given directory of Python files.
 
     Attributes:
@@ -36,7 +42,7 @@ class CodeParser:
         self.function_dict: Dict[str, PythonFunction] = {}
         self.class_dict: Dict[str, PythonClass] = {}
         self.module_dict: Dict[str, PythonModule] = {}
-        self.package_dict: Dict[str, CodePackageType] = {}
+        self.package_dict: Dict[str, PythonPackageType] = {}
         self.relative_dir = relative_dir
         self._populate_dicts(os.path.join(home_path(), self.relative_dir))
 
@@ -175,10 +181,10 @@ class CodeParser:
                     packages[package_name][module_py_path] = module_obj
 
         for package_name, modules in packages.items():
-            self.package_dict[package_name] = CodePackageType(package_name, modules)
+            self.package_dict[package_name] = PythonPackageType(package_name, modules)
 
 
 if __name__ == "__main__":
-    code_parser = CodeParser()
+    code_parser = PythonParser()
     print("Done loading the Code Parser")
     print("Code Parser Raw Code:\n%s" % (code_parser.get_raw_code("spork.tools.code.parser")))

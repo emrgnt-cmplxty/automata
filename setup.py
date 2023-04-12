@@ -7,7 +7,7 @@ def read_requirements():
 
 
 setup(
-    name="improved-spork",
+    name="improved_spork",
     version="0.1.0",
     packages=find_packages(),
     install_requires=read_requirements(),

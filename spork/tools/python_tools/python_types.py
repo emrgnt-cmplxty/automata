@@ -222,7 +222,7 @@ class PythonModule(PythonObject):
         return "\n".join(docstrings) if len(docstrings) > 0 else RESULT_NOT_FOUND
 
 
-class CodePackageType(PythonObject):
+class PythonPackageType(PythonObject):
     def __init__(self, py_path: str, modules: Dict[str, PythonModule]):
         super().__init__(py_path, RESULT_NOT_FOUND, RESULT_NOT_FOUND)
         self.modules = modules
