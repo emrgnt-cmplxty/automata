@@ -12,7 +12,7 @@ from langchain.memory import ConversationBufferMemory
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
 from .tools.code.parser import CodeParser
 from .tools.code.parser_tool_builder import CodeParserToolBuilder
-from .tools.github.github_tool_builder import GithubToolBuilder, requests_get_clean
+from .tools.github.tool_builder import GithubToolBuilder, requests_get_clean
 from .tools.prompts import make_execution_task, make_planning_task
 from .tools.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 

@@ -312,7 +312,8 @@ class CodeParser:
                             )
                             classes.append(class_obj)
 
-                    self.file_dict[relative_path] = FileObject(  # Use the relative path as the key
+                    # Use the relative path as the key
+                    self.file_dict[relative_path] = FileObject(
                         file_path, docstring if docstring else "", standalone_functions, classes
                     )
 
