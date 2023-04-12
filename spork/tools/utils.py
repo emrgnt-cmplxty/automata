@@ -24,7 +24,7 @@ def home_path() -> str:
 
     """
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    data_folder = os.path.join(script_dir, "..")
+    data_folder = os.path.join(script_dir, "..", "..")
     return data_folder
 
 

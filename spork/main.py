@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
 import traceback
@@ -15,6 +16,21 @@ from .tools.code.parser_tool_builder import CodeParserToolBuilder
 from .tools.github.tool_builder import GithubToolBuilder, requests_get_clean
 from .tools.prompts import make_execution_task, make_planning_task
 from .tools.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
+
+# Create argument parser and define arguments
+parser = argparse.ArgumentParser(description="Modify main.py script to use passed-in args")
+parser.add_argument("--branch_name", default="main", help="Default branch name (default: main)")
+parser.add_argument(
+    "--planner_model", default="gpt-3.5-turbo", help="Planner model (default: gpt-3.5-turbo)"
+)
+parser.add_argument(
+    "--base_tools",
+    default="python_repl,terminal,human",
+    help="Base tools (default: python_repl,terminal,human)",
+)
+
+args = parser.parse_args()
+
 
 # Log into GitHub
 print("Logging into github")
@@ -33,21 +49,20 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "main"
 # reset to default branch if necessary
-if pygit_repo.active_branch.name != default_branch_name:
-    pygit_repo.git.checkout(default_branch_name)
+if pygit_repo.active_branch.name != args.branch_name:
+    pygit_repo.git.checkout(args.branch_name)
 
 
 work_item = choose_work_item(github_repo)
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0, model=args.planner_model)
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
-base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
+base_tools = load_tools(args.base_tools.split(", "), llm=llm)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
@@ -117,4 +132,4 @@ if do_exec == "y":
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer
-        pygit_repo.git.checkout(default_branch_name)
+        pygit_repo.git.checkout(args.branch_name)

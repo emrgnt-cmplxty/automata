@@ -53,41 +53,21 @@ class CodeParserToolBuilder:
         """
         tools = [
             Tool(
-                name="code-parser-lookup-code",
-                func=lambda object_name: self.code_parser.lookup_code(object_name),
-                description='Returns the raw code of the function or class with the given name, or "No results found" if there is no match found.',
+                name="code-parser-get-raw-code",
+                func=lambda object_py_path: self.code_parser.get_raw_code(object_py_path),
+                description=f"Returns the raw code of the python package, module, class, method, or function with the given path,"
+                f' or "No results found" if there is no match found.'
+                f' For example, if the function "my_function" is defined in the file "my_file.py" '
+                f' located in the main working directory, then the input "my_file.my_function" will return the raw code of the function.'
+                f' If the file is off the main directory, then the input should be "my_directory.my_file.my_function".'
+                f" To save valuable prompt space, package raw code excludes module standalone functions and class methods.",
                 return_direct=True,
             ),
             Tool(
-                name="code-parser-lookup-docstring",
-                func=lambda object_name: self.code_parser.lookup_docstring(object_name),
-                description='Returns the docstring of the function or class with the given name, or  "No results found" if there is no match found.',
-                return_direct=True,
-            ),
-            Tool(
-                name="code-parser-get-standalone-functions",
-                func=lambda file_name: ", ".join(
-                    self.code_parser.get_standalone_functions(file_name)
-                ),
-                description='Returns the list of standalone function names for the given file, or a list with the single entry "No results found" if the file is not found or if it contains no standalone functions.',
-                return_direct=True,
-            ),
-            Tool(
-                name="code-parser-get-classes",
-                func=lambda file_name: ", ".join(self.code_parser.get_classes(file_name)),
-                description='Returns the list of class names in a file, or a list with the single entry "No results found" if the file is not found or if it contains no classes.',
-                return_direct=True,
-            ),
-            Tool(
-                name="code-parser-lookup-file-docstring",
-                func=lambda file_name: self.code_parser.lookup_file_docstring(file_name),
-                description='Returns the docstring of a file, or "No results found" if the file is not found or if it contains no docstring.',
-                return_direct=True,
-            ),
-            Tool(
-                name="code-parser-build-file-summary",
-                func=lambda file_name: self.code_parser.build_file_summary(file_name),
-                description='Returns a formatted summary of the specified file, or "No results found" if the file is not found or if there is nothing to summarize. A valid summary returns the concatenated docstrings of standalone functions, classes and their respective functions, and any nested classes.',
+                name="code-parser-get-object-docstring",
+                func=lambda object_py_path: self.code_parser.get_docstring(object_py_path),
+                description=f"Identical to code-parser-get-object-code, except returns"
+                f" the object docstring instead of raw code.",
                 return_direct=True,
             ),
         ]
