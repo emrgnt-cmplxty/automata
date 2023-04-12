@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import List
 
 from langchain.agents import Tool
 from langchain.chains import RetrievalQA
@@ -23,8 +24,14 @@ class CodebaseQAToolBuilder:
     def build(self) -> Tool:
         docs = []
         embeddings = OpenAIEmbeddings()
+        # skip anything in gitignore
+        ignore = self._get_gitignore_files_and_dirs()
         for dirpath, dirnames, filenames in os.walk(self.codebase_path):
+            if dirpath in ignore:
+                continue
             for file in filenames:
+                if file in ignore:
+                    continue
                 try:
                     loader = TextLoader(os.path.join(dirpath, file))
                     docs.extend(loader.load_and_split())
@@ -51,3 +58,18 @@ class CodebaseQAToolBuilder:
             " you're working on, like how does a function work or what does a file do."
             " Input should be a fully formed question.",
         )
+
+    def _get_gitignore_files_and_dirs(self) -> List[str]:
+        # get the gitignore file
+        gitignore_path = Path(self.codebase_path).joinpath(".gitignore")
+        if not gitignore_path.exists():
+            return []
+        with open(gitignore_path, "r") as f:
+            gitignore = f.read()
+            # get the files and dirs to ignore
+            files_and_dirs = gitignore.split("\n")
+            # remove comments
+            files_and_dirs = [f for f in files_and_dirs if not f.startswith("#")]
+            # remove empty lines
+            files_and_dirs = [f for f in files_and_dirs if f]
+            return files_and_dirs
