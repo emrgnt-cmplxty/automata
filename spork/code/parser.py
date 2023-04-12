@@ -186,9 +186,9 @@ class CodeParser:
         self.file_dict: Dict[str, FileObject] = {}
         self._populate_file_dict(root_dir if root_dir else os.path.join(home_path(), "spork"))
 
-    def lookup_code(self, object_name: str) -> Optional[str]:
+    def lookup_code(self, object_name: str) -> str:
         """
-        Returns the raw code of the object with the given name, or None if the object is not found.
+        Returns the raw code of an function or class with the given name, or None if the object is not found.
 
         Args:
             object_name (str): The name of the object (class or function) to look up.
@@ -200,7 +200,7 @@ class CodeParser:
             for obj in file_obj.get_standalone_functions() + file_obj.get_classes():
                 if obj.name == object_name:
                     return obj.get_raw_code()
-        return None
+        return "No result found"
 
     def lookup_docstring(self, object_name: str) -> Optional[str]:
         """
@@ -216,9 +216,9 @@ class CodeParser:
             for obj in file_obj.get_standalone_functions() + file_obj.get_classes():
                 if obj.name == object_name:
                     return obj.get_doc_string()
-        return None
+        return "No result found"
 
-    def get_standalone_functions(self, file_name: str) -> Optional[List[str]]:
+    def get_standalone_functions(self, file_name: str) -> List[str]:
         """
         Returns the list of standalone function names in the given file, or None if the file is not found.
 
@@ -230,9 +230,9 @@ class CodeParser:
         """
         if file_name in self.file_dict:
             return [func.name for func in self.file_dict[file_name].get_standalone_functions()]
-        return None
+        return ["No results found."]
 
-    def get_classes(self, file_name: str) -> Optional[List[str]]:
+    def get_classes(self, file_name: str) -> List[str]:
         """
         Returns the list of class names in a file, or None if the file is not found.
 
@@ -244,9 +244,9 @@ class CodeParser:
         """
         if file_name in self.file_dict:
             return [cls.name for cls in self.file_dict[file_name].get_classes()]
-        return None
+        return ["No results found."]
 
-    def lookup_file_docstring(self, file_name: str) -> Optional[str]:
+    def lookup_file_docstring(self, file_name: str) -> str:
         """
         Returns the docstring of a file, or None if the file is not found.
 
@@ -258,9 +258,9 @@ class CodeParser:
         """
         if file_name in self.file_dict:
             return self.file_dict[file_name].get_docstring()
-        return None
+        return "No results found."
 
-    def build_file_summary(self, file_name: str) -> Optional[str]:
+    def build_file_summary(self, file_name: str) -> str:
         """
         Returns a formatted summary of the specified file, or None if the file is not found.
 
@@ -272,7 +272,7 @@ class CodeParser:
         """
         if file_name in self.file_dict:
             return self.file_dict[file_name].get_summary()
-        return None
+        return "No results found."
 
     def _populate_file_dict(self, root_dir: str) -> None:
         """

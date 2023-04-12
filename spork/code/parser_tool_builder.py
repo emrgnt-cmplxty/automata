@@ -55,37 +55,39 @@ class CodeParserToolBuilder:
             Tool(
                 name="code-parser-lookup-code",
                 func=lambda object_name: self.code_parser.lookup_code(object_name),
-                description="Returns the raw code of the object with the given name, or None if the object is not found.",
+                description='Returns the raw code of the function or class with the given name, or "No results found" if there is no match found.',
                 return_direct=True,
             ),
             Tool(
                 name="code-parser-lookup-docstring",
                 func=lambda object_name: self.code_parser.lookup_docstring(object_name),
-                description="Returns the docstring of the object with the given name, or None if the object is not found.",
+                description='Returns the docstring of the function or class with the given name, or  "No results found" if there is no match found.',
                 return_direct=True,
             ),
             Tool(
                 name="code-parser-get-standalone-functions",
-                func=lambda file_name: self.code_parser.get_standalone_functions(file_name),
-                description="Returns the list of standalone function names in the given file, or None if the file is not found.",
+                func=lambda file_name: ", ".join(
+                    self.code_parser.get_standalone_functions(file_name)
+                ),
+                description='Returns the list of standalone function names for the given file, or a list with the single entry "No results found" if the file is not found or if it contains no standalone functions.',
                 return_direct=True,
             ),
             Tool(
                 name="code-parser-get-classes",
-                func=lambda file_name: self.code_parser.get_classes(file_name),
-                description="Returns the list of class names in a file, or None if the file is not found.",
+                func=lambda file_name: ", ".join(self.code_parser.get_classes(file_name)),
+                description='Returns the list of class names in a file, or a list with the single entry "No results found" if the file is not found or if it contains no classes.',
                 return_direct=True,
             ),
             Tool(
                 name="code-parser-lookup-file-docstring",
                 func=lambda file_name: self.code_parser.lookup_file_docstring(file_name),
-                description="Returns the docstring of a file, or None if the file is not found.",
+                description='Returns the docstring of a file, or "No results found" if the file is not found or if it contains no docstring.',
                 return_direct=True,
             ),
             Tool(
                 name="code-parser-build-file-summary",
                 func=lambda file_name: self.code_parser.build_file_summary(file_name),
-                description="Returns a formatted summary of the specified file, or None if the file is not found.",
+                description='Returns a formatted summary of the specified file, or "No results found" if the file is not found or if there is nothing to summarize. A valid summary returns the concatenated docstrings of standalone functions, classes and their respective functions, and any nested classes.',
                 return_direct=True,
             ),
         ]
