@@ -285,7 +285,6 @@ class CodeParser:
             for file in files:
                 if file.endswith(".py"):
                     file_path = os.path.join(root, file)
-                    print("file_path = ", file_path)
                     relative_path = os.path.relpath(
                         file_path, home_path()
                     )  # Get the relative path
