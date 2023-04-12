@@ -14,20 +14,11 @@ Example usage:
 
     print("Source code of a class or function:")
     print(code_get.get_raw_code('module_dir.module_name.ClassName_Or_function_name'))
-
-    print("Standalone functions in a module:")
-    print(code_get.get_module_standalone_functions('module_dir.module_name'))
-
-    print("Classes in a file")
-    print(code_get.get_module_classes('path/to/file/file_name.py'))
-
-    print("Docstring of a file:")
-    print(code_get.get_module_docstring('path/to/file/file_name.py'))
 """
 import abc
 import ast
 import os
-from typing import Dict, List, Optional, cast
+from typing import Dict, List, cast
 
 from ..utils import home_path
 
@@ -302,13 +293,13 @@ class CodeParser:
         module_dict (Dict[str, ModuleObject]): A dictionary that maps file names to their corresponding ModuleObject instances.
     """
 
-    def __init__(self, root_dir: Optional[str] = None):
+    def __init__(self, relative_dir: str = "spork"):
         self.function_dict: Dict[str, FunctionObject] = {}
         self.class_dict: Dict[str, ClassObject] = {}
         self.module_dict: Dict[str, ModuleObject] = {}
         self.package_dict: Dict[str, PackageObject] = {}
-        self._populate_dicts(root_dir if root_dir else os.path.join(home_path(), "spork"))
-        print("package_dict = ", self.package_dict)
+        self.relative_dir = relative_dir
+        self._populate_dicts(os.path.join(home_path(), self.relative_dir))
 
     def get_raw_code(self, object_py_path: str) -> str:
         """
@@ -353,26 +344,26 @@ class CodeParser:
         else:
             return RESULT_NOT_FOUND
 
-    def _populate_dicts(self, root_dir: str) -> None:
+    def _populate_dicts(self, abs_dir: str) -> None:
         """
         Populates the file_dict, class_dict, and function_dict with ModuleObjects, ClassObjects, and FunctionObjects
         for each Python file found in the specified directory.
 
         Args:
-            root_dir (str): The root directory containing the Python files.
+            rel_dir (str): The absolute directory containing the Python files.
         """
         packages: Dict[str, Dict[str, ModuleObject]] = {}
-        for root, _dirs, files in os.walk(root_dir):
+        for root, _dirs, files in os.walk(abs_dir):
             for file in files:
                 if file.endswith(".py"):
                     if file == "__init__.py":
                         continue
                     file_path = os.path.join(root, file)
-                    module_py_path = os.path.relpath(file_path, root_dir).replace(
-                        os.path.sep, "."
-                    )[
-                        :-3
-                    ]  # Get the python path
+                    module_py_path = os.path.relpath(
+                        file_path, os.path.join(abs_dir, "..")
+                    ).replace(os.path.sep, ".")[:-3]
+
+                    # Get the python path
                     package_name = ".".join(module_py_path.split(".")[:-1])
 
                     with open(file_path, "r", encoding="utf-8") as f:
@@ -446,3 +437,9 @@ class CodeParser:
 
         for package_name, modules in packages.items():
             self.package_dict[package_name] = PackageObject(package_name, modules)
+
+
+if __name__ == "__main__":
+    code_parser = CodeParser(os.path.join(home_path(), "spork"))
+    print("Done loading the Code Parser")
+    print("Code Parser Raw Code:\n%s" % (code_parser.get_raw_code("spork.tools.code.parser")))

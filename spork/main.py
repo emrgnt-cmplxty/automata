@@ -21,13 +21,27 @@ from .tools.utils import PassThroughBuffer, choose_work_item, list_repositories,
 parser = argparse.ArgumentParser(description="Modify main.py script to use passed-in args")
 parser.add_argument("--branch_name", default="main", help="Default branch name (default: main)")
 parser.add_argument(
-    "--planner_model", default="gpt-3.5-turbo", help="Planner model (default: gpt-3.5-turbo)"
+    "--repository_name",
+    default="maks-ivanov/improved-spork",
+    help="Default branch name (default: main)",
 )
+parser.add_argument("--planner_model", default="gpt-4", help="Planner model (default: gpt-4)")
 parser.add_argument(
     "--base_tools",
-    default="python_repl,terminal,human",
+    default="python_repl,human",
     help="Base tools (default: python_repl,terminal,human)",
 )
+parser.add_argument(
+    "--do_plan",
+    default=True,
+    help="Run the planning agent? (default: True)",
+)
+parser.add_argument(
+    "--issues_or_prs",
+    default="issues",
+    help='Work on issues or pull requests? (default: "issues", alternative: "pulls")',
+)
+
 
 args = parser.parse_args()
 
@@ -40,10 +54,7 @@ github_client = login_github(GITHUB_API_KEY)
 
 repositories = list_repositories(github_client)
 print("Found recent repos:", repositories)
-# Let user choose a repository
-repository_name = input("Enter the name of the repository you want to work with:")
-
-github_repo = github_client.get_repo(repository_name)
+github_repo = github_client.get_repo(args.repository_name)
 
 
 # create a repo object which represents the repository we are inside of
@@ -54,7 +65,7 @@ if pygit_repo.active_branch.name != args.branch_name:
     pygit_repo.git.checkout(args.branch_name)
 
 
-work_item = choose_work_item(github_repo)
+work_item = choose_work_item(github_repo, args.issues_or_prs)
 
 
 llm = ChatOpenAI(temperature=0, model=args.planner_model)
@@ -62,7 +73,8 @@ llm = ChatOpenAI(temperature=0, model=args.planner_model)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
-base_tools = load_tools(args.base_tools.split(", "), llm=llm)
+print("Loading Base Tools :%s" % (args.base_tools.split(",")))
+base_tools = load_tools(args.base_tools.split(","), llm=llm)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
@@ -95,9 +107,7 @@ if instructions_list:
 
 # ask user if they want to run planner agent, default is yes if no instructions
 
-do_plan = input("Do you want to run the PLANNING agent? (y/n)")
-
-if do_plan == "y":
+if args.do_plan:
     plan_task = make_planning_task(work_item, exec_tools, github_repo.name)
     print("Planning task:", plan_task)
     approved = False

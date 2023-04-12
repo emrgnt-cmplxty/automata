@@ -85,9 +85,7 @@ def list_pulls(repo: Repository) -> PaginatedList:
     return repo.get_pulls(state="open")
 
 
-def choose_work_item(
-    github_repo: Repository,
-) -> Union[Issue, PullRequest]:
+def choose_work_item(github_repo: Repository, choice: str = "") -> Union[Issue, PullRequest]:
     """
     Asks the user whether they want to work on issues or pull requests for a given repository, lists the available
     work items, and prompts the user to choose one to work on.
@@ -99,13 +97,13 @@ def choose_work_item(
     - A Github Issue object or PullRequest object representing the user's chosen work item.
     """
 
-    choice = input("Do you want to work on issues or pull requests? (i/p)")
     work_items = []
-
-    if choice == "i":
+    if choice == "":
+        choice = input("Do you want to work on issues or pull requests (issues/pulls)? ")
+    if choice == "issues":
         work_items = list_issues(github_repo)
         print("Issues:")
-    elif choice == "p":
+    elif choice == "pulls":
         work_items = list_pulls(github_repo)
         print("Pull requests:")
     else:
