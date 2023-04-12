@@ -113,11 +113,11 @@ if do_exec == "y":
     except ValueError as e:
         if DO_RETRY:
             tb = traceback.format_exc()
-            exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
-            pass_through_buffer.saved_output = ""
-            print(f"Failed to complete execution task with {e}")
+            print(f"Failed to complete execution task with {e}, traceback: {tb}")
             print("New task:", exec_task)
             print("Retrying...")
+            exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
+            pass_through_buffer.saved_output = ""
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer
