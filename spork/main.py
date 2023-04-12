@@ -7,16 +7,16 @@ from typing import TextIO, cast
 from git import Repo
 from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
-from spork.tools.custom_tools import GitToolBuilder, requests_get_clean
+from spork.tools.git_tools import GitToolBuilder, requests_get_clean
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
 from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
-from .tools.codebase_qa_tool import CodebaseQAToolBuilder
+from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
 
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)
@@ -46,8 +46,9 @@ work_item = choose_work_item(github_repo)
 llm1 = ChatOpenAI(temperature=0, model="gpt-4")
 llm2 = ChatOpenAI(temperature=0, model="gpt-4")
 
-# llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+readonlymemory = ReadOnlySharedMemory(memory=memory)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "terminal", "human", "serpapi"], llm=llm2)
@@ -56,14 +57,13 @@ exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).bui
 
 # planning_tools += [requests_get_clean]
 # planning_tools = load_tools(["terminal"], llm=llm2)
-planning_tools = [CodebaseQAToolBuilder(os.getcwd() + "/spork", llm2).build()]
+planning_tools = [CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory).build()]
 
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
+exec_tools += planning_tools
 plan_agent = initialize_agent(
     planning_tools,
     llm1,
-    agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+    agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
     verbose=True,
     memory=memory,
 )

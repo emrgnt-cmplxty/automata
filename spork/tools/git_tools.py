@@ -1,5 +1,5 @@
 """
-custom_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
+git_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
 
 This module contains a GitToolBuilder class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
 
