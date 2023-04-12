@@ -1,10 +1,10 @@
 """
 custom_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
 
-This module contains a GitToolBuilder class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
+This module contains a GitHubToolBuilder class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
 
 Classes:
-- GitToolBuilder: A class for interacting with Git repositories.
+- GitHubToolBuilder: A class for interacting with Git repositories.
 
 Functions:
 - requests_get_clean: A function for sending GET requests and returning clean text.
@@ -20,10 +20,10 @@ from github.PullRequest import PullRequest
 from github.Repository import Repository
 from langchain.agents import Tool, tool
 
-from spork.utils import PassThroughBuffer, remove_html_tags
+from spork.tools.utils import PassThroughBuffer, remove_html_tags
 
 
-class GitToolBuilder:
+class GitHubToolBuilder:
     def __init__(
         self,
         github_repo: Repository,
@@ -32,7 +32,7 @@ class GitToolBuilder:
         logger: Optional[PassThroughBuffer] = None,
     ):
         """
-        Initializes a GitToolBuilder object with the given inputs.
+        Initializes a GitHubToolBuilder object with the given inputs.
 
         Args:
         - github_repo (github.Repository): A github.Repository object representing the repository to work on.
