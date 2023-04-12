@@ -3,6 +3,7 @@ This module provides functions to interact with the GitHub API, specifically to 
 choose a work item to work on, and remove HTML tags from text.
 """
 
+import os
 from typing import List, Union
 
 import regex as re
@@ -12,6 +13,19 @@ from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.Repository import Repository
+
+
+def home_path() -> str:
+    """
+    Returns the path to the home folder.
+
+    Returns:
+    - A path object in string form
+
+    """
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    data_folder = os.path.join(script_dir, "..")
+    return data_folder
 
 
 def login_github(token: str) -> Github:

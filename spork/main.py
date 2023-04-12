@@ -11,6 +11,8 @@ from langchain.memory import ConversationBufferMemory
 
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
+from .code.parser import CodeParser
+from .code.parser_tool_builder import CodeParserToolBuilder
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
 from .custom_tools import GitToolBuilder, requests_get_clean
 from .prompts import make_execution_task, make_planning_task
@@ -49,6 +51,9 @@ sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
+
+code_parser = CodeParser()
+exec_tools += CodeParserToolBuilder(code_parser).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 

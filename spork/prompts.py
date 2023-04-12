@@ -39,6 +39,8 @@ def make_planning_task(
     pr_or_issue_str = (
         " submit a pull request" if isinstance(work_item, Issue) else " make a commit "
     )
+    file_tree_command = 'tree . -I "__pycache__*|*.pyc|__init__.py|local_env|*.egg-info"'
+    file_tree = os.popen(file_tree_command)
     return (
         f"You are a GPT-4 software engineering lead agent."
         f" You plan out software engineering work for developer agents."
@@ -46,6 +48,7 @@ def make_planning_task(
         f" You can read about it here: https://python.langchain.com/en/latest/modules/agents.html"
         f" Assume you have the code locally on your machine."  # todo
         f" You are working in {os.getcwd()} on {github_repo_name} repository."
+        f" The local file structure is as follows:\n {file_tree.read()}"
         f" Your task is to thoroughly understand the following work item and "
         f" create simple and thorough step-by-step instructions for a developer to implement the solution."
         f" You should not make the changes yourself, but rather output instructions for a developer to make the changes."
@@ -56,6 +59,7 @@ def make_planning_task(
         f" {pr_or_issue_str} with working, clean, and documented code."
         f" Your developer is also a GPT-4-powered agent, so keep that in mind when creating instructions."
         f" You should acquire an excellent understanding of the current state of the repository and the code within it."
+        f" The best resource for furthering your understanding of the code is the code-parser tool, you may use this to help with uncertainty about around the working of any file, or the repository as a whole."
         f" You should also look up documentation on the internet whenever necessary."
         f" Your instructions should be clear and concise, and should not contain any typos or grammatical errors."
         f" You should tell the developer which files to create/modify/delete, and what to write in them."
