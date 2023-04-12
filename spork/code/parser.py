@@ -16,13 +16,13 @@ Example usage:
     print(code_lookup.lookup_code('ClassNameOrFunctionName'))
 
     print("Standalone functions in a file:")
-    print(code_lookup.get_standalone_functions('file_name.py'))
+    print(code_lookup.get_standalone_functions('path/to/file/file_name.py'))
 
     print("Classes in a file")
-    print(code_lookup.get_classes('file_name.py'))
+    print(code_lookup.get_classes('path/to/file/file_name.py'))
 
     print("Docstring of a file:")
-    print(code_lookup.lookup_file_docstring('file_name.py'))
+    print(code_lookup.lookup_file_docstring('path/to/file/file_name.py'))
 """
 import ast
 import os
@@ -218,60 +218,60 @@ class CodeParser:
                     return obj.get_doc_string()
         return "No result found"
 
-    def get_standalone_functions(self, file_name: str) -> List[str]:
+    def get_standalone_functions(self, file_path: str) -> List[str]:
         """
         Returns the list of standalone function names in the given file, or None if the file is not found.
 
         Args:
-            file_name (str): The name of the file to look up.
+            file_path (str): The relative path of the file to look up.
 
         Returns:
             Optional[List[str]]: A list of standalone function names found in the file, or None if the file is not found.
         """
-        if file_name in self.file_dict:
-            return [func.name for func in self.file_dict[file_name].get_standalone_functions()]
+        if file_path in self.file_dict:
+            return [func.name for func in self.file_dict[file_path].get_standalone_functions()]
         return ["No results found."]
 
-    def get_classes(self, file_name: str) -> List[str]:
+    def get_classes(self, file_path: str) -> List[str]:
         """
         Returns the list of class names in a file, or None if the file is not found.
 
         Args:
-            file_name (str): The name of the file.
+            file_path (str): The relative path of the file to look up.
 
         Returns:
             Optional[List[str]]: A list of class names found in the file, or None if the file is not found.
         """
-        if file_name in self.file_dict:
-            return [cls.name for cls in self.file_dict[file_name].get_classes()]
+        if file_path in self.file_dict:
+            return [cls.name for cls in self.file_dict[file_path].get_classes()]
         return ["No results found."]
 
-    def lookup_file_docstring(self, file_name: str) -> str:
+    def lookup_file_docstring(self, file_path: str) -> str:
         """
         Returns the docstring of a file, or None if the file is not found.
 
         Args:
-            file_name (str): The name of the file.
+            file_path (str): The relative path of the file to look up.
 
         Returns:
             Optional[str]: The docstring of the file, or None if the file is not found.
         """
-        if file_name in self.file_dict:
-            return self.file_dict[file_name].get_docstring()
+        if file_path in self.file_dict:
+            return self.file_dict[file_path].get_docstring()
         return "No results found."
 
-    def build_file_summary(self, file_name: str) -> str:
+    def build_file_summary(self, file_path: str) -> str:
         """
         Returns a formatted summary of the specified file, or None if the file is not found.
 
         Args:
-            file_name (str): The name of the file.
+            file_path (str): The relative path of the file to look up.
 
         Returns:
             Optional[str]: A formatted summary of the file, or None if the file is not found.
         """
-        if file_name in self.file_dict:
-            return self.file_dict[file_name].get_summary()
+        if file_path in self.file_dict:
+            return self.file_dict[file_path].get_summary()
         return "No results found."
 
     def _populate_file_dict(self, root_dir: str) -> None:
@@ -285,6 +285,10 @@ class CodeParser:
             for file in files:
                 if file.endswith(".py"):
                     file_path = os.path.join(root, file)
+                    print("file_path = ", file_path)
+                    relative_path = os.path.relpath(
+                        file_path, home_path()
+                    )  # Get the relative path
                     with open(file_path, "r", encoding="utf-8") as f:
                         node = ast.parse(f.read())
 
@@ -309,7 +313,7 @@ class CodeParser:
                             )
                             classes.append(class_obj)
 
-                    self.file_dict[file] = FileObject(
+                    self.file_dict[relative_path] = FileObject(  # Use the relative path as the key
                         file_path, docstring if docstring else "", standalone_functions, classes
                     )
 
@@ -320,7 +324,9 @@ if __name__ == "__main__":
     print("Done loading the Code Parser")
     print("Login Github:\n%s" % (code_parser.lookup_code("login_github")))
     print("Lookup Docstring:\n%s" % (code_parser.lookup_docstring("login_github")))
-    print("Get StandAlone Functions:\n%s" % (code_parser.get_standalone_functions("utils.py")))
-    print("Get Classes:\n%s" % (code_parser.get_classes("utils.py")))
-    print("Lookup File DocString:\n%s" % (code_parser.lookup_file_docstring("utils.py")))
-    print("Lookup File Summary:\n%s" % (code_parser.build_file_summary("parser.py")))
+    print(
+        "Get StandAlone Functions:\n%s" % (code_parser.get_standalone_functions("spork/utils.py"))
+    )
+    print("Get Classes:\n%s" % (code_parser.get_classes("spork/utils.py")))
+    print("Lookup File DocString:\n%s" % (code_parser.lookup_file_docstring("spork/utils.py")))
+    print("Lookup File Summary:\n%s" % (code_parser.build_file_summary("spork/code/parser.py")))
