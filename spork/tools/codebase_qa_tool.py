@@ -26,10 +26,10 @@ class CodebaseQAToolBuilder:
         for dirpath, dirnames, filenames in os.walk(self.codebase_path):
             for file in filenames:
                 try:
-                    loader = TextLoader(os.path.join(dirpath, file), encoding="utf-8")
+                    loader = TextLoader(os.path.join(dirpath, file))
                     docs.extend(loader.load_and_split())
                 except Exception as e:
-                    print(e)
+                    print(dirpath, file, e)
 
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         texts = text_splitter.split_documents(docs)
