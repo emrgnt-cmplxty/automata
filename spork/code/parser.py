@@ -1,13 +1,13 @@
 """
-CodeLookup
+CodeParser
 
 This module provides functionality to extract information about classes, functions,
-and their docstrings from a given directory of Python files. It defines the `CodeLookup`
+and their docstrings from a given directory of Python files. It defines the `CodeParser`
 class that can be used to lookup the source code, docstrings, and list of functions
 or classes within a specific file.
 
 Example usage:
-    code_lookup = CodeLookup(os.path.join(home_path(), "spork"))
+    code_lookup = CodeParser(os.path.join(home_path(), "spork"))
 
     print("Docstring of a class or function:")
     print(code_lookup.lookup_docstring('ClassNameOrFunctionName'))
@@ -26,7 +26,7 @@ Example usage:
 """
 import ast
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 from ..utils import home_path
 
@@ -115,6 +115,63 @@ class FileObject:
         """
         return self.docstring
 
+    def get_summary(self) -> str:
+        """
+        Returns a formatted summary of the file, including its docstring, classes, class functions, and standalone functions.
+
+        Returns:
+            str: A formatted summary of the file as a string.
+        """
+        summary = [f"File: {self.filepath}", f"Docstring: {self.docstring}\n"]
+
+        summary.append("Standalone Functions:")
+        for func in self.standalone_functions:
+            summary.append(self.format_standalone_function_summary(func))
+
+        summary.append("\nClasses:")
+        for cls in self.classes:
+            summary.append(self.format_class_summary(cls))
+
+        return "\n".join(summary)
+
+    @staticmethod
+    def format_standalone_function_summary(function: ObjectInfo) -> str:
+        """
+        Formats the summary of a standalone function.
+
+        Args:
+            function (ObjectInfo): The ObjectInfo instance representing the standalone function.
+
+        Returns:
+            str: A formatted summary of the standalone function as a string.
+        """
+        return f"Function: {function.name}\nDocstring: {function.docstring}\n"
+
+    @staticmethod
+    def format_class_summary(class_obj: ObjectInfo) -> str:
+        """
+        Formats the summary of a class, including its class functions.
+
+        Args:
+            class_obj (ObjectInfo): The ObjectInfo instance representing the class.
+
+        Returns:
+            str: A formatted summary of the class and its functions as a string.
+        """
+        class_summary = [f"Class: {class_obj.name}", f"Docstring: {class_obj.docstring}\n"]
+
+        # Assuming class_obj.code is an ast.ClassDef node
+        class_node = cast(ast.ClassDef, ast.parse(class_obj.code).body[0])
+
+        class_summary.append("Class Functions:")
+        for n in class_node.body:
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                func_name = n.name
+                func_docstring = ast.get_docstring(n)
+                class_summary.append(f"  Function: {func_name}\n  Docstring: {func_docstring}\n")
+
+        return "\n".join(class_summary)
+
 
 class CodeParser:
     """
@@ -125,9 +182,9 @@ class CodeParser:
         file_dict (Dict[str, FileObject]): A dictionary that maps file names to their corresponding FileObject instances.
     """
 
-    def __init__(self, root_dir: str):
+    def __init__(self, root_dir: Optional[str] = None):
         self.file_dict: Dict[str, FileObject] = {}
-        self._populate_file_dict(root_dir)
+        self._populate_file_dict(root_dir if root_dir else os.path.join(home_path(), "spork"))
 
     def lookup_code(self, object_name: str) -> Optional[str]:
         """
@@ -203,6 +260,20 @@ class CodeParser:
             return self.file_dict[file_name].get_docstring()
         return None
 
+    def build_file_summary(self, file_name: str) -> Optional[str]:
+        """
+        Returns a formatted summary of the specified file, or None if the file is not found.
+
+        Args:
+            file_name (str): The name of the file.
+
+        Returns:
+            Optional[str]: A formatted summary of the file, or None if the file is not found.
+        """
+        if file_name in self.file_dict:
+            return self.file_dict[file_name].get_summary()
+        return None
+
     def _populate_file_dict(self, root_dir: str) -> None:
         """
         Populates the file_dict with FileObjects for each Python file found in the specified directory.
@@ -252,3 +323,4 @@ if __name__ == "__main__":
     print("Get StandAlone Functions:\n%s" % (code_parser.get_standalone_functions("utils.py")))
     print("Get Classes:\n%s" % (code_parser.get_classes("utils.py")))
     print("Lookup File DocString:\n%s" % (code_parser.lookup_file_docstring("utils.py")))
+    print("Lookup File Summary:\n%s" % (code_parser.build_file_summary("parser.py")))
