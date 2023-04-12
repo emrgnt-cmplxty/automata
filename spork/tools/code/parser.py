@@ -9,279 +9,18 @@ or classes within a specific file.
 Example usage:
     code_get = CodeParser()
 
-    print("Docstring of a class or function:")
+    print("Fetch the doc strings of a package, module, class, method or function:")
     print(code_get.get_docstring('module_dir.module_name.ClassName_Or_function_name'))
 
-    print("Source code of a class or function:")
+    print("Fetch the raw code of a package, module, class, method or function:")
     print(code_get.get_raw_code('module_dir.module_name.ClassName_Or_function_name'))
 """
-import abc
 import ast
 import os
-from typing import Dict, List, cast
+from typing import Dict
 
 from ..utils import home_path
-
-RESULT_NOT_FOUND = "No results found."
-
-
-class Object(abc.ABC):
-    """
-    The Object class represents a single object with its python path, docstring, and raw code.
-
-    Attributes:
-        py_path (str): The name of the object.
-        docstring (str): The docstring of the object.
-        code (str): The raw code of the object.
-    """
-
-    def __init__(self, py_path: str, docstring: str, code: str):
-        self.py_path = py_path
-        self.docstring = docstring
-        self.code = code
-
-    def get_raw_code(self) -> str:
-        """
-        Returns the raw code of the object.
-
-        Note:
-            This method may be extended by subclasses to customize the behavior.
-
-        Returns:
-            str: The raw code of the object as a string.
-        """
-
-        node = ast.parse(self.code)
-        if isinstance(node.body[0], (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            node.body[0].body.pop(0)  # Remove the docstring node
-        return ast.unparse(node)
-
-    def get_doc_string(self) -> str:
-        """
-        Returns the docstring of the object.
-
-        Note:
-            This method may be extended by subclasses to customize the behavior.
-
-        Returns:
-            str: The docstring of the object as a string.
-        """
-        name = self.py_path.split(".")[-1]
-        return f"{name}:\n{self.docstring}" if self.docstring else RESULT_NOT_FOUND
-
-
-class FunctionObject(Object):
-    """
-    The FunctionObject class represents a single function (or method) with its python path, docstring, and raw code.
-
-    Attributes:
-        methods (Dict[str, FunctionObject]): A dictionary of associated FunctionObject instances, keyed by method names.
-    """
-
-    def __init__(self, py_path: str, docstring: str, code: str):
-        super().__init__(py_path, docstring, code)
-
-
-class ClassObject(Object):
-    """
-    The ClassObject class represents a single class with its python path, docstring, and raw code.
-
-    Attributes:
-        py_path (str): The name of the class.
-        docstring (str): The docstring of the class.
-        code (str): The raw code of the class.
-        methods (Dict[str, FunctionObject]): A dictionary of associated FunctionObject instances, keyed by method names.
-    """
-
-    def __init__(self, py_path: str, docstring: str, code: str):
-        super().__init__(py_path, docstring, code)
-        self.methods = self._parse_methods()
-
-    def get_raw_code(self, exclude_methods: bool = False) -> str:
-        """
-        Returns the raw code of the object without the docstring,
-        and with methods' docstrings removed as well.
-
-        Returns:
-            str: The raw code of the object as a string.
-        """
-        node = ast.parse(self.code)
-        if isinstance(node.body[0], ast.ClassDef):
-            # Remove the class docstring node
-            if isinstance(node.body[0].body[0], ast.Expr) and isinstance(
-                node.body[0].body[0].value, ast.Str
-            ):
-                node.body[0].body.pop(0)
-
-            # Iterate through the methods and remove their docstrings
-            for method_node in node.body[0].body:
-                if isinstance(method_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    if (
-                        isinstance(method_node.body[0], ast.Expr)
-                        and isinstance(method_node.body[0].value, ast.Str)
-                        or (exclude_methods and method_node.name != "__init__")
-                    ):
-                        method_node.body.pop(0)
-        return ast.unparse(node)
-
-    def get_doc_string(self, exclude_methods: bool = False) -> str:
-        """
-        Returns the docstring of the class.
-
-        Returns:
-            str: The docstring of the class as a string.
-        """
-
-        result = RESULT_NOT_FOUND
-        if self.docstring:
-            name = self.py_path.split(".")[-1]
-            result = f"{name}:\n{self.docstring}"
-
-        if not exclude_methods:
-            for method in self.methods.values():
-                if result == RESULT_NOT_FOUND:
-                    result = ""
-                result += f"\n{method.get_doc_string()}"
-
-        return result
-
-    def _parse_methods(self) -> Dict[str, FunctionObject]:
-        """
-        Parses the class code and extracts its methods as FunctionObject instances.
-
-        Returns:
-            Dict[str, FunctionObject]: A dictionary of associated FunctionObject instances, keyed by method names.
-        """
-        # Assuming self.code is an ast.ClassDef node
-        class_node = cast(ast.ClassDef, ast.parse(self.code).body[0])
-        methods = {}
-
-        for n in class_node.body:
-            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                func_name = n.name
-                func_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
-                func_code = ast.unparse(n)
-                methods[func_name] = FunctionObject(func_name, func_docstring, func_code)
-
-        return methods
-
-
-class ModuleObject(Object):
-    """
-    The ModuleObject class represents a single python module with associated docstrings, standalone functions, and classes.
-
-    Attributes:
-        filepath (str): The filepath of the file.
-        docstring (str): The docstring of the file.
-        standalone_functions (List[FunctionObject]): A list of FunctionObject instances representing standalone functions.
-        classes (List[FunctionObject]): A list of FunctionObject instances representing classes.
-    """
-
-    def __init__(
-        self,
-        py_path: str,
-        docstring: str,
-        standalone_functions: List[FunctionObject],
-        classes: List[ClassObject],
-    ):
-        super().__init__(py_path, docstring, RESULT_NOT_FOUND)
-        self.standalone_functions = standalone_functions
-        self.classes = classes
-
-    def get_raw_code(
-        self, exclude_standalones: bool = False, exclude_methods: bool = False
-    ) -> str:
-        """
-        Returns the raw code of the module, including all nested functions and classes.
-
-        Args:
-            exclude_standalones (bool): If True, exclude docstrings of standalone functions from the result.
-            exclude_methods (bool): If True, exclude docstrings of methods from the result.
-
-        Returns:
-            str: The raw code of the module as a string.
-        """
-        raw_code = []
-        if not exclude_standalones:
-            for func_obj in self.standalone_functions:
-                raw_code.append(func_obj.get_raw_code())
-                raw_code.append("\n")
-
-        for class_obj in self.classes:
-            raw_code.append(class_obj.get_raw_code(exclude_methods))
-            raw_code.append("\n")
-
-        return "\n".join(raw_code) if len(raw_code) > 0 else RESULT_NOT_FOUND
-
-    def get_docstring(self, exclude_standalones: bool = True, exclude_methods: bool = True) -> str:
-        """
-        Returns the concatenated docstrings of all nested functions and classes in the module.
-
-        Args:
-            exclude_standalones (bool): If True, exclude docstrings of standalone functions from the result.
-            exclude_methods (bool): If True, exclude docstrings of methods from the result.
-
-        Returns:
-            str: The concatenated docstrings of the module as a string.
-        """
-
-        docstrings = []
-        if self.docstring:
-            name = self.py_path.split(".")[-1]
-            docstrings.append(f"{name}:\n{self.docstring}")
-
-        if not exclude_standalones:
-            for func_obj in self.standalone_functions:
-                docstrings.append(func_obj.get_doc_string())
-                docstrings.append("\n")
-
-        for class_obj in self.classes:
-            docstrings.append(class_obj.get_doc_string(exclude_methods))
-            docstrings.append("\n")
-
-        return "\n".join(docstrings) if len(docstrings) > 0 else RESULT_NOT_FOUND
-
-
-class PackageObject(Object):
-    def __init__(self, py_path: str, modules: Dict[str, ModuleObject]):
-        super().__init__(py_path, RESULT_NOT_FOUND, RESULT_NOT_FOUND)
-        self.modules = modules
-
-    def get_docstring(self, exclude_standalones: bool = True, exclude_methods: bool = True) -> str:
-        """
-        Returns the concatenated docstrings of all modules inside the package.
-
-        Args:
-            exclude_standalones (bool): If True, exclude docstrings of standalone functions from the result.
-            exclude_methods (bool): If True, exclude docstrings of methods from the result.
-
-        Returns:
-            str: The concatenated docstrings of the module as a string.
-        """
-
-        docstrings = []
-        for module in self.modules.values():
-            docstrings.append(module.get_docstring(exclude_standalones, exclude_methods))
-        return "\n".join(docstrings) if len(docstrings) > 0 else RESULT_NOT_FOUND
-
-    def get_raw_code(
-        self, exclude_standalones: bool = False, exclude_methods: bool = False
-    ) -> str:
-        """
-        Returns the raw code of the module, including all nested functions and classes.
-
-        Args:
-            exclude_standalones (bool): If True, exclude code of standalone functions in modules from the result.
-            exclude_methods (bool): If True, exclude code of methods from the result.
-
-        Returns:
-            str: The concatenated raw code of the module as a string.
-        """
-
-        raw_code = []
-        for module in self.modules.values():
-            raw_code.append(module.get_raw_code(exclude_standalones, exclude_methods))
-        return "\n".join(raw_code) if len(raw_code) > 0 else RESULT_NOT_FOUND
+from .types import RESULT_NOT_FOUND, CodePackageType, PythonClass, PythonFunction, PythonModule
 
 
 class CodeParser:
@@ -290,69 +29,69 @@ class CodeParser:
     classes, functions, and their docstrings from a given directory of Python files.
 
     Attributes:
-        module_dict (Dict[str, ModuleObject]): A dictionary that maps file names to their corresponding ModuleObject instances.
+        module_dict (Dict[str, PythonModule]): A dictionary that maps file names to their corresponding PythonModule instances.
     """
 
     def __init__(self, relative_dir: str = "spork"):
-        self.function_dict: Dict[str, FunctionObject] = {}
-        self.class_dict: Dict[str, ClassObject] = {}
-        self.module_dict: Dict[str, ModuleObject] = {}
-        self.package_dict: Dict[str, PackageObject] = {}
+        self.function_dict: Dict[str, PythonFunction] = {}
+        self.class_dict: Dict[str, PythonClass] = {}
+        self.module_dict: Dict[str, PythonModule] = {}
+        self.package_dict: Dict[str, CodePackageType] = {}
         self.relative_dir = relative_dir
         self._populate_dicts(os.path.join(home_path(), self.relative_dir))
 
-    def get_raw_code(self, object_py_path: str) -> str:
+    def get_raw_code(self, PythonObject_py_path: str) -> str:
         """
         Returns the raw code of a function, class, or module with the given name,
-        or RESULT_NOT_FOUND if the object is not found.
+        or RESULT_NOT_FOUND if the PythonObject is not found.
 
         Args:
-            object_py_path (str): The python path of the object (module, class, method, or function) to look up.
+            PythonObject_py_path (str): The python path of the PythonObject (module, class, method, or function) to look up.
 
         Returns:
-            str: The raw code of the object, or RESULT_NOT_FOUND if the object is not found.
+            str: The raw code of the PythonObject, or RESULT_NOT_FOUND if the PythonObject is not found.
         """
-        if object_py_path in self.function_dict:
-            return self.function_dict[object_py_path].get_raw_code()
-        elif object_py_path in self.class_dict:
-            return self.class_dict[object_py_path].get_raw_code()
-        elif object_py_path in self.module_dict:
-            return self.module_dict[object_py_path].get_raw_code()
-        elif object_py_path in self.package_dict:
-            return self.package_dict[object_py_path].get_raw_code()
+        if PythonObject_py_path in self.function_dict:
+            return self.function_dict[PythonObject_py_path].get_raw_code()
+        elif PythonObject_py_path in self.class_dict:
+            return self.class_dict[PythonObject_py_path].get_raw_code()
+        elif PythonObject_py_path in self.module_dict:
+            return self.module_dict[PythonObject_py_path].get_raw_code()
+        elif PythonObject_py_path in self.package_dict:
+            return self.package_dict[PythonObject_py_path].get_raw_code()
         else:
             return RESULT_NOT_FOUND
 
-    def get_docstring(self, object_py_path: str) -> str:
+    def get_docstring(self, PythonObject_py_path: str) -> str:
         """
         Returns the docstrings of a function, class, or module with the given name, or RESULT_NOT_FOUND.
 
         Args:
-            object_py_path (str): The python path of the object (module, class, method, or function) to look up.
+            PythonObject_py_path (str): The python path of the PythonObject (module, class, method, or function) to look up.
 
         Returns:
-            str: The docstring code of the object, or RESULT_NOT_FOUND.
+            str: The docstring code of the PythonObject, or RESULT_NOT_FOUND.
         """
-        if object_py_path in self.function_dict:
-            return self.function_dict[object_py_path].get_doc_string()
-        elif object_py_path in self.class_dict:
-            return self.class_dict[object_py_path].get_doc_string()
-        elif object_py_path in self.module_dict:
-            return self.module_dict[object_py_path].get_docstring()
-        elif object_py_path in self.package_dict:
-            return self.package_dict[object_py_path].get_docstring()
+        if PythonObject_py_path in self.function_dict:
+            return self.function_dict[PythonObject_py_path].get_doc_string()
+        elif PythonObject_py_path in self.class_dict:
+            return self.class_dict[PythonObject_py_path].get_doc_string()
+        elif PythonObject_py_path in self.module_dict:
+            return self.module_dict[PythonObject_py_path].get_docstring()
+        elif PythonObject_py_path in self.package_dict:
+            return self.package_dict[PythonObject_py_path].get_docstring()
         else:
             return RESULT_NOT_FOUND
 
     def _populate_dicts(self, abs_dir: str) -> None:
         """
-        Populates the file_dict, class_dict, and function_dict with ModuleObjects, ClassObjects, and FunctionObjects
+        Populates the file_dict, class_dict, and function_dict with ModulePythonObjects, ClassPythonObjects, and FunctionPythonObjects
         for each Python file found in the specified directory.
 
         Args:
             rel_dir (str): The absolute directory containing the Python files.
         """
-        packages: Dict[str, Dict[str, ModuleObject]] = {}
+        packages: Dict[str, Dict[str, PythonModule]] = {}
         for root, _dirs, files in os.walk(abs_dir):
             for file in files:
                 if file.endswith(".py"):
@@ -378,7 +117,7 @@ class CodeParser:
                             func_docstring = ast.get_docstring(n)
                             func_code = "".join(ast.unparse(n))
                             func_py_path = f"{module_py_path}.{func_name}"
-                            function = FunctionObject(
+                            function = PythonFunction(
                                 func_py_path,
                                 func_docstring if func_docstring else "",
                                 func_code,
@@ -399,7 +138,7 @@ class CodeParser:
                                     break
                             class_code = "".join(ast.unparse(n))
                             class_py_path = f"{module_py_path}.{class_name}"
-                            class_obj = ClassObject(
+                            class_obj = PythonClass(
                                 class_py_path,
                                 class_docstring if class_docstring else RESULT_NOT_FOUND,
                                 class_code,
@@ -414,14 +153,14 @@ class CodeParser:
                                     method_docstring = ast.get_docstring(m)
                                     method_code = "".join(ast.unparse(m))
                                     method_py_path = f"{class_py_path}.{method_name}"
-                                    method_obj = FunctionObject(
+                                    method_obj = PythonFunction(
                                         method_py_path,
                                         method_docstring if method_docstring else RESULT_NOT_FOUND,
                                         method_code,
                                     )
                                     class_obj.methods[method_name] = method_obj
                                     self.function_dict[method_py_path] = method_obj
-                    module_obj = ModuleObject(
+                    module_obj = PythonModule(
                         module_py_path,
                         docstring if docstring else RESULT_NOT_FOUND,
                         standalone_functions,
@@ -436,7 +175,7 @@ class CodeParser:
                     packages[package_name][module_py_path] = module_obj
 
         for package_name, modules in packages.items():
-            self.package_dict[package_name] = PackageObject(package_name, modules)
+            self.package_dict[package_name] = CodePackageType(package_name, modules)
 
 
 if __name__ == "__main__":

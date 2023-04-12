@@ -32,6 +32,16 @@ parser.add_argument(
     help="Base tools (default: python_repl,terminal,human)",
 )
 parser.add_argument(
+    "--load_github_tools",
+    default=True,
+    help="Load github tools? (default: True)",
+)
+parser.add_argument(
+    "--load_code_tools",
+    default=True,
+    help="Load code tools? (default: True)",
+)
+parser.add_argument(
     "--do_plan",
     default=True,
     help="Run the planning agent? (default: True)",
@@ -57,7 +67,7 @@ print("Found recent repos:", repositories)
 github_repo = github_client.get_repo(args.repository_name)
 
 
-# create a repo object which represents the repository we are inside of
+# create a repo PythonObject which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
 # reset to default branch if necessary
@@ -76,10 +86,14 @@ sys.stdout = cast(TextIO, pass_through_buffer)
 print("Loading Base Tools :%s" % (args.base_tools.split(",")))
 base_tools = load_tools(args.base_tools.split(","), llm=llm)
 base_tools += [requests_get_clean]
-exec_tools = base_tools + GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
-code_parser = CodeParser()
-exec_tools += CodeParserToolBuilder(code_parser).build_tools()
+exec_tools = base_tools
+if args.load_github_tools:
+    exec_tools += GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
+
+if args.load_code_tools:
+    code_parser = CodeParser()
+    exec_tools += CodeParserToolBuilder(code_parser).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 

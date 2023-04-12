@@ -29,7 +29,7 @@ def make_planning_task(
     Generates a planning task for an agent.
 
     Args:
-    - work_item (Union[Issue, PullRequest]): An object representing the work item to generate a planning task for.
+    - work_item (Union[Issue, PullRequest]): An PythonObject representing the work item to generate a planning task for.
     - exec_tools (List[BaseTool]): A list of tools that the execution agent has access to.
     - github_repo_name (str): The name of the GitHub repository the work item belongs to.
 
@@ -47,8 +47,6 @@ def make_planning_task(
         f" You are built with langchain, a framework for building language-based agents."
         f" You are working in {os.getcwd()} on {github_repo_name} repository."
         f" The local file structure is as follows:\n {file_tree.read()}"
-        f" You may interact with the repository using the Github tools described later, further there is the CodeParser tool which you should use to navigate the codebase."
-        f" If necessary, python files can be imported via package-relative imports, e.g. 'from spork.tools.code.parser import CodeParser' is a valid from your current working directory."
         f" Your task is not to make the changes yourself, but rather output instructions for a developer to make the changes."
         f" The task follows:"
         f" \n\nTitle: {work_item.title}"
@@ -56,7 +54,7 @@ def make_planning_task(
         f" \n\nComments: {[c.body for c in work_item.get_comments() if not c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]}"
         f" \n\n The developer will use your instructions to make changes to the repository and"
         f" {pr_or_issue_str} with working, clean, and documented code."
-        f" The developer agent will have access to the following tools: {[(tool.name, tool.description) for tool in exec_tools]}, so keep that in mind when creating instructions."
+        f" To assist in your task, you may make use of the following tools: {[(tool.name, tool.description) for tool in exec_tools]}, so keep that in mind when creating instructions."
         f" Begin."
     )
 
@@ -70,7 +68,7 @@ def make_execution_task(
     Generates an execution task for an agent.
 
     Args:
-    - work_item (Union[Issue, PullRequest]): An object representing the work item to generate an execution task for.
+    - work_item (Union[Issue, PullRequest]): An PythonObject representing the work item to generate an execution task for.
     - solution_instructions (str): A string containing the solution instructions for the work item.
     - github_repo_name (str): The name of the GitHub repository the work item belongs to.
 

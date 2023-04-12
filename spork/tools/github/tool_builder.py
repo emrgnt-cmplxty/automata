@@ -32,13 +32,13 @@ class GithubToolBuilder:
         logger: Optional[PassThroughBuffer] = None,
     ):
         """
-        Initializes a GithubToolBuilder object with the given inputs.
+        Initializes a GithubToolBuilder PythonObject with the given inputs.
 
         Args:
-        - github_repo (github.Repository): A github.Repository object representing the repository to work on.
-        - pygit_repo (git.Repo): A git.Repo object representing the local copy of the repository to work on.
-        - work_item (Union[Issue, PullRequest]): An Issue or PullRequest object representing the work item to work on.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
+        - github_repo (github.Repository): A github.Repository PythonObject representing the repository to work on.
+        - pygit_repo (git.Repo): A git.Repo PythonObject representing the local copy of the repository to work on.
+        - work_item (Union[Issue, PullRequest]): An Issue or PullRequest PythonObject representing the work item to work on.
+        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObject to log output.
 
         Returns:
         - None
@@ -50,13 +50,13 @@ class GithubToolBuilder:
 
     def build_tools(self) -> List[Tool]:
         """
-        Builds a list of Tool objects for interacting with Git.
+        Builds a list of Tool PythonObjects for interacting with Git.
 
         Args:
         - None
 
         Returns:
-        - tools (List[Tool]): A list of Tool objects representing Git commands.
+        - tools (List[Tool]): A list of Tool PythonObjects representing Git commands.
         """
         tools = [
             Tool(
