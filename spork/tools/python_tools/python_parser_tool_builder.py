@@ -69,7 +69,7 @@ class PythonParserToolBuilder:
                 return_direct=True,
             ),
             Tool(
-                name="python-parser-get-pyobject-docstring",
+                name="python-parser-get-docstring",
                 func=lambda object_py_path: self.python_parser.get_docstring(object_py_path),
                 description=f"Identical to python-parser-get-pyobject-code, except returns"
                 f" the pyobject docstring instead of raw code.",

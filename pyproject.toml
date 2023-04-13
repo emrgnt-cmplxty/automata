@@ -62,6 +62,10 @@ exclude = '(random|local_env|data|results|notebooks)/'
 module = "pytz.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "yaml"
+ignore_missing_imports = true
+
 [tool.coverage.run]
 branch = true
 source = ["."]

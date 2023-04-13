@@ -20,6 +20,7 @@ Example usage:
 
     TODO
     1. Consider how to handle import statements, they are not currently parsed.
+    2. Include support for getting code + doc strings in a single shot
 """
 import ast
 import os
@@ -99,7 +100,7 @@ class PythonParser:
 
     def _populate_dicts(self, abs_dir: str) -> None:
         """
-        Populates the file_dict, class_dict, and function_dict with ModulePythonObjects, ClassPythonObjects, and FunctionPythonObjects
+        Populates the file_dict, class_dict, and function_dict with PythonModuleType, PythonClassType, and PYthonFunctionType
         for each Python file found in the specified directory.
 
         Args:
@@ -123,7 +124,11 @@ class PythonParser:
                     docstring = ast.get_docstring(node)
                     standalone_functions = []
                     classes = []
+                    imports = []
                     for n in node.body:
+                        if isinstance(n, (ast.Import, ast.ImportFrom)):
+                            import_code = "".join(ast.unparse(n)).strip()
+                            imports.append(import_code)
                         if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
                             func_name = n.name
                             func_docstring = ast.get_docstring(n)
@@ -177,6 +182,7 @@ class PythonParser:
                         docstring if docstring else RESULT_NOT_FOUND,
                         standalone_functions,
                         classes,
+                        imports,
                     )
 
                     # Use the python path as the key

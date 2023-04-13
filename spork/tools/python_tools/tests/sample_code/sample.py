@@ -1,9 +1,11 @@
-"""Sample module for testing PythonWriter."""
+"""This is a sample module"""
+
+import math
 
 
 def sample_function(name):
     """This is a sample function."""
-    return f"Hello, {name}!"
+    return f"Hello, {name}! Sqrt(2) = " + str(math.sqrt(2))
 
 
 class Person:

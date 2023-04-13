@@ -42,7 +42,6 @@ work_item = choose_work_item(github_repo)
 
 
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
-# llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)

@@ -115,6 +115,7 @@ def test_create_new_class_no_existing_module(python_writer):
 
 def test_create_new_class_new_writer(python_new_writer):
     parser = python_new_writer.python_parser
+    print("parser.module_dict = ", parser.module_dict)
     python_new_writer._create_new_class(
         new_module_data["module_py_path"],
         class_data["class_py_path"],
@@ -186,6 +187,7 @@ def test_create_new_function_existing_module(python_writer):
     python_writer._create_new_function(
         function_py_path=f"{module_py_path}.{function_name}",
         function_code=new_function_code,
+        has_class=False,
     )
 
     # Check if the function is added to the function_dict

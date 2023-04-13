@@ -32,7 +32,7 @@ class PythonObjectType(abc.ABC):
         pass
 
     @classmethod
-    def from_code(cls, py_path: str, code: str):
+    def from_code(cls, py_path: str, code: str, _imports: List[str]):
         pass
 
 
@@ -97,7 +97,7 @@ class PythonFunctionType(PythonObjectType):
             self.docstring = ast.get_docstring(node.body[0]) or RESULT_NOT_FOUND
 
     @classmethod
-    def from_code(cls, py_path: str, code: str) -> "PythonFunctionType":
+    def from_code(cls, py_path: str, code: str, _imports: List[str] = []) -> "PythonFunctionType":
         """
         Creates a PythonFunctionType instance from an AST node.
 
@@ -203,7 +203,7 @@ class PythonClassType(PythonObjectType):
         notify_update("class", self.py_path, {})
 
     @classmethod
-    def from_code(cls, py_path: str, code: str) -> "PythonClassType":
+    def from_code(cls, py_path: str, code: str, _imports: List[str] = []) -> "PythonClassType":
         """
         Creates a PythonModuleType instance from an AST node.
 
@@ -265,10 +265,12 @@ class PythonModuleType(PythonObjectType):
         docstring: str,
         standalone_functions: List[PythonFunctionType],
         classes: List[PythonClassType],
+        imports: List[str],
     ):
         super().__init__(py_path, docstring, RESULT_NOT_FOUND)
         self.standalone_functions = standalone_functions
         self.classes = classes
+        self.imports = imports
 
     def get_raw_code(
         self, exclude_standalones: bool = False, exclude_methods: bool = False
@@ -345,7 +347,7 @@ class PythonModuleType(PythonObjectType):
         )
 
     @classmethod
-    def from_code(cls, py_path: str, code: str) -> "PythonModuleType":
+    def from_code(cls, py_path: str, code: str, imports: List[str]) -> "PythonModuleType":
         """
         Creates a PythonClassType instance from an AST node.
 
@@ -359,7 +361,7 @@ class PythonModuleType(PythonObjectType):
         tree = ast.parse(code)
         docstring = ast.get_docstring(tree) or RESULT_NOT_FOUND
         standalone_functions, classes = cls._parse_functions_and_classes(py_path, tree)
-        return cls(py_path, docstring, standalone_functions, classes)
+        return cls(py_path, docstring, standalone_functions, classes, imports)
 
     @staticmethod
     def _parse_functions_and_classes(
@@ -436,5 +438,5 @@ class PythonPackageType(PythonObjectType):
 
     # TODO - Consider how to implement this.
     @classmethod
-    def from_code(cls, py_path: str, code: str):
+    def from_code(cls, py_path: str, code: str, _imports: List[str] = []):
         pass

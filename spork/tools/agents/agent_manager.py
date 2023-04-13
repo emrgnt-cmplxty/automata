@@ -95,7 +95,7 @@ class AgentManager:
             home_path(),
             "spork",
             "tools",
-            "agent",
+            "agents",
             config_dir,
             config_path,
         )

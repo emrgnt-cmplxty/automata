@@ -44,6 +44,10 @@ CLASS_PY_PATH = f"{NEW_MODULE_PY_PATH}.{CLASS_NAME}"
 
 CLASS_CODE = textwrap.dedent(
     '''
+    import json  # Add this line
+    
+    from collections import namedtuple  # Add this line
+
     class NewClass:
         """ This is a new class. """
        
@@ -118,6 +122,10 @@ MODULE_WITH_CLASS_AND_FUNCTION_PY_PATH = (
 
 MODULE_WITH_CLASS_AND_FUNCTION_CODE = textwrap.dedent(
     f"""
+    import sys  # Add this line
+    
+    from os import path  # Add this line
+
     class {CLASS_NAME}:
         def __init__(self, name):
             self.name = name
