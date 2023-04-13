@@ -34,12 +34,16 @@ class PythonWriterToolBuilder:
         tools = [
             Tool(
                 name="python-writer-modify-code-state",
-                func=lambda python_path, code: self.python_writer.modify_code_state(
-                    python_path, code
+                func=lambda python_path_comma_code_str: self.python_writer.modify_code_state(
+                    *tuple(python_path_comma_code_str.split(","))
                 ),
                 description=f"Modifies the code state in memory by taking a python_path and raw-text code as input."
                 f" If the specified function, class, or module does not exist, it creates a new one and updates the in-memory code to reflect this change."
-                f" If it already exists, it modifies the existing code.",
+                f" If it already exists, it modifies the existing code."
+                f" Example:"
+                f'Suppose you wish to a new function named "my_function" of "my_class" is defined in the file "my_file.py" that lives in "my_folder"'
+                f" Then, the correct function call is "
+                f'python-writer-modify-code-state(my_folder.my_file.my_class.my_function, def my_function() -> None:\n   """My Function"""\n    print("hello world")',
                 return_direct=True,
             ),
             Tool(

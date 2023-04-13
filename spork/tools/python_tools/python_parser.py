@@ -7,13 +7,16 @@ class that can be used to get the source code, docstrings, and list of functions
 or classes within a specific file.
 
 Example usage:
-    code_get = PythonParser()
+    parser = PythonParser()
 
-    print("Fetch the doc strings of a package, module, class, method or function:")
-    print(code_get.get_docstring('module_dir.module_name.ClassName_Or_function_name'))
+    print("Fetch raw code of a function:")
+    print(parser.get_raw_code('package_dir.module_name.function_name'))
 
-    print("Fetch the raw code of a package, module, class, method or function:")
-    print(code_get.get_raw_code('module_dir.module_name.ClassName_Or_function_name'))
+    print("Fetch raw code of a method:")
+    print(parser.get_raw_code('package_dir.module_name.ClassName.method_name'))
+
+    print("Fetch the docstring summary of a package:")
+    print(parser.get_docstring('package_dir'))
 
     TODO
     1. Consider how to handle import statements, they are not currently parsed.

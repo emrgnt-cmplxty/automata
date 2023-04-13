@@ -1,3 +1,24 @@
+'''
+PythonWriter
+
+This module provides functionality to modify the in-memory representation 
+of a Python package, via the PythonParser class, and write the changes to disk.
+
+Example usage:
+    parser = PythonParser()
+    writer = PythonWriter(parser)
+
+    print("Write a new standalone function:")
+    print(code_get.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""A new function"""\npass'))
+
+    print("Modify an existing function:")
+    print(code_get.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""My Modified function"""\ndo_something()'))
+
+    # The structure above works for packages, modules, classes, and methods as well.
+
+    TODO
+    1. Consider how to handle import statements, they are not currently parsed.
+'''
 import ast
 import os
 import subprocess
@@ -8,6 +29,15 @@ from .python_types import PythonClassType, PythonFunctionType, PythonModuleType,
 
 
 class PythonWriter:
+    """
+    The PythonWriter class provides functionality to modify the in-memory representation
+    of a Python package, via the PythonParser class, and write the changes to disk.
+
+    Attributes:
+        python_parser (PythonParser): An instance of PythonParser.
+
+    """
+
     def __init__(self, python_parser: PythonParser):
         """
         Initialize PythonWriter with a PythonParser instance and register a callback for update notifications.

@@ -17,7 +17,7 @@ from github.Issue import Issue
 from github.PullRequest import PullRequest
 from langchain.tools import BaseTool
 
-from ..config import PLANNER_AGENT_OUTPUT_STRING
+from .config import PLANNER_AGENT_OUTPUT_STRING
 
 
 def make_planning_task(
@@ -39,22 +39,30 @@ def make_planning_task(
     pr_or_issue_str = (
         " submit a pull request" if isinstance(work_item, Issue) else " make a commit "
     )
-    file_tree_command = 'tree . -I "__pycache__*|*.pyc|__init__.py|local_env|*.egg-info"'
-    file_tree = os.popen(file_tree_command)
     return (
         f"You are a GPT-4 software engineering lead agent."
         f" You plan out software engineering work for developer agents."
         f" You are built with langchain, a framework for building language-based agents."
+        f" You can read about it here: https://python.langchain.com/en/latest/modules/agents.html"
+        f" Assume you have the code locally on your machine."  # todo
         f" You are working in {os.getcwd()} on {github_repo_name} repository."
-        f" The local file structure is as follows:\n {file_tree.read()}"
-        f" Your task is not to make the changes yourself, but rather output instructions for a developer to make the changes."
-        f" The task follows:"
+        f" Your task is to thoroughly understand the following work item and "
+        f" create simple and thorough step-by-step instructions for a developer to implement the solution."
+        f" You should not make the changes yourself, but rather output instructions for a developer to make the changes."
         f" \n\nTitle: {work_item.title}"
         f" \n\nBody: {work_item.body}"
         f" \n\nComments: {[c.body for c in work_item.get_comments() if not c.body.startswith(PLANNER_AGENT_OUTPUT_STRING)]}"
         f" \n\n The developer will use your instructions to make changes to the repository and"
         f" {pr_or_issue_str} with working, clean, and documented code."
-        f" To assist in your task, you may make use of the following tools: {[(tool.name, tool.description) for tool in exec_tools]}, so keep that in mind when creating instructions."
+        f" Your developer is also a GPT-4-powered agent, so keep that in mind when creating instructions."
+        f" You should acquire an excellent understanding of the current state of the repository and the code within it."
+        f" You should also look up documentation on the internet whenever necessary."
+        f" Your instructions should be clear and concise, and should not contain any typos or grammatical errors."
+        f" You should tell the developer which files to create/modify/delete, and what to write in them."
+        f" You should also tell the developer which external libraries to use, if any."
+        f" For external libraries, you should provide a link to the documentation."
+        f" Make sure not to regress any existing functionality."
+        f" The developer agent will have access to the following tools: {[(tool.name, tool.description) for tool in exec_tools]}, so keep that in mind when creating instructions."
         f" Begin."
     )
 

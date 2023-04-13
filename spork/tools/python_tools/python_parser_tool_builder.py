@@ -12,7 +12,7 @@ Attributes:
 - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
 
 Example usage:
-    python_parser = PythonParser(os.path.join(home_path(), "your_directory"))
+    python_parser = PythonParser()
     python_parser_tool_builder = PythonParserToolBuilder(python_parser)
     tools = python_parser_tool_builder.build_tools()
 
@@ -55,12 +55,17 @@ class PythonParserToolBuilder:
             Tool(
                 name="python-parser-get-raw-code",
                 func=lambda object_py_path: self.python_parser.get_raw_code(object_py_path),
-                description=f"Returns the raw code of the python package, module, class, method, or function with the given path,"
-                f' or "No results found" if there is no match found.'
-                f' For example, if the function "my_function" is defined in the file "my_file.py" '
-                f' located in the main working directory, then the input "my_file.my_function" will return the raw code of the function.'
-                f' If the file is off the main directory, then the input should be "my_directory.my_file.my_function".'
-                f" To save valuable prompt space, package raw code excludes module standalone functions and class methods.",
+                description=f"Returns the raw code of the python package, module,"
+                f" standalone function, class, or method at the given python path."
+                f' "No results found" is returned if no match is found.'
+                f' For example:\n Suppose the function "my_function" is defined in the file "my_file.py"'
+                f" located in the main working directory, then the correct tool input is my_file.my_function"
+                f" and the result is the raw code of the function, e.g."
+                f' def my_function() -> None:\n   return "Hello, World".'
+                f" Suppose instead the file is located in a subdirectory called my_directory,"
+                f' then the correct tool input is "my_directory.my_file.my_function".'
+                f" To save valuable prompt space, call the python path of a package"
+                f" will exclude module standalone functions and class methods from the result.",
                 return_direct=True,
             ),
             Tool(

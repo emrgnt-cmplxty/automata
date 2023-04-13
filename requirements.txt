@@ -5,6 +5,7 @@ mypy==1.2.0
 mypy-extensions==1.0.0
 numpy==1.24.2
 openai==0.27.4
+jsoncomment==0.4.2
 pandas==2.0.0
 pandas-stubs==1.5.3.230321
 PyGithub==1.58.1
