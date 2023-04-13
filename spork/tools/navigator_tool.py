@@ -13,6 +13,7 @@ template = (
     # Q: Change the current working directory to: /home/username/Downloads
     import os
     answer = os.chdir('/home/username/Downloads')
+    if answer is None: answer = "Success."
     
     # Q: List all files in the current directory
     import os
@@ -30,30 +31,37 @@ template = (
     # Q: Make a new directory: /home/username/Documents/new_directory
     import os
     answer = os.mkdir('/home/username/Documents/new_directory')
+    if answer is None: answer = "Success."
     
     # Q: Move a file myfile.txt to /home/username/Documents/ directory:
     import os
     answer = os.rename('myfile.txt', '/home/username/Documents/myfile.txt')
+    if answer is None: answer = "Success."
     
     # Q: Move a directory: /home/username/Documents/new_directory to /home/username/Documents/new_directory2
     import os
     answer = shutil.move('/home/username/Documents/new_directory', '/home/username/Documents/new_directory2')
+    if answer is None: answer = "Success."
     
     # Q: Copy a file myfile.txt to /home/username/Documents/ directory:
     import shutil
     answer = shutil.copy('myfile.txt', '/home/username/Documents/myfile.txt')
+    if answer is None: answer = "Success."
     
     # Q: Delete a file myfile.txt
     import os
     answer = os.remove('myfile.txt')
+    if answer is None: answer = "Success."
     
     # Q: Delete a directory: /home/username/Documents/new_directory
     import os
     answer = os.rmdir('/home/username/Documents/new_directory')
+    if answer is None: answer = "Success."
     
     # Q: Delete a directory and all its contents: /home/username/Documents/new_directory
     import shutil
     answer = shutil.rmtree('/home/username/Documents/new_directory')
+    if answer is None: answer = "Success."
     
     # Q: What is 2 + 2?
     answer = "Invalid request."
@@ -77,7 +85,7 @@ class LocalNavigatorTool(Tool):
             name="Local navigator tool",
             func=lambda q: chain.run(q),
             description="Useful for when you need to manipulate directories and files locally. "
-            "It doesn't know what you're working on, but it knows how to take you around the machine you're on."
+            "It doesn't know what you're working on, but it knows how to take you around the machine you're on. "
             "Input should be a single fully formed request. "
             "Examples of what to ask: "
             "What directory am I in? "
