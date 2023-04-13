@@ -1,4 +1,6 @@
+import inspect
 import os
+import shutil
 import textwrap
 
 import pytest
@@ -322,18 +324,32 @@ def test_modify_code_state_create_new_package(python_writer):
     assert f"{package_path}.__init__" in parser.package_dict
 
 
-def test_write_new_module(python_writer):
+# TODO - Why is this test not creating an __init__.py in the new package?
+def test_write_new_package(python_writer):
+    current_file = inspect.getframeinfo(inspect.currentframe()).filename
+    absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
+
+    prev_text = None
+    with open(os.path.join(absolute_path, "sample_code", "sample.py"), "r", encoding="utf-8") as f:
+        prev_text = f.read()
+
     python_writer.modify_code_state(
         new_module_data["module_py_path"], new_module_data["module_code"]
     )
-
-    parser = python_writer.python_parser
-    assert new_module_data["module_py_path"] in parser.module_dict
-
     # Write the changes to disk and ensure the file exists.
     python_writer.write_to_disk()
-    # new_file_path = os.path.join("path/to/your_directory", "my_package", "new_module.py")
-    # assert os.path.isfile(new_file_path)
+    new_file_path = os.path.join(
+        absolute_path, new_module_data["package_py_path"], new_module_data["module_name"]
+    )
 
-    # # Clean up after the test.
-    # os.remove(new_file_path)
+    assert new_module_data["module_py_path"] in python_writer.python_parser.module_dict
+
+    assert os.path.isfile(f"{new_file_path}.py")
+
+    # Clean up after the check
+    shutil.rmtree(os.sep.join(new_file_path.split(os.sep)[:-1]), ignore_errors=True)
+
+    with open(os.path.join(absolute_path, "sample_code", "sample.py"), "r", encoding="utf-8") as f:
+        new_text = f.read()
+    # Check that the original sample.py has not been modified by the recreation process.
+    assert prev_text == new_text

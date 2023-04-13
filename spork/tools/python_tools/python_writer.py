@@ -1,5 +1,6 @@
 import ast
 import os
+import subprocess
 from typing import Any, Dict, Tuple
 
 from .python_parser import PythonParser
@@ -306,7 +307,6 @@ class PythonWriter:
             code_parts.append("\n\n")
 
         new_code = "".join(code_parts)
-        print("Writing code = ", new_code)
 
         try:
             ast.parse(new_code)
@@ -317,3 +317,6 @@ class PythonWriter:
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(new_code)
+
+        # Format the output file to match the Black style
+        subprocess.run(["black", file_path])
