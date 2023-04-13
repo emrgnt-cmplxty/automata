@@ -54,46 +54,46 @@ class PythonParser:
         self._update_callbacks: List[Callable[[str, str, Dict[str, Any]], None]] = []
         self.absolute_path_to_base = os.path.join(home_path(), self.relative_dir, "..")
 
-    def get_raw_code(self, PythonObject_py_path: str) -> str:
+    def get_raw_code(self, object_py_path: str) -> str:
         """
         Returns the raw code of a function, class, or module with the given name,
         or RESULT_NOT_FOUND if the PythonObjectType is not found.
 
         Args:
-            PythonObject_py_path (str): The python path of the PythonObjectType (module, class, method, or function) to look up.
+            object_py_path (str): The python path of the PythonObjectType (module, class, method, or function) to look up.
 
         Returns:
             str: The raw code of the PythonObjectType, or RESULT_NOT_FOUND if the PythonObjectType is not found.
         """
-        if PythonObject_py_path in self.function_dict:
-            return self.function_dict[PythonObject_py_path].get_raw_code()
-        elif PythonObject_py_path in self.class_dict:
-            return self.class_dict[PythonObject_py_path].get_raw_code()
-        elif PythonObject_py_path in self.module_dict:
-            return self.module_dict[PythonObject_py_path].get_raw_code()
-        elif PythonObject_py_path in self.package_dict:
-            return self.package_dict[PythonObject_py_path].get_raw_code()
+        if object_py_path in self.function_dict:
+            return self.function_dict[object_py_path].get_raw_code()
+        elif object_py_path in self.class_dict:
+            return self.class_dict[object_py_path].get_raw_code()
+        elif object_py_path in self.module_dict:
+            return self.module_dict[object_py_path].get_raw_code()
+        elif object_py_path in self.package_dict:
+            return self.package_dict[object_py_path].get_raw_code()
         else:
             return RESULT_NOT_FOUND
 
-    def get_docstring(self, PythonObject_py_path: str) -> str:
+    def get_docstring(self, object_py_path: str) -> str:
         """
         Returns the docstrings of a function, class, or module with the given name, or RESULT_NOT_FOUND.
 
         Args:
-            PythonObject_py_path (str): The python path of the PythonObjectType (module, class, method, or function) to look up.
+            object_py_path (str): The python path of the PythonObjectType (module, class, method, or function) to look up.
 
         Returns:
             str: The docstring code of the PythonObjectType, or RESULT_NOT_FOUND.
         """
-        if PythonObject_py_path in self.function_dict:
-            return self.function_dict[PythonObject_py_path].get_docstring()
-        elif PythonObject_py_path in self.class_dict:
-            return self.class_dict[PythonObject_py_path].get_docstring()
-        elif PythonObject_py_path in self.module_dict:
-            return self.module_dict[PythonObject_py_path].get_docstring()
-        elif PythonObject_py_path in self.package_dict:
-            return self.package_dict[PythonObject_py_path].get_docstring()
+        if object_py_path in self.function_dict:
+            return self.function_dict[object_py_path].get_docstring()
+        elif object_py_path in self.class_dict:
+            return self.class_dict[object_py_path].get_docstring()
+        elif object_py_path in self.module_dict:
+            return self.module_dict[object_py_path].get_docstring()
+        elif object_py_path in self.package_dict:
+            return self.package_dict[object_py_path].get_docstring()
         else:
             return RESULT_NOT_FOUND
 

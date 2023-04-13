@@ -9,7 +9,7 @@ from langchain.tools.base import BaseTool
 
 from ..utils import home_path, load_yaml
 from .agent_configs.agent_version import AgentVersion
-from .task_configs.task import Task
+from .task_configs.task import TaskType
 
 
 class AgentManager:
@@ -41,7 +41,7 @@ class AgentManager:
         self.planning_prompt_version = planning_prompt_version
         self.exec_prompt_version = exec_prompt_version
 
-    def make_planning_task(self, task=Task.BASIC_PROGRAMMING_V0) -> str:
+    def make_planning_task(self, task=TaskType.BASIC_PROGRAMMING_V0) -> str:
         """
         Generates a planning task for an agent.
 

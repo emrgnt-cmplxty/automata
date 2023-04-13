@@ -7,7 +7,7 @@ from langchain.agents import load_tools
 from langchain.chat_models import ChatOpenAI
 
 from .config import *  # noqa: F401, F403
-from .tools.agent import AgentManager
+from .tools.agents import AgentManager
 from .tools.github import requests_get_clean
 from .tools.python_tools import (
     PythonParser,

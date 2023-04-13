@@ -23,11 +23,11 @@ repos:
     hooks:
       - id: isort
         language_version: python3.9 # Replace with your Python version
-  # - repo: local
-  #   hooks:
-  #     - id: pytest
-  #       name: pytest
-  #       entry: pytest
-  #       language: system
-  #       types: [python]
-  #       pass_filenames: false
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [python]
+        pass_filenames: false
