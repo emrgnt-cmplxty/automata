@@ -54,9 +54,7 @@ class PythonParserToolBuilder:
         tools = [
             Tool(
                 name="python-parser-get-raw-code",
-                func=lambda PythonObject_py_path: self.python_parser.get_raw_code(
-                    PythonObject_py_path
-                ),
+                func=lambda object_py_path: self.python_parser.get_raw_code(object_py_path),
                 description=f"Returns the raw code of the python package, module, class, method, or function with the given path,"
                 f' or "No results found" if there is no match found.'
                 f' For example, if the function "my_function" is defined in the file "my_file.py" '
@@ -67,9 +65,7 @@ class PythonParserToolBuilder:
             ),
             Tool(
                 name="python-parser-get-pyobject-docstring",
-                func=lambda PythonObject_py_path: self.python_parser.get_docstring(
-                    PythonObject_py_path
-                ),
+                func=lambda object_py_path: self.python_parser.get_docstring(object_py_path),
                 description=f"Identical to python-parser-get-pyobject-code, except returns"
                 f" the pyobject docstring instead of raw code.",
                 return_direct=True,

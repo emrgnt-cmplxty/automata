@@ -27,6 +27,9 @@ class PythonWriter:
         Args:
             py_path (str): The path to the Python file.
             code (str): The source code to be analyzed and updated.
+
+        Raises:
+            ValueError: If the provided code is not valid Python.
         """
 
         has_class, has_function, has_module_docstring = self._get_code_type(py_path, code)
@@ -48,8 +51,8 @@ class PythonWriter:
         Rebuilds the Python module file at the given file path in a deterministic order,
         checking if the resulting output is a valid Python file.
 
-        Args:
-            None
+        Raises:
+            ValueError: If the resulting output is not a valid Python file.
         """
 
         for module_path in self.python_parser.module_dict.keys():
@@ -74,12 +77,32 @@ class PythonWriter:
             raise ValueError(f"Provided code is not valid Python: {e}")
 
     def _modify_or_create_new_function(self, function_py_path: str, function_code: str) -> None:
+        """
+        Add a new function to the PythonParser or modify an existing function.
+
+        Args:
+            function_py_path (str): The Python path of the function.
+            function_code (str): The source code of the function.
+
+        Raises:
+            ValueError: If the provided code is not valid Python.
+        """
         if function_py_path not in self.python_parser.function_dict:
             self._create_new_function(function_py_path, function_code)
         else:
             self._modify_existing_function(function_py_path, function_code)
 
     def _modify_or_create_new_class(self, class_py_path: str, class_code: str) -> None:
+        """
+        Add a new class to the PythonParser or modify an existing class.
+
+        Args:
+            class_py_path (str): The Python path of the class.
+            class_code (str): The source code of the class.
+
+        Raises:
+            ValueError: If the provided code is not valid Python.
+        """
         module_path = ".".join(class_py_path.split(".")[:-1])
         if class_py_path not in self.python_parser.class_dict:
             self._create_new_class(module_path, class_py_path, class_code)
@@ -87,12 +110,32 @@ class PythonWriter:
             self._modify_existing_class(class_py_path, class_code)
 
     def _modify_or_create_new_module(self, module_py_path: str, module_code: str) -> None:
+        """
+        Add a new module to the PythonParser or modify an existing module.
+
+        Args:
+            module_py_path (str): The Python path of the module.
+            module_code (str): The source code of the module.
+
+        Raises:
+            ValueError: If the provided code is not valid Python.
+        """
         if module_py_path not in self.python_parser.module_dict:
             self._create_new_module(module_py_path, module_code)
         else:
             self._modify_existing_module(module_py_path, module_code)
 
     def _modify_or_create_new_package(self, package_py_path: str, package_code: str) -> None:
+        """
+        Add a new package to the PythonParser or modify an existing package.
+
+        Args:
+            package_py_path (str): The Python path of the package.
+            package_code (str): The source code of the package.
+
+        Raises:
+            ValueError: If the provided code is not valid Python.
+        """
         if package_py_path not in self.python_parser.package_dict:
             self._create_new_package(package_py_path)
         else:
@@ -225,9 +268,29 @@ class PythonWriter:
         self.python_parser.module_dict[module_py_path] = module_obj
 
     def _modify_existing_package(self, _package_py_path: str, _package_code: str) -> None:
+        """
+        Modify an existing package in the PythonParser.
+
+        Args:
+            _package_py_path (str): The Python path of the package to modify.
+            _package_code (str): The new source code of the package.
+
+        Raises:
+            ValueError: If called, as this method is not implemented.
+        """
+
         raise NotImplementedError
 
     def _update_dependent_dicts_on_module_creation(self, module_obj: PythonModuleType) -> None:
+        """
+        Update the PythonParser's dependent dictionaries on the creation of a new module.
+
+        Args:
+            module_obj (PythonModuleType): The new module.
+
+        Raises:
+            ValueError: If the module's package is not found in the PythonParser's package_dict.
+        """
         # Update the package dictionary based on the module path
         module_path = module_obj.py_path
         package_path = ".".join(module_path.split(".")[:-1])
@@ -241,6 +304,15 @@ class PythonWriter:
             self._update_dependent_dicts_on_class_creation(class_obj)
 
     def _update_dependent_dicts_on_class_creation(self, class_obj: PythonClassType) -> None:
+        """
+        Update the PythonParser's dependent dictionaries on the creation of a new class.
+
+        Args:
+            class_obj (PythonClassType): The new class.
+
+        Raises:
+            ValueError: If the class's module is not found in the PythonParser's module_dict.
+        """
         class_py_path = class_obj.py_path
         self.python_parser.class_dict[class_py_path] = class_obj
         for method_obj in class_obj.methods.values():
@@ -255,7 +327,7 @@ class PythonWriter:
     @staticmethod
     def _get_code_type(py_path: str, code: str) -> Tuple[bool, bool, bool]:
         """
-        Determine the existence of classes, functions, and module-level docstrings in the given code.
+        Determine the type of code at a given py_path, functions, and module-level docstrings in the given code.
 
         Args:
             py_path (str): The path to the Python file.
@@ -267,7 +339,7 @@ class PythonWriter:
                 The second value indicates whether a function is present in the code.
                 The third value indicates whether a module-level docstring is present in the code.
         """
-        is_package = os.path.basename(py_path) == "__init__.py"
+        is_package = "__init__" in py_path
         if is_package:
             return False, False, False
 
@@ -287,6 +359,16 @@ class PythonWriter:
         return has_class, has_function, has_module_docstring
 
     def _write_file(self, file_path: str, module_py_path: str) -> None:
+        """
+        Write the code for a module to a file.
+
+        Args:
+            file_path (str): The path to the file to write.
+            module_py_path (str): The Python path of the module to write.
+
+        Raises:
+            ValueError: If the generated code is not valid Python.
+        """
         module_obj = self.python_parser.module_dict[module_py_path]
         docstring = module_obj.docstring
         functions = module_obj.standalone_functions

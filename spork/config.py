@@ -8,7 +8,7 @@ Environment variables:
 - PINECONE_API_KEY: The API key for the Pinecone API.
 - PINECONE_ENVIRONMENT: The environment to use for the Pinecone API.
 - YOUR_TABLE_NAME: The name of the table to use for storing data.
-- OBJECTIVE: The OBJECTIVE of the program.
+- OBJECTIVE: The objective of the program.
 - DO_RETRY: A boolean value indicating whether to retry failed requests.
 
 Constants:

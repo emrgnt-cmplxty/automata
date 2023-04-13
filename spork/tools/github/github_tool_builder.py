@@ -50,13 +50,13 @@ class GithubToolBuilder:
 
     def build_tools(self) -> List[Tool]:
         """
-        Builds a list of Tool PythonObjects for interacting with Git.
+        Builds a list of Tool objects for interacting with Git.
 
         Args:
         - None
 
         Returns:
-        - tools (List[Tool]): A list of Tool PythonObjects representing Git commands.
+        - tools (List[Tool]): A list of Tool objects representing Git commands.
         """
         tools = [
             Tool(

@@ -29,7 +29,7 @@ def make_planning_task(
     Generates a planning task for an agent.
 
     Args:
-    - work_item (Union[Issue, PullRequest]): An PythonObjectType representing the work item to generate a planning task for.
+    - work_item (Union[Issue, PullRequest]): An object representing the work item to generate a planning task for.
     - exec_tools (List[BaseTool]): A list of tools that the execution agent has access to.
     - github_repo_name (str): The name of the GitHub repository the work item belongs to.
 
@@ -68,7 +68,7 @@ def make_execution_task(
     Generates an execution task for an agent.
 
     Args:
-    - work_item (Union[Issue, PullRequest]): An PythonObjectType representing the work item to generate an execution task for.
+    - work_item (Union[Issue, PullRequest]): An object representing the work item to generate an execution task for.
     - solution_instructions (str): A string containing the solution instructions for the work item.
     - github_repo_name (str): The name of the GitHub repository the work item belongs to.
 
