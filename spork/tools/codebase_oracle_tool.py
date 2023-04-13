@@ -53,16 +53,15 @@ class CodebaseOracleToolBuilder:
         chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm, retriever=docsearch.as_retriever(), memory=self.memory
         )
-
         return Tool(
             name="Codebase Oracle tool",
             func=lambda q: chain.run(q),
-            description="Useful for when you need to answer specific questions about the contents of a specific file in the repository"
-            " you're working on, like how does a function work or where is a variable set."
-            " Input should be a fully formed question about a file.",
+            description="Useful for when you need to answer specific questions about the contents of the repository"
+            " you're working on, like how does a given function work or where is a particular variable set,"
+            " or what is in a particular file. Input should be a fully formed question.",
         )
 
-    def is_excluded(self, path, debug=False):
+    def is_excluded(self, path):
         exclusions = [
             ".git",
             ".gitignore",
@@ -74,8 +73,6 @@ class CodebaseOracleToolBuilder:
             "local_env",
             "/.",
         ]
-        if debug:
-            breakpoint()
         for exclusion in exclusions:
             if exclusion in path:
                 return True
