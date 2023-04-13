@@ -25,7 +25,7 @@ PROMPT = PromptTemplate(input_variables=["question"], template=_PROMPT_TEMPLATE)
 
 class LocalNavigatorTool(Tool):
     def __init__(self, llm: BaseLLM):
-        chain = LLMBashChain(llm=llm, prompt=PROMPT, verbose=True)
+        chain = LLMBashChain(llm=llm, prompt=PROMPT, verbose=False)
 
         super().__init__(
             name="Local navigator tool",
