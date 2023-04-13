@@ -8,7 +8,7 @@ Environment variables:
 - PINECONE_API_KEY: The API key for the Pinecone API.
 - PINECONE_ENVIRONMENT: The environment to use for the Pinecone API.
 - YOUR_TABLE_NAME: The name of the table to use for storing data.
-- PythonObjectIVE: The PythonObjective of the program.
+- OBJECTIVE: The OBJECTIVE of the program.
 - DO_RETRY: A boolean value indicating whether to retry failed requests.
 
 Constants:
@@ -29,7 +29,7 @@ GITHUB_API_KEY = os.getenv("GITHUB_API_KEY", "")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT", "us-east1-gcp")
 YOUR_TABLE_NAME = os.getenv("TABLE_NAME", "")
-PythonObjectIVE = os.getenv("PythonObjectIVE", "")
+OBJECTIVE = os.getenv("OBJECTIVE", "")
 DO_RETRY = bool(os.getenv("DO_RETRY", 1))
 
 # Define constants

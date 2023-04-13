@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
 import traceback
@@ -9,11 +10,50 @@ from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
-from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
-
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
-from .custom_tools import GitToolBuilder, requests_get_clean
-from .prompts import make_execution_task, make_planning_task
+from .tools.github import GithubToolBuilder, requests_get_clean
+from .tools.prompts import make_execution_task, make_planning_task
+from .tools.python_tools import PythonParser, PythonParserToolBuilder
+from .tools.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
+
+# Create argument parser and define arguments
+parser = argparse.ArgumentParser(description="Modify main.py script to use passed-in args")
+parser.add_argument("--branch_name", default="main", help="Default branch name (default: main)")
+parser.add_argument(
+    "--repository_name",
+    default="maks-ivanov/improved-spork",
+    help="Default branch name (default: main)",
+)
+parser.add_argument("--planner_model", default="gpt-4", help="Planner model (default: gpt-4)")
+parser.add_argument(
+    "--base_tools",
+    default="python_repl,human",
+    help="Base tools (default: python_repl,terminal,human)",
+)
+parser.add_argument(
+    "--load_github_tools",
+    default=True,
+    help="Load github tools? (default: True)",
+)
+parser.add_argument(
+    "--load_code_tools",
+    default=True,
+    help="Load code tools? (default: True)",
+)
+parser.add_argument(
+    "--do_plan",
+    default=True,
+    help="Run the planning agent? (default: True)",
+)
+parser.add_argument(
+    "--issues_or_prs",
+    default="issues",
+    help='Work on issues or pull requests? (default: "issues", alternative: "pulls")',
+)
+
+
+args = parser.parse_args()
+
 
 # Log into GitHub
 print("Logging into github")
@@ -23,32 +63,36 @@ github_client = login_github(GITHUB_API_KEY)
 
 repositories = list_repositories(github_client)
 print("Found recent repos:", repositories)
-# Let user choose a repository
-repository_name = input("Enter the name of the repository you want to work with:")
-
-github_repo = github_client.get_repo(repository_name)
+github_repo = github_client.get_repo(args.repository_name)
 
 
-# create a repo object which represents the repository we are inside of
+# create a repo PythonObjectType which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "main"
 # reset to default branch if necessary
-if pygit_repo.active_branch.name != default_branch_name:
-    pygit_repo.git.checkout(default_branch_name)
+if pygit_repo.active_branch.name != args.branch_name:
+    pygit_repo.git.checkout(args.branch_name)
 
 
-work_item = choose_work_item(github_repo)
+work_item = choose_work_item(github_repo, args.issues_or_prs)
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0, model=args.planner_model)
 # llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
-base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
+print("Loading Base Tools :%s" % (args.base_tools.split(",")))
+base_tools = load_tools(args.base_tools.split(","), llm=llm)
 base_tools += [requests_get_clean]
-exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
+
+exec_tools = base_tools
+if args.load_github_tools:
+    exec_tools += GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
+
+if args.load_code_tools:
+    python_parser = PythonParser()
+    exec_tools += PythonParserToolBuilder(python_parser).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
@@ -76,9 +120,7 @@ if instructions_list:
 
 # ask user if they want to run planner agent, default is yes if no instructions
 
-do_plan = input("Do you want to run the PLANNING agent? (y/n)")
-
-if do_plan == "y":
+if args.do_plan:
     plan_task = make_planning_task(work_item, exec_tools, github_repo.name)
     print("Planning task:", plan_task)
     approved = False
@@ -113,4 +155,4 @@ if do_exec == "y":
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer
-        pygit_repo.git.checkout(default_branch_name)
+        pygit_repo.git.checkout(args.branch_name)

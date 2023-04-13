@@ -14,6 +14,9 @@ Example usage:
 
     print("Fetch the raw code of a package, module, class, method or function:")
     print(code_get.get_raw_code('module_dir.module_name.ClassName_Or_function_name'))
+
+    TODO
+    1. Consider how to handle import statements, they are not currently parsed.
 """
 import ast
 import os
