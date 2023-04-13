@@ -55,7 +55,6 @@ class PythonWriter:
             file_path = os.path.join(
                 self.python_parser.absolute_path_to_base, *(module_path.split("."))
             )
-            file_path = f"{file_path}.py"
             self._write_file(f"{file_path}.py", module_path)
 
     def _validate_code(self, code: str) -> None:
@@ -295,7 +294,7 @@ class PythonWriter:
         code_parts = []
 
         if docstring:
-            code_parts.append(f'"""\n{docstring}\n"""\n\n')
+            code_parts.append(f'"""{docstring}"""\n\n')
 
         for function in functions:
             print("Writing function.get_raw_code() = ", function.code)
@@ -313,6 +312,8 @@ class PythonWriter:
             ast.parse(new_code)
         except SyntaxError as e:
             raise ValueError(f"Generated code is not valid Python: {e}")
+        dir_path = os.path.dirname(file_path)
+        os.makedirs(dir_path, exist_ok=True)
 
-        # with open(f"{module_py_path}.py", "w", encoding="utf-8") as f:
-        #     f.write(new_code)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(new_code)
