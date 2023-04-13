@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import List
 
 from langchain.agents import Tool
 from langchain.chains import ConversationalRetrievalChain
@@ -36,11 +37,11 @@ class CodebaseOracleToolBuilder:
                 for file in filenames:
                     if not self.is_excluded(os.path.join(dirpath, file)):
                         try:
-                            loader = TextLoader(os.path.join(dirpath, file))
+                            loader = NumberedLinesTextLoader(os.path.join(dirpath, file))
                             docs.extend(loader.load())
                         except Exception as e:
                             print(dirpath, file, e)
-        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         texts = text_splitter.split_documents(docs)
         print(
             "CodeOracleTool: Running Chroma using direct local API. Using DuckDB in-memory for database. Data will be transient."
@@ -79,3 +80,15 @@ class CodebaseOracleToolBuilder:
             if exclusion in path:
                 return True
         return False
+
+
+class NumberedLinesTextLoader(TextLoader):
+    def load(self) -> List[Document]:
+        """Load from file path."""
+        with open(self.file_path, encoding=self.encoding) as f:
+            lines = f.readlines()
+            text = f"{self.file_path}\n"
+            for i, line in enumerate(lines):
+                text += f"{i}: {line}\n"
+        metadata = {"source": self.file_path}
+        return [Document(page_content=text, metadata=metadata)]
