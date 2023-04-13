@@ -6,6 +6,7 @@ from typing import TextIO, cast
 from langchain.agents import load_tools
 from langchain.chat_models import ChatOpenAI
 
+from .config import *  # noqa: F401, F403
 from .tools.agent import AgentManager
 from .tools.github import requests_get_clean
 from .tools.python_tools import (
@@ -18,11 +19,6 @@ from .tools.utils import PassThroughBuffer
 
 # Create argument parser and define arguments
 parser = argparse.ArgumentParser(description="Modify main.py script to use passed-in args")
-parser.add_argument(
-    "--repository_name",
-    default="maks-ivanov/improved-spork",
-    help="Default branch name (default: main)",
-)
 parser.add_argument("--planner_model", default="gpt-4", help="Planner model (default: gpt-4)")
 parser.add_argument("--exec_model", default="gpt-3.5-turbo", help="Planner model (default: gpt-4)")
 parser.add_argument(
@@ -54,7 +50,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-# llm1 = OpenAI(temperature=0)
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)

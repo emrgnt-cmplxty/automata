@@ -9,12 +9,14 @@ Example usage:
     writer = PythonWriter(parser)
 
     print("Write a new standalone function:")
-    print(code_get.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""A new function"""\npass'))
+    print(writer.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""A new function"""\npass'))
 
     print("Modify an existing function:")
-    print(code_get.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""My Modified function"""\ndo_something()'))
+    print(writer.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""My Modified function"""\ndo_something()'))
 
     # The structure above works for packages, modules, classes, and methods as well.
+    # when done modifying code, write the changes to disk:
+    writer.write_to_disk()
 
     TODO
     1. Consider how to handle import statements, they are not currently parsed.

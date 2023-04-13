@@ -1,0 +1,10 @@
+task:
+  title: Optimize python_tools
+  body: |
+    The PythonTool kit exposes 4 functions across two unique tool builders, the functions are
+    - python-parser-get-raw-code
+    - python-parser-get-pyobject-docstring
+    - python-writer-modify-code-state
+    - python-writer-write-to-disk
+    These functions are to be used by an autonomous developer agent, and the tool is meant to be optimized for such a use case. 
+    Your job is to inspect the code and come up with new essential functions for the agent, and to then implement them.

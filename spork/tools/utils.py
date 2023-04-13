@@ -4,15 +4,21 @@ choose a work item to work on, and remove HTML tags from text.
 """
 
 import os
-from typing import List, Union
+from typing import Dict, List, Union
 
 import regex as re
+import yaml
 from bs4 import BeautifulSoup
 from github import Github
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.Repository import Repository
+
+
+def load_yaml(filename: str) -> Dict:
+    with open(filename, "r") as f:
+        return yaml.safe_load(f)
 
 
 def home_path() -> str:

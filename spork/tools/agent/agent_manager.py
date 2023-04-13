@@ -1,13 +1,15 @@
 import os
-import textwrap
 from typing import Sequence
 
 from langchain.agents import AgentType, initialize_agent
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import load_prompt
 from langchain.schema import BaseLanguageModel
 from langchain.tools.base import BaseTool
 
-from .prompt_configs.prompt_versions import PromptVersion
+from ..utils import home_path, load_yaml
+from .agent_configs.agent_version import AgentVersion
+from .task_configs.task import Task
 
 
 class AgentManager:
@@ -19,8 +21,8 @@ class AgentManager:
         exec_llm: BaseLanguageModel,
         planning_agent: AgentType = AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
         execution_agent: AgentType = AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-        _planning_prompt_version: PromptVersion = PromptVersion.PLANNING_V1,
-        _exec_prompt_version: PromptVersion = PromptVersion.EXECUTION_V1,
+        planning_prompt_version: AgentVersion = AgentVersion.PLANNING_V1,
+        exec_prompt_version: AgentVersion = AgentVersion.EXECUTION_V1,
     ):
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
@@ -36,8 +38,10 @@ class AgentManager:
         self.exec_agent = initialize_agent(
             exec_tools, exec_llm, agent=execution_agent, verbose=True
         )
+        self.planning_prompt_version = planning_prompt_version
+        self.exec_prompt_version = exec_prompt_version
 
-    def make_planning_task(self) -> str:
+    def make_planning_task(self, task=Task.BASIC_PROGRAMMING_V0) -> str:
         """
         Generates a planning task for an agent.
 
@@ -49,41 +53,51 @@ class AgentManager:
         Returns:
         - task_instructions (str): A string containing the instructions for the planning task.
         """
-        file_tree_command = 'tree . -I "__pycache__*|*.pyc|__init__.py|local_env|*.egg-info"'
-        file_tree = os.popen(file_tree_command)
+        if self.planning_prompt_version == AgentVersion.PLANNING_V1:
+            file_tree_exec = os.popen(
+                'tree . -I "__pycache__*|*.pyc|__init__.py|local_env|*.egg-info"'
+            )
+            file_tree = file_tree_exec.read()
+            path = os.getcwd()
+            tools = f" {[(tool.name, tool.description) for tool in self.exec_tools]}.\n"
+            task_yaml = load_yaml(self.format_config_path("task_configs", f"{task.value}.yaml"))[
+                "task"
+            ]
+            payload = {
+                "file_tree": file_tree,
+                "path": path,
+                "tools": tools,
+                "task": f"Title:{task_yaml['title']}\nBody:{task_yaml['body']}\n",
+            }
 
-        task = textwrap.dedent(
-            """
-        PROPOSE and IMPLEMENT a step-by-step solution to the following task: 
-
-        Title: Optimize python_tools 
-
-        Body: The PythonTool kit exposes 4 functions across two unique tool builders, the functions are
-
-        - python-parser-get-raw-code
-        - python-parser-get-pyobject-docstring
-        - python-writer-modify-code-state
-        - python-writer-write-to-disk
-
-        These functions are to be used by an autonomous developer agent, and the tool is meant to be optimized for such a use case. 
-        
-        Your job is to inspect the code and come up with new essential functions for the agent, and to then implement them.
-        """
+        prompt = load_prompt(
+            self.format_config_path("agent_configs", f"{self.planning_prompt_version.value}.yaml")
         )
-        return (
-            f"You are a GPT-4, an autonomous python engineering system."
-            f" You are given a task and your job is to plan and execute a solution to that task."
-            f" You are working in {os.getcwd()} on the improved-spork repository."
-            f" IMPORTANT - the output of tree . is shown:\n{file_tree.read()}\n"
-            f" Your task is to PROPOSE and IMPLEMENT a step-by-step solution to the following task:\n"
-            f"{task}"
-            f" To accomplish your task you will need to make use of the following tools:\n"
-            f" {[(tool.name, tool.description) for tool in self.exec_tools]}.\n"
-            f" Begin by using the available tools to inspect the docstrings of"
-            f" files you will need to modify to accomplish the task,"
-            f" then, write a step-by-step plan for execution."
-            f" Finally, execute your plan. REMEMBER, start by inspecting the docstrings and step-by-step reasoning."
-            f" Begin the task: \n"
+        # Replace newline characters with actual newlines
+        formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
+
+        print("Returning agent prompt = %s" % (formatted_prompt))
+        return formatted_prompt
+
+    @staticmethod
+    def format_config_path(config_dir: str, config_path: str) -> str:
+        """
+        Returns the path to a config file.
+
+        Args:
+        - config_dir (str): The name of the directory the config file is in.
+        - config_path (str): The name of the config file.
+
+        Returns:
+        - The path to the config file.
+        """
+        return os.path.join(
+            home_path(),
+            "spork",
+            "tools",
+            "agent",
+            config_dir,
+            config_path,
         )
 
         # def load_prompt_config(self) -> Dict:

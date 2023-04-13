@@ -1,0 +1,9 @@
+input_variables:
+  - path
+  - file_tree
+  - task
+  - tools
+output_parser: null
+template: >
+  Impl is TODO
+template_format: "f-string"
