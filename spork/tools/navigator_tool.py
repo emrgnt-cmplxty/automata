@@ -1,31 +1,70 @@
-from langchain import LLMBashChain
+from langchain import LLMBashChain, PALChain
 from langchain.agents import Tool
 from langchain.llms import BaseLLM
+
+# flake8: noqa
 from langchain.prompts.prompt import PromptTemplate
 
-_PROMPT_TEMPLATE = """If someone asks you to perform a task, your job is to come up with a series of bash commands that will perform the task. There is no need to put "#!/bin/bash" in your answer. Make sure to reason step by step, using this format:
-Question: "copy the files in the directory named 'target' into a new directory at the same level as target called 'myNewDirectory'"
-I need to take the following actions:
-- List all files in the directory
-- Create a new directory
-- Copy the files from the first directory into the second directory
-```bash
-ls
-mkdir myNewDirectory
-cp -r target/* myNewDirectory
-```
+template = (
+    """
+    # Generate Python3 Code to manipulate files and directories
+    # Q: Change the current working directory to: /home/username/Downloads
+    import os
+    os.chdir('/home/username/Downloads')
+    
+    # Q: List all files in the current directory
+    import os
+    current_directory = os.getcwd()
+    os.listdir(current_directory)
+    
+    # Q: List all files in directory: /home/username/Documents
+    import os
+    os.listdir('/home/username/Documents')
+    
+    # Q: What directory am I in?
+    import os
+    os.getcwd()
+    
+    # Q: Make a new directory: /home/username/Documents/new_directory
+    import os
+    os.mkdir('/home/username/Documents/new_directory')
+    
+    # Q: Move a file myfile.txt to /home/username/Documents/ directory:
+    import os
+    os.rename('myfile.txt', '/home/username/Documents/myfile.txt')
+    
+    # Q: Move a directory: /home/username/Documents/new_directory to /home/username/Documents/new_directory2
+    import os
+    shutil.move('/home/username/Documents/new_directory', '/home/username/Documents/new_directory2')
+    
+    # Q: Copy a file myfile.txt to /home/username/Documents/ directory:
+    import shutil
+    shutil.copy('myfile.txt', '/home/username/Documents/myfile.txt')
+    
+    # Q: Delete a file myfile.txt
+    import os
+    os.remove('myfile.txt')
+    
+    # Q: Delete a directory: /home/username/Documents/new_directory
+    import os
+    os.rmdir('/home/username/Documents/new_directory')
+    
+    # Q: Delete a directory and all its contents: /home/username/Documents/new_directory
+    import shutil
+    shutil.rmtree('/home/username/Documents/new_directory')
+    
+    
+    # Q: {question}
+    """.strip()
+    + "\n"
+)
 
-Do not use 'echo' when writing the script. Do not put anything after the command and set of triple backticks
-
-That is the format you *must* follow. Begin!
-Question: {question}"""
-
-PROMPT = PromptTemplate(input_variables=["question"], template=_PROMPT_TEMPLATE)
+PROMPT = PromptTemplate(input_variables=["question"], template=template)
 
 
 class LocalNavigatorTool(Tool):
     def __init__(self, llm: BaseLLM):
-        chain = LLMBashChain(llm=llm, prompt=PROMPT, verbose=False)
+        chain = PALChain(prompt=PROMPT, llm=llm)
 
         super().__init__(
             name="Local navigator tool",
