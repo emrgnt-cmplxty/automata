@@ -7,3 +7,4 @@ improved_spork.egg-info/*
 local_env/*
 __pycache__/
 *.pyc
+/build/
