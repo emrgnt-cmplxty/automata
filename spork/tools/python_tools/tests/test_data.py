@@ -1,5 +1,7 @@
 import textwrap
 
+from spork.tools.python_tools.python_types import RESULT_NOT_FOUND
+
 # New Module Test Data
 NEW_PACKAGE_PY_PATH = "new_sample_code"
 NEW_MODULE_NAME = "new_sample"
@@ -16,6 +18,16 @@ NEW_MODULE_CODE = textwrap.dedent(
         return 'New function!'
     '''
 )
+
+
+NEW_FUNCTION_CODE = textwrap.dedent(
+    '''
+    def new_function():
+        """Returns a string that says 'New function!'"""
+        return 'New function!'
+    '''
+)
+
 
 NEW_FUNCTION_RAW_CODE = f"""def {NEW_FUNCTION_NAME}():\n    return 'New function!'"""
 NEW_MODULE_DOCSTRING = f"{NEW_MODULE_NAME}:\nThis module defines a new function."
@@ -77,6 +89,7 @@ new_module_data = {
     "function_name": NEW_FUNCTION_NAME,
     "function_py_path": NEW_FUNCTION_PY_PATH,
     "module_code": NEW_MODULE_CODE,
+    "function_code": NEW_FUNCTION_CODE,
     "function_raw_code": NEW_FUNCTION_RAW_CODE,
     "module_docstring": NEW_MODULE_DOCSTRING,
     "function_docstring": NEW_FUNCTION_DOCSTRING,
@@ -94,6 +107,7 @@ class_data = {
     "class_code": CLASS_CODE,
     "class_raw_code": CLASS_RAW_CODE,
     "class_module_code": CLASS_MODULE_CODE,
+    "class_docstring": f"NewClass:\nThis is a new class. \n__init__:\nThis is the constructor. \nsay_hello:\n{RESULT_NOT_FOUND}",
 }
 
 # Module with Class and Function Test Data

@@ -46,6 +46,7 @@ class PythonParser:
         self.relative_dir = relative_dir
         self._populate_dicts(os.path.join(home_path(), self.relative_dir))
         self._update_callbacks: List[Callable[[str, str, Dict[str, Any]], None]] = []
+        self.absolute_path_to_base = os.path.join(home_path(), self.relative_dir, "..")
 
     def get_raw_code(self, PythonObject_py_path: str) -> str:
         """
@@ -193,6 +194,6 @@ class PythonParser:
 
 
 if __name__ == "__main__":
-    code_parser = PythonParser()
+    python_parser = PythonParser()
     print("Done loading the Code Parser")
-    print("Code Parser Raw Code:\n%s" % (code_parser.get_raw_code("spork.tools.code.parser")))
+    print("Code Parser Raw Code:\n%s" % (python_parser.get_raw_code("spork.tools.code.parser")))

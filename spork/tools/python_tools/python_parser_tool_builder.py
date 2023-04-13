@@ -8,13 +8,13 @@ The PythonParserToolBuilder class builds a list of Tool PythonObjects, each repr
 command to interact with the PythonParser API.
 
 Attributes:
-- code_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
+- python_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
 - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
 
 Example usage:
-    code_parser = PythonParser(os.path.join(home_path(), "your_directory"))
-    code_parser_tool_builder = PythonParserToolBuilder(code_parser)
-    tools = code_parser_tool_builder.build_tools()
+    python_parser = PythonParser(os.path.join(home_path(), "your_directory"))
+    python_parser_tool_builder = PythonParserToolBuilder(python_parser)
+    tools = python_parser_tool_builder.build_tools()
 
 """
 
@@ -27,18 +27,18 @@ from .python_parser import PythonParser
 
 
 class PythonParserToolBuilder:
-    def __init__(self, code_parser: PythonParser, logger: Optional[PassThroughBuffer] = None):
+    def __init__(self, python_parser: PythonParser, logger: Optional[PassThroughBuffer] = None):
         """
         Initializes a PythonParserToolBuilder PythonObjectType with the given inputs.
 
         Args:
-        - code_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
+        - python_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
         - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
 
         Returns:
         - None
         """
-        self.code_parser = code_parser
+        self.python_parser = python_parser
         self.logger = logger
 
     def build_tools(self) -> List[Tool]:
@@ -53,8 +53,8 @@ class PythonParserToolBuilder:
         """
         tools = [
             Tool(
-                name="code-parser-get-raw-code",
-                func=lambda PythonObject_py_path: self.code_parser.get_raw_code(
+                name="python-parser-get-raw-code",
+                func=lambda PythonObject_py_path: self.python_parser.get_raw_code(
                     PythonObject_py_path
                 ),
                 description=f"Returns the raw code of the python package, module, class, method, or function with the given path,"
@@ -66,12 +66,12 @@ class PythonParserToolBuilder:
                 return_direct=True,
             ),
             Tool(
-                name="code-parser-get-PythonObjectType-docstring",
-                func=lambda PythonObject_py_path: self.code_parser.get_docstring(
+                name="python-parser-get-pyobject-docstring",
+                func=lambda PythonObject_py_path: self.python_parser.get_docstring(
                     PythonObject_py_path
                 ),
-                description=f"Identical to code-parser-get-PythonObjectType-code, except returns"
-                f" the PythonObjectType docstring instead of raw code.",
+                description=f"Identical to python-parser-get-pyobject-code, except returns"
+                f" the pyobject docstring instead of raw code.",
                 return_direct=True,
             ),
         ]

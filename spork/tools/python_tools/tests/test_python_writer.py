@@ -1,3 +1,4 @@
+import os
 import textwrap
 
 import pytest
@@ -30,13 +31,15 @@ def python_new_writer():
 
 def test_add_old_module_no_existing_package(python_writer):
     with pytest.raises(AssertionError):
-        python_writer.add_new_module(
+        python_writer._create_new_module(
             old_module_data["module_py_path"], new_module_data["module_code"]
         )
 
 
-def test_add_new_module_old_writer(python_writer):
-    python_writer.add_new_module(new_module_data["module_py_path"], new_module_data["module_code"])
+def test_create_new_module_old_writer(python_writer):
+    python_writer._create_new_module(
+        new_module_data["module_py_path"], new_module_data["module_code"]
+    )
     parser = python_writer.python_parser
 
     assert new_module_data["package_py_path"] in parser.package_dict
@@ -66,8 +69,8 @@ def test_add_new_module_old_writer(python_writer):
     )
 
 
-def test_add_new_module_new_writer(python_new_writer):
-    python_new_writer.add_new_module(
+def test_create_new_module_new_writer(python_new_writer):
+    python_new_writer._create_new_module(
         new_module_data["module_py_path"], new_module_data["module_code"]
     )
     parser = python_new_writer.python_parser
@@ -99,18 +102,18 @@ def test_add_new_module_new_writer(python_new_writer):
     )
 
 
-def test_add_new_class_no_existing_module(python_writer):
+def test_create_new_class_no_existing_module(python_writer):
     with pytest.raises(AssertionError):
-        python_writer.add_new_class(
+        python_writer._create_new_class(
             new_module_data["module_py_path"],
             class_data["class_py_path"],
             class_data["class_code"],
         )
 
 
-def test_add_new_class_new_writer(python_new_writer):
+def test_create_new_class_new_writer(python_new_writer):
     parser = python_new_writer.python_parser
-    python_new_writer.add_new_class(
+    python_new_writer._create_new_class(
         new_module_data["module_py_path"],
         class_data["class_py_path"],
         class_data["class_code"],
@@ -127,8 +130,8 @@ def test_add_new_class_new_writer(python_new_writer):
     ) == class_data["class_raw_code"].replace(" ", "").replace("\n", "")
 
 
-def test_add_new_class(python_writer):
-    python_writer.add_new_class(
+def test_create_new_class(python_writer):
+    python_writer._create_new_class(
         old_module_data["module_py_path"],
         class_data["class_py_path"],
         class_data["class_code"],
@@ -142,7 +145,7 @@ def test_add_new_class(python_writer):
 
 
 def test_add_module_with_class_and_function(python_writer):
-    python_writer.add_new_module(
+    python_writer._create_new_module(
         module_with_class_and_function_data["module_py_path"],
         module_with_class_and_function_data["module_code"],
     )
@@ -159,10 +162,10 @@ def test_add_module_with_class_and_function(python_writer):
     )
 
 
-def test_add_new_function_existing_module(python_writer):
+def test_create_new_function_existing_module(python_writer):
     # Add the test module
     module_py_path = new_module_data["module_py_path"]
-    python_writer.add_new_module(
+    python_writer._create_new_module(
         module_py_path=module_py_path,
         module_code=new_module_data["module_code"],
     )
@@ -178,7 +181,7 @@ def test_add_new_function_existing_module(python_writer):
         '''
     )
 
-    python_writer.add_new_function(
+    python_writer._create_new_function(
         function_py_path=f"{module_py_path}.{function_name}",
         function_code=new_function_code,
     )
@@ -196,7 +199,7 @@ def test_modify_existing_function(python_writer):
     module_py_path = module_with_class_and_function_data["module_py_path"]
     function_name = new_module_data["function_name"]
 
-    python_writer.add_new_module(
+    python_writer._create_new_module(
         module_py_path=module_py_path,
         module_code=module_with_class_and_function_data["module_code"],
     )
@@ -212,7 +215,7 @@ def test_modify_existing_function(python_writer):
         '''
     )
 
-    python_writer.modify_existing_function(
+    python_writer._modify_existing_function(
         function_py_path=f"{module_py_path}.{function_name}",
         function_code=modified_function_code,
     )
@@ -231,7 +234,7 @@ def test_modify_existing_class(python_writer):
     module_py_path = module_with_class_and_function_data["module_py_path"]
     class_name = class_data["class_name"]
 
-    python_writer.add_new_module(
+    python_writer._create_new_module(
         module_py_path=module_py_path,
         module_code=module_with_class_and_function_data["module_code"],
     )
@@ -248,7 +251,7 @@ def test_modify_existing_class(python_writer):
         '''
     )
 
-    python_writer.modify_existing_class(
+    python_writer._modify_existing_class(
         class_py_path=f"{module_py_path}.{class_name}",
         class_code=modified_class_code,
     )
@@ -268,3 +271,69 @@ def test_modify_existing_class(python_writer):
         "new_sample_code.module_with_class_and_function.NewClass.modified_class_method"
         in modified_class_obj.methods
     )
+
+
+def test_modify_code_state_create_new_function(python_writer):
+    old_module_path = old_module_data["module_py_path"]
+    new_function_name = new_module_data["function_name"]
+    new_path = f"{old_module_path}.{new_function_name}"
+    python_writer.modify_code_state(new_path, new_module_data["function_code"])
+
+    parser = python_writer.python_parser
+    assert new_path in parser.function_dict
+    assert parser.get_raw_code(new_path).replace(" ", "").replace("\n", "") == new_module_data[
+        "function_raw_code"
+    ].replace(" ", "").replace("\n", "")
+    assert parser.get_docstring(new_path).replace(" ", "").replace("\n", "") == new_module_data[
+        "function_docstring"
+    ].replace(" ", "").replace("\n", "")
+
+
+def test_modify_code_state_create_new_class(python_writer):
+    old_module_path = old_module_data["module_py_path"]
+    new_class_name = class_data["class_name"]
+    new_path = f"{old_module_path}.{new_class_name}"
+    python_writer.modify_code_state(new_path, class_data["class_code"])
+
+    parser = python_writer.python_parser
+    assert new_path in parser.class_dict
+    assert parser.get_raw_code(new_path).replace(" ", "").replace("\n", "") == class_data[
+        "class_raw_code"
+    ].replace(" ", "").replace("\n", "")
+    assert parser.get_docstring(new_path).replace(" ", "").replace("\n", "") == class_data[
+        "class_docstring"
+    ].replace(" ", "").replace("\n", "")
+
+
+def test_modify_code_state_create_new_module(python_writer):
+    python_writer.modify_code_state(
+        new_module_data["module_py_path"], new_module_data["module_code"]
+    )
+
+    parser = python_writer.python_parser
+    assert new_module_data["module_py_path"] in parser.module_dict
+
+
+def test_modify_code_state_create_new_package(python_writer):
+    package_path = new_module_data["package_py_path"]
+    python_writer.modify_code_state(f"{package_path}.__init__", "")
+
+    parser = python_writer.python_parser
+    assert f"{package_path}.__init__" in parser.package_dict
+
+
+def test_write_new_module(python_writer):
+    python_writer.modify_code_state(
+        new_module_data["module_py_path"], new_module_data["module_code"]
+    )
+
+    parser = python_writer.python_parser
+    assert new_module_data["module_py_path"] in parser.module_dict
+
+    # Write the changes to disk and ensure the file exists.
+    python_writer.write_to_disk()
+    # new_file_path = os.path.join("path/to/your_directory", "my_package", "new_module.py")
+    # assert os.path.isfile(new_file_path)
+
+    # # Clean up after the test.
+    # os.remove(new_file_path)

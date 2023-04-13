@@ -91,8 +91,8 @@ if args.load_github_tools:
     exec_tools += GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
 if args.load_code_tools:
-    code_parser = PythonParser()
-    exec_tools += PythonParserToolBuilder(code_parser).build_tools()
+    python_parser = PythonParser()
+    exec_tools += PythonParserToolBuilder(python_parser).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 

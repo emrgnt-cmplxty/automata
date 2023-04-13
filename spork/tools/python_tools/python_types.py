@@ -245,8 +245,6 @@ class PythonClassType(PythonObjectType):
                 methods[f"{self.py_path}.{func_name}"] = PythonFunctionType(
                     f"{self.py_path}.{func_name}", func_docstring, func_code
                 )
-        print("creating methods = ", methods)
-
         return methods
 
 
@@ -308,7 +306,6 @@ class PythonModuleType(PythonObjectType):
         Returns:
             str: The concatenated docstrings of the module as a string.
         """
-        print("CALLING GET_DOCSTRING FROM PYTHON TYPES")
         docstrings = []
         if self.docstring:
             name = self.py_path.split(".")[-1]
