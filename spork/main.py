@@ -43,7 +43,7 @@ if pygit_repo.active_branch.name != default_branch_name:
 work_item = choose_work_item(github_repo)
 
 
-llm1 = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+llm1 = ChatOpenAI(temperature=0, model="gpt-4")
 llm2 = ChatOpenAI(temperature=0, model="gpt-4")
 
 pass_through_buffer = PassThroughBuffer(sys.stdout)
