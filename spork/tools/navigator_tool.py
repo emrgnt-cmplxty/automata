@@ -7,52 +7,59 @@ from langchain.prompts.prompt import PromptTemplate
 
 template = (
     """
-    # Generate Python3 Code to manipulate files and directories
+    # Generate Python3 Code to manipulate files and directories. 
+    If you don't understand request, or it asks you to do something other than manipulate files and directories,
+    say "Invalid request."
     # Q: Change the current working directory to: /home/username/Downloads
     import os
-    os.chdir('/home/username/Downloads')
+    answer = os.chdir('/home/username/Downloads')
     
     # Q: List all files in the current directory
     import os
     current_directory = os.getcwd()
-    os.listdir(current_directory)
+    answer = os.listdir(current_directory)
     
     # Q: List all files in directory: /home/username/Documents
     import os
-    os.listdir('/home/username/Documents')
+    answer = os.listdir('/home/username/Documents')
     
     # Q: What directory am I in?
     import os
-    os.getcwd()
+    answer = os.getcwd()
     
     # Q: Make a new directory: /home/username/Documents/new_directory
     import os
-    os.mkdir('/home/username/Documents/new_directory')
+    answer = os.mkdir('/home/username/Documents/new_directory')
     
     # Q: Move a file myfile.txt to /home/username/Documents/ directory:
     import os
-    os.rename('myfile.txt', '/home/username/Documents/myfile.txt')
+    answer = os.rename('myfile.txt', '/home/username/Documents/myfile.txt')
     
     # Q: Move a directory: /home/username/Documents/new_directory to /home/username/Documents/new_directory2
     import os
-    shutil.move('/home/username/Documents/new_directory', '/home/username/Documents/new_directory2')
+    answer = shutil.move('/home/username/Documents/new_directory', '/home/username/Documents/new_directory2')
     
     # Q: Copy a file myfile.txt to /home/username/Documents/ directory:
     import shutil
-    shutil.copy('myfile.txt', '/home/username/Documents/myfile.txt')
+    answer = shutil.copy('myfile.txt', '/home/username/Documents/myfile.txt')
     
     # Q: Delete a file myfile.txt
     import os
-    os.remove('myfile.txt')
+    answer = os.remove('myfile.txt')
     
     # Q: Delete a directory: /home/username/Documents/new_directory
     import os
-    os.rmdir('/home/username/Documents/new_directory')
+    answer = os.rmdir('/home/username/Documents/new_directory')
     
     # Q: Delete a directory and all its contents: /home/username/Documents/new_directory
     import shutil
-    shutil.rmtree('/home/username/Documents/new_directory')
+    answer = shutil.rmtree('/home/username/Documents/new_directory')
     
+    # Q: What is 2 + 2?
+    answer = "Invalid request."
+    
+    # Q: Write a function to compute the Nth Fibonacci number.
+    answer = "Invalid request."
     
     # Q: {question}
     """.strip()
@@ -64,7 +71,7 @@ PROMPT = PromptTemplate(input_variables=["question"], template=template)
 
 class LocalNavigatorTool(Tool):
     def __init__(self, llm: BaseLLM):
-        chain = PALChain(prompt=PROMPT, llm=llm)
+        chain = PALChain(prompt=PROMPT, llm=llm, get_answer_expr="print(answer)")
 
         super().__init__(
             name="Local navigator tool",
