@@ -1,13 +1,13 @@
 import abc
 import ast
-from typing import Dict, List, cast
+from typing import Any, Callable, Dict, List, Tuple, cast
 
 RESULT_NOT_FOUND = "No results found."
 
 
-class PythonObject(abc.ABC):
+class PythonObjectType(abc.ABC):
     """
-    The PythonObject class represents a single object with its python path, docstring, and raw code.
+    The PythonObjectType class represents a single object with its python path, docstring, and raw code.
 
     Attributes:
         py_path (str): The name of the object.
@@ -19,6 +19,33 @@ class PythonObject(abc.ABC):
         self.py_path = py_path
         self.docstring = docstring
         self.code = code
+
+    def get_raw_code(self):
+        pass
+
+    def get_docstring(self):
+        pass
+
+    def update_code(
+        self, new_code: str, notify_update: Callable[[str, str, Dict[str, Any]], None]
+    ):
+        pass
+
+    @classmethod
+    def from_code(cls, py_path: str, code: str):
+        pass
+
+
+class PythonFunctionType(PythonObjectType):
+    """
+    The PythonFunctionType class represents a single function (or method) with its python path, docstring, and raw code.
+
+    Attributes:
+        methods (Dict[str, PythonFunctionType]): A dictionary of associated PythonFunctionType instances, keyed by method names.
+    """
+
+    def __init__(self, py_path: str, docstring: str, code: str):
+        super().__init__(py_path, docstring, code)
 
     def get_raw_code(self) -> str:
         """
@@ -36,7 +63,7 @@ class PythonObject(abc.ABC):
             node.body[0].body.pop(0)  # Remove the docstring node
         return ast.unparse(node)
 
-    def get_doc_string(self) -> str:
+    def get_docstring(self) -> str:
         """
         Returns the docstring of the object.
 
@@ -49,28 +76,55 @@ class PythonObject(abc.ABC):
         name = self.py_path.split(".")[-1]
         return f"{name}:\n{self.docstring}" if self.docstring else RESULT_NOT_FOUND
 
+    def update_code(
+        self, new_code: str, notify_update: Callable[[str, str, Dict[str, Any]], None]
+    ) -> None:
+        """
+        Updates the raw code and the docstring of the PythonFunctionType instance.
 
-class PythonFunction(PythonObject):
+        Args:
+            new_code (str): The new raw code to replace the existing code.
+            notify_update (Callable[[str, str, Dict[str, Any]], None]): A callback function that is called when the code is updated.
+                The function should take two arguments: an entity type (e.g., "function") and the python path.
+
+        Returns:
+            None
+        """
+        self.code = new_code
+        notify_update("function", self.py_path, {})
+        node = ast.parse(new_code)
+        if isinstance(node.body[0], (ast.FunctionDef, ast.AsyncFunctionDef)):
+            self.docstring = ast.get_docstring(node.body[0]) or RESULT_NOT_FOUND
+
+    @classmethod
+    def from_code(cls, py_path: str, code: str) -> "PythonFunctionType":
+        """
+        Creates a PythonFunctionType instance from an AST node.
+
+        Args:
+            node (ast.AST): The AST node representing the Python object.
+            py_path (str): The Python path of the object.
+
+        Returns:
+            PythonFunctionType: A new PythonFunctionType instance.
+        """
+        tree = ast.parse(code)
+        # Access the ClassDef node inside the Module node's body
+        function_node = cast(ast.FunctionDef, tree.body[0])
+        docstring = ast.get_docstring(function_node) or RESULT_NOT_FOUND
+
+        return cls(py_path, docstring, code)
+
+
+class PythonClassType(PythonObjectType):
     """
-    The PythonFunction class represents a single function (or method) with its python path, docstring, and raw code.
-
-    Attributes:
-        methods (Dict[str, PythonFunction]): A dictionary of associated PythonFunction instances, keyed by method names.
-    """
-
-    def __init__(self, py_path: str, docstring: str, code: str):
-        super().__init__(py_path, docstring, code)
-
-
-class PythonClass(PythonObject):
-    """
-    The PythonClass class represents a single class with its python path, docstring, and raw code.
+    The PythonClassType class represents a single class with its python path, docstring, and raw code.
 
     Attributes:
         py_path (str): The name of the class.
         docstring (str): The docstring of the class.
         code (str): The raw code of the class.
-        methods (Dict[str, PythonFunction]): A dictionary of associated PythonFunction instances, keyed by method names.
+        methods (Dict[str, PythonFunctionType]): A dictionary of associated PythonFunctionType instances, keyed by method names.
     """
 
     def __init__(self, py_path: str, docstring: str, code: str):
@@ -104,7 +158,7 @@ class PythonClass(PythonObject):
                         method_node.body.pop(0)
         return ast.unparse(node)
 
-    def get_doc_string(self, exclude_methods: bool = False) -> str:
+    def get_docstring(self, exclude_methods: bool = False) -> str:
         """
         Returns the docstring of the class.
 
@@ -121,16 +175,63 @@ class PythonClass(PythonObject):
             for method in self.methods.values():
                 if result == RESULT_NOT_FOUND:
                     result = ""
-                result += f"\n{method.get_doc_string()}"
+                result += f"\n{method.get_docstring()}"
 
         return result
 
-    def _parse_methods(self) -> Dict[str, PythonFunction]:
+    def update_code(
+        self, new_code: str, notify_update: Callable[[str, str, Dict[str, Any]], None]
+    ) -> None:
         """
-        Parses the class code and extracts its methods as PythonFunction instances.
+        Updates the raw code and the docstring of the PythonFunctionType instance.
+
+        Args:
+            new_code (str): The new raw code to replace the existing code.
+            notify_update (Callable[[str, str, Dict[str, Any]], None]): A callback function that is called when the code is updated.
+                The function should take two arguments: an entity type (e.g., "function") and the python path.
 
         Returns:
-            Dict[str, PythonFunction]: A dictionary of associated PythonFunction instances, keyed by method names.
+            None
+        """
+        self.code = new_code
+        node = ast.parse(new_code)
+        if isinstance(node.body[0], ast.ClassDef):
+            class_node = node.body[0]
+            self.docstring = ast.get_docstring(class_node) or RESULT_NOT_FOUND
+            self.code = new_code
+            self.methods = self._parse_methods()
+        notify_update("class", self.py_path, {})
+
+    @classmethod
+    def from_code(cls, py_path: str, code: str) -> "PythonClassType":
+        """
+        Creates a PythonModuleType instance from an AST node.
+
+        Args:
+            node (ast.AST): The AST node representing the Python module.
+            py_path (str): The Python path of the module.
+
+        Returns:
+            PythonModuleType: A new PythonModuleType instance.
+        """
+        tree = ast.parse(code)
+        class_node = None
+        for node in ast.iter_child_nodes(tree):
+            if isinstance(node, ast.ClassDef):
+                class_node = node
+                break
+        # Get the class docstring
+        class_docstring = RESULT_NOT_FOUND
+        if class_node:
+            class_docstring = ast.get_docstring(class_node) or RESULT_NOT_FOUND
+        return cls(py_path, class_docstring, code)
+
+    def _parse_methods(self) -> Dict[str, PythonFunctionType]:
+        """
+        Parses the class code and extracts its methods as PythonFunctionType instances.
+
+        Returns:
+            Dict[str, PythonFunctionType]: A dictionary of associated PythonFunctionType instances, keyed by method names.
         """
         # Assuming self.code is an ast.ClassDef node
         class_node = cast(ast.ClassDef, ast.parse(self.code).body[0])
@@ -141,28 +242,31 @@ class PythonClass(PythonObject):
                 func_name = n.name
                 func_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
                 func_code = ast.unparse(n)
-                methods[func_name] = PythonFunction(func_name, func_docstring, func_code)
+                methods[f"{self.py_path}.{func_name}"] = PythonFunctionType(
+                    f"{self.py_path}.{func_name}", func_docstring, func_code
+                )
+        print("creating methods = ", methods)
 
         return methods
 
 
-class PythonModule(PythonObject):
+class PythonModuleType(PythonObjectType):
     """
-    The PythonModule class represents a single python module with associated docstrings, standalone functions, and classes.
+    The PythonModuleType class represents a single python module with associated docstrings, standalone functions, and classes.
 
     Attributes:
         filepath (str): The filepath of the file.
         docstring (str): The docstring of the file.
-        standalone_functions (List[PythonFunction]): A list of PythonFunction instances representing standalone functions.
-        classes (List[PythonFunction]): A list of PythonFunction instances representing classes.
+        standalone_functions (List[PythonFunctionType]): A list of PythonFunctionType instances representing standalone functions.
+        classes (List[PythonFunctionType]): A list of PythonFunctionType instances representing classes.
     """
 
     def __init__(
         self,
         py_path: str,
         docstring: str,
-        standalone_functions: List[PythonFunction],
-        classes: List[PythonClass],
+        standalone_functions: List[PythonFunctionType],
+        classes: List[PythonClassType],
     ):
         super().__init__(py_path, docstring, RESULT_NOT_FOUND)
         self.standalone_functions = standalone_functions
@@ -204,7 +308,7 @@ class PythonModule(PythonObject):
         Returns:
             str: The concatenated docstrings of the module as a string.
         """
-
+        print("CALLING GET_DOCSTRING FROM PYTHON TYPES")
         docstrings = []
         if self.docstring:
             name = self.py_path.split(".")[-1]
@@ -212,18 +316,82 @@ class PythonModule(PythonObject):
 
         if not exclude_standalones:
             for func_obj in self.standalone_functions:
-                docstrings.append(func_obj.get_doc_string())
+                docstrings.append(func_obj.get_docstring())
                 docstrings.append("\n")
 
         for class_obj in self.classes:
-            docstrings.append(class_obj.get_doc_string(exclude_methods))
+            docstrings.append(class_obj.get_docstring(exclude_methods))
             docstrings.append("\n")
 
         return "\n".join(docstrings) if len(docstrings) > 0 else RESULT_NOT_FOUND
 
+    def update_code(
+        self, new_code: str, notify_update: Callable[[str, str, Dict[str, Any]], None]
+    ) -> None:
+        """
+        Updates the raw code and the docstring of the PythonFunctionType instance.
 
-class PythonPackageType(PythonObject):
-    def __init__(self, py_path: str, modules: Dict[str, PythonModule]):
+        Args:
+            new_code (str): The new raw code to replace the existing code.
+            notify_update (Callable[[str, str, Dict[str, Any]], None]): A callback function that is called when the code is updated.
+                The function should take two arguments: an entity type (e.g., "function") and the python path.
+
+        Returns:
+            None
+        """
+        self.code = new_code
+        notify_update("module", self.py_path, {})
+        node = ast.parse(new_code)
+        self.docstring = ast.get_docstring(node) or RESULT_NOT_FOUND
+        self.standalone_functions, self.classes = self._parse_functions_and_classes(
+            self.py_path, node
+        )
+
+    @classmethod
+    def from_code(cls, py_path: str, code: str) -> "PythonModuleType":
+        """
+        Creates a PythonClassType instance from an AST node.
+
+        Args:
+            node (ast.AST): The AST node representing the Python class.
+            py_path (str): The Python path of the class.
+
+        Returns:
+            PythonClassType: A new PythonClassType instance.
+        """
+        tree = ast.parse(code)
+        docstring = ast.get_docstring(tree) or RESULT_NOT_FOUND
+        standalone_functions, classes = cls._parse_functions_and_classes(py_path, tree)
+        return cls(py_path, docstring, standalone_functions, classes)
+
+    @staticmethod
+    def _parse_functions_and_classes(
+        py_path: str,
+        node: ast.Module,
+    ) -> Tuple[List[PythonFunctionType], List[PythonClassType]]:
+        standalone_functions = []
+        classes = []
+
+        for n in node.body:
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                func_name = n.name
+                func_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
+                func_code = ast.unparse(n)
+                standalone_functions.append(
+                    PythonFunctionType(f"{py_path}.{func_name}", func_docstring, func_code)
+                )
+            elif isinstance(n, ast.ClassDef):
+                class_name = n.name
+                class_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
+                class_code = ast.unparse(n)
+                class_obj = PythonClassType(f"{py_path}.{class_name}", class_docstring, class_code)
+                classes.append(class_obj)
+
+        return standalone_functions, classes
+
+
+class PythonPackageType(PythonObjectType):
+    def __init__(self, py_path: str, modules: Dict[str, PythonModuleType]):
         super().__init__(py_path, RESULT_NOT_FOUND, RESULT_NOT_FOUND)
         self.modules = modules
 
@@ -262,3 +430,14 @@ class PythonPackageType(PythonObject):
         for module in self.modules.values():
             raw_code.append(module.get_raw_code(exclude_standalones, exclude_methods))
         return "\n".join(raw_code) if len(raw_code) > 0 else RESULT_NOT_FOUND
+
+    def update_code(
+        self, new_code: str, notify_update: Callable[[str, str, Dict[str, Any]], None]
+    ):
+        # Not applicable for PythonPackageType as it doesn't hold any code directly.
+        pass
+
+    # TODO - Consider how to implement this.
+    @classmethod
+    def from_code(cls, py_path: str, code: str):
+        pass

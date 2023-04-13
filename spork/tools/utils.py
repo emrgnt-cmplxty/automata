@@ -20,7 +20,7 @@ def home_path() -> str:
     Returns the path to the home folder.
 
     Returns:
-    - A path PythonObject in string form
+    - A path PythonObjectType in string form
 
     """
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -36,7 +36,7 @@ def login_github(token: str) -> Github:
     - token: A GitHub access token.
 
     Returns:
-    - A Github PythonObject representing the authenticated user.
+    - A Github PythonObjectType representing the authenticated user.
     """
     return Github(token)
 
@@ -45,7 +45,7 @@ def list_repositories(github: Github) -> List[str]:
     """
     Lists the five most recently updated repositories for the authenticated user.
     Args:
-    - github: A Github PythonObject representing the authenticated user.
+    - github: A Github PythonObjectType representing the authenticated user.
 
     Returns:
     - A list of strings, each string representing a repository's full name.
@@ -62,7 +62,7 @@ def list_issues(repo: Repository) -> PaginatedList:
     Lists the open issues for a given repository.
 
     Args:
-    - repo: A Github repository PythonObject.
+    - repo: A Github repository PythonObjectType.
 
     Returns:
     - A list of Github Issue PythonObjects representing the open issues for the repository.
@@ -76,7 +76,7 @@ def list_pulls(repo: Repository) -> PaginatedList:
     Lists the open pull requests for a given repository.
 
     Args:
-    - repo: A Github repository PythonObject.
+    - repo: A Github repository PythonObjectType.
 
     Returns:
     - A list of Github PullRequest PythonObjects representing the open pull requests for the repository.
@@ -91,10 +91,10 @@ def choose_work_item(github_repo: Repository, choice: str = "") -> Union[Issue, 
     work items, and prompts the user to choose one to work on.
 
     Args:
-    - github_repo: A Github repository PythonObject.
+    - github_repo: A Github repository PythonObjectType.
 
     Returns:
-    - A Github Issue PythonObject or PullRequest PythonObject representing the user's chosen work item.
+    - A Github Issue PythonObjectType or PullRequest PythonObjectType representing the user's chosen work item.
     """
 
     work_items = []

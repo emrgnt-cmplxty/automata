@@ -32,13 +32,13 @@ class GithubToolBuilder:
         logger: Optional[PassThroughBuffer] = None,
     ):
         """
-        Initializes a GithubToolBuilder PythonObject with the given inputs.
+        Initializes a GithubToolBuilder PythonObjectType with the given inputs.
 
         Args:
-        - github_repo (github.Repository): A github.Repository PythonObject representing the repository to work on.
-        - pygit_repo (git.Repo): A git.Repo PythonObject representing the local copy of the repository to work on.
-        - work_item (Union[Issue, PullRequest]): An Issue or PullRequest PythonObject representing the work item to work on.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObject to log output.
+        - github_repo (github.Repository): A github.Repository PythonObjectType representing the repository to work on.
+        - pygit_repo (git.Repo): A git.Repo PythonObjectType representing the local copy of the repository to work on.
+        - work_item (Union[Issue, PullRequest]): An Issue or PullRequest PythonObjectType representing the work item to work on.
+        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
 
         Returns:
         - None

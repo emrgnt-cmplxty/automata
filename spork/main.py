@@ -66,7 +66,7 @@ print("Found recent repos:", repositories)
 github_repo = github_client.get_repo(args.repository_name)
 
 
-# create a repo PythonObject which represents the repository we are inside of
+# create a repo PythonObjectType which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
 # reset to default branch if necessary

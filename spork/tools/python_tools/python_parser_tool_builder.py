@@ -8,8 +8,8 @@ The PythonParserToolBuilder class builds a list of Tool PythonObjects, each repr
 command to interact with the PythonParser API.
 
 Attributes:
-- code_parser (PythonParser): A PythonParser PythonObject representing the code parser to work with.
-- logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObject to log output.
+- code_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
+- logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
 
 Example usage:
     code_parser = PythonParser(os.path.join(home_path(), "your_directory"))
@@ -29,11 +29,11 @@ from .python_parser import PythonParser
 class PythonParserToolBuilder:
     def __init__(self, code_parser: PythonParser, logger: Optional[PassThroughBuffer] = None):
         """
-        Initializes a PythonParserToolBuilder PythonObject with the given inputs.
+        Initializes a PythonParserToolBuilder PythonObjectType with the given inputs.
 
         Args:
-        - code_parser (PythonParser): A PythonParser PythonObject representing the code parser to work with.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObject to log output.
+        - code_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
+        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
 
         Returns:
         - None
@@ -66,12 +66,12 @@ class PythonParserToolBuilder:
                 return_direct=True,
             ),
             Tool(
-                name="code-parser-get-PythonObject-docstring",
+                name="code-parser-get-PythonObjectType-docstring",
                 func=lambda PythonObject_py_path: self.code_parser.get_docstring(
                     PythonObject_py_path
                 ),
-                description=f"Identical to code-parser-get-PythonObject-code, except returns"
-                f" the PythonObject docstring instead of raw code.",
+                description=f"Identical to code-parser-get-PythonObjectType-code, except returns"
+                f" the PythonObjectType docstring instead of raw code.",
                 return_direct=True,
             ),
         ]
