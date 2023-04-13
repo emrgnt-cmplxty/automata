@@ -17,6 +17,7 @@ from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
 from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
+from .tools.navigator_tool import LocalNavigatorTool
 
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)
@@ -34,7 +35,7 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "feature/codebase-oracle"
+default_branch_name = "feature/navigator-tool"
 # reset to default branch if necessary
 if pygit_repo.active_branch.name != default_branch_name:
     pygit_repo.git.checkout(default_branch_name)
@@ -43,17 +44,18 @@ if pygit_repo.active_branch.name != default_branch_name:
 work_item = choose_work_item(github_repo)
 
 
-llm1 = ChatOpenAI(temperature=0, model="gpt-4")
-llm2 = ChatOpenAI(temperature=0, model="gpt-4")
+llm1 = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+llm2 = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
 
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 readonlymemory = ReadOnlySharedMemory(memory=memory)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
-base_tools = load_tools(["python_repl", "terminal", "human", "serpapi"], llm=llm2)
+base_tools = load_tools(["python_repl", "human", "serpapi"], llm=llm2)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
+exec_tools += [LocalNavigatorTool(llm2)]
 
 # planning_tools += [requests_get_clean]
 # planning_tools = load_tools(["terminal"], llm=llm2)
