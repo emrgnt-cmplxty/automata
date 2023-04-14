@@ -1,8 +1,36 @@
+"""
+Python Agent Example
+
+This example demonstrates how to create an autonomous Python agent that can perform Python tasks
+using Language Learning Models (LLMs), PythonParser, and PythonWriter.
+
+Example:
+    from ...config import *  # noqa F403
+    from .python_parser_tool_builder import PythonParserToolBuilder
+    from .python_writer_tool_builder import PythonWriterToolBuilder
+
+    python_parser = PythonParser()
+    python_writer = PythonWriter(python_parser)
+
+    exec_tools = PythonParserToolBuilder(python_parser).build_tools()
+    exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
+    python_agent = PythonAgent(exec_tools)
+
+    python_code_overview = python_parser.get_overview()
+    instruction_payload = {
+        "instruction": "My First Instruction",
+        "overview": python_code_overview,
+    }
+
+    python_agent.run_agent(instruction_payload)
+"""
 import os
 import time
 from typing import Dict, Sequence
 
 from langchain.agents import AgentType, initialize_agent
+from langchain.callbacks.base import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import load_prompt
@@ -16,8 +44,16 @@ from .python_writer import PythonWriter
 
 class PythonAgent:
     """
-    This class consumes an LLM and PythonParser+PythonWriter to create a Python agent.
-    The agent can be used to plan and execute Python code.
+    The PythonAgent class is responsible for creating an autonomous agent that
+    can carry out Python tasks. The agent utilizes a Language Learning Model (LLM),
+    a PythonParser, and a PythonWriter to plan and execute Python code.
+
+    Attributes:
+        parser (PythonParser): An instance of the PythonParser class.
+        writer (PythonWriter): An instance of the PythonWriter class.
+        agent_version (AgentVersion): The version of the agent.
+        exec_tools (Sequence[BaseTool]): A sequence of execution tools.
+        agent (Agent): The initialized agent instance.
     """
 
     def __init__(
@@ -27,13 +63,30 @@ class PythonAgent:
         model="gpt-4",
         agent_type=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
     ):
+        """
+        Initializes a PythonAgent instance.
+
+        Args:
+            exec_tools (Sequence[BaseTool]): A sequence of execution tools.
+            agent_version (AgentVersion, optional): The version of the agent.
+                Defaults to AgentVersion.RETRIEVAL_V1.
+            model (str, optional): The LLM model to use. Defaults to "gpt-4".
+            agent_type (AgentType, optional): The type of agent to create.
+                Defaults to AgentType.CONVERSATIONAL_REACT_DESCRIPTION.
+        """
+
         self.parser = PythonParser()
         self.writer = PythonWriter(self.parser)
         self.agent_version = agent_version
         self.exec_tools = exec_tools
 
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        llm = ChatOpenAI(temperature=0.7, model=model)
+        llm = ChatOpenAI(
+            temperature=0.7,
+            model=model,
+            streaming=True,
+            callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
+        )
 
         self.agent = initialize_agent(
             exec_tools,
@@ -88,12 +141,6 @@ class PythonAgent:
                     % e
                 )
             time.sleep(1)
-
-            # feedback = input(
-            #     "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again: "
-            # )
-            # approved = feedback == "y"
-            # run_task = feedback
         return "Success"
 
 
