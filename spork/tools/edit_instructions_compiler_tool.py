@@ -41,6 +41,10 @@ PROMPT_TEMPLATE = (
     f"Here's how you replace: replace`LINE_NUMBER`TEXT_TO_REPLACE;"
     f"Example:"
     f"{example}\n\n"
+    f"Remember that inserts and deletes alter the line numbers of the surrounding lines, "
+    f"specifically inserting a line will shift all lines below it down by one,"
+    f"and deleting a line will shift all lines below it up by one. "
+    f"Each instruction line number argument should account for the edits that will have occurred by then. "
     f"Do not deviate from this format and output the command sequence only."
     f"\n\n"
 )
