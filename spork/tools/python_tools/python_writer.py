@@ -282,14 +282,6 @@ class PythonWriter:
             self.python_parser.class_dict[class_py_path] = class_obj
             self._update_dependent_dicts_on_class_creation(class_obj)
 
-        print(
-            "self.python_parser.module_dict[module_py_path] = ",
-            self.python_parser.module_dict[module_py_path],
-        )
-        print(
-            "self.python_parser.module_dict[module_py_path].imports = ",
-            self.python_parser.module_dict[module_py_path].imports,
-        )
         self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
 
     def _create_new_module(self, module_py_path: str, module_code: str) -> None:
