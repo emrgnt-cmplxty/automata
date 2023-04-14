@@ -37,7 +37,7 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "feature/text-editor-tool"
+default_branch_name = "feature/text-editor-tool-2"
 # reset to default branch if necessary
 if pygit_repo.active_branch.name != default_branch_name:
     pygit_repo.git.checkout(default_branch_name)
