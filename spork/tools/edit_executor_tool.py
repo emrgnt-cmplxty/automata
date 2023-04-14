@@ -3,7 +3,7 @@ from langchain.agents import Tool
 from spork.tools.simple_text_editor import SimpleTextEditor
 
 
-class EditExecutorTool(Tool):
+class EditInstructionsExecutorTool(Tool):
     def __init__(self):
         editor = SimpleTextEditor()
         super().__init__(
@@ -15,7 +15,7 @@ class EditExecutorTool(Tool):
 
     def try_edit(self, editor: SimpleTextEditor, input_str: str) -> str:
         try:
+            editor.reset()
             return editor.execute_commands(input_str)
         except Exception as e:
-            editor.reset()
             return f"Error: {e}"

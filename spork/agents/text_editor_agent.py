@@ -3,7 +3,7 @@ from langchain.llms import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
 
 from spork.tools.codebase_oracle_tool import CodebaseOracleToolBuilder
-from spork.tools.edit_executor_tool import EditExecutorTool
+from spork.tools.edit_executor_tool import EditInstructionsExecutorTool
 from spork.tools.edit_instructions_compiler_tool import EditInstructionsCompilerTool
 
 
@@ -13,7 +13,7 @@ def make_text_editor_agent(
     """Create a text editor agent."""
     codebase_oracle_tool = CodebaseOracleToolBuilder(home_dir, llm, memory).build()
     compiler_tool = EditInstructionsCompilerTool(llm, memory)
-    executor_tool = EditExecutorTool()
+    executor_tool = EditInstructionsExecutorTool()
     tools = [codebase_oracle_tool, compiler_tool, executor_tool]
     editor_agent = initialize_agent(
         tools,

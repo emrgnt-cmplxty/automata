@@ -74,13 +74,14 @@ class SimpleTextEditor:
                 if self.state != EditorState.EDIT:
                     raise ValueError("Invalid state transition: end")
                 self.save_file()
-                self.reset()
                 break
             else:
                 raise ValueError(f"Invalid command: {cmd_parts[0]}")
         return "Edits completed successfully!"
 
     def reset(self):
+        self.file_path = None
+        self.lines = []
         self.state = EditorState.BEGIN
 
 
