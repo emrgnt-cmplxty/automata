@@ -32,7 +32,7 @@ class PythonAgent:
         self.exec_tools = exec_tools
 
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        llm = ChatOpenAI(temperature=0, model=model)
+        llm = ChatOpenAI(temperature=0.7, model=model)
 
         self.agent = initialize_agent(
             exec_tools,
@@ -69,9 +69,7 @@ class PythonAgent:
         )
         formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
 
-        print(
-            f"The PythonAgent is creating the prompt {formatted_prompt} for instruction_payload {instruction_payload}"
-        )
+        print(f"The PythonAgent is creating the prompt {formatted_prompt}")
         return formatted_prompt
 
     def run_agent(self, instruction_payload: Dict[str, str]) -> str:

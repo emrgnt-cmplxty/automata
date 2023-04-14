@@ -77,7 +77,7 @@ template: >
     def say_hello(self):\n
         return f"Hello, I am %s." % (self.name))\n
     \n
-  Output -\n
+  Output - \n
     Success\n
 
 template_format: "f-string"

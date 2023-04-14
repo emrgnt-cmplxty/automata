@@ -37,7 +37,7 @@ class PythonWriterToolBuilder:
                 func=lambda python_path_comma_code_str: self.python_writer.modify_code_state(
                     *(
                         python_path_comma_code_str.split(",")[0],
-                        ",".join(python_path_comma_code_str.split(",")[1:]),
+                        ",".join(python_path_comma_code_str.split(",")[1:]).strip(),
                     )
                 ),
                 description=f"Modifies the code state in memory by taking a python_path and raw-text code as input."
