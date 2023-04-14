@@ -1,7 +1,5 @@
 from setuptools import find_packages, setup
 
-print("Hello, world!")
-
 
 def read_requirements():
     with open("requirements.txt", "r") as req_file:

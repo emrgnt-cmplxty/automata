@@ -30,7 +30,7 @@ class CodebaseOracleToolBuilder:
         for dirpath, dirnames, filenames in os.walk(self.codebase_path):
             if not self.is_excluded(dirpath):
                 directory_document = Document(
-                    page_content=f"Directory: path={dirpath}; folders={dirnames}; filenames={filenames}",
+                    page_content=f"Directory: path={dirpath}; inner_directories={dirnames}; files={filenames}",
                     metadata={"source": dirpath},
                 )
                 docs.append(directory_document)
@@ -51,11 +51,14 @@ class CodebaseOracleToolBuilder:
             texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]
         )
         chain = ConversationalRetrievalChain.from_llm(
-            llm=self.llm, retriever=docsearch.as_retriever(), memory=self.memory
+            llm=self.llm,
+            retriever=docsearch.as_retriever(),
+            memory=self.memory,
+            return_source_documents=True,
         )
         return Tool(
             name="Codebase Oracle tool",
-            func=lambda q: chain.run(q),
+            func=lambda q: run_retrieval_chain(chain, q),
             description="Useful for when you need to answer specific questions about the contents of the repository"
             " you're working on, like how does a given function work or where is a particular variable set,"
             " or what is in a particular file. Input should be a fully formed question.",
@@ -77,3 +80,8 @@ class CodebaseOracleToolBuilder:
             if exclusion in path:
                 return True
         return False
+
+
+def run_retrieval_chain(chain, q):
+    result = chain.run(q)
+    return f'Answer: {result["answer"]}.\n\n Sources: {result["source"]}'
