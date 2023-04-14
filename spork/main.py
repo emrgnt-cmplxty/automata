@@ -12,6 +12,7 @@ from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 from spork.tools.git_tools import GitToolBuilder, requests_get_clean
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
+from .agents.text_editor_agent import make_text_editor_agent
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
 from .prompts import make_execution_task, make_planning_task
 
@@ -59,12 +60,15 @@ exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).bui
 
 exec_tools += [LocalNavigatorTool(llm2)]
 codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
-codebase_oracle = codebase_oracle_builder.build()
-text_editor_tool = TextEditorTool(llm2, codebase_oracle)
+codebase_oracle_tool = codebase_oracle_builder.build()
+
+text_editor_agent = make_text_editor_agent(llm2, readonlymemory, os.getcwd())
+text_editor_tool = TextEditorTool(text_editor_agent)
+
 # planning_tools += [requests_get_clean]
 # planning_tools = load_tools(["terminal"], llm=llm2)
 breakpoint()
-planning_tools = [codebase_oracle]
+planning_tools = [codebase_oracle_tool]
 
 exec_tools += planning_tools
 plan_agent = initialize_agent(
