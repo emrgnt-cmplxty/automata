@@ -9,13 +9,14 @@ from unidiff import PatchSet
 
 class TextEditorTool(Tool):
     def __init__(self, llm: BaseLLM, codebase_oracle_tool: Tool):
-        self.codebase_oracle_tool = codebase_oracle_tool
         self.llm = llm
         super().__init__(
-            name="Text editor tool", func=self.edit, description="A tool to edit text files."
+            name="Text editor tool",
+            func=lambda x: self.edit(x, codebase_oracle_tool),
+            description="A tool to edit text files.",
         )
 
-    def edit(self, instructions: str) -> str:
+    def edit(self, instructions: str, codebase_oracle_tool: Tool) -> str:
         filename_prompt = (
             f"The following instructions contain a filename. Please give me the filename with full path."
             f"For example:\n\n"
@@ -25,7 +26,7 @@ class TextEditorTool(Tool):
             f"Begin!"
             f"Instructions: {instructions}\n"
         )
-        filename = self.codebase_oracle_tool.run(filename_prompt).strip()
+        filename = codebase_oracle_tool.run(filename_prompt).strip()
 
         if not os.path.exists(filename):
             return f"File not found: {filename}"
@@ -38,7 +39,7 @@ class TextEditorTool(Tool):
             f"Return the results only.\n\n"
             f"Begin!"
         )
-        context = self.codebase_oracle_tool.run(context_prompt).strip()
+        context = codebase_oracle_tool.run(context_prompt).strip()
 
         example = """Instructions: I have a file setup.py and I need to change it so in the beginning it prints out hello world\n
                     Context: I have a file main.py with the following contents
