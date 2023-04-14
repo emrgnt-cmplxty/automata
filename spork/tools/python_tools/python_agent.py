@@ -81,10 +81,12 @@ class PythonAgent:
         self.exec_tools = exec_tools
 
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
         llm = ChatOpenAI(
             temperature=0.7,
             model=model,
             streaming=True,
+            verbose=True,
             callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
         )
 
@@ -132,7 +134,6 @@ class PythonAgent:
         while not approved:
             try:
                 instructions = self.agent.run(run_task)
-                print("Instructions:", instructions)
                 run_task = instructions
             except Exception as e:
                 print("Exception:", e)
@@ -141,6 +142,7 @@ class PythonAgent:
                     % e
                 )
             time.sleep(1)
+
         return "Success"
 
 
