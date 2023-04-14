@@ -147,6 +147,7 @@ class PythonWriter:
 
         # Format the output file to match the Black style
         subprocess.run(["black", file_path])
+        subprocess.run(["isort", file_path])
 
     def _validate_code(self, code: str) -> None:
         """
@@ -192,8 +193,8 @@ class PythonWriter:
         Raises:
             ValueError: If the provided code is not valid Python.
         """
-        module_path = ".".join(class_py_path.split(".")[:-1])
         if class_py_path not in self.python_parser.class_dict:
+            module_path = ".".join(class_py_path.split(".")[:-1])
             self._create_new_class(module_path, class_py_path, class_code)
         else:
             self._modify_existing_class(class_py_path, class_code)
@@ -246,22 +247,29 @@ class PythonWriter:
         self.python_parser.function_dict[function_py_path] = function_obj
 
         if has_class:
-            module_path = ".".join(function_py_path.split(".")[:-2])
-            if module_path not in self.python_parser.module_dict:
-                self._create_new_module(module_path, "")
+            module_py_path = ".".join(function_py_path.split(".")[:-2])
+            if module_py_path not in self.python_parser.module_dict:
+                self._create_new_module(module_py_path, "")
             class_path = ".".join(function_py_path.split(".")[:-1])
             self.python_parser.class_dict[class_path].methods[function_obj.py_path] = function_obj
         else:
-            module_path = function_py_path
-            if module_path not in self.python_parser.module_dict:
-                self._create_new_module(module_path, "")
-            self.python_parser.module_dict[module_path].standalone_functions.append(function_obj)
+            module_py_path = function_py_path
+            if module_py_path not in self.python_parser.module_dict:
+                self._create_new_module(module_py_path, "")
+            self.python_parser.module_dict[module_py_path].standalone_functions.append(
+                function_obj
+            )
 
-        self.python_parser.module_dict[module_path].imports.extend(import_statements)
+        # filter redundant import statements
+        import_statements = [
+            ele
+            for ele in import_statements
+            if ele not in self.python_parser.module_dict[module_py_path].imports
+        ]
 
-    def _create_new_class(
-        self, module_py_path: str, class_py_path: str, class_code: str, module_code=None
-    ) -> None:
+        self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
+
+    def _create_new_class(self, module_py_path: str, class_py_path: str, class_code: str) -> None:
         """
         Add a new class to the PythonParser.
 
@@ -273,17 +281,21 @@ class PythonWriter:
         """
         stripped_class_code, import_statements = self._strip_import_statements(class_code)
 
+        class_obj = PythonClassType.from_code(class_py_path, stripped_class_code)
+        self.python_parser.class_dict[class_py_path] = class_obj
+        self._update_dependent_dicts_on_class_creation(class_obj)
+
         if module_py_path not in self.python_parser.module_dict:
-            assert (
-                module_code is not None
-            ), "Module code must be provided if module does not exist."
+            module_code = class_code  # The class becomes the module
             self._create_new_module(module_py_path, module_code)
         else:
-            class_obj = PythonClassType.from_code(class_py_path, stripped_class_code)
-            self.python_parser.class_dict[class_py_path] = class_obj
-            self._update_dependent_dicts_on_class_creation(class_obj)
-
-        self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
+            # filter redundant import statements
+            import_statements = [
+                ele
+                for ele in import_statements
+                if ele not in self.python_parser.module_dict[module_py_path].imports
+            ]
+            self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
 
     def _create_new_module(self, module_py_path: str, module_code: str) -> None:
         """

@@ -48,7 +48,12 @@ def test_create_new_module_old_writer(python_writer):
     assert new_module_data["package_py_path"] in parser.package_dict
     assert new_module_data["module_py_path"] in parser.module_dict
     assert new_module_data["function_py_path"] in parser.function_dict
-    assert list(parser.class_dict.keys()) == ["sample_code.sample.Person"]
+    assert set(list(parser.class_dict.keys())) == set(
+        [
+            "sample_code.sample.Person",
+            "sample_code.sample2.PythonAgentToolBuilder",
+        ]
+    )
     assert list(parser.package_dict.keys()) == ["sample_code", "new_sample_code"]
     assert (
         parser.get_raw_code(new_module_data["module_py_path"]).strip()
@@ -106,12 +111,11 @@ def test_create_new_module_new_writer(python_new_writer):
 
 
 def test_create_new_class_no_existing_module(python_writer):
-    with pytest.raises(AssertionError):
-        python_writer._create_new_class(
-            new_module_data["module_py_path"],
-            class_data["class_py_path"],
-            class_data["class_code"],
-        )
+    python_writer._create_new_class(
+        new_module_data["module_py_path"],
+        class_data["class_py_path"],
+        class_data["class_code"],
+    )
 
 
 def test_create_new_class_new_writer(python_new_writer):
@@ -120,7 +124,6 @@ def test_create_new_class_new_writer(python_new_writer):
         new_module_data["module_py_path"],
         class_data["class_py_path"],
         class_data["class_code"],
-        module_code=class_data["class_module_code"],
     )
     parser = python_new_writer.python_parser
 
@@ -138,7 +141,6 @@ def test_create_new_class(python_writer):
         old_module_data["module_py_path"],
         class_data["class_py_path"],
         class_data["class_code"],
-        module_code=class_data["class_module_code"],
     )
     parser = python_writer.python_parser
     assert class_data["class_py_path"] in parser.class_dict

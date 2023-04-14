@@ -228,13 +228,23 @@ class PythonClassType(PythonObjectType):
 
     def _parse_methods(self) -> Dict[str, PythonFunctionType]:
         """
-        Parses the class code and extracts its methods as PythonFunctionType instances.
+        Parses the code and extracts its methods as PythonFunctionType instances.
 
         Returns:
             Dict[str, PythonFunctionType]: A dictionary of associated PythonFunctionType instances, keyed by method names.
         """
-        # Assuming self.code is an ast.ClassDef node
-        class_node = cast(ast.ClassDef, ast.parse(self.code).body[0])
+        parsed_code = ast.parse(self.code)
+        class_node = None
+
+        # Search for the class definition within the parsed code
+        for node in parsed_code.body:
+            if isinstance(node, ast.ClassDef):
+                class_node = node
+                break
+
+        if class_node is None:
+            raise ValueError("No class definition found in the provided code")
+
         methods = {}
 
         for n in class_node.body:
