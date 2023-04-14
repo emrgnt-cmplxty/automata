@@ -17,4 +17,5 @@ class EditExecutorTool(Tool):
         try:
             return editor.execute_commands(input_str)
         except Exception as e:
+            editor.reset()
             return f"Error: {e}"
