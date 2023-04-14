@@ -106,6 +106,5 @@ def make_execution_task(
         f" Your code oracle tool is really powerful so use it to search for code and ask questions about it."
         f" If you run into any errors, be thoughtful about why they occurred and how to resolve them."
         f" Make sure not to regress any existing functionality."
-        f"\n\nUseful tips: Do NOT use nano, vim or other text editors, but rather modify files directly either via python or terminal. "
-        f" Important: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
+        f"\n\nUseful tips: when following git-create-branch instructions, make sure to use a branch name that's not taken. "
     )
