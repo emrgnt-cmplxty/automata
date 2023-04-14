@@ -20,15 +20,11 @@ example = """I have a file setup.py and I need to change it so in the beginning 
             I have a file myrepo/conf.json and I need to change the port to 8008\n
             16:    \"app_name\": \"myapp\",
             17:    \"version\": \"0.1.0\",
-            18:    \"server\": \\{\n
-            19:        \"host\": \"localhost\",
-            20:        \"port\": 8000,
-            21:    \\},
-            22:     \"db\": {
+            18:    \"port\": 8000,
             \n
             begin;
             open`home/users/user/dev/myrepo/conf.json;
-            replace`20`        \"port\": 8000,;
+            replace`18`   \"port\": 8000,;
             end;
             """
 
