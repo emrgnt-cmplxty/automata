@@ -78,6 +78,7 @@ class SimpleTextEditor:
                 break
             else:
                 raise ValueError(f"Invalid command: {cmd_parts[0]}")
+        return "Edits completed successfully!"
 
 
 # editor = SimpleTextEditor()
