@@ -13,6 +13,11 @@ from langchain.vectorstores import Chroma
 from spork.utils import NumberedLinesTextLoader
 
 
+def run_retrieval_chain_with_sources(chain: ConversationalRetrievalChain, q: str) -> str:
+    result = chain(q)
+    return f'Answer: {result["answer"]}.\n\n Sources: {result["source"]}'
+
+
 class CodebaseOracleToolBuilder:
     def __init__(self, codebase_path: str, llm: BaseLLM, memory: ReadOnlySharedMemory):
         self.codebase_path = codebase_path
@@ -58,7 +63,7 @@ class CodebaseOracleToolBuilder:
         )
         return Tool(
             name="Codebase Oracle tool",
-            func=lambda q: run_retrieval_chain(chain, q),
+            func=lambda q: run_retrieval_chain_with_sources(chain, q),
             description="Useful for when you need to answer specific questions about the contents of the repository"
             " you're working on, like how does a given function work or where is a particular variable set,"
             " or what is in a particular file. Input should be a fully formed question.",
@@ -80,8 +85,3 @@ class CodebaseOracleToolBuilder:
             if exclusion in path:
                 return True
         return False
-
-
-def run_retrieval_chain(chain, q):
-    result = chain.run(q)
-    return f'Answer: {result["answer"]}.\n\n Sources: {result["source"]}'
