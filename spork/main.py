@@ -67,8 +67,7 @@ text_editor_tool = TextEditorTool(text_editor_agent)
 
 # planning_tools += [requests_get_clean]
 # planning_tools = load_tools(["terminal"], llm=llm2)
-breakpoint()
-planning_tools = [codebase_oracle_tool]
+planning_tools = [codebase_oracle_tool, text_editor_tool]
 
 exec_tools += planning_tools
 plan_agent = initialize_agent(
