@@ -6,42 +6,7 @@ from langchain.agents import Tool
 from langchain.llms import BaseLLM
 from unidiff import PatchSet
 
-
-class TextEditorTool(Tool):
-    def __init__(self, llm: BaseLLM, codebase_oracle_tool: Tool):
-        self.llm = llm
-        super().__init__(
-            name="Text editor tool",
-            func=lambda x: self.edit(x, codebase_oracle_tool),
-            description="A tool to edit text files.",
-        )
-
-    def edit(self, instructions: str, codebase_oracle_tool: Tool) -> str:
-        filename_prompt = (
-            f"The following instructions contain a filename. Please give me the filename with full path."
-            f"For example:\n\n"
-            f"Instructions: 'Add the line to print hello world in main.py '\n"
-            f"/home/user/proj/project1/main.py "
-            f"\n\n"
-            f"Begin!"
-            f"Instructions: {instructions}\n"
-        )
-        filename = codebase_oracle_tool.run(filename_prompt).strip()
-
-        if not os.path.exists(filename):
-            return f"File not found: {filename}"
-
-        context_prompt = (
-            f"What are the relevant code snippets for the following changes? "
-            f"Provide raw code.\n\n"
-            f"Filename: {filename}\n\n"
-            f"Instructions: {instructions}\n\n"
-            f"Return the results only.\n\n"
-            f"Begin!"
-        )
-        context = codebase_oracle_tool.run(context_prompt).strip()
-
-        example = """Instructions: I have a file setup.py and I need to change it so in the beginning it prints out hello world\n
+example = """Instructions: I have a file setup.py and I need to change it so in the beginning it prints out hello world\n
                     Context: I have a file main.py with the following contents
                     from setuptools import find_packages, setup
 
@@ -75,18 +40,54 @@ class TextEditorTool(Tool):
                              return req_file.readlines()
                     """
 
-        diff_prompt = (
-            f"You are an expert diff writer. Your job is to take instructions to edit a file, with relevant context,"
-            f"and produce a diff "
-            f"that can be applied to the file to effect the changes.\n\n"
-            f"Example:"
-            f"{example}\n\n"
-            f"You should write the diff and diff only. Do not include the instructions or context or any other thoughts.\n\n"
+DIFF_PROMPT = (
+    f"You are an expert diff writer. Your job is to take instructions to edit a file, with relevant context,"
+    f"and produce a diff "
+    f"that can be applied to the file to effect the changes.\n\n"
+    f"Example:"
+    f"{example}\n\n"
+    f"You should write the diff and diff only. Do not include the instructions or context or any other thoughts.\n\n"
+)
+
+
+class TextEditorTool(Tool):
+    def __init__(self, llm: BaseLLM, codebase_oracle_tool: Tool):
+        diff_writing_chain = LLMChain(llm=llm, prompt=DIFF_PROMPT)
+        super().__init__(
+            name="Text editor tool",
+            func=lambda x: self.edit(x, diff_writing_chain, codebase_oracle_tool),
+            description="A tool to edit text files.",
         )
+
+    def edit(
+        self, instructions: str, diff_writing_chain: LLMChain, codebase_oracle_tool: Tool
+    ) -> str:
+        filename_prompt = (
+            f"The following instructions contain a filename. Please give me the filename with full path."
+            f"For example:\n\n"
+            f"Instructions: 'Add the line to print hello world in main.py '\n"
+            f"/home/user/proj/project1/main.py "
+            f"\n\n"
+            f"Begin!"
+            f"Instructions: {instructions}\n"
+        )
+        filename = codebase_oracle_tool.run(filename_prompt).strip()
+
+        if not os.path.exists(filename):
+            return f"File not found: {filename}"
+
+        context_prompt = (
+            f"What are the relevant code snippets for the following changes? "
+            f"Provide raw code.\n\n"
+            f"Filename: {filename}\n\n"
+            f"Instructions: {instructions}\n\n"
+            f"Return the results only.\n\n"
+            f"Begin!"
+        )
+        context = codebase_oracle_tool.run(context_prompt).strip()
 
         diff_query = f"Instructions: {instructions}\n\n Context: {context}\n\n Begin!"
 
-        diff_writing_chain = LLMChain(llm=self.llm, prompt=diff_prompt)
         diff = diff_writing_chain.run(diff_query).strip()
         try:
             return self.apply_diff(diff)
