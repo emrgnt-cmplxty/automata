@@ -1,5 +1,5 @@
 import os
-from typing import Sequence
+from typing import Dict, Sequence
 
 from langchain.agents import AgentType, initialize_agent
 from langchain.chat_models import ChatOpenAI
@@ -42,7 +42,7 @@ class PythonAgent:
             memory=memory,
         )
 
-    def build_prompt(self, task):
+    def build_prompt(self, instruction_payload: Dict[str, str]):
         path = os.getcwd()
         tools = f" {[(tool.name, tool.description) for tool in self.exec_tools]}.\n"
 
@@ -55,22 +55,28 @@ class PythonAgent:
                 "file_tree": file_tree,
                 "path": path,
                 "tools": tools,
-                "task": task,
+                "instruction": instruction_payload["instruction"],
             }
         elif self.agent_version == AgentVersion.RETRIEVAL_V1:
-            payload = {"task": task, "path": path, "tools": tools}
+            payload = {
+                "tools": tools,
+                "instruction": instruction_payload["instruction"],
+                "overview": instruction_payload["overview"],
+            }
 
         prompt = load_prompt(
             AgentManager.format_config_path("agent_configs", f"{self.agent_version.value}.yaml")
         )
         formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
 
-        print(f"The PythonAgent is creating the prompt {formatted_prompt} for task {task}")
+        print(
+            f"The PythonAgent is creating the prompt {formatted_prompt} for instruction_payload {instruction_payload}"
+        )
         return formatted_prompt
 
-    def run_agent(self, task) -> str:
+    def run_agent(self, instruction_payload: Dict[str, str]) -> str:
         approved = False
-        run_task = self.build_prompt(task)
+        run_task = self.build_prompt(instruction_payload)
         while not approved:
             try:
                 instructions = self.agent.run(run_task)
@@ -96,7 +102,10 @@ if __name__ == "__main__":
     exec_tools += PythonParserToolBuilder(python_parser).build_tools()
     python_writer = PythonWriter(python_parser)
     exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
-
-    test_task = "Write a file called python_agent_tool_builder.py that mimics the workflow of prompt_tool_builder.py, in the same directory, but which uses the PythonAgent to implement a single function called python-agent-python-task. Always begin by inspecting the relevant files in the codebase using the python-parser tool, then proceed to write step-by-step instructions, and then finally code the solution. Begin"
+    overview = python_parser.get_overview()
+    instruction_payload = {
+        "instruction": "Write a file called python_agent_tool_builder.py that mimics the workflow of prompt_tool_builder.py, in the same directory, but which uses the PythonAgent to implement a single function called python-agent-python-task. Always begin by inspecting the relevant files in the codebase using the python-parser tool, then proceed to write step-by-step instructions, and then finally code the solution. Begin",
+        "overview": overview,
+    }
     python_agent = PythonAgent(exec_tools)
-    python_agent.run_agent(test_task)
+    python_agent.run_agent(instruction_payload)

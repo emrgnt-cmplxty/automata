@@ -35,7 +35,10 @@ class PythonWriterToolBuilder:
             Tool(
                 name="python-writer-modify-code-state",
                 func=lambda python_path_comma_code_str: self.python_writer.modify_code_state(
-                    *tuple(python_path_comma_code_str.split(","))
+                    *(
+                        python_path_comma_code_str.split(",")[0],
+                        ",".join(python_path_comma_code_str.split(",")[1:]),
+                    )
                 ),
                 description=f"Modifies the code state in memory by taking a python_path and raw-text code as input."
                 f" If the specified function, class, or module does not exist, it creates a new one and updates the in-memory code to reflect this change."
