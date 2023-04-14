@@ -17,7 +17,7 @@ from github.Issue import Issue
 from github.PullRequest import PullRequest
 from langchain.tools import BaseTool
 
-from .config import PLANNER_AGENT_OUTPUT_STRING
+from spork.config import PLANNER_AGENT_OUTPUT_STRING
 
 
 def make_planning_task(
