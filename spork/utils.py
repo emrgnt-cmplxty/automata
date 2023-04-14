@@ -144,7 +144,7 @@ class NumberedLinesTextLoader(TextLoader):
         """Load from file path."""
         with open(self.file_path, encoding=self.encoding) as f:
             lines = f.readlines()
-            text = ""
+            text = f"{self.file_path}"  # this helps with mapping content to file name
             for i, line in enumerate(lines):
                 text += f"{i}: {line}"
         metadata = {"source": self.file_path}

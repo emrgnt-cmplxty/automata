@@ -3,13 +3,8 @@ from langchain.llms import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
 
 from spork.tools.codebase_oracle_tool import CodebaseOracleToolBuilder
-from spork.tools.diff_applier_tool import DiffApplierTool
-from spork.tools.diff_writer_tool import DiffWriterTool
-
-task = (
-    "You are a text editor agent. Other LLM agents call you to do editing tasks on local files. You pefrom these tasks by finding the correct files,"
-    "breaking down changes into diffs and then applying them to the right files. Your current task is: {task}"
-)
+from spork.tools.edit_executor_tool import EditExecutorTool
+from spork.tools.edit_instructions_compiler_tool import EditInstructionsCompilerTool
 
 
 def make_text_editor_agent(
@@ -17,9 +12,9 @@ def make_text_editor_agent(
 ) -> AgentExecutor:
     """Create a text editor agent."""
     codebase_oracle_tool = CodebaseOracleToolBuilder(home_dir, llm, memory).build()
-    diff_writer_tool = DiffWriterTool(llm)
-    diff_applier_tool = DiffApplierTool()
-    tools = [codebase_oracle_tool, diff_writer_tool, diff_applier_tool]
+    compiler_tool = EditInstructionsCompilerTool(llm)
+    executor_tool = EditExecutorTool()
+    tools = [codebase_oracle_tool, compiler_tool, executor_tool]
     editor_agent = initialize_agent(
         tools,
         llm,
@@ -33,6 +28,11 @@ def make_text_editor_agent(
 def make_text_editor_task(instructions: str) -> str:
     task = (
         "You are a text editor agent. Other LLM agents call you to do editing tasks on local files. You pefrom these tasks by finding the correct files,"
-        f"breaking down changes into diffs and then applying them to the right files. Your current task is: {instructions}"
+        f"compiling changes into edit instructions and then executing them on the right files. Your current task is: {instructions}"
+        "ALWAYS start by asking the codebase oracle tool about the file you want to edit, otherwise you will likely fail."
+        "You should use codebase oracle repeatedly to ask better questions that help you with your objective. "
+        "When you're ready, you should use the edit instructions compiler tool to compile your instructions into edit commands."
+        "ALWAYS end by using the edit executor tool to apply your edit commands to the file."
+        "If you see an Error, you should try to ask the codebase oracle tool for more context before retrying."
     )
     return task
