@@ -24,6 +24,7 @@ Example usage:
 """
 import ast
 import os
+import textwrap
 from typing import Any, Callable, Dict, List
 
 from ..utils import home_path
@@ -97,6 +98,64 @@ class PythonParser:
             return self.package_dict[object_py_path].get_docstring()
         else:
             return RESULT_NOT_FOUND
+
+    def get_overview(self, print_func_docstrings=False, print_method_docstrings=False) -> str:
+        """
+        Loops over the PythonParser's dictionaries and returns a string that provides an overview of the PythonParser's state.
+
+        Returns:
+            str: A string that provides an overview of the PythonParser's state.
+        """
+        result = ""
+        LINE_SPACING = 2
+        for package in self.package_dict.values():
+            for module in package.modules.values():
+                if "type" in module.py_path.split(".")[-1]:
+                    continue
+
+                if len(module.classes) == 0 and len(module.standalone_functions) == 0:
+                    continue
+
+                result += module.py_path + "\n"
+                if len(module.standalone_functions) > 0:
+                    # result += textwrap.indent("Functions - ", " " * LINE_SPACING * 1)
+                    for function in module.standalone_functions:
+                        if "_" == function.py_path.split(".")[-1][0]:
+                            continue
+                        function_name = function.py_path.split(".")[-1]
+                        result += textwrap.indent(function_name, " " * LINE_SPACING * 1) + "\n"
+                        if print_func_docstrings:
+                            result += (
+                                textwrap.indent(
+                                    "\n".join(function.get_docstring().split("\n")[1:]),
+                                    " " * LINE_SPACING * 2,
+                                )
+                                + "\n"
+                            )
+
+                if len(module.classes) > 0:
+                    # result += textwrap.indent("Classes - ", " " * LINE_SPACING * 1)
+                    for class_obj in module.classes:
+                        class_name = class_obj.py_path.split(".")[-1]
+                        result += textwrap.indent(class_name, " " * LINE_SPACING * 1) + "\n"
+                        if len(list(class_obj.methods.keys())) > 0:
+                            # result += textwrap.indent("Methods - ", " " * LINE_SPACING * 2)
+                            for method in class_obj.methods.values():
+                                if "_" == method.py_path.split(".")[-1][0]:
+                                    continue
+                                module_name = method.py_path.split(".")[-1]
+                                result += (
+                                    textwrap.indent(module_name, " " * LINE_SPACING * 2) + "\n"
+                                )
+                                if print_method_docstrings:
+                                    result += (
+                                        textwrap.indent(
+                                            "\n".join(method.get_docstring().split("\n")[1:]),
+                                            " " * LINE_SPACING * 3,
+                                        )
+                                        + "\n"
+                                    )
+        return result
 
     def _populate_dicts(self, abs_dir: str) -> None:
         """
@@ -175,7 +234,6 @@ class PythonParser:
                                         method_docstring if method_docstring else RESULT_NOT_FOUND,
                                         method_code,
                                     )
-                                    class_obj.methods[method_name] = method_obj
                                     self.function_dict[method_py_path] = method_obj
                     module_obj = PythonModuleType(
                         module_py_path,
@@ -208,4 +266,5 @@ class PythonParser:
 if __name__ == "__main__":
     python_parser = PythonParser()
     print("Done loading the Code Parser")
-    print("Code Parser Raw Code:\n%s" % (python_parser.get_raw_code("spork.tools.code.parser")))
+    print("Code Parser Overview:\n%s" % (python_parser.get_overview()))
+    # print("Code Parser Raw Code:\n%s" % (python_parser.get_raw_code("spork.tools.code.parser")))

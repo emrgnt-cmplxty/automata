@@ -22,7 +22,7 @@ class PythonAgent:
     def __init__(
         self,
         exec_tools: Sequence[BaseTool],
-        agent_version: AgentVersion = AgentVersion.PYTHON_V1,
+        agent_version: AgentVersion = AgentVersion.RETRIEVAL_V1,
         model="gpt-3.5-turbo",
         agent_type=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
     ):
@@ -43,19 +43,23 @@ class PythonAgent:
         )
 
     def build_prompt(self, task):
+        path = os.getcwd()
+        tools = f" {[(tool.name, tool.description) for tool in self.exec_tools]}.\n"
+
         if self.agent_version == AgentVersion.PYTHON_V1:
             file_tree_exec = os.popen(
                 'tree . -I "__pycache__*|*.pyc|__init__.py|local_env|*.egg-info"'
             )
             file_tree = file_tree_exec.read()
-            path = os.getcwd()
-            tools = f" {[(tool.name, tool.description) for tool in self.exec_tools]}.\n"
             payload = {
                 "file_tree": file_tree,
                 "path": path,
                 "tools": tools,
                 "task": task,
             }
+        elif self.agent_version == AgentVersion.RETRIEVAL_V1:
+            payload = {"task": task, "path": path, "tools": tools}
+
         prompt = load_prompt(
             AgentManager.format_config_path("agent_configs", f"{self.agent_version.value}.yaml")
         )
@@ -68,8 +72,12 @@ class PythonAgent:
         approved = False
         run_task = self.build_prompt(task)
         while not approved:
-            instructions = self.agent.run(run_task)
-            print("Created new Instructions:", instructions)
+            try:
+                instructions = self.agent.run(run_task)
+                print("Instructions:", instructions)
+            except Exception as e:
+                print("Exception:", e)
+
             feedback = input(
                 "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again: "
             )
@@ -89,6 +97,6 @@ if __name__ == "__main__":
     python_writer = PythonWriter(python_parser)
     exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
 
-    test_task = "Write a file called python_agent_tool_builder.py that mimics the workflow of prompt_tool_builder.py, in the same directory, but which uses the PythonAgent to implement a single function called python-agent-python-task. Write a reasonable description for this task"
+    test_task = "Write a file called python_agent_tool_builder.py that mimics the workflow of prompt_tool_builder.py, in the same directory, but which uses the PythonAgent to implement a single function called python-agent-python-task. Always begin by inspecting the relevant files in the codebase using the python-parser tool, then proceed to write step-by-step instructions, and then finally code the solution. Begin"
     python_agent = PythonAgent(exec_tools)
     python_agent.run_agent(test_task)
