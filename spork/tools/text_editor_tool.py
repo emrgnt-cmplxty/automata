@@ -7,10 +7,13 @@ from langchain.llms import BaseLLM
 from unidiff import PatchSet
 
 
-class TextEditorTool:
+class TextEditorTool(Tool):
     def __init__(self, llm: BaseLLM, codebase_oracle_tool: Tool):
         self.codebase_oracle_tool = codebase_oracle_tool
         self.llm = llm
+        super().__init__(
+            name="Text editor tool", func=self.edit, description="A tool to edit text files."
+        )
 
     def edit(self, instructions: str) -> str:
         filename_prompt = (
