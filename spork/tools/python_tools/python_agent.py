@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Dict, Sequence
 
 from langchain.agents import AgentType, initialize_agent
@@ -23,8 +24,8 @@ class PythonAgent:
         self,
         exec_tools: Sequence[BaseTool],
         agent_version: AgentVersion = AgentVersion.RETRIEVAL_V1,
-        model="gpt-3.5-turbo",
-        agent_type=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+        model="gpt-4",
+        agent_type=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
     ):
         self.parser = PythonParser()
         self.writer = PythonWriter(self.parser)
@@ -69,7 +70,7 @@ class PythonAgent:
         )
         formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
 
-        print(f"The PythonAgent is creating the prompt {formatted_prompt}")
+        print(f"INFO - PythonAgent is running with initial prompt:\n\n{formatted_prompt}")
         return formatted_prompt
 
     def run_agent(self, instruction_payload: Dict[str, str]) -> str:
@@ -79,14 +80,17 @@ class PythonAgent:
             try:
                 instructions = self.agent.run(run_task)
                 print("Instructions:", instructions)
+                run_task = instructions
             except Exception as e:
                 print("Exception:", e)
+                instructions = "The previous action created an exception %s" % e
+            time.sleep(1)
 
-            feedback = input(
-                "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again: "
-            )
-            approved = feedback == "y"
-            run_task = feedback
+            # feedback = input(
+            #     "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again: "
+            # )
+            # approved = feedback == "y"
+            # run_task = feedback
         return "Success"
 
 
@@ -102,7 +106,7 @@ if __name__ == "__main__":
     exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
     overview = python_parser.get_overview()
     instruction_payload = {
-        "instruction": "Write a file called python_agent_tool_builder.py that mimics the workflow of prompt_tool_builder.py, in the same directory, but which uses the PythonAgent to implement a single function called python-agent-python-task. Always begin by inspecting the relevant files in the codebase using the python-parser tool, then proceed to write step-by-step instructions, and then finally code the solution. Begin",
+        "instruction": "Write a file called python_agent_tool_builder.py that mimics the workflow of python_parser_tool_builder.py, in the same directory, but which uses the PythonAgent to implement a single function called python-agent-python-task. Be sure to include a sensible description. You should begin this task by inspecting necessary docstrings",
         "overview": overview,
     }
     python_agent = PythonAgent(exec_tools)
