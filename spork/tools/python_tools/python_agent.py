@@ -83,7 +83,10 @@ class PythonAgent:
                 run_task = instructions
             except Exception as e:
                 print("Exception:", e)
-                instructions = "The previous action created an exception %s" % e
+                instructions = (
+                    "The previous action created an exception %s. If the exception message contained 'Could not parse LLM output:', the error was likely due to resposne formatting."
+                    % e
+                )
             time.sleep(1)
 
             # feedback = input(
