@@ -29,7 +29,13 @@ from typing import Any, Dict, List, Tuple
 import astunparse
 
 from .python_parser import PythonParser
-from .python_types import PythonClassType, PythonFunctionType, PythonModuleType, PythonPackageType
+from .python_types import (
+    RESULT_NOT_FOUND,
+    PythonClassType,
+    PythonFunctionType,
+    PythonModuleType,
+    PythonPackageType,
+)
 
 
 class PythonWriter:
@@ -67,15 +73,16 @@ class PythonWriter:
         """
 
         has_class, has_function, has_module_docstring = self._get_code_type(py_path, code)
-
+        print("modify_code_state(pyth_path = {}, code = {})".format(py_path, code))
+        print(
+            f"has_class: {has_class}, has_function: {has_function}, has_module_docstring: {has_module_docstring}"
+        )
         if has_module_docstring:
             self._modify_or_create_new_module(py_path, code)
         elif has_class and not has_function:
             self._modify_or_create_new_class(py_path, code)
-        elif has_function and not has_class:
-            self._modify_or_create_new_function(py_path, code, has_class=False)
-        elif has_function and has_class:
-            self._modify_or_create_new_function(py_path, code, has_class=True)
+        elif has_function:
+            self._modify_or_create_new_function(py_path, code, has_class)
         else:
             if "__init__" in py_path:
                 self._modify_or_create_new_package(py_path, code)
@@ -117,7 +124,7 @@ class PythonWriter:
 
         code_parts = []
 
-        if docstring:
+        if docstring and docstring != RESULT_NOT_FOUND:
             code_parts.append(f'"""{docstring}"""\n\n')
 
         for import_statement in module_obj.imports:
@@ -249,9 +256,10 @@ class PythonWriter:
             if module_path not in self.python_parser.module_dict:
                 self._create_new_module(module_path, "")
             class_path = ".".join(function_py_path.split(".")[:-1])
+            print("class_path = ", class_path)
             self.python_parser.class_dict[class_path].methods[function_obj.py_path] = function_obj
         else:
-            module_path = ".".join(function_py_path.split(".")[:-1])
+            module_path = function_py_path
             if module_path not in self.python_parser.module_dict:
                 self._create_new_module(module_path, "")
             self.python_parser.module_dict[module_path].standalone_functions.append(function_obj)
