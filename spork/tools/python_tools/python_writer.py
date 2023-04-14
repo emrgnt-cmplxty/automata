@@ -26,8 +26,6 @@ import os
 import subprocess
 from typing import Any, Dict, List, Tuple
 
-import astunparse
-
 from .python_parser import PythonParser
 from .python_types import (
     RESULT_NOT_FOUND,
@@ -73,10 +71,6 @@ class PythonWriter:
         """
 
         has_class, has_function, has_module_docstring = self._get_code_type(py_path, code)
-        print("modify_code_state(pyth_path = {}, code = {})".format(py_path, code))
-        print(
-            f"has_class: {has_class}, has_function: {has_function}, has_module_docstring: {has_module_docstring}"
-        )
         if has_module_docstring:
             self._modify_or_create_new_module(py_path, code)
         elif has_class and not has_function:
@@ -256,7 +250,6 @@ class PythonWriter:
             if module_path not in self.python_parser.module_dict:
                 self._create_new_module(module_path, "")
             class_path = ".".join(function_py_path.split(".")[:-1])
-            print("class_path = ", class_path)
             self.python_parser.class_dict[class_path].methods[function_obj.py_path] = function_obj
         else:
             module_path = function_py_path
@@ -441,7 +434,6 @@ class PythonWriter:
         class_py_path = class_obj.py_path
         self.python_parser.class_dict[class_py_path] = class_obj
         for method_obj in class_obj.methods.values():
-            print("method_obj = ", method_obj)
             self.python_parser.function_dict[method_obj.py_path] = method_obj
 
     # TODO - Implement callbacks here for the PythonParser to use
@@ -509,6 +501,9 @@ class PythonWriter:
         node.body = new_body
 
         # Unparse the modified AST back to code
-        stripped_code = astunparse.unparse(node).strip()
-        imports_code = astunparse.unparse(import_statements).strip()
+        stripped_code_module = ast.Module(body=new_body, type_ignores=[])
+        imports_module = ast.Module(body=import_statements, type_ignores=[])
+
+        stripped_code = ast.unparse(stripped_code_module).strip()
+        imports_code = ast.unparse(imports_module).strip()
         return stripped_code, [ele.strip() for ele in imports_code.split("\n")]

@@ -267,4 +267,4 @@ if __name__ == "__main__":
     python_parser = PythonParser()
     print("Done loading the Code Parser")
     print("Code Parser Overview:\n%s" % (python_parser.get_overview()))
-    # print("Code Parser Raw Code:\n%s" % (python_parser.get_raw_code("spork.tools.code.parser")))
+    print("Code Parser Raw Code:\n%s" % (python_parser.get_raw_code("spork.tools.code.parser")))

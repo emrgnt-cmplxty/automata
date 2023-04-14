@@ -86,37 +86,3 @@ if args.do_plan:
         )
         approved = feedback == "y"
         planning_task = feedback
-
-
-# if args.do_plan:
-#     plan_task = make_planning_task(exec_tools)
-#     print("Planning task:", plan_task)
-#     approved = False
-#     while not approved:
-#         instructions = plan_agent.run(plan_task)
-#         print("Created new Instructions:", instructions)
-#         feedback = input(
-#             "Do you approve? If approved, type 'y'. If not approved, type why so the agent can try again: "
-#         )
-#         approved = feedback == "y"
-#         plan_task = feedback
-
-# # ask user if they want to run exec agent
-# do_exec = input("Do you want to run the EXECUTION agent? (y/n)")
-# if do_exec == "y":
-#     exec_task = make_execution_task(work_item, instructions, github_repo.name)
-#     print("Execution task:", exec_task)
-#     try:
-#         exec_agent.run(exec_task)
-#     except ValueError as e:
-#         if DO_RETRY:
-#             tb = traceback.format_exc()
-#             exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
-#             pass_through_buffer.saved_output = ""
-#             print(f"Failed to complete execution task with {e}")
-#             print("New task:", exec_task)
-#             print("Retrying...")
-#             exec_agent.run(exec_task)
-#     finally:
-#         sys.stdout = pass_through_buffer.original_buffer
-#         pygit_repo.git.checkout(args.branch_name)

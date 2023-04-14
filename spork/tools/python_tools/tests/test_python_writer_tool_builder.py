@@ -97,3 +97,35 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     assert function_def in new_sample_text
     with open(file_abs_path, "w", encoding="utf-8") as f:
         f.write(prev_text)
+
+
+# Check that we can extend existing module "sample.py" with a new function
+# that has documentation and type hints, e.g. "f(x) -> int;    return x + 1"
+def test_extend_module_with_documented_new_function(python_writer_tool_builder):
+    current_file = inspect.getframeinfo(inspect.currentframe()).filename
+    absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
+    prev_text = None
+    with open(os.path.join(absolute_path, "sample_code", "sample.py"), "r", encoding="utf-8") as f:
+        prev_text = f.read()
+    assert prev_text is not None, "Could not read sample.py"
+
+    tools = python_writer_tool_builder.build_tools()
+    (code_writer, disk_writer) = (tools[0], tools[1])
+    function_def = 'def f(x) -> int:\n    """This is my new function"""\n    return x + 1'
+    package = "sample_code"
+    module = "sample"
+
+    file_py_path = f"{package}.{module}"
+    file_rel_path = os.path.join(package, f"{module}.py")
+    file_abs_path = os.path.join(absolute_path, file_rel_path)
+
+    code_writer.func(f"{file_py_path},{function_def}")
+    disk_writer.func()
+
+    new_sample_text = None
+    with open(file_abs_path, "r", encoding="utf-8") as f:
+        new_sample_text = f.read()
+    with open(file_abs_path, "w", encoding="utf-8") as f:
+        f.write(prev_text)
+
+    assert function_def in new_sample_text

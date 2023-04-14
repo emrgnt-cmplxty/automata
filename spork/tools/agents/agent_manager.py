@@ -76,7 +76,7 @@ class AgentManager:
         # Replace newline characters with actual newlines
         formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
 
-        print("Returning agent prompt = %s" % (formatted_prompt))
+        print("The Agent Manager is returnign the prompt = %s" % (formatted_prompt))
         return formatted_prompt
 
     @staticmethod
