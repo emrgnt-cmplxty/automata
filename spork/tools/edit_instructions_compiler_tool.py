@@ -1,6 +1,7 @@
 from langchain import LLMChain, PromptTemplate
 from langchain.agents import Tool
 from langchain.llms import BaseLLM
+from langchain.memory import ReadOnlySharedMemory
 
 example = """I have a file setup.py and I need to change it so in the beginning it prints out hello world\n
             0: import os
@@ -46,11 +47,11 @@ PROMPT_TEMPLATE = (
 
 
 class EditInstructionsCompilerTool(Tool):
-    def __init__(self, llm: BaseLLM):
+    def __init__(self, llm: BaseLLM, memory: ReadOnlySharedMemory):
         prompt = PromptTemplate(
             input_variables=["question"], template=PROMPT_TEMPLATE + "Q: {question}"
         )
-        compiler_chain = LLMChain(llm=llm, prompt=prompt)
+        compiler_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
         super().__init__(
             name="Edit Instructions Compiler Tool",
             func=compiler_chain.run,

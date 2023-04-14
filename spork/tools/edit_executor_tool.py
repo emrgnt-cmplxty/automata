@@ -8,7 +8,13 @@ class EditExecutorTool(Tool):
         editor = SimpleTextEditor()
         super().__init__(
             name="Edit Executor Tool",
-            func=editor.execute_commands,
+            func=lambda input_str: self.try_edit(editor, input_str),
             description="Use it to execute compiled edit instructions on the file. "
             "The input should be a perfectly formatted string of instructions from compiler",
         )
+
+    def try_edit(self, editor: SimpleTextEditor, input_str: str) -> str:
+        try:
+            return editor.execute_commands(input_str)
+        except Exception as e:
+            return f"Error: {e}"

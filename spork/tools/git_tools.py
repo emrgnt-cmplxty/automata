@@ -116,9 +116,15 @@ class GitToolBuilder:
         """
 
         # Checkout branch
+        success = (
+            f"Checked out an existing branch {branch_name} in {self.github_repo.name} repository."
+        )
         try:
             self.pygit_repo.git.checkout(branch_name)
-            self.pygit_repo.git.pull()
+            try:
+                self.pygit_repo.git.pull()
+            except Exception:
+                return "Note: remote branch doesn't exist, nothing to pull. " + success
             return f"Checked out an existing branch {branch_name} in {self.github_repo.name} repository."
         except Exception as e:
             return f"Error: {e}"

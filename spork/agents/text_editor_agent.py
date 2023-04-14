@@ -12,7 +12,7 @@ def make_text_editor_agent(
 ) -> AgentExecutor:
     """Create a text editor agent."""
     codebase_oracle_tool = CodebaseOracleToolBuilder(home_dir, llm, memory).build()
-    compiler_tool = EditInstructionsCompilerTool(llm)
+    compiler_tool = EditInstructionsCompilerTool(llm, memory)
     executor_tool = EditExecutorTool()
     tools = [codebase_oracle_tool, compiler_tool, executor_tool]
     editor_agent = initialize_agent(
@@ -29,7 +29,6 @@ def make_text_editor_task(instructions: str) -> str:
     task = (
         "You are a text editor agent. Other LLM agents call you to do editing tasks on local files. You pefrom these tasks by finding the correct files,"
         f"compiling changes into edit instructions and then executing them on the right files. Your current task is: {instructions}"
-        "ALWAYS start by asking the codebase oracle tool about the file you want to edit, otherwise you will likely fail."
         "You should use codebase oracle repeatedly to ask better questions that help you with your objective. "
         "When you're ready, you should use the edit instructions compiler tool to compile your instructions into edit commands."
         "ALWAYS end by using the edit executor tool to apply your edit commands to the file."
