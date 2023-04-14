@@ -18,6 +18,7 @@ from .prompts import make_execution_task, make_planning_task
 # Log into GitHub
 from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
 from .tools.navigator_tool import LocalNavigatorTool
+from .tools.text_editor_tool import TextEditorTool
 
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)
@@ -55,11 +56,15 @@ sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "human", "serpapi"], llm=llm2)
 base_tools += [requests_get_clean]
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
-exec_tools += [LocalNavigatorTool(llm2)]
 
+exec_tools += [LocalNavigatorTool(llm2)]
+codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
+codebase_oracle = codebase_oracle_builder.build()
+text_editor_tool = TextEditorTool(llm2, codebase_oracle)
 # planning_tools += [requests_get_clean]
 # planning_tools = load_tools(["terminal"], llm=llm2)
-planning_tools = [CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory).build()]
+breakpoint()
+planning_tools = [codebase_oracle]
 
 exec_tools += planning_tools
 plan_agent = initialize_agent(

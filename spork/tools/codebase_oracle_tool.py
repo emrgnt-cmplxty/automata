@@ -1,16 +1,16 @@
 import os
 from pathlib import Path
-from typing import List
 
 from langchain.agents import Tool
 from langchain.chains import ConversationalRetrievalChain
-from langchain.document_loaders import TextLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms.base import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
 from langchain.schema import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
+
+from spork.utils import NumberedLinesTextLoader
 
 
 class CodebaseOracleToolBuilder:
@@ -77,15 +77,3 @@ class CodebaseOracleToolBuilder:
             if exclusion in path:
                 return True
         return False
-
-
-class NumberedLinesTextLoader(TextLoader):
-    def load(self) -> List[Document]:
-        """Load from file path."""
-        with open(self.file_path, encoding=self.encoding) as f:
-            lines = f.readlines()
-            text = f"{self.file_path}\n"
-            for i, line in enumerate(lines):
-                text += f"{i}: {line}\n"
-        metadata = {"source": self.file_path}
-        return [Document(page_content=text, metadata=metadata)]
