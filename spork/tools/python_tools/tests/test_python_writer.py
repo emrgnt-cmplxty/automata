@@ -4,15 +4,16 @@ import shutil
 import textwrap
 
 import pytest
-from test_data import (
+
+from spork.tools.python_tools.python_parser import PythonParser
+from spork.tools.python_tools.python_writer import PythonWriter
+
+from .test_data import (
     class_data,
     module_with_class_and_function_data,
     new_module_data,
     old_module_data,
 )
-
-from spork.tools.python_tools.python_parser import PythonParser
-from spork.tools.python_tools.python_writer import PythonWriter
 
 
 @pytest.fixture

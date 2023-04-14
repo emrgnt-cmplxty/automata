@@ -246,10 +246,14 @@ class PythonWriter:
 
         if has_class:
             module_path = ".".join(function_py_path.split(".")[:-2])
+            if module_path not in self.python_parser.module_dict:
+                self._create_new_module(module_path, "")
             class_path = ".".join(function_py_path.split(".")[:-1])
             self.python_parser.class_dict[class_path].methods[function_obj.py_path] = function_obj
         else:
             module_path = ".".join(function_py_path.split(".")[:-1])
+            if module_path not in self.python_parser.module_dict:
+                self._create_new_module(module_path, "")
             self.python_parser.module_dict[module_path].standalone_functions.append(function_obj)
 
         self.python_parser.module_dict[module_path].imports.extend(import_statements)
