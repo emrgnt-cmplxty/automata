@@ -15,7 +15,7 @@ from spork.utils import NumberedLinesTextLoader
 
 def run_retrieval_chain_with_sources(chain: ConversationalRetrievalChain, q: str) -> str:
     result = chain(q)
-    return f'Answer: {result["answer"]}.\n\n Sources: {result["source"]}'
+    return f'Answer: {result["answer"]}.\n\n Sources: {result["source_documents"]}'
 
 
 class CodebaseOracleToolBuilder:

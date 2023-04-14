@@ -144,8 +144,8 @@ class NumberedLinesTextLoader(TextLoader):
         """Load from file path."""
         with open(self.file_path, encoding=self.encoding) as f:
             lines = f.readlines()
-            text = f"{self.file_path}\n"
+            text = ""
             for i, line in enumerate(lines):
-                text += f"{i}: {line}\n"
+                text += f"{i}: {line}"
         metadata = {"source": self.file_path}
         return [Document(page_content=text, metadata=metadata)]
