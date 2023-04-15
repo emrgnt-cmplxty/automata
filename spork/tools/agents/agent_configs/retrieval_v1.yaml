@@ -33,7 +33,7 @@ template: >
 
   Action: python-parser-get-docstring
 
-  Input: spork.tools.agents
+  Action Input: spork.tools.agents
 
   Output: 
     PythonParserToolBuilder
@@ -47,7 +47,7 @@ template: >
 
   Action: python-parser-get-raw-code
 
-  Input: spork.tools.python_tools.python_writer.PythonWriter.write_to_disk
+  Action Input: spork.tools.python_tools.python_writer.PythonWriter.write_to_disk
 
   Output: def write_to_disk(self) -> None:
     for module_path in self.python_parser.module_dict.keys():
@@ -60,7 +60,7 @@ template: >
 
   Action: python-parser-get-docstring
 
-  Input: spork.tools.python_tools.PythonParser
+  Action Input: spork.tools.python_tools.PythonParser
 
   Output: PythonParser
 
@@ -72,9 +72,7 @@ template: >
 
   Action: python-writer-modify-code-state
 
-  Input: spork.tools.utils,def new_function()
-    """Returns a string that says 'New function!'"""
-    return 'New function!'
+  Action Input: spork.tools.utils,def new_function()\n    """Returns a string that says 'New function!'"""\n    return 'New function!'
 
   Output: Success
 
@@ -85,22 +83,16 @@ template: >
 
   Action: python-writer-modify-code-state
 
-  Input: spork.tools.python_tools.NewModule.NewClass,class NewClass:
-    """ This is a new class. """
-
-    def __init__(self, name):
-        """ This is the constructor. """
-        self.name = name
-
-    def say_hello(self):
-        return f"Hello, I am %s." % (self.name))
+  Action Input: spork.tools.python_tools.NewModule.NewClass,class NewClass:\n    """ This is a new class. """\n    def __init__(self, name):\n        """ This is the constructor. """\n        self.name = name\n\n        def say_hello(self):\n        return f"Hello, I am %s." % (self.name))""
 
   Output: Success
     
     
   You should ALWAYS begin your task by exploring the
-  docstrings of code which will influence your actions. 
-  You should NEXT write a step-by-step approach to solving the task at hand.
+  docstrings and/or raw-code of code which will influence your actions. 
+  You should NEXT write a step-by-step approach to solve the task at hand.
   Be sure to include docstrings for the module, class, and functions written, or you may encounter errors.
+  Lastly, note that the bandwidth for interaction is very limited. Rather than first typing code, you
+  should immediately insert code into python-writer-modify-code-state, to reduce waste.
 
 template_format: "f-string"
