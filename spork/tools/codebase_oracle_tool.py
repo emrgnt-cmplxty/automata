@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from langchain import FAISS
 from langchain.agents import Tool
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
@@ -9,7 +10,6 @@ from langchain.llms.base import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
 from langchain.schema import Document
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import Chroma
 
 from spork.utils import NumberedLinesTextLoader
 
@@ -49,13 +49,8 @@ class CodebaseOracleToolBuilder:
                             print(dirpath, file, e)
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         texts = text_splitter.split_documents(docs)
-        print(
-            "CodeOracleTool: Running Chroma using direct local API. Using DuckDB in-memory for database. Data will be transient."
-        )
 
-        docsearch = Chroma.from_documents(
-            texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]
-        )
+        docsearch = FAISS.from_documents(texts, embeddings)
         chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=docsearch.as_retriever(),
