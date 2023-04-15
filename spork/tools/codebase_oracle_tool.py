@@ -31,7 +31,7 @@ class CodebaseOracleToolBuilder:
             Path(self.codebase_path).joinpath(".git").exists()
         ), "Codebase path must be a git repo"
         # we make chain into a mutable state variable, because we need to refresh it occasionally
-        self._chain = self._build_chain()
+        self._needs_refresh = True
 
     def build(self) -> Tool:
         return Tool(
@@ -70,11 +70,14 @@ class CodebaseOracleToolBuilder:
         )
 
     def _get_chain(self):
+        if self._needs_refresh:
+            self._build_chain()
+            self._needs_refresh = False
         return self._chain
 
     def refresh_callback(self):
-        # we give this to the editor so that it can refresh the chain when the codebase changes
-        self._build_chain()
+        # we give this to the editor so that it can tell the codebase oracle to refresh its chain with new codebase content
+        self._needs_refresh = True
 
     def _is_excluded(self, path):
         exclusions = [
