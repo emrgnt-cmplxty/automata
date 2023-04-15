@@ -60,7 +60,9 @@ exec_tools += [LocalNavigatorTool(llm2)]
 codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
 codebase_oracle_tool = codebase_oracle_builder.build()
 
-text_editor_agent = make_text_editor_agent(llm2, readonlymemory, os.getcwd())
+text_editor_agent = make_text_editor_agent(
+    llm2, readonlymemory, os.getcwd(), callbacks=[codebase_oracle_builder.refresh_callback]
+)
 text_editor_tool = TextEditorTool(text_editor_agent)
 
 # planning_tools += [requests_get_clean]
