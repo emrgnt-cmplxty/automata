@@ -88,7 +88,7 @@ def choose_work_item(
     """
 
     choice = input("Do you want to work on issues or pull requests? (i/p)")
-    work_items = []
+    work_items: PaginatedList
 
     if choice == "i":
         work_items = list_issues(github_repo)
