@@ -37,6 +37,7 @@ exclude = '''
     | dist
     | random
     | local_env
+    | build
   )/
   | foo.py           # also separately exclude a file named foo.py in
                       # the root of the project
