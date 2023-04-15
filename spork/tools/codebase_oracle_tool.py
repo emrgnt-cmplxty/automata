@@ -50,9 +50,7 @@ class CodebaseOracleToolBuilder:
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         texts = text_splitter.split_documents(docs)
 
-        docsearch = FAISS.from_documents(
-            texts, embeddings, metadatas=[{"source": str(i)} for i in range(len(texts))]
-        )
+        docsearch = FAISS.from_documents(texts, embeddings)
         chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=docsearch.as_retriever(),
