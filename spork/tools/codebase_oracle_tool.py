@@ -3,6 +3,7 @@ from pathlib import Path
 
 from langchain.agents import Tool
 from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms.base import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
@@ -13,7 +14,7 @@ from langchain.vectorstores import Chroma
 from spork.utils import NumberedLinesTextLoader
 
 
-def run_retrieval_chain_with_sources(chain: ConversationalRetrievalChain, q: str) -> str:
+def run_retrieval_chain_with_sources(chain: BaseConversationalRetrievalChain, q: str) -> str:
     result = chain(q)
     return f'Answer: {result["answer"]}.\n\n Sources: {result["source_documents"]}'
 

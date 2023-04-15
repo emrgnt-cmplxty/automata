@@ -9,7 +9,7 @@ from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
-from spork.tools.git_tools import GitToolBuilder, requests_get_clean
+from spork.tools.git_tools import GitToolBuilder
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 from .agents.text_editor_agent import make_text_editor_agent
@@ -55,7 +55,6 @@ readonlymemory = ReadOnlySharedMemory(memory=memory)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "human", "serpapi"], llm=llm2)
-base_tools += [requests_get_clean]
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
 exec_tools += [LocalNavigatorTool(llm2)]
