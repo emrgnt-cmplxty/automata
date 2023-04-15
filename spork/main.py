@@ -13,7 +13,7 @@ from spork.tools.git_tools import GitToolBuilder
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 from .agents.text_editor_agent import make_text_editor_agent
-from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
+from .config import DEFAULT_BRANCH_NAME, DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
 from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
@@ -37,10 +37,9 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "dev-maks"
 # reset to default branch if necessary
-if pygit_repo.active_branch.name != default_branch_name:
-    pygit_repo.git.checkout(default_branch_name)
+if pygit_repo.active_branch.name != DEFAULT_BRANCH_NAME:
+    pygit_repo.git.checkout(DEFAULT_BRANCH_NAME)
 
 
 work_item = choose_work_item(github_repo)
@@ -130,4 +129,4 @@ if do_exec == "y":
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer
-        pygit_repo.git.checkout(default_branch_name)
+        pygit_repo.git.checkout(DEFAULT_BRANCH_NAME)
