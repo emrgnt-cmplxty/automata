@@ -14,7 +14,9 @@ from langchain.text_splitter import CharacterTextSplitter
 from spork.utils import NumberedLinesTextLoader
 
 
-def run_retrieval_chain_with_sources(chain: BaseConversationalRetrievalChain, q: str) -> str:
+def run_retrieval_chain_with_sources_format(
+    chain: BaseConversationalRetrievalChain, q: str
+) -> str:
     result = chain(q)
     return f'Answer: {result["answer"]}.\n\n Sources: {result["source_documents"]}'
 
@@ -28,20 +30,30 @@ class CodebaseOracleToolBuilder:
         assert (
             Path(self.codebase_path).joinpath(".git").exists()
         ), "Codebase path must be a git repo"
-        # go through the codebase and get all the files
+        # we make chain into a mutable state variable, because we need to refresh it occasionally
+        self._needs_refresh = True
 
     def build(self) -> Tool:
+        return Tool(
+            name="Codebase Oracle tool",
+            func=lambda q: run_retrieval_chain_with_sources_format(self._get_chain(), q),
+            description="Useful for when you need to answer specific questions about the contents of the repository"
+            " you're working on, like how does a given function work or where is a particular variable set,"
+            " or what is in a file or where a file is. Input should be a fully formed question.",
+        )
+
+    def _build_chain(self):
         docs = []
         embeddings = OpenAIEmbeddings()
         for dirpath, dirnames, filenames in os.walk(self.codebase_path):
-            if not self.is_excluded(dirpath):
+            if not self._is_excluded(dirpath):
                 directory_document = Document(
                     page_content=f"Directory: path={dirpath}; inner_directories={dirnames}; files={filenames}",
                     metadata={"source": dirpath},
                 )
                 docs.append(directory_document)
                 for file in filenames:
-                    if not self.is_excluded(os.path.join(dirpath, file)):
+                    if not self._is_excluded(os.path.join(dirpath, file)):
                         try:
                             loader = NumberedLinesTextLoader(os.path.join(dirpath, file))
                             docs.extend(loader.load())
@@ -49,23 +61,25 @@ class CodebaseOracleToolBuilder:
                             print(dirpath, file, e)
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         texts = text_splitter.split_documents(docs)
-
         docsearch = FAISS.from_documents(texts, embeddings)
-        chain = ConversationalRetrievalChain.from_llm(
+        self._chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=docsearch.as_retriever(),
             memory=self.memory,
             return_source_documents=True,
         )
-        return Tool(
-            name="Codebase Oracle tool",
-            func=lambda q: run_retrieval_chain_with_sources(chain, q),
-            description="Useful for when you need to answer specific questions about the contents of the repository"
-            " you're working on, like how does a given function work or where is a particular variable set,"
-            " or what is in a particular file. Input should be a fully formed question.",
-        )
 
-    def is_excluded(self, path):
+    def _get_chain(self):
+        if self._needs_refresh:
+            self._build_chain()
+            self._needs_refresh = False
+        return self._chain
+
+    def refresh_callback(self):
+        # we give this to the editor so that it can tell the codebase oracle to refresh its chain with new codebase content
+        self._needs_refresh = True
+
+    def _is_excluded(self, path):
         exclusions = [
             ".git",
             ".gitignore",
