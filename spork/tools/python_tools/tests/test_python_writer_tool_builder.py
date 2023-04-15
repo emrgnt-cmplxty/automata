@@ -209,3 +209,27 @@ class PythonAgentToolBuilder:
     # assert class_str.strip() == new_sample_text.strip()
     assert old_sample_text.strip() == new_sample_text.strip()
     os.remove(file_abs_path)
+
+
+def test_extend_module_with_documented_new_module(python_writer_tool_builder):
+    combo_str = textwrap.dedent(
+        """spork.tools.python_tools.python_agent_tool_builder,from typing import List, Optional
+from spork.buffer import PassThroughBuffer
+from spork.tools.tool import Tool
+from spork.tools.python_tools.python_agent import PythonAgent
+
+class PythonAgentToolBuilder:
+
+    def __init__(self, python_agent: PythonAgent, logger: Optional[PassThroughBuffer]=None):
+        self.python_agent = python_agent
+        self.logger = logger
+
+    def build_tools(self) -> List[Tool]:
+        tools = [Tool(name='python-agent-python-task', func=lambda task: self.python_agent.run_agent(task), description=f'A single function that uses PythonAgent to perform a given task.', return_direct=True)]
+        return tools"""
+    )
+    tools = python_writer_tool_builder.build_tools()
+    (code_writer, disk_writer) = (tools[0], tools[1])
+
+    code_writer.func(combo_str)
+    disk_writer.func()
