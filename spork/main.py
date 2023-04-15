@@ -7,15 +7,20 @@ from typing import TextIO, cast
 from git import Repo
 from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
+from spork.tools.git_tools import GitToolBuilder
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
+from .agents.text_editor_agent import make_text_editor_agent
 from .config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
-from .custom_tools import GitToolBuilder, requests_get_clean
 from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
+from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
+from .tools.navigator_tool import LocalNavigatorTool
+from .tools.text_editor_tool import TextEditorTool
+
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)
 
@@ -32,7 +37,7 @@ github_repo = github_client.get_repo(repository_name)
 # create a repo object which represents the repository we are inside of
 pygit_repo = Repo(os.getcwd())
 
-default_branch_name = "main"
+default_branch_name = "feature/text-editor-tool-2"
 # reset to default branch if necessary
 if pygit_repo.active_branch.name != default_branch_name:
     pygit_repo.git.checkout(default_branch_name)
@@ -41,27 +46,39 @@ if pygit_repo.active_branch.name != default_branch_name:
 work_item = choose_work_item(github_repo)
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-4")
-# llm1 = OpenAI(temperature=0)
+llm1 = ChatOpenAI(streaming=True, temperature=0, model_name="gpt-4")
+llm2 = ChatOpenAI(streaming=True, temperature=0, model_name="gpt-4")
+
 pass_through_buffer = PassThroughBuffer(sys.stdout)
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+readonlymemory = ReadOnlySharedMemory(memory=memory)
 assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
-base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
-base_tools += [requests_get_clean]
+base_tools = load_tools(["python_repl", "human", "serpapi"], llm=llm2)
 exec_tools = base_tools + GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+exec_tools += [LocalNavigatorTool(llm2)]
+codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
+codebase_oracle_tool = codebase_oracle_builder.build()
 
+text_editor_agent = make_text_editor_agent(llm2, readonlymemory, os.getcwd())
+text_editor_tool = TextEditorTool(text_editor_agent)
+
+# planning_tools += [requests_get_clean]
+# planning_tools = load_tools(["terminal"], llm=llm2)
+planning_tools = [codebase_oracle_tool, text_editor_tool]
+
+exec_tools += planning_tools
 plan_agent = initialize_agent(
-    base_tools,
-    llm,
+    planning_tools,
+    llm1,
     agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
     verbose=True,
     memory=memory,
 )
 
 exec_agent = initialize_agent(
-    exec_tools, llm, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+    exec_tools, llm1, agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True
 )
 
 # check if instrutions are already attached to the issue
@@ -105,11 +122,11 @@ if do_exec == "y":
     except ValueError as e:
         if DO_RETRY:
             tb = traceback.format_exc()
-            exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
-            pass_through_buffer.saved_output = ""
-            print(f"Failed to complete execution task with {e}")
+            print(f"Failed to complete execution task with {e}, traceback: {tb}")
             print("New task:", exec_task)
             print("Retrying...")
+            exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output}</run> Let's try again, avoiding previous mistakes."
+            pass_through_buffer.saved_output = ""
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer

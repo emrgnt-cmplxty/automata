@@ -12,6 +12,8 @@ from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.Repository import Repository
+from langchain.document_loaders import TextLoader
+from langchain.schema import Document
 
 
 def login_github(token: str) -> Github:
@@ -86,7 +88,7 @@ def choose_work_item(
     """
 
     choice = input("Do you want to work on issues or pull requests? (i/p)")
-    work_items = []
+    work_items: PaginatedList
 
     if choice == "i":
         work_items = list_issues(github_repo)
@@ -135,3 +137,15 @@ def remove_html_tags(text: str) -> str:
     raw_text = soup.get_text(strip=True, separator="\n")
     clean_text = re.sub(clean, "", raw_text)
     return clean_text
+
+
+class NumberedLinesTextLoader(TextLoader):
+    def load(self) -> List[Document]:
+        """Load from file path."""
+        with open(self.file_path, encoding=self.encoding) as f:
+            lines = f.readlines()
+            text = f"{self.file_path}"  # this helps with mapping content to file name
+            for i, line in enumerate(lines):
+                text += f"{i}: {line}"
+        metadata = {"source": self.file_path}
+        return [Document(page_content=text, metadata=metadata)]

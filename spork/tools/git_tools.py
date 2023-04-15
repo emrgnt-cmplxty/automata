@@ -1,5 +1,5 @@
 """
-custom_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
+git_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
 
 This module contains a GitToolBuilder class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
 
@@ -116,9 +116,15 @@ class GitToolBuilder:
         """
 
         # Checkout branch
+        success = (
+            f"Checked out an existing branch {branch_name} in {self.github_repo.name} repository."
+        )
         try:
             self.pygit_repo.git.checkout(branch_name)
-            self.pygit_repo.git.pull()
+            try:
+                self.pygit_repo.git.pull()
+            except Exception:
+                return "Note: remote branch doesn't exist, nothing to pull. " + success
             return f"Checked out an existing branch {branch_name} in {self.github_repo.name} repository."
         except Exception as e:
             return f"Error: {e}"
