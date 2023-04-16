@@ -93,6 +93,6 @@ class LocalNavigatorTool(Tool):
             "Give me all python files in this directory: directory_path. "
             "Go to this directory: directory_path."
             "Make a new directory: directory_path/directory_name. "
-            "Make a new file: directory_path/file_name. "
+            "Create a new file: directory_path/file_name. "
             "Copy this file: file_path to this directory: directory_path. ",
         )

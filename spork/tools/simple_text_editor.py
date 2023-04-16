@@ -16,28 +16,28 @@ class SimpleTextEditor:
         self.state = EditorState.BEGIN
 
     def open_file(self, file_path):
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
-
         self.file_path = file_path
+        if not os.path.exists(file_path):
+            return "File does not exist. Creating a new file."
+
         with open(file_path, "r") as file:
             self.lines = file.readlines()
 
     def insert_line(self, line_number, full_line_text):
         if line_number < 0 or line_number > len(self.lines):
-            raise IndexError("Invalid line number")
+            raise IndexError("Invalid line number: out of range")
 
         self.lines.insert(line_number, full_line_text + "\n")
 
     def delete_line(self, line_number):
         if line_number < 0 or line_number >= len(self.lines):
-            raise IndexError("Invalid line number")
+            raise IndexError("Invalid line number: line doesn't exist")
 
         del self.lines[line_number]
 
     def replace_line(self, line_number, new_line_text):
         if line_number < 0 or line_number >= len(self.lines):
-            raise IndexError("Invalid line number")
+            raise IndexError("Invalid line number: line doesn't exist")
         self.lines[line_number] = new_line_text + "\n"
 
     def save_file(self):
@@ -77,7 +77,7 @@ class SimpleTextEditor:
                 break
             else:
                 raise ValueError(f"Invalid command: {cmd_parts[0]}")
-        return "Edits completed successfully!"
+        return f"Edits completed successfully! File {self.file_path} saved with {len(self.lines)} lines."
 
     def reset(self):
         self.file_path = None

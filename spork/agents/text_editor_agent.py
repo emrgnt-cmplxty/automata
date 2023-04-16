@@ -31,7 +31,8 @@ def make_text_editor_agent(
 
 def make_text_editor_task(instructions: str) -> str:
     task = (
-        "You are a text editor agent. Other LLM agents call you to do editing tasks on local files. You pefrom these tasks by finding the correct files,"
+        "You are a text editor agent. You help other agents edit and save files. Other LLM agents call you to do editing tasks. "
+        "You perform these tasks with your given tools by finding the correct files,"
         f"compiling changes into edit instructions and then executing them on the right files. Your current task is: {instructions}"
         "You should use codebase oracle repeatedly to ask better questions that help you with your objective. "
         "When you're ready, you should use the edit instructions compiler tool to compile your instructions into edit commands."
