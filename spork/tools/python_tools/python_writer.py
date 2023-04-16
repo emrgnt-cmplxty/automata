@@ -93,7 +93,7 @@ class PythonWriter:
         Raises:
             ValueError: If the resulting output is not a valid Python file.
         """
-
+        print("self.modified_modules = ", self.modified_modules)
         for module_path in self.python_parser.module_dict.keys():
             file_path = os.path.join(
                 self.python_parser.absolute_path_to_base, *(module_path.split("."))

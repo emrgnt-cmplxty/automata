@@ -79,7 +79,8 @@ class AgentMrMeeseeks:
             for instruction in initial_instructions:
                 self._save_interaction(instruction)
 
-        print("Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id))
+        # print("Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id))
+        print("Initializing SessionId: %s\n" % (self.session_id))
 
     def __del__(self):
         self.conn.close()
@@ -111,9 +112,13 @@ class AgentMrMeeseeks:
     def replay_messages(self):
         """Replay the messages in the conversation."""
         for message in self.messages:
+            if message["role"] == "user":
+                continue
             print("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+            print("Processing message content = ", message["content"])
             processed_outputs = self._process_input(message["content"])
-            print("Processed Outputs:\n%s\n" % processed_outputs)
+            print("\nProcessed Outputs:\n%s\n" % processed_outputs)
+            print("-" * 100)
 
     def _load_prompt(self, initial_payload: Dict[str, str]):
         """Load the prompt from a config specified at initialization."""
@@ -132,17 +137,18 @@ class AgentMrMeeseeks:
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = AgentMrMeeseeks._parse_input_string(response_text)
-
         outputs = []
+        print("Tool Calls len = %s" % (len(tool_calls.keys())))
         for tool, tool_input in tool_calls.items():
+            if tool == "error-reporter":
+                # In the event of an error, the tool_input becomes the output, as it is now a parsing error
+                tool_output = tool_input
+                outputs.append(tool_input)
+
             for tool_instance in self.tools:
                 if tool_instance.name == tool:
                     tool_output = tool_instance.run(tool_input, verbose=True)
                     outputs.append(tool_output)
-                elif tool_instance.name == "error-reporter":
-                    # In the event of an error, the tool_input becomes the output, as it is now a parsing error
-                    tool_output = tool_input
-                    outputs.append(tool_input)
         return outputs
 
     def _init_database(self):
@@ -184,18 +190,6 @@ class AgentMrMeeseeks:
         ]
 
     @staticmethod
-    def _tool_dry_run(input_text: str):
-        """Run the test and report the tool outputs back to the master."""
-        results = AgentMrMeeseeks._parse_input_string(input_text)
-        for tool, tool_input in results.items():
-            for tool_instance in agent.tools:
-                if tool_instance.name == tool:
-                    tool_output = tool_instance.run(tool_input, verbose=True)
-                    print(
-                        "tool=%s, tool_input=%s, tool_output=%s" % (tool, tool_input, tool_output)
-                    )
-
-    @staticmethod
     def _sanitize_json(json_str: str):
         """Sanitize the JSON string to make it parsable."""
         sanitized_str = json_str.replace("\n", "\\n")
@@ -205,27 +199,31 @@ class AgentMrMeeseeks:
     @staticmethod
     def _extract_json_objects(input_str: str):
         """Extract all JSON objects from the input string."""
-        json_pattern = r"\{(?:[^{}]|(?R))*\}"
+        json_pattern = r"\{(?:[^{}]|(?R))*?\}"
         json_matches = regex.findall(json_pattern, input_str, regex.MULTILINE)
         return json_matches
 
     @staticmethod
     def _parse_input_string(input_str: str) -> Dict[str, str]:
         """Parse the input string and return a dictionary of tool names to tool inputs."""
+        print("Receiving input string = ", input_str)
         json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
+        print("json_objects = ", json_objects)
         parsed_entries = []
         for json_str in json_objects:
             try:
                 sanitized_str = json_str  # _sanitize_json(json_str)
                 parsed_entry = json.loads(sanitized_str)
                 print("parsed_entry = ", parsed_entry)
-                if "tool" in parsed_entry and "input" in parsed_entry:
+                if "tool" in parsed_entry:
                     parsed_entries.append(parsed_entry)
             except json.JSONDecodeError as e:
+                print("error parsing json")
                 parsed_entries.append(
                     {"tool": "error-reporter", "input": "Error parsing JSON: %s" % e}
                 )
-        return {entry["tool"]: entry["input"] for entry in parsed_entries}
+        print("parsed_entries = ", parsed_entries)
+        return {entry["tool"]: entry.get("input") for entry in parsed_entries}
 
 
 if __name__ == "__main__":

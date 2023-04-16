@@ -37,7 +37,7 @@ def test_tool_execution(python_writer_tool_builder):
     python_writer_tool_builder.python_writer.write_to_disk = MagicMock()
     tools = python_writer_tool_builder.build_tools()
     tools[0].func("some.path, sample_code")
-    tools[1].func()
+    tools[1].func(None)
     python_writer_tool_builder.python_writer.modify_code_state.assert_called_once_with(
         "some.path", "sample_code"
     )
@@ -60,7 +60,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
     code_writer.func(f"{file_py_path},{function_def}")
-    disk_writer.func()
+    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -89,7 +89,7 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
     code_writer.func(f"{file_py_path},{function_def}")
-    disk_writer.func()
+    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -121,7 +121,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
     code_writer.func(f"{file_py_path},{function_def}")
-    disk_writer.func()
+    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -194,7 +194,7 @@ class PythonAgentToolBuilder:
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
     code_writer.func(f"{file_py_path},{class_str}")
-    disk_writer.func()
+    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -232,4 +232,4 @@ class PythonAgentToolBuilder:
     (code_writer, disk_writer) = (tools[0], tools[1])
 
     code_writer.func(combo_str)
-    disk_writer.func()
+    disk_writer.func(None)

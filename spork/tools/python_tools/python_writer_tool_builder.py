@@ -61,7 +61,7 @@ class PythonWriterToolBuilder:
             ),
             Tool(
                 name="python-writer-write-to-disk",
-                func=lambda: self.python_writer.write_to_disk(),
+                func=lambda _: self.python_writer.write_to_disk(),
                 description=f"Writes all the latest modifications in the code state to disk."
                 f" New files are created when necessary.",
                 return_direct=True,

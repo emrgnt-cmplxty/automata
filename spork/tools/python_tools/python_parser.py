@@ -54,8 +54,6 @@ class PythonParser:
         self.relative_dir = relative_dir
         self._populate_dicts(os.path.join(home_path(), self.relative_dir))
         self._update_callbacks: List[Callable[[str, str, Dict[str, Any]], None]] = []
-        print("home_path() = ", home_path())
-        print("self.relative_dir = ", self.relative_dir)
         self.absolute_path_to_base = os.path.join(home_path(), self.relative_dir, "..")
 
     def get_raw_code(self, object_py_path: str) -> str:
