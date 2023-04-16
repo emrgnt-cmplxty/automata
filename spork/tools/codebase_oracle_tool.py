@@ -97,9 +97,11 @@ class CodebaseOracleToolBuilder:
             ".gitmodules",
             "__pycache__",
             ".idea",
-            "/build/",
+            "build",
             "local_env",
-            "/.",
+            "dist",
+            "chroma",
+            "egg",
         ]
         for exclusion in exclusions:
             if exclusion in path:
