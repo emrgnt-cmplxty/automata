@@ -101,7 +101,15 @@ class CodebaseOracleToolBuilder:
             "local_env",
             "dist",
             "chroma",
-            "egg",
+            "egg",  # exclude a few common directories in the
+            ".git",  # root of the project
+            ".hg",
+            ".mypy_cache",
+            ".tox",
+            ".venv",
+            "_build",
+            "buck-out",
+            "random",
         ]
         for exclusion in exclusions:
             if exclusion in path:
