@@ -16,10 +16,10 @@ class SimpleTextEditor:
         self.state = EditorState.BEGIN
 
     def open_file(self, file_path):
+        self.file_path = file_path
         if not os.path.exists(file_path):
             return "File does not exist. Creating a new file."
 
-        self.file_path = file_path
         with open(file_path, "r") as file:
             self.lines = file.readlines()
 
