@@ -24,7 +24,7 @@ Example usage:
 import ast
 import os
 import subprocess
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 from .python_parser import PythonParser
 from .python_types import (
@@ -55,6 +55,7 @@ class PythonWriter:
         """
         self.python_parser = python_parser
         self.python_parser.register_update_callback(self._handle_update_notification)
+        self.modified_modules: Set[str] = set([])
 
     def modify_code_state(self, py_path: str, code: str) -> str:
         """
@@ -97,7 +98,8 @@ class PythonWriter:
             file_path = os.path.join(
                 self.python_parser.absolute_path_to_base, *(module_path.split("."))
             )
-            self._write_file(f"{file_path}.py", module_path)
+            if module_path in self.modified_modules:
+                self._write_file(f"{file_path}.py", module_path)
         return "Success"
 
     def _write_file(self, file_path: str, module_py_path: str) -> None:
@@ -259,6 +261,7 @@ class PythonWriter:
             self.python_parser.module_dict[module_py_path].standalone_functions.append(
                 function_obj
             )
+            self.modified_modules.add(module_py_path)
 
         # filter redundant import statements
         import_statements = [
@@ -268,6 +271,7 @@ class PythonWriter:
         ]
 
         self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
+        self.modified_modules.add(module_py_path)
 
     def _create_new_class(self, module_py_path: str, class_py_path: str, class_code: str) -> None:
         """
@@ -317,6 +321,8 @@ class PythonWriter:
         )
 
         self.python_parser.module_dict[module_py_path] = module_obj
+        self.modified_modules.add(module_py_path)
+
         self._update_dependent_dicts_on_module_creation(module_obj)
 
     def _create_new_package(self, py_path: str) -> None:
@@ -396,6 +402,7 @@ class PythonWriter:
             self._modify_existing_class(class_obj.py_path, class_obj.code)
 
         self.python_parser.module_dict[module_py_path] = module_obj
+        self.modified_modules.add(module_py_path)
 
     def _modify_existing_package(self, _package_py_path: str, _package_code: str) -> None:
         """

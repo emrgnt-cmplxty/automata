@@ -123,7 +123,7 @@ class PythonAgent:
         prompt = load_prompt(
             AgentManager.format_config_path("agent_configs", f"{self.agent_version.value}.yaml")
         )
-        formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
+        formatted_prompt = prompt.format(**payload)
 
         print(f"INFO - PythonAgent is running with initial prompt:\n\n{formatted_prompt}")
         return formatted_prompt

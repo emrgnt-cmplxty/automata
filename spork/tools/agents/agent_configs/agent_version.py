@@ -6,3 +6,4 @@ class AgentVersion(Enum):
     EXECUTION_V1 = "execution_v1"
     PYTHON_V1 = "python_v1"
     RETRIEVAL_V1 = "retrieval_v1"
+    RETRIEVAL_V2 = "retrieval_v2"

@@ -31,6 +31,6 @@ PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT", "us-east1-gcp")
 YOUR_TABLE_NAME = os.getenv("TABLE_NAME", "")
 OBJECTIVE = os.getenv("OBJECTIVE", "")
 DO_RETRY = bool(os.getenv("DO_RETRY", 1))
-
+CONVERSATION_DB_NAME = os.getenv("CONVERSATION_DB_NAME", "interactions.sqlite3")
 # Define constants
 PLANNER_AGENT_OUTPUT_STRING = "Planner Agent Output: "
