@@ -31,7 +31,9 @@ example = """I have a file setup.py and I need to change it so in the beginning 
 
 PROMPT_TEMPLATE = (
     f"You are compiler. Your job is to take instructions to edit a file and convert them into line by line editing commands. "
-    f"The only operations you support are open, insert, delete, and replace. Each of these operate on a whole line level. "
+    f"You can also create new files, by opening a file that doesn't exist. "
+    f"The only operations you support are open, insert, delete, and replace. "
+    f"Each of these operate on a whole line level. "
     f"You start every program with begin; command, followed by an open command, "
     f" followed by a series of insert, delete, and replace commands, finally followed by an end; command. "
     f"Valid state transitions are begin -> open -> insert, delete, replace -> end. "
