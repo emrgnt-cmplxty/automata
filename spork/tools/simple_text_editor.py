@@ -25,19 +25,21 @@ class SimpleTextEditor:
 
     def insert_line(self, line_number, full_line_text):
         if line_number < 0 or line_number > len(self.lines):
-            raise IndexError("Invalid line number: out of range")
+            raise IndexError(
+                f"Error: insert`{line_number}`{full_line_text}; {line_number} is out of range [0, {len(self.lines)}]"
+            )
 
         self.lines.insert(line_number, full_line_text + "\n")
 
     def delete_line(self, line_number):
         if line_number < 0 or line_number >= len(self.lines):
-            raise IndexError("Invalid line number: line doesn't exist")
+            raise IndexError(f"Error: delete`{line_number}; line doesn't exist")
 
         del self.lines[line_number]
 
     def replace_line(self, line_number, new_line_text):
         if line_number < 0 or line_number >= len(self.lines):
-            raise IndexError("Invalid line number: line doesn't exist")
+            raise IndexError(f"Error: replace`{line_number}`{new_line_text}; line doesn't exist")
         self.lines[line_number] = new_line_text + "\n"
 
     def save_file(self):
@@ -46,37 +48,37 @@ class SimpleTextEditor:
 
     def execute_commands(self, commands: str):
         commands_list = commands.strip().split(";\n")
-        for command in commands_list:
+        for i, command in enumerate(commands_list):
             cmd_parts = command.strip().split("`")
 
             if cmd_parts[0] == "begin":
                 if self.state != EditorState.BEGIN:
-                    raise ValueError("Invalid state transition: begin")
+                    raise ValueError(f"Command {i}: Invalid state transition: begin")
                 self.state = EditorState.OPEN
             elif cmd_parts[0] == "open":
                 if self.state != EditorState.OPEN:
-                    raise ValueError("Invalid state transition: open")
+                    raise ValueError(f"Command {i}: Invalid state transition: open")
                 self.open_file(cmd_parts[1])
                 self.state = EditorState.EDIT
             elif cmd_parts[0] == "insert":
                 if self.state != EditorState.EDIT:
-                    raise ValueError("Invalid state transition: insert")
+                    raise ValueError(f"Command {i}: Invalid state transition: insert")
                 self.insert_line(int(cmd_parts[1]), cmd_parts[2])
             elif cmd_parts[0] == "delete":
                 if self.state != EditorState.EDIT:
-                    raise ValueError("Invalid state transition: delete")
+                    raise ValueError(f"Command {i}: Invalid state transition: delete")
                 self.delete_line(int(cmd_parts[1]))
             elif cmd_parts[0] == "replace":
                 if self.state != EditorState.EDIT:
-                    raise ValueError("Invalid state transition: replace")
+                    raise ValueError(f"Command {i}: Invalid state transition: replace")
                 self.replace_line(int(cmd_parts[1]), cmd_parts[2])
             elif cmd_parts[0] == "end;":
                 if self.state != EditorState.EDIT:
-                    raise ValueError("Invalid state transition: end")
+                    raise ValueError(f"Command {i}: Invalid state transition: end")
                 self.save_file()
                 break
             else:
-                raise ValueError(f"Invalid command: {cmd_parts[0]}")
+                raise ValueError(f"Invalid command {i}: {cmd_parts[0]}")
         return f"Edits completed successfully! File {self.file_path} saved with {len(self.lines)} lines."
 
     def reset(self):
