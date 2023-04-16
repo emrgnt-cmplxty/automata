@@ -17,7 +17,7 @@ class SimpleTextEditor:
 
     def open_file(self, file_path):
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+            return "File does not exist. Creating a new file."
 
         self.file_path = file_path
         with open(file_path, "r") as file:
