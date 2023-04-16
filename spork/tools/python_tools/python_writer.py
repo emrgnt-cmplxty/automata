@@ -99,6 +99,8 @@ class PythonWriter:
                 self.python_parser.absolute_path_to_base, *(module_path.split("."))
             )
             if module_path in self.modified_modules:
+                print("Writing to disk, module_path: ", module_path)
+                print("Writing to disk, file_path: ", module_path)
                 self._write_file(f"{file_path}.py", module_path)
         return "Success"
 

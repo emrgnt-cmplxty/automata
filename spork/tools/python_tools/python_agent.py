@@ -37,7 +37,7 @@ from langchain.prompts import load_prompt
 from langchain.tools.base import BaseTool
 
 from ..agents.agent_configs.agent_version import AgentVersion
-from ..agents.agent_manager import AgentManager
+from ..agents.agent_langchain_manager import AgentLangchainManager
 from .python_parser import PythonParser
 from .python_writer import PythonWriter
 
@@ -121,7 +121,9 @@ class PythonAgent:
             }
 
         prompt = load_prompt(
-            AgentManager.format_config_path("agent_configs", f"{self.agent_version.value}.yaml")
+            AgentLangchainManager.format_config_path(
+                "agent_configs", f"{self.agent_version.value}.yaml"
+            )
         )
         formatted_prompt = prompt.format(**payload)
 

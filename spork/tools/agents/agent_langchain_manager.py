@@ -12,7 +12,7 @@ from .agent_configs.agent_version import AgentVersion
 from .task_configs.task import TaskType
 
 
-class AgentManager:
+class AgentLangchainManager:
     def __init__(
         self,
         planning_tools: Sequence[BaseTool],

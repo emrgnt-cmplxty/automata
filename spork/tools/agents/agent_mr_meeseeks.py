@@ -1,5 +1,5 @@
 """
-    AgentMeeseeks is an autonomous agent that performs the actual work of the Spork
+    AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
     system. Meeseeks are responsible for executing instructions and reporting
     the results back to the master.
 
@@ -16,7 +16,7 @@
         initial_payload = {
             "overview": overview,
         }
-        agent = AgentMeeseeks(initial_payload, exec_tools)
+        agent = AgentMrMeeseeks(initial_payload, exec_tools)
 
         next_instruction = agent.iter_task(instructions)
         ...
@@ -34,18 +34,12 @@ from langchain.tools.base import BaseTool
 from spork.config import *  # noqa F403
 
 from .agent_configs.agent_version import AgentVersion
-from .agent_manager import AgentManager
+from .agent_langchain_manager import AgentLangchainManager
 
 CONTINUE_MESSAGE = "Continue"
 
 
-class AgentMeeseeks:
-    """
-    AgentMeeseeks is an autonomous agent that performs the actual work of the Spork
-    system. Meeseeks are responsible for executing instructions and reporting
-    the results back to the master.
-    """
-
+class AgentMrMeeseeks:
     def __init__(
         self,
         initial_payload: Dict[str, str],
@@ -56,7 +50,7 @@ class AgentMeeseeks:
         session_id: Optional[str] = None,
     ):
         """
-        AgentMeeseeks is an autonomous agent that performs the actual work of the Spork
+        AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
         system. Meeseeks are responsible for executing instructions and reporting
         the results back to the master.
         """
@@ -118,10 +112,16 @@ class AgentMeeseeks:
         """Replay the messages in the conversation."""
         for message in self.messages:
             print("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+            processed_outputs = self._process_input(message["content"])
+            print("Processed Outputs:\n%s\n" % processed_outputs)
 
     def _load_prompt(self, initial_payload: Dict[str, str]):
+        """Load the prompt from a config specified at initialization."""
         with open(
-            AgentManager.format_config_path("agent_configs", f"{self.version.value}.yaml"), "r"
+            AgentLangchainManager.format_config_path(
+                "agent_configs", f"{self.version.value}.yaml"
+            ),
+            "r",
         ) as file:
             loaded_yaml = yaml.safe_load(file)
 
@@ -131,7 +131,7 @@ class AgentMeeseeks:
 
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
-        tool_calls = AgentMeeseeks._parse_input_string(response_text)
+        tool_calls = AgentMrMeeseeks._parse_input_string(response_text)
 
         outputs = []
         for tool, tool_input in tool_calls.items():
@@ -186,7 +186,7 @@ class AgentMeeseeks:
     @staticmethod
     def _tool_dry_run(input_text: str):
         """Run the test and report the tool outputs back to the master."""
-        results = AgentMeeseeks._parse_input_string(input_text)
+        results = AgentMrMeeseeks._parse_input_string(input_text)
         for tool, tool_input in results.items():
             for tool_instance in agent.tools:
                 if tool_instance.name == tool:
@@ -212,17 +212,19 @@ class AgentMeeseeks:
     @staticmethod
     def _parse_input_string(input_str: str) -> Dict[str, str]:
         """Parse the input string and return a dictionary of tool names to tool inputs."""
-        json_objects = AgentMeeseeks._extract_json_objects(input_str)
+        json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
         parsed_entries = []
         for json_str in json_objects:
             try:
                 sanitized_str = json_str  # _sanitize_json(json_str)
                 parsed_entry = json.loads(sanitized_str)
+                print("parsed_entry = ", parsed_entry)
                 if "tool" in parsed_entry and "input" in parsed_entry:
                     parsed_entries.append(parsed_entry)
             except json.JSONDecodeError as e:
-                parsed_entries.append({"error-reporter:", "Error parsing JSON: %s" % e})
-
+                parsed_entries.append(
+                    {"tool": "error-reporter", "input": "Error parsing JSON: %s" % e}
+                )
         return {entry["tool"]: entry["input"] for entry in parsed_entries}
 
 
@@ -252,7 +254,7 @@ if __name__ == "__main__":
     first_instruction = (
         f"Write a file called python_meseeks_tool_builder.py which imitates the workflow "
         f"of python_parser_tool_builder.py, and is located in the same directory."
-        f" The tool uses AgentMeeseeks to implement a single tool end-point called python-agent-python-task."
+        f" The tool uses AgentMrMeeseeks to implement a single tool end-point called python-agent-python-task."
         f" Be sure to include a sensible description based on the context. You should begin this task by inspecting necessary docstrings."
     )
     initial_instructions = [
@@ -262,7 +264,7 @@ if __name__ == "__main__":
         },
         {"role": "user", "content": first_instruction},
     ]
-    agent = AgentMeeseeks(
+    agent = AgentMrMeeseeks(
         initial_payload,
         initial_instructions,
         exec_tools,

@@ -10,7 +10,7 @@ from langchain.tools import BaseTool
 from spork.config import *  # noqa F403
 
 # Replace imports with appropriate paths for your project
-from ..agent_meeseeks import AgentMeeseeks
+from ..agent_mr_meeseeks import AgentMrMeeseeks
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def temporary_database():
 
     # Set the SQLite connection string to use the temporary file
     original_db_path = CONVERSATION_DB_NAME  # noqa F405
-    AgentMeeseeks.DB_PATH = f"sqlite:///{db_file.name}"
+    AgentMrMeeseeks.DB_PATH = f"sqlite:///{db_file.name}"
 
     yield
 
@@ -41,7 +41,7 @@ def temporary_database():
     os.unlink(db_file.name)
 
     # Reset the SQLite connection string to the original value
-    AgentMeeseeks.DB_PATH = original_db_path
+    AgentMrMeeseeks.DB_PATH = original_db_path
 
 
 def test_order_preservation(temporary_database, mocked_openai_api):
@@ -56,7 +56,7 @@ def test_order_preservation(temporary_database, mocked_openai_api):
     tools: List[BaseTool] = []
 
     # Create an agent and save interactions
-    agent = AgentMeeseeks(initial_payload, initial_instructions, tools)
+    agent = AgentMrMeeseeks(initial_payload, initial_instructions, tools)
     agent.iter_task()
     agent._save_interaction({"role": "user", "content": "Test instruction 2"})
     agent.iter_task()
@@ -64,7 +64,7 @@ def test_order_preservation(temporary_database, mocked_openai_api):
     session_id = agent.session_id
 
     # Create a new agent with the same session ID to replay the interactions
-    replay_agent = AgentMeeseeks(
+    replay_agent = AgentMrMeeseeks(
         initial_payload, initial_instructions, tools, session_id=session_id
     )
 

@@ -7,7 +7,7 @@ from langchain.agents import load_tools
 from langchain.chat_models import ChatOpenAI
 
 from .config import *  # noqa: F401, F403
-from .tools.agents import AgentManager
+from .tools.agents import AgentLangchainManager
 from .tools.github import requests_get_clean
 from .tools.python_tools import (
     PythonParser,
@@ -74,7 +74,7 @@ if args.load_python_tools:
     exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
 
 
-agent_manager = AgentManager(base_tools, planning_llm, exec_tools, exec_llm)
+agent_manager = AgentLangchainManager(base_tools, planning_llm, exec_tools, exec_llm)
 
 if args.do_plan:
     approved = False

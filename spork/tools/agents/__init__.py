@@ -1,1 +1,1 @@
-from .agent_manager import AgentManager  # noqa F401
+from .agent_langchain_manager import AgentLangchainManager  # noqa F401
