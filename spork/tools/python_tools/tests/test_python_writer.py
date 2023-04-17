@@ -30,7 +30,7 @@ class MockCodeGenerator:
             has_function_docstring = False
 
         module_class_docstring = (
-            f'"""{self.module_class_docstring}"""\n' if has_function_docstring else ""
+            f'"""{self.module_class_docstring}"""\n' if has_class_docstring else ""
         )
 
         class_code = (

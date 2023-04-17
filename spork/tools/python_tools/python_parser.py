@@ -161,49 +161,53 @@ class PythonParser:
     def parse_raw_code(
         source_code: str,
     ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, str], Dict[str, str]]:
-        module_ast = ast.parse(source_code)
-
         class FunctionAndClassCollector(ast.NodeVisitor):
             def __init__(self):
                 self.nodes = []
 
             def visit_FunctionDef(self, node):
-                self.nodes.append(node)
+                self.nodes.append(("function", node))
                 self.generic_visit(node)
 
             def visit_ClassDef(self, node):
-                self.nodes.append(node)
+                self.nodes.append(("class", node))
                 self.generic_visit(node)
+
+        module_ast = ast.parse(source_code)
 
         # Collect classes and functions from the AST
         collector = FunctionAndClassCollector()
         collector.visit(module_ast)
 
-        # Filter out nodes representing classes and functions
-        class_and_function_nodes = {node.name: node for node in collector.nodes}
-
-        # Get classes, methods, and standalone functions
-        classes = [
-            node for node in class_and_function_nodes.values() if isinstance(node, ast.ClassDef)
-        ]
-        functions = [
-            node for node in class_and_function_nodes.values() if isinstance(node, ast.FunctionDef)
-        ]
-
-        # Get methods for each class and their code
-        class_methods = {}
-        for cls in classes:
-            methods = {
-                method_node.name: ast.unparse(method_node)
-                for method_node in cls.body
-                if isinstance(method_node, ast.FunctionDef)
-            }
-            class_methods[cls.name] = methods
+        # Separate classes and functions
+        classes = [node for nodetype, node in collector.nodes if nodetype == "class"]
+        functions = [node for nodetype, node in collector.nodes if nodetype == "function"]
 
         # Convert functions to a dictionary with names and code
         functions_dict = {func_node.name: ast.unparse(func_node) for func_node in functions}
 
-        # Get the full code of classes and modules
+        def collect_inner_functions(node, inner_functions):
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef):
+                    inner_functions[item.name] = ast.unparse(item)
+                    collect_inner_functions(item, inner_functions)
+
+        class_methods = {}
+        for cls in classes:
+            methods = {}
+            for item in cls.body:
+                if isinstance(item, ast.FunctionDef):
+                    method_name = item.name
+                    methods[method_name] = ast.unparse(item)
+                    inner_methods: Dict[str, Any] = {}
+                    collect_inner_functions(item, inner_methods)
+                    if method_name in functions_dict:
+                        del functions_dict[method_name]
+                    for method in inner_methods:
+                        if method in functions_dict:
+                            del functions_dict[method]
+            class_methods[cls.name] = methods
+
         classes_code, modules_code = PythonParser._get_full_module_code(classes, functions)
 
         return class_methods, functions_dict, classes_code, modules_code

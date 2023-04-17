@@ -91,7 +91,8 @@ class PythonWriter:
 
         # Update the class and function dictionaries
         class_methods, functions_dict, classes_code, _ = self.python_parser.parse_raw_code(code)
-        print("classes_code = ", classes_code)
+        print("class_methods = ", class_methods)
+        print("functions_dict = ", functions_dict)
         for class_name in classes_code:
             class_path = f"{module_py_path}.{class_name}"
             # Create the class entry if it does not already exist
@@ -115,6 +116,7 @@ class PythonWriter:
                 function_path
             ] = function_object
 
+        self.modified_modules.add(module_py_path)
         return "Success"
 
     def write_to_disk(self) -> str:
