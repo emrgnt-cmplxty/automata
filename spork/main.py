@@ -119,11 +119,14 @@ if do_plan == "y":
 
 # ask user if they want to run exec agent
 do_exec = input("Do you want to run the EXECUTION agent? (y/n)")
+success = False
+branch_to_delete = None
 if do_exec == "y":
     exec_task = make_execution_task(work_item, instructions, github_repo.name)
     print("Execution task:", exec_task)
     try:
         exec_agent.run(exec_task)
+        success = True
     except ValueError as e:
         if DO_RETRY:
             tb = traceback.format_exc()
@@ -131,6 +134,11 @@ if do_exec == "y":
             print("New task:", exec_task)
             print("Retrying...")
             exec_agent.run(exec_task)
+            success = True
     finally:
+        if not success and pygit_repo.active_branch.name != DEFAULT_BRANCH_NAME:
+            branch_to_delete = pygit_repo.active_branch.name
         sys.stdout = pass_through_buffer.original_buffer
         pygit_repo.git.checkout(DEFAULT_BRANCH_NAME)
+        if branch_to_delete:
+            pygit_repo.git.branch("-D", branch_to_delete)
