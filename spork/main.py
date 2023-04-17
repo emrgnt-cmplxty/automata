@@ -130,8 +130,6 @@ if do_exec == "y":
             print(f"Failed to complete execution task with {e}, traceback: {tb}")
             print("New task:", exec_task)
             print("Retrying...")
-            exec_task += f" This is your second attempt. During the previous attempt, you crashed with the following sequence: <run>{pass_through_buffer.saved_output[-100:]}</run> Let's try again, avoiding previous mistakes."
-            pass_through_buffer.saved_output = ""
             exec_agent.run(exec_task)
     finally:
         sys.stdout = pass_through_buffer.original_buffer
