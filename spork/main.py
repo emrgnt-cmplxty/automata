@@ -57,6 +57,7 @@ sys.stdout = cast(TextIO, pass_through_buffer)
 # TOOLS
 codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
 codebase_oracle_tool = codebase_oracle_builder.build()
+breakpoint()
 local_navigator_tool = LocalNavigatorTool(llm2)
 planning_tools = [codebase_oracle_tool]
 
