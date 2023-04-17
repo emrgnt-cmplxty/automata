@@ -8,10 +8,12 @@ from langchain.memory import ReadOnlySharedMemory
 
 from spork.utils import _get_chat_history, run_retrieval_chain_with_sources_format
 
+URL = "https://python.langchain.com/en/latest/"
 
-class LangchainDocumentationOracle(Tool):
-    def __init__(self, url: str, llm: BaseLLM, memory: ReadOnlySharedMemory):
-        loader = WebBaseLoader(url)
+
+class LangchainDocumentationOracleTool(Tool):
+    def __init__(self, llm: BaseLLM, memory: ReadOnlySharedMemory):
+        loader = WebBaseLoader(URL)
         docs = loader.load()
         vector_store = FAISS.from_documents(docs, OpenAIEmbeddings())
         chain = ConversationalRetrievalChain.from_llm(

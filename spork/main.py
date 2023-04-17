@@ -19,6 +19,7 @@ from .prompts import make_execution_task, make_planning_task
 
 # Log into GitHub
 from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
+from .tools.langchain_oracle_tool import LangchainDocumentationOracleTool
 from .tools.navigator_tool import LocalNavigatorTool
 
 print("Logging into github")
@@ -57,8 +58,9 @@ sys.stdout = cast(TextIO, pass_through_buffer)
 # TOOLS
 codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
 codebase_oracle_tool = codebase_oracle_builder.build()
+langchain_oracle_tool = LangchainDocumentationOracleTool(llm2, readonlymemory)
 local_navigator_tool = LocalNavigatorTool(llm2)
-planning_tools = [codebase_oracle_tool]
+planning_tools = [codebase_oracle_tool, langchain_oracle_tool]
 
 
 text_editor_agent = make_text_editor_agent(
