@@ -69,7 +69,7 @@ text_editor_agent = make_text_editor_agent(
 text_editor_tool = TextEditorTool(text_editor_agent)
 
 
-base_tools = load_tools(["human", "serpapi"], llm=llm2)
+base_tools = load_tools(["human"], llm=llm2)
 git_tools = GitToolBuilder(github_repo, pygit_repo, work_item).build_tools()
 exec_tools = base_tools + git_tools + planning_tools + [text_editor_tool]
 
