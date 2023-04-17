@@ -57,7 +57,6 @@ class CodebaseOracleToolBuilder:
                             print(dirpath, file, e)
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=50)
         texts = text_splitter.split_documents(docs)
-        breakpoint()
         docsearch = FAISS.from_documents(texts, embeddings)
         self._chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
