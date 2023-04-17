@@ -25,7 +25,7 @@ Example usage:
 import ast
 import os
 import textwrap
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Tuple
 
 from ..utils import home_path
 from .python_types import (
@@ -52,7 +52,7 @@ class PythonParser:
         self.module_dict: Dict[str, PythonModuleType] = {}
         self.package_dict: Dict[str, PythonPackageType] = {}
         self.relative_dir = relative_dir
-        self._populate_dicts(os.path.join(home_path(), self.relative_dir))
+        self._populate_dicts_from_source(os.path.join(home_path(), self.relative_dir))
         self._update_callbacks: List[Callable[[str, str, Dict[str, Any]], None]] = []
         self.absolute_path_to_base = os.path.join(home_path(), self.relative_dir, "..")
 
@@ -157,7 +157,58 @@ class PythonParser:
                                     )
         return result
 
-    def _populate_dicts(self, abs_dir: str) -> None:
+    @staticmethod
+    def parse_raw_code(
+        source_code: str,
+    ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, str], Dict[str, str]]:
+        module_ast = ast.parse(source_code)
+
+        class FunctionAndClassCollector(ast.NodeVisitor):
+            def __init__(self):
+                self.nodes = []
+
+            def visit_FunctionDef(self, node):
+                self.nodes.append(node)
+                self.generic_visit(node)
+
+            def visit_ClassDef(self, node):
+                self.nodes.append(node)
+                self.generic_visit(node)
+
+        # Collect classes and functions from the AST
+        collector = FunctionAndClassCollector()
+        collector.visit(module_ast)
+
+        # Filter out nodes representing classes and functions
+        class_and_function_nodes = {node.name: node for node in collector.nodes}
+
+        # Get classes, methods, and standalone functions
+        classes = [
+            node for node in class_and_function_nodes.values() if isinstance(node, ast.ClassDef)
+        ]
+        functions = [
+            node for node in class_and_function_nodes.values() if isinstance(node, ast.FunctionDef)
+        ]
+
+        # Get methods for each class and their code
+        class_methods = {}
+        for cls in classes:
+            methods = {
+                method_node.name: ast.unparse(method_node)
+                for method_node in cls.body
+                if isinstance(method_node, ast.FunctionDef)
+            }
+            class_methods[cls.name] = methods
+
+        # Convert functions to a dictionary with names and code
+        functions_dict = {func_node.name: ast.unparse(func_node) for func_node in functions}
+
+        # Get the full code of classes and modules
+        classes_code, modules_code = PythonParser._get_full_module_code(classes, functions)
+
+        return class_methods, functions_dict, classes_code, modules_code
+
+    def _populate_dicts_from_source(self, abs_dir: str) -> None:
         """
         Populates the file_dict, class_dict, and function_dict with PythonModuleType, PythonClassType, and PYthonFunctionType
         for each Python file found in the specified directory.
@@ -252,6 +303,14 @@ class PythonParser:
 
         for package_name, modules in packages.items():
             self.package_dict[package_name] = PythonPackageType(package_name, modules)
+
+    @staticmethod
+    def _get_full_module_code(
+        classes: list, functions: list
+    ) -> Tuple[Dict[str, str], Dict[str, str]]:
+        classes_code = {cls.name: ast.unparse(cls) for cls in classes}
+        modules_code = {func.name: ast.unparse(func) for func in functions}
+        return classes_code, modules_code
 
     def register_update_callback(
         self, callback: Callable[[str, str, Dict[str, Any]], None]

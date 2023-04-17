@@ -55,7 +55,7 @@ class PythonWriterToolBuilder:
                 f" For Example:"
                 f'Suppose you wish to a new function named "my_function" of "my_class" is defined in the file "my_file.py" that lives in "my_folder"'
                 f" Then, the correct function call is "
-                f'python-writer-modify-code-state(my_folder.my_file.my_class.my_function, def my_function() -> None:\n   """My Function"""\n    print("hello world")'
+                f'python-writer-modify-code-state(my_folder.my_file.MyClass.my_function,def my_function() -> None:\n   """My Function"""\n    print("hello world")'
                 f" If new import statements are necessary, then append them to the top of the input string.",
                 return_direct=True,
             ),

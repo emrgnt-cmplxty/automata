@@ -57,34 +57,65 @@ class PythonWriter:
         self.python_parser.register_update_callback(self._handle_update_notification)
         self.modified_modules: Set[str] = set([])
 
-    def modify_code_state(self, py_path: str, code: str) -> str:
+    def modify_code_state(self, module_py_path: str, code: str) -> str:
         """
         This function takes the input path and code and intelligently determines whether this
         is a function, class, module, or package update. It then calls the appropriate method
         to perform the update.
 
         Args:
-            py_path (str): The path to the Python file.
+            module_py_path (str): The path to the Python file.
             code (str): The source code to be analyzed and updated.
 
         Raises:
             ValueError: If the provided code is not valid Python.
         """
-        print("py_path = %s" % (py_path))
-        has_class, has_function, has_module_docstring = self._get_code_type(py_path, code)
-        if has_module_docstring:
-            print("calling _modify_or_create_new_module")
-            self._modify_or_create_new_module(py_path, code)
-        elif has_class and not has_function:
-            print("calling _modify_or_create_new_class")
-            self._modify_or_create_new_class(py_path, code)
-        elif has_function:
-            self._modify_or_create_new_function(py_path, code, has_class)
+
+        # Check that we can parse the code
+        self._validate_code(code)
+
+        package_path = module_py_path.split(".")[-1]
+
+        # Create the package if it does not already exist
+        if package_path not in self.python_parser.package_dict:
+            self._create_new_package(package_path)
+
+        # Update the module dictionaries
+        if module_py_path not in self.python_parser.module_dict:
+            self._create_new_module(module_py_path, code)
         else:
-            if "__init__" in py_path:
-                self._modify_or_create_new_package(py_path, code)
-            else:
-                raise ValueError("Invalid code: Unable to determine the code type.")
+            self._modify_existing_module_imports(module_py_path, code)
+        module = self.python_parser.module_dict[module_py_path]
+        # Update the package dictionaries to reflect module changes
+        self._modify_existing_package(package_path, module_py_path, module)
+        print("code = ", code)
+
+        # Update the class and function dictionaries
+        class_methods, functions_dict, classes_code, _ = self.python_parser.parse_raw_code(code)
+        print("class_methods = ", class_methods)
+        print("classes_code = ", classes_code)
+        for class_name in classes_code:
+            class_path = f"{module_py_path}.{class_name}"
+            print("updaing class_path = ", class_path)
+            # Create the class entry if it does not already exist
+            if class_path not in self.python_parser.class_dict:
+                self._create_new_class(class_path, classes_code[class_name])
+
+            # Update the class and function dictionaries
+            for method_name in class_methods[class_name]:
+                method_path = f"{class_path}.{method_name}"
+                function = PythonFunctionType.from_code(
+                    method_path, class_methods[class_name][method_name]
+                )
+                self.python_parser.class_dict[class_path].methods[method_path] = function
+                self.python_parser.function_dict[method_path] = function
+        for function_name in functions_dict:
+            function_path = f"{module_py_path}.{function_name}"
+            function_code = functions_dict[function_name]
+            self.python_parser.function_dict[function_path] = PythonFunctionType.from_code(
+                function_path, function_code
+            )
+
         return "Success"
 
     def write_to_disk(self) -> str:
@@ -95,15 +126,12 @@ class PythonWriter:
         Raises:
             ValueError: If the resulting output is not a valid Python file.
         """
-        print("self.modified_modules = ", self.modified_modules)
-        for module_path in self.python_parser.module_dict.keys():
+        for module_py_path in self.python_parser.module_dict.keys():
             file_path = os.path.join(
-                self.python_parser.absolute_path_to_base, *(module_path.split("."))
+                self.python_parser.absolute_path_to_base, *(module_py_path.split("."))
             )
-            if module_path in self.modified_modules:
-                print("Writing to disk, module_path: ", module_path)
-                print("Writing to disk, file_path: ", module_path)
-                self._write_file(f"{file_path}.py", module_path)
+            if module_py_path in self.modified_modules:
+                self._write_file(f"{file_path}.py", module_py_path)
         return "Success"
 
     def _write_file(self, file_path: str, module_py_path: str) -> None:
@@ -170,142 +198,27 @@ class PythonWriter:
         except SyntaxError as e:
             raise ValueError(f"Provided code is not valid Python: {e}")
 
-    def _modify_or_create_new_function(
-        self, function_py_path: str, function_code: str, has_class: bool
+    def _create_new_package(self, py_path: str) -> None:
+        """
+        Add a new package to the PythonParser package dictionary and update dependent dictionaries.
+
+        Args:
+            py_path (str): Package path.
+        """
+        assert py_path not in self.python_parser.package_dict
+        self.python_parser.package_dict[py_path] = PythonPackageType(py_path, {})
+
+    def _modify_existing_package(
+        self, package_py_path: str, module_py_path: str, module: PythonModuleType
     ) -> None:
         """
-        Add a new function to the PythonParser or modify an existing function.
+        Modify an existing package in the PythonParser.
 
         Args:
-            function_py_path (str): The Python path of the function.
-            function_code (str): The source code of the function.
-
-        Raises:
-            ValueError: If the provided code is not valid Python.
+            py_path (str): The Python path of the package to modify.
         """
-        if function_py_path not in self.python_parser.function_dict:
-            self._create_new_function(function_py_path, function_code, has_class)
-        else:
-            self._modify_existing_function(function_py_path, function_code)
-
-    def _modify_or_create_new_class(self, class_py_path: str, class_code: str) -> None:
-        """
-        Add a new class to the PythonParser or modify an existing class.
-
-        Args:
-            class_py_path (str): The Python path of the class.
-            class_code (str): The source code of the class.
-
-        Raises:
-            ValueError: If the provided code is not valid Python.
-        """
-        if class_py_path not in self.python_parser.class_dict:
-            module_path = ".".join(class_py_path.split(".")[:-1])
-            self._create_new_class(module_path, class_py_path, class_code)
-        else:
-            self._modify_existing_class(class_py_path, class_code)
-
-    def _modify_or_create_new_module(self, module_py_path: str, module_code: str) -> None:
-        """
-        Add a new module to the PythonParser or modify an existing module.
-
-        Args:
-            module_py_path (str): The Python path of the module.
-            module_code (str): The source code of the module.
-
-        Raises:
-            ValueError: If the provided code is not valid Python.
-        """
-        if module_py_path not in self.python_parser.module_dict:
-            self._create_new_module(module_py_path, module_code)
-        else:
-            self._modify_existing_module(module_py_path, module_code)
-
-    def _modify_or_create_new_package(self, package_py_path: str, package_code: str) -> None:
-        """
-        Add a new package to the PythonParser or modify an existing package.
-
-        Args:
-            package_py_path (str): The Python path of the package.
-            package_code (str): The source code of the package.
-
-        Raises:
-            ValueError: If the provided code is not valid Python.
-        """
-        if package_py_path not in self.python_parser.package_dict:
-            self._create_new_package(package_py_path)
-        else:
-            self._modify_existing_package(package_py_path, package_code)
-
-    def _create_new_function(
-        self, function_py_path: str, function_code: str, has_class: bool
-    ) -> None:
-        """
-        Add a new function to the PythonParser.
-
-        Args:
-            function_py_path (str): The Python path of the function.
-            code (str): The source code of the function.
-        """
-
-        stripped_function_code, import_statements = self._strip_import_statements(function_code)
-        function_obj = PythonFunctionType.from_code(function_py_path, stripped_function_code)
-        self.python_parser.function_dict[function_py_path] = function_obj
-
-        if has_class:
-            module_py_path = ".".join(function_py_path.split(".")[:-2])
-            if module_py_path not in self.python_parser.module_dict:
-                self._create_new_module(module_py_path, "")
-            class_path = ".".join(function_py_path.split(".")[:-1])
-            self.python_parser.class_dict[class_path].methods[function_obj.py_path] = function_obj
-        else:
-            module_py_path = function_py_path
-            if module_py_path not in self.python_parser.module_dict:
-                self._create_new_module(module_py_path, "")
-            self.python_parser.module_dict[module_py_path].standalone_functions.append(
-                function_obj
-            )
-            print("a")
-            self.modified_modules.add(module_py_path)
-
-        # filter redundant import statements
-        import_statements = [
-            ele
-            for ele in import_statements
-            if ele not in self.python_parser.module_dict[module_py_path].imports
-        ]
-
-        self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
-        print("b")
-        self.modified_modules.add(module_py_path)
-
-    def _create_new_class(self, module_py_path: str, class_py_path: str, class_code: str) -> None:
-        """
-        Add a new class to the PythonParser.
-
-        Args:
-            module_py_path (str): The Python path of the module containing the class.
-            class_py_path (str): The Python path of the class.
-            class_code (str): The source code of the class.
-            module_code (str, optional): The source code of the module, required if the module doesn't exist.
-        """
-        stripped_class_code, import_statements = self._strip_import_statements(class_code)
-
-        class_obj = PythonClassType.from_code(class_py_path, stripped_class_code)
-        self.python_parser.class_dict[class_py_path] = class_obj
-        self._update_dependent_dicts_on_class_creation(class_obj)
-
-        if module_py_path not in self.python_parser.module_dict:
-            module_code = class_code  # The class becomes the module
-            self._create_new_module(module_py_path, module_code)
-        else:
-            # filter redundant import statements
-            import_statements = [
-                ele
-                for ele in import_statements
-                if ele not in self.python_parser.module_dict[module_py_path].imports
-            ]
-            self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
+        assert package_py_path in self.python_parser.package_dict
+        self.python_parser.package_dict[package_py_path].modules[module_py_path] = module
 
     def _create_new_module(self, module_py_path: str, module_code: str) -> None:
         """
@@ -315,10 +228,6 @@ class PythonWriter:
             module_py_path (str): The Python path of the module.
             module_code (str): The source code of the module.
         """
-        package_py_path = ".".join(module_py_path.split(".")[:-1])
-        if package_py_path not in self.python_parser.package_dict:
-            self._create_new_package(package_py_path)
-
         assert module_py_path not in self.python_parser.module_dict
         stripped_module_code, import_statements = self._strip_import_statements(module_code)
 
@@ -327,181 +236,39 @@ class PythonWriter:
         )
 
         self.python_parser.module_dict[module_py_path] = module_obj
-        print("c, module_py_path=", module_py_path)
         self.modified_modules.add(module_py_path)
 
-        self._update_dependent_dicts_on_module_creation(module_obj)
-
-    def _create_new_package(self, py_path: str) -> None:
-        """
-        Add a new package to the PythonParser package dictionary and update dependent dictionaries.
-
-        Args:
-            py_path (str): Package path.
-            code (str): Python code for the package.
-        """
-        assert py_path not in self.python_parser.package_dict
-        self.python_parser.package_dict[py_path] = PythonPackageType(py_path, {})
-
-    def _modify_existing_function(self, function_py_path: str, function_code: str) -> None:
-        """
-        Modify an existing function in the PythonParser.
-
-        Args:
-            function_py_path (str): The Python path of the function to modify.
-            function_code (str): The new source code of the function.
-
-        Raises:
-            ValueError: If the function is not found in the PythonParser's function_dict.
-        """
-        if function_py_path not in self.python_parser.function_dict:
-            raise ValueError(f"Method or function {function_py_path} not found in function_dict.")
-        old_function_obj = self.python_parser.function_dict[function_py_path]
-        function_obj = PythonFunctionType.from_code(function_py_path, function_code)
-        self.python_parser.function_dict[function_py_path] = function_obj
-        # Update the class's method dict
-        for class_key, class_obj in self.python_parser.class_dict.items():
-            for method_key, method_obj in class_obj.methods.items():
-                if method_obj == old_function_obj:
-                    self.python_parser.class_dict[class_key].methods[method_key] = function_obj
-                    break
-
-    def _modify_existing_class(self, class_py_path: str, class_code: str) -> None:
-        """
-        Modify an existing class in the PythonParser.
-
-        Args:
-            class_py_path (str): The Python path of the class to modify.
-            class_code (str): The new source code of the class.
-
-        Raises:
-            ValueError: If the class is not found in the PythonParser's class_dict.
-        """
-        if class_py_path not in self.python_parser.class_dict:
-            raise ValueError(f"Class {class_py_path} not found in class_dict.")
-        class_obj = PythonClassType.from_code(class_py_path, class_code)
-
-        for method in class_obj.methods.values():
-            self._modify_or_create_new_function(method.py_path, method.code, has_class=True)
-
-        self.python_parser.class_dict[class_py_path] = class_obj
-
-    def _modify_existing_module(self, module_py_path: str, module_code: str) -> None:
+    def _modify_existing_module_imports(self, module_py_path: str, module_code: str) -> None:
         """
         Modify an existing module in the PythonParser.
 
         Args:
             module_py_path (str): The Python path of the module to modify.
             module_code (str): The new source code of the module.
-
-        Raises:
-            ValueError: If the module is not found in the PythonParser's module_dict.
         """
-        if module_py_path not in self.python_parser.module_dict:
-            raise ValueError(f"Module {module_py_path} not found in module_dict.")
+        assert module_py_path in self.python_parser.module_dict
 
-        stripped_module_code, import_statements = self._strip_import_statements(module_code)
-        module_obj = PythonModuleType.from_code(
-            module_py_path, stripped_module_code, import_statements
-        )
+        _, import_statements = self._strip_import_statements(module_code)
+        self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
 
-        for class_obj in module_obj.classes:
-            self._modify_existing_class(class_obj.py_path, class_obj.code)
-
-        self.python_parser.module_dict[module_py_path] = module_obj
-        print("d")
-        self.modified_modules.add(module_py_path)
-
-    def _modify_existing_package(self, _package_py_path: str, _package_code: str) -> None:
+    def _create_new_class(self, class_py_path: str, class_code: str) -> None:
         """
-        Modify an existing package in the PythonParser.
-
+        Add a new class to the PythonParser.
         Args:
-            _package_py_path (str): The Python path of the package to modify.
-            _package_code (str): The new source code of the package.
-
-        Raises:
-            ValueError: If called, as this method is not implemented.
+            module_py_path (str): The Python path of the module containing the class.
+            class_py_path (str): The Python path of the class.
+            class_code (str): The source code of the class.
+            module_code (str, optional): The source code of the module, required if the module doesn't exist.
         """
-
-        raise NotImplementedError
-
-    def _update_dependent_dicts_on_module_creation(self, module_obj: PythonModuleType) -> None:
-        """
-        Update the PythonParser's dependent dictionaries on the creation of a new module.
-
-        Args:
-            module_obj (PythonModuleType): The new module.
-
-        Raises:
-            ValueError: If the module's package is not found in the PythonParser's package_dict.
-        """
-        # Update the package dictionary based on the module path
-        module_path = module_obj.py_path
-        package_path = ".".join(module_path.split(".")[:-1])
-        if package_path in self.python_parser.package_dict:
-            self.python_parser.package_dict[package_path].modules[module_path] = module_obj
-
-        for func_obj in module_obj.standalone_functions:
-            self.python_parser.function_dict[func_obj.py_path] = func_obj
-
-        for class_obj in module_obj.classes:
-            self._update_dependent_dicts_on_class_creation(class_obj)
-
-    def _update_dependent_dicts_on_class_creation(self, class_obj: PythonClassType) -> None:
-        """
-        Update the PythonParser's dependent dictionaries on the creation of a new class.
-
-        Args:
-            class_obj (PythonClassType): The new class.
-
-        Raises:
-            ValueError: If the class's module is not found in the PythonParser's module_dict.
-        """
-        class_py_path = class_obj.py_path
+        stripped_class_code, _ = self._strip_import_statements(class_code)
+        class_obj = PythonClassType.from_code(class_py_path, stripped_class_code)
         self.python_parser.class_dict[class_py_path] = class_obj
-        for method_obj in class_obj.methods.values():
-            self.python_parser.function_dict[method_obj.py_path] = method_obj
 
     # TODO - Implement callbacks here for the PythonParser to use
     def _handle_update_notification(
         self, object_type: str, py_path: str, payload: Dict[str, Any]
     ) -> None:
         pass
-
-    @staticmethod
-    def _get_code_type(py_path: str, code: str) -> Tuple[bool, bool, bool]:
-        """
-        Determine the type of code at a given py_path, functions, and module-level docstrings in the given code.
-
-        Args:
-            py_path (str): The path to the Python file.
-            code (str): The source code to be analyzed.
-
-        Returns:
-            Tuple[bool, bool, bool]: A tuple containing three boolean values.
-                The first value indicates whether a class is present in the code.
-                The second value indicates whether a function is present in the code.
-                The third value indicates whether a module-level docstring is present in the code.
-        """
-        is_package = "__init__" in py_path
-        if is_package:
-            return False, False, False
-
-        has_class = False
-        has_function = False
-        has_module_docstring = False
-
-        code_ast = ast.parse(code)
-        for node in code_ast.body:
-            if isinstance(node, ast.FunctionDef):
-                has_function = True
-            elif isinstance(node, ast.ClassDef):
-                has_class = True
-            elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
-                has_module_docstring = True
-
-        return has_class, has_function, has_module_docstring
 
     @staticmethod
     def _strip_import_statements(code: str) -> Tuple[str, List[str]]:

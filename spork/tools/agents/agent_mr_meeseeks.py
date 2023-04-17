@@ -53,6 +53,26 @@ class AgentMrMeeseeks:
         AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
         system. Meeseeks are responsible for executing instructions and reporting
         the results back to the master.
+
+        Args:
+            initial_payload (Dict[str, str]): The initial payload to be used for the agent.
+            initial_instructions (List[Dict[str, str]]): The initial instructions to be used for the agent.
+            tools (List[BaseTool]): The tools to be used for the agent.
+            version (AgentVersion, optional): The version of the agent. Defaults to AgentVersion.MEESEEKS_V1.
+            model (str, optional): The model to be used for the agent. Defaults to "gpt-4".
+            session_id (Optional[str], optional): The session id to be used for the agent. Defaults to None.
+
+        Attributes:
+            model (str): The model to be used for the agent.
+            version (AgentVersion): The version of the agent.
+            tools (List[BaseTool]): The tools to be used for the agent.
+            messages (List[Dict[str, str]]): The messages that have been sent to the agent.
+            session_id (str): The session id to be used for the agent.
+
+        Methods:
+            iter_task(instructions: List[Dict[str, str]]) -> Dict[str, str]: Iterates through the instructions and returns the next instruction.
+            replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
+
         """
 
         # Initialize OpenAI API Key
@@ -273,7 +293,7 @@ if __name__ == "__main__":
         initial_payload,
         initial_instructions,
         exec_tools,
-        # session_id="c20a9472-a2d2-45fc-86b8-5e9865561356",
+        session_id="728c0edc-3ab3-4b5b-ac52-36531fe2ea45",
     )
     agent.replay_messages()
     # next_instruction = agent.iter_task()
@@ -281,4 +301,3 @@ if __name__ == "__main__":
     import pdb
 
     pdb.set_trace()
-    # print("Next Instruction: %s" % next_instruction)

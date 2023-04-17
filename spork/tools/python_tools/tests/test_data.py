@@ -112,6 +112,7 @@ class_data = {
     "class_raw_code": CLASS_RAW_CODE,
     "class_module_code": CLASS_MODULE_CODE,
     "class_docstring": f"NewClass:\nThis is a new class. \n__init__:\nThis is the constructor. \nsay_hello:\n{RESULT_NOT_FOUND}",
+    "function_name": "say_hello",
 }
 
 # Module with Class and Function Test Data
