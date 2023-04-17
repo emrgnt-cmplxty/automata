@@ -209,7 +209,6 @@ class PythonParser:
             class_methods[cls.name] = methods
 
         classes_code, modules_code = PythonParser._get_full_module_code(classes, functions)
-
         return class_methods, functions_dict, classes_code, modules_code
 
     def _populate_dicts_from_source(self, abs_dir: str) -> None:

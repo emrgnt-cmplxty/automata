@@ -50,10 +50,6 @@ class AgentMrMeeseeks:
         session_id: Optional[str] = None,
     ):
         """
-        AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
-        system. Meeseeks are responsible for executing instructions and reporting
-        the results back to the master.
-
         Args:
             initial_payload (Dict[str, str]): The initial payload to be used for the agent.
             initial_instructions (List[Dict[str, str]]): The initial instructions to be used for the agent.
@@ -162,7 +158,8 @@ class AgentMrMeeseeks:
         """Process the messages in the conversation."""
         tool_calls = AgentMrMeeseeks._parse_input_string(response_text)
         outputs = []
-        for tool, tool_input in tool_calls.items():
+        for tool_request in tool_calls:
+            tool, tool_input = tool_request["tool"], tool_request["input"]
             if tool == "error-reporter":
                 # In the event of an error, the tool_input becomes the output, as it is now a parsing error
                 tool_output = tool_input
@@ -170,7 +167,6 @@ class AgentMrMeeseeks:
 
             for tool_instance in self.tools:
                 if tool_instance.name == tool:
-                    print("Processing Tool Input: %s" % (tool_input))
                     tool_output = tool_instance.run(tool_input, verbose=False)
                     outputs.append(tool_output)
         return outputs
@@ -233,7 +229,7 @@ class AgentMrMeeseeks:
         return json_matches
 
     @staticmethod
-    def _parse_input_string(input_str: str) -> Dict[str, str]:
+    def _parse_input_string(input_str: str) -> List[Dict[str, str]]:
         """Parse the input string and return a dictionary of tool names to tool inputs."""
         json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
         parsed_entries = []
@@ -247,7 +243,7 @@ class AgentMrMeeseeks:
                 parsed_entries.append(
                     {"tool": "error-reporter", "input": "Error parsing JSON: %s" % e}
                 )
-        return {entry["tool"]: entry.get("input") for entry in parsed_entries}
+        return [{"tool": entry["tool"], "input": entry.get("input")} for entry in parsed_entries]
 
 
 if __name__ == "__main__":
@@ -280,7 +276,6 @@ if __name__ == "__main__":
         f" The tool uses AgentMrMeeseeks to implement a single tool end-point called python-agent-python-task."
         f" Be sure to include a sensible description based on the context. You should begin this task by inspecting necessary docstrings."
     )
-
     initial_instructions = [
         {
             "role": "assistant",
@@ -293,10 +288,10 @@ if __name__ == "__main__":
         initial_payload,
         initial_instructions,
         exec_tools,
-        session_id="728c0edc-3ab3-4b5b-ac52-36531fe2ea45",
+        # session_id="04f84ef2-c896-49d0-9d20-f50bb7d42f8a",
     )
-    agent.replay_messages()
-    # next_instruction = agent.iter_task()
+    # agent.replay_messages()
+    next_instruction = agent.iter_task()
 
     import pdb
 

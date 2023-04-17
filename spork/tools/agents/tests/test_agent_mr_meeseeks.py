@@ -1,75 +1,78 @@
-import os
-import tempfile
-from typing import List
-from unittest.mock import MagicMock
+import json
+from unittest.mock import patch
 
-import openai
 import pytest
-from langchain.tools import BaseTool
+from langchain.agents import Tool
 
-from spork.config import *  # noqa F403
-
-# Replace imports with appropriate paths for your project
-from ..agent_mr_meeseeks import AgentMrMeeseeks
+from spork.tools.agents.agent_mr_meeseeks import AgentMrMeeseeks
+from spork.tools.python_tools.python_parser_tool_builder import PythonParser
 
 
 @pytest.fixture
-def mocked_openai_api():
-    original_api_method = openai.ChatCompletion.create
-    openai.ChatCompletion.create = MagicMock(
-        return_value={"choices": [{"message": {"content": "Test response from Assistant"}}]}
-    )
+def agent_mr_meeseeks():
+    python_parser = PythonParser()
 
-    yield
+    exec_tools = [
+        Tool(
+            name="test-tool",
+            func=lambda x: x,
+            description=f"Test tool",
+            return_direct=True,
+            verbose=True,
+        )
+    ]
 
-    openai.ChatCompletion.create = original_api_method
+    overview = python_parser.get_overview()
 
-
-@pytest.fixture
-def temporary_database():
-    # Create a temporary file for the SQLite database
-    db_file = tempfile.NamedTemporaryFile(delete=False)
-
-    # Set the SQLite connection string to use the temporary file
-    original_db_path = CONVERSATION_DB_NAME  # noqa F405
-    AgentMrMeeseeks.DB_PATH = f"sqlite:///{db_file.name}"
-
-    yield
-
-    # Close and remove the temporary file after the test is finished
-    db_file.close()
-    os.unlink(db_file.name)
-
-    # Reset the SQLite connection string to the original value
-    AgentMrMeeseeks.DB_PATH = original_db_path
-
-
-def test_order_preservation(temporary_database, mocked_openai_api):
-    initial_payload = {"overview": "Test overview"}
+    initial_payload = {
+        "overview": overview,
+    }
     initial_instructions = [
         {
             "role": "assistant",
-            "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, look at me."}',
+            "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
         },
-        {"role": "user", "content": "Test instruction"},
+        {"role": "user", "content": "Test instruction."},
     ]
-    tools: List[BaseTool] = []
 
-    # Create an agent and save interactions
-    agent = AgentMrMeeseeks(initial_payload, initial_instructions, tools)
-    agent.iter_task()
-    agent._save_interaction({"role": "user", "content": "Test instruction 2"})
-    agent.iter_task()
-
-    session_id = agent.session_id
-
-    # Create a new agent with the same session ID to replay the interactions
-    replay_agent = AgentMrMeeseeks(
-        initial_payload, initial_instructions, tools, session_id=session_id
-    )
-
-    assert replay_agent.messages == agent.messages
+    agent = AgentMrMeeseeks(initial_payload, initial_instructions, exec_tools)
+    return agent
 
 
-if __name__ == "__main__":
-    pytest.main(["-v", "test_agent_meeseeks.py"])
+def test_agent_mr_meeseeks_init(agent_mr_meeseeks):
+    assert agent_mr_meeseeks is not None
+    assert agent_mr_meeseeks.model == "gpt-4"
+    assert agent_mr_meeseeks.session_id is not None
+    assert len(agent_mr_meeseeks.tools) > 0
+
+
+@patch("spork.tools.agents.agent_mr_meeseeks.openai.ChatCompletion.create")
+def test_agent_mr_meeseeks_iter_task(mock_chatcompletion_create, agent_mr_meeseeks):
+    mock_chatcompletion_create.return_value = {
+        "choices": [{"message": {"content": '{"tool": "test-tool", "input": "test input"}'}}]
+    }
+
+    next_instruction = agent_mr_meeseeks.iter_task()
+    assert len(next_instruction) == 1
+    assert next_instruction[0] == "test input"
+
+
+@patch("spork.tools.agents.agent_mr_meeseeks.openai.ChatCompletion.create")
+def test_agent_mr_meeseeks_iter_task_no_outputs(mock_chatcompletion_create, agent_mr_meeseeks):
+    mock_chatcompletion_create.return_value = {"choices": [{"message": {"content": "No outputs"}}]}
+
+    next_instruction = agent_mr_meeseeks.iter_task()
+    assert next_instruction is None
+
+
+def test_agent_mr_meeseeks_extract_json_objects(agent_mr_meeseeks):
+    input_str = """
+        This is a sample string with some JSON objects.
+        {"tool": "tool1", "input": "input1"}
+        {"tool": "tool2", "input": "input2"}
+    """
+
+    json_objects = agent_mr_meeseeks._extract_json_objects(input_str)
+    assert len(json_objects) == 2
+    assert json.loads(json_objects[0]) == {"tool": "tool1", "input": "input1"}
+    assert json.loads(json_objects[1]) == {"tool": "tool2", "input": "input2"}
