@@ -3,6 +3,7 @@ This module provides functions to interact with the GitHub API, specifically to 
 choose a work item to work on, and remove HTML tags from text.
 """
 
+import logging
 import os
 from typing import Dict, List, Union
 
@@ -153,3 +154,29 @@ def remove_html_tags(text: str) -> str:
     raw_text = soup.get_text(strip=True, separator="\n")
     clean_text = re.sub(clean, "", raw_text)
     return clean_text
+
+
+def get_logging_config(log_level=logging.INFO) -> dict:
+    """Returns logging configuration."""
+
+    logging_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": log_level,
+            },
+        },
+        "root": {
+            "handlers": ["console"],
+            "level": log_level,
+        },
+    }
+    return logging_config

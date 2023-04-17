@@ -22,6 +22,7 @@
         ...
 """
 import json
+import logging
 import sqlite3
 import uuid
 from typing import Dict, List, Optional
@@ -37,6 +38,8 @@ from .agent_configs.agent_version import AgentVersion
 from .agent_langchain_manager import AgentLangchainManager
 
 CONTINUE_MESSAGE = "Continue"
+
+logger = logging.getLogger(__name__)
 
 
 class AgentMrMeeseeks:
@@ -95,8 +98,9 @@ class AgentMrMeeseeks:
             for instruction in initial_instructions:
                 self._save_interaction(instruction)
 
-        print("Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id))
-        # print("Initializing SessionId: %s\n" % (self.session_id))
+        logger.info(
+            "Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id)
+        )
 
     def __del__(self):
         self.conn.close()
@@ -105,7 +109,7 @@ class AgentMrMeeseeks:
         self,
     ) -> Optional[List[Dict[str, str]]]:
         """Run the test and report the tool outputs back to the master."""
-        print("Running instruction...")
+        logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
             model=self.model, messages=self.messages, temperature=0.7
         )
@@ -128,16 +132,16 @@ class AgentMrMeeseeks:
     def replay_messages(self) -> None:
         """Replay the messages in the conversation."""
         if len(self.messages) == 0:
-            print("No messages to replay.")
+            logger.info("No messages to replay.")
             return
         for message in self.messages:
             if message["role"] == "user":
                 continue
-            print("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-            print("Processing message content = ", message["content"])
+            logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+            logger.info("Processing message content = ", message["content"])
             processed_outputs = self._process_input(message["content"])
-            print("\nProcessed Outputs:\n%s\n" % processed_outputs)
-            print("-" * 100)
+            logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
+            logger.info("-" * 100)
 
     def _load_prompt(self, initial_payload: Dict[str, str]) -> str:
         """Load the prompt from a config specified at initialization."""
@@ -198,11 +202,11 @@ class AgentMrMeeseeks:
             (self.session_id, interaction_id, role, content),
         )
         self.conn.commit()
-        print(
+        logger.info(
             "Saving Interaction:\nRole:%s\nContent:%s\n\n"
             % (interaction["role"], interaction["content"])
         )
-        print("-" * 100)
+        logger.info("-" * 100)
         self.messages.append(interaction)
 
     def _load_previous_interactions(self):
@@ -270,12 +274,13 @@ if __name__ == "__main__":
         "overview": overview,
     }
 
-    first_instruction = (
-        f"Write a file called python_meseeks_tool_builder.py which imitates the workflow "
-        f"of python_parser_tool_builder.py, and is located in the same directory."
-        f" The tool uses AgentMrMeeseeks to implement a single tool end-point called python-agent-python-task."
-        f" Be sure to include a sensible description based on the context. You should begin this task by inspecting necessary docstrings."
-    )
+    # first_instruction = (
+    #     f"Write a file called python_meseeks_tool_builder.py which imitates the workflow "
+    #     f"of python_parser_tool_builder.py, and is located in the same directory."
+    #     f" The tool uses AgentMrMeeseeks to implement a single tool end-point called python-agent-python-task."
+    #     f" Be sure to include a sensible description based on the context. You should begin this task by inspecting necessary docstrings."
+    # )
+    first_instruction = f"Write a script which builds API documentation for the local repository, put it into an intelligent location. "
     initial_instructions = [
         {
             "role": "assistant",

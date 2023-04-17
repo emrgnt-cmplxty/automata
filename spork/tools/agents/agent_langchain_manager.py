@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Sequence
 
@@ -10,6 +11,8 @@ from langchain.tools.base import BaseTool
 from ..utils import home_path, load_yaml
 from .agent_configs.agent_version import AgentVersion
 from .task_configs.task import TaskType
+
+logger = logging.getLogger(__name__)
 
 
 class AgentLangchainManager:
@@ -76,7 +79,7 @@ class AgentLangchainManager:
         # Replace newline characters with actual newlines
         formatted_prompt = prompt.format(**payload).replace("\\n", "\n")
 
-        print("The Agent Manager is returning the prompt = %s" % (formatted_prompt))
+        logger.info("The Agent Manager is returning the prompt = %s" % (formatted_prompt))
         return formatted_prompt
 
     @staticmethod
@@ -99,13 +102,3 @@ class AgentLangchainManager:
             config_dir,
             config_path,
         )
-
-        # def load_prompt_config(self) -> Dict:
-        #     config_file = os.path.join("prompt_config", self.version.value)
-        #     with open(config_path.get(), "r") as f:
-        #         config: Config = jsoncomment.JsonComment().load(f)
-
-        # def get_prompt_text(self, **kwargs) -> str:
-        #     prompt_text = self.prompt_config["prompt_text"]
-        #     # Inject the required local variables into the prompt text
-        #     return prompt_text.format(**kwargs)

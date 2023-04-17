@@ -232,10 +232,6 @@ class PythonClassType(PythonObjectType):
                     break
             else:
                 class_docstring = RESULT_NOT_FOUND
-        print("code = ", code)
-        print("class_docstring = ", class_docstring)
-        print("ast.get_docstring(tree) = ", ast.get_docstring(tree))
-
         return cls(py_path, class_docstring, code)
 
     def _parse_methods(self) -> Dict[str, PythonFunctionType]:

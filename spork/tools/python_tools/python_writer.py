@@ -91,13 +91,10 @@ class PythonWriter:
 
         # Update the class and function dictionaries
         class_methods, functions_dict, classes_code, _ = self.python_parser.parse_raw_code(code)
-        print("class_methods = ", class_methods)
-        print("functions_dict = ", functions_dict)
         for class_name in classes_code:
             class_path = f"{module_py_path}.{class_name}"
             # Create the class entry if it does not already exist
             if class_path not in self.python_parser.class_dict:
-                print("creating new class..")
                 self._create_new_class(class_path, classes_code[class_name])
             # Update the class and function dictionaries
             for method_name in class_methods[class_name]:

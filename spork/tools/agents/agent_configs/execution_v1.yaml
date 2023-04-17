@@ -5,5 +5,5 @@ input_variables:
   - tools
 output_parser: null
 template: >
-  Impl is TODO
+  Implementation is TODO
 template_format: "f-string"
