@@ -4,9 +4,9 @@ from langchain.agents import AgentExecutor, AgentType, initialize_agent
 from langchain.llms import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
 
-from spork.tools.codebase_oracle_tool import CodebaseOracleToolBuilder
-from spork.tools.edit_instructions_compiler_tool import EditInstructionsCompilerTool
-from spork.tools.edit_instructions_executor_tool import EditInstructionsExecutorTool
+from spork.tools.oracles.codebase_oracle_tool import CodebaseOracleToolBuilder
+from spork.tools.text_editor.edit_instructions_compiler_tool import EditInstructionsCompilerTool
+from spork.tools.text_editor.edit_instructions_executor_tool import EditInstructionsExecutorTool
 
 
 def make_text_editor_agent(

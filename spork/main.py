@@ -10,16 +10,17 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
 from spork.tools.git_tools import GitToolBuilder
+
+# Log into GitHub
+from spork.tools.oracles.codebase_oracle_tool import CodebaseOracleToolBuilder
+from spork.tools.oracles.langchain_oracle_tool import LangchainDocumentationOracleTool
+from spork.tools.text_editor.text_editor_tool import TextEditorTool
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 from .agents.text_editor_agent import make_text_editor_agent
 from .config import DEFAULT_BRANCH_NAME, DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
 from .prompts import make_execution_task, make_planning_task
-
-# Log into GitHub
-from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
 from .tools.navigator_tool import LocalNavigatorTool
-from .tools.text_editor_tool import TextEditorTool
 
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)
@@ -57,9 +58,9 @@ sys.stdout = cast(TextIO, pass_through_buffer)
 # TOOLS
 codebase_oracle_builder = CodebaseOracleToolBuilder(os.getcwd(), llm2, readonlymemory)
 codebase_oracle_tool = codebase_oracle_builder.build()
-breakpoint()
+langchain_oracle_tool = LangchainDocumentationOracleTool(llm2, readonlymemory)
 local_navigator_tool = LocalNavigatorTool(llm2)
-planning_tools = [codebase_oracle_tool]
+planning_tools = [codebase_oracle_tool, langchain_oracle_tool]
 
 
 text_editor_agent = make_text_editor_agent(

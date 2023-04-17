@@ -3,17 +3,16 @@ This module provides functions to interact with the GitHub API, specifically to 
 choose a work item to work on, and remove HTML tags from text.
 """
 
-from typing import List, Union
+from typing import List, Tuple, Union
 
-import regex as re
-from bs4 import BeautifulSoup
 from github import Github
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.Repository import Repository
+from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 from langchain.document_loaders import TextLoader
-from langchain.schema import Document
+from langchain.schema import AIMessage, Document, HumanMessage
 
 
 def login_github(token: str) -> Github:
@@ -121,22 +120,20 @@ class PassThroughBuffer:
         return getattr(self.original_buffer, attr)
 
 
-def remove_html_tags(text: str) -> str:
-    """
-    Removes HTML tags from a given string of text.
+def _get_chat_history(chat_history: List[Tuple[HumanMessage, AIMessage]]) -> str:
+    buffer = ""
+    for human_m, ai_m in chat_history:
+        human = "Human: " + str(human_m)
+        ai = "Assistant: " + str(ai_m)
+        buffer += "\n" + "\n".join([human, ai])
+    return buffer
 
-    Args:
-    - text: A string of text that may contain HTML tags.
 
-    Returns:
-    - A string of text with all HTML tags removed.
-    """
-
-    clean = re.compile("<.*?>")
-    soup = BeautifulSoup(text, "html.parser")
-    raw_text = soup.get_text(strip=True, separator="\n")
-    clean_text = re.sub(clean, "", raw_text)
-    return clean_text
+def run_retrieval_chain_with_sources_format(
+    chain: BaseConversationalRetrievalChain, q: str
+) -> str:
+    result = chain(q)
+    return f'Answer: {result["answer"]}.\n\n Sources: {result["source_documents"]}'
 
 
 class NumberedLinesTextLoader(TextLoader):
