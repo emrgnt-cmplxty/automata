@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from langchain.agents import Tool
 
-from spork.tools.simple_text_editor import SimpleTextEditor
+from spork.tools.text_editor.simple_text_editor import SimpleTextEditor
 
 
 class EditInstructionsExecutorTool(Tool):

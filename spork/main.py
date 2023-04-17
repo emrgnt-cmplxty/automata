@@ -10,6 +10,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
 from spork.tools.git_tools import GitToolBuilder
+from spork.tools.text_editor.text_editor_tool import TextEditorTool
 from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
 from .agents.text_editor_agent import make_text_editor_agent
@@ -19,7 +20,6 @@ from .prompts import make_execution_task, make_planning_task
 # Log into GitHub
 from .tools.codebase_oracle_tool import CodebaseOracleToolBuilder
 from .tools.navigator_tool import LocalNavigatorTool
-from .tools.text_editor_tool import TextEditorTool
 
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)

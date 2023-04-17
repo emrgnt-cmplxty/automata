@@ -1,25 +1,20 @@
 import os
 from pathlib import Path
-from typing import List, Tuple
 
 from langchain import FAISS
 from langchain.agents import Tool
 from langchain.chains import ConversationalRetrievalChain
-from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms.base import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
-from langchain.schema import AIMessage, Document, HumanMessage
+from langchain.schema import Document
 from langchain.text_splitter import CharacterTextSplitter
 
-from spork.utils import NumberedLinesTextLoader
-
-
-def run_retrieval_chain_with_sources_format(
-    chain: BaseConversationalRetrievalChain, q: str
-) -> str:
-    result = chain(q)
-    return f'Answer: {result["answer"]}.\n\n Sources: {result["source_documents"]}'
+from spork.utils import (
+    NumberedLinesTextLoader,
+    _get_chat_history,
+    run_retrieval_chain_with_sources_format,
+)
 
 
 class CodebaseOracleToolBuilder:
@@ -68,16 +63,8 @@ class CodebaseOracleToolBuilder:
             retriever=docsearch.as_retriever(),
             memory=self.memory,
             return_source_documents=True,
-            get_chat_history=self._get_chat_history,
+            get_chat_history=_get_chat_history,
         )
-
-    def _get_chat_history(self, chat_history: List[Tuple[HumanMessage, AIMessage]]) -> str:
-        buffer = ""
-        for human_m, ai_m in chat_history:
-            human = "Human: " + str(human_m)
-            ai = "Assistant: " + str(ai_m)
-            buffer += "\n" + "\n".join([human, ai])
-        return buffer
 
     def _get_chain(self):
         if self._needs_refresh:

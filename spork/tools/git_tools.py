@@ -14,13 +14,12 @@ from typing import List, Optional, Union
 
 import git
 import github
-import requests
 from github.Issue import Issue
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from langchain.agents import Tool, tool
+from langchain.agents import Tool
 
-from spork.utils import PassThroughBuffer, remove_html_tags
+from spork.utils import PassThroughBuffer
 
 
 class GitToolBuilder:
@@ -177,24 +176,3 @@ class GitToolBuilder:
             return f"Created pull request for  {title} in {self.github_repo.name} repository."
         except Exception as e:
             return f"Error: {e}"
-
-
-@tool
-def requests_get_clean(url: str) -> str:
-    """
-    Sends a GET request to a specified URL and returns the clean text in the response.
-    Args:
-    - url (str): A string representing the URL to send a GET request to.
-
-    Returns:
-    - output (str): A string representing the clean text in the response.
-    """
-
-    response = requests.get(url)
-    try:
-        if response.status_code == 200:
-            return remove_html_tags(response.text)
-        else:
-            raise Exception(f"Error: {response.status_code} {response.text}")
-    except Exception as e:
-        return f"Error: {e}"
