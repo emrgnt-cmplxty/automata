@@ -59,13 +59,13 @@ class PythonParser:
     def get_raw_code(self, object_py_path: str) -> str:
         """
         Returns the raw code of a function, class, or module with the given name,
-        or RESULT_NOT_FOUND if the PythonObjectType is not found.
+        or RESULT_NOT_FOUND if the object is not found.
 
         Args:
-            object_py_path (str): The python path of the PythonObjectType (module, class, method, or function) to look up.
+            object_py_path (str): The python path of the object (module, class, method, or function) to look up.
 
         Returns:
-            str: The raw code of the PythonObjectType, or RESULT_NOT_FOUND if the PythonObjectType is not found.
+            str: The raw code of the object, or RESULT_NOT_FOUND if the object is not found.
         """
         if object_py_path in self.function_dict:
             return self.function_dict[object_py_path].get_raw_code()
@@ -83,10 +83,10 @@ class PythonParser:
         Returns the docstrings of a function, class, or module with the given name, or RESULT_NOT_FOUND.
 
         Args:
-            object_py_path (str): The python path of the PythonObjectType (module, class, method, or function) to look up.
+            object_py_path (str): The python path of the object (module, class, method, or function) to look up.
 
         Returns:
-            str: The docstring code of the PythonObjectType, or RESULT_NOT_FOUND.
+            str: The docstring code of the object, or RESULT_NOT_FOUND.
         """
         if object_py_path in self.function_dict:
             return self.function_dict[object_py_path].get_docstring()

@@ -8,8 +8,8 @@ The PythonParserToolBuilder class builds a list of Tool PythonObjects, each repr
 command to interact with the PythonParser API.
 
 Attributes:
-- python_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
-- logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
+- python_parser (PythonParser): A PythonParser object representing the code parser to work with.
+- logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
 
 Example usage:
     python_parser = PythonParser()
@@ -29,11 +29,11 @@ from .python_parser import PythonParser
 class PythonParserToolBuilder:
     def __init__(self, python_parser: PythonParser, logger: Optional[PassThroughBuffer] = None):
         """
-        Initializes a PythonParserToolBuilder PythonObjectType with the given inputs.
+        Initializes a PythonParserToolBuilder object with the given inputs.
 
         Args:
-        - python_parser (PythonParser): A PythonParser PythonObjectType representing the code parser to work with.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
+        - python_parser (PythonParser): A PythonParser object representing the code parser to work with.
+        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
 
         Returns:
         - None

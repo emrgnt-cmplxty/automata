@@ -70,11 +70,13 @@ class PythonWriter:
         Raises:
             ValueError: If the provided code is not valid Python.
         """
-
+        print("py_path = %s" % (py_path))
         has_class, has_function, has_module_docstring = self._get_code_type(py_path, code)
         if has_module_docstring:
+            print("calling _modify_or_create_new_module")
             self._modify_or_create_new_module(py_path, code)
         elif has_class and not has_function:
+            print("calling _modify_or_create_new_class")
             self._modify_or_create_new_class(py_path, code)
         elif has_function:
             self._modify_or_create_new_function(py_path, code, has_class)
@@ -263,6 +265,7 @@ class PythonWriter:
             self.python_parser.module_dict[module_py_path].standalone_functions.append(
                 function_obj
             )
+            print("a")
             self.modified_modules.add(module_py_path)
 
         # filter redundant import statements
@@ -273,6 +276,7 @@ class PythonWriter:
         ]
 
         self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
+        print("b")
         self.modified_modules.add(module_py_path)
 
     def _create_new_class(self, module_py_path: str, class_py_path: str, class_code: str) -> None:
@@ -323,6 +327,7 @@ class PythonWriter:
         )
 
         self.python_parser.module_dict[module_py_path] = module_obj
+        print("c, module_py_path=", module_py_path)
         self.modified_modules.add(module_py_path)
 
         self._update_dependent_dicts_on_module_creation(module_obj)
@@ -404,6 +409,7 @@ class PythonWriter:
             self._modify_existing_class(class_obj.py_path, class_obj.code)
 
         self.python_parser.module_dict[module_py_path] = module_obj
+        print("d")
         self.modified_modules.add(module_py_path)
 
     def _modify_existing_package(self, _package_py_path: str, _package_code: str) -> None:

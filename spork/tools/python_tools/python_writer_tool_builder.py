@@ -9,11 +9,11 @@ from .python_writer import PythonWriter
 class PythonWriterToolBuilder:
     def __init__(self, python_writer: PythonWriter, logger: Optional[PassThroughBuffer] = None):
         """
-        Initializes a PythonWriterToolBuilder PythonObjectType with the given inputs.
+        Initializes a PythonWriterToolBuilder object with the given inputs.
 
         Args:
-        - python_writer (PythonWriter): A PythonWriter PythonObjectType representing the code writer to work with.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer PythonObjectType to log output.
+        - python_writer (PythonWriter): A PythonWriter object representing the code writer to work with.
+        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
 
         Returns:
         - None

@@ -45,7 +45,7 @@ class AgentMrMeeseeks:
         initial_payload: Dict[str, str],
         initial_instructions: List[Dict[str, str]],
         tools: List[BaseTool],
-        version: AgentVersion = AgentVersion.RETRIEVAL_V2,
+        version: AgentVersion = AgentVersion.MEESEEKS_V1,
         model: str = "gpt-4",
         session_id: Optional[str] = None,
     ):
@@ -79,8 +79,8 @@ class AgentMrMeeseeks:
             for instruction in initial_instructions:
                 self._save_interaction(instruction)
 
-        # print("Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id))
-        print("Initializing SessionId: %s\n" % (self.session_id))
+        print("Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id))
+        # print("Initializing SessionId: %s\n" % (self.session_id))
 
     def __del__(self):
         self.conn.close()
@@ -89,9 +89,9 @@ class AgentMrMeeseeks:
         self,
     ) -> Optional[List[Dict[str, str]]]:
         """Run the test and report the tool outputs back to the master."""
+        print("Running instruction...")
         response_summary = openai.ChatCompletion.create(
-            model=self.model,
-            messages=self.messages,
+            model=self.model, messages=self.messages, temperature=0.7
         )
         response_text = response_summary["choices"][0]["message"]["content"]
         processed_inputs = self._process_input(response_text)
@@ -109,8 +109,11 @@ class AgentMrMeeseeks:
         self._save_interaction({"role": "user", "content": CONTINUE_MESSAGE})
         return None
 
-    def replay_messages(self):
+    def replay_messages(self) -> None:
         """Replay the messages in the conversation."""
+        if len(self.messages) == 0:
+            print("No messages to replay.")
+            return
         for message in self.messages:
             if message["role"] == "user":
                 continue
@@ -120,7 +123,7 @@ class AgentMrMeeseeks:
             print("\nProcessed Outputs:\n%s\n" % processed_outputs)
             print("-" * 100)
 
-    def _load_prompt(self, initial_payload: Dict[str, str]):
+    def _load_prompt(self, initial_payload: Dict[str, str]) -> str:
         """Load the prompt from a config specified at initialization."""
         with open(
             AgentLangchainManager.format_config_path(
@@ -133,12 +136,12 @@ class AgentMrMeeseeks:
         prompt = loaded_yaml["template"]
         for arg in loaded_yaml["input_variables"]:
             prompt = prompt.replace(f"{{{arg}}}", initial_payload[arg])
+        return prompt
 
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = AgentMrMeeseeks._parse_input_string(response_text)
         outputs = []
-        print("Tool Calls len = %s" % (len(tool_calls.keys())))
         for tool, tool_input in tool_calls.items():
             if tool == "error-reporter":
                 # In the event of an error, the tool_input becomes the output, as it is now a parsing error
@@ -147,7 +150,8 @@ class AgentMrMeeseeks:
 
             for tool_instance in self.tools:
                 if tool_instance.name == tool:
-                    tool_output = tool_instance.run(tool_input, verbose=True)
+                    print("Processing Tool Input: %s" % (tool_input))
+                    tool_output = tool_instance.run(tool_input, verbose=False)
                     outputs.append(tool_output)
         return outputs
 
@@ -178,6 +182,11 @@ class AgentMrMeeseeks:
             (self.session_id, interaction_id, role, content),
         )
         self.conn.commit()
+        print(
+            "Saving Interaction:\nRole:%s\nContent:%s\n\n"
+            % (interaction["role"], interaction["content"])
+        )
+        print("-" * 100)
         self.messages.append(interaction)
 
     def _load_previous_interactions(self):
@@ -206,23 +215,18 @@ class AgentMrMeeseeks:
     @staticmethod
     def _parse_input_string(input_str: str) -> Dict[str, str]:
         """Parse the input string and return a dictionary of tool names to tool inputs."""
-        print("Receiving input string = ", input_str)
         json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
-        print("json_objects = ", json_objects)
         parsed_entries = []
         for json_str in json_objects:
             try:
                 sanitized_str = json_str  # _sanitize_json(json_str)
                 parsed_entry = json.loads(sanitized_str)
-                print("parsed_entry = ", parsed_entry)
                 if "tool" in parsed_entry:
                     parsed_entries.append(parsed_entry)
             except json.JSONDecodeError as e:
-                print("error parsing json")
                 parsed_entries.append(
                     {"tool": "error-reporter", "input": "Error parsing JSON: %s" % e}
                 )
-        print("parsed_entries = ", parsed_entries)
         return {entry["tool"]: entry.get("input") for entry in parsed_entries}
 
 
@@ -249,27 +253,32 @@ if __name__ == "__main__":
     initial_payload = {
         "overview": overview,
     }
+
     first_instruction = (
         f"Write a file called python_meseeks_tool_builder.py which imitates the workflow "
         f"of python_parser_tool_builder.py, and is located in the same directory."
         f" The tool uses AgentMrMeeseeks to implement a single tool end-point called python-agent-python-task."
         f" Be sure to include a sensible description based on the context. You should begin this task by inspecting necessary docstrings."
     )
+
     initial_instructions = [
         {
             "role": "assistant",
-            "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, look at me."}',
+            "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
         },
         {"role": "user", "content": first_instruction},
     ]
+
     agent = AgentMrMeeseeks(
         initial_payload,
         initial_instructions,
         exec_tools,
-        session_id="ec8172f1-2a75-4fed-9278-8476cfc1d967",
+        # session_id="c20a9472-a2d2-45fc-86b8-5e9865561356",
     )
     agent.replay_messages()
     # next_instruction = agent.iter_task()
 
-    # pdb.set_trace()
+    import pdb
+
+    pdb.set_trace()
     # print("Next Instruction: %s" % next_instruction)
