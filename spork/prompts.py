@@ -86,10 +86,8 @@ def make_execution_task(
     return (
         f"You are a GPT-4-powered coding agent."
         f" You are built with langchain, a framework for building language-based agents. "
-        f" You can read about it here: https://python.langchain.com/en/latest/modules/agents.html"
         f" Your task is to contribute clean, high-quality code to the given codebase."
         f" You are working in {os.getcwd()} on {github_repo_name} repository."
-        f" Assume the repository is private, so don't try to look it up on the internet, but find it locally on your machine."
         f" You are working on the following work item: "
         f"\n\nTitle: {work_item.title};"
         f"\n\nBody: {work_item.body};"
