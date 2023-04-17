@@ -223,7 +223,19 @@ class PythonClassType(PythonObjectType):
         # Get the class docstring
         class_docstring = RESULT_NOT_FOUND
         if class_node:
-            class_docstring = ast.get_docstring(class_node) or RESULT_NOT_FOUND
+            for stmt in class_node.body:
+                if isinstance(stmt, ast.Expr) and (
+                    isinstance(stmt.value, (ast.Str, ast.Constant))
+                    and isinstance(stmt.value.value, str)
+                ):
+                    class_docstring = stmt.value.value
+                    break
+            else:
+                class_docstring = RESULT_NOT_FOUND
+        print("code = ", code)
+        print("class_docstring = ", class_docstring)
+        print("ast.get_docstring(tree) = ", ast.get_docstring(tree))
+
         return cls(py_path, class_docstring, code)
 
     def _parse_methods(self) -> Dict[str, PythonFunctionType]:
@@ -265,7 +277,7 @@ class PythonModuleType(PythonObjectType):
     Attributes:
         filepath (str): The filepath of the file.
         docstring (str): The docstring of the file.
-        standalone_functions (List[PythonFunctionType]): A list of PythonFunctionType instances representing standalone functions.
+        standalone_functions (Dict[str, PythonFunctionType]): A list of PythonFunctionType instances representing standalone functions.
         classes (List[PythonFunctionType]): A list of PythonFunctionType instances representing classes.
     """
 
@@ -273,8 +285,8 @@ class PythonModuleType(PythonObjectType):
         self,
         py_path: str,
         docstring: str,
-        standalone_functions: List[PythonFunctionType],
-        classes: List[PythonClassType],
+        standalone_functions: Dict[str, PythonFunctionType],
+        classes: Dict[str, PythonClassType],
         imports: List[str],
     ):
         super().__init__(py_path, docstring, RESULT_NOT_FOUND)
@@ -297,11 +309,11 @@ class PythonModuleType(PythonObjectType):
         """
         raw_code = []
         if not exclude_standalones:
-            for func_obj in self.standalone_functions:
+            for func_obj in self.standalone_functions.values():
                 raw_code.append(func_obj.get_raw_code())
                 raw_code.append("\n")
 
-        for class_obj in self.classes:
+        for class_obj in self.classes.values():
             raw_code.append(class_obj.get_raw_code(exclude_methods))
             raw_code.append("\n")
 
@@ -324,11 +336,11 @@ class PythonModuleType(PythonObjectType):
             docstrings.append(f"{name}:\n{self.docstring}")
 
         if not exclude_standalones:
-            for func_obj in self.standalone_functions:
+            for func_obj in self.standalone_functions.values():
                 docstrings.append(func_obj.get_docstring())
                 docstrings.append("\n")
 
-        for class_obj in self.classes:
+        for class_obj in self.classes.values():
             docstrings.append(class_obj.get_docstring(exclude_methods))
             docstrings.append("\n")
 
@@ -359,14 +371,14 @@ class PythonModuleType(PythonObjectType):
     @classmethod
     def from_code(cls, py_path: str, code: str, imports: List[str]) -> "PythonModuleType":
         """
-        Creates a PythonClassType instance from an AST node.
+        Creates a PythonModuleType instance from an AST node.
 
         Args:
             node (ast.AST): The AST node representing the Python class.
             py_path (str): The Python path of the class.
 
         Returns:
-            PythonClassType: A new PythonClassType instance.
+            PythonModuleType: A new PythonModuleType instance.
         """
         tree = ast.parse(code)
         docstring = ast.get_docstring(tree) or RESULT_NOT_FOUND
@@ -377,24 +389,24 @@ class PythonModuleType(PythonObjectType):
     def _parse_functions_and_classes(
         py_path: str,
         node: ast.Module,
-    ) -> Tuple[List[PythonFunctionType], List[PythonClassType]]:
-        standalone_functions = []
-        classes = []
+    ) -> Tuple[Dict[str, PythonFunctionType], Dict[str, PythonClassType]]:
+        standalone_functions = {}
+        classes = {}
 
         for n in node.body:
             if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 func_name = n.name
                 func_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
                 func_code = ast.unparse(n)
-                standalone_functions.append(
-                    PythonFunctionType(f"{py_path}.{func_name}", func_docstring, func_code)
+                standalone_functions[f"{py_path}.{func_name}"] = PythonFunctionType(
+                    f"{py_path}.{func_name}", func_docstring, func_code
                 )
             elif isinstance(n, ast.ClassDef):
                 class_name = n.name
                 class_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
                 class_code = ast.unparse(n)
                 class_obj = PythonClassType(f"{py_path}.{class_name}", class_docstring, class_code)
-                classes.append(class_obj)
+                classes[f"{py_path}.{class_name}"] = class_obj
 
         return standalone_functions, classes
 

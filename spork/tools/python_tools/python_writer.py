@@ -85,22 +85,19 @@ class PythonWriter:
             self._create_new_module(module_py_path, code)
         else:
             self._modify_existing_module_imports(module_py_path, code)
-        module = self.python_parser.module_dict[module_py_path]
+        existing_module = self.python_parser.module_dict[module_py_path]
         # Update the package dictionaries to reflect module changes
-        self._modify_existing_package(package_path, module_py_path, module)
-        print("code = ", code)
+        self._modify_existing_package(package_path, module_py_path, existing_module)
 
         # Update the class and function dictionaries
         class_methods, functions_dict, classes_code, _ = self.python_parser.parse_raw_code(code)
-        print("class_methods = ", class_methods)
         print("classes_code = ", classes_code)
         for class_name in classes_code:
             class_path = f"{module_py_path}.{class_name}"
-            print("updaing class_path = ", class_path)
             # Create the class entry if it does not already exist
             if class_path not in self.python_parser.class_dict:
+                print("creating new class..")
                 self._create_new_class(class_path, classes_code[class_name])
-
             # Update the class and function dictionaries
             for method_name in class_methods[class_name]:
                 method_path = f"{class_path}.{method_name}"
@@ -112,9 +109,11 @@ class PythonWriter:
         for function_name in functions_dict:
             function_path = f"{module_py_path}.{function_name}"
             function_code = functions_dict[function_name]
-            self.python_parser.function_dict[function_path] = PythonFunctionType.from_code(
-                function_path, function_code
-            )
+            function_object = PythonFunctionType.from_code(function_path, function_code)
+            self.python_parser.function_dict[function_path] = function_object
+            self.python_parser.module_dict[module_py_path].standalone_functions[
+                function_path
+            ] = function_object
 
         return "Success"
 
@@ -159,11 +158,11 @@ class PythonWriter:
             code_parts.append(import_statement)
             code_parts.append("\n")
 
-        for function in functions:
+        for function in functions.values():
             code_parts.append(function.code)
             code_parts.append("\n\n")
 
-        for class_obj in classes:
+        for class_obj in classes.values():
             code_parts.append(class_obj.code)
             code_parts.append("\n\n")
 
@@ -239,6 +238,19 @@ class PythonWriter:
         self.modified_modules.add(module_py_path)
 
     def _modify_existing_module_imports(self, module_py_path: str, module_code: str) -> None:
+        """
+        Modify an existing module in the PythonParser.
+
+        Args:
+            module_py_path (str): The Python path of the module to modify.
+            module_code (str): The new source code of the module.
+        """
+        assert module_py_path in self.python_parser.module_dict
+
+        _, import_statements = self._strip_import_statements(module_code)
+        self.python_parser.module_dict[module_py_path].imports.extend(import_statements)
+
+    def _modify_existing_module(self, module_py_path: str, module_code: str) -> None:
         """
         Modify an existing module in the PythonParser.
 

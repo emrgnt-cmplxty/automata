@@ -113,13 +113,15 @@ class PythonParser:
                 if "type" in module.py_path.split(".")[-1]:
                     continue
 
-                if len(module.classes) == 0 and len(module.standalone_functions) == 0:
+                if (
+                    len(module.classes.keys()) == 0
+                    and len(module.standalone_functions.keys()) == 0
+                ):
                     continue
 
                 result += module.py_path + "\n"
-                if len(module.standalone_functions) > 0:
-                    # result += textwrap.indent("Functions - ", " " * LINE_SPACING * 1)
-                    for function in module.standalone_functions:
+                if len(module.standalone_functions.keys()) > 0:
+                    for function in module.standalone_functions.values():
                         if "_" == function.py_path.split(".")[-1][0]:
                             continue
                         function_name = function.py_path.split(".")[-1]
@@ -134,12 +136,10 @@ class PythonParser:
                             )
 
                 if len(module.classes) > 0:
-                    # result += textwrap.indent("Classes - ", " " * LINE_SPACING * 1)
-                    for class_obj in module.classes:
+                    for class_obj in module.classes.values():
                         class_name = class_obj.py_path.split(".")[-1]
                         result += textwrap.indent(class_name, " " * LINE_SPACING * 1) + "\n"
                         if len(list(class_obj.methods.keys())) > 0:
-                            # result += textwrap.indent("Methods - ", " " * LINE_SPACING * 2)
                             for method in class_obj.methods.values():
                                 if "_" == method.py_path.split(".")[-1][0]:
                                     continue
@@ -232,8 +232,8 @@ class PythonParser:
                         node = ast.parse(f.read())
 
                     docstring = ast.get_docstring(node)
-                    standalone_functions = []
-                    classes = []
+                    standalone_functions: Dict[str, PythonFunctionType] = {}
+                    classes: Dict[str, PythonClassType] = {}
                     imports = []
                     for n in node.body:
                         if isinstance(n, (ast.Import, ast.ImportFrom)):
@@ -249,28 +249,20 @@ class PythonParser:
                                 func_docstring if func_docstring else "",
                                 func_code,
                             )
-                            standalone_functions.append(function)
+                            standalone_functions[func_py_path] = function
                             self.function_dict[func_py_path] = function
                         elif isinstance(n, ast.ClassDef):
                             class_name = n.name
-                            class_docstring = ""
-
                             # Check for the __init__ method and extract its docstring
-                            for stmt in n.body:
-                                if (
-                                    isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
-                                    and stmt.name == "__init__"
-                                ):
-                                    class_docstring = ast.get_docstring(stmt) or RESULT_NOT_FOUND
-                                    break
+                            class_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
                             class_code = "".join(ast.unparse(n))
                             class_py_path = f"{module_py_path}.{class_name}"
                             class_obj = PythonClassType(
                                 class_py_path,
-                                class_docstring if class_docstring else RESULT_NOT_FOUND,
+                                class_docstring,
                                 class_code,
                             )
-                            classes.append(class_obj)
+                            classes[class_py_path] = class_obj
                             self.class_dict[class_py_path] = class_obj
 
                             # Adding class methods to function_dict

@@ -1,25 +1,69 @@
-import inspect
-import os
-import shutil
-import textwrap
+import itertools
+import random
+import string
 
 import pytest
 
 from spork.tools.python_tools.python_parser import PythonParser
 from spork.tools.python_tools.python_writer import PythonWriter
 
-from .test_data import (
-    class_data,
-    module_with_class_and_function_data,
-    new_module_data,
-    old_module_data,
-)
+
+class MockCodeGenerator:
+    def __init__(self):
+        self.class_name = MockCodeGenerator.random_string(5)
+        self.function_name = MockCodeGenerator.random_string(5)
+        self.module_docstring = MockCodeGenerator.random_string(20)
+        self.module_class_docstring = MockCodeGenerator.random_string(20)
+        self.function_docstring = MockCodeGenerator.random_string(20)
+
+    def generate_code(
+        self,
+        has_class: bool = False,
+        has_function: bool = False,
+        has_class_docstring: bool = False,
+        has_function_docstring: bool = False,
+        has_module_docstring: bool = False,
+    ):
+        if not has_class:
+            has_class_docstring = False
+        if not has_function:
+            has_function_docstring = False
+
+        module_class_docstring = (
+            f'"""{self.module_class_docstring}"""\n' if has_function_docstring else ""
+        )
+
+        class_code = (
+            f'''class {self.class_name}:
+                {module_class_docstring}
+                def method(self):
+                    """ This is a method """
+                    pass'''
+            if has_class
+            else ""
+        )
+
+        module_docstring = f'"""{self.module_docstring}"""\n' if has_module_docstring else ""
+        function_docstring_code = (
+            f'"""{self.function_docstring}"""\n' if has_function_docstring else ""
+        )
+        function_code = (
+            f"def {self.function_name}():\n    {function_docstring_code}\n    pass"
+            if has_function
+            else ""
+        )
+
+        return f"{module_docstring}{class_code}\n\n{function_code}"
+
+    @staticmethod
+    def random_string(length: int):
+        return "".join(random.choice(string.ascii_letters) for _ in range(length))
 
 
 @pytest.fixture
 def python_writer():
     python_parser = PythonParser(
-        relative_dir=f"spork/tools/python_tools/tests/{old_module_data['package_py_path']}"
+        relative_dir=f"spork/tools/python_tools/tests/{MockCodeGenerator.random_string(5)}"
     )
     return PythonWriter(python_parser)
 
@@ -27,365 +71,112 @@ def python_writer():
 @pytest.fixture
 def python_new_writer():
     python_parser = PythonParser(
-        relative_dir=f"spork/tools/python_tools/tests/{new_module_data['package_py_path']}"
+        relative_dir=f"spork/tools/python_tools/tests/{MockCodeGenerator.random_string(5)}"
     )
     return PythonWriter(python_parser)
 
 
-def test_add_old_module_no_existing_package(python_writer):
-    with pytest.raises(AssertionError):
-        python_writer._create_new_module(
-            old_module_data["module_py_path"], new_module_data["module_code"]
+@pytest.fixture
+def mock_generator():
+    return MockCodeGenerator()
+
+
+def generate_code():
+    all_permutations = list(itertools.product([True, False], repeat=5))
+    mock_codes = []
+
+    for (
+        has_class,
+        has_function,
+        has_class_docstring,
+        has_function_docstring,
+        has_module_docstring,
+    ) in all_permutations:
+        if not has_class and not has_function:
+            continue
+        generator = MockCodeGenerator()
+        code = generator.generate_code(
+            has_class,
+            has_function,
+            has_class_docstring,
+            has_function_docstring,
+            has_module_docstring,
         )
+        mock_codes.append([generator, code])
+
+    return mock_codes
 
 
-def test_add_old_module_existing_package_new_writer(python_new_writer):
-    python_new_writer._create_new_module(
-        old_module_data["module_py_path"], new_module_data["module_code"]
-    )
+if __name__ == "__main__":
+    all_mock_codes = generate_code()
+    for idx, mock_code in enumerate(all_mock_codes, start=1):
+        print(f"Mock Code {idx}:\n{mock_code}\n")
+
+EXISTING_MODULE_PATH = "sample_code.sample"
+NEW_MODULE_PATH = "sample_code.new_sample"
 
 
-def test_create_new_module(python_writer):
+def test_create_new_module(python_writer, mock_generator):
+    mock_code = mock_generator.generate_code(True, True, True, True)
     python_writer._create_new_module(
-        new_module_data["module_py_path"], new_module_data["module_code"]
+        NEW_MODULE_PATH,
+        mock_code,
     )
     parser = python_writer.python_parser
-    assert new_module_data["module_py_path"] in parser.module_dict
-    assert list(parser.class_dict.keys()) == [
-        "sample_code.sample.Person",
-        "sample_code.sample2.PythonAgentToolBuilder",
-    ]
+    assert NEW_MODULE_PATH in parser.module_dict
     assert (
-        parser.get_raw_code(new_module_data["module_py_path"]).strip()
-        == new_module_data["function_raw_code"]
-    )
-    assert (
-        parser.get_docstring(new_module_data["module_py_path"])
-        == new_module_data["module_docstring"]
+        f"{NEW_MODULE_PATH}.{mock_generator.class_name}"
+        in parser.module_dict[NEW_MODULE_PATH].classes
     )
 
 
-def test_create_new_module_new_writer(python_new_writer):
-    python_new_writer._create_new_module(
-        new_module_data["module_py_path"], new_module_data["module_code"]
-    )
-    parser = python_new_writer.python_parser
-    assert new_module_data["module_py_path"] in parser.module_dict
-    assert list(parser.class_dict.keys()) == []
-    assert (
-        parser.get_raw_code(new_module_data["module_py_path"]).strip()
-        == new_module_data["function_raw_code"]
-    )
-    assert (
-        parser.get_docstring(new_module_data["module_py_path"])
-        == new_module_data["module_docstring"]
-    )
+# Test the modify_code_state method with all permutations of the MockCodeGenerator
+def test_modify_code_state(python_writer, mock_generator):
+    for permutation in list(itertools.product([True, False], repeat=5)):
+        (
+            has_class,
+            has_function,
+            has_class_docstring,
+            has_function_docstring,
+            has_module_docstring,
+        ) = permutation
+        mock_code = mock_generator.generate_code(*permutation)
+        parser = python_writer.python_parser
+        result = python_writer.modify_code_state(NEW_MODULE_PATH, mock_code)
 
+        module_obj = parser.module_dict[NEW_MODULE_PATH]
 
-def test_create_new_class(python_new_writer):
-    python_new_writer._create_new_class(
-        class_data["class_py_path"],
-        class_data["class_code"],
-    )
-    parser = python_new_writer.python_parser
-    assert parser.get_raw_code(class_data["class_py_path"]).strip().replace(
-        "\n", ""
-    ) == class_data["class_raw_code"].strip().replace("\n", "")
-    assert parser.get_docstring(class_data["class_py_path"]) == class_data["class_docstring"]
+        class_name = f"{NEW_MODULE_PATH}.{mock_generator.class_name}"
+        class_obj = module_obj.classes.get(class_name) if module_obj else None
+        method_name = f"{NEW_MODULE_PATH}.{mock_generator.class_name}.method"
+        method_obj = class_obj.methods.get(method_name)
 
+        function_name = f"{NEW_MODULE_PATH}.{mock_generator.function_name}"
+        function_obj = module_obj.standalone_functions.get(function_name)
 
-def test_create_new_class_no_existing_module(python_writer):
-    python_writer._create_new_class(
-        class_data["class_py_path"],
-        class_data["class_code"],
-    )
-    parser = python_writer.python_parser
-    assert parser.get_raw_code(class_data["class_py_path"]).strip().replace(
-        "\n", ""
-    ) == class_data["class_raw_code"].strip().replace("\n", "")
-    assert parser.get_docstring(class_data["class_py_path"]) == class_data["class_docstring"]
+        if has_module_docstring and not has_class_docstring and not has_function_docstring:
+            module_name = NEW_MODULE_PATH.split(".")[-1]
+            module_docstring = f"{module_name}:\n{mock_generator.module_docstring}\n{mock_generator.class_name}:\n{mock_generator.module_class_docstring}"
+            assert module_obj.get_docstring().strip() == module_docstring
 
+        if has_class:
+            assert module_obj is not None
+            assert class_obj is not None
+            assert method_obj is not None
 
-def test_add_module_with_class_and_function(python_writer):
-    python_writer._create_new_module(
-        module_with_class_and_function_data["module_py_path"],
-        module_with_class_and_function_data["module_code"],
-    )
-    parser = python_writer.python_parser
-    assert module_with_class_and_function_data["module_py_path"] in parser.module_dict
+        if has_function:
+            assert function_obj is not None
 
+        if has_class and has_class_docstring:
+            assert (
+                class_obj.get_docstring().strip()
+                == f"{mock_generator.class_name}:\n{mock_generator.module_class_docstring}\nmethod:\nThis is a method".strip()
+            )
+        function_single_name = mock_generator.function_name.split(".")[-1]
+        if has_function and has_function_docstring:
+            assert (
+                function_obj.get_docstring().strip()
+                == f"{function_single_name}:\n{mock_generator.function_docstring}".strip()
+            )
 
-# Create a new function in an existing module
-def test_create_new_function_old_module(python_writer):
-    old_module_path = old_module_data["module_py_path"]
-    new_function_name = new_module_data["function_name"]
-    new_function_path = f"{old_module_path}.{new_function_name}"
-
-    python_writer.modify_code_state(old_module_path, new_module_data["function_code"])
-
-    parser = python_writer.python_parser
-    print("new_path = ", new_function_path)
-    print("parser.function_dict = ", list(parser.function_dict.keys()))
-
-    assert new_function_path in parser.function_dict
-    assert parser.get_raw_code(new_function_path).replace(" ", "").replace(
-        "\n", ""
-    ) == new_module_data["function_raw_code"].replace(" ", "").replace("\n", "")
-    assert parser.get_docstring(new_function_path).replace(" ", "").replace(
-        "\n", ""
-    ) == new_module_data["function_docstring"].replace(" ", "").replace("\n", "")
-
-
-# Create a new function and module in a new package
-def test_create_new_function_new_writer(python_new_writer):
-    old_module_path = old_module_data["module_py_path"]
-    new_function_name = new_module_data["function_name"]
-    new_function_path = f"{old_module_path}.{new_function_name}"
-    python_new_writer.modify_code_state(old_module_path, new_module_data["function_code"])
-    parser = python_new_writer.python_parser
-
-    assert old_module_path in parser.module_dict
-    assert new_function_path in parser.function_dict
-    assert parser.get_raw_code(new_function_path).replace(" ", "").replace(
-        "\n", ""
-    ) == new_module_data["function_raw_code"].replace(" ", "").replace("\n", "")
-    assert parser.get_docstring(new_function_path).replace(" ", "").replace(
-        "\n", ""
-    ) == new_module_data["function_docstring"].replace(" ", "").replace("\n", "")
-
-
-def test_create_class_with_function_old_module(python_writer):
-    old_module_path = old_module_data["module_py_path"]
-    class_name = class_data["class_name"]
-    class_path = f"{old_module_path}.{class_name}"
-    new_function_name = class_data["function_name"]
-    new_function_path = f"{class_path}.{new_function_name}"
-    python_writer.modify_code_state(old_module_path, class_data["class_code"])
-
-    parser = python_writer.python_parser
-    assert old_module_path in parser.module_dict
-    assert class_path in parser.class_dict
-    assert new_function_path in parser.function_dict
-
-
-def test_create_class_with_function_new_module(python_new_writer):
-    old_module_path = old_module_data["module_py_path"]
-    class_name = class_data["class_name"]
-    class_path = f"{old_module_path}.{class_name}"
-    new_function_name = class_data["function_name"]
-    new_function_path = f"{class_path}.{new_function_name}"
-    python_new_writer.modify_code_state(old_module_path, class_data["class_code"])
-
-    parser = python_new_writer.python_parser
-    assert old_module_path in parser.module_dict
-    assert class_path in parser.class_dict
-    assert new_function_path in parser.function_dict
-
-
-# def test_create_class_with_function_old_module(python_writer):
-#     old_module_path = old_module_data["module_py_path"]
-#     new_function_name = new_module_data["function_name"]
-#     new_function_path = f"{old_module_path}.{new_function_name}"
-#     python_writer.modify_code_state(old_module_path, new_module_data["function_code"])
-
-#     parser = python_writer.python_parser
-#     assert module_with_class_and_function_data["module_py_path"] in parser.module_dict
-
-#     assert (
-#         f"{module_with_class_and_function_data['module_py_path']}.{class_data['class_name']}"
-#         in parser.class_dict
-#     )
-#     assert (
-#         f"{module_with_class_and_function_data['module_py_path']}.{new_module_data['function_name']}"
-#         in parser.function_dict
-#     )
-# def test_create_new_function_existing_module(python_writer):
-#     # Add the test module
-#     module_py_path = new_module_data["module_py_path"]
-#     python_writer._create_new_module(
-#         module_py_path=module_py_path,
-#         module_code=new_module_data["module_code"],
-#     )
-
-#     # Add a new function to the module
-#     function_name = new_module_data["function_name"]
-#     function_docstring = "New function docstring"
-#     new_function_code = textwrap.dedent(
-#         f'''
-#         def {function_name}():
-#             """{function_docstring}"""
-#             return 'New function!'
-#         '''
-#     )
-
-#     python_writer._create_new_function(
-#         function_py_path=f"{module_py_path}.{function_name}",
-#         function_code=new_function_code,
-#         has_class=False,
-#     )
-
-#     # Check if the function is added to the function_dict
-#     new_function_obj = python_writer.python_parser.function_dict[
-#         f"{module_py_path}.{function_name}"
-#     ]
-#     assert new_function_obj.get_raw_code() == f"def {function_name}():\n    return 'New function!'"
-#     assert new_function_obj.get_docstring() == f"{function_name}:\n{function_docstring}"
-
-
-# def test_modify_existing_function(python_writer):
-#     # Add the test module with a class and a function
-#     module_py_path = module_with_class_and_function_data["module_py_path"]
-#     function_name = new_module_data["function_name"]
-
-#     python_writer._create_new_module(
-#         module_py_path=module_py_path,
-#         module_code=module_with_class_and_function_data["module_code"],
-#     )
-
-#     # Modify the existing function
-#     function_name = new_module_data["function_name"]
-#     function_docstring = "Modified new function docstring"
-#     modified_function_code = textwrap.dedent(
-#         f'''
-#         def {function_name}():
-#             """{function_docstring}"""
-#             return 'Modified new function!'
-#         '''
-#     )
-
-#     python_writer._modify_existing_function(
-#         function_py_path=f"{module_py_path}.{function_name}",
-#         function_code=modified_function_code,
-#     )
-#     modified_function_raw_code = f"def {function_name}():\n    return 'Modified new function!'"
-
-#     # Check if the function is modified in the function_dict
-#     modified_function_obj = python_writer.python_parser.function_dict[
-#         f"{module_py_path}.{function_name}"
-#     ]
-#     assert modified_function_obj.get_raw_code() == modified_function_raw_code
-#     assert modified_function_obj.get_docstring() == f"{function_name}:\n{function_docstring}"
-
-
-# def test_modify_existing_class(python_writer):
-#     # Add the test module with a class and a function
-#     module_py_path = module_with_class_and_function_data["module_py_path"]
-#     class_name = class_data["class_name"]
-
-#     python_writer._create_new_module(
-#         module_py_path=module_py_path,
-#         module_code=module_with_class_and_function_data["module_code"],
-#     )
-
-#     # Modify the existing class
-#     class_docstring = "Modified class docstring"
-#     modified_class_code = textwrap.dedent(
-#         f'''
-#         class {class_name}:
-#             """{class_docstring}"""
-#             def modified_class_method(self):
-#                 """Modified class method docstring"""
-#                 return "Modified class method"
-#         '''
-#     )
-
-#     python_writer._modify_existing_class(
-#         class_py_path=f"{module_py_path}.{class_name}",
-#         class_code=modified_class_code,
-#     )
-
-#     # Check if the class is modified in the class_dict
-#     modified_class_obj = python_writer.python_parser.class_dict[f"{module_py_path}.{class_name}"]
-#     assert (
-#         modified_class_obj.get_docstring()
-#         == f"{class_name}:\n{class_docstring}\nmodified_class_method:\nModified class method docstring"
-#     )
-#     assert (
-#         modified_class_obj.get_docstring(exclude_methods=True)
-#         == f"{class_name}:\n{class_docstring}"
-#     )
-
-#     assert (
-#         "new_sample_code.module_with_class_and_function.NewClass.modified_class_method"
-#         in modified_class_obj.methods
-#     )
-
-
-# # def test_modify_code_state_create_new_function(python_writer):
-# #     old_module_path = old_module_data["module_py_path"]
-# #     new_function_name = new_module_data["function_name"]
-# #     new_path = f"{old_module_path}.{new_function_name}"
-# #     python_writer.modify_code_state(new_path, new_module_data["function_code"])
-
-# #     parser = python_writer.python_parser
-# #     assert new_path in parser.function_dict
-# #     assert parser.get_raw_code(new_path).replace(" ", "").replace("\n", "") == new_module_data[
-# #         "function_raw_code"
-# #     ].replace(" ", "").replace("\n", "")
-# #     assert parser.get_docstring(new_path).replace(" ", "").replace("\n", "") == new_module_data[
-# #         "function_docstring"
-# #     ].replace(" ", "").replace("\n", "")
-
-
-# def test_modify_code_state_create_new_class(python_writer):
-#     old_module_path = old_module_data["module_py_path"]
-#     new_class_name = class_data["class_name"]
-#     class_path = f"{old_module_path}.{new_class_name}"
-#     python_writer.modify_code_state(old_module_path, class_data["class_code"])
-
-#     parser = python_writer.python_parser
-#     assert class_path in parser.class_dict
-#     assert parser.get_raw_code(class_path).replace(" ", "").replace("\n", "") == class_data[
-#         "class_raw_code"
-#     ].replace(" ", "").replace("\n", "")
-#     assert parser.get_docstring(class_path).replace(" ", "").replace("\n", "") == class_data[
-#         "class_docstring"
-#     ].replace(" ", "").replace("\n", "")
-
-
-# def test_modify_code_state_create_new_module(python_writer):
-#     python_writer.modify_code_state(
-#         new_module_data["module_py_path"], new_module_data["module_code"]
-#     )
-
-#     parser = python_writer.python_parser
-#     assert new_module_data["module_py_path"] in parser.module_dict
-
-
-# def test_modify_code_state_create_new_package(python_writer):
-#     package_path = new_module_data["package_py_path"]
-#     python_writer.modify_code_state(f"{package_path}", "")
-
-#     parser = python_writer.python_parser
-#     assert f"{package_path}" in parser.package_dict
-
-
-# # TODO - Why is this test not creating an __init__.py in the new package?
-# def test_write_new_package(python_writer):
-#     current_file = inspect.getframeinfo(inspect.currentframe()).filename
-#     absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
-
-#     prev_text = None
-#     with open(os.path.join(absolute_path, "sample_code", "sample.py"), "r", encoding="utf-8") as f:
-#         prev_text = f.read()
-
-#     python_writer.modify_code_state(
-#         new_module_data["module_py_path"], new_module_data["module_code"]
-#     )
-#     # Write the changes to disk and ensure the file exists.
-#     python_writer.write_to_disk()
-#     new_file_path = os.path.join(
-#         absolute_path, new_module_data["package_py_path"], new_module_data["module_name"]
-#     )
-
-#     assert new_module_data["module_py_path"] in python_writer.python_parser.module_dict
-
-#     assert os.path.isfile(f"{new_file_path}.py")
-
-#     # Clean up after the check
-#     shutil.rmtree(os.sep.join(new_file_path.split(os.sep)[:-1]), ignore_errors=True)
-
-#     with open(os.path.join(absolute_path, "sample_code", "sample.py"), "r", encoding="utf-8") as f:
-#         new_text = f.read()
-#     # Check that the original sample.py has not been modified by the recreation process.
-#     assert prev_text == new_text
+        assert result == "Success"
