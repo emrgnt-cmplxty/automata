@@ -62,7 +62,7 @@ class CodebaseOracleToolBuilder:
             llm=self.llm,
             retriever=docsearch.as_retriever(),
             memory=self.memory,
-            return_source_documents=True,
+            return_source_documents=False,
             get_chat_history=_get_chat_history,
         )
 

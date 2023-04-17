@@ -133,7 +133,7 @@ def run_retrieval_chain_with_sources_format(
     chain: BaseConversationalRetrievalChain, q: str
 ) -> str:
     result = chain(q)
-    return f'Answer: {result["answer"]}.\n\n Sources: {result["source_documents"]}'
+    return f'Answer: {result["answer"]}.\n\n Sources: {result.get("source_documents", [])}'
 
 
 class NumberedLinesTextLoader(TextLoader):
