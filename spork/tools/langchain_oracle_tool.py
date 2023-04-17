@@ -28,5 +28,5 @@ class LangchainDocumentationOracleTool(Tool):
             func=lambda q: run_retrieval_chain_with_sources_format(chain, q),
             description="Use this tool to ask questions about langchain works and how to use it. "
             "You can ask about chains, tools, agents, memory, and other abstractions that langchain provides. "
-            "You can also ask to provide code examples",
+            "You can also ask for code examples. Input should be a fully formed question.",
         )
