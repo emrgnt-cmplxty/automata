@@ -14,14 +14,24 @@ class SimpleTextEditor:
         self.file_path = None
         self.lines = []
         self.state = EditorState.BEGIN
+        self.log = []
 
     def open_file(self, file_path):
         self.file_path = file_path
         if not os.path.exists(file_path):
-            return "File does not exist. Creating a new file."
+            raise ValueError("File does not exist.")
 
         with open(file_path, "r") as file:
             self.lines = file.readlines()
+            self.log.append(f"Opened file {file_path}")
+
+    def create_file(self, file_path):
+        self.file_path = file_path
+        if os.path.exists(file_path):
+            raise ValueError("File already exists.")
+
+        self.lines = []
+        self.log.append(f"Created file {file_path}")
 
     def insert_line(self, line_number, full_line_text):
         if line_number < 0 or line_number > len(self.lines):
@@ -50,7 +60,11 @@ class SimpleTextEditor:
         commands_list = commands.strip().split(";\n")
         for i, command in enumerate(commands_list):
             cmd_parts = command.strip().split("`")
-
+            if cmd_parts[0] == "create":
+                if self.state != EditorState.BEGIN:
+                    raise ValueError(f"Command {i}: Invalid state transition: create")
+                self.create_file(cmd_parts[1])
+                self.state = EditorState.EDIT
             if cmd_parts[0] == "begin":
                 if self.state != EditorState.BEGIN:
                     raise ValueError(f"Command {i}: Invalid state transition: begin")
