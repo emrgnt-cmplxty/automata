@@ -3,14 +3,14 @@ import logging
 import logging.config
 
 from spork.tools.agents.agent_configs.agent_version import AgentVersion
-from spork.tools.agents.agent_mr_meeseeks import AgentMrMeeseeks
+from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.python_tools import PythonParser, PythonWriter
 from spork.tools.tool_managers import PythonParserToolManager, PythonWriterToolManager, build_tools
 from spork.tools.utils import get_logging_config
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run the AgentMrMeeseeks.")
+    parser = argparse.ArgumentParser(description="Run the MrMeeseeksAgent.")
     parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
     parser.add_argument(
         "--version",
@@ -48,7 +48,7 @@ def main():
 
     logger.info("Passing in instructions: %s", args.instructions)
     logger.info("-" * 100)
-    agent = AgentMrMeeseeks(
+    agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
         instructions=args.instructions,
         tools=exec_tools,

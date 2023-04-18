@@ -10,7 +10,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
 from spork.config import DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
-from spork.tools.github import GithubToolBuilder, requests_get_clean
+from spork.tools.github import GithubToolManager, requests_get_clean
 from spork.tools.prompts import make_execution_task, make_planning_task
 from spork.tools.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
 
@@ -46,7 +46,7 @@ assert pass_through_buffer.saved_output == ""
 sys.stdout = cast(TextIO, pass_through_buffer)
 base_tools = load_tools(["python_repl", "terminal", "human"], llm=llm)
 base_tools += [requests_get_clean]
-exec_tools = base_tools + GithubToolBuilder(github_repo, pygit_repo, work_item).build_tools()
+exec_tools = base_tools + GithubToolManager(github_repo, pygit_repo, work_item).build_tools()
 
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 

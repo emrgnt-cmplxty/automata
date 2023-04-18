@@ -1,1 +1,1 @@
-from .github_tool_builder import GithubToolBuilder, requests_get_clean  # noqa F401
+from ..tool_managers.github_tool_manager import GithubToolManager, requests_get_clean  # noqa F401

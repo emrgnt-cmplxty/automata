@@ -85,14 +85,12 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    print("file_py_path = ", file_py_path)
     code_writer.func(f"{file_py_path},{function_def}")
     disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
-    print(" new_sample_text = ", new_sample_text)
     assert function_def in new_sample_text
     with open(file_abs_path, "w", encoding="utf-8") as f:
         f.write(prev_text)

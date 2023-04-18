@@ -4,12 +4,12 @@ from unittest.mock import patch
 import pytest
 from langchain.agents import Tool
 
-from spork.tools.agents.agent_mr_meeseeks import AgentMrMeeseeks
+from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.python_tools.python_parser import PythonParser
 
 
 @pytest.fixture
-def agent_mr_meeseeks():
+def mr_meeseeks_agent():
     python_parser = PythonParser()
 
     exec_tools = [
@@ -28,91 +28,91 @@ def agent_mr_meeseeks():
         "overview": overview,
     }
 
-    agent = AgentMrMeeseeks(
+    agent = MrMeeseeksAgent(
         initial_payload=initial_payload, instructions="Test instruction.", tools=exec_tools
     )
     return agent
 
 
-def test_agent_mr_meeseeks_init(agent_mr_meeseeks):
-    assert agent_mr_meeseeks is not None
-    assert agent_mr_meeseeks.model == "gpt-4"
-    assert agent_mr_meeseeks.session_id is not None
-    assert len(agent_mr_meeseeks.tools) > 0
+def test_mr_meeseeks_agent_init(mr_meeseeks_agent):
+    assert mr_meeseeks_agent is not None
+    assert mr_meeseeks_agent.model == "gpt-4"
+    assert mr_meeseeks_agent.session_id is not None
+    assert len(mr_meeseeks_agent.tools) > 0
 
 
-@patch("spork.tools.agents.agent_mr_meeseeks.openai.ChatCompletion.create")
-def test_agent_mr_meeseeks_iter_task(mock_chatcompletion_create, agent_mr_meeseeks):
+@patch("spork.tools.agents.mr_meeseeks_agent.openai.ChatCompletion.create")
+def test_mr_meeseeks_agent_iter_task(mock_chatcompletion_create, mr_meeseeks_agent):
     mock_chatcompletion_create.return_value = {
         "choices": [{"message": {"content": '{"tool": "test-tool", "input": "test input"}'}}]
     }
 
-    next_instruction = agent_mr_meeseeks.iter_task()
+    next_instruction = mr_meeseeks_agent.iter_task()
     assert len(next_instruction) == 1
     assert next_instruction[0] == "test input"
 
 
-@patch("spork.tools.agents.agent_mr_meeseeks.openai.ChatCompletion.create")
-def test_agent_mr_meeseeks_iter_task_no_outputs(mock_chatcompletion_create, agent_mr_meeseeks):
+@patch("spork.tools.agents.mr_meeseeks_agent.openai.ChatCompletion.create")
+def test_mr_meeseeks_agent_iter_task_no_outputs(mock_chatcompletion_create, mr_meeseeks_agent):
     mock_chatcompletion_create.return_value = {"choices": [{"message": {"content": "No outputs"}}]}
 
-    next_instruction = agent_mr_meeseeks.iter_task()
+    next_instruction = mr_meeseeks_agent.iter_task()
     assert next_instruction is None
 
 
-def test_agent_mr_meeseeks_extract_json_objects(agent_mr_meeseeks):
+def test_mr_meeseeks_agent_extract_json_objects(mr_meeseeks_agent):
     input_str = '''
         This is a sample string with some JSON objects.
         {"tool": "tool1", "input": "input1"}
         {"tool": "tool2", "input": """"input2""""}
     '''
 
-    json_objects = agent_mr_meeseeks._parse_input_string(input_str)
+    json_objects = mr_meeseeks_agent._parse_input_string(input_str)
     assert len(json_objects) == 2
     assert json_objects[0] == {"tool": "tool1", "input": "input1"}
     assert json_objects[1] == {"tool": "tool2", "input": '"""input2"""'}
 
 
-def test_agent_mr_meeseeks_extract_json_objects_single_quotes(agent_mr_meeseeks):
+def test_mr_meeseeks_agent_extract_json_objects_single_quotes(mr_meeseeks_agent):
     input_str = """
         This is a sample string with some JSON objects.
         {"tool": "tool1", "input": "input1"}
         {"tool": "tool2", "input": 'input2'}
     """
-    json_objects = agent_mr_meeseeks._parse_input_string(input_str)
+    json_objects = mr_meeseeks_agent._parse_input_string(input_str)
     assert len(json_objects) == 2
     assert json_objects[0]["tool"] == "tool1"
     assert json_objects[0]["input"] == "input1"
     assert json_objects[1] == {"tool": "tool2", "input": "input2"}
 
 
-def test_agent_mr_meeseeks_parse_example_0(agent_mr_meeseeks):
+def test_mr_meeseeks_agent_parse_example_0(mr_meeseeks_agent):
     input_str = textwrap.dedent(
         """{
   "tool": "python-writer-modify-code-state",
-  "input": "spork.tools.tool_managers.tests.test_agent_mr_meeseeks_tool_manager,import pytest
-from spork.tools.agents.agent_mr_meeseeks import AgentMrMeeseeks
-from spork.tools.tool_managers.agent_mr_meeseeks_tool_manager import AgentMrMeeseeksToolManager
+  "input": "spork.tools.tool_managers.tests.test_mr_meeseeks_agent_tool_manager,import pytest
+from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools.tool_managers.mr_meeseeks_agent_tool_manager import MrMeeseeksAgentToolManager
 from spork.tools.utils import PassThroughBuffer
 
 def test_init():
-    agent_mr_meeseeks = AgentMrMeeseeks()
-    tool_manager = AgentMrMeeseeksToolManager(agent_mr_meeseeks)
-    assert tool_manager.agent_mr_meeseeks == agent_mr_meeseeks
+    mr_meeseeks_agent = MrMeeseeksAgent()
+    tool_manager = MrMeeseeksAgentToolManager(mr_meeseeks_agent)
+    assert tool_manager.mr_meeseeks_agent == mr_meeseeks_agent
     assert tool_manager.logger is None
 
 def test_build_tools():
-    agent_mr_meeseeks = AgentMrMeeseeks()
-    tool_manager = AgentMrMeeseeksToolManager(agent_mr_meeseeks)
+    mr_meeseeks_agent = MrMeeseeksAgent()
+    tool_manager = MrMeeseeksAgentToolManager(mr_meeseeks_agent)
     tools = tool_manager.build_tools()
     assert len(tools) == 1
     assert tools[0].name == 'mr-meeseeks-task'
 
 def test_tool_execution():
-    agent_mr_meeseeks = AgentMrMeeseeks()
-    tool_manager = AgentMrMeeseeksToolManager(agent_mr_meeseeks)
+    mr_meeseeks_agent = MrMeeseeksAgent()
+    tool_manager = MrMeeseeksAgentToolManager(mr_meeseeks_agent)
     tools = tool_manager.build_tools()
-    agent_mr_meeseeks.run = MagicMock(return_value='Task completed')
+    mr_meeseeks_agent.run = MagicMock(return_value='Task completed')
     tool = tools[0]
     result = tool.func()
     assert result == 'Task completed'"
@@ -122,15 +122,15 @@ def test_tool_execution():
   "tool": "python-writer-write-to-disk"
 }"""
     )
-    json_objects = agent_mr_meeseeks._parse_input_string(input_str)
+    json_objects = mr_meeseeks_agent._parse_input_string(input_str)
     assert len(json_objects) == 2
 
 
-def test_agent_mr_meeseeks_parse_example_1(agent_mr_meeseeks):
+def test_mr_meeseeks_agent_parse_example_1(mr_meeseeks_agent):
     input_str = textwrap.dedent(
         """{
   "tool": "python-writer-modify-code-state",
-  "input": "spork.main_meeseeks.main,from spork.tools.tool_managers.agent_mr_meeseeks_tool_manager import AgentMrMeeseeksToolManager
+  "input": "spork.main_meeseeks.main,from spork.tools.tool_managers.mr_meeseeks_agent_tool_manager import MrMeeseeksAgentToolManager
 
 def main():
     parser.add_argument('--instructions', type=str, help='The initial instructions for the agent.')
@@ -151,9 +151,9 @@ def main():
     initial_payload = {'overview': overview}
     logger.info('Passing in instructions: %s', args.instructions)
     logger.info('-' * 100)
-    agent = AgentMrMeeseeks(initial_payload=initial_payload, instructions=args.instructions, tools=exec_tools, version=args.version, model=args.model, session_id=args.session_id, stream=args.stream)
-    agent_mr_meeseeks_tool_manager = AgentMrMeeseeksToolManager(agent)
-    exec_tools += build_tools(agent_mr_meeseeks_tool_manager)
+    agent = MrMeeseeksAgent(initial_payload=initial_payload, instructions=args.instructions, tools=exec_tools, version=args.version, model=args.model, session_id=args.session_id, stream=args.stream)
+    mr_meeseeks_agent_tool_manager = MrMeeseeksAgentToolManager(agent)
+    exec_tools += build_tools(mr_meeseeks_agent_tool_manager)
     logger.info('Running the agent now...')
     agent.run()
     while True:
@@ -172,5 +172,5 @@ Now, I will write the modifications to disk.
   "tool": "python-writer-write-to-disk"
 }"""
     )
-    json_objects = agent_mr_meeseeks._parse_input_string(input_str)
+    json_objects = mr_meeseeks_agent._parse_input_string(input_str)
     assert len(json_objects) == 2

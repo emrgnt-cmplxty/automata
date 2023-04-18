@@ -1,10 +1,10 @@
 """
 custom_tools.py - a module containing custom tools for Spork, an open-source Python framework for building bots.
 
-This module contains a GithubToolBuilder class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
+This module contains a GithubToolManager class for interacting with Git repositories, and a requests_get_clean tool for sending GET requests and returning clean text.
 
 Classes:
-- GithubToolBuilder: A class for interacting with Git repositories.
+- GithubToolManager: A class for interacting with Git repositories.
 
 Functions:
 - requests_get_clean: A function for sending GET requests and returning clean text.
@@ -23,7 +23,7 @@ from langchain.agents import Tool, tool
 from spork.tools.utils import PassThroughBuffer, remove_html_tags
 
 
-class GithubToolBuilder:
+class GithubToolManager:
     def __init__(
         self,
         github_repo: Repository,
@@ -32,7 +32,7 @@ class GithubToolBuilder:
         logger: Optional[PassThroughBuffer] = None,
     ):
         """
-        Initializes a GithubToolBuilder object with the given inputs.
+        Initializes a GithubToolManager object with the given inputs.
 
         Args:
         - github_repo (github.Repository): A github.Repository object representing the repository to work on.
@@ -61,32 +61,32 @@ class GithubToolBuilder:
         tools = [
             Tool(
                 name="git-new-branch",
-                func=lambda input_str: self.create_new_branch(input_str),
+                func=lambda input_str: self._create_new_branch(input_str),
                 description="Creates and checks out a new branch in the specified repository. The only input is the branch name. For example: 'my-branch'.",
                 return_direct=False,
             ),
             Tool(
                 name="git-commit",
-                func=lambda input_str: self.commit_to_git(input_str),
+                func=lambda input_str: self._commit_to_git(input_str),
                 description="Takes a string of comma-separated file names and commits them to git. For example: 'file1.py,file2.py'.",
                 return_direct=False,
             ),
             Tool(
                 name="git-create-pull-request",
-                func=lambda input_str: self.create_pull_request(input_str),
+                func=lambda input_str: self._create_pull_request(input_str),
                 description="Creates a pull request in the specified repository.",
                 return_direct=False,
             ),
             Tool(
                 name="git-checkout-existing-branch",
-                func=lambda input_str: self.checkout_branch(input_str),
+                func=lambda input_str: self._checkout_branch(input_str),
                 description="Checks out an existing branch in the specified repository. The only input is the branch name. For example: 'my-branch'.",
                 return_direct=False,
             ),
         ]
         return tools
 
-    def create_new_branch(self, branch_name: str) -> str:
+    def _create_new_branch(self, branch_name: str) -> str:
         """
         Creates and checks out a new branch in the specified repository.
 
@@ -104,7 +104,7 @@ class GithubToolBuilder:
         except Exception as e:
             return f"Error: {e}"
 
-    def checkout_branch(self, branch_name: str) -> str:
+    def _checkout_branch(self, branch_name: str) -> str:
         """
         Checks out an existing branch in the specified repository.
 
@@ -123,7 +123,7 @@ class GithubToolBuilder:
         except Exception as e:
             return f"Error: {e}"
 
-    def commit_to_git(self, file_names: str) -> str:
+    def _commit_to_git(self, file_names: str) -> str:
         """
         Commits specified files to Git.
 
@@ -146,7 +146,7 @@ class GithubToolBuilder:
         except Exception as e:
             return f"Error: {e}"
 
-    def create_pull_request(self, body) -> str:
+    def _create_pull_request(self, body) -> str:
         """
         Creates a pull request in the specified repository.
 

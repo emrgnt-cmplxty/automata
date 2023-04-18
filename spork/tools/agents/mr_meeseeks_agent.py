@@ -1,5 +1,5 @@
 """
-    AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
+    MrMeeseeksAgent is an autonomous agent that performs the actual work of the Spork
     system. Meeseeks are responsible for executing instructions and reporting
     the results back to the master.
 
@@ -16,7 +16,7 @@
         initial_payload = {
             "overview": overview,
         }
-        agent = AgentMrMeeseeks(initial_payload, exec_tools)
+        agent = MrMeeseeksAgent(initial_payload, exec_tools)
 
         next_instruction = agent.iter_task(instructions)
         ...
@@ -33,7 +33,7 @@ from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
 
-from ...tools.utils import format_config_path
+from ..utils import format_config_path
 from .agent_configs.agent_version import AgentVersion
 
 CONTINUE_MESSAGE = "Continue"
@@ -42,9 +42,9 @@ COMPLETION_MESSAGE = "TASK_COMPLETED"
 logger = logging.getLogger(__name__)
 
 
-class AgentMrMeeseeks:
+class MrMeeseeksAgent:
     """
-    AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
+    MrMeeseeksAgent is an autonomous agent that performs the actual work of the Spork
     system. Meeseeks are responsible for executing instructions and reporting
     the results back to the master.
     """
@@ -226,7 +226,7 @@ class AgentMrMeeseeks:
 
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
-        tool_calls = AgentMrMeeseeks._parse_input_string(response_text)
+        tool_calls = MrMeeseeksAgent._parse_input_string(response_text)
         outputs = []
         for tool_request in tool_calls:
             tool, tool_input = tool_request["tool"], tool_request["input"]
@@ -321,8 +321,8 @@ class AgentMrMeeseeks:
 
     @staticmethod
     def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
-        extracted_json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
-        tool_input_pairs = AgentMrMeeseeks._extract_tool_and_input(extracted_json_objects)
+        extracted_json_objects = MrMeeseeksAgent._extract_json_objects(input_str)
+        tool_input_pairs = MrMeeseeksAgent._extract_tool_and_input(extracted_json_objects)
         parsed_entries = []
         for tool_input_pair in tool_input_pairs:
             parsed_entries.append({"tool": tool_input_pair[0], "input": tool_input_pair[1]})
