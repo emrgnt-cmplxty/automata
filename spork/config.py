@@ -25,6 +25,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GITHUB_API_KEY = os.getenv("GITHUB_API_KEY", "")
 DO_RETRY = bool(os.getenv("DO_RETRY", 1))
 DEFAULT_BRANCH_NAME = os.getenv("DEFAULT_BRANCH_NAME", "main")
+REPOSITORY_NAME = os.getenv("REPOSITORY_NAME", "maks-ivanov/spork")
 
 # Define constants
 PLANNER_AGENT_OUTPUT_STRING = "Planner Agent Output: "

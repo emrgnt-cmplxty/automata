@@ -15,24 +15,23 @@ from spork.tools.git_tools import GitToolBuilder
 from spork.tools.oracles.codebase_oracle_tool import CodebaseOracleToolBuilder
 from spork.tools.oracles.langchain_oracle_tool import LangchainDocumentationOracleTool
 from spork.tools.text_editor.text_editor_tool import TextEditorTool
-from spork.utils import PassThroughBuffer, choose_work_item, list_repositories, login_github
+from spork.utils import PassThroughBuffer, choose_work_item, login_github
 
 from .agents.text_editor_agent import make_text_editor_agent
-from .config import DEFAULT_BRANCH_NAME, DO_RETRY, GITHUB_API_KEY, PLANNER_AGENT_OUTPUT_STRING
+from .config import (
+    DEFAULT_BRANCH_NAME,
+    DO_RETRY,
+    GITHUB_API_KEY,
+    PLANNER_AGENT_OUTPUT_STRING,
+    REPOSITORY_NAME,
+)
 from .prompts import make_execution_task, make_planning_task
 from .tools.navigator_tool import LocalNavigatorTool
 
 print("Logging into github")
 github_client = login_github(GITHUB_API_KEY)
 
-# List repositories
-
-repositories = list_repositories(github_client)
-print("Found recent repos:", repositories)
-# Let user choose a repository
-repository_name = input("Enter the name of the repository you want to work with:")
-
-github_repo = github_client.get_repo(repository_name)
+github_repo = github_client.get_repo(REPOSITORY_NAME)
 
 
 # create a repo object which represents the repository we are inside of

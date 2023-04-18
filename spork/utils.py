@@ -28,22 +28,6 @@ def login_github(token: str) -> Github:
     return Github(token)
 
 
-def list_repositories(github: Github) -> List[str]:
-    """
-    Lists the five most recently updated repositories for the authenticated user.
-    Args:
-    - github: A Github object representing the authenticated user.
-
-    Returns:
-    - A list of strings, each string representing a repository's full name.
-    """
-
-    repos = []
-    for repo in github.get_user().get_repos(sort="updated", direction="desc"):
-        repos.append(repo.full_name)
-    return repos[:5]
-
-
 def list_issues(repo: Repository) -> PaginatedList:
     """
     Lists the open issues for a given repository.
