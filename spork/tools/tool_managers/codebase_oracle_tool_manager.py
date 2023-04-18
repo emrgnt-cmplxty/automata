@@ -22,7 +22,6 @@ class CodebaseOracleToolManager(BaseToolManager):
                     self.codebase_oracle.get_chain(), q
                 ),
                 description="Exposes the run command a codebase oracle, which conducts a semantic search on the code repository using natural language queries, and subsequently returns the results to the master",
-                example="codbase-oracle-agent",
                 return_direct=True,
                 verbose=True,
             )
