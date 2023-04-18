@@ -35,8 +35,9 @@ def make_text_editor_task(instructions: str) -> str:
         "You perform these tasks with your given tools by finding the correct files,"
         f"compiling changes into edit instructions and then executing them on the right files. Your current task is: {instructions}"
         "You should use codebase oracle repeatedly to ask better questions that help you with your objective. "
-        "When you're ready, you should use the edit instructions compiler tool to compile your instructions into edit commands."
+        "When you're ready, you must use the edit instructions compiler tool to compile your instructions into edit commands."
         "ALWAYS end by using the edit executor tool to apply your edit commands to the file."
+        "Your final answer must be the confirmation of edit commands being applied to the file."
         "If you see an Error, you should try to ask the codebase oracle tool for more context before retrying."
     )
     return task
