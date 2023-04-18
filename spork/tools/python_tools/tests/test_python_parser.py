@@ -1,6 +1,5 @@
 """Unit tests for the PythonParser module."""
 
-
 from spork.tools.python_tools.python_parser import PythonParser
 
 

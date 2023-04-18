@@ -69,7 +69,12 @@ class PythonWriter:
         """
 
         # Check that we can parse the code
-        self._validate_code(code)
+        try:
+            self._validate_code(code)
+        except ValueError as e:
+            return (
+                f"Failed to parse code with error {e}. Please check that the code is valid Python."
+            )
 
         package_path = module_py_path.split(".")[-1]
 

@@ -1,5 +1,4 @@
-"""
-PythonParser
+"""PythonParser
 
 This module provides functionality to extract information about classes, functions,
 and their docstrings from a given directory of Python files. It defines the `PythonParser`
@@ -20,8 +19,8 @@ Example usage:
 
     TODO
     1. Consider how to handle import statements, they are not currently parsed.
-    2. Include support for getting code + doc strings in a single shot
-"""
+    2. Include support for getting code + doc strings in a single shot"""
+
 import ast
 import os
 import textwrap
@@ -112,13 +111,11 @@ class PythonParser:
             for module in package.modules.values():
                 if "type" in module.py_path.split(".")[-1]:
                     continue
-
                 if (
                     len(module.classes.keys()) == 0
                     and len(module.standalone_functions.keys()) == 0
                 ):
                     continue
-
                 result += module.py_path + "\n"
                 if len(module.standalone_functions.keys()) > 0:
                     for function in module.standalone_functions.values():
@@ -134,7 +131,6 @@ class PythonParser:
                                 )
                                 + "\n"
                             )
-
                 if len(module.classes) > 0:
                     for class_obj in module.classes.values():
                         class_name = class_obj.py_path.split(".")[-1]
@@ -174,16 +170,10 @@ class PythonParser:
                 self.generic_visit(node)
 
         module_ast = ast.parse(source_code)
-
-        # Collect classes and functions from the AST
         collector = FunctionAndClassCollector()
         collector.visit(module_ast)
-
-        # Separate classes and functions
-        classes = [node for nodetype, node in collector.nodes if nodetype == "class"]
-        functions = [node for nodetype, node in collector.nodes if nodetype == "function"]
-
-        # Convert functions to a dictionary with names and code
+        classes = [node for (nodetype, node) in collector.nodes if nodetype == "class"]
+        functions = [node for (nodetype, node) in collector.nodes if nodetype == "function"]
         functions_dict = {func_node.name: ast.unparse(func_node) for func_node in functions}
 
         def collect_inner_functions(node, inner_functions):
@@ -207,9 +197,8 @@ class PythonParser:
                         if method in functions_dict:
                             del functions_dict[method]
             class_methods[cls.name] = methods
-
-        classes_code, modules_code = PythonParser._get_full_module_code(classes, functions)
-        return class_methods, functions_dict, classes_code, modules_code
+        (classes_code, modules_code) = PythonParser._get_full_module_code(classes, functions)
+        return (class_methods, functions_dict, classes_code, modules_code)
 
     def _populate_dicts_from_source(self, abs_dir: str) -> None:
         """
@@ -227,13 +216,9 @@ class PythonParser:
                     module_py_path = os.path.relpath(
                         file_path, os.path.join(abs_dir, "..")
                     ).replace(os.path.sep, ".")[:-3]
-
-                    # Get the python path
                     package_name = ".".join(module_py_path.split(".")[:-1])
-
                     with open(file_path, "r", encoding="utf-8") as f:
                         node = ast.parse(f.read())
-
                     docstring = ast.get_docstring(node)
                     standalone_functions: Dict[str, PythonFunctionType] = {}
                     classes: Dict[str, PythonClassType] = {}
@@ -248,27 +233,18 @@ class PythonParser:
                             func_code = "".join(ast.unparse(n))
                             func_py_path = f"{module_py_path}.{func_name}"
                             function = PythonFunctionType(
-                                func_py_path,
-                                func_docstring if func_docstring else "",
-                                func_code,
+                                func_py_path, func_docstring if func_docstring else "", func_code
                             )
                             standalone_functions[func_py_path] = function
                             self.function_dict[func_py_path] = function
                         elif isinstance(n, ast.ClassDef):
                             class_name = n.name
-                            # Check for the __init__ method and extract its docstring
                             class_docstring = ast.get_docstring(n) or RESULT_NOT_FOUND
                             class_code = "".join(ast.unparse(n))
                             class_py_path = f"{module_py_path}.{class_name}"
-                            class_obj = PythonClassType(
-                                class_py_path,
-                                class_docstring,
-                                class_code,
-                            )
+                            class_obj = PythonClassType(class_py_path, class_docstring, class_code)
                             classes[class_py_path] = class_obj
                             self.class_dict[class_py_path] = class_obj
-
-                            # Adding class methods to function_dict
                             for m in n.body:
                                 if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef)):
                                     method_name = m.name
@@ -288,14 +264,10 @@ class PythonParser:
                         classes,
                         imports,
                     )
-
-                    # Use the python path as the key
                     self.module_dict[module_py_path] = module_obj
-
                     if package_name not in packages:
                         packages[package_name] = {}
                     packages[package_name][module_py_path] = module_obj
-
         for package_name, modules in packages.items():
             self.package_dict[package_name] = PythonPackageType(package_name, modules)
 
@@ -305,7 +277,7 @@ class PythonParser:
     ) -> Tuple[Dict[str, str], Dict[str, str]]:
         classes_code = {cls.name: ast.unparse(cls) for cls in classes}
         modules_code = {func.name: ast.unparse(func) for func in functions}
-        return classes_code, modules_code
+        return (classes_code, modules_code)
 
     def register_update_callback(
         self, callback: Callable[[str, str, Dict[str, Any]], None]

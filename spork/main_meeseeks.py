@@ -1,19 +1,17 @@
 import argparse
 import logging
+import logging.config
 
 from spork.tools.agents.agent_configs.agent_version import AgentVersion
 from spork.tools.agents.agent_mr_meeseeks import AgentMrMeeseeks
 from spork.tools.python_tools import PythonParser, PythonWriter
 from spork.tools.tool_managers import PythonParserToolManager, PythonWriterToolManager, build_tools
-
-logger = logging.getLogger(__name__)
+from spork.tools.utils import get_logging_config
 
 
 def main():
     parser = argparse.ArgumentParser(description="Run the AgentMrMeeseeks.")
-    parser.add_argument(
-        "--initial_instructions", type=str, help="The initial instructions for the agent."
-    )
+    parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
     parser.add_argument(
         "--version",
         type=AgentVersion,
@@ -26,7 +24,13 @@ def main():
     parser.add_argument(
         "--session_id", type=str, default=None, help="The session id for the agent."
     )
-    parser.add_argument("--stream", type=str, default=True, help="Should we stream the responses?")
+    parser.add_argument(
+        "--stream", type=bool, default=True, help="Should we stream the responses?"
+    )
+
+    logging_config = get_logging_config()
+    logging.config.dictConfig(logging_config)
+    logger = logging.getLogger(__name__)
 
     args = parser.parse_args()
 
@@ -42,10 +46,11 @@ def main():
         "overview": overview,
     }
 
-    logger.info("Passing in initial_instructions: %s", args.initial_instructions)
+    logger.info("Passing in instructions: %s", args.instructions)
+    logger.info("-" * 100)
     agent = AgentMrMeeseeks(
         initial_payload=initial_payload,
-        instructions=args.initial_instructions,
+        instructions=args.instructions,
         tools=exec_tools,
         version=args.version,
         model=args.model,
@@ -64,7 +69,8 @@ def main():
             break
         else:
             instructions = [{"role": "user", "content": user_input}]
-            agent.iter_task(instructions)
+            agent.extend_last_instructions(instructions)
+            agent.iter_task()
 
 
 if __name__ == "__main__":

@@ -118,10 +118,10 @@ class AgentMrMeeseeks:
             for message in initial_messages:
                 self._save_interaction(message)
 
-        logger.info(
-            "Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id)
-        )
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s]: %(message)s")
+        logger.info("Initializing with Prompt:%s\n" % (prompt))
+        logger.info("-" * 100)
+        logger.info("Session ID: %s" % self.session_id)
+        logger.info("-" * 100)
 
     def __del__(self):
         self.conn.close()
@@ -197,9 +197,12 @@ class AgentMrMeeseeks:
             logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
             logger.info("-" * 100)
 
-    def modify_last_message(self, new_message: str) -> None:
+    def extend_last_instructions(self, new_message: str) -> None:
         previous_message = self.messages[-1]
-        self.messages[-1] = {"role": previous_message["role"], "content": new_message}
+        self.messages[-1] = {
+            "role": previous_message["role"],
+            "content": f"{previous_message}\n{new_message}",
+        }
 
     def _load_prompt(self, initial_payload: Dict[str, str]) -> str:
         """Load the prompt from a config specified at initialization."""
