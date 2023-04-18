@@ -143,6 +143,7 @@ class SimpleTextEditor:
         self.file_path = None
         self.lines = []
         self.state = EditorState.BEGIN
+        self.log = []
 
 
 # editor = SimpleTextEditor()
