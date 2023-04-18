@@ -37,13 +37,6 @@ class CodebaseOracle:
         # we make chain into a mutable state variable, because we need to refresh it occasionally
         self._needs_refresh = True
 
-    @staticmethod
-    def get_default_codebase_oracle() -> "CodebaseOracle":
-        llm = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
-        memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        read_only_memory = ReadOnlySharedMemory(memory=memory)
-        return CodebaseOracle(home_path(), llm, read_only_memory)
-
     def refresh_callback(self) -> None:
         # we give this to the editor so that it can tell the codebase oracle to refresh its chain with new codebase content
         self._needs_refresh = True
@@ -53,6 +46,13 @@ class CodebaseOracle:
             self._build_chain()
             self._needs_refresh = False
         return self._chain
+
+    @staticmethod
+    def get_default_codebase_oracle() -> "CodebaseOracle":
+        llm = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
+        memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+        read_only_memory = ReadOnlySharedMemory(memory=memory)
+        return CodebaseOracle(home_path(), llm, read_only_memory)
 
     def _build_chain(self) -> None:
         docs = []
