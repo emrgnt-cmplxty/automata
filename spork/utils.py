@@ -137,7 +137,7 @@ def run_retrieval_chain_with_sources_format(
     formatted_answer = f"Answer: {answer}"
     if sources:
         formatted_sources = "\n".join(
-            [f"Source: {s.metadata} Content: {s.page_context}" for s in sources]
+            [f"Source: {s.metadata} Content: {s.page_content}" for s in sources]
         )
         formatted_answer = "\n".join([formatted_answer, formatted_sources])
     return formatted_answer
