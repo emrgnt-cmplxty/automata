@@ -71,3 +71,16 @@ def test_agent_mr_meeseeks_extract_json_objects(agent_mr_meeseeks):
     assert len(json_objects) == 2
     assert json.loads(json_objects[0]) == {"tool": "tool1", "input": "input1"}
     assert json.loads(json_objects[1]) == {"tool": "tool2", "input": "input2"}
+
+
+def test_agent_mr_meeseeks_extract_json_objects_single_quotes(agent_mr_meeseeks):
+    input_str = """
+        This is a sample string with some JSON objects.
+        {"tool": 'tool1', "input": 'input1'}
+        {"tool": 'tool2', "input": 'input2'}
+    """
+
+    json_objects = agent_mr_meeseeks._extract_json_objects(input_str)
+    assert len(json_objects) == 2
+    assert json.loads(json_objects[0]) == {"tool": "tool1", "input": "input1"}
+    assert json.loads(json_objects[1]) == {"tool": "tool2", "input": "input2"}

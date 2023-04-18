@@ -23,6 +23,7 @@
 """
 import json
 import logging
+import re
 import sqlite3
 import uuid
 from typing import Dict, List, Optional
@@ -30,7 +31,9 @@ from typing import Dict, List, Optional
 import openai
 import regex
 import yaml
+from demjson import decode
 from langchain.tools.base import BaseTool
+from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
 
@@ -117,6 +120,7 @@ class AgentMrMeeseeks:
 
             for message in initial_messages:
                 self._save_interaction(message)
+        self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
         logger.info("Initializing with Prompt:%s\n" % (prompt))
         logger.info("-" * 100)
@@ -170,6 +174,14 @@ class AgentMrMeeseeks:
         # If there are no outputs, then the user has must respond to continue
         self._save_interaction({"role": "user", "content": CONTINUE_MESSAGE})
         logger.info("Synthetic User Message:\n%s\n" % CONTINUE_MESSAGE)
+        context_length = sum(
+            [
+                len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
+                for message in self.messages
+            ]
+        )
+
+        logger.info("Chat Context length: %s", context_length)
         logger.info("-" * 100)
 
         return None
@@ -273,11 +285,21 @@ class AgentMrMeeseeks:
         ]
 
     @staticmethod
-    def _sanitize_json(json_str: str) -> str:
-        """Sanitize the JSON string to make it parsable."""
-        sanitized_str = json_str.replace("\n", "\\n")
-        sanitized_str = sanitized_str.replace("'", '"')
-        return sanitized_str
+    def _replace_single_quotes(input_str: str) -> str:
+        input_str = re.sub(r"((?<!\\)')", '"', input_str)
+        return re.sub(r'(?<!\\)""(?!\s*[:,}])', "'", input_str)
+
+    @staticmethod
+    def _fix_unquoted_keys(input_str: str) -> str:
+        return re.sub(r'(?<!")(\b\w+\b)(?!":)', r'"\1"', input_str)
+
+    @staticmethod
+    def _add_missing_commas(input_str: str) -> str:
+        return re.sub(r"\}(?=\s*\{)", "},", input_str)
+
+    @staticmethod
+    def _remove_trailing_commas(input_str: str) -> str:
+        return re.sub(r",\s*(}|\])", r"\1", input_str)
 
     @staticmethod
     def _extract_json_objects(input_str: str) -> str:
@@ -287,13 +309,33 @@ class AgentMrMeeseeks:
         return json_matches
 
     @staticmethod
+    def preprocess_input_string(input_str: str) -> str:
+        input_str = AgentMrMeeseeks._replace_single_quotes(input_str)
+        input_str = AgentMrMeeseeks._fix_unquoted_keys(input_str)
+        input_str = AgentMrMeeseeks._add_missing_commas(input_str)
+        input_str = AgentMrMeeseeks._remove_trailing_commas(input_str)
+        return input_str
+
+    @staticmethod
+    def _sanitize_json(json_str: str) -> str:
+        try:
+            # Replace single quotes with double quotes, but not when escaped
+            sanitized_str = re.sub(r"(?<!\\)'", '"', json_str)
+            decoded = decode(sanitized_str, encoding="utf-8")
+            return json.dumps(decoded)
+        except Exception as e:
+            return "Error parsing JSON: %s" % e
+
+    @staticmethod
     def _parse_input_string(input_str: str) -> List[Dict[str, str]]:
-        """Parse the input string and return a dictionary of tool names to tool inputs."""
         json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
         parsed_entries = []
         for json_str in json_objects:
+            sanitized_str = AgentMrMeeseeks._sanitize_json(json_str)
+            if sanitized_str is None:
+                continue
+
             try:
-                sanitized_str = json_str  # _sanitize_json(json_str)
                 parsed_entry = json.loads(sanitized_str)
                 if "tool" in parsed_entry:
                     parsed_entries.append(parsed_entry)
