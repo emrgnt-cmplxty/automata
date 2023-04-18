@@ -5,7 +5,7 @@ choose a work item to work on, and remove HTML tags from text.
 
 import logging
 import os
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 
 import regex as re
 import yaml

@@ -8,7 +8,7 @@ from spork.tools.tool_managers.tool_utils import load_llm_tools
 from spork.tools.utils import get_logging_config
 
 
-def main():
+def update_docstrings():
     logging_config = get_logging_config()
     logging.config.dictConfig(logging_config)
     logger = logging.getLogger(__name__)
@@ -42,15 +42,18 @@ def main():
         default="python_parser,python_writer,codebase_oracle",
         help="Comma-separated list of tools to be used.",
     )
-
     args = parser.parse_args()
-    assert args.instructions is not None, "You must provide instructions for the agent."
+
+    assert "python_parser" in args.tools, "You must include the python_parser tool."
+    assert "python_writer" in args.tools, "You must include the python_writer tool."
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
     tool_payload, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
+    python_parser, python_writer = tool_payload["python_parser"], tool_payload["python_writer"]
 
+    overview = python_parser.get_overview()
     initial_payload = {
-        "overview": tool_payload["python_parser"].get_overview(),
+        "overview": overview,
     }
 
     logger.info("Passing in instructions: %s", args.instructions)
@@ -65,23 +68,28 @@ def main():
         stream=args.stream,
     )
 
-    logger.info("Running the agent now...")
-    if args.session_id is None:
-        agent.run()
-    else:
-        agent.replay_messages()
+    overview = {}  # Replace with the output from the previous message
+    for py_path in overview:
+        if "test_" in py_path:
+            continue
+        logger.info("Updating docstring for %s" % (py_path))
+        # Get the raw code and existing docstring
+        raw_code = python_parser.get_raw_code(py_path)
+        docstring = python_parser.get_docstring(py_path)
+        logger.info("Prev Docstring:\n%s" % (docstring))
+        logger.info("Prev Raw Code:\n%s" % (raw_code))
 
-    while True:
-        user_input = input(
-            "Do you have any further instructions or feedback? Type 'exit' to terminate: "
-        )
-        if user_input.lower() == "exit":
-            break
-        else:
-            instructions = [{"role": "user", "content": user_input}]
-            agent.extend_last_instructions(instructions)
-            agent.iter_task()
+        # # Update the docstring using the Mr.Meeseeks agent
+        # # You can tailor the input based on the agent's capabilities
+        # updated_docstring = meeseeks.update_docstring(docstring)
+
+        # # Modify the code state with the updated docstring
+        # new_code = raw_code.replace(docstring, updated_docstring)
+        # writer.modify_code_state(py_path, new_code)
+
+    # Write the updated code state to disk
+    # python_writer.write_to_disk()
 
 
 if __name__ == "__main__":
-    main()
+    update_docstrings()

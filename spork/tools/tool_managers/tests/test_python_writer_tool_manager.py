@@ -9,6 +9,7 @@ from langchain.agents import Tool
 from spork.tools.python_tools.python_parser import PythonParser
 from spork.tools.python_tools.python_writer import PythonWriter
 from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
+from spork.tools.utils import home_path
 
 
 @pytest.fixture
@@ -228,3 +229,10 @@ class PythonAgentToolBuilder:
 
     code_writer.func(combo_str)
     disk_writer.func(None)
+    # Why?
+    os.remove(
+        os.path.join(
+            home_path(),
+            "spork/tools/tool_managers/tests/spork/tools/python_tools/python_agent_tool_builder.py",
+        )
+    )
