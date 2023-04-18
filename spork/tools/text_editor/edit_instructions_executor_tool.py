@@ -24,4 +24,4 @@ class EditInstructionsExecutorTool(Tool):
                     callback()
             return result
         except Exception as e:
-            return f"Error: {e}"
+            return f"Error: {e}. {editor.get_formatted_log()}"
