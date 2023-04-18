@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from langchain.agents import AgentExecutor, AgentType, initialize_agent
 from langchain.llms import BaseLLM
 from langchain.memory import ReadOnlySharedMemory
@@ -10,13 +8,15 @@ from spork.tools.text_editor.edit_instructions_executor_tool import EditInstruct
 
 
 def make_text_editor_agent(
-    llm: BaseLLM, memory: ReadOnlySharedMemory, home_dir: str, callbacks: Optional[List] = None
+    llm: BaseLLM,
+    memory: ReadOnlySharedMemory,
+    codebase_oracle_tool_builder: CodebaseOracleToolBuilder,
 ) -> AgentExecutor:
     """Create a text editor agent."""
-    codebase_oracle_tool = CodebaseOracleToolBuilder(home_dir, llm, memory).build()
+    codebase_oracle_tool = codebase_oracle_tool_builder.build()
     compiler_tool = EditInstructionsCompilerTool(llm, memory)
     executor_tool = EditInstructionsExecutorTool(
-        callbacks
+        [CodebaseOracleToolBuilder.refresh_callback]
     )  # the idea here is that editor changes the file, so it should call a callback for the codebase oracle to update its state
     tools = [codebase_oracle_tool, compiler_tool, executor_tool]
     editor_agent = initialize_agent(

@@ -63,9 +63,7 @@ local_navigator_tool = LocalNavigatorTool(llm2)
 planning_tools = [codebase_oracle_tool, langchain_oracle_tool]
 
 
-text_editor_agent = make_text_editor_agent(
-    llm2, readonlymemory, os.getcwd(), callbacks=[codebase_oracle_builder.refresh_callback]
-)
+text_editor_agent = make_text_editor_agent(llm2, readonlymemory, codebase_oracle_builder)
 text_editor_tool = TextEditorTool(text_editor_agent)
 
 
