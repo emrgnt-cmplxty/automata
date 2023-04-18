@@ -133,7 +133,14 @@ def run_retrieval_chain_with_sources_format(
     chain: BaseConversationalRetrievalChain, q: str
 ) -> str:
     result = chain(q)
-    return f'Answer: {result["answer"]}.\n\n Sources: {result.get("source_documents", [])}'
+    answer, sources = result["answer"], result.get("source_documents", [])
+    formatted_answer = f"Answer: {answer}"
+    if sources:
+        formatted_sources = "\n".join(
+            [f"Source: {s.metadata} Content: {s.page_context}" for s in sources]
+        )
+        formatted_answer = "\n".join([formatted_answer, formatted_sources])
+    return formatted_answer
 
 
 class NumberedLinesTextLoader(TextLoader):
@@ -141,7 +148,7 @@ class NumberedLinesTextLoader(TextLoader):
         """Load from file path."""
         with open(self.file_path, encoding=self.encoding) as f:
             lines = f.readlines()
-            text = f"{self.file_path}"  # this helps with mapping content to file name
+            text = f"{self.file_path}\n"  # this helps with mapping content to file name
             for i, line in enumerate(lines):
                 text += f"{i}: {line}"
         metadata = {"source": self.file_path}
