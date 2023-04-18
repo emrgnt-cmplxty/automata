@@ -16,7 +16,7 @@ def make_text_editor_agent(
     codebase_oracle_tool = codebase_oracle_tool_builder.build()
     compiler_tool = EditInstructionsCompilerTool(llm, memory)
     executor_tool = EditInstructionsExecutorTool(
-        [CodebaseOracleToolBuilder.refresh_callback]
+        [codebase_oracle_tool_builder.refresh_callback]
     )  # the idea here is that editor changes the file, so it should call a callback for the codebase oracle to update its state
     tools = [codebase_oracle_tool, compiler_tool, executor_tool]
     editor_agent = initialize_agent(
