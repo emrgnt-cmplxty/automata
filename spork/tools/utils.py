@@ -35,6 +35,25 @@ def home_path() -> str:
     return data_folder
 
 
+def format_config_path(config_dir: str, config_path: str) -> str:
+    """
+    Returns the path to a config file.
+    Args:
+    - config_dir (str): The name of the directory the config file is in.
+    - config_path (str): The name of the config file.
+    Returns:
+    - The path to the config file.
+    """
+    return os.path.join(
+        home_path(),
+        "spork",
+        "tools",
+        "agents",
+        config_dir,
+        config_path,
+    )
+
+
 def login_github(token: str) -> Github:
     """
     Logs in to the GitHub API using a token.

@@ -58,11 +58,6 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    print("package =", package)
-    print("file_rel_path =", file_rel_path)
-    print("absolute_path =", absolute_path)
-    print("file_abs_path =", file_abs_path)
-    print("file_py_path =", file_py_path)
     code_writer.func(f"{file_py_path},{function_def}")
     disk_writer.func(None)
 

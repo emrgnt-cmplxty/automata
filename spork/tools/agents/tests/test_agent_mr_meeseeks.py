@@ -27,15 +27,10 @@ def agent_mr_meeseeks():
     initial_payload = {
         "overview": overview,
     }
-    initial_instructions = [
-        {
-            "role": "assistant",
-            "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
-        },
-        {"role": "user", "content": "Test instruction."},
-    ]
 
-    agent = AgentMrMeeseeks(initial_payload, initial_instructions, exec_tools)
+    agent = AgentMrMeeseeks(
+        initial_payload=initial_payload, instructions="Test instruction.", tools=exec_tools
+    )
     return agent
 
 

@@ -34,9 +34,9 @@ from langchain.tools.base import BaseTool
 
 from spork.config import *  # noqa F403
 
+from ...tools.utils import format_config_path
 from ..tool_managers.tool_builder import build_tools
 from .agent_configs.agent_version import AgentVersion
-from .agent_langchain_manager import AgentLangchainManager
 
 CONTINUE_MESSAGE = "Continue"
 COMPLETION_MESSAGE = "TASK_COMPLETED"
@@ -54,8 +54,8 @@ class AgentMrMeeseeks:
     def __init__(
         self,
         initial_payload: Dict[str, str],
-        initial_instructions: List[Dict[str, str]],
         tools: List[BaseTool],
+        instructions: str,
         version: AgentVersion = AgentVersion.MEESEEKS_V1,
         model: str = "gpt-4",
         session_id: Optional[str] = None,
@@ -107,8 +107,16 @@ class AgentMrMeeseeks:
         else:
             self.session_id = str(uuid.uuid4())
             self._save_interaction({"role": "system", "content": prompt})
-            for instruction in initial_instructions:
-                self._save_interaction(instruction)
+            initial_messages = [
+                {
+                    "role": "assistant",
+                    "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
+                },
+                {"role": "user", "content": instructions},
+            ]
+
+            for message in initial_messages:
+                self._save_interaction(message)
 
         logger.info(
             "Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id)
@@ -124,7 +132,7 @@ class AgentMrMeeseeks:
         """Run the test and report the tool outputs back to the master."""
         logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
-            model=self.model, messages=self.messages, temperature=0.7, stream=True
+            model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
         )
         if self.stream:
             accumulated_output = ""
@@ -166,7 +174,7 @@ class AgentMrMeeseeks:
 
         return None
 
-    def run(self):
+    def run(self) -> None:
         """Run until the initial instruction terminates."""
         while True:
             self.iter_task()
@@ -189,12 +197,14 @@ class AgentMrMeeseeks:
             logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
             logger.info("-" * 100)
 
+    def modify_last_message(self, new_message: str) -> None:
+        previous_message = self.messages[-1]
+        self.messages[-1] = {"role": previous_message["role"], "content": new_message}
+
     def _load_prompt(self, initial_payload: Dict[str, str]) -> str:
         """Load the prompt from a config specified at initialization."""
         with open(
-            AgentLangchainManager.format_config_path(
-                "agent_configs", f"{self.version.value}.yaml"
-            ),
+            format_config_path("agent_configs", f"{self.version.value}.yaml"),
             "r",
         ) as file:
             loaded_yaml = yaml.safe_load(file)
@@ -260,14 +270,14 @@ class AgentMrMeeseeks:
         ]
 
     @staticmethod
-    def _sanitize_json(json_str: str):
+    def _sanitize_json(json_str: str) -> str:
         """Sanitize the JSON string to make it parsable."""
         sanitized_str = json_str.replace("\n", "\\n")
         sanitized_str = sanitized_str.replace("'", '"')
         return sanitized_str
 
     @staticmethod
-    def _extract_json_objects(input_str: str):
+    def _extract_json_objects(input_str: str) -> str:
         """Extract all JSON objects from the input string."""
         json_pattern = r"\{(?:[^{}]|(?R))*?\}"
         json_matches = regex.findall(json_pattern, input_str, regex.MULTILINE)
@@ -317,26 +327,19 @@ if __name__ == "__main__":
         "overview": overview,
     }
 
-    first_instruction = (
-        f"Write a file called agent_mr_meeseeks_tool_manager.py which imitates the workflow "
-        f"of python_parser_tool_manager.py, and is located in the same directory."
-        f" Implement a single tool named python-agent-python-task, which exposes the agent mr meeseeks iter_task command."
-        f" Be sure to include a sensible description of the functionality of the tool and include an example."
-    )
+    # first_instruction = (
+    #     f"Write a file called agent_mr_meeseeks_tool_manager.py which imitates the workflow "
+    #     f"of python_parser_tool_manager.py, and is located in the same directory."
+    #     f" Implement a single tool named python-agent-python-task, which exposes the agent mr meeseeks iter_task command."
+    #     f" Be sure to include a sensible description of the functionality of the tool and include an example."
+    # )
     # first_instruction = f"Write a script which builds API documentation for the local repository, put it into an intelligent location. "
-    # first_instruction = f"Give AgentMrMeeseeks the ability to . "
-    initial_instructions = [
-        {
-            "role": "assistant",
-            "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
-        },
-        {"role": "user", "content": first_instruction},
-    ]
+    first_instruction = f"Create a script similar to main_static which is used exclusively to run the AgentMrMeeseeks. Use argparse to make all relevant parameters configurable. Name the script main_meeseeks.py. "
 
     agent = AgentMrMeeseeks(
         initial_payload,
-        initial_instructions,
         exec_tools,
+        first_instruction,
         stream=True,
         # model="gpt-3.5-turbo",
         # session_id="04f84ef2-c896-49d0-9d20-f50bb7d42f8a",
