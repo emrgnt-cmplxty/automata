@@ -15,6 +15,9 @@ from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.Repository import Repository
+from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
+from langchain.document_loaders import TextLoader
+from langchain.schema import Document
 
 
 def load_yaml(filename: str) -> Dict:
@@ -143,20 +146,6 @@ def choose_work_item(github_repo: Repository, choice: str = "") -> Union[Issue, 
     return work_items[choice_index]
 
 
-# this is probably not a good idea but it works for now
-class PassThroughBuffer:
-    def __init__(self, buffer):
-        self.saved_output = ""
-        self.original_buffer = buffer
-
-    def write(self, message):
-        self.saved_output += message
-        self.original_buffer.write(message)
-
-    def __getattr__(self, attr):
-        return getattr(self.original_buffer, attr)
-
-
 def remove_html_tags(text: str) -> str:
     """
     Removes HTML tags from a given string of text.
@@ -199,3 +188,36 @@ def get_logging_config(log_level=logging.INFO) -> dict:
         },
     }
     return logging_config
+
+
+def run_retrieval_chain_with_sources_format(
+    chain: BaseConversationalRetrievalChain, q: str
+) -> str:
+    result = chain(q)
+    return f'Answer: {result["answer"]}.\n\n Sources: {result.get("source_documents", [])}'
+
+
+class NumberedLinesTextLoader(TextLoader):
+    def load(self) -> List[Document]:
+        """Load from file path."""
+        with open(self.file_path, encoding=self.encoding) as f:
+            lines = f.readlines()
+            text = f"{self.file_path}"  # this helps with mapping content to file name
+            for i, line in enumerate(lines):
+                text += f"{i}: {line}"
+        metadata = {"source": self.file_path}
+        return [Document(page_content=text, metadata=metadata)]
+
+
+# this is probably not a good idea but it works for now
+class PassThroughBuffer:
+    def __init__(self, buffer):
+        self.saved_output = ""
+        self.original_buffer = buffer
+
+    def write(self, message):
+        self.saved_output += message
+        self.original_buffer.write(message)
+
+    def __getattr__(self, attr):
+        return getattr(self.original_buffer, attr)

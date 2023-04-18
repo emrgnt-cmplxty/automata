@@ -74,17 +74,19 @@ class PythonWriter:
         Raises:
             ValueError: If the provided code is not valid Python.
         """
-
+        print("-" * 250)
+        print("in modify code state.....")
         # Check that we can parse the code
         try:
             self._validate_code(code)
         except ValueError as e:
+            print("Exception triggered..")
             return (
                 f"Failed to parse code with error {e}. Please check that the code is valid Python."
             )
 
         package_path = module_py_path.split(".")[-1]
-
+        print("Calling Modify Code State = %s" % (code))
         # Create the package if it does not already exist
         if package_path not in self.python_parser.package_dict:
             self._create_new_package(package_path)
@@ -121,7 +123,8 @@ class PythonWriter:
             self.python_parser.module_dict[module_py_path].standalone_functions[
                 function_path
             ] = function_object
-
+        print("module_py_path=", module_py_path)
+        print("-" * 100)
         self.modified_modules.add(module_py_path)
         return "Success"
 
@@ -133,6 +136,7 @@ class PythonWriter:
         Raises:
             ValueError: If the resulting output is not a valid Python file.
         """
+        print("self.modified_modules = ", self.modified_modules)
         for module_py_path in self.python_parser.module_dict.keys():
             file_path = os.path.join(
                 self.python_parser.absolute_path_to_base, *(module_py_path.split("."))

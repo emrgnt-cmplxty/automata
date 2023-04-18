@@ -31,14 +31,13 @@ class PythonWriterToolManager(BaseToolManager):
     def python_writer_wrapper(self, input_str) -> str:
         path = input_str.split(",")[0]
         code = ",".join(input_str.split(",")[1:]).strip()
-
-        self.python_writer.modify_code_state(
+        print("Calling python_writer.modify_code_state on path = %s and code = %s" % (path, code))
+        return self.python_writer.modify_code_state(
             *(
                 path,
                 code,
             )
         )
-        return "Success"
 
     def build_tools(self) -> List[Tool]:
         """

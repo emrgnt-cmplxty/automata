@@ -199,7 +199,7 @@ class MrMeeseeksAgent:
             if message["role"] == "user":
                 continue
             logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-            logger.info("Processing message content = ", message["content"])
+            logger.info("Processing message content =  %s" % (message["content"]))
             processed_outputs = self._process_input(message["content"])
             logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
             logger.info("-" * 100)

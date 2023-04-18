@@ -20,10 +20,11 @@ from github.PullRequest import PullRequest
 from github.Repository import Repository
 from langchain.agents import Tool, tool
 
+from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 from spork.tools.utils import PassThroughBuffer, remove_html_tags
 
 
-class GithubToolManager:
+class GithubToolManager(BaseToolManager):
     def __init__(
         self,
         github_repo: Repository,
