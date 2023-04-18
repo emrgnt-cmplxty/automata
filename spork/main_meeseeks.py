@@ -4,8 +4,14 @@ import logging.config
 
 from spork.tools.agents.agent_configs.agent_version import AgentVersion
 from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.python_tools import PythonParser, PythonWriter
-from spork.tools.tool_managers import PythonParserToolManager, PythonWriterToolManager, build_tools
+from spork.tools.tool_managers import (
+    CodebaseOracleToolManager,
+    PythonParserToolManager,
+    PythonWriterToolManager,
+    build_tools,
+)
 from spork.tools.utils import get_logging_config
 
 
@@ -36,10 +42,12 @@ def main():
 
     python_parser = PythonParser()
     python_writer = PythonWriter(python_parser)
+    codebase_oracle = CodebaseOracle.get_default_codebase_oracle()
 
     exec_tools = []
     exec_tools += build_tools(PythonParserToolManager(python_parser))
     exec_tools += build_tools(PythonWriterToolManager(python_writer))
+    exec_tools += build_tools(CodebaseOracleToolManager(codebase_oracle))
     overview = python_parser.get_overview()
 
     initial_payload = {

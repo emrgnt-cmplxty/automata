@@ -4,13 +4,14 @@ from typing import List, Tuple
 
 from langchain import FAISS, PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
+from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms.base import BaseLLM
-from langchain.memory import ReadOnlySharedMemory
+from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 from langchain.schema import AIMessage, Document, HumanMessage
 from langchain.text_splitter import CharacterTextSplitter
 
-from spork.tools.utils import NumberedLinesTextLoader
+from spork.tools.utils import NumberedLinesTextLoader, home_path
 
 prompt_template = """Use the following pieces of context to answer the question about a codebase.
 This codebase is giving to you in context, and it's called improved-spork.
@@ -35,6 +36,13 @@ class CodebaseOracle:
         ), "Codebase path must be a git repo"
         # we make chain into a mutable state variable, because we need to refresh it occasionally
         self._needs_refresh = True
+
+    @staticmethod
+    def get_default_codebase_oracle() -> "CodebaseOracle":
+        llm = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
+        memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+        read_only_memory = ReadOnlySharedMemory(memory=memory)
+        return CodebaseOracle(home_path(), llm, read_only_memory)
 
     def refresh_callback(self) -> None:
         # we give this to the editor so that it can tell the codebase oracle to refresh its chain with new codebase content
