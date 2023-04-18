@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from langchain import FAISS
+from langchain import FAISS, PromptTemplate
 from langchain.agents import Tool
 from langchain.chains import ConversationalRetrievalChain
 from langchain.embeddings import OpenAIEmbeddings
@@ -15,6 +15,17 @@ from spork.utils import (
     _get_chat_history,
     run_retrieval_chain_with_sources_format,
 )
+
+prompt_template = """Use the following pieces of context to answer the question about a codebase.
+This codebase is giving to you in context, and it's called improved-sporl.
+The question may ask about some file or a piece of code, and you will always be able to come up with an answer using only the provided conext.
+If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+{context}
+
+Question: {question}
+Helpful Answer:"""
+QA_PROMPT = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
 
 class CodebaseOracleToolBuilder:
@@ -61,6 +72,7 @@ class CodebaseOracleToolBuilder:
         self._chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=docsearch.as_retriever(),
+            qa_prompt=QA_PROMPT,
             memory=self.memory,
             return_source_documents=False,
             get_chat_history=_get_chat_history,
