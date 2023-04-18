@@ -13,5 +13,6 @@ class TextEditorTool(Tool):
             "Add a print statement on line 64 of bar.sh; Delete the try-except block around 12 of baz.py."
             "When you edit a line, you should also edit the other lines that are affected by the change. "
             "For example, if you rename a function, you should also rename all the calls to that function."
-            "If you delete a variable, you should also fix the lines that use that variable. ",
+            "If you delete a variable, you should also fix the lines that use that variable. "
+            "If you delete a function, make sure to delete its entire definition and fix the calls to that function.",
         )
