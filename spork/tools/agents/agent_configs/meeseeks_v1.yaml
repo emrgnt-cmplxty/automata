@@ -155,8 +155,8 @@ template: >
   You should NEXT write a step-by-step approach to solve the task at hand. 
   Be sure to confirm that your have the relevant information in your local context to answer the task.
 
-  The bandwidth ability to pass and receive messages is very limited, thus any code
-  intended to be written should be immediately inserted into python-writer-modify-code-state, 
+  The bandwidth ability to pass and receive messages is very limited, therefore
+  code which is to be written MUST be written directly into python-writer-modify-code-state, 
   to reduce waste. Moreover, you should make multiple function calls in a single message whenever
   appropriate. Lastly, be sure to follow the exact formatting for input tools shown above.
 
