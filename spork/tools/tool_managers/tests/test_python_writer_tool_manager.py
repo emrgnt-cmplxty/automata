@@ -56,7 +56,6 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     module = "sample3"
 
     file_py_path = f"{package}.{module}"
-    file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
     code_writer.func(f"{file_py_path},{function_def}")
     disk_writer.func(None)
@@ -172,7 +171,7 @@ class PythonAgentToolBuilder:
 
         tools = [
             Tool(
-                "python-agent-python-task",
+                "mr-meeseeks-task",
                 python_agent_python_task,
                 "Execute a Python task using the PythonAgent. Provide the task description in plain English.",
             )
@@ -223,7 +222,7 @@ class PythonAgentToolBuilder:
         self.logger = logger
 
     def build_tools(self) -> List[Tool]:
-        tools = [Tool(name='python-agent-python-task', func=lambda task: self.python_agent.run_agent(task), description=f'A single function that uses PythonAgent to perform a given task.', return_direct=True)]
+        tools = [Tool(name='mr-meeseeks-task', func=lambda task: self.python_agent.run_agent(task), description=f'A single function that uses PythonAgent to perform a given task.', return_direct=True)]
         return tools"""
     )
     tools = python_writer_tool_builder.build_tools()

@@ -9,15 +9,17 @@ Example usage:
     writer = PythonWriter(parser)
 
     print("Write a new standalone function:")
-    print(writer.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""A new function"""\npass'))
+    print(writer.modify_code_state('package_dir.module_name', 'def function_name():\n"""A new function"""\npass'))
 
     print("Modify an existing function:")
-    print(writer.modify_code_state('package_dir.module_name.function_name', 'def function_name():\n"""My Modified function"""\ndo_something()'))
+    print(writer.modify_code_state('package_dir.module_name', 'def function_name():\n"""My Modified function"""\ndo_something()'))
 
     # The structure above works for packages, modules, classes, and methods as well.
     # when done modifying code, write the changes to disk:
     writer.write_to_disk()
 '''
+
+
 import ast
 import os
 import subprocess
@@ -40,7 +42,12 @@ class PythonWriter:
 
     Attributes:
         python_parser (PythonParser): An instance of PythonParser.
+        modified_modules (Set[str]): A set containing the modified module paths.
 
+    Methods:
+        __init__: Initialize PythonWriter with a PythonParser instance and register a callback for update notifications.
+        modify_code_state: Modify the in-memory representation of Python code and update the PythonParser state.
+        write_to_disk: Write the modified code to disk.
     """
 
     def __init__(self, python_parser: PythonParser):

@@ -35,7 +35,7 @@ class PythonAgentToolBuilder:
 
         tools = [
             Tool(
-                "python-agent-python-task",
+                "mr-meeseeks-task",
                 python_agent_python_task,
                 "Execute a Python task using the PythonAgent. Provide the task description in plain English.",
             )

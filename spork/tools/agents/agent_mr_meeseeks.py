@@ -21,24 +21,19 @@
         next_instruction = agent.iter_task(instructions)
         ...
 """
-import json
 import logging
-import re
 import sqlite3
 import uuid
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import openai
-import regex
 import yaml
-from demjson import decode
 from langchain.tools.base import BaseTool
 from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
 
 from ...tools.utils import format_config_path
-from ..tool_managers.tool_builder import build_tools
 from .agent_configs.agent_version import AgentVersion
 
 CONTINUE_MESSAGE = "Continue"
@@ -239,7 +234,6 @@ class AgentMrMeeseeks:
                 # In the event of an error, the tool_input becomes the output, as it is now a parsing error
                 tool_output = tool_input
                 outputs.append(tool_input)
-
             for tool_instance in self.tools:
                 if tool_instance.name == tool:
                     tool_output = tool_instance.run(tool_input, verbose=False)
@@ -285,113 +279,51 @@ class AgentMrMeeseeks:
         ]
 
     @staticmethod
-    def _replace_single_quotes(input_str: str) -> str:
-        input_str = re.sub(r"((?<!\\)')", '"', input_str)
-        return re.sub(r'(?<!\\)""(?!\s*[:,}])', "'", input_str)
+    def _extract_json_objects(input_str: str) -> List[str]:
+        """Extract non-nested JSON objects from the input string."""
+        json_objects = []
+        stack = []
+        start_idx = -1
+
+        for idx, char in enumerate(input_str):
+            if char == "{":
+                stack.append(char)
+                if len(stack) == 1:
+                    start_idx = idx
+            elif char == "}":
+                if stack and stack[-1] == "{":
+                    stack.pop()
+                if not stack:
+                    json_objects.append(input_str[start_idx : idx + 1])
+
+        return json_objects
 
     @staticmethod
-    def _fix_unquoted_keys(input_str: str) -> str:
-        return re.sub(r'(?<!")(\b\w+\b)(?!":)', r'"\1"', input_str)
-
-    @staticmethod
-    def _add_missing_commas(input_str: str) -> str:
-        return re.sub(r"\}(?=\s*\{)", "},", input_str)
-
-    @staticmethod
-    def _remove_trailing_commas(input_str: str) -> str:
-        return re.sub(r",\s*(}|\])", r"\1", input_str)
-
-    @staticmethod
-    def _extract_json_objects(input_str: str) -> str:
-        """Extract all JSON objects from the input string."""
-        json_pattern = r"\{(?:[^{}]|(?R))*?\}"
-        json_matches = regex.findall(json_pattern, input_str, regex.MULTILINE)
-        return json_matches
-
-    @staticmethod
-    def preprocess_input_string(input_str: str) -> str:
-        input_str = AgentMrMeeseeks._replace_single_quotes(input_str)
-        input_str = AgentMrMeeseeks._fix_unquoted_keys(input_str)
-        input_str = AgentMrMeeseeks._add_missing_commas(input_str)
-        input_str = AgentMrMeeseeks._remove_trailing_commas(input_str)
-        return input_str
-
-    @staticmethod
-    def _sanitize_json(json_str: str) -> str:
-        try:
-            # Replace single quotes with double quotes, but not when escaped
-            sanitized_str = re.sub(r"(?<!\\)'", '"', json_str)
-            decoded = decode(sanitized_str, encoding="utf-8")
-            return json.dumps(decoded)
-        except Exception as e:
-            return "Error parsing JSON: %s" % e
-
-    @staticmethod
-    def _parse_input_string(input_str: str) -> List[Dict[str, str]]:
-        json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
-        parsed_entries = []
-        for json_str in json_objects:
-            sanitized_str = AgentMrMeeseeks._sanitize_json(json_str)
-            if sanitized_str is None:
+    def _extract_tool_and_input(json_object_str: List[str]) -> List[Tuple[str, Optional[str]]]:
+        results = []
+        for json_object in json_object_str:
+            tool_tag, input_tag = '"tool":', '"input":'
+            if tool_tag not in json_object:
                 continue
 
-            try:
-                parsed_entry = json.loads(sanitized_str)
-                if "tool" in parsed_entry:
-                    parsed_entries.append(parsed_entry)
-            except json.JSONDecodeError as e:
-                parsed_entries.append(
-                    {"tool": "error-reporter", "input": "Error parsing JSON: %s" % e}
-                )
+            def _strip_trailing_cruft(s: str) -> str:
+                return s.strip()[1:-1].strip("'").strip('"').strip("'\n").strip('"\n')
+
+            tool = _strip_trailing_cruft(json_object.split(tool_tag)[1].split(",")[0])
+
+            input_str = None
+            if input_tag in json_object:
+                split_on_input_tag = json_object.split(input_tag)[1].split("}")
+                joined_input_str = "}".join(split_on_input_tag[:-1])
+                input_str = joined_input_str.strip()[1:-1]
+            results.append((tool, input_str))
+        return results
+
+    @staticmethod
+    def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
+        extracted_json_objects = AgentMrMeeseeks._extract_json_objects(input_str)
+        tool_input_pairs = AgentMrMeeseeks._extract_tool_and_input(extracted_json_objects)
+        parsed_entries = []
+        for tool_input_pair in tool_input_pairs:
+            parsed_entries.append({"tool": tool_input_pair[0], "input": tool_input_pair[1]})
         return [{"tool": entry["tool"], "input": entry.get("input")} for entry in parsed_entries]
-
-
-if __name__ == "__main__":
-    import logging.config
-
-    from spork.tools.python_tools.python_parser import PythonParser
-    from spork.tools.python_tools.python_writer import PythonWriter
-    from spork.tools.tool_managers.python_parser_tool_manager import PythonParserToolManager
-    from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
-    from spork.tools.utils import get_logging_config
-
-    from ...config import *  # noqa F403
-
-    logging_config = get_logging_config(logging.INFO)
-    logging.config.dictConfig(logging_config)
-
-    python_parser = PythonParser()
-    python_writer = PythonWriter(python_parser)
-
-    exec_tools = []
-    exec_tools += build_tools(PythonParserToolManager(python_parser))
-    exec_tools += build_tools(PythonWriterToolManager(python_writer))
-    overview = python_parser.get_overview()
-
-    initial_payload = {
-        "overview": overview,
-    }
-
-    # first_instruction = (
-    #     f"Write a file called agent_mr_meeseeks_tool_manager.py which imitates the workflow "
-    #     f"of python_parser_tool_manager.py, and is located in the same directory."
-    #     f" Implement a single tool named python-agent-python-task, which exposes the agent mr meeseeks iter_task command."
-    #     f" Be sure to include a sensible description of the functionality of the tool and include an example."
-    # )
-    # first_instruction = f"Write a script which builds API documentation for the local repository, put it into an intelligent location. "
-    first_instruction = f"Create a script similar to main_static which is used exclusively to run the AgentMrMeeseeks. Use argparse to make all relevant parameters configurable. Name the script main_meeseeks.py. "
-
-    agent = AgentMrMeeseeks(
-        initial_payload,
-        exec_tools,
-        first_instruction,
-        stream=True,
-        # model="gpt-3.5-turbo",
-        # session_id="04f84ef2-c896-49d0-9d20-f50bb7d42f8a",
-    )
-    # agent.replay_messages()
-    agent.run()
-
-    import pdb
-
-    pdb.set_trace()

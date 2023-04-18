@@ -59,7 +59,10 @@ def main():
     )
 
     logger.info("Running the agent now...")
-    agent.run()
+    if args.session_id is None:
+        agent.run()
+    else:
+        agent.replay_messages()
 
     while True:
         user_input = input(

@@ -17,10 +17,10 @@ class AgentMrMeeseeksToolManager(BaseToolManager):
     def build_tools(self) -> List[Tool]:
         tools = [
             Tool(
-                name="python-agent-python-task",
+                name="mr-meeseeks-task",
                 func=lambda: self.agent_mr_meeseeks.run(),
                 description="Exposes the run command of the AgentMrMeeseeks class, which runs the task and reports the tool outputs back to the master.",
-                example="python-agent-python-task",
+                example="mr-meeseeks-task",
                 return_direct=True,
                 verbose=True,
             )
