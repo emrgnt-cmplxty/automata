@@ -17,7 +17,7 @@ from spork.utils import (
 )
 
 prompt_template = """Use the following pieces of context to answer the question about a codebase.
-This codebase is giving to you in context, and it's called improved-sporl.
+This codebase is giving to you in context, and it's called improved-spork.
 The question may ask about some file or a piece of code, and you will always be able to come up with an answer using only the provided conext.
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
