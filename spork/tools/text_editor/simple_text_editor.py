@@ -49,13 +49,13 @@ class SimpleTextEditor:
             line_number_for_logging = i + log_start
             log_entry = f">{line_number_for_logging}: {line}"
             if line_number_for_logging == line_number:
-                log_entry += " <-- inserted"
+                log_entry = log_entry[:-1] + " <-- inserted"
             self.log.append(log_entry)
 
     def delete_line(self, line_number):
         if line_number < 0 or line_number >= len(self.lines):
             raise IndexError(f"Error: delete`{line_number}; line doesn't exist")
-        full_line_text = self.lines[line_number][:]
+        full_line_text = self.lines[line_number][:-1]
         del self.lines[line_number]
 
         self.log.append(f"Deleted line {line_number} with text {full_line_text}.")
@@ -74,7 +74,7 @@ class SimpleTextEditor:
     def replace_line(self, line_number, new_line_text):
         if line_number < 0 or line_number >= len(self.lines):
             raise IndexError(f"Error: replace`{line_number}`{new_line_text}; line doesn't exist")
-        full_line_text = self.lines[line_number][:]
+        full_line_text = self.lines[line_number][:-1]
         self.lines[line_number] = new_line_text + "\n"
 
         self.log.append(f"Replaced line {line_number} with text {full_line_text}.")
@@ -134,7 +134,7 @@ class SimpleTextEditor:
         return f"Edits completed successfully! File {self.file_path} saved with {len(self.lines)} lines. {self.get_formatted_log()}"
 
     def get_formatted_log(self):
-        return "Log:\n" + "\n".join(self.log)
+        return "Log:\n" + "".join(self.log)
 
     def reset(self):
         self.file_path = None
