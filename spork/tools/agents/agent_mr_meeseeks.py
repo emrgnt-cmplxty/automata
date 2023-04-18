@@ -38,7 +38,6 @@ from .agent_configs.agent_version import AgentVersion
 from .agent_langchain_manager import AgentLangchainManager
 
 CONTINUE_MESSAGE = "Continue"
-
 logger = logging.getLogger(__name__)
 
 
@@ -51,6 +50,7 @@ class AgentMrMeeseeks:
         version: AgentVersion = AgentVersion.MEESEEKS_V1,
         model: str = "gpt-4",
         session_id: Optional[str] = None,
+        stream: bool = False,
     ):
         """
         Args:
@@ -82,6 +82,7 @@ class AgentMrMeeseeks:
         self.version = version
         self.tools = tools
         self.messages: List[Dict[str, str]] = []
+        self.stream = stream
 
         initial_payload["tools"] = "".join(
             ["\n%s: %s\n" % (tool.name, tool.description) for tool in self.tools]
@@ -101,6 +102,7 @@ class AgentMrMeeseeks:
         logger.info(
             "Initializing with Prompt:%s\n\nAnd SessionId:%s\n" % (prompt, self.session_id)
         )
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s]: %(message)s")
 
     def __del__(self):
         self.conn.close()
@@ -111,9 +113,29 @@ class AgentMrMeeseeks:
         """Run the test and report the tool outputs back to the master."""
         logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
-            model=self.model, messages=self.messages, temperature=0.7
+            model=self.model, messages=self.messages, temperature=0.7, stream=True
         )
-        response_text = response_summary["choices"][0]["message"]["content"]
+        if self.stream:
+            accumulated_output = ""
+            separator = " "
+            response_text = ""
+            for chunk in response_summary:
+                if "content" in chunk["choices"][0]["delta"]:
+                    chunk_content = chunk["choices"][0]["delta"]["content"]
+                    accumulated_output += chunk_content
+                    response_text += chunk_content
+                if separator in accumulated_output:
+                    # Split the accumulated output into words
+                    words = accumulated_output.split(separator)
+                    # Print all words except the last one, as it may be an incomplete word
+                    for word in words[:-1]:
+                        print(word, end=" ", flush=True)
+                    # Keep the last (potentially incomplete) word for the next iteration
+                    accumulated_output = words[-1]
+        else:
+            response_text = response_summary["choices"][0]["message"]["content"]
+
+        logger.info("OpenAI Response:\n%s\n" % response_text)
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
 
@@ -123,10 +145,14 @@ class AgentMrMeeseeks:
                 message += f'"output_{i}": {(output)}, \n'
             message += "}"
             self._save_interaction({"role": "user", "content": message})
+            logger.info("Synthetic User Message:\n%s\n" % message)
             return processed_inputs
 
         # If there are no outputs, then the user has must respond to continue
         self._save_interaction({"role": "user", "content": CONTINUE_MESSAGE})
+        logger.info("Synthetic User Message:\n%s\n" % CONTINUE_MESSAGE)
+        logger.info("-" * 100)
+
         return None
 
     def replay_messages(self) -> None:
@@ -202,11 +228,6 @@ class AgentMrMeeseeks:
             (self.session_id, interaction_id, role, content),
         )
         self.conn.commit()
-        logger.info(
-            "Saving Interaction:\nRole:%s\nContent:%s\n\n"
-            % (interaction["role"], interaction["content"])
-        )
-        logger.info("-" * 100)
         self.messages.append(interaction)
 
     def _load_previous_interactions(self):
@@ -251,6 +272,8 @@ class AgentMrMeeseeks:
 
 
 if __name__ == "__main__":
+    import logging.config
+
     from spork.tools.python_tools.python_parser_tool_builder import (
         PythonParser,
         PythonParserToolBuilder,
@@ -259,8 +282,12 @@ if __name__ == "__main__":
         PythonWriter,
         PythonWriterToolBuilder,
     )
+    from spork.tools.utils import get_logging_config
 
     from ...config import *  # noqa F403
+
+    logging_config = get_logging_config(logging.INFO)
+    logging.config.dictConfig(logging_config)
 
     python_parser = PythonParser()
     python_writer = PythonWriter(python_parser)
@@ -293,6 +320,7 @@ if __name__ == "__main__":
         initial_payload,
         initial_instructions,
         exec_tools,
+        # model="gpt-3.5-turbo",
         # session_id="04f84ef2-c896-49d0-9d20-f50bb7d42f8a",
     )
     # agent.replay_messages()
