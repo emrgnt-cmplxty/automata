@@ -15,7 +15,7 @@ class SimpleTextEditor:
         self.lines = []
         self.state = EditorState.BEGIN
         self.log = []
-        self.log_window = 3
+        self.log_window = 2
 
     def open_file(self, file_path):
         self.file_path = file_path
@@ -131,7 +131,10 @@ class SimpleTextEditor:
                 break
             else:
                 raise ValueError(f"Invalid command {i}: {cmd_parts[0]}")
-        return f"Edits completed successfully! File {self.file_path} saved with {len(self.lines)} lines. {self.get_formatted_log()}"
+        return (
+            f"Edits completed. File {self.file_path} saved with {len(self.lines)} lines. {self.get_formatted_log()}\n"
+            f"Please check the log for correctness of the edits."
+        )
 
     def get_formatted_log(self):
         return "Log:\n" + "".join(self.log)
