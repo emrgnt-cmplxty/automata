@@ -50,7 +50,6 @@ def format_config_path(config_dir: str, config_path: str) -> str:
     return os.path.join(
         home_path(),
         "spork",
-        "tools",
         "agents",
         config_dir,
         config_path,

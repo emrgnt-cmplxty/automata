@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from langchain.agents import Tool
 
-from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 from spork.tools.utils import PassThroughBuffer
 

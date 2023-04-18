@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from langchain.agents import Tool
 
-from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.python_tools.python_parser import PythonParser
 
 
@@ -41,7 +41,7 @@ def test_mr_meeseeks_agent_init(mr_meeseeks_agent):
     assert len(mr_meeseeks_agent.tools) > 0
 
 
-@patch("spork.tools.agents.mr_meeseeks_agent.openai.ChatCompletion.create")
+@patch("spork.agents.mr_meeseeks_agent.openai.ChatCompletion.create")
 def test_mr_meeseeks_agent_iter_task(mock_chatcompletion_create, mr_meeseeks_agent):
     mock_chatcompletion_create.return_value = {
         "choices": [{"message": {"content": '{"tool": "test-tool", "input": "test input"}'}}]
@@ -52,7 +52,7 @@ def test_mr_meeseeks_agent_iter_task(mock_chatcompletion_create, mr_meeseeks_age
     assert next_instruction[0] == "test input"
 
 
-@patch("spork.tools.agents.mr_meeseeks_agent.openai.ChatCompletion.create")
+@patch("spork.agents.mr_meeseeks_agent.openai.ChatCompletion.create")
 def test_mr_meeseeks_agent_iter_task_no_outputs(mock_chatcompletion_create, mr_meeseeks_agent):
     mock_chatcompletion_create.return_value = {"choices": [{"message": {"content": "No outputs"}}]}
 
@@ -91,7 +91,7 @@ def test_mr_meeseeks_agent_parse_example_0(mr_meeseeks_agent):
         """{
   "tool": "python-writer-modify-code-state",
   "input": "spork.tools.tool_managers.tests.test_mr_meeseeks_agent_tool_manager,import pytest
-from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.tool_managers.mr_meeseeks_agent_tool_manager import MrMeeseeksAgentToolManager
 from spork.tools.utils import PassThroughBuffer
 

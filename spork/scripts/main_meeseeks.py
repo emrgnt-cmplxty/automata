@@ -2,12 +2,14 @@ import argparse
 import logging
 import logging.config
 
-from spork.tools.agents.agent_configs.agent_version import AgentVersion
-from spork.tools.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.agents.agent_configs.agent_version import AgentVersion
+from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.python_tools import PythonParser, PythonWriter
 from spork.tools.tool_managers import (
     CodebaseOracleToolManager,
+    DocumentationGPTToolManager,
     PythonParserToolManager,
     PythonWriterToolManager,
     build_tools,
@@ -28,10 +30,22 @@ def main():
         "--model", type=str, default="gpt-4", help="The model to be used for the agent."
     )
     parser.add_argument(
+        "--documentation_url",
+        type=str,
+        default="https://python.langchain.com/en/latest",
+        help="The model to be used for the agent.",
+    )
+    parser.add_argument(
         "--session_id", type=str, default=None, help="The session id for the agent."
     )
     parser.add_argument(
         "--stream", type=bool, default=True, help="Should we stream the responses?"
+    )
+    parser.add_argument(
+        "--tools",
+        type=str,
+        default="python_parser,python_writer,codebase_oracle",
+        help="Comma-separated list of tools to be used.",
     )
 
     logging_config = get_logging_config()
@@ -42,12 +56,29 @@ def main():
 
     python_parser = PythonParser()
     python_writer = PythonWriter(python_parser)
-    codebase_oracle = CodebaseOracle.get_default_codebase_oracle()
 
     exec_tools = []
-    exec_tools += build_tools(PythonParserToolManager(python_parser))
-    exec_tools += build_tools(PythonWriterToolManager(python_writer))
-    exec_tools += build_tools(CodebaseOracleToolManager(codebase_oracle))
+    if args.tools:
+        for tool_name in args.tools.split(","):
+            tool_name = tool_name.strip()
+            if tool_name.lower() == "python_parser":
+                exec_tools += build_tools(PythonParserToolManager(python_parser))
+            elif tool_name.lower() == "python_writer":
+                exec_tools += build_tools(PythonWriterToolManager(python_writer))
+            elif tool_name.lower() == "codebase_oracle":
+                codebase_oracle = CodebaseOracle.get_default_codebase_oracle()
+                exec_tools += build_tools(CodebaseOracleToolManager(codebase_oracle))
+            elif tool_name.lower() == "documentation_gpt":
+                doc_gpt = DocumentationGPT(
+                    url=args.documentation_url,
+                    model=args.model,
+                    temperature=0.7,
+                    verbose=True,
+                )
+                exec_tools += build_tools(DocumentationGPTToolManager(doc_gpt))
+            else:
+                logger.warning("Unknown tool: %s", tool_name)
+
     overview = python_parser.get_overview()
 
     initial_payload = {

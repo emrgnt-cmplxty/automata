@@ -32,8 +32,8 @@ from langchain.tools.base import BaseTool
 from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
+from spork.tools.utils import format_config_path
 
-from ..utils import format_config_path
 from .agent_configs.agent_version import AgentVersion
 
 CONTINUE_MESSAGE = "Continue"
@@ -185,8 +185,8 @@ class MrMeeseeksAgent:
         """Run until the initial instruction terminates."""
         while True:
             self.iter_task()
-            if COMPLETION_MESSAGE in self.messages[-1]["content"]:
-                break
+            # if COMPLETION_MESSAGE in self.messages[-1]["content"]:
+            #     break
             if COMPLETION_MESSAGE in self.messages[-2]["content"]:
                 break
 
@@ -196,8 +196,6 @@ class MrMeeseeksAgent:
             logger.info("No messages to replay.")
             return
         for message in self.messages:
-            if message["role"] == "user":
-                continue
             logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
             logger.info("Processing message content =  %s" % (message["content"]))
             processed_outputs = self._process_input(message["content"])

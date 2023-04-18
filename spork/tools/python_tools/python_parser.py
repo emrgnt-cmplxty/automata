@@ -1,4 +1,5 @@
-"""PythonParser
+"""
+PythonParser
 
 This module provides functionality to extract information about classes, functions,
 and their docstrings from a given directory of Python files. It defines the `PythonParser`
@@ -19,7 +20,8 @@ Example usage:
 
     TODO
     1. Consider how to handle import statements, they are not currently parsed.
-    2. Include support for getting code + doc strings in a single shot"""
+    2. Include support for getting code + doc strings in a single shot
+"""
 
 import ast
 import os

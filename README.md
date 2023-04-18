@@ -3,18 +3,39 @@ Getting started guide to run the code for new users
 
 # Overview
 
-The improved-spork project is an AI software engineering assistant that helps developers contribute clean, high-quality code to GitHub repositories. It provides the following functionality:
+Spork Code Repository
 
-- Automatically log into GitHub using an API key
-- List repositories and issues
-- Utilize an AI agent along with various tools (Python REPL, Terminal, and others) to close issues while adhering to the user's instructions
+This repository contains a collection of tools and utilities for various tasks.
 
-The project consists of the following files:
+Main Packages and Modules:
 
-- `config.py`: Loads environment variables and stores required settings
-- `custom_tools.py`: Builds custom Git tools (git-branch, git-commit, git-create-pull-request) to interact with the Git repository
-- `main.py`: Logs into GitHub, selects a repository and issue, initializes the AI agent, and runs the task of closing the chosen issue
-- `utils.py`: Contains utility functions for GitHub interactions
+1. spork.main_meeseeks:
+   The main package for the Meeseeks project. It currently has no documentation.
+
+2. spork.tools.prompts:
+   A module containing task generators for planning and execution agents.
+   Functions:
+
+   - make_planning_task: A function for generating a planning task for an agent.
+   - make_execution_task: A function for generating an execution task for an agent.
+
+3. spork.tools.utils:
+   A module providing functions to interact with the GitHub API. It includes listing repositories, issues, and pull requests, choosing a work item, and removing HTML tags from text.
+
+4. spork.tools.python_tools.python_parser:
+   A module providing functionality to extract information about classes, functions, and their docstrings from a given directory of Python files. It defines the `PythonParser` class that can be used to get the source code, docstrings, and list of functions or classes within a specific file.
+
+5. spork.tools.python_tools.python_writer:
+   A module providing functionality to modify the in-memory representation of a Python package, via the PythonParser class, and write the changes to disk.
+
+6. spork.tools.documentation_tools.documentation_gpt:
+   A simple chatbot that uses DocGPT to answer questions about documentation.
+
+7. spork.tools.oracle.codebase_oracle:
+   A codebase oracle module. The documentation for this module is currently unavailable.
+
+8. spork.agents.mr_meeseeks_agent:
+   MrMeeseeksAgent is an autonomous agent that performs the actual work of the Spork system. Meeseeks are responsible for executing instructions and reporting the results back to the master.
 
 # Getting Started
 

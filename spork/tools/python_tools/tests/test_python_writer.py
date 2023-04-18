@@ -107,11 +107,6 @@ def generate_code():
     return mock_codes
 
 
-if __name__ == "__main__":
-    all_mock_codes = generate_code()
-    for idx, mock_code in enumerate(all_mock_codes, start=1):
-        print(f"Mock Code {idx}:\n{mock_code}\n")
-
 EXISTING_MODULE_PATH = "sample_code.sample"
 NEW_MODULE_PATH = "sample_code.new_sample"
 

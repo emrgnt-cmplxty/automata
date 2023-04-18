@@ -74,9 +74,11 @@ class PythonWriter:
         Raises:
             ValueError: If the provided code is not valid Python.
         """
+        code = code.replace("\\n", "\n").strip()
         print("-" * 250)
         print("in modify code state.....")
         # Check that we can parse the code
+        print("Validating input code = ", code)
         try:
             self._validate_code(code)
         except ValueError as e:
