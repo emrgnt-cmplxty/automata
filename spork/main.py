@@ -46,8 +46,8 @@ if pygit_repo.active_branch.name != DEFAULT_BRANCH_NAME:
 work_item = choose_work_item(github_repo)
 
 
-llm1 = ChatOpenAI(streaming=True, temperature=0, model_name="gpt-4")
-llm2 = ChatOpenAI(streaming=True, temperature=0, model_name="gpt-4")
+llm1 = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
+llm2 = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
 
 pass_through_buffer = PassThroughBuffer(sys.stdout)
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
