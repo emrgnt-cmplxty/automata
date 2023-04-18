@@ -11,9 +11,9 @@ from .tools.agents import AgentLangchainManager
 from .tools.github import requests_get_clean
 from .tools.python_tools import (
     PythonParser,
-    PythonParserToolBuilder,
+    PythonParserToolManager,
     PythonWriter,
-    PythonWriterToolBuilder,
+    PythonWriterToolManager,
 )
 from .tools.utils import PassThroughBuffer
 
@@ -69,9 +69,9 @@ exec_tools = base_tools
 
 if args.load_python_tools:
     python_parser = PythonParser()
-    exec_tools += PythonParserToolBuilder(python_parser).build_tools()
+    exec_tools += PythonParserToolManager(python_parser).build_tools()
     python_writer = PythonWriter(python_parser)
-    exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
+    exec_tools += PythonWriterToolManager(python_writer).build_tools()
 
 
 agent_manager = AgentLangchainManager(base_tools, planning_llm, exec_tools, exec_llm)

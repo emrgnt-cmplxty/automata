@@ -72,7 +72,7 @@ def list_issues(repo: Repository) -> PaginatedList:
     - repo: A Github repository object.
 
     Returns:
-    - A list of Github Issue PythonObjects representing the open issues for the repository.
+    - A list of Github Issue object representing the open issues for the repository.
     """
 
     return repo.get_issues(state="open")
@@ -86,7 +86,7 @@ def list_pulls(repo: Repository) -> PaginatedList:
     - repo: A Github repository object.
 
     Returns:
-    - A list of Github PullRequest PythonObjects representing the open pull requests for the repository.
+    - A list of Github PullRequest object representing the open pull requests for the repository.
     """
 
     return repo.get_pulls(state="open")

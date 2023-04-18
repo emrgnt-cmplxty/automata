@@ -8,16 +8,16 @@ from langchain.agents import Tool
 
 from spork.tools.python_tools.python_parser import PythonParser
 from spork.tools.python_tools.python_writer import PythonWriter
-from spork.tools.python_tools.python_writer_tool_builder import PythonWriterToolBuilder
+from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
 
 
 @pytest.fixture
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    python_parser = PythonParser(relative_dir=f"spork/tools/python_tools/tests/sample_code")
+    python_parser = PythonParser(relative_dir=f"spork/tools/tool_managers/tests/sample_code")
     python_writer = PythonWriter(python_parser)
-    return PythonWriterToolBuilder(python_writer)
+    return PythonWriterToolManager(python_writer)
 
 
 def test_init(python_writer_tool_builder):
@@ -57,8 +57,12 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
-    file_abs_path = os.path.join(absolute_path, file_rel_path)
-
+    file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
+    print("package =", package)
+    print("file_rel_path =", file_rel_path)
+    print("absolute_path =", absolute_path)
+    print("file_abs_path =", file_abs_path)
+    print("file_py_path =", file_py_path)
     code_writer.func(f"{file_py_path},{function_def}")
     disk_writer.func(None)
 

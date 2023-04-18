@@ -34,4 +34,3 @@ DO_RETRY = bool(os.getenv("DO_RETRY", 1))
 CONVERSATION_DB_NAME = os.getenv("CONVERSATION_DB_NAME", "interactions.sqlite3")
 # Define constants
 PLANNER_AGENT_OUTPUT_STRING = "Planner Agent Output: "
-COMPLETION_MESSAGE = "TASK_COMPLETED"

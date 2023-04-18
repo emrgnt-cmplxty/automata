@@ -1,3 +1,13 @@
+"""
+PythonObjectTypes
+
+There are several major PythonObjectType subclasses:
+    - PythonFunctionType
+    - PythonClassType
+    - PythonModuleType
+    - PythonPackageType
+These classes are used to represent Python objects in the PythonTools class.
+"""
 import abc
 import ast
 from typing import Any, Callable, Dict, List, Tuple, cast

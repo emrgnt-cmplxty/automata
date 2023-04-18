@@ -5,7 +5,7 @@ import pytest
 from langchain.agents import Tool
 
 from spork.tools.agents.agent_mr_meeseeks import AgentMrMeeseeks
-from spork.tools.python_tools.python_parser_tool_builder import PythonParser
+from spork.tools.python_tools.python_parser import PythonParser
 
 
 @pytest.fixture

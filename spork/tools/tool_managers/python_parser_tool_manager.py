@@ -1,10 +1,10 @@
 """
-PythonParserToolBuilder
+PythonParserToolManager
 
 A class for interacting with the PythonParser API, which provides functionality to extract
 information about classes, functions, and their docstrings from a given directory of Python files.
 
-The PythonParserToolBuilder class builds a list of Tool PythonObjects, each representing a specific
+The PythonParserToolManager class builds a list of Tool objects, each representing a specific
 command to interact with the PythonParser API.
 
 Attributes:
@@ -13,7 +13,7 @@ Attributes:
 
 Example usage:
     python_parser = PythonParser()
-    python_parser_tool_builder = PythonParserToolBuilder(python_parser)
+    python_parser_tool_builder = PythonParserToolManager(python_parser)
     tools = python_parser_tool_builder.build_tools()
 
 """
@@ -22,14 +22,21 @@ from typing import List, Optional
 
 from langchain.agents import Tool
 
+from ..python_tools.python_parser import PythonParser
 from ..utils import PassThroughBuffer
-from .python_parser import PythonParser
+from .base_tool_manager import BaseToolManager
 
 
-class PythonParserToolBuilder:
+class PythonParserToolManager(BaseToolManager):
+    """
+    PythonParserToolManager
+    A class for interacting with the PythonParser API, which provides functionality to read
+    the code state of a of local Python files.
+    """
+
     def __init__(self, python_parser: PythonParser, logger: Optional[PassThroughBuffer] = None):
         """
-        Initializes a PythonParserToolBuilder object with the given inputs.
+        Initializes a PythonParserToolManager object with the given inputs.
 
         Args:
         - python_parser (PythonParser): A PythonParser object representing the code parser to work with.
@@ -43,13 +50,13 @@ class PythonParserToolBuilder:
 
     def build_tools(self) -> List[Tool]:
         """
-        Builds a list of Tool PythonObjects for interacting with PythonParser.
+        Builds a list of Tool objects for interacting with PythonParser.
 
         Args:
         - None
 
         Returns:
-        - tools (List[Tool]): A list of Tool PythonObjects representing PythonParser commands.
+        - tools (List[Tool]): A list of Tool objects representing PythonParser commands.
         """
         tools = [
             Tool(

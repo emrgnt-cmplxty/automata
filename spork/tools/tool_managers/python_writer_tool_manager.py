@@ -2,14 +2,21 @@ from typing import List, Optional
 
 from langchain.agents import Tool
 
+from ..python_tools.python_writer import PythonWriter
 from ..utils import PassThroughBuffer
-from .python_writer import PythonWriter
+from .base_tool_manager import BaseToolManager
 
 
-class PythonWriterToolBuilder:
+class PythonWriterToolManager(BaseToolManager):
+    """
+    PythonWriterToolManager
+    A class for interacting with the PythonWriter API, which provides functionality to modify
+    the code state of a given directory of Python files.
+    """
+
     def __init__(self, python_writer: PythonWriter, logger: Optional[PassThroughBuffer] = None):
         """
-        Initializes a PythonWriterToolBuilder object with the given inputs.
+        Initializes a PythonWriterToolManager object with the given inputs.
 
         Args:
         - python_writer (PythonWriter): A PythonWriter object representing the code writer to work with.
@@ -35,13 +42,13 @@ class PythonWriterToolBuilder:
 
     def build_tools(self) -> List[Tool]:
         """
-        Builds a list of Tool PythonObjects for interacting with PythonWriter.
+        Builds a list of Tool object for interacting with PythonWriter.
 
         Args:
         - None
 
         Returns:
-        - tools (List[Tool]): A list of Tool PythonObjects representing PythonWriter commands.
+        - tools (List[Tool]): A list of Tool objects representing PythonWriter commands.
         """
         tools = [
             Tool(

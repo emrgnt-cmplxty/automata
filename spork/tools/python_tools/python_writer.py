@@ -17,9 +17,6 @@ Example usage:
     # The structure above works for packages, modules, classes, and methods as well.
     # when done modifying code, write the changes to disk:
     writer.write_to_disk()
-
-    TODO
-    1. Consider how to handle import statements, they are not currently parsed.
 '''
 import ast
 import os

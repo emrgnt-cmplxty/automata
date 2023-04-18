@@ -4,13 +4,13 @@ import pytest
 from langchain.agents import Tool
 
 from spork.tools.python_tools.python_parser import PythonParser
-from spork.tools.python_tools.python_parser_tool_builder import PythonParserToolBuilder
+from spork.tools.tool_managers.python_parser_tool_manager import PythonParserToolManager
 
 
 @pytest.fixture
 def python_parser_tool_builder():
     python_parser = PythonParser()
-    return PythonParserToolBuilder(python_parser)
+    return PythonParserToolManager(python_parser)
 
 
 def test_init(python_parser_tool_builder):

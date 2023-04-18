@@ -9,8 +9,8 @@
         python_writer = PythonWriter(python_parser)
 
         exec_tools = []
-        exec_tools += PythonParserToolBuilder(python_parser).build_tools()
-        exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
+        exec_tools += build_tools(python_parser)
+        exec_tools += build_tools(python_writer)
         overview = python_parser.get_overview()
 
         initial_payload = {
@@ -34,14 +34,23 @@ from langchain.tools.base import BaseTool
 
 from spork.config import *  # noqa F403
 
+from ..tool_managers.tool_builder import build_tools
 from .agent_configs.agent_version import AgentVersion
 from .agent_langchain_manager import AgentLangchainManager
 
 CONTINUE_MESSAGE = "Continue"
+COMPLETION_MESSAGE = "TASK_COMPLETED"
+
 logger = logging.getLogger(__name__)
 
 
 class AgentMrMeeseeks:
+    """
+    AgentMrMeeseeks is an autonomous agent that performs the actual work of the Spork
+    system. Meeseeks are responsible for executing instructions and reporting
+    the results back to the master.
+    """
+
     def __init__(
         self,
         initial_payload: Dict[str, str],
@@ -87,7 +96,9 @@ class AgentMrMeeseeks:
         initial_payload["tools"] = "".join(
             ["\n%s: %s\n" % (tool.name, tool.description) for tool in self.tools]
         )
+        initial_payload["completion_message"] = COMPLETION_MESSAGE
         prompt = self._load_prompt(initial_payload)
+
         self._init_database()
 
         if session_id:
@@ -154,6 +165,15 @@ class AgentMrMeeseeks:
         logger.info("-" * 100)
 
         return None
+
+    def run(self):
+        """Run until the initial instruction terminates."""
+        while True:
+            self.iter_task()
+            if COMPLETION_MESSAGE in self.messages[-1]["content"]:
+                break
+            if COMPLETION_MESSAGE in self.messages[-2]["content"]:
+                break
 
     def replay_messages(self) -> None:
         """Replay the messages in the conversation."""
@@ -274,14 +294,10 @@ class AgentMrMeeseeks:
 if __name__ == "__main__":
     import logging.config
 
-    from spork.tools.python_tools.python_parser_tool_builder import (
-        PythonParser,
-        PythonParserToolBuilder,
-    )
-    from spork.tools.python_tools.python_writer_tool_builder import (
-        PythonWriter,
-        PythonWriterToolBuilder,
-    )
+    from spork.tools.python_tools.python_parser import PythonParser
+    from spork.tools.python_tools.python_writer import PythonWriter
+    from spork.tools.tool_managers.python_parser_tool_manager import PythonParserToolManager
+    from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
     from spork.tools.utils import get_logging_config
 
     from ...config import *  # noqa F403
@@ -293,21 +309,22 @@ if __name__ == "__main__":
     python_writer = PythonWriter(python_parser)
 
     exec_tools = []
-    exec_tools += PythonParserToolBuilder(python_parser).build_tools()
-    exec_tools += PythonWriterToolBuilder(python_writer).build_tools()
+    exec_tools += build_tools(PythonParserToolManager(python_parser))
+    exec_tools += build_tools(PythonWriterToolManager(python_writer))
     overview = python_parser.get_overview()
 
     initial_payload = {
         "overview": overview,
     }
 
-    # first_instruction = (
-    #     f"Write a file called python_meseeks_tool_builder.py which imitates the workflow "
-    #     f"of python_parser_tool_builder.py, and is located in the same directory."
-    #     f" The tool uses AgentMrMeeseeks to implement a single tool end-point called python-agent-python-task."
-    #     f" Be sure to include a sensible description based on the context. You should begin this task by inspecting necessary docstrings."
-    # )
-    first_instruction = f"Write a script which builds API documentation for the local repository, put it into an intelligent location. "
+    first_instruction = (
+        f"Write a file called agent_mr_meeseeks_tool_manager.py which imitates the workflow "
+        f"of python_parser_tool_manager.py, and is located in the same directory."
+        f" Implement a single tool named python-agent-python-task, which exposes the agent mr meeseeks iter_task command."
+        f" Be sure to include a sensible description of the functionality of the tool and include an example."
+    )
+    # first_instruction = f"Write a script which builds API documentation for the local repository, put it into an intelligent location. "
+    # first_instruction = f"Give AgentMrMeeseeks the ability to . "
     initial_instructions = [
         {
             "role": "assistant",
@@ -320,11 +337,12 @@ if __name__ == "__main__":
         initial_payload,
         initial_instructions,
         exec_tools,
+        stream=True,
         # model="gpt-3.5-turbo",
         # session_id="04f84ef2-c896-49d0-9d20-f50bb7d42f8a",
     )
     # agent.replay_messages()
-    next_instruction = agent.iter_task()
+    agent.run()
 
     import pdb
 
