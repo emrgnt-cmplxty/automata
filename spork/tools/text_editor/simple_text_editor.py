@@ -15,6 +15,7 @@ class SimpleTextEditor:
         self.lines = []
         self.state = EditorState.BEGIN
         self.log = []
+        self.log_window = 3
 
     def open_file(self, file_path):
         self.file_path = file_path
@@ -41,16 +42,53 @@ class SimpleTextEditor:
 
         self.lines.insert(line_number, full_line_text + "\n")
 
+        self.log.append(f"Inserted line {line_number} with text {full_line_text}.")
+        log_start = max(0, line_number - self.log_window)
+        log_end = min(len(self.lines), line_number + self.log_window)
+        for i, line in enumerate(self.lines[log_start:log_end]):
+            line_number_for_logging = i + log_start
+            log_entry = f">{line_number_for_logging}: {line}"
+            if line_number_for_logging == line_number:
+                log_entry += " <-- inserted"
+            self.log.append(log_entry)
+
     def delete_line(self, line_number):
         if line_number < 0 or line_number >= len(self.lines):
             raise IndexError(f"Error: delete`{line_number}; line doesn't exist")
-
+        full_line_text = self.lines[line_number][:]
         del self.lines[line_number]
+
+        self.log.append(f"Deleted line {line_number} with text {full_line_text}.")
+        log_start = max(0, line_number - self.log_window)
+        log_end = min(len(self.lines), line_number + self.log_window)
+
+        for i, line in enumerate(self.lines[log_start:log_end]):
+            line_number_for_logging = i + log_start
+            if line_number_for_logging == line_number:
+                log_entry = f">{line_number_for_logging}: {full_line_text} <-- deleted"
+                self.log.append(log_entry)
+
+            log_entry = f">{line_number_for_logging}: {line}"
+            self.log.append(log_entry)
 
     def replace_line(self, line_number, new_line_text):
         if line_number < 0 or line_number >= len(self.lines):
             raise IndexError(f"Error: replace`{line_number}`{new_line_text}; line doesn't exist")
+        full_line_text = self.lines[line_number][:]
         self.lines[line_number] = new_line_text + "\n"
+
+        self.log.append(f"Replaced line {line_number} with text {full_line_text}.")
+        log_start = max(0, line_number - self.log_window)
+        log_end = min(len(self.lines), line_number + self.log_window)
+
+        for i, line in enumerate(self.lines[log_start:log_end]):
+            line_number_for_logging = i + log_start
+            if line_number_for_logging == line_number:
+                log_entry = f">{line_number_for_logging}: {full_line_text} <-- replaced"
+                self.log.append(log_entry)
+
+            log_entry = f">{line_number_for_logging}: {line}"
+            self.log.append(log_entry)
 
     def save_file(self):
         with open(self.file_path, "w") as file:
@@ -93,7 +131,10 @@ class SimpleTextEditor:
                 break
             else:
                 raise ValueError(f"Invalid command {i}: {cmd_parts[0]}")
-        return f"Edits completed successfully! File {self.file_path} saved with {len(self.lines)} lines."
+        return f"Edits completed successfully! File {self.file_path} saved with {len(self.lines)} lines. {self.get_formatted_log()}"
+
+    def get_formatted_log(self):
+        return "Log:\n" + "\n".join(self.log)
 
     def reset(self):
         self.file_path = None
