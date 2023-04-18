@@ -66,7 +66,7 @@ class CodebaseOracleToolBuilder:
                             docs.extend(loader.load())
                         except Exception as e:
                             print(dirpath, file, e)
-        text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=50)
+        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=500)
         texts = text_splitter.split_documents(docs)
         docsearch = FAISS.from_documents(texts, embeddings)
         self._chain = ConversationalRetrievalChain.from_llm(
@@ -74,7 +74,7 @@ class CodebaseOracleToolBuilder:
             retriever=docsearch.as_retriever(),
             qa_prompt=QA_PROMPT,
             memory=self.memory,
-            return_source_documents=False,
+            return_source_documents=True,
             get_chat_history=_get_chat_history,
         )
 
