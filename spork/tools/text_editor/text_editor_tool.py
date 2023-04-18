@@ -9,6 +9,6 @@ class TextEditorTool(Tool):
             name="Text Editor Tool",
             func=lambda x: text_editor_agent.run(make_text_editor_task(x)),
             description="This tool is a text editor agent that takes instructions and edits a file. "
-            "The instructions should be a fully formed request. For example: Rename the variable x to y in file foo.py;"
+            "The instructions should be a fully formed request to edit a SINGLE file. For example: Rename the variable x to y in file foo.py;"
             "Add a print statement on line 64 of bar.sh; Delete the try-except block around 12 of baz.py.",
         )

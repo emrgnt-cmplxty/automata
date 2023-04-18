@@ -62,7 +62,7 @@ class EditInstructionsCompilerTool(Tool):
         super().__init__(
             name="Edit Instructions Compiler Tool",
             func=compiler_chain.run,
-            description=f"Useful for compiling instructions into step-by-step commands for the editor. "
+            description=f"Useful for compiling instructions into step-by-step commands for the editor. Instructions should be to edit a SINGLE file. "
             f"Before using this tool, you *MUST* ask codebase oracle for the relevant context. Provide the full context as your input, do not shorten it. "
             f"Example: {example}",
         )

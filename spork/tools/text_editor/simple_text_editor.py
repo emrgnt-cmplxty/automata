@@ -86,7 +86,7 @@ class SimpleTextEditor:
                 if self.state != EditorState.EDIT:
                     raise ValueError(f"Command {i}: Invalid state transition: replace")
                 self.replace_line(int(cmd_parts[1]), cmd_parts[2])
-            elif cmd_parts[0] == "end;":
+            elif cmd_parts[0] == "end;" or cmd_parts[0] == "end":
                 if self.state != EditorState.EDIT:
                     raise ValueError(f"Command {i}: Invalid state transition: end")
                 self.save_file()
