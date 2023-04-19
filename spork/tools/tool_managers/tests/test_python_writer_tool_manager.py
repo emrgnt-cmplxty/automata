@@ -192,7 +192,6 @@ class PythonAgentToolBuilder:
     code_writer.func(f"{file_py_path},{class_str}")
     disk_writer.func(None)
     new_sample_text = None
-    print("file_abs_path", file_abs_path)
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
 

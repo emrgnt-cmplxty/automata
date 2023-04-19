@@ -70,7 +70,10 @@ class PythonFunctionType(PythonObjectType):
 
         node = ast.parse(self.code)
         if isinstance(node.body[0], (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            node.body[0].body.pop(0)  # Remove the docstring node
+            if isinstance(node.body[0].body[0], ast.Expr) and isinstance(
+                node.body[0].body[0].value, ast.Str
+            ):
+                node.body[0].body.pop(0)
         return ast.unparse(node)
 
     def get_docstring(self) -> str:

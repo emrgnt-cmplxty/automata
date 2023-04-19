@@ -121,7 +121,7 @@ template: >
   'Agent:
     {
       "tool": "python-writer-modify-code-state", 
-      "input": "spork.tools.python_tools.new_module.NewClass.new_function,def new_function()
+      "input": "spork.tools.python_tools.new_module,def new_function()
       """Returns a string that says 'New function!'"""
       return 'New function!'"
     }'

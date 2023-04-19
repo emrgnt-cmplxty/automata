@@ -1,11 +1,9 @@
-"""
-This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
-choose a work item to work on, and remove HTML tags from text.
-"""
+"""This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
+choose a work item to work on, and remove HTML tags from text."""
 
 import logging
 import os
-from typing import Any, Dict, List, Union
+from typing import Any, List, Union
 
 import regex as re
 import yaml
@@ -20,9 +18,17 @@ from langchain.document_loaders import TextLoader
 from langchain.schema import Document
 
 
-def load_yaml(filename: str) -> Dict:
-    with open(filename, "r") as f:
-        return yaml.safe_load(f)
+def load_yaml(file_path: str) -> Any:
+    """Load a YAML file.
+
+    Args:
+        file_path (str): The path to the YAML file.
+
+    Returns:
+        Any: The content of the YAML file as a Python object.
+    """
+    with open(file_path, "r") as file:
+        return yaml.safe_load(file)
 
 
 def home_path() -> str:
@@ -47,13 +53,7 @@ def format_config_path(config_dir: str, config_path: str) -> str:
     Returns:
     - The path to the config file.
     """
-    return os.path.join(
-        home_path(),
-        "spork",
-        "agents",
-        config_dir,
-        config_path,
-    )
+    return os.path.join(home_path(), "spork", "agents", config_dir, config_path)
 
 
 def login_github(token: str) -> Github:
@@ -78,7 +78,6 @@ def list_repositories(github: Github) -> List[str]:
     Returns:
     - A list of strings, each string representing a repository's full name.
     """
-
     repos = []
     for repo in github.get_user().get_repos(sort="updated", direction="desc"):
         repos.append(repo.full_name)
@@ -95,7 +94,6 @@ def list_issues(repo: Repository) -> PaginatedList:
     Returns:
     - A list of Github Issue object representing the open issues for the repository.
     """
-
     return repo.get_issues(state="open")
 
 
@@ -109,7 +107,6 @@ def list_pulls(repo: Repository) -> PaginatedList:
     Returns:
     - A list of Github PullRequest object representing the open pull requests for the repository.
     """
-
     return repo.get_pulls(state="open")
 
 
@@ -124,7 +121,6 @@ def choose_work_item(github_repo: Repository, choice: str = "") -> Union[Issue, 
     Returns:
     - A Github Issue object or PullRequest object representing the user's chosen work item.
     """
-
     work_items = []
     if choice == "":
         choice = input("Do you want to work on issues or pull requests (issues/pulls)? ")
@@ -137,10 +133,8 @@ def choose_work_item(github_repo: Repository, choice: str = "") -> Union[Issue, 
     else:
         print("Invalid choice.")
         return choose_work_item(github_repo)
-
     for i, work_item in enumerate(work_items):
         print(f"{i + 1}. {work_item.title}")
-
     choice_index = int(input("Choose a work item by its number: ")) - 1
     return work_items[choice_index]
 
@@ -155,7 +149,6 @@ def remove_html_tags(text: str) -> str:
     Returns:
     - A string of text with all HTML tags removed.
     """
-
     clean = re.compile("<.*?>")
     soup = BeautifulSoup(text, "html.parser")
     raw_text = soup.get_text(strip=True, separator="\n")
@@ -165,26 +158,20 @@ def remove_html_tags(text: str) -> str:
 
 def get_logging_config(log_level=logging.INFO) -> dict:
     """Returns logging configuration."""
-
     logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "default": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            },
+            "default": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "default",
                 "level": log_level,
-            },
+            }
         },
-        "root": {
-            "handlers": ["console"],
-            "level": log_level,
-        },
+        "root": {"handlers": ["console"], "level": log_level},
     }
     return logging_config
 
@@ -192,8 +179,17 @@ def get_logging_config(log_level=logging.INFO) -> dict:
 def run_retrieval_chain_with_sources_format(
     chain: BaseConversationalRetrievalChain, q: str
 ) -> str:
+    """Runs a retrieval chain and formats the result with sources.
+
+    Args:
+        chain (BaseConversationalRetrievalChain): The retrieval chain to run.
+        q (str): The query to pass to the retrieval chain.
+
+    Returns:
+        str: The formatted result containing the answer and sources.
+    """
     result = chain(q)
-    return f'Answer: {result["answer"]}.\n\n Sources: {result.get("source_documents", [])}'
+    return f"Answer: {result['answer']}.\n\n Sources: {result.get('source_documents', [])}"
 
 
 class NumberedLinesTextLoader(TextLoader):
@@ -201,22 +197,27 @@ class NumberedLinesTextLoader(TextLoader):
         """Load from file path."""
         with open(self.file_path, encoding=self.encoding) as f:
             lines = f.readlines()
-            text = f"{self.file_path}"  # this helps with mapping content to file name
+            text = f"{self.file_path}"
             for i, line in enumerate(lines):
                 text += f"{i}: {line}"
         metadata = {"source": self.file_path}
         return [Document(page_content=text, metadata=metadata)]
 
 
-# this is probably not a good idea but it works for now
 class PassThroughBuffer:
     def __init__(self, buffer):
+        """Initializes the PassThroughBuffer object.
+
+        Args:
+            buffer: The original buffer that the PassThroughBuffer will wrap around."""
         self.saved_output = ""
         self.original_buffer = buffer
 
     def write(self, message):
+        """Write the message to the buffer."""
         self.saved_output += message
         self.original_buffer.write(message)
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr) -> Any:
+        """Delegate attribute access to the original buffer."""
         return getattr(self.original_buffer, attr)

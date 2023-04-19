@@ -232,7 +232,6 @@ class MrMeeseeksAgent:
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = MrMeeseeksAgent._parse_input_string(response_text)
-        print("tool_calls = ", tool_calls)
         outputs = []
         for tool_request in tool_calls:
             tool, tool_input = tool_request["tool"], tool_request["input"]
@@ -321,8 +320,6 @@ class MrMeeseeksAgent:
             if input_tag in json_object:
                 split_on_input_tag = json_object.split(input_tag)[1].split("}")
                 joined_input_str = "}".join(split_on_input_tag[:-1])
-                print("joined_input_str = %s" % (joined_input_str))
-                print("stripped joined_input_str = %s" % (joined_input_str.strip()[1:-1]))
                 input_str = joined_input_str.strip()[1:-1]
             results.append((tool, input_str))
         return results
@@ -330,7 +327,6 @@ class MrMeeseeksAgent:
     @staticmethod
     def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
         extracted_json_objects = MrMeeseeksAgent._extract_json_objects(input_str)
-        print("extracted_json_objects - %s" % extracted_json_objects)
         tool_input_pairs = MrMeeseeksAgent._extract_tool_and_input(extracted_json_objects)
         parsed_entries = []
         for tool_input_pair in tool_input_pairs:

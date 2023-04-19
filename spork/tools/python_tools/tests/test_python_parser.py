@@ -1,4 +1,5 @@
 """Unit tests for the PythonParser module."""
+import textwrap
 
 from spork.tools.python_tools.python_parser import PythonParser
 
@@ -26,3 +27,15 @@ def test_get_overview():
     assert "sample_function" in overview
     assert "Person" in overview
     assert "say_hello" in overview
+
+
+def test_parse_raw_code():
+    input_text = textwrap.dedent(
+        """def run_retrieval_chain_with_sources_format(
+    chain: BaseConversationalRetrievalChain, q: str
+) -> str:
+    result = chain(q)
+    return f'Answer: {result["answer"]}.\\n\\n Sources: {result.get("source_documents", [])}'
+"""
+    )
+    _ = PythonParser.parse_raw_code(input_text)  # "def sample_function(name):\n  return 0")

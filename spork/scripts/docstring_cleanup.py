@@ -1,3 +1,4 @@
+# import pdb
 import argparse
 import logging
 import logging.config
@@ -56,32 +57,20 @@ def update_docstrings():
         "overview": overview,
     }
 
-    logger.info("Passing in instructions: %s", args.instructions)
-    logger.info("-" * 100)
-    print("overview.split('\n') = ", overview.split("\n"))
-    for py_path in overview.split("\n"):
-        if "test_" in py_path:
-            continue
-        if "spork" in py_path:
-            latest_path = py_path
-            continue
-        if "yaml" in py_path:
-            continue
-
-        path = f"{latest_path}.{py_path.strip()}"
-        logger.info("Updating docstring for %s" % (path))
-        # Get the raw code and existing docstring
-
+    for function in python_parser.function_dict.values():
+        path = function.py_path
         raw_code = python_parser.get_raw_code(path)
         docstring = python_parser.get_docstring(path)
-        if len(docstring) > 20:
+        print("docstring = ", docstring)
+        if "No results found." not in docstring:
             continue
+
         logger.info("Prev Docstring:\n%s" % (docstring))
         logger.info("Prev Raw Code:\n%s" % (raw_code))
         instructions = (
             f"The following code is located at the path {path}:\n\n{raw_code}\n\n"
-            f"Please write relevant docstrings for this piece of code,"
-            f" then use the python-writer to write the result to disk."
+            f"Please fetch the code from the raw file, then write relevant docstrings for this piece of code,"
+            f" and lastly, use the python-writer to write the result to disk."
         )
 
         agent = MrMeeseeksAgent(
@@ -92,13 +81,10 @@ def update_docstrings():
             model=args.model,
             session_id=args.session_id,
             stream=args.stream,
-            verbose=False,
+            verbose=True,
         )
         agent.run()
-
-        import pdb
-
-        pdb.set_trace()
+        # pdb.set_trace()
 
         # Update the docstring using the Mr.Meeseeks agent
         # You can tailor the input based on the agent's capabilities

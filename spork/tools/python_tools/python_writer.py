@@ -82,10 +82,7 @@ class PythonWriter:
         def replace_newline_chars(input_str: str) -> str:
             def replace(match):
                 text = match.group(0)
-                print("match = ", match)
                 if text[0] == '"' and text[-1] == '"':
-                    print("text = ", text)
-                    print("returning with no strip..")
                     return text
                 return text.replace("\\n", "\n")
 
@@ -109,12 +106,11 @@ class PythonWriter:
             )
             return output_str
 
+        print("-" * 100)
         print("code = ", code)
         code = replace_newline_chars(code)
         code = re.sub(r"\\\"", '"', code)
         code = code.strip()
-        print("-" * 250)
-        print("in modify code state.....")
         # Check that we can parse the code
         print("Validating input code = ", code)
         try:
@@ -127,7 +123,6 @@ class PythonWriter:
             return error_message
 
         package_path = module_py_path.split(".")[-1]
-        print("Calling Modify Code State = %s" % (code))
         # Create the package if it does not already exist
         if package_path not in self.python_parser.package_dict:
             self._create_new_package(package_path)
@@ -164,7 +159,6 @@ class PythonWriter:
             self.python_parser.module_dict[module_py_path].standalone_functions[
                 function_path
             ] = function_object
-        print("module_py_path=", module_py_path)
         print("-" * 100)
         self.modified_modules.add(module_py_path)
         return "Success"
@@ -177,7 +171,6 @@ class PythonWriter:
         Raises:
             ValueError: If the resulting output is not a valid Python file.
         """
-        print("self.modified_modules = ", self.modified_modules)
         for module_py_path in self.python_parser.module_dict.keys():
             file_path = os.path.join(
                 self.python_parser.absolute_path_to_base, *(module_py_path.split("."))
@@ -227,7 +220,6 @@ class PythonWriter:
             raise ValueError(f"Generated code is not valid Python: {e}")
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)
-
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(new_code)
 
