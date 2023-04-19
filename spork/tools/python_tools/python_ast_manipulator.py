@@ -35,7 +35,9 @@ Example usage:
 
 import ast
 from ast import ClassDef, FunctionDef, Module
-from typing import Dict, Optional, Union
+from typing import Optional, Union
+
+from spork.tools.python_tools.python_ast_indexer import PythonASTIndexer
 
 
 class PythonASTManipulator:
@@ -52,6 +54,9 @@ class PythonASTManipulator:
         ) -> None:
             Perform an in-place extention or reduction of a module object according to the received code.
 
+        write_module(self) -> None:
+            Write the module object to a file.
+
         Exceptions:
             ModuleNotFound: Raised when a module cannot be found.
             InvalidArguments: Raised when invalid arguments are passed to a method.
@@ -63,13 +68,15 @@ class PythonASTManipulator:
     class InvalidArguments(Exception):
         pass
 
-    def __init__(self):
-        self.module_dict: Dict[str, Module] = {}
-        pass
+    def __init__(self, python_ast_indexer: PythonASTIndexer):
+        """
+        Initialize the PythonASTManipulator with a PythonASTIndexer instance.
+        """
+        self.indexer = python_ast_indexer
 
     def update_module(
         self,
-        code: str,
+        source_code: str,
         extending_module: bool = True,
         **kwargs,
     ) -> None:
@@ -77,13 +84,12 @@ class PythonASTManipulator:
         Perform an in-place extention or reduction of a module object according to the received code.
 
         Args:
-            code (str): The code containing the updates or deletions.
+            source_code (str): The source_code containing the updates or deletions.
             extending_module (bool): True for adding/updating, False for reducing/deleting.
             module_obj (Optional[Module], keyword): The module object to be updated.
             module_path (Optional[str], keyword): The path of the module to be updated.
 
         Raises:
-            ModuleNotFound: If the module is not found in the module dictionary.
             InvalidArguments: If both module_obj and module_path are provided or none of them.
 
         Returns:
@@ -94,15 +100,30 @@ class PythonASTManipulator:
 
         self._validate_args(module_obj, module_path)
 
-        if not module_obj:
-            if module_path not in self.module_dict:
-                raise PythonASTManipulator.ModuleNotFound(
-                    f"Module not found in module dictionary: {module_path}"
-                )
+        if not module_obj and module_path:
+            if module_path not in self.indexer.module_dict:
+                self._create_module_from_source_code(module_path)
+            module_obj = self.indexer.module_dict[module_path]
 
-            module_obj = self.module_dict[module_path]
+        PythonASTManipulator._update_module(source_code, module_obj, extending_module)  # type: ignore
 
-        PythonASTManipulator._update_module(code, module_obj, extending_module)
+    def write_module(self, module_path: str) -> None:
+        """
+        Write the modified AST module to a file at the specified output path.
+
+        Args:
+            module_path (str): The file path where the modified module should be written.
+        """
+        if module_path not in self.indexer.module_dict:
+            raise PythonASTManipulator.ModuleNotFound(
+                f"Module not found in module dictionary: {module_path}"
+            )
+
+        module_obj = self.indexer.module_dict[module_path]
+        source_code = ast.unparse(module_obj)
+
+        with open(module_path, "w") as output_file:
+            output_file.write(source_code)
 
     @staticmethod
     def _validate_args(module_obj: Optional[Module], module_path: Optional[str]) -> None:
@@ -112,42 +133,59 @@ class PythonASTManipulator:
             )
 
     @staticmethod
+    def _create_module_from_source_code(source_code: str) -> Module:
+        """
+        Create a Python module from the given source code string.
+
+        Args:
+            module_path (str): The path where the new module will be created.
+        """
+        parsed = ast.parse(source_code)
+        if not isinstance(parsed, ast.Module):
+            raise ValueError("The source code does not define a module.")
+        return parsed
+
+    @staticmethod
     def _update_module(
-        code: str,
-        module_obj: Module,
+        source_code: str,
+        existing_module_obj: Module,
         extending_module: bool,
     ) -> None:
         """
         Update a module object according to the received code.
 
         Args:
-            code (str): The code containing the updates.
-            module_obj Module: The module object to be updated.
+            source_code (str): The code containing the updates.
+            existing_module_obj Module: The module object to be updated.
             extending_module (bool): If True, add or update the code; if False, remove the code.
         """
 
-        new_ast = ast.parse(code)
+        new_ast = ast.parse(source_code)
         for new_node in new_ast.body:
             if isinstance(new_node, (ast.ClassDef, ast.FunctionDef)):
                 obj_name = new_node.name
-                existing_obj = PythonASTManipulator._find_class_or_function(module_obj, obj_name)
+                existing_obj = PythonASTManipulator._find_class_or_function(
+                    existing_module_obj, obj_name
+                )
 
                 if extending_module:
                     if existing_obj:
-                        PythonASTManipulator._update_existing_object(
-                            module_obj, new_node, existing_obj
+                        PythonASTManipulator._update_existing_node(
+                            existing_module_obj, new_node, existing_obj
                         )
                     else:
-                        PythonASTManipulator._add_ast_node(module_obj, new_node)
+                        PythonASTManipulator._add_ast_node(existing_module_obj, new_node)
                 else:
                     if existing_obj:
-                        PythonASTManipulator._remove_existing_object(module_obj, existing_obj)
+                        PythonASTManipulator._remove_existing_node(
+                            existing_module_obj, existing_obj
+                        )
 
     @staticmethod
-    def _update_existing_object(
+    def _update_existing_node(
         module_obj: Module,
         new_node: Union[ast.ClassDef, ast.FunctionDef],
-        existing_obj: Union[ast.ClassDef, ast.FunctionDef],
+        existing_node: Union[ast.ClassDef, ast.FunctionDef],
     ) -> None:
         """
         Update an existing object (class or function) in the module.
@@ -155,9 +193,9 @@ class PythonASTManipulator:
         Args:
             module_obj (Module): The module object to be updated.
             new_node (Union[ast.ClassDef, ast.FunctionDef]): The new AST node.
-            existing_obj (Union[ast.ClassDef, ast.FunctionDef]): The existing AST node.
+            existing_node (Union[ast.ClassDef, ast.FunctionDef]): The existing AST node.
         """
-        if isinstance(new_node, ast.ClassDef) and isinstance(existing_obj, ast.ClassDef):
+        if isinstance(new_node, ast.ClassDef) and isinstance(existing_node, ast.ClassDef):
             for class_node in new_node.body:
                 if isinstance(class_node, ast.FunctionDef):
                     method_name = class_node.name
@@ -166,18 +204,18 @@ class PythonASTManipulator:
                     )
 
                     if existing_method:
-                        existing_method.args = class_node.args
+                        # existing_method.args = class_node.args
                         existing_method.body = class_node.body
                     else:
                         PythonASTManipulator._add_ast_node(
-                            module_obj, class_node, target_node=existing_obj
+                            module_obj, class_node, target_node=existing_node
                         )
-        elif isinstance(new_node, ast.FunctionDef) and isinstance(existing_obj, ast.FunctionDef):
-            existing_obj.args = new_node.args
-            existing_obj.body = new_node.body
+        elif isinstance(new_node, ast.FunctionDef) and isinstance(existing_node, ast.FunctionDef):
+            existing_node.args = new_node.args
+            existing_node.body = new_node.body
 
     @staticmethod
-    def _remove_existing_object(
+    def _remove_existing_node(
         module_obj: Module, existing_obj: Union[ast.ClassDef, ast.FunctionDef]
     ) -> None:
         """
@@ -216,53 +254,6 @@ class PythonASTManipulator:
 
         # Add the new node to the target_node's body
         target_node.body.append(node)
-
-    @staticmethod
-    def _create_module_from_source(source: str) -> Module:
-        """
-        Create a Python module from the given source code string.
-
-        Args:
-            module_path (str): The path where the new module will be created.
-        """
-        parsed = ast.parse(source)
-        if not isinstance(parsed, ast.Module):
-            raise ValueError("The source code does not define a module.")
-        return parsed
-
-    @staticmethod
-    def _create_function_from_source(source: str) -> ast.FunctionDef:
-        """
-        Create a Python function from the given source code string.
-
-        Args:
-            source (str): The source code string of the function.
-
-        Returns:
-            ast.FunctionDef: The created function as an AST node.
-        """
-        parsed = ast.parse(source)
-        function_node = parsed.body[0]
-        if not isinstance(function_node, ast.FunctionDef):
-            raise ValueError("The source code does not define a function.")
-        return function_node
-
-    @staticmethod
-    def _create_class_from_source(source: str) -> ast.ClassDef:
-        """
-        Create a Python class from the given source code string.
-
-        Args:
-            source (str): The source code string of the class.
-
-        Returns:
-            ast.ClassDef: The created class as an AST node.
-        """
-        parsed = ast.parse(source)
-        class_node = parsed.body[0]
-        if not isinstance(class_node, ast.ClassDef):
-            raise ValueError("The source code does not define a class.")
-        return class_node
 
     @staticmethod
     def _find_class_or_function(

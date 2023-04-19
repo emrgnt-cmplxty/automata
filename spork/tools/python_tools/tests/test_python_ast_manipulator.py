@@ -1,9 +1,12 @@
-import textwrap
 import ast
+import os
 import random
 import string
+import textwrap
 
 import pytest
+
+from spork.tools.python_tools.python_ast_indexer import PythonASTIndexer
 from spork.tools.python_tools.python_ast_manipulator import PythonASTManipulator
 
 
@@ -83,7 +86,7 @@ class MockCodeGenerator:
     def _check_function_obj(self, function_obj=None):
         if function_obj is None:
             source_code = self.generate_code()
-            function_obj = PythonASTManipulator._create_function_from_source(source_code)
+            function_obj = ast.parse(source_code).body[0]
 
         assert function_obj.name == self.function_name
         if self.has_function_docstring:
@@ -96,7 +99,7 @@ class MockCodeGenerator:
     def _check_class_obj(self, class_obj=None):
         if class_obj is None:
             source_code = self.generate_code()
-            class_obj = PythonASTManipulator._create_class_from_source(source_code)
+            class_obj = ast.parse(source_code).body[0]
 
         assert class_obj.name == self.class_name
         if self.has_class_docstring:
@@ -119,7 +122,7 @@ class MockCodeGenerator:
     def _check_module_obj(self, module_obj=None):
         if module_obj is None:
             source_code = self.generate_code()
-            module_obj = PythonASTManipulator._create_class_from_source(source_code)
+            module_obj = ast.parse(source_code)
         if self.has_module_docstring:
             assert isinstance(module_obj.body[0], ast.Expr)
             assert isinstance(module_obj.body[1], ast.ClassDef)
@@ -133,7 +136,10 @@ class MockCodeGenerator:
 
 @pytest.fixture
 def python_ast_parser():
-    return PythonASTManipulator()
+    root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    indexer = PythonASTIndexer(root_dir)
+
+    return PythonASTManipulator(indexer)
 
 
 def test_create_function_source_function():
@@ -142,12 +148,6 @@ def test_create_function_source_function():
 
     mock_generator = MockCodeGenerator(has_function=True, has_function_docstring=True)
     mock_generator._check_function_obj()
-
-
-def test_create_class_source_function():
-    source_code = MockCodeGenerator(has_function=True).generate_code()
-    with pytest.raises(ValueError):
-        PythonASTManipulator._create_class_from_source(source_code)
 
 
 def test_create_class_source_class():
@@ -169,20 +169,13 @@ def test_create_class_source_class():
     mock_generator._check_class_obj()
 
 
-def test_create_function_source_class():
-    mock_generator = MockCodeGenerator(has_class=True)
-    source_code = mock_generator.generate_code()
-    with pytest.raises(ValueError):
-        PythonASTManipulator._create_function_from_source(source_code)
-
-
 def test_find_object():
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
 
-    module_obj = PythonASTManipulator._create_module_from_source(source_code)
+    module_obj = PythonASTManipulator._create_module_from_source_code(source_code)
     function_obj = PythonASTManipulator._find_class_or_function(
         module_obj, mock_generator.function_name
     )
@@ -193,12 +186,12 @@ def test_find_object():
     mock_generator._check_class_obj(class_obj)
 
 
-def test_extend_module():
+def test_extend_module(python_ast_parser):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    module_obj = PythonASTManipulator._create_module_from_source(source_code)
+    module_obj = python_ast_parser._create_module_from_source_code(source_code)
     mock_generator._check_module_obj(module_obj)
 
     mock_generator_2 = MockCodeGenerator(
@@ -206,8 +199,8 @@ def test_extend_module():
     )
     source_code_2 = mock_generator_2.generate_code()
 
-    PythonASTManipulator().update_module(
-        code=source_code_2, module_obj=module_obj, extending_module=True
+    python_ast_parser.update_module(
+        source_code=source_code_2, module_obj=module_obj, extending_module=True
     )
 
     # Check module 2 is merged into module 1
@@ -218,15 +211,15 @@ def test_extend_module():
     mock_generator_2._check_function_obj(module_obj.body[3])
 
 
-def test_reduce_module():
+def test_reduce_module(python_ast_parser):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    module_obj = PythonASTManipulator._create_module_from_source(source_code)
+    module_obj = python_ast_parser._create_module_from_source_code(source_code)
     class_obj = module_obj.body[0]
     function_obj = module_obj.body[1]
-    PythonASTManipulator().update_module(
-        code=ast.unparse(class_obj), module_obj=module_obj, extending_module=False
+    python_ast_parser.update_module(
+        source_code=ast.unparse(class_obj), module_obj=module_obj, extending_module=False
     )
     assert module_obj.body[0] == function_obj
