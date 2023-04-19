@@ -1,4 +1,3 @@
-# import pdb
 import argparse
 import logging
 import logging.config
@@ -61,7 +60,6 @@ def update_docstrings():
         path = function.py_path
         raw_code = python_parser.get_raw_code(path)
         docstring = python_parser.get_docstring(path)
-        print("docstring = ", docstring)
         if "No results found." not in docstring:
             continue
 
@@ -84,6 +82,7 @@ def update_docstrings():
             verbose=True,
         )
         agent.run()
+        # import pdb
         # pdb.set_trace()
 
         # Update the docstring using the Mr.Meeseeks agent

@@ -94,19 +94,19 @@ template: >
     {
       "tool": "python-writer-modify-code-state", 
       "input": "spork.tools.utils,def new_function()
-      """Returns a string that says 'New function!'"""
-      return 'New function!'"
+          """Returns a string that says 'New function!'"""
+          return 'New function!'"
     }
 
     {
       "tool": "python-writer-modify-code-state", 
       "input": "spork.tools.python_tools.new_module,class NewClass:
-      """ This is a new class. """
-      def __init__(self, name):
-          """ This is the constructor. """
-          self.name = name
-      def say_hello(self):
-          return f"Hello, I am %s." % (self.name))"
+          """ This is a new class. """
+          def __init__(self, name):
+              """ This is the constructor. """
+              self.name = name
+          def say_hello(self):
+              return f"Hello, I am %s." % (self.name))"
     }'
 
   'User:
@@ -122,8 +122,8 @@ template: >
     {
       "tool": "python-writer-modify-code-state", 
       "input": "spork.tools.python_tools.new_module,def new_function()
-      """Returns a string that says 'New function!'"""
-      return 'New function!'"
+          """Returns a string that says 'New function!'"""
+          return 'New function!'"
     }'
 
   'User:

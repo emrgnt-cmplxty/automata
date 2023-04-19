@@ -28,7 +28,7 @@ class PythonWriterToolManager(BaseToolManager):
         self.python_writer = python_writer
         self.logger = logger
 
-    def python_writer_wrapper(self, input_str) -> str:
+    def python_writer_wrapper(self, input_str: str) -> str:
         path = input_str.split(",")[0]
         code = ",".join(input_str.split(",")[1:]).strip()
         return self.python_writer.modify_code_state(

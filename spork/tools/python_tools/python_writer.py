@@ -98,21 +98,21 @@ class PythonWriter:
                 "".join(
                     replace(match)
                     for match in re.finditer(
-                        pattern, input_str.replace('"""', "ZZ__ZZ").replace("'''", "QQ__QQ")
+                        pattern, input_str.replace('"""', "ZZ_^^_ZZ").replace("'''", "QQ_^^_QQ")
                     )
                 )
-                .replace("ZZ__ZZ", '"""')
-                .replace("QQ__QQ", "'''")
+                .replace("ZZ_^^_ZZ", '"""')
+                .replace("QQ_^^_QQ", "'''")
             )
             return output_str
 
         print("-" * 100)
-        print("code = ", code)
+        print("Initial Code = ", code)
         code = replace_newline_chars(code)
         code = re.sub(r"\\\"", '"', code)
         code = code.strip()
         # Check that we can parse the code
-        print("Validating input code = ", code)
+        print("Cleaned Code = ", code)
         try:
             self._validate_code(code)
         except ValueError as e:
