@@ -31,7 +31,6 @@ class PythonWriterToolManager(BaseToolManager):
     def python_writer_wrapper(self, input_str) -> str:
         path = input_str.split(",")[0]
         code = ",".join(input_str.split(",")[1:]).strip()
-        print("Calling python_writer.modify_code_state on path = %s and code = %s" % (path, code))
         return self.python_writer.modify_code_state(
             *(
                 path,
@@ -55,21 +54,23 @@ class PythonWriterToolManager(BaseToolManager):
                 func=lambda python_path_comma_code_str: self.python_writer_wrapper(
                     python_path_comma_code_str
                 ),
-                description=f"Modifies the code state in memory by taking a python_path and raw-text code as input."
-                f" If the specified function, class, or module does not exist, it creates a new one and updates the in-memory code to reflect this change."
-                f" If it already exists, it modifies the existing code."
-                f" For Example:"
-                f'Suppose you wish to a new function named "my_function" of "my_class" is defined in the file "my_file.py" that lives in "my_folder"'
+                description=f"Modifies the in-memory python code of a function, class, method, or module after receiving"
+                f" an input python-path and code string. If the specified object or dependencies do not exist,"
+                f" then they are created automatically. If the object already exists,"
+                f" then it is modified the existing code."
+                f" For example -"
+                f' suppose you wish to a new function named "my_function" of "my_class" is defined in the file "my_file.py" that lives in "my_folder".'
                 f" Then, the correct function call is "
-                f'python-writer-modify-code-state(my_folder.my_file.MyClass.my_function,def my_function() -> None:\n   """My Function"""\n    print("hello world")'
-                f" If new import statements are necessary, then append them to the top of the input string.",
+                f'{{"tool": "python-writer-modify-code-state",'
+                f' "input": "my_folder.my_file,def my_function() -> None:\n   """My Function"""\n    print("hello world")}}.'
+                f" If new import statements are necessary, then append them to the top of the code string. Do not forget to wrap your input in double quotes.",
                 return_direct=True,
             ),
             Tool(
                 name="python-writer-write-to-disk",
                 func=lambda _: self.python_writer.write_to_disk(),
                 description=f"Writes all the latest modifications in the code state to disk."
-                f" New files are created when necessary.",
+                " New files are created automatically where necessary.",
                 return_direct=True,
             ),
         ]

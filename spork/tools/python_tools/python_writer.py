@@ -21,7 +21,9 @@ Example usage:
 
 
 import ast
+import logging
 import os
+import re
 import subprocess
 from typing import Any, Dict, List, Set, Tuple
 
@@ -33,6 +35,8 @@ from .python_types import (
     PythonModuleType,
     PythonPackageType,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class PythonWriter:
@@ -74,7 +78,41 @@ class PythonWriter:
         Raises:
             ValueError: If the provided code is not valid Python.
         """
-        code = code.replace("\\n", "\n").strip()
+
+        def replace_newline_chars(input_str: str) -> str:
+            def replace(match):
+                text = match.group(0)
+                print("match = ", match)
+                if text[0] == '"' and text[-1] == '"':
+                    print("text = ", text)
+                    print("returning with no strip..")
+                    return text
+                return text.replace("\\n", "\n")
+
+            # Match single or double-quoted strings, and text outside quotes
+            pattern = r"""(?x)
+                '.*?'
+                |
+                ".*?"
+                |
+                [^'"]+
+            """
+            output_str = (
+                "".join(
+                    replace(match)
+                    for match in re.finditer(
+                        pattern, input_str.replace('"""', "ZZ__ZZ").replace("'''", "QQ__QQ")
+                    )
+                )
+                .replace("ZZ__ZZ", '"""')
+                .replace("QQ__QQ", "'''")
+            )
+            return output_str
+
+        print("code = ", code)
+        code = replace_newline_chars(code)
+        code = re.sub(r"\\\"", '"', code)
+        code = code.strip()
         print("-" * 250)
         print("in modify code state.....")
         # Check that we can parse the code
@@ -82,10 +120,11 @@ class PythonWriter:
         try:
             self._validate_code(code)
         except ValueError as e:
-            print("Exception triggered..")
-            return (
+            error_message = (
                 f"Failed to parse code with error {e}. Please check that the code is valid Python."
             )
+            logger.info(f"Found Error = {error_message}")
+            return error_message
 
         package_path = module_py_path.split(".")[-1]
         print("Calling Modify Code State = %s" % (code))

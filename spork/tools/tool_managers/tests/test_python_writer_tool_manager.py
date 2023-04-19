@@ -155,13 +155,13 @@ class PythonAgentToolBuilder:
 
     def build_tools(self) -> List:
         """
-        Builds a list of Tool PythonObjects for interacting with PythonAgent.
+        Builds a list of Tool objects for interacting with PythonAgent.
 
         Args:
             - None
 
         Returns:
-            - tools (List[Tool]): A list of Tool PythonObjects representing PythonAgent commands.
+            - tools (List[Tool]): A list of Tool objects representing PythonAgent commands.
         """
 
         def python_agent_python_task():
@@ -191,8 +191,8 @@ class PythonAgentToolBuilder:
     file_abs_path = os.path.join(absolute_path, file_rel_path)
     code_writer.func(f"{file_py_path},{class_str}")
     disk_writer.func(None)
-
     new_sample_text = None
+    print("file_abs_path", file_abs_path)
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
 

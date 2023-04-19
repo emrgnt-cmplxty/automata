@@ -58,6 +58,7 @@ class MrMeeseeksAgent:
         model: str = "gpt-4",
         session_id: Optional[str] = None,
         stream: bool = False,
+        verbose: bool = True,
     ):
         """
         Args:
@@ -90,6 +91,7 @@ class MrMeeseeksAgent:
         self.tools = tools
         self.messages: List[Dict[str, str]] = []
         self.stream = stream
+        self.verbose = verbose
 
         initial_payload["tools"] = "".join(
             ["\n%s: %s\n" % (tool.name, tool.description) for tool in self.tools]
@@ -116,9 +118,9 @@ class MrMeeseeksAgent:
             for message in initial_messages:
                 self._save_interaction(message)
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-
-        logger.info("Initializing with Prompt:%s\n" % (prompt))
-        logger.info("-" * 100)
+        if self.verbose:
+            logger.info("Initializing with Prompt:%s\n" % (prompt))
+            logger.info("-" * 100)
         logger.info("Session ID: %s" % self.session_id)
         logger.info("-" * 100)
 
@@ -153,7 +155,8 @@ class MrMeeseeksAgent:
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
 
-        logger.info("OpenAI Response:\n%s\n" % response_text)
+        if self.verbose:
+            logger.info("OpenAI Response:\n%s\n" % response_text)
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
 
@@ -163,21 +166,23 @@ class MrMeeseeksAgent:
                 message += f'"output_{i}": {(output)}, \n'
             message += "}"
             self._save_interaction({"role": "user", "content": message})
-            logger.info("Synthetic User Message:\n%s\n" % message)
+            if self.verbose:
+                logger.info("Synthetic User Message:\n%s\n" % message)
             return processed_inputs
 
         # If there are no outputs, then the user has must respond to continue
         self._save_interaction({"role": "user", "content": CONTINUE_MESSAGE})
-        logger.info("Synthetic User Message:\n%s\n" % CONTINUE_MESSAGE)
+        if self.verbose:
+            logger.info("Synthetic User Message:\n%s\n" % CONTINUE_MESSAGE)
         context_length = sum(
             [
                 len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
                 for message in self.messages
             ]
         )
-
-        logger.info("Chat Context length: %s", context_length)
-        logger.info("-" * 100)
+        if self.verbose:
+            logger.info("Chat Context length: %s", context_length)
+            logger.info("-" * 100)
 
         return None
 
@@ -193,14 +198,16 @@ class MrMeeseeksAgent:
     def replay_messages(self) -> None:
         """Replay the messages in the conversation."""
         if len(self.messages) == 0:
-            logger.info("No messages to replay.")
+            if self.verbose:
+                logger.info("No messages to replay.")
             return
         for message in self.messages:
-            logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-            logger.info("Processing message content =  %s" % (message["content"]))
             processed_outputs = self._process_input(message["content"])
-            logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
-            logger.info("-" * 100)
+            if self.verbose:
+                logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+                logger.info("Processing message content =  %s" % (message["content"]))
+                logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
+                logger.info("-" * 100)
 
     def extend_last_instructions(self, new_message: str) -> None:
         previous_message = self.messages[-1]
@@ -225,6 +232,7 @@ class MrMeeseeksAgent:
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = MrMeeseeksAgent._parse_input_string(response_text)
+        print("tool_calls = ", tool_calls)
         outputs = []
         for tool_request in tool_calls:
             tool, tool_input = tool_request["tool"], tool_request["input"]
@@ -313,6 +321,8 @@ class MrMeeseeksAgent:
             if input_tag in json_object:
                 split_on_input_tag = json_object.split(input_tag)[1].split("}")
                 joined_input_str = "}".join(split_on_input_tag[:-1])
+                print("joined_input_str = %s" % (joined_input_str))
+                print("stripped joined_input_str = %s" % (joined_input_str.strip()[1:-1]))
                 input_str = joined_input_str.strip()[1:-1]
             results.append((tool, input_str))
         return results
@@ -320,6 +330,7 @@ class MrMeeseeksAgent:
     @staticmethod
     def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
         extracted_json_objects = MrMeeseeksAgent._extract_json_objects(input_str)
+        print("extracted_json_objects - %s" % extracted_json_objects)
         tool_input_pairs = MrMeeseeksAgent._extract_tool_and_input(extracted_json_objects)
         parsed_entries = []
         for tool_input_pair in tool_input_pairs:

@@ -49,7 +49,7 @@ def update_docstrings():
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
     tool_payload, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
-    python_parser, python_writer = tool_payload["python_parser"], tool_payload["python_writer"]
+    python_parser, _ = tool_payload["python_parser"], tool_payload["python_writer"]
 
     overview = python_parser.get_overview()
     initial_payload = {
@@ -58,30 +58,51 @@ def update_docstrings():
 
     logger.info("Passing in instructions: %s", args.instructions)
     logger.info("-" * 100)
-    agent = MrMeeseeksAgent(
-        initial_payload=initial_payload,
-        instructions=args.instructions,
-        tools=exec_tools,
-        version=args.version,
-        model=args.model,
-        session_id=args.session_id,
-        stream=args.stream,
-    )
-
-    overview = {}  # Replace with the output from the previous message
-    for py_path in overview:
+    print("overview.split('\n') = ", overview.split("\n"))
+    for py_path in overview.split("\n"):
         if "test_" in py_path:
             continue
-        logger.info("Updating docstring for %s" % (py_path))
+        if "spork" in py_path:
+            latest_path = py_path
+            continue
+        if "yaml" in py_path:
+            continue
+
+        path = f"{latest_path}.{py_path.strip()}"
+        logger.info("Updating docstring for %s" % (path))
         # Get the raw code and existing docstring
-        raw_code = python_parser.get_raw_code(py_path)
-        docstring = python_parser.get_docstring(py_path)
+
+        raw_code = python_parser.get_raw_code(path)
+        docstring = python_parser.get_docstring(path)
+        if len(docstring) > 20:
+            continue
         logger.info("Prev Docstring:\n%s" % (docstring))
         logger.info("Prev Raw Code:\n%s" % (raw_code))
+        instructions = (
+            f"The following code is located at the path {path}:\n\n{raw_code}\n\n"
+            f"Please write relevant docstrings for this piece of code,"
+            f" then use the python-writer to write the result to disk."
+        )
 
-        # # Update the docstring using the Mr.Meeseeks agent
-        # # You can tailor the input based on the agent's capabilities
-        # updated_docstring = meeseeks.update_docstring(docstring)
+        agent = MrMeeseeksAgent(
+            initial_payload=initial_payload,
+            instructions=instructions,
+            tools=exec_tools,
+            version=args.version,
+            model=args.model,
+            session_id=args.session_id,
+            stream=args.stream,
+            verbose=False,
+        )
+        agent.run()
+
+        import pdb
+
+        pdb.set_trace()
+
+        # Update the docstring using the Mr.Meeseeks agent
+        # You can tailor the input based on the agent's capabilities
+        # updated_docstring = agent.run(docstring)
 
         # # Modify the code state with the updated docstring
         # new_code = raw_code.replace(docstring, updated_docstring)
