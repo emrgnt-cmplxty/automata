@@ -102,7 +102,7 @@ class PythonASTManipulator:
 
         if not module_obj and module_path:
             if module_path not in self.indexer.module_dict:
-                self._create_module_from_source_code(module_path)
+                self._create_module_from_source_code(module_path, source_code)
             module_obj = self.indexer.module_dict[module_path]
 
         PythonASTManipulator._update_module(source_code, module_obj, extending_module)  # type: ignore
@@ -125,15 +125,7 @@ class PythonASTManipulator:
         with open(module_path, "w") as output_file:
             output_file.write(source_code)
 
-    @staticmethod
-    def _validate_args(module_obj: Optional[Module], module_path: Optional[str]) -> None:
-        if not (module_obj or module_path) or (module_obj and module_path):
-            raise PythonASTManipulator.InvalidArguments(
-                "Provide either 'module_obj' or 'module_path', not both or none."
-            )
-
-    @staticmethod
-    def _create_module_from_source_code(source_code: str) -> Module:
+    def _create_module_from_source_code(self, module_path: str, source_code: str) -> Module:
         """
         Create a Python module from the given source code string.
 
@@ -143,7 +135,15 @@ class PythonASTManipulator:
         parsed = ast.parse(source_code)
         if not isinstance(parsed, ast.Module):
             raise ValueError("The source code does not define a module.")
+        self.indexer.module_dict[module_path] = parsed
         return parsed
+
+    @staticmethod
+    def _validate_args(module_obj: Optional[Module], module_path: Optional[str]) -> None:
+        if not (module_obj or module_path) or (module_obj and module_path):
+            raise PythonASTManipulator.InvalidArguments(
+                "Provide either 'module_obj' or 'module_path', not both or none."
+            )
 
     @staticmethod
     def _update_module(
@@ -204,7 +204,6 @@ class PythonASTManipulator:
                     )
 
                     if existing_method:
-                        # existing_method.args = class_node.args
                         existing_method.body = class_node.body
                     else:
                         PythonASTManipulator._add_ast_node(
