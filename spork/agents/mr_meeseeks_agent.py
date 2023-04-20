@@ -243,7 +243,7 @@ class MrMeeseeksAgent:
         tool_calls = MrMeeseeksAgent._parse_input_string(response_text)
         outputs = []
         for tool_request in tool_calls:
-            tool, tool_input = tool_request["tool"], tool_request["input"]
+            tool, tool_input = tool_request["tool"], tool_request["input"] or ""
             if tool == "error-reporter":
                 # In the event of an error, the tool_input becomes the output, as it is now a parsing error
                 tool_output = tool_input

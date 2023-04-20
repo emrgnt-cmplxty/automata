@@ -134,7 +134,7 @@ def choose_work_item(github_repo: Repository, choice: str = "") -> Union[Issue, 
     Returns:
     - A Github Issue object or PullRequest object representing the user's chosen work item.
     """
-    work_items = []
+    work_items: Any = []
     if choice == "":
         choice = input("Do you want to work on issues or pull requests (issues/pulls)? ")
     if choice == "issues":

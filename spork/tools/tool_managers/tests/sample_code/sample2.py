@@ -14,7 +14,6 @@ class PythonAgentToolBuilder:
 
         Args:
             python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.
-            logger (logging.Logger): An optional logger to log output.
         """
         self.python_agent = python_agent
 

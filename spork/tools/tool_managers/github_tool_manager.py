@@ -10,7 +10,7 @@ Functions:
 - requests_get_clean: A function for sending GET requests and returning clean text.
 """
 
-from typing import List, Optional, Union
+from typing import List, Union
 
 import git
 import github
@@ -21,7 +21,7 @@ from github.Repository import Repository
 from langchain.agents import Tool, tool
 
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
-from spork.tools.utils import PassThroughBuffer, remove_html_tags
+from spork.tools.utils import remove_html_tags
 
 
 class GithubToolManager(BaseToolManager):
@@ -30,7 +30,6 @@ class GithubToolManager(BaseToolManager):
         github_repo: Repository,
         pygit_repo: git.Repo,
         work_item: Union[Issue, PullRequest],
-        logger: Optional[PassThroughBuffer] = None,
     ):
         """
         Initializes a GithubToolManager object with the given inputs.
@@ -39,7 +38,6 @@ class GithubToolManager(BaseToolManager):
         - github_repo (github.Repository): A github.Repository object representing the repository to work on.
         - pygit_repo (git.Repo): A git.Repo object representing the local copy of the repository to work on.
         - work_item (Union[Issue, PullRequest]): An Issue or PullRequest object representing the work item to work on.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
 
         Returns:
         - None
@@ -47,7 +45,6 @@ class GithubToolManager(BaseToolManager):
         self.github_repo = github_repo
         self.pygit_repo = pygit_repo
         self.work_item = work_item
-        self.logger = logger
 
     def build_tools(self) -> List[Tool]:
         """
@@ -167,8 +164,6 @@ class GithubToolManager(BaseToolManager):
                 base=self.github_repo.default_branch,
                 issue=self.work_item,
             )
-            if self.logger:
-                pull.create_issue_comment(self.logger.saved_output)
             return f"Created pull request for  {title} in {self.github_repo.name} repository."
         except Exception as e:
             return f"Error: {e}"

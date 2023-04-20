@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import Dict, List, Tuple, cast
 
 from langchain.agents import Tool
@@ -23,7 +22,7 @@ from spork.tools.utils import root_py_path
 def load_llm_tools(
     tool_list: List[str], inputs: Dict[str, str], logger: logging.Logger
 ) -> Tuple[Dict[str, BaseToolManager], List[Tool]]:
-    payload: Dict[str, BaseToolManager] = {}
+    payload: dict = {}
     if "python_indexer" in tool_list:
         python_writer = PythonIndexer(root_py_path())
         payload["python_indexer"] = python_writer

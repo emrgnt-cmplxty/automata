@@ -1,7 +1,6 @@
 import inspect
 import os
 import textwrap
-from unittest.mock import MagicMock
 
 import pytest
 from langchain.agents import Tool
@@ -25,7 +24,6 @@ def python_writer_tool_builder(tmpdir):
 
 def test_init(python_writer_tool_builder):
     assert isinstance(python_writer_tool_builder.python_writer, PythonWriter)
-    assert python_writer_tool_builder.logger is None
 
 
 def test_build_tools(python_writer_tool_builder):
@@ -136,7 +134,6 @@ class PythonAgentToolBuilder:
 
         Args:
             python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.
-            logger (logging.Logger): An optional logger to log output.
         """
         self.python_agent = python_agent
 
@@ -202,9 +199,8 @@ from spork.tools.python_tools.python_agent import PythonAgent
 
 class PythonAgentToolBuilder:
 
-    def __init__(self, python_agent: PythonAgent, logger: Optional[PassThroughBuffer]=None):
+    def __init__(self, python_agent: PythonAgen):
         self.python_agent = python_agent
-        self.logger = logger
 
     def build_tools(self) -> List[Tool]:
         tools = [Tool(name='mr-meeseeks-task', func=lambda task: self.python_agent.run_agent(task), description=f'A single function that uses PythonAgent to perform a given task.', return_direct=True)]

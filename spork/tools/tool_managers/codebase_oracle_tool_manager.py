@@ -1,18 +1,15 @@
-from typing import List, Optional
+from typing import List
 
 from langchain.agents import Tool
 
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
-from spork.tools.utils import PassThroughBuffer, run_retrieval_chain_with_sources_format
+from spork.tools.utils import run_retrieval_chain_with_sources_format
 
 
 class CodebaseOracleToolManager(BaseToolManager):
-    def __init__(
-        self, codebase_oracle: CodebaseOracle, logger: Optional[PassThroughBuffer] = None
-    ):
+    def __init__(self, codebase_oracle: CodebaseOracle):
         self.codebase_oracle = codebase_oracle
-        self.logger = logger
 
     def build_tools(self) -> List[Tool]:
         tools = [

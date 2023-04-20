@@ -116,6 +116,7 @@ class PythonWriter:
         print("write_to_disk = ", write_to_disk)
         if write_to_disk:
             print("calling write to disk at path module_path = ", module_path)
+            assert module_path is not None, "Must provide a module path to write to disk."
             self.write_module(module_path)
 
     def write_module(self, module_path: str) -> None:

@@ -19,9 +19,9 @@ docstring = indexer.retrieve_docstring("module.path", "ClassName.method_name")
 import ast
 import logging
 import os
-import textwrap
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
 from typing import Dict, Optional, Union, cast
+
 from spork.tools.utils import root_path
 
 logger = logging.getLogger(__name__)
@@ -104,7 +104,7 @@ class PythonIndexer:
         module = self.module_dict[module_path]
         result = self._find_module_class_function_or_method(module, object_path)
         if result is not None:
-            return ast.get_docstring(result)
+            return ast.get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
@@ -130,9 +130,9 @@ class PythonIndexer:
         Returns:
             str: A string that provides an overview of the PythonParser's state.
         """
-        result = ""
-        LINE_SPACING = 2
         return "x"
+        # result = ""
+        # LINE_SPACING = 2
         # for package in self.package_dict.values():
         #     for module in package.modules.values():
         #         if "type" in module.py_path.split(".")[-1]:
