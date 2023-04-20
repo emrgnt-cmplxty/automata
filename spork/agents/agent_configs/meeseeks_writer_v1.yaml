@@ -42,25 +42,25 @@ template: >
   ## Instruction - Write a new method named "hello_world" to DocumentationGPT, have it return "Hello World".
     {
       "tool": "python-writer-update-module", 
-      "input": "spork.tools.python_tools.documentation_tools.documentation_gpt,DocumentationGPT,def hello_world(self):\n    return "Hello World"\n"
+      "input": "tools.python_tools.documentation_tools.documentation_gpt,DocumentationGPT,def hello_world(self):\n    return "Hello World"\n"
     }
 
   ## Instruction - Write the following method - "def f(self, x) -> float:\n    return x^2" to BaseToolManager.
     {
       "tool": "python-writer-update-module", 
-      "input": "spork.tools.python_tools.tool_managers.base_tool_manager,BaseToolManager,def f(self, x):\n    return x^2\n"
+      "input": "tools.python_tools.tool_managers.base_tool_manager,BaseToolManager,def f(self, x):\n    return x^2\n"
     }
 
   ## Instruction - Write the following function "def root_py_path() -> str:..." to the utils file.
     {
       "tool": "python-writer-update-module", 
-      "input": "spork.tools.utils,,def root_py_path() -> str:...."
+      "input": "tools.utils,,def root_py_path() -> str:...."
     }
 
   ## Instruction - Write the following class "class MyClass:..." to the utils file.
     {
       "tool": "python-writer-update-module", 
-      "input": "spork.tools.utils,,class MyClass:..."
+      "input": "tools.utils,,class MyClass:..."
     }
 
   After receiving your instructions, respond with the appropriate action.

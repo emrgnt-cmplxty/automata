@@ -35,9 +35,10 @@ Example usage:
 
 import ast
 import os
+import re
 import subprocess
 from ast import ClassDef, FunctionDef, Module
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from spork.tools.python_tools.python_indexer import PythonIndexer
 
@@ -67,6 +68,9 @@ class PythonWriter:
     class ModuleNotFound(Exception):
         pass
 
+    class ClassNotFound(Exception):
+        pass
+
     class InvalidArguments(Exception):
         pass
 
@@ -90,6 +94,7 @@ class PythonWriter:
             extending_module (bool): True for adding/updating, False for reducing/deleting.
             module_obj (Optional[Module], keyword): The module object to be updated.
             module_path (Optional[str], keyword): The path of the module to be updated.
+            class_name (Optional[str], keyword): The name of the class where the update should be applied, will default to modul.
             write_to_disk (Optional[bool], keyword): Writes the changed module to disk.
 
         Raises:
@@ -98,12 +103,13 @@ class PythonWriter:
         Returns:
             Module: The updated module object.
         """
-        print("Calling Update Module with source code = %s" % (source_code))
         module_obj = kwargs.get("module_obj")
         module_path = kwargs.get("module_path")
+        class_name = kwargs.get("class_name")
         write_to_disk = kwargs.get("write_to_disk") or False
 
         self._validate_args(module_obj, module_path, write_to_disk)
+        source_code = PythonWriter._clean_input_code(source_code)
 
         if not module_obj and module_path:
             if module_path not in self.indexer.module_dict:
@@ -112,7 +118,7 @@ class PythonWriter:
         elif module_obj and not module_path:
             module_path = self.indexer.get_module_path(module_obj)
             assert module_path != PythonIndexer.NO_RESULT_FOUND_STR
-        PythonWriter._update_module(source_code, module_path, module_obj, extending_module)  # type: ignore
+        PythonWriter._update_module(source_code, module_path, module_obj, extending_module, class_name)  # type: ignore
         if write_to_disk:
             assert module_path is not None, "Must provide a module path to write to disk."
             self.write_module(module_path)
@@ -150,7 +156,7 @@ class PythonWriter:
             module_path (str): The path where the new module will be created.
         """
         parsed = ast.parse(source_code)
-        if not isinstance(parsed, ast.Module):
+        if not isinstance(parsed, Module):
             raise ValueError("The source code does not define a module.")
         self.indexer.module_dict[module_path] = parsed
         return parsed
@@ -174,6 +180,7 @@ class PythonWriter:
         module_path: str,
         existing_module_obj: Module,
         extending_module: bool,
+        class_name: Optional[str] = None,
     ) -> None:
         """
         Update a module object according to the received code.
@@ -184,80 +191,121 @@ class PythonWriter:
             existing_module_obj Module: The module object to be updated.
             extending_module (bool): If True, add or update the code; if False, remove the code.
         """
+
+        if class_name:
+            existing_class = PythonWriter._find_function_class_or_method(
+                existing_module_obj, class_name
+            )
+            if not existing_class:
+                raise PythonWriter.ClassNotFound(
+                    f"Class {class_name} not found in module {module_path}"
+                )
+            if not isinstance(existing_class, ClassDef):
+                raise PythonWriter.ClassNotFound(
+                    f"Object {class_name} in module {module_path} is not a class."
+                )
+            PythonWriter._update_class(
+                source_code, cast(ClassDef, existing_class), extending_module
+            )
+        else:
+            new_ast = ast.parse(source_code)
+            for new_node in new_ast.body:
+                if isinstance(new_node, (ClassDef, FunctionDef)):
+                    obj_name = new_node.name
+                    existing_obj = PythonWriter._find_function_class_or_method(
+                        existing_module_obj, obj_name
+                    )
+
+                    if extending_module:
+                        if existing_obj:
+                            PythonWriter._update_existing_node(
+                                existing_module_obj, new_node, existing_obj
+                            )
+                        else:
+                            PythonWriter._add_ast_node(existing_module_obj, new_node)
+                    else:
+                        if existing_obj:
+                            PythonWriter._remove_existing_node(existing_module_obj, existing_obj)
+
+    @staticmethod
+    def _update_class(
+        source_code: str,
+        existing_class_obj: ClassDef,
+        extending_module: bool,
+    ) -> None:
         new_ast = ast.parse(source_code)
         for new_node in new_ast.body:
-            if isinstance(new_node, (ast.ClassDef, ast.FunctionDef)):
-                obj_name = new_node.name
-                existing_obj = PythonWriter._find_function_class_or_method(
-                    existing_module_obj, obj_name
+            if isinstance(new_node, FunctionDef):
+                method_name = new_node.name
+                existing_method = PythonWriter._find_function_class_or_method(
+                    existing_class_obj, method_name
                 )
 
                 if extending_module:
-                    if existing_obj:
+                    if existing_method:
                         PythonWriter._update_existing_node(
-                            module_path, existing_module_obj, new_node, existing_obj
+                            existing_class_obj, new_node, existing_method
                         )
                     else:
-                        PythonWriter._add_ast_node(existing_module_obj, new_node)
+                        PythonWriter._add_ast_node(existing_class_obj, new_node)
                 else:
-                    if existing_obj:
-                        PythonWriter._remove_existing_node(existing_module_obj, existing_obj)
+                    if existing_method:
+                        PythonWriter._remove_existing_node(existing_class_obj, existing_method)
 
     @staticmethod
     def _update_existing_node(
-        module_path: str,
-        module_obj: Module,
-        new_node: Union[ast.ClassDef, ast.FunctionDef],
-        existing_node: Union[ast.ClassDef, ast.FunctionDef],
+        python_obj: Union[Module, ClassDef],
+        new_node: Union[ClassDef, FunctionDef],
+        existing_node: Union[ClassDef, FunctionDef],
     ) -> None:
         """
         Update an existing object (class or function) in the module.
 
         Args:
-            module_obj (Module): The module object to be updated.
-            new_node (Union[ast.ClassDef, ast.FunctionDef]): The new AST node.
-            existing_node (Union[ast.ClassDef, ast.FunctionDef]): The existing AST node.
+            module_obj (Module): The module or class object to be updated.
+            new_node (Union[ClassDef, FunctionDef]): The new AST node.
+            existing_node (Union[ClassDef, FunctionDef]): The existing AST node.
         """
-        if isinstance(new_node, ast.ClassDef) and isinstance(existing_node, ast.ClassDef):
+        if isinstance(new_node, ClassDef) and isinstance(existing_node, ClassDef):
             for node in new_node.body:
                 class_name = new_node.name
-                if isinstance(node, ast.FunctionDef):
+                if isinstance(node, FunctionDef):
                     method_name = node.name
                     lookup_path = f"{class_name}.{method_name}"
                     existing_method = PythonWriter._find_function_class_or_method(
-                        module_obj, lookup_path
+                        python_obj, lookup_path
                     )
 
                     if existing_method:
                         existing_method.body = node.body
                     else:
-                        PythonWriter._add_ast_node(module_obj, node, target_node=existing_node)
-        elif isinstance(new_node, ast.FunctionDef) and isinstance(existing_node, ast.FunctionDef):
+                        PythonWriter._add_ast_node(python_obj, node, target_node=existing_node)
+        elif isinstance(new_node, FunctionDef) and isinstance(existing_node, FunctionDef):
             existing_node.args = new_node.args
             existing_node.body = new_node.body
 
     @staticmethod
     def _remove_existing_node(
-        module_obj: Module, existing_obj: Union[ast.ClassDef, ast.FunctionDef]
+        python_obj: Union[Module, ClassDef], existing_obj: Union[ClassDef, FunctionDef]
     ) -> None:
         """
         Remove an existing object (class or function) from the module.
 
         Args:
-            module_obj (Module): The module object to be updated.
-            existing_obj (Union[ast.ClassDef, ast.FunctionDef]): The existing AST node.
+            python_obj (Union[Module, ClassDef]): The python object to be updated.
+            existing_obj (Union[ClassDef, FunctionDef]): The existing AST node.
         """
-        if existing_obj in module_obj.body:
-            module_obj.body.remove(existing_obj)
-        elif isinstance(existing_obj, ast.ClassDef):
+        if existing_obj in python_obj.body:
+            python_obj.body.remove(existing_obj)
+        elif isinstance(existing_obj, ClassDef):
             for method_node in existing_obj.body:
-                if isinstance(method_node, ast.FunctionDef):
+                if isinstance(method_node, FunctionDef):
                     if method_node in existing_obj.body:
                         existing_obj.body.remove(method_node)
 
     @staticmethod
     def _add_ast_node(
-        module_obj: Module,
+        python_obj: Union[Module, ClassDef],
         node: Union[FunctionDef, ClassDef],
         target_node: Optional[Union[ClassDef, Module]] = None,
     ):
@@ -265,14 +313,14 @@ class PythonWriter:
         Add an AST node (function or class) to the target node (class or module) in the specified module.
 
         Args:
-            module_path (str): The path of the module where the new node will be added.
+            python_obj (Union[Module, ClassDef]): The python object to be updated.
             node (Union[FunctionDef, ClassDef]): The new function or class to add.
             target_node (Optional[Union[ClassDef, Module]]): The target node (class or module) where the new node will be added.
                                                        If not provided, the new node will be added to the module level.
         """
         if target_node is None:
             # Add the new node to the module level
-            target_node = module_obj
+            target_node = python_obj
 
         # Add the new node to the target_node's body
         target_node.body.append(node)
@@ -280,7 +328,7 @@ class PythonWriter:
     @staticmethod
     def _find_function_class_or_method(
         code_obj: Union[Module, ClassDef], lookup_name: str
-    ) -> Optional[Union[ast.FunctionDef, ast.ClassDef]]:
+    ) -> Optional[Union[FunctionDef, ClassDef]]:
         """
         Find a function or method node in a module or class.
 
@@ -290,16 +338,16 @@ class PythonWriter:
             class_name (Optional[str], optional): The name of the class where the method is located. If not provided, the function is assumed to be at the module level.
 
         Returns:
-            Optional[ast.FunctionDef]: The found function or method node, or None if not found.
+            Optional[FunctionDef]: The found function or method node, or None if not found.
         """
         lookup_split = lookup_name.split(".")
         lookup_name = lookup_split[0]
         # Find the method node in the class
         for node in code_obj.body:
-            if isinstance(node, ast.FunctionDef) and node.name == lookup_name:
+            if isinstance(node, FunctionDef) and node.name == lookup_name:
                 assert len(lookup_split) == 1, "Function name is not unique"
                 return node
-            elif isinstance(node, ast.ClassDef) and node.name == lookup_name:
+            elif isinstance(node, ClassDef) and node.name == lookup_name:
                 if len(lookup_split) == 1:
                     return node
                 else:
@@ -308,3 +356,47 @@ class PythonWriter:
                     )
 
         return None
+
+    @staticmethod
+    def _clean_input_code(source_code: str) -> str:
+        """
+        Take the input source code and remove formatting issues that will cause the AST to fail.
+
+        Args:
+            source_code (str): The source code to clean.
+
+        Returns:
+            str: The cleaned source code.
+        """
+
+        def replace_newline_chars(input_str: str) -> str:
+            def replace(match):
+                text = match.group(0)
+                if text[0] == '"' and text[-1] == '"':
+                    return text
+                return text.replace("\\n", "\n")
+
+            # Match single or double-quoted strings, and text outside quotes
+            pattern = r"""(?x)
+                '.*?'
+                |
+                ".*?"
+                |
+                [^'"]+
+            """
+            output_str = (
+                "".join(
+                    replace(match)
+                    for match in re.finditer(
+                        pattern, input_str.replace('"""', "ZZ_^^_ZZ").replace("'''", "QQ_^^_QQ")
+                    )
+                )
+                .replace("ZZ_^^_ZZ", '"""')
+                .replace("QQ_^^_QQ", "'''")
+            )
+            return output_str
+
+        source_code = replace_newline_chars(source_code)
+        source_code = re.sub(r"\\\"", '"', source_code)
+        source_code = source_code.strip()
+        return source_code

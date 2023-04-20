@@ -30,18 +30,16 @@ class PythonWriterToolManager(BaseToolManager):
         self.python_writer = python_writer
 
     def writer_update_module(self, input_str: str) -> str:
-        print("Input Path:\n%s" % (input_str))
         module_path = input_str.split(",")[0]
         class_name = input_str.split(",")[1]
-        print("class_name = ", class_name)
         code = ",".join(input_str.split(",")[2:]).strip()
         try:
-            print("Writing to module_path - " + module_path)
             self.python_writer.update_module(
                 source_code=code,
                 extending_module=True,
                 module_path=module_path,
                 write_to_disk=True,
+                class_name=class_name,
             )
             return "Success"
         except Exception as e:

@@ -1,5 +1,6 @@
 import inspect
 import os
+import shutil
 import textwrap
 
 import pytest
@@ -190,7 +191,7 @@ class PythonAgentToolBuilder:
 
 def test_extend_module_with_documented_new_module(python_writer_tool_builder):
     combo_str = textwrap.dedent(
-        """spork.tools.python_tools.python_agent_tool_builder,from typing import List, Optional
+        """temp_code.python_agent_tool_builder,,from typing import List, Optional
 from spork.buffer import PassThroughBuffer
 from spork.tools.tool import Tool
 from spork.tools.python_tools.python_agent import PythonAgent
@@ -208,10 +209,5 @@ class PythonAgentToolBuilder:
     code_writer = tools[0]
 
     code_writer.func(combo_str)
-    # Why?
-    os.remove(
-        os.path.join(
-            root_py_path(),
-            "tools/tool_managers/tests/spork/tools/python_tools/python_agent_tool_builder.py",
-        )
-    )
+    # # Why?
+    shutil.rmtree(os.path.join(root_py_path(), "tools", "tool_managers", "tests", "temp_code"))
