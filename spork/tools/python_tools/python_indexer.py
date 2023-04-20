@@ -163,10 +163,8 @@ class PythonIndexer:
                     module = self._load_module_from_path(module_path)
                     if module:
                         module_rel_path = (
-                            os.path.relpath(module_path, self.abs_path)
-                            .replace(os.path.sep, ".")
-                            .replace(".py", "")
-                        )
+                            os.path.relpath(module_path, self.abs_path).replace(os.path.sep, ".")
+                        )[:-3]
                         module_dict[module_rel_path] = module
         return module_dict
 

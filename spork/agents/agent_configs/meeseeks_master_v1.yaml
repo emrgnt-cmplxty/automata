@@ -41,30 +41,52 @@ template: >
 
   To help you in your task, you may refer to the following examples for guidance:\n
 
+  ## Instruction - Fetch package docstrings from the agents package
+  '
+  Agent:
+    Thought: To fetch docstrings I should use the python-parser-get-docstring tool
+    {
+      "tool": "python-parser-get-docstring", 
+      "input": "spork.agents"
+    }'
+
+  ## Instruction - Fetch the raw code for function write_to_disk of the PythonWriter class
+  ## And, fetch the docstrings for the PythonParser module in a single message
+  'Agent:
+    Thought: To fetch docstrings I should use the python-parser-get-docstring tool, 
+    to fetch raw code I should use the python-parser-get-raw-code tool.
+    {
+      "tool": "python-parser-get-docstring", 
+      "input": "spork.tools.python_tools.python_writer.PythonWriter.write_to_disk"
+    }
+    {
+      "tool": "python-parser-get-raw-code", 
+      "input": "spork.tools.python_tools.python_writer.PythonWriter.write_to_disk"
+    }'
+
   ## Instruction - Write a new method named "hello_world" to DocumentationGPT, have it return "Hello World".
+  'Agent:
+    Thought: To write out a new method I should use the meeseeks-update-module tool.
     {
       "tool": "meeseeks-update-module", 
       "input": "Write a new method named "hello_world" to DocumentationGPT, have it return "Hello World""
-    }
+    }'
 
   ## Instruction - Write the following method - "def f(self, x) -> float:\n    return x^2" to BaseToolManager.
+  'Agent:
+    Thought: To write out a new method I should use the meeseeks-update-module tool.
     {
       "tool": "meeseeks-update-module", 
       "input": "Write the following method - "def f(self, x) -> float:\n    return x^2" to BaseToolManager."
-    }
+    }'
 
-  ## Instruction - Write the following function "def root_py_path() -> str:..." to the utils file.
-    {
-      "tool": "meeseeks-update-module", 
-      "input": "Write the following function "def root_py_path() -> str:..." to the utils file."
-    }
+  START by writing a step-by-step approach to solve the task at hand. 
+  NEXT, retrieve the relevant information from the local repository using available tools.
+  LASTLY, make appropriate function calls to complete the task.
 
-  ## Instruction - Write the following class "class MyClass:..." to the utils file.
-    {
-      "tool": "meeseeks-update-module", 
-      "input": "Write the following class "class MyClass:..." to the utils file."
-    }
-
-  After receiving your instructions, respond with the appropriate action.
+  The bandwidth to pass and receive messages is quite limited, therefore
+  code which is to be written should be written directly to the meeseeks-update-module tool, 
+  to reduce waste. Moreover, you should make multiple function calls in a single message whenever
+  appropriate. Lastly, be sure to follow the exact formatting for input tools shown above.
 
 template_format: "f-string"
