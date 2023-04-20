@@ -39,19 +39,19 @@ def update_docstrings():
     parser.add_argument(
         "--tools",
         type=str,
-        default="python_parser,python_writer,codebase_oracle",
+        default="python_indexer,python_writer,codebase_oracle",
         help="Comma-separated list of tools to be used.",
     )
     args = parser.parse_args()
 
-    assert "python_parser" in args.tools, "You must include the python_parser tool."
+    assert "python_indexer" in args.tools, "You must include the python_indexer tool."
     assert "python_writer" in args.tools, "You must include the python_writer tool."
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
     tool_payload, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
-    python_parser, _ = tool_payload["python_parser"], tool_payload["python_writer"]
+    python_indexer, _ = tool_payload["python_indexer"], tool_payload["python_writer"]
 
-    overview = python_parser.get_overview()
+    overview = python_indexer.get_overview()
     initial_payload = {
         "overview": overview,
     }
@@ -91,10 +91,10 @@ def update_docstrings():
 
         # # Modify the code state with the updated docstring
         # new_code = raw_code.replace(docstring, updated_docstring)
-        # writer.modify_code_state(py_path, new_code)
+        # writer.update_module(py_path, new_code)
 
-    # Write the updated code state to disk
-    # python_writer.write_to_disk()
+    # # Write the updated code state to disk
+    # # python_writer.write_to_disk()
 
 
 if __name__ == "__main__":

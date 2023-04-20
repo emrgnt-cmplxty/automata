@@ -5,12 +5,12 @@ import pytest
 from langchain.agents import Tool
 
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-from spork.tools.python_tools.python_parser import PythonParser
+from spork.tools.python_tools.python_indexer import PythonIndexer
 
 
 @pytest.fixture
 def mr_meeseeks_agent():
-    python_parser = PythonParser()
+    python_indexer = PythonIndexer("")
 
     exec_tools = [
         Tool(
@@ -22,7 +22,7 @@ def mr_meeseeks_agent():
         )
     ]
 
-    overview = python_parser.get_overview()
+    overview = python_indexer.get_overview()
 
     initial_payload = {
         "overview": overview,
@@ -142,10 +142,10 @@ def main():
     logging.config.dictConfig(logging_config)
     logger = logging.getLogger(__name__)
     args = parser.parse_args()
-    python_parser = PythonParser()
-    python_writer = PythonWriter(python_parser)
+    python_indexer = PythonIndexer()
+    python_writer = PythonWriter(python_indexer)
     exec_tools = []
-    exec_tools += build_tools(PythonParserToolManager(python_parser))
+    exec_tools += build_tools(PythonIndexerToolManager(python_indexer))
     exec_tools += build_tools(PythonWriterToolManager(python_writer))
     overview = python_parser.get_overview()
     initial_payload = {'overview': overview}

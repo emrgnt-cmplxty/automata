@@ -1,6 +1,6 @@
 """
 This module provides a Python Abstract Syntax Tree (AST) indexer to help retrieve code and docstrings from
-Python source code files in a specified directory. The PythonASTIndexer class supports retrieval of code
+Python source code files in a specified directory. The PythonIndexer class supports retrieval of code
 and docstrings for top-level functions, methods, and classes.
 
 Dependencies:
@@ -9,31 +9,32 @@ Dependencies:
 - typing (Dict, Optional, Union, cast)
 
 Classes:
-PythonASTIndexer: Main class to index and retrieve code and docstrings from Python source files.
+PythonIndexer: Main class to index and retrieve code and docstrings from Python source files.
 
 Example:
-indexer = PythonASTIndexer("/path/to/python/source")
+indexer = PythonIndexer("/path/to/python/source")
 code = indexer.retrieve_code("module.path", "ClassName.method_name")
 docstring = indexer.retrieve_docstring("module.path", "ClassName.method_name")
 """
 import ast
 import logging
 import os
+import textwrap
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
 from typing import Dict, Optional, Union, cast
 
 logger = logging.getLogger(__name__)
 
 
-class PythonASTIndexer:
+class PythonIndexer:
     """
     A class to index Python source code files in a specified directory and retrieve code and docstrings.
     Attributes:
-        root_dir (str): The root directory containing Python source code files to be indexed.
+        root_path (str): The root directory containing Python source code files to be indexed.
         module_dict (Dict[str, Module]): A dictionary with module paths as keys and AST Module objects as values.
 
     Methods:
-        __init__(self, root_dir: str) -> None
+        __init__(self, root_path: str) -> None
         retrieve_code(self, module_path: str, object_path: Optional[str]) -> Optional[str]
         retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> Optional[str]
     """
@@ -41,18 +42,18 @@ class PythonASTIndexer:
     NO_RESULT_FOUND_STR = "No Result Found."
     PATH_SEP = "."
 
-    def __init__(self, root_dir: str) -> None:
+    def __init__(self, root_path: str) -> None:
         """
-        Initializes the PythonASTIndexer with the specified root directory and builds the module dictionary.
+        Initializes the PythonIndexer with the specified root directory and builds the module dictionary.
 
         Args:
-            root_dir (str): The root directory containing Python source code files to be indexed.
+            root_path (str): The root directory containing Python source code files to be indexed.
         """
 
-        self.root_dir = root_dir
+        self.root_path = root_path
         self.module_dict = self._build_module_dict()
 
-    def retrieve_code(self, module_path: str, object_path: Optional[str]) -> Optional[str]:
+    def retrieve_code(self, module_path: str, object_path: Optional[str]) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
@@ -62,12 +63,12 @@ class PythonASTIndexer:
                 (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
 
         Returns:
-            Optional[str]: The code for the specified module, class, or function/method, or "No Result Found."
+            str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found.
         """
 
         if module_path not in self.module_dict:
-            return PythonASTIndexer.NO_RESULT_FOUND_STR
+            return PythonIndexer.NO_RESULT_FOUND_STR
 
         module = self.module_dict[module_path]
         result = self._find_module_class_function_or_method(module, object_path)
@@ -75,9 +76,9 @@ class PythonASTIndexer:
             self._remove_docstrings(result)
             return ast.unparse(result)
         else:
-            return PythonASTIndexer.NO_RESULT_FOUND_STR
+            return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> Optional[str]:
+    def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """
         Retrieve the docstring for a specified module, class, or function/method.
 
@@ -87,19 +88,74 @@ class PythonASTIndexer:
                 (e.g. 'ClassName.method_name'). If None, the module-level docstring will be returned.
 
         Returns:
-            Optional[str]: The docstring for the specified module, class, or function/method, or "No Result Found."
+            str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found.
         """
 
         if module_path not in self.module_dict:
-            return PythonASTIndexer.NO_RESULT_FOUND_STR
+            return PythonIndexer.NO_RESULT_FOUND_STR
 
         module = self.module_dict[module_path]
         result = self._find_module_class_function_or_method(module, object_path)
         if result is not None:
             return ast.get_docstring(result)
         else:
-            return PythonASTIndexer.NO_RESULT_FOUND_STR
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def get_overview(self, print_func_docstrings=False, print_method_docstrings=False) -> str:
+        """
+        Loops over the PythonParser's dictionaries and returns a string that provides an overview of the PythonParser's state.
+        Returns:
+            str: A string that provides an overview of the PythonParser's state.
+        """
+        result = ""
+        LINE_SPACING = 2
+        return "x"
+        # for package in self.package_dict.values():
+        #     for module in package.modules.values():
+        #         if "type" in module.py_path.split(".")[-1]:
+        #             continue
+        #         if (
+        #             len(module.classes.keys()) == 0
+        #             and len(module.standalone_functions.keys()) == 0
+        #         ):
+        #             continue
+        #         result += module.py_path + "\n"
+        #         if len(module.standalone_functions.keys()) > 0:
+        #             for function in module.standalone_functions.values():
+        #                 if "_" == function.py_path.split(".")[-1][0]:
+        #                     continue
+        #                 function_name = function.py_path.split(".")[-1]
+        #                 result += textwrap.indent(function_name, " " * LINE_SPACING * 1) + "\n"
+        #                 if print_func_docstrings:
+        #                     result += (
+        #                         textwrap.indent(
+        #                             "\n".join(function.get_docstring().split("\n")[1:]),
+        #                             " " * LINE_SPACING * 2,
+        #                         )
+        #                         + "\n"
+        #                     )
+        #         if len(module.classes) > 0:
+        #             for class_obj in module.classes.values():
+        #                 class_name = class_obj.py_path.split(".")[-1]
+        #                 result += textwrap.indent(class_name, " " * LINE_SPACING * 1) + "\n"
+        #                 if len(list(class_obj.methods.keys())) > 0:
+        #                     for method in class_obj.methods.values():
+        #                         if "_" == method.py_path.split(".")[-1][0]:
+        #                             continue
+        #                         module_name = method.py_path.split(".")[-1]
+        #                         result += (
+        #                             textwrap.indent(module_name, " " * LINE_SPACING * 2) + "\n"
+        #                         )
+        #                         if print_method_docstrings:
+        #                             result += (
+        #                                 textwrap.indent(
+        #                                     "\n".join(method.get_docstring().split("\n")[1:]),
+        #                                     " " * LINE_SPACING * 3,
+        #                                 )
+        #                                 + "\n"
+        #                             )
+        # return result
 
     def _build_module_dict(self) -> Dict[str, Module]:
         """
@@ -112,14 +168,14 @@ class PythonASTIndexer:
 
         module_dict = {}
 
-        for root, _, files in os.walk(self.root_dir):
+        for root, _, files in os.walk(self.root_path):
             for file in files:
                 if file.endswith(".py"):
                     module_path = os.path.join(root, file)
                     module = self._load_module_from_path(module_path)
                     if module:
                         module_rel_path = (
-                            os.path.relpath(module_path, self.root_dir)
+                            os.path.relpath(module_path, self.root_path)
                             .replace(os.path.sep, ".")
                             .replace(".py", "")
                         )
@@ -166,14 +222,14 @@ class PythonASTIndexer:
             assert isinstance(code_obj, Module)
             return cast(Module, code_obj)
 
-        obj_parts = object_path.split(PythonASTIndexer.PATH_SEP)
+        obj_parts = object_path.split(PythonIndexer.PATH_SEP)
 
         if len(obj_parts) == 1:
-            return PythonASTIndexer._find_node(code_obj, obj_parts[0])
+            return PythonIndexer._find_node(code_obj, obj_parts[0])
         elif len(obj_parts) == 2:
-            class_node = PythonASTIndexer._find_node(code_obj, obj_parts[0])
+            class_node = PythonIndexer._find_node(code_obj, obj_parts[0])
             if class_node and isinstance(class_node, ClassDef):
-                return PythonASTIndexer._find_node(class_node, obj_parts[1])
+                return PythonIndexer._find_node(class_node, obj_parts[1])
         return None
 
     @staticmethod
@@ -222,7 +278,7 @@ class PythonASTIndexer:
                     or isinstance(node, ClassDef)
                     or isinstance(node, Module)
                 ):
-                    PythonASTIndexer._remove_docstrings(node)
+                    PythonIndexer._remove_docstrings(node)
 
         if isinstance(result, Module):
             if isinstance(result.body[0], ast.Expr) and isinstance(result.body[0].value, ast.Str):
@@ -234,4 +290,4 @@ class PythonASTIndexer:
                     or isinstance(node, ClassDef)
                     or isinstance(node, Module)
                 ):
-                    PythonASTIndexer._remove_docstrings(node)
+                    PythonIndexer._remove_docstrings(node)

@@ -6,8 +6,8 @@ import textwrap
 
 import pytest
 
-from spork.tools.python_tools.python_ast_indexer import PythonASTIndexer
-from spork.tools.python_tools.python_ast_manipulator import PythonASTManipulator
+from spork.tools.python_tools.python_indexer import PythonIndexer
+from spork.tools.python_tools.python_writer import PythonWriter
 
 
 class MockCodeGenerator:
@@ -135,11 +135,11 @@ class MockCodeGenerator:
 
 
 @pytest.fixture
-def python_ast_manipulator():
+def python_writer():
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    indexer = PythonASTIndexer(root_dir)
+    indexer = PythonIndexer(root_dir)
 
-    return PythonASTManipulator(indexer)
+    return PythonWriter(indexer)
 
 
 def test_create_function_source_function():
@@ -169,33 +169,27 @@ def test_create_class_source_class():
     mock_generator._check_class_obj()
 
 
-def test_find_object(python_ast_manipulator):
+def test_find_object(python_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
 
-    module_obj = python_ast_manipulator._create_module_from_source_code(
-        "test_module_2", source_code
-    )
-    function_obj = PythonASTManipulator._find_class_or_function(
-        module_obj, mock_generator.function_name
-    )
+    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+    function_obj = PythonWriter._find_class_or_function(module_obj, mock_generator.function_name)
 
     mock_generator._check_function_obj(function_obj)
 
-    class_obj = PythonASTManipulator._find_class_or_function(module_obj, mock_generator.class_name)
+    class_obj = PythonWriter._find_class_or_function(module_obj, mock_generator.class_name)
     mock_generator._check_class_obj(class_obj)
 
 
-def test_extend_module(python_ast_manipulator):
+def test_extend_module(python_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    module_obj = python_ast_manipulator._create_module_from_source_code(
-        "test_module_2", source_code
-    )
+    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
     mock_generator._check_module_obj(module_obj)
 
     mock_generator_2 = MockCodeGenerator(
@@ -203,7 +197,7 @@ def test_extend_module(python_ast_manipulator):
     )
     source_code_2 = mock_generator_2.generate_code()
 
-    python_ast_manipulator.update_module(
+    python_writer.update_module(
         source_code=source_code_2, module_obj=module_obj, extending_module=True
     )
 
@@ -215,29 +209,28 @@ def test_extend_module(python_ast_manipulator):
     mock_generator_2._check_function_obj(module_obj.body[3])
 
 
-def test_reduce_module(python_ast_manipulator):
+def test_reduce_module(python_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    module_obj = python_ast_manipulator._create_module_from_source_code(
-        "test_module_2", source_code
-    )
+    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
     class_obj = module_obj.body[0]
     function_obj = module_obj.body[1]
-    python_ast_manipulator.update_module(
+    python_writer.update_module(
         source_code=ast.unparse(class_obj), module_obj=module_obj, extending_module=False
     )
     assert module_obj.body[0] == function_obj
 
 
-def test_write_module(python_ast_manipulator):
+def test_create_update_write_module(python_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    # module_obj = python_ast_manipulator._create_module_from_source_code("test_module_2", source_code)
-    # class_obj = module_obj.body[0]
-    python_ast_manipulator.update_module(
+    python_writer.update_module(
         source_code=source_code, module_path="test_module_2", extending_module=False
     )
+    python_writer.write_module("test_module_2")
+    root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    os.remove(os.path.join(root_dir, "test_module_2.py"))

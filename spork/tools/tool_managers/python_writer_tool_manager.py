@@ -14,7 +14,11 @@ class PythonWriterToolManager(BaseToolManager):
     the code state of a given directory of Python files.
     """
 
-    def __init__(self, python_writer: PythonWriter, logger: Optional[PassThroughBuffer] = None):
+    def __init__(
+        self,
+        python_writer: PythonWriter,
+        logger: Optional[PassThroughBuffer] = None,
+    ):
         """
         Initializes a PythonWriterToolManager object with the given inputs.
 
@@ -31,11 +35,10 @@ class PythonWriterToolManager(BaseToolManager):
     def python_writer_wrapper(self, input_str: str) -> str:
         path = input_str.split(",")[0]
         code = ",".join(input_str.split(",")[1:]).strip()
-        return self.python_writer.modify_code_state(
-            *(
-                path,
-                code,
-            )
+        return self.python_writer.update_module(
+            source_code=code,
+            extending_module=True,
+            module_path=path,
         )
 
     def build_tools(self) -> List[Tool]:

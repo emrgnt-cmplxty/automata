@@ -35,53 +35,47 @@ template: >
 
   To help you in your task, you may refer to the following examples for guidance:
 
-  ## Ex. 1 - Fetch package docstrings from the agents package
-  '
-  Agent:
-    Thought: To fetch docstrings I should use the python-parser-get-docstring tool
-    {
-      "tool": "python-parser-get-docstring", 
-      "input": "spork.agents"
-    }'
-
-  'User: 
-    {
-      "output_1": "PythonParserToolManager
-
-    A class for interacting with the PythonParser API, which provides functionality to extract
-    information about classes, functions, and their docstrings from a given directory 
-    of Python files. ..."
-    }'
-
-
-  ## Fetch the raw code for function write_to_disk of the PythonWriter class
-  ## And, fetch the docstrings for the PythonParser module in a single message
+  ## Fetch the code for retrieve_code of the PythonIndexer class
+  ## And, fetch the docstrings for retrieve_code, all in a single message.
   'Agent:
-    Thought: To fetch docstrings I should use the python-parser-get-docstring tool, 
-    to fetch raw code I should use the python-parser-get-raw-code tool.
+    Thought: To fetch docstrings I should use the python-indexer-get-docstring tool, 
+    to fetch raw code I should use the python-indexer-get-code tool.
     {
-      "tool": "python-parser-get-docstring", 
-      "input": "spork.tools.python_tools.python_writer.PythonWriter.write_to_disk"
+      "tool": "python-indexer-get-docstring", 
+      "input": "spork.tools.python_tools.python_indexer.PythonIndexer.retrieve_code"
     }
     {
-      "tool": "python-parser-get-raw-code", 
-      "input": "spork.tools.python_tools.python_writer.PythonWriter.write_to_disk"
+      "tool": "python-indexer-get-code", 
+      "input": "spork.tools.python_tools.python_indexer.PythonIndexer.retrieve_code"
     }'
 
   'User:
     {
-      "output_1":"def write_to_disk(self) -> None:
-      for module_path in self.python_parser.module_dict.keys():
-          file_path = os.path.join(
-              self.python_parser.absolute_path_to_base, *(module_path.split("."))
-          )
-          self._write_file(file_path+".py", module_path)"
+      "output_1":"PythonIndexer
+
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
     }
     {
-      "output_2":"PythonParser
+      "output_2":"def retrieve_code(self, module_path: str, object_path: Optional[str]) -> str:
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
 
-      This module provides functionality to extract information about classes, functions,
-      and their docstrings from a given directory of Python files. It defines the `PythonParser`"
+        module = self.module_dict[module_path]
+        result = self._find_module_class_function_or_method(module, object_path)
+        if result is not None:
+            self._remove_docstrings(result)
+            return ast.unparse(result)
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR"
     }'
 
   ## Write a function "new_function" to be added to the utils module.
@@ -147,12 +141,12 @@ template: >
     example.agents.autonomus_agent.agent_one
 
     {
-        "tool": "python-parser-get-docstring", 
+        "tool": "python-indexer-get-docstring", 
         "input": example.agents.autonomus_agent
     }
     ...
     }
-        "tool": "python-parser-get-raw-code",
+        "tool": "python-indexer-get-code",
         "input": example.agents.autonomus_agent.agent_one
     }'
 

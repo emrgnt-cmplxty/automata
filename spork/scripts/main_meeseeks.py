@@ -39,7 +39,7 @@ def main():
     parser.add_argument(
         "--tools",
         type=str,
-        default="python_parser,python_writer,codebase_oracle",
+        default="python_indexer,python_writer,codebase_oracle",
         help="Comma-separated list of tools to be used.",
     )
 
@@ -52,7 +52,7 @@ def main():
     tool_payload, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
 
     initial_payload = {
-        "overview": tool_payload["python_parser"].get_overview(),
+        "overview": tool_payload["python_indexer"].get_overview(),
     }
 
     logger.info("Passing in instructions: %s", args.instructions)

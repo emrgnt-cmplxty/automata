@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 from langchain.agents import Tool
 
-from spork.tools.python_tools.python_parser import PythonParser
+from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.python_tools.python_writer import PythonWriter
 from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
 from spork.tools.utils import home_path
@@ -16,8 +16,8 @@ from spork.tools.utils import home_path
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    python_parser = PythonParser(relative_dir=f"spork/tools/tool_managers/tests/sample_code")
-    python_writer = PythonWriter(python_parser)
+    python_indexer = PythonIndexer(root_path=f"sample_code")
+    python_writer = PythonWriter(python_indexer)
     return PythonWriterToolManager(python_writer)
 
 
@@ -34,12 +34,12 @@ def test_build_tools(python_writer_tool_builder):
 
 
 def test_tool_execution(python_writer_tool_builder):
-    python_writer_tool_builder.python_writer.modify_code_state = MagicMock()
+    python_writer_tool_builder.python_writer.update_module = MagicMock()
     python_writer_tool_builder.python_writer.write_to_disk = MagicMock()
     tools = python_writer_tool_builder.build_tools()
     tools[0].func("some.path, sample_code")
     tools[1].func(None)
-    python_writer_tool_builder.python_writer.modify_code_state.assert_called_once_with(
+    python_writer_tool_builder.python_writer.update_module.assert_called_once_with(
         "some.path", "sample_code"
     )
     python_writer_tool_builder.python_writer.write_to_disk.assert_called_once()

@@ -22,11 +22,12 @@ Main Packages and Modules:
 3. spork.tools.utils:
    A module providing functions to interact with the GitHub API. It includes listing repositories, issues, and pull requests, choosing a work item, and removing HTML tags from text.
 
-4. spork.tools.python_tools.python_parser:
-   A module providing functionality to extract information about classes, functions, and their docstrings from a given directory of Python files. It defines the `PythonParser` class that can be used to get the source code, docstrings, and list of functions or classes within a specific file.
+4. spork.tools.python_tools.python_indexer:
+   A module providing functionality to extract information about classes, functions, and their docstrings from a given directory of Python files. It defines the `PythonIndexer` class that can be used to get the source code, docstrings, and list of functions or classes within a specific file.
 
 5. spork.tools.python_tools.python_writer:
-   A module providing functionality to modify the in-memory representation of a Python package, via the PythonParser class, and write the changes to disk.
+   A module which provides the ability to change the in-memory representation of a python module in the PythonIndexer and to
+   write this out to disk
 
 6. spork.tools.documentation_tools.documentation_gpt:
    A simple chatbot that uses DocGPT to answer questions about documentation.
