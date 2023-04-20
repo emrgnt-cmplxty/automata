@@ -84,16 +84,16 @@ template: >
 
   'Agent:
     Thought: In order to save space I should directly write the function into the
-    python-writer-modify-code-state tool, then I should save the result.
+    python-writer-update-module tool, then I should save the result.
     {
-      "tool": "python-writer-modify-code-state", 
+      "tool": "python-writer-update-module", 
       "input": "spork.tools.utils,def new_function()
           """Returns a string that says 'New function!'"""
           return 'New function!'"
     }
 
     {
-      "tool": "python-writer-modify-code-state", 
+      "tool": "python-writer-update-module", 
       "input": "spork.tools.python_tools.new_module,class NewClass:
           """ This is a new class. """
           def __init__(self, name):
@@ -114,7 +114,7 @@ template: >
 
   'Agent:
     {
-      "tool": "python-writer-modify-code-state", 
+      "tool": "python-writer-update-module", 
       "input": "spork.tools.python_tools.new_module,def new_function()
           """Returns a string that says 'New function!'"""
           return 'New function!'"
@@ -155,7 +155,7 @@ template: >
   Retrieve the relevant information from the local repository to answer the task.
 
   The bandwidth to pass and receive messages is very limited, therefore
-  code which is to be written MUST be written directly into python-writer-modify-code-state, 
+  code which is to be written MUST be written directly into python-writer-update-module, 
   to reduce waste. Moreover, you should make multiple function calls in a single message whenever
   appropriate. Lastly, be sure to follow the exact formatting for input tools shown above.
 

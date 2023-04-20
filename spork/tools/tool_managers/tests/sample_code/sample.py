@@ -1,5 +1,4 @@
 """This is a sample module"""
-
 import math
 
 

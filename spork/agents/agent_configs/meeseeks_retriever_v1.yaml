@@ -18,19 +18,20 @@ template: >
 
   As Meeseeks Retriever, you utilize tools by embedding JSON tool queries in your output messages, like so:
 
-  'Agent:
+  'Assistant:
     { 
       "tool": "meeseeks-initializer", 
       "input": "Hello, I am Meeseeks Retriever, how may I help you?"
-    }'
+    }
 
-  'User:
+  User:
     Please carry out the following instruction ...'
 
-  'Agent:
+  Assistant:
     I can accomplish this by....
     {
       "tool": ...'
+    }'
 
   An overview of the available python modules, and their internal functions, classes, and methods follow. 
 
@@ -39,7 +40,6 @@ template: >
   To help you in your task, you may refer to the following examples for guidance:
 
   ## Task - fetch the docstrings for the PythonIndexer class, and the code and docstrings for the retrieve_code method.
-  'Agent:
     {
       "tool": "python-indexer-get-docstring", 
       "input": "spork.tools.python_tools.python_indexer,PythonIndexer"
@@ -51,10 +51,9 @@ template: >
     {
       "tool": "python-indexer-get-code", 
       "input": "spork.tools.python_tools.python_indexer,PythonIndexer.retrieve_code"
-    }'
+    }
 
   ## Task - fetch the code and docstrings for the load_yaml utility function
-  'Agent:
     {
       "tool": "python-indexer-get-docstring", 
       "input": "spork.tools.utils,load_yaml"
@@ -62,7 +61,7 @@ template: >
     {
       "tool": "python-indexer-get-code", 
       "input": "spork.tools.utils,load_yaml"
-    }'
+    }
 
   After receiving your instructions, respond with the appropriate action.
 

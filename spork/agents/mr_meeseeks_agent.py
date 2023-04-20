@@ -240,6 +240,7 @@ class MrMeeseeksAgent:
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = MrMeeseeksAgent._parse_input_string(response_text)
+        logger.info("Tool Calls: %s" % tool_calls)
         outputs = []
         for tool_request in tool_calls:
             tool, tool_input = tool_request["tool"], tool_request["input"] or ""
@@ -248,6 +249,8 @@ class MrMeeseeksAgent:
                 tool_output = tool_input
                 outputs.append(tool_input)
             for tool_instance in self.tools:
+                logger.info("tool = %s" % tool)
+                logger.info("tool_instance = %s" % tool_instance)
                 if tool_instance.name == tool:
                     tool_output = tool_instance.run(tool_input, verbose=False)
                     outputs.append(tool_output)

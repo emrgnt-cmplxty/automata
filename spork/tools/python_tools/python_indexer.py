@@ -52,12 +52,9 @@ class PythonIndexer:
         """
 
         self.abs_path = os.path.join(root_path(), rel_path)
-        print("self.abs_path = ", self.abs_path)
         self.module_dict = self._build_module_dict()
-        print("self.module_dict = ", self.module_dict)
         # get file path
         self.absolute_path_to_base = os.path.abspath(__file__)
-        print("self.absolute_path_to_base = ", self.absolute_path_to_base)
 
     def retrieve_code(self, module_path: str, object_path: Optional[str]) -> str:
         """

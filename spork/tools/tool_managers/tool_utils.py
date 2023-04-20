@@ -24,11 +24,11 @@ def load_llm_tools(
 ) -> Tuple[Dict[str, BaseToolManager], List[Tool]]:
     payload: dict = {}
     if "python_indexer" in tool_list:
-        python_writer = PythonIndexer(root_py_path())
-        payload["python_indexer"] = python_writer
-    if "python_manipulator" in tool_list:
-        assert "python_writer" in payload
-        payload["python_writer"] = PythonWriter(python_writer)
+        python_indexer = PythonIndexer(root_py_path())
+        payload["python_indexer"] = python_indexer
+    if "python_writer" in tool_list:
+        assert "python_indexer" in payload
+        payload["python_writer"] = PythonWriter(python_indexer)
     if "codebase_oracle" in tool_list:
         payload["codebase_oracle"] = CodebaseOracle.get_default_codebase_oracle()
     if "doc_gpt" in tool_list:

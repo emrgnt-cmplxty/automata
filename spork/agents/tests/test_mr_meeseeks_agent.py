@@ -90,7 +90,7 @@ def test_mr_meeseeks_agent_extract_json_objects_single_quotes(mr_meeseeks_agent)
 def test_mr_meeseeks_agent_parse_example_0(mr_meeseeks_agent):
     input_str = textwrap.dedent(
         """{
-  "tool": "python-writer-modify-code-state",
+  "tool": "python-writer-update-module",
   "input": "spork.tools.tool_managers.tests.test_mr_meeseeks_agent_tool_manager,import pytest
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.tool_managers.mr_meeseeks_agent_tool_manager import MrMeeseeksAgentToolManager
@@ -130,7 +130,7 @@ def test_tool_execution():
 def test_mr_meeseeks_agent_parse_example_1(mr_meeseeks_agent):
     input_str = textwrap.dedent(
         """{
-  "tool": "python-writer-modify-code-state",
+  "tool": "python-writer-update-module",
   "input": "spork.main_meeseeks.main,from spork.tools.tool_managers.mr_meeseeks_agent_tool_manager import MrMeeseeksAgentToolManager
 
 def main():

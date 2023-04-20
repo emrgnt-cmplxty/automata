@@ -46,7 +46,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    code_writer.func(f"{file_py_path},{function_def}")
+    code_writer.func(f"{file_py_path},,{function_def}")
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -73,7 +73,7 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.func(f"{file_py_path},{function_def}")
+    code_writer.func(f"{file_py_path},,{function_def}")
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -103,7 +103,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
-    code_writer.func(f"{file_py_path},{function_def}")
+    code_writer.func(f"{file_py_path},,{function_def}")
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -173,7 +173,7 @@ class PythonAgentToolBuilder:
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.func(f"{file_py_path},{class_str}")
+    code_writer.func(f"{file_py_path},PythonAgentToolBuilder,{class_str}")
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
@@ -183,8 +183,6 @@ class PythonAgentToolBuilder:
 
     with open(file2_abs_path, "r", encoding="utf-8") as f:
         old_sample_text = f.read().replace("# type: ignore\n", "")
-    print("old_sample_text = ", old_sample_text)
-    print("new_sample_text = ", new_sample_text)
     # assert class_str.strip() == new_sample_text.strip()
     assert old_sample_text.strip() == new_sample_text.strip()
     os.remove(file_abs_path)

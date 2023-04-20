@@ -47,6 +47,9 @@ def main():
     assert not (
         args.instructions is None and args.session_id is None
     ), "You must provide instructions for the agent if you are not providing a session_id."
+    assert not (
+        args.instructions and args.session_id
+    ), "You must provide either instructions for the agent or a session_id."
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
     tool_payload, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
@@ -71,6 +74,7 @@ def main():
     if args.session_id is None:
         agent.run()
     else:
+        logger.info("Replaying messages...")
         agent.replay_messages()
 
     while True:
