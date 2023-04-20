@@ -4,8 +4,9 @@ import logging.config
 
 from spork.agents.agent_configs.agent_version import AgentVersion
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.tool_managers.tool_utils import load_llm_tools
-from spork.tools.utils import get_logging_config
+from spork.tools.utils import get_logging_config, root_py_path
 
 
 def main():
@@ -52,10 +53,11 @@ def main():
     ), "You must provide either instructions for the agent or a session_id."
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
-    tool_payload, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
+    _, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
+    indexer = PythonIndexer(root_py_path())
 
     initial_payload = {
-        "overview": tool_payload["python_indexer"].get_overview(),
+        "overview": indexer.get_overview(),
     }
 
     logger.info("Passing in instructions: %s", args.instructions)

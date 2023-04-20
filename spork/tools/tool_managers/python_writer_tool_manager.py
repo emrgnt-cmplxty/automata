@@ -2,6 +2,9 @@ from typing import List
 
 from langchain.agents import Tool
 
+from spork.agents.agent_configs.agent_version import AgentVersion
+from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+
 from ..python_tools.python_writer import PythonWriter
 from .base_tool_manager import BaseToolManager
 
@@ -45,6 +48,29 @@ class PythonWriterToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to update the module with error - " + str(e)
 
+    def meeseeks_update_module(self, input_str: str) -> str:
+        try:
+            initial_payload = {
+                "overview": self.python_writer.indexer.get_overview(),
+            }
+            print(
+                "Calling a MrMeeseeksAgent to update the module with instructions = %s "
+                % (input_str)
+            )
+            agent = MrMeeseeksAgent(
+                initial_payload=initial_payload,
+                instructions=input_str,
+                tools=self.build_tools(),
+                version=AgentVersion.MEESEEKS_WRITER_V1,
+                model="gpt-4",
+                stream=True,
+            )
+            agent.run()
+
+            return "Success"
+        except Exception as e:
+            return "Failed to update the module with error - " + str(e)
+
     def build_tools(self) -> List[Tool]:
         """
         Builds a list of Tool object for interacting with PythonWriter.
@@ -59,17 +85,37 @@ class PythonWriterToolManager(BaseToolManager):
             Tool(
                 name="python-writer-update-module",
                 func=lambda path_comma_code_str: self.writer_update_module(path_comma_code_str),
-                description=f"Modifies the in-memory python code of a function, class, method, or module after receiving"
-                f" an input python-path and code string. If the specified object or dependencies do not exist,"
+                description=f"Modifies the python code of a function, class, method, or module after receiving"
+                f" an input module path, source code, and optional class name. If the specified object or dependencies do not exist,"
                 f" then they are created automatically. If the object already exists,"
-                f" then it is modified the existing code."
+                f" then the existing code is modified."
                 f" For example -"
-                f' suppose you wish to a new function named "my_function" of "my_class" is defined in the file "my_file.py" that exists in "my_folder".'
-                f" Then, the correct function call is "
-                f'{{"tool": "python-writer-update-module",'
-                f' "input": "my_folder.my_file,my_class,def my_function() -> None:\n   """My Function"""\n    print("hello world")"}}.'
-                f" If new import statements are necessary, then append them to the top of the code string. Do not forget to wrap your input in double quotes.",
+                f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
+                f" the correct function call is"
+                f' {{"tool": "python-writer-update-module",'
+                f' "input": "my_folder.my_file,MyClass,def my_function() -> None:\n   """My Function"""\n    print("hello world")"}}.'
+                f" If new import statements are necessary, then introduce them to the module separately. Do not forget to wrap your input in double quotes.",
                 return_direct=True,
+            ),
+        ]
+        return tools
+
+    def build_tools_with_meeseeks(self) -> List[Tool]:
+        """
+        Builds a list of Tool object for interacting with PythonWriter.
+
+        Args:
+        - None
+
+        Returns:
+        - tools (List[Tool]): A list of Tool objects representing PythonWriter commands.
+        """
+        tools = [
+            Tool(
+                name="meeseeks-update-module",
+                func=lambda path_comma_code_str: self.meeseeks_update_module(path_comma_code_str),
+                description=f"Modifies the python code of a function, class, method, or module after receiving"
+                f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Mr. Meeseeks.",
             ),
         ]
         return tools
