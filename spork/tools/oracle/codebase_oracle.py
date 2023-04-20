@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from typing import List, Tuple
-
+import openai
 from langchain import FAISS, PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -11,7 +11,8 @@ from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 from langchain.schema import AIMessage, Document, HumanMessage
 from langchain.text_splitter import CharacterTextSplitter
 
-from spork.tools.utils import NumberedLinesTextLoader, home_path
+from spork.tools.utils import NumberedLinesTextLoader, root_path
+from spork.config import *
 
 prompt_template = """Use the following pieces of context to answer the question about a codebase.
 This codebase is giving to you in context, and it's called improved-spork.
@@ -27,6 +28,7 @@ QA_PROMPT = PromptTemplate(template=prompt_template, input_variables=["context",
 
 class CodebaseOracle:
     def __init__(self, codebase_path: str, llm: BaseLLM, memory: ReadOnlySharedMemory):
+        openai.api_key = OPENAI_API_KEY
         self.codebase_path = codebase_path
         self.llm = llm
         self.memory = memory
@@ -52,7 +54,7 @@ class CodebaseOracle:
         llm = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
         read_only_memory = ReadOnlySharedMemory(memory=memory)
-        return CodebaseOracle(home_path(), llm, read_only_memory)
+        return CodebaseOracle(root_path(), llm, read_only_memory)
 
     def _build_chain(self) -> None:
         docs = []

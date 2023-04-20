@@ -6,7 +6,8 @@ from langchain.agents import Tool
 
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
-from spork.tools.python_tools import PythonIndexer, PythonWriter
+from spork.tools.python_tools.python_indexer import PythonIndexer
+from spork.tools.python_tools.python_writer import PythonWriter
 from spork.tools.tool_managers import (
     CodebaseOracleToolManager,
     DocumentationGPTToolManager,
@@ -15,7 +16,7 @@ from spork.tools.tool_managers import (
     build_tools,
 )
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
-from spork.tools.utils import home_path
+from spork.tools.utils import root_py_path
 
 
 # TODO - Build a Tool enumeration for cleanliness
@@ -24,7 +25,7 @@ def load_llm_tools(
 ) -> Tuple[Dict[str, BaseToolManager], List[Tool]]:
     payload: Dict[str, BaseToolManager] = {}
     if "python_indexer" in tool_list:
-        python_writer = PythonIndexer(os.path.join(home_path(), "spork"))
+        python_writer = PythonIndexer(root_py_path())
         payload["python_indexer"] = python_writer
     if "python_manipulator" in tool_list:
         assert "python_writer" in payload

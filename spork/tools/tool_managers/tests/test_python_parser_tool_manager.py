@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock
 
 import pytest
@@ -5,11 +6,13 @@ from langchain.agents import Tool
 
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.tool_managers.python_indexer_tool_manager import PythonIndexerToolManager
+from spork.tools.utils import root_py_path
 
 
 @pytest.fixture
 def python_indexer_tool_builder():
-    python_indexer = PythonIndexer("sample_code")
+    path_to_here = os.path.join(root_py_path(), "tools", "tool_managers", "tests")
+    python_indexer = PythonIndexer(path_to_here)
     return PythonIndexerToolManager(python_indexer)
 
 

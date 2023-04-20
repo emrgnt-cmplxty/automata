@@ -6,11 +6,12 @@ from langchain.agents import Tool
 
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.python_tools.python_indexer import PythonIndexer
+from spork.tools.utils import root_py_path
 
 
 @pytest.fixture
 def mr_meeseeks_agent():
-    python_indexer = PythonIndexer("")
+    python_indexer = PythonIndexer(root_py_path())
 
     exec_tools = [
         Tool(
@@ -142,11 +143,11 @@ def main():
     logging.config.dictConfig(logging_config)
     logger = logging.getLogger(__name__)
     args = parser.parse_args()
-    python_indexer = PythonIndexer()
-    python_writer = PythonWriter(python_indexer)
+    python_indexer = PythonIndexer(root_py_path())
+    python_writer = PythonASTManipulator(python_indexer)
     exec_tools = []
     exec_tools += build_tools(PythonIndexerToolManager(python_indexer))
-    exec_tools += build_tools(PythonWriterToolManager(python_writer))
+    exec_tools += build_tools(PythonASTManipulatorToolManager(python_writer))
     overview = python_parser.get_overview()
     initial_payload = {'overview': overview}
     logger.info('Passing in instructions: %s', args.instructions)

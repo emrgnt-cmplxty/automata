@@ -36,9 +36,7 @@ class PythonWriterToolManager(BaseToolManager):
         path = input_str.split(",")[0]
         code = ",".join(input_str.split(",")[1:]).strip()
         return self.python_writer.update_module(
-            source_code=code,
-            extending_module=True,
-            module_path=path,
+            source_code=code, extending_module=True, module_path=path, write_to_disk=True
         )
 
     def build_tools(self) -> List[Tool]:
@@ -67,13 +65,6 @@ class PythonWriterToolManager(BaseToolManager):
                 f'{{"tool": "python-writer-modify-code-state",'
                 f' "input": "my_folder.my_file,def my_function() -> None:\n   """My Function"""\n    print("hello world")}}.'
                 f" If new import statements are necessary, then append them to the top of the code string. Do not forget to wrap your input in double quotes.",
-                return_direct=True,
-            ),
-            Tool(
-                name="python-writer-write-to-disk",
-                func=lambda _: self.python_writer.write_to_disk(),
-                description=f"Writes all the latest modifications in the code state to disk."
-                " New files are created automatically where necessary.",
                 return_direct=True,
             ),
         ]

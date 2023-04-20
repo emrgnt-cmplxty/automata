@@ -9,9 +9,9 @@ from spork.tools.python_tools.python_indexer import PythonIndexer
 @pytest.fixture
 def indexer():
     # get latest path
-    root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     # Set the root directory to the folder containing test modules
-    return PythonIndexer(root_dir)
+    return PythonIndexer(sample_dir)
 
 
 def test_retrieve_docstring_function(indexer):

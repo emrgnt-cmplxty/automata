@@ -9,14 +9,16 @@ from langchain.agents import Tool
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.python_tools.python_writer import PythonWriter
 from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
-from spork.tools.utils import home_path
+from spork.tools.utils import root_py_path
 
 
 @pytest.fixture
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    python_indexer = PythonIndexer(root_path=f"sample_code")
+    path_to_here = os.path.join(root_py_path(), "tools", "tool_managers", "tests")
+    python_indexer = PythonIndexer(path_to_here)
+
     python_writer = PythonWriter(python_indexer)
     return PythonWriterToolManager(python_writer)
 
@@ -28,21 +30,9 @@ def test_init(python_writer_tool_builder):
 
 def test_build_tools(python_writer_tool_builder):
     tools = python_writer_tool_builder.build_tools()
-    assert len(tools) == 2
+    assert len(tools) == 1
     for tool in tools:
         assert isinstance(tool, Tool)
-
-
-def test_tool_execution(python_writer_tool_builder):
-    python_writer_tool_builder.python_writer.update_module = MagicMock()
-    python_writer_tool_builder.python_writer.write_to_disk = MagicMock()
-    tools = python_writer_tool_builder.build_tools()
-    tools[0].func("some.path, sample_code")
-    tools[1].func(None)
-    python_writer_tool_builder.python_writer.update_module.assert_called_once_with(
-        "some.path", "sample_code"
-    )
-    python_writer_tool_builder.python_writer.write_to_disk.assert_called_once()
 
 
 # Check that we can bootstrap a new module "sample3.py" with a new function "f(x) -> x + 1"
@@ -51,7 +41,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
 
     tools = python_writer_tool_builder.build_tools()
-    (code_writer, disk_writer) = (tools[0], tools[1])
+    code_writer = tools[0]
     function_def = "def f(x):\n    return x + 1"
     package = "sample_code"
     module = "sample3"
@@ -59,7 +49,6 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
     code_writer.func(f"{file_py_path},{function_def}")
-    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -78,7 +67,7 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     assert prev_text is not None, "Could not read sample.py"
 
     tools = python_writer_tool_builder.build_tools()
-    (code_writer, disk_writer) = (tools[0], tools[1])
+    code_writer = tools[0]
     function_def = "def f(x):\n    return x + 1"
     package = "sample_code"
     module = "sample"
@@ -87,7 +76,6 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
     code_writer.func(f"{file_py_path},{function_def}")
-    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -108,7 +96,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     assert prev_text is not None, "Could not read sample.py"
 
     tools = python_writer_tool_builder.build_tools()
-    (code_writer, disk_writer) = (tools[0], tools[1])
+    code_writer = tools[0]
     function_def = 'def f(x) -> int:\n    """This is my new function"""\n    return x + 1'
     package = "sample_code"
     module = "sample"
@@ -118,7 +106,6 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
     code_writer.func(f"{file_py_path},{function_def}")
-    disk_writer.func(None)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -184,13 +171,12 @@ class PythonAgentToolBuilder:
     module = "sample4"
 
     tools = python_writer_tool_builder.build_tools()
-    (code_writer, disk_writer) = (tools[0], tools[1])
+    code_writer = tools[0]
 
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
     code_writer.func(f"{file_py_path},{class_str}")
-    disk_writer.func(None)
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
@@ -200,7 +186,8 @@ class PythonAgentToolBuilder:
 
     with open(file2_abs_path, "r", encoding="utf-8") as f:
         old_sample_text = f.read().replace("# type: ignore\n", "")
-
+    print("old_sample_text = ", old_sample_text)
+    print("new_sample_text = ", new_sample_text)
     # assert class_str.strip() == new_sample_text.strip()
     assert old_sample_text.strip() == new_sample_text.strip()
     os.remove(file_abs_path)
@@ -224,14 +211,13 @@ class PythonAgentToolBuilder:
         return tools"""
     )
     tools = python_writer_tool_builder.build_tools()
-    (code_writer, disk_writer) = (tools[0], tools[1])
+    code_writer = tools[0]
 
     code_writer.func(combo_str)
-    disk_writer.func(None)
     # Why?
     os.remove(
         os.path.join(
-            home_path(),
-            "spork/tools/tool_managers/tests/spork/tools/python_tools/python_agent_tool_builder.py",
+            root_py_path(),
+            "tools/tool_managers/tests/spork/tools/python_tools/python_agent_tool_builder.py",
         )
     )

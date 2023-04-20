@@ -22,6 +22,7 @@ import os
 import textwrap
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
 from typing import Dict, Optional, Union, cast
+from spork.tools.utils import root_path
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,11 @@ class PythonIndexer:
     """
     A class to index Python source code files in a specified directory and retrieve code and docstrings.
     Attributes:
-        root_path (str): The root directory containing Python source code files to be indexed.
+        rel_path (str): The relative path to the root directory containing Python source code files to be indexed.
         module_dict (Dict[str, Module]): A dictionary with module paths as keys and AST Module objects as values.
 
     Methods:
-        __init__(self, root_path: str) -> None
+        __init__(self, rel_path: str) -> None
         retrieve_code(self, module_path: str, object_path: Optional[str]) -> Optional[str]
         retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> Optional[str]
     """
@@ -42,16 +43,21 @@ class PythonIndexer:
     NO_RESULT_FOUND_STR = "No Result Found."
     PATH_SEP = "."
 
-    def __init__(self, root_path: str) -> None:
+    def __init__(self, rel_path: str) -> None:
         """
         Initializes the PythonIndexer with the specified root directory and builds the module dictionary.
 
         Args:
-            root_path (str): The root directory containing Python source code files to be indexed.
+            rel_path (str): The root directory containing Python source code files to be indexed.
         """
 
-        self.root_path = root_path
+        self.abs_path = os.path.join(root_path(), rel_path)
+        print("self.abs_path = ", self.abs_path)
         self.module_dict = self._build_module_dict()
+        print("self.module_dict = ", self.module_dict)
+        # get file path
+        self.absolute_path_to_base = os.path.abspath(__file__)
+        print("self.absolute_path_to_base = ", self.absolute_path_to_base)
 
     def retrieve_code(self, module_path: str, object_path: Optional[str]) -> str:
         """
@@ -101,6 +107,22 @@ class PythonIndexer:
             return ast.get_docstring(result)
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def get_module_path(self, module_obj: Module) -> str:
+        """
+        Returns the module path for the specified module object.
+
+        Args:
+            module_obj (Module): The module object.
+
+        Returns:
+            str: The module path for the specified module object.
+        """
+
+        for module_path, module in self.module_dict.items():
+            if module is module_obj:
+                return module_path
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     def get_overview(self, print_func_docstrings=False, print_method_docstrings=False) -> str:
         """
@@ -168,14 +190,14 @@ class PythonIndexer:
 
         module_dict = {}
 
-        for root, _, files in os.walk(self.root_path):
+        for root, _, files in os.walk(self.abs_path):
             for file in files:
                 if file.endswith(".py"):
                     module_path = os.path.join(root, file)
                     module = self._load_module_from_path(module_path)
                     if module:
                         module_rel_path = (
-                            os.path.relpath(module_path, self.root_path)
+                            os.path.relpath(module_path, self.abs_path)
                             .replace(os.path.sep, ".")
                             .replace(".py", "")
                         )

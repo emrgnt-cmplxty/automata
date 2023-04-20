@@ -136,8 +136,8 @@ class MockCodeGenerator:
 
 @pytest.fixture
 def python_writer():
-    root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    indexer = PythonIndexer(root_dir)
+    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    indexer = PythonIndexer(sample_dir)
 
     return PythonWriter(indexer)
 
@@ -176,11 +176,13 @@ def test_find_object(python_writer):
     source_code = mock_generator.generate_code()
 
     module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
-    function_obj = PythonWriter._find_class_or_function(module_obj, mock_generator.function_name)
+    function_obj = PythonWriter._find_function_class_or_method(
+        module_obj, mock_generator.function_name
+    )
 
     mock_generator._check_function_obj(function_obj)
 
-    class_obj = PythonWriter._find_class_or_function(module_obj, mock_generator.class_name)
+    class_obj = PythonWriter._find_function_class_or_method(module_obj, mock_generator.class_name)
     mock_generator._check_class_obj(class_obj)
 
 
