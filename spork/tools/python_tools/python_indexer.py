@@ -124,60 +124,29 @@ class PythonIndexer:
                 return module_path
         return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def get_overview(self, print_func_docstrings=False, print_method_docstrings=False) -> str:
+    def get_overview(self) -> str:
         """
         Loops over the PythonParser's dictionaries and returns a string that provides an overview of the PythonParser's state.
         Returns:
             str: A string that provides an overview of the PythonParser's state.
         """
-        return "x"
-        # result = ""
-        # LINE_SPACING = 2
-        # for package in self.package_dict.values():
-        #     for module in package.modules.values():
-        #         if "type" in module.py_path.split(".")[-1]:
-        #             continue
-        #         if (
-        #             len(module.classes.keys()) == 0
-        #             and len(module.standalone_functions.keys()) == 0
-        #         ):
-        #             continue
-        #         result += module.py_path + "\n"
-        #         if len(module.standalone_functions.keys()) > 0:
-        #             for function in module.standalone_functions.values():
-        #                 if "_" == function.py_path.split(".")[-1][0]:
-        #                     continue
-        #                 function_name = function.py_path.split(".")[-1]
-        #                 result += textwrap.indent(function_name, " " * LINE_SPACING * 1) + "\n"
-        #                 if print_func_docstrings:
-        #                     result += (
-        #                         textwrap.indent(
-        #                             "\n".join(function.get_docstring().split("\n")[1:]),
-        #                             " " * LINE_SPACING * 2,
-        #                         )
-        #                         + "\n"
-        #                     )
-        #         if len(module.classes) > 0:
-        #             for class_obj in module.classes.values():
-        #                 class_name = class_obj.py_path.split(".")[-1]
-        #                 result += textwrap.indent(class_name, " " * LINE_SPACING * 1) + "\n"
-        #                 if len(list(class_obj.methods.keys())) > 0:
-        #                     for method in class_obj.methods.values():
-        #                         if "_" == method.py_path.split(".")[-1][0]:
-        #                             continue
-        #                         module_name = method.py_path.split(".")[-1]
-        #                         result += (
-        #                             textwrap.indent(module_name, " " * LINE_SPACING * 2) + "\n"
-        #                         )
-        #                         if print_method_docstrings:
-        #                             result += (
-        #                                 textwrap.indent(
-        #                                     "\n".join(method.get_docstring().split("\n")[1:]),
-        #                                     " " * LINE_SPACING * 3,
-        #                                 )
-        #                                 + "\n"
-        #                             )
-        # return result
+        result = ""
+        LINE_SPACING = 2
+        for module_path in self.module_dict:
+            result += module_path + ":\n"
+            module = self.module_dict[module_path]
+            for node in module.body:
+                if isinstance(node, ClassDef):
+                    result += " " * LINE_SPACING + " - " + node.name + "\n"
+                    for subnode in node.body:
+                        if isinstance(subnode, FunctionDef):
+                            result += " " * 2 * LINE_SPACING + " -- " + subnode.name + "\n"
+                        elif isinstance(subnode, AsyncFunctionDef):
+                            result += " " * 2 * LINE_SPACING + " -- " + subnode.name + "\n"
+                elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
+                    result += " " * LINE_SPACING + " - " + node.name + "\n"
+
+        return result
 
     def _build_module_dict(self) -> Dict[str, Module]:
         """

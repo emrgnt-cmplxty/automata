@@ -18,7 +18,7 @@ def main():
     parser.add_argument(
         "--version",
         type=AgentVersion,
-        default=AgentVersion.MEESEEKS_V1,
+        default=AgentVersion.MEESEEKS_MASTER_V1,
         help="The version of the agent.",
     )
     parser.add_argument(

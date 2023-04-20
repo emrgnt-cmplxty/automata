@@ -63,7 +63,7 @@ class MrMeeseeksAgent:
         initial_payload: Dict[str, str],
         tools: List[BaseTool],
         instructions: str,
-        version: AgentVersion = AgentVersion.MEESEEKS_V1,
+        version: AgentVersion = AgentVersion.MEESEEKS_MASTER_V1,
         model: str = "gpt-4",
         session_id: Optional[str] = None,
         stream: bool = False,
@@ -74,7 +74,7 @@ class MrMeeseeksAgent:
             initial_payload (Dict[str, str]): The initial payload to be used for the agent.
             initial_instructions (List[Dict[str, str]]): The initial instructions to be used for the agent.
             tools (List[BaseTool]): The tools to be used for the agent.
-            version (AgentVersion, optional): The version of the agent. Defaults to AgentVersion.MEESEEKS_V1.
+            version (AgentVersion, optional): The version of the agent. Defaults to AgentVersion.MEESEEKS_MASTER_V1.
             model (str, optional): The model to be used for the agent. Defaults to "gpt-4".
             session_id (Optional[str], optional): The session id to be used for the agent. Defaults to None.
 
@@ -232,7 +232,6 @@ class MrMeeseeksAgent:
             "r",
         ) as file:
             loaded_yaml = yaml.safe_load(file)
-
         prompt = loaded_yaml["template"]
         for arg in loaded_yaml["input_variables"]:
             prompt = prompt.replace(f"{{{arg}}}", initial_payload[arg])
