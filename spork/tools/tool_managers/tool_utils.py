@@ -23,7 +23,6 @@ from spork.tools.utils import root_py_path
 def load_llm_tools(
     tool_list: List[str], inputs: Dict[str, str], logger: logging.Logger
 ) -> Tuple[Dict[str, BaseToolManager], List[Tool]]:
-    print("Received a tool_list = ", tool_list)
     payload: dict = {}
     if "python_indexer" in tool_list:
         python_indexer = PythonIndexer(root_py_path())

@@ -53,7 +53,8 @@ template: >
     Observation:
       {
         "output_0": "task_0 Successfully Completed."
-      }'
+      }
+  '
 
   Note, as soon as possible, return the result for the ith task in a JSON object denoted "result_i".
 
@@ -66,6 +67,7 @@ template: >
   Example 1 - Fetch the docstrings for the PythonIndexer class, and the code and docstrings for the retrieve_code method.
   Thought: This is simple, I can just directly call the python indexer on
   the python_indexer file shown above.
+
   '
   Assistant:
     Thought: I will directly retrieve the docstrings and code.
@@ -96,7 +98,8 @@ template: >
     Observation:
       {
         "output_0": "task_0 Successfully Completed."
-      }'
+      }
+  '
       
   After receiving your instructions, execute the appropriate tools to gather necessary information.
   Then, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the

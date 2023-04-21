@@ -111,6 +111,7 @@ class PythonIndexerToolManager(BaseToolManager):
             return "Failed to retrieve docstring with error - " + str(e)
 
     def _meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
+        """Mr. Meeseeks retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
             initial_payload = {"overview": self.indexer.get_overview()}
             instructions = f"Retrieve the code for {path_str}"
@@ -118,7 +119,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 initial_payload=initial_payload,
                 instructions=instructions,
                 tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_WRITER_V1,
+                version=AgentVersion.MEESEEKS_WRITER_V2,
                 model="gpt-4",
                 stream=True,
             )
@@ -135,7 +136,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 initial_payload=initial_payload,
                 instructions=instructions,
                 tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_WRITER_V1,
+                version=AgentVersion.MEESEEKS_WRITER_V2,
                 model="gpt-4",
                 stream=True,
             )

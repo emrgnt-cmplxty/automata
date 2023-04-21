@@ -21,7 +21,7 @@ template: >
 
   As Meeseeks Master, tools are utilized by embedding JSON tool queries in your output messages, like so:
 
-  '
+  '\n
   Assistant:
     Thought: I will begin by initializing myself.
     Action:
@@ -63,7 +63,8 @@ template: >
 
   To help you in your task, refer closely to the following example for guidance:
 
-  'Assistant:
+  '\n
+  Assistant:
     { 
       "tool": "meeseeks-initializer", 
       "input": "Hello, I am Meeseeks Master, how may I help you?"
@@ -85,58 +86,48 @@ template: >
   {overview}
   \n
 
-  To help you in your task, you may refer to the following examples for guidance:\n
+  To help you in your task, you may refer to the following example for guidance:\n
 
-  Example 1 - Fetch package docstrings from the master_agent module
-  '
+
+  Example - Check that the method meeseeks_indexer_retrieve_code method is currently using MrMeeseeksAgent with
+  configuration v2, if not, update the class accordingly.
+  '\n
   Agent:
-    Thought: To fetch docstrings I should use the python-parser-get-docstring tool
+    Thought: Before updating any code, I will first fetch the latest code and docstrings for meeseeks_indexer_retrieve_code.
     Action:
     {
-      "tool": "python-parser-get-docstring", 
-      "input": "agents.master_agent"
+      "tool": "python-parser-retrieve-docstring", 
+      "input": "tools.tool_managers.python_indexer_tool_manager,PythonIndexer._meeseeks_indexer_retrieve_code"
+    }
+    {
+      "tool": "python-parser-retrieve-code", 
+      "input": "tools.tool_managers.python_indexer_tool_manager,PythonIndexer._meeseeks_indexer_retrieve_code"
     }
   User:
-    Observation: The docstrings for the master_agent module are ...
+    Observation: Mr. Meeseeks retrieves the code of the python ...
   Agent:
-    Thought: I have the necessary information, ...
-    Action:
-    {
-      "result_0": "The docstrings for the master_agent module are ..."
-    }
-  '
-
-
-  Example 2 - Update the code for the meeseeks_indexer_retrieve_code method in the PythonIndexerToolManager class.
-  '
-  Agent:
-    Thought: To update the code I should write the change into the meseeks-update-module
+    Thought: I see that the incorrect version is currently being loaded, I now update the code.
     Action:
     {
       "tool": "meeseeks-update-module", 
-      "input": "Update PythonIndexerToolManager with the following - 
-                'def meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
-                  try:
-                      initial_payload = {'overview': self.indexer.get_overview()}
-                      instructions = f"Retrieve the code for {path_str}"
-                      agent = MrMeeseeksAgent(initial_payload=initial_payload, instructions=instructions, tools=self.build_tools(), version=AgentVersion.MEESEEKS_WRITER_V1, model='gpt-4', stream=True)
-                      agent.run()
-                      return 'Success'
-                  except Exception as e:
-                      return 'Failed to retrieve the code with error - ' + str(e)'"
-      }
+      "input": "Update the initialization of MrMeeseeks in PythonIndexer._meeseeks_indexer_retrieve_code to read as follows: ..."
+    }
   User:
-    Observation: The code for the meeseeks_indexer_retrieve_code method in the PythonIndexerToolManager class has been updated.
+    Observation:
+    {
+      "output_0": "Mr. Meeseeks has been updated."
+    }
   Agent:
-    Thought: I have successfully executed the task
+    Thought: The task is completed.
     Action:
     {
-      "result_0": "The code for the meeseeks_indexer_retrieve_code method in the PythonIndexerToolManager class has been updated."
+      "result_0": "Mr. Meeseeks has been updated."
     }
   '
 
-  After receiving your instructions, execute the appropriate tools to gather necessary information.
-  Then, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the
-  JSON format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle.
+  After receiving your instructions, begin with a step-by-step thought process establishing the necessary
+  actions that must be taken to complete the task. Then, execute the appropriate tools to gather necessary observations.
+  Lastly, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the
+  JSON format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle throughout.
 
 template_format: "f-string"

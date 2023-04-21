@@ -64,7 +64,7 @@ class PythonWriterToolManager(BaseToolManager):
                 initial_payload=initial_payload,
                 instructions=input_str,
                 tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_WRITER_V1,
+                version=AgentVersion.MEESEEKS_WRITER_V2,
                 model="gpt-4",
                 stream=True,
             )

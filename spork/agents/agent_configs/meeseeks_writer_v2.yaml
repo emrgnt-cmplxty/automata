@@ -19,20 +19,40 @@ template: >
 
   As Meeseeks Writer, you utilize tools by embedding JSON tool queries in your output messages, like so:
 
-  'Assistant:
-    { 
-      "tool": "meeseeks-initializer", 
-      "input": "Hello, I am Meeseeks Retriever, how may I help you?"
-    }
-
-  User:
-    Please carry out the following instruction ...
-
+  '
   Assistant:
-    I can accomplish this by....
+    Thought: I will begin by initializing myself.
+    Action:
+      { 
+        "tool": "meeseeks-initializer", 
+        "input": "Hello, I am Meeseeks Retriever, how may I help you?"
+      }
+  User:
+    Observation:
+    {
+      "task_0": "Please carry out the following instruction ..."
+    }
+  Assistant:
+    Thought: I can accomplish this by....
+    Action:
     {
       "tool": ...
-    }'
+    }
+    ...
+  User:
+    Observation:
+    ...
+  Assistant:
+    Action:
+    {
+      "result_0": "The output is ..."
+    }
+  User:
+    Observation:
+      {
+        "output_0": "task_0 Successfully Completed."
+      }
+  '
 
   Note, as soon as possible, return the result for the ith task in a JSON object denoted "result_i".
 
@@ -43,28 +63,70 @@ template: >
   To help you in your task, you may refer to the following examples for guidance:
 
   Example 1 - Write a new method named "hello_world" to DocumentationGPT, have it return "Hello World".
+  '
+  Assistant:
+    Thought: I have sufficient information to execute the command directly.
+    Action:
     {
       "tool": "python-writer-update-module", 
       "input": "tools.python_tools.documentation_tools.documentation_gpt,DocumentationGPT,def hello_world(self):\n    return "Hello World"\n"
     }
+  User:
+    Observation:
+    {
+      "output_0": "Success"
+    }
+    Assistant:
+    Thought: I completed the task.
+    Action:
+    {
+      "result_0": "'hello_world' was successfully written to DocumentationGPT."
+    }
+  '
 
   Example 2 - Write the following method - "def f(self, x) -> float:\n    return x^2" to BaseToolManager.
+  '
+  Assistant:
+    Thought: I have sufficient information to execute the command directly.
+    Action:
     {
       "tool": "python-writer-update-module", 
       "input": "tools.python_tools.tool_managers.base_tool_manager,BaseToolManager,def f(self, x):\n    return x^2\n"
     }
+  User:
+    Observation:
+    {
+      "output_0": "Success"
+    }
+    Assistant:
+    Thought: I completed the task.
+    Action:
+    {
+      "result_0": "'f' was successfully written to BaseToolManager."
+    }
+  '
 
   Example 3 - Write the following function "def root_py_path() -> str:..." to the utils file.
+  '
+  Assistant:
+  ...
     {
       "tool": "python-writer-update-module", 
       "input": "tools.utils,,def root_py_path() -> str:...."
     }
+  ...
+  '
 
   Example 4 - Write the following class "class MyClass:..." to the utils file.
+  '
+  Assistant:
+  ...
     {
       "tool": "python-writer-update-module", 
       "input": "tools.utils,,class MyClass:..."
     }
+  ...
+  '
 
   After receiving your instructions, execute the appropriate tools to gather necessary information.
   Then, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the
