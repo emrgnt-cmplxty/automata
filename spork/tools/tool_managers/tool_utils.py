@@ -13,7 +13,6 @@ from spork.tools.tool_managers import (
     PythonIndexerToolManager,
     PythonWriterToolManager,
     build_tools,
-    build_tools_with_meeseeks,
 )
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 from spork.tools.utils import root_py_path
@@ -65,9 +64,10 @@ def load_llm_tools(
                 )
             )
         elif tool_name == "meeseeks_update_module" in tool_list:
-            exec_tools += build_tools_with_meeseeks(
-                PythonWriterToolManager(payload["meeseeks_update_module"])
-            )
+            # exec_tools += build_tools_with_meeseeks(
+            #     PythonWriterToolManager(payload["meeseeks_update_module"])
+            # )
+            pass
 
         else:
             logger.warning("Unknown tool: %s", tool_name)

@@ -249,6 +249,8 @@ class MrMeeseeksAgent:
                 tool_output = tool_input
                 outputs.append(tool_input)
             for tool_instance in self.tools:
+                logger.debug("tool = %s" % tool)
+                logger.debug("tool_instance = %s" % tool_instance)
                 if tool_instance.name == tool:
                     tool_output = tool_instance.run(tool_input, verbose=False)
                     outputs.append(tool_output)

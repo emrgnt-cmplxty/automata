@@ -2,6 +2,8 @@ import argparse
 import logging
 import logging.config
 
+from termcolor import colored
+
 from spork.agents.agent_configs.agent_version import AgentVersion
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools.python_tools.python_indexer import PythonIndexer
@@ -60,7 +62,7 @@ def main():
         "overview": indexer.get_overview(),
     }
 
-    logger.info("Passing in instructions: %s", args.instructions)
+    logger.info("Passing in instructions: %s", colored(args.instructions, "magenta"))
     logger.info("-" * 100)
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
