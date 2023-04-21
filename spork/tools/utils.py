@@ -66,6 +66,13 @@ def format_config_path(config_dir: str, config_path: str) -> str:
 
 def get_logging_config(log_level=logging.INFO) -> dict:
     """Returns logging configuration."""
+    color_scheme = {
+        'DEBUG': 'cyan',
+        'INFO': 'green',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'bold_red'
+    }
     logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
