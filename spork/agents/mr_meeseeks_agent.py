@@ -14,7 +14,7 @@
         }
 
         logger.info("Passing in instructions: %s", args.instructions)
-        logger.info("-" * 100)
+        logger.info("-" * 60)
         agent = MrMeeseeksAgent(
             initial_payload=initial_payload,
             instructions=args.instructions,
@@ -38,6 +38,7 @@ from typing import Dict, List, Optional, Tuple
 import openai
 import yaml
 from langchain.tools.base import BaseTool
+from termcolor import colored
 from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
@@ -127,11 +128,10 @@ class MrMeeseeksAgent:
             for message in initial_messages:
                 self._save_interaction(message)
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-        if self.verbose:
-            logger.info("Initializing with Prompt:%s\n" % (prompt))
-            logger.info("-" * 100)
-        logger.info("Session ID: %s" % self.session_id)
-        logger.info("-" * 100)
+        logger.debug("Initializing with Prompt:%s\n" % (prompt))
+        logger.debug("-" * 60)
+        logger.debug("Session ID: %s" % self.session_id)
+        logger.debug("-" * 60)
 
     def __del__(self):
         self.conn.close()
@@ -158,14 +158,13 @@ class MrMeeseeksAgent:
                     words = accumulated_output.split(separator)
                     # Print all words except the last one, as it may be an incomplete word
                     for word in words[:-1]:
-                        print(word, end=" ", flush=True)
+                        print(colored(word, "green"), end=" ", flush=True)
                     # Keep the last (potentially incomplete) word for the next iteration
                     accumulated_output = words[-1]
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
 
-        if self.verbose:
-            logger.info("OpenAI Response:\n%s\n" % response_text)
+        logger.debug("OpenAI Response:\n%s\n" % response_text)
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
 
@@ -175,23 +174,20 @@ class MrMeeseeksAgent:
                 message += f'"output_{i}": {(output)}, \n'
             message += "}"
             self._save_interaction({"role": "user", "content": message})
-            if self.verbose:
-                logger.info("Synthetic User Message:\n%s\n" % message)
+            logger.debug("Synthetic User Message:\n%s\n" % message)
             return processed_inputs
 
         # If there are no outputs, then the user has must respond to continue
         self._save_interaction({"role": "user", "content": MrMeeseeksAgent.CONTINUE_MESSAGE})
-        if self.verbose:
-            logger.info("Synthetic User Message:\n%s\n" % MrMeeseeksAgent.CONTINUE_MESSAGE)
+        logger.debug("Synthetic User Message:\n%s\n" % MrMeeseeksAgent.CONTINUE_MESSAGE)
         context_length = sum(
             [
                 len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
                 for message in self.messages
             ]
         )
-        if self.verbose:
-            logger.info("Chat Context length: %s", context_length)
-            logger.info("-" * 100)
+        logger.debug("Chat Context length: %s", context_length)
+        logger.debug("-" * 60)
 
         return None
 
@@ -207,18 +203,16 @@ class MrMeeseeksAgent:
     def replay_messages(self) -> None:
         """Replay the messages in the conversation."""
         if len(self.messages) == 0:
-            if self.verbose:
-                logger.debug("No messages to replay.")
+            logger.debug("No messages to replay.")
             return "No messages to replay."
         for message in self.messages[1:]:
             if MrMeeseeksAgent.is_completion_message(message["content"]):
                 return message["content"]
             processed_outputs = self._process_input(message["content"])
-            if self.verbose:
-                logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-                logger.debug("Processing message content =  %s" % (message["content"]))
-                logger.debug("\nProcessed Outputs:\n%s\n" % processed_outputs)
-                logger.info("-" * 100)
+            logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+            logger.debug("Processing message content =  %s" % (message["content"]))
+            logger.debug("\nProcessed Outputs:\n%s\n" % processed_outputs)
+            logger.debug("-" * 60)
         return "No completion message found."
 
     def extend_last_instructions(self, new_message: str) -> None:
