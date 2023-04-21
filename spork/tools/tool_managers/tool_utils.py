@@ -72,5 +72,5 @@ def load_llm_tools(
             )
 
         else:
-            logger.warning("Unknown tool: %s", tool_name)
+            logger.error("Unknown tool: %s", tool_name)
     return payload, exec_tools
