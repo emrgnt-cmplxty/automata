@@ -55,15 +55,14 @@ class MrMeeseeksAgent:
     the results back to the master.
     """
 
-    CONTINUE_MESSAGE = "Continue"
-    COMPLETION_MESSAGE = "TASK_COMPLETED"
+    CONTINUE_MESSAGE = "Continue, and return a result JSON when finished."
 
     def __init__(
         self,
         initial_payload: Dict[str, str],
         tools: List[BaseTool],
         instructions: str,
-        version: AgentVersion = AgentVersion.MEESEEKS_MASTER_V1,
+        version: AgentVersion = AgentVersion.MEESEEKS_MASTER_V2,
         model: str = "gpt-4",
         session_id: Optional[str] = None,
         stream: bool = False,
@@ -105,7 +104,6 @@ class MrMeeseeksAgent:
         initial_payload["tools"] = "".join(
             ["\n%s: %s\n" % (tool.name, tool.description) for tool in self.tools]
         )
-        initial_payload["completion_message"] = MrMeeseeksAgent.COMPLETION_MESSAGE
         prompt = self._load_prompt(initial_payload)
 
         self._init_database()
@@ -119,9 +117,9 @@ class MrMeeseeksAgent:
             initial_messages = [
                 {
                     "role": "assistant",
-                    "content": '{"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
+                    "content": 'Thought: I will begin by initializing myself. {"tool": "meeseeks-initializer", "input": "Hello, I am Mr. Meeseeks, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
                 },
-                {"role": "user", "content": instructions},
+                {"role": "user", "content": f'Observation:\n{{"task_0":"{instructions}"}}'},
             ]
 
             for message in initial_messages:
@@ -170,9 +168,9 @@ class MrMeeseeksAgent:
         self._save_interaction({"role": "assistant", "content": response_text})
 
         if len(processed_inputs) > 0:
-            message = "{" + "\n"
+            message = "Observation:\n{" + "\n"
             for i, output in enumerate(processed_inputs):
-                message += f'"output_{i}": {(output)}, \n'
+                message += f'"output_{i}": "{(output)}", \n'
             message += "}"
             self._save_interaction({"role": "user", "content": message})
             if self.verbose:
@@ -195,28 +193,34 @@ class MrMeeseeksAgent:
 
         return None
 
-    def run(self) -> None:
+    def run(self) -> str:
         """Run until the initial instruction terminates."""
+
         while True:
             self.iter_task()
-            # if COMPLETION_MESSAGE in self.messages[-1]["content"]:
-            #     break
-            if MrMeeseeksAgent.COMPLETION_MESSAGE in self.messages[-2]["content"]:
-                break
 
-    def replay_messages(self) -> None:
+            if MrMeeseeksAgent.is_completion_message(self.messages[-1]["content"]):
+                return self.messages[-1]["content"]
+            # Check the previous previous message to see if it is a completion message
+            if MrMeeseeksAgent.is_completion_message(self.messages[-2]["content"]):
+                return self.messages[-2]["content"]
+
+    def replay_messages(self) -> str:
         """Replay the messages in the conversation."""
         if len(self.messages) == 0:
             if self.verbose:
                 logger.info("No messages to replay.")
-            return
-        for message in self.messages:
+            return "No messages to replay."
+        for message in self.messages[1:]:
+            if MrMeeseeksAgent.is_completion_message(message["content"]):
+                return message["content"]
             processed_outputs = self._process_input(message["content"])
             if self.verbose:
                 logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
                 logger.info("Processing message content =  %s" % (message["content"]))
                 logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
                 logger.info("-" * 100)
+        return "No completion message found."
 
     def extend_last_instructions(self, new_message: str) -> None:
         previous_message = self.messages[-1]
@@ -244,14 +248,24 @@ class MrMeeseeksAgent:
         outputs = []
         for tool_request in tool_calls:
             tool, tool_input = tool_request["tool"], tool_request["input"] or ""
+            # Skip the meeseeks-initializer tool
+            if tool == "meeseeks-initializer":
+                continue
             if tool == "error-reporter":
                 # In the event of an error, the tool_input becomes the output, as it is now a parsing error
                 tool_output = tool_input
                 outputs.append(tool_input)
-            for tool_instance in self.tools:
-                if tool_instance.name == tool:
-                    tool_output = tool_instance.run(tool_input, verbose=False)
-                    outputs.append(tool_output)
+            else:
+                tool_found = False
+                for tool_instance in self.tools:
+                    if tool_instance.name == tool:
+                        tool_output = tool_instance.run(tool_input, verbose=False)
+                        outputs.append(tool_output)
+                        tool_found = True
+                        break  # Tool found, no need to continue the loop
+                if not tool_found:
+                    error_message = f"Error: Tool '{tool}' not found."
+                    outputs.append(error_message)
         return outputs
 
     def _init_database(self):
@@ -341,3 +355,9 @@ class MrMeeseeksAgent:
         for tool_input_pair in tool_input_pairs:
             parsed_entries.append({"tool": tool_input_pair[0], "input": tool_input_pair[1]})
         return [{"tool": entry["tool"], "input": entry.get("input")} for entry in parsed_entries]
+
+    @staticmethod
+    def is_completion_message(message: str):
+        match_filter = "result_0"
+        match_string = '"%s":' % (match_filter)
+        return match_string in message
