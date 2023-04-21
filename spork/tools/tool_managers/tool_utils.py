@@ -29,13 +29,13 @@ def load_llm_tools(
         python_indexer = PythonIndexer(root_py_path())
         payload["python_indexer"] = python_indexer
     if "python_writer" in tool_list:
-        assert "python_indexer" in payload
-        payload["python_writer"] = PythonWriter(python_indexer)
-    if "meeseeks_update_module" in tool_list:
-        if "python_writer" in tool_list:
-            payload["meeseeks_update_module"] = payload["python_writer"]
+        # assert "python_indexer" in payload
+        if "python_indexer" not in payload:
+            python_indexer = PythonIndexer(root_py_path())
+            payload["python_writer"] = PythonWriter(python_indexer)
         else:
-            payload["meeseeks_update_module"] = PythonWriter(PythonIndexer(root_py_path()))
+            payload["python_writer"] = PythonWriter(payload["python_indexer"])
+
     if "codebase_oracle" in tool_list:
         payload["codebase_oracle"] = CodebaseOracle.get_default_codebase_oracle()
     if "doc_gpt" in tool_list:
@@ -48,6 +48,17 @@ def load_llm_tools(
                 verbose=True,
             ),
         )
+    # Handle Meeseeks tools now
+    if "meeseeks_indexer" in tool_list:
+        if "python_indexer" in tool_list:
+            payload["meeseeks_indexer"] = payload["python_indexer"]
+        else:
+            payload["meeseeks_indexer"] = PythonIndexer(root_py_path())
+    if "meeseeks_writer" in tool_list:
+        if "python_writer" in tool_list:
+            payload["meeseeks_writer"] = payload["python_writer"]
+        else:
+            payload["meeseeks_writer"] = PythonWriter(PythonIndexer(root_py_path()))
 
     exec_tools: List[Tool] = []
     for tool_name in payload.keys():
@@ -64,9 +75,13 @@ def load_llm_tools(
                     payload["documentation_gpt"],
                 )
             )
-        elif tool_name == "meeseeks_update_module" in tool_list:
+        elif tool_name == "meeseeks_writer" in tool_list:
             exec_tools += build_tools_with_meeseeks(
-                PythonWriterToolManager(payload["meeseeks_update_module"])
+                PythonWriterToolManager(payload["meeseeks_writer"])
+            )
+        elif tool_name == "meeseeks_indexer" in tool_list:
+            exec_tools += build_tools_with_meeseeks(
+                PythonIndexerToolManager(payload["meeseeks_indexer"])
             )
 
         else:
