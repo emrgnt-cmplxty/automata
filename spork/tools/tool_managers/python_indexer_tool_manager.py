@@ -116,10 +116,7 @@ class PythonIndexerToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=instructions,
-                tools=self.build_tools()
-                + CodebaseOracleToolManager(
-                    CodebaseOracle.get_default_codebase_oracle()
-                ).build_tools(),
+                tools=self.build_tools(),
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,
@@ -128,26 +125,6 @@ class PythonIndexerToolManager(BaseToolManager):
             return "Success"
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)
-
-    # def _meeseeks_indexer_retrieve_docstring(self, path_str: Optional[str]) -> str:
-    #     try:
-    #         initial_payload = {"overview": self.indexer.get_overview()}
-    #         instructions = f"Retrieve the docstring for {path_str}"
-    #         agent = MrMeeseeksAgent(
-    #             initial_payload=initial_payload,
-    #             instructions=instructions,
-    #             tools=self.build_tools()
-    #             + CodebaseOracleToolManager(
-    #                 CodebaseOracle.get_default_codebase_oracle()
-    #             ).build_tools(),
-    #             version=AgentVersion.MEESEEKS_RETRIEVER_V2,
-    #             model="gpt-4",
-    #             stream=True,
-    #         )
-    #         agent.run()
-    #         return "Success"
-    #     except Exception as e:
-    #         return "Failed to retrieve the docstring with error - " + str(e)
 
     @staticmethod
     def parse_input_str(input_str: str) -> Tuple[str, Optional[str]]:

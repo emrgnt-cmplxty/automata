@@ -115,7 +115,7 @@ class PythonWriterToolManager(BaseToolManager):
         """
         tools = [
             Tool(
-                name="meeseeks-update-module",
+                name="meeseeks-writer-modify-module",
                 func=lambda path_comma_code_str: self.meeseeks_update_module(path_comma_code_str),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Mr. Meeseeks.",
