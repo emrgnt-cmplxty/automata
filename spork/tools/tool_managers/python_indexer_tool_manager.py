@@ -119,7 +119,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 initial_payload=initial_payload,
                 instructions=instructions,
                 tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_WRITER_V2,
+                version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,
             )
@@ -136,7 +136,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 initial_payload=initial_payload,
                 instructions=instructions,
                 tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_WRITER_V2,
+                version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,
             )

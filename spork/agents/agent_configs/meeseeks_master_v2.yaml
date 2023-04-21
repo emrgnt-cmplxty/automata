@@ -1,6 +1,5 @@
 input_variables:
   - tools
-  - overview
 output_parser: null
 template: >
   You are Meeseeks Master, an autonomous software architect built by OpenAI
@@ -81,10 +80,6 @@ template: >
 
   An overview of the available python modules, and their internal functions, 
   classes, and methods follows below. 
-
-  \n
-  {overview}
-  \n
 
   To help you in your task, you may refer to the following example for guidance:\n
 
