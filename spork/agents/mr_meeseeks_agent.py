@@ -14,7 +14,7 @@
         }
 
         logger.info("Passing in instructions: %s", args.instructions)
-        logger.info("-" * 100)
+        logger.info("-" * 60)
         agent = MrMeeseeksAgent(
             initial_payload=initial_payload,
             instructions=args.instructions,
@@ -129,9 +129,9 @@ class MrMeeseeksAgent:
                 self._save_interaction(message)
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
         logger.debug("Initializing with Prompt:%s\n" % (prompt))
-        logger.debug("-" * 100)
+        logger.debug("-" * 60)
         logger.debug("Session ID: %s" % self.session_id)
-        logger.debug("-" * 100)
+        logger.debug("-" * 60)
 
     def __del__(self):
         self.conn.close()
@@ -189,7 +189,7 @@ class MrMeeseeksAgent:
             ]
         )
         logger.debug("Chat Context length: %s", context_length)
-        logger.debug("-" * 100)
+        logger.debug("-" * 60)
 
         return None
 
@@ -212,7 +212,7 @@ class MrMeeseeksAgent:
             logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
             logger.debug("Processing message content =  %s" % (message["content"]))
             logger.debug("\nProcessed Outputs:\n%s\n" % processed_outputs)
-            logger.debug("-" * 100)
+            logger.debug("-" * 60)
 
     def extend_last_instructions(self, new_message: str) -> None:
         previous_message = self.messages[-1]
