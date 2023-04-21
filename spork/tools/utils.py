@@ -228,22 +228,3 @@ class NumberedLinesTextLoader(TextLoader):
                 text += f"{i}: {line}"
         metadata = {"source": self.file_path}
         return [Document(page_content=text, metadata=metadata)]
-
-
-class PassThroughBuffer:
-    def __init__(self, buffer):
-        """Initializes the PassThroughBuffer object.
-
-        Args:
-            buffer: The original buffer that the PassThroughBuffer will wrap around."""
-        self.saved_output = ""
-        self.original_buffer = buffer
-
-    def write(self, message):
-        """Write the message to the buffer."""
-        self.saved_output += message
-        self.original_buffer.write(message)
-
-    def __getattr__(self, attr) -> Any:
-        """Delegate attribute access to the original buffer."""
-        return getattr(self.original_buffer, attr)
