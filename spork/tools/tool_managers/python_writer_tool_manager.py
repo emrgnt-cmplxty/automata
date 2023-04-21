@@ -25,7 +25,6 @@ class PythonWriterToolManager(BaseToolManager):
 
         Args:
         - python_writer (PythonWriter): A PythonWriter object representing the code writer to work with.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
 
         Returns:
         - None
@@ -65,8 +64,9 @@ class PythonWriterToolManager(BaseToolManager):
                 instructions=input_str,
                 tools=self.build_tools(),
                 version=AgentVersion.MEESEEKS_WRITER_V2,
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 stream=True,
+                verbose=False,
             )
             agent.run()
 

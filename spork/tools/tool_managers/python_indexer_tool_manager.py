@@ -43,7 +43,6 @@ class PythonIndexerToolManager(BaseToolManager):
 
         Args:
         - python_indexer (PythonIndexer): A PythonIndexer object which indexes the code to work with.
-        - logger (Optional[PassThroughBuffer]): An optional PassThroughBuffer object to log output.
 
         Returns:
         - None
@@ -118,7 +117,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 instructions=instructions,
                 tools=self.build_tools(),
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 stream=True,
                 verbose=False,
             )
