@@ -182,7 +182,7 @@ class MrMeeseeksAgent:
         logger.debug("Synthetic User Message:\n%s\n" % MrMeeseeksAgent.CONTINUE_MESSAGE)
         context_length = sum(
             [
-                len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
+                len(self.tokenizer.encode(message["content"], max_length=1024 * 8, truncation=True))
                 for message in self.messages
             ]
         )
