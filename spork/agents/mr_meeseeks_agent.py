@@ -145,7 +145,7 @@ class MrMeeseeksAgent:
             model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
         )
         if self.stream:
-            accumulated_output = ""
+            accumulated_output = "\n>>> AGENT:\n"
             separator = " "
             response_text = ""
             for chunk in response_summary:
@@ -158,12 +158,13 @@ class MrMeeseeksAgent:
                     words = accumulated_output.split(separator)
                     # Print all words except the last one, as it may be an incomplete word
                     for word in words[:-1]:
-                        print(colored(word, "green"), end=" ", flush=True)
+                        print(colored(str(word), "green"), end=" ", flush=True)
                     # Keep the last (potentially incomplete) word for the next iteration
                     accumulated_output = words[-1]
+            # Print the last word
+            print(colored(str(accumulated_output), "green"))
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
-
         logger.debug("OpenAI Response:\n%s\n" % response_text)
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
