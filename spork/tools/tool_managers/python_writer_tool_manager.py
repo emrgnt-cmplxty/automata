@@ -34,9 +34,6 @@ class PythonWriterToolManager(BaseToolManager):
         module_path = input_str.split(",")[0]
         class_name = input_str.split(",")[1]
         code = ",".join(input_str.split(",")[2:]).strip()
-        print("Calling PythonWriter to update the module with code = %s " % code)
-        print("class_name = %s " % class_name)
-        print("module_path = %s " % module_path)
         try:
             self.python_writer.update_module(
                 source_code=code,
@@ -54,16 +51,12 @@ class PythonWriterToolManager(BaseToolManager):
             initial_payload = {
                 "overview": self.python_writer.indexer.get_overview(),
             }
-            print(
-                "Calling a MrMeeseeksAgent to update the module with instructions = %s "
-                % (input_str)
-            )
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=input_str,
                 tools=self.build_tools(),
                 version=AgentVersion.MEESEEKS_WRITER_V2,
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 stream=True,
                 verbose=False,
             )

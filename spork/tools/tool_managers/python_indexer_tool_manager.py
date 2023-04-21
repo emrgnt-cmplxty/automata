@@ -116,7 +116,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 instructions=instructions,
                 tools=self.build_tools(),
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 stream=True,
                 verbose=False,
             )
