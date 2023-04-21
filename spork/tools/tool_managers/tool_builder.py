@@ -1,6 +1,6 @@
 from typing import List
 
-from langchain.agents import Tool
+from spork.tools import Tool
 
 from .base_tool_manager import BaseToolManager
 

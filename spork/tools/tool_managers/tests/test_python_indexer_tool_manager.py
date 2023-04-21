@@ -2,8 +2,8 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from langchain.agents import Tool
 
+from spork.tools import Tool
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.tool_managers.python_indexer_tool_manager import PythonIndexerToolManager
 from spork.tools.utils import root_py_path

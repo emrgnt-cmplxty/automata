@@ -1,7 +1,6 @@
 from typing import List
 
-from langchain.agents import Tool
-
+from spork.tools import Tool
 from spork.tools.python_tools.python_agent import PythonAgent
 
 

@@ -1,8 +1,7 @@
 import logging
 from typing import Dict, List, Tuple, cast
 
-from langchain.agents import Tool
-
+from spork.tools import Tool
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.python_tools.python_indexer import PythonIndexer

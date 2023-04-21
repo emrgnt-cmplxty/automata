@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
 
 import pytest
-from langchain.agents import Tool
 
+from spork.tools import Tool
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
 from spork.tools.tool_managers.documentation_gpt_tool_manager import DocumentationGPTToolManager
 

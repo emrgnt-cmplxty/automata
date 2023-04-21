@@ -1,7 +1,6 @@
 from typing import List
 
-from langchain.agents import Tool
-
+from spork.tools import Tool
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 from spork.tools.utils import run_retrieval_chain_with_sources_format

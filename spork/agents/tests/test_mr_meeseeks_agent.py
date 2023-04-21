@@ -2,9 +2,9 @@ import textwrap
 from unittest.mock import patch
 
 import pytest
-from langchain.agents import Tool
 
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools import Tool
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.utils import root_py_path
 

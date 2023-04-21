@@ -3,8 +3,8 @@ import os
 import textwrap
 
 import pytest
-from langchain.agents import Tool
 
+from spork.tools import Tool
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.python_tools.python_writer import PythonWriter
 from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
@@ -123,7 +123,7 @@ def test_extend_module_with_documented_new_class(python_writer_tool_builder):
     class_str = textwrap.dedent(
         '''from typing import List
 
-from langchain.agents import Tool
+from spork.tools import Tool
 
 from spork.tools.python_tools.python_agent import PythonAgent
 

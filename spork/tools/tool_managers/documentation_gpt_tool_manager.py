@@ -1,7 +1,6 @@
 from typing import List
 
-from langchain.agents import Tool
-
+from spork.tools import Tool
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 

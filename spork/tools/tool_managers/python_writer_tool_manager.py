@@ -1,9 +1,8 @@
 from typing import List
 
-from langchain.agents import Tool
-
 from spork.agents.agent_configs.agent_version import AgentVersion
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools import Tool
 
 from ..python_tools.python_writer import PythonWriter
 from .base_tool_manager import BaseToolManager

@@ -19,10 +19,9 @@ TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 """
 from typing import List, Optional, Tuple
 
-from langchain.agents import Tool
-
 from spork.agents.agent_configs.agent_version import AgentVersion
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools import Tool
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.tool_managers.codebase_oracle_tool_manager import CodebaseOracleToolManager
 
