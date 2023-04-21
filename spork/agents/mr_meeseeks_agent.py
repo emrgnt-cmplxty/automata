@@ -145,7 +145,11 @@ class MrMeeseeksAgent:
             model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
         )
         if self.stream:
-            accumulated_output = "\n>>> AGENT:\n"
+            print(
+                colored("\n>>>", "green", attrs=["blink"])
+                + colored(" Agent:", "green")
+            )
+            accumulated_output = ""
             separator = " "
             response_text = ""
             for chunk in response_summary:
@@ -183,7 +187,9 @@ class MrMeeseeksAgent:
         logger.debug("Synthetic User Message:\n%s\n" % MrMeeseeksAgent.CONTINUE_MESSAGE)
         context_length = sum(
             [
-                len(self.tokenizer.encode(message["content"], max_length=1024 * 8, truncation=True))
+                len(
+                    self.tokenizer.encode(message["content"], max_length=1024 * 8, truncation=True)
+                )
                 for message in self.messages
             ]
         )

@@ -194,7 +194,6 @@ class PythonAgentToolBuilder:
 def test_extend_module_with_documented_new_module(python_writer_tool_builder):
     combo_str = textwrap.dedent(
         """temp_code.python_agent_tool_builder,,from typing import List, Optional
-from spork.buffer import PassThroughBuffer
 from spork.tools.tool import Tool
 from spork.tools.python_tools.python_agent import PythonAgent
 

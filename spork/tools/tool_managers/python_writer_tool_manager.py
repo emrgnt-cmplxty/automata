@@ -70,7 +70,7 @@ class PythonWriterToolManager(BaseToolManager):
             )
             agent.run()
 
-            return "Success"
+            return "Success: updated the module with instructions = %s " % (input_str)
         except Exception as e:
             return "Failed to update the module with error - " + str(e)
 
