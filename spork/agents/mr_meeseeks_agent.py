@@ -145,7 +145,7 @@ class MrMeeseeksAgent:
             model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
         )
         if self.stream:
-            accumulated_output = ""
+            accumulated_output = "Agent:\n"
             separator = " "
             response_text = ""
             for chunk in response_summary:

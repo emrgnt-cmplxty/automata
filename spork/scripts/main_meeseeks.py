@@ -62,7 +62,7 @@ def main():
         "overview": indexer.get_overview(),
     }
 
-    logger.info("Passing in instructions: %s", colored(args.instructions, "magenta"))
+    logger.info("Passing in instructions:\n%s", colored(args.instructions, "magenta"))
     logger.info("-" * 100)
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
