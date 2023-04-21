@@ -11,3 +11,7 @@ class BaseToolManager(ABC):
     @abstractmethod
     def build_tools(self) -> List[Tool]:
         pass
+
+    @abstractmethod
+    def build_tools_with_meeseeks(self) -> List[Tool]:
+        pass

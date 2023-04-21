@@ -36,6 +36,9 @@ class PythonWriterToolManager(BaseToolManager):
         module_path = input_str.split(",")[0]
         class_name = input_str.split(",")[1]
         code = ",".join(input_str.split(",")[2:]).strip()
+        print("Calling PythonWriter to update the module with code = %s " % code)
+        print("class_name = %s " % class_name)
+        print("module_path = %s " % module_path)
         try:
             self.python_writer.update_module(
                 source_code=code,

@@ -84,6 +84,9 @@ class GithubToolManager(BaseToolManager):
         ]
         return tools
 
+    def build_tools_with_meeseeks(self) -> List[Tool]:
+        return []
+
     def _create_new_branch(self, branch_name: str) -> str:
         """
         Creates and checks out a new branch in the specified repository.
