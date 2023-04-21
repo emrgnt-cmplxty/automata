@@ -71,8 +71,10 @@ def main():
     initial_payload = {
         "overview": indexer.get_overview(),
     }
-
-    logger.info("Passing in instructions:\n%s", colored(args.instructions, "magenta"))
+    logger.info("-" * 60)
+    logger.info(
+        f"Passing in instructions:\n{colored(args.instructions, color='white', on_color='on_green')}"
+    )
     logger.info("-" * 60)
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
