@@ -13,6 +13,7 @@ from spork.tools.tool_managers import (
     PythonIndexerToolManager,
     PythonWriterToolManager,
     build_tools,
+    build_tools_with_meeseeks,
 )
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 from spork.tools.utils import root_py_path
@@ -22,6 +23,7 @@ from spork.tools.utils import root_py_path
 def load_llm_tools(
     tool_list: List[str], inputs: Dict[str, str], logger: logging.Logger
 ) -> Tuple[Dict[str, BaseToolManager], List[Tool]]:
+    print("Received a tool_list = ", tool_list)
     payload: dict = {}
     if "python_indexer" in tool_list:
         python_indexer = PythonIndexer(root_py_path())
@@ -62,11 +64,14 @@ def load_llm_tools(
                     payload["documentation_gpt"],
                 )
             )
-        elif tool_name == "meeseeks_update_module" in tool_list:
-            # exec_tools += build_tools_with_meeseeks(
-            #     PythonWriterToolManager(payload["meeseeks_update_module"])
-            # )
-            pass
+        elif tool_name == "meeseeks_writer" in tool_list:
+            exec_tools += build_tools_with_meeseeks(
+                PythonWriterToolManager(payload["meeseeks_writer"])
+            )
+        elif tool_name == "meeseeks_indexer" in tool_list:
+            exec_tools += build_tools_with_meeseeks(
+                PythonIndexerToolManager(payload["meeseeks_indexer"])
+            )
 
         else:
             logger.warning("Unknown tool: %s", tool_name)

@@ -36,6 +36,9 @@ class PythonWriterToolManager(BaseToolManager):
         module_path = input_str.split(",")[0]
         class_name = input_str.split(",")[1]
         code = ",".join(input_str.split(",")[2:]).strip()
+        print("Calling PythonWriter to update the module with code = %s " % code)
+        print("class_name = %s " % class_name)
+        print("module_path = %s " % module_path)
         try:
             self.python_writer.update_module(
                 source_code=code,
@@ -61,7 +64,7 @@ class PythonWriterToolManager(BaseToolManager):
                 initial_payload=initial_payload,
                 instructions=input_str,
                 tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_WRITER_V1,
+                version=AgentVersion.MEESEEKS_WRITER_V2,
                 model="gpt-4",
                 stream=True,
             )
@@ -112,7 +115,7 @@ class PythonWriterToolManager(BaseToolManager):
         """
         tools = [
             Tool(
-                name="meeseeks-update-module",
+                name="meeseeks-writer-modify-module",
                 func=lambda path_comma_code_str: self.meeseeks_update_module(path_comma_code_str),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Mr. Meeseeks.",

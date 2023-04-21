@@ -22,3 +22,6 @@ class MrMeeseeksAgentToolManager(BaseToolManager):
             )
         ]
         return tools
+
+    def build_tools_with_meeseeks(self) -> List[Tool]:
+        return []

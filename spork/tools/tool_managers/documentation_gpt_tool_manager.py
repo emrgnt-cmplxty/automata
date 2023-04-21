@@ -1,3 +1,5 @@
+from typing import List
+
 from langchain.agents import Tool
 
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
@@ -22,3 +24,6 @@ class DocumentationGPTToolManager(BaseToolManager):
     def documentation_gpt_lookup(self, input_text):
         result = self.documentation_gpt.run(input_text)
         return result
+
+    def build_tools_with_meeseeks(self) -> List[Tool]:
+        return []

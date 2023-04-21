@@ -31,13 +31,11 @@ Example usage:
 
     TODO - Add explicit check of module contents after extension and reduction.
 """
-
-
 import ast
 import os
 import re
 import subprocess
-from ast import ClassDef, FunctionDef, Module
+from ast import ClassDef, FunctionDef, Import, ImportFrom, Module
 from typing import Optional, Union, cast
 
 from spork.tools.python_tools.python_indexer import PythonIndexer
@@ -80,12 +78,7 @@ class PythonWriter:
         """
         self.indexer = python_ast_indexer
 
-    def update_module(
-        self,
-        source_code: str,
-        extending_module: bool = True,
-        **kwargs,
-    ) -> None:
+    def update_module(self, source_code: str, extending_module: bool = True, **kwargs) -> None:
         """
         Perform an in-place extention or reduction of a module object according to the received code.
 
@@ -105,22 +98,28 @@ class PythonWriter:
         """
         module_obj = kwargs.get("module_obj")
         module_path = kwargs.get("module_path")
-        class_name = kwargs.get("class_name")
-        write_to_disk = kwargs.get("write_to_disk") or False
+        class_name = kwargs.get("class_name") or ""
 
+        write_to_disk = kwargs.get("write_to_disk") or False
         self._validate_args(module_obj, module_path, write_to_disk)
         source_code = PythonWriter._clean_input_code(source_code)
-
         if not module_obj and module_path:
             if module_path not in self.indexer.module_dict:
                 self._create_module_from_source_code(module_path, source_code)
             module_obj = self.indexer.module_dict[module_path]
-        elif module_obj and not module_path:
+        elif module_obj and (not module_path):
             module_path = self.indexer.get_module_path(module_obj)
             assert module_path != PythonIndexer.NO_RESULT_FOUND_STR
-        PythonWriter._update_module(source_code, module_path, module_obj, extending_module, class_name)  # type: ignore
+        module_path = cast(str, module_path)
+        module_obj = cast(Module, module_obj)
+        PythonWriter._update_module(
+            source_code,
+            module_path,
+            module_obj,
+            extending_module,
+            class_name,
+        )
         if write_to_disk:
-            assert module_path is not None, "Must provide a module path to write to disk."
             self.write_module(module_path)
 
     def write_module(self, module_path: str) -> None:
@@ -134,13 +133,10 @@ class PythonWriter:
             raise PythonWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_path}"
             )
-
         module_obj = self.indexer.module_dict[module_path]
         source_code = ast.unparse(module_obj)
         module_os_rel_path = module_path.replace(self.indexer.PATH_SEP, os.path.sep)
-        # Add path relative to indexer to the output path
         module_os_abs_path = os.path.join(self.indexer.abs_path, module_os_rel_path)
-        # Make directories if they do not exist
         os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)
         file_path = f"{module_os_abs_path}.py"
         with open(file_path, "w") as output_file:
@@ -180,7 +176,7 @@ class PythonWriter:
         module_path: str,
         existing_module_obj: Module,
         extending_module: bool,
-        class_name: Optional[str] = None,
+        class_name: str = "",
     ) -> None:
         """
         Update a module object according to the received code.
@@ -191,8 +187,7 @@ class PythonWriter:
             existing_module_obj Module: The module object to be updated.
             extending_module (bool): If True, add or update the code; if False, remove the code.
         """
-
-        if class_name:
+        if class_name != "":
             existing_class = PythonWriter._find_function_class_or_method(
                 existing_module_obj, class_name
             )
@@ -210,12 +205,18 @@ class PythonWriter:
         else:
             new_ast = ast.parse(source_code)
             for new_node in new_ast.body:
+                if isinstance(
+                    new_node, (Import, ImportFrom)
+                ):  # Check if the node is an import statement
+                    PythonWriter.manage_imports(
+                        existing_module_obj, new_node, "add" if extending_module else "remove"
+                    )  # Handle the import statement
+
                 if isinstance(new_node, (ClassDef, FunctionDef)):
                     obj_name = new_node.name
                     existing_obj = PythonWriter._find_function_class_or_method(
                         existing_module_obj, obj_name
                     )
-
                     if extending_module:
                         if existing_obj:
                             PythonWriter._update_existing_node(
@@ -223,15 +224,12 @@ class PythonWriter:
                             )
                         else:
                             PythonWriter._add_ast_node(existing_module_obj, new_node)
-                    else:
-                        if existing_obj:
-                            PythonWriter._remove_existing_node(existing_module_obj, existing_obj)
+                    elif existing_obj:
+                        PythonWriter._remove_existing_node(existing_module_obj, existing_obj)
 
     @staticmethod
     def _update_class(
-        source_code: str,
-        existing_class_obj: ClassDef,
-        extending_module: bool,
+        source_code: str, existing_class_obj: ClassDef, extending_module: bool
     ) -> None:
         new_ast = ast.parse(source_code)
         for new_node in new_ast.body:
@@ -240,7 +238,6 @@ class PythonWriter:
                 existing_method = PythonWriter._find_function_class_or_method(
                     existing_class_obj, method_name
                 )
-
                 if extending_module:
                     if existing_method:
                         PythonWriter._update_existing_node(
@@ -248,9 +245,8 @@ class PythonWriter:
                         )
                     else:
                         PythonWriter._add_ast_node(existing_class_obj, new_node)
-                else:
-                    if existing_method:
-                        PythonWriter._remove_existing_node(existing_class_obj, existing_method)
+                elif existing_method:
+                    PythonWriter._remove_existing_node(existing_class_obj, existing_method)
 
     @staticmethod
     def _update_existing_node(
@@ -275,7 +271,6 @@ class PythonWriter:
                     existing_method = PythonWriter._find_function_class_or_method(
                         python_obj, lookup_path
                     )
-
                     if existing_method:
                         existing_method.body = node.body
                     else:
@@ -319,10 +314,7 @@ class PythonWriter:
                                                        If not provided, the new node will be added to the module level.
         """
         if target_node is None:
-            # Add the new node to the module level
             target_node = python_obj
-
-        # Add the new node to the target_node's body
         target_node.body.append(node)
 
     @staticmethod
@@ -342,7 +334,6 @@ class PythonWriter:
         """
         lookup_split = lookup_name.split(".")
         lookup_name = lookup_split[0]
-        # Find the method node in the class
         for node in code_obj.body:
             if isinstance(node, FunctionDef) and node.name == lookup_name:
                 assert len(lookup_split) == 1, "Function name is not unique"
@@ -354,7 +345,6 @@ class PythonWriter:
                     return PythonWriter._find_function_class_or_method(
                         node, ".".join(lookup_split[1:])
                     )
-
         return None
 
     @staticmethod
@@ -376,19 +366,15 @@ class PythonWriter:
                     return text
                 return text.replace("\\n", "\n")
 
-            # Match single or double-quoted strings, and text outside quotes
-            pattern = r"""(?x)
-                '.*?'
-                |
-                ".*?"
-                |
-                [^'"]+
-            """
+            pattern = "(?x)\n                '.*?'\n                |\n                \".*?\"\n                |\n                [^'\"]+\n            "
             output_str = (
                 "".join(
-                    replace(match)
-                    for match in re.finditer(
-                        pattern, input_str.replace('"""', "ZZ_^^_ZZ").replace("'''", "QQ_^^_QQ")
+                    (
+                        replace(match)
+                        for match in re.finditer(
+                            pattern,
+                            input_str.replace('"""', "ZZ_^^_ZZ").replace("'''", "QQ_^^_QQ"),
+                        )
                     )
                 )
                 .replace("ZZ_^^_ZZ", '"""')
@@ -397,6 +383,50 @@ class PythonWriter:
             return output_str
 
         source_code = replace_newline_chars(source_code)
-        source_code = re.sub(r"\\\"", '"', source_code)
+        source_code = re.sub('\\\\\\"', '"', source_code)
         source_code = source_code.strip()
         return source_code
+
+    @staticmethod
+    def manage_imports(
+        module_obj: Module, import_statement: Union[Import, ImportFrom], action: str
+    ) -> None:
+        if action not in ["add", "remove", "modify"]:
+            raise ValueError("Invalid action. Supported actions: 'add', 'remove', 'modify'")
+
+        if not isinstance(import_statement, (Import, ImportFrom)):
+            raise ValueError("The provided import statement is not valid.")
+
+        existing_import_node = None
+        for node in module_obj.body:
+            if isinstance(node, (Import, ImportFrom)):
+                if PythonWriter._compare_import_nodes(node, import_statement):
+                    existing_import_node = node
+                    break
+
+        if action == "add":
+            if not existing_import_node:
+                module_obj.body.insert(0, import_statement)
+        elif action == "remove":
+            if existing_import_node:
+                module_obj.body.remove(existing_import_node)
+        elif action == "modify":
+            if existing_import_node:
+                module_obj.body.remove(existing_import_node)
+                module_obj.body.insert(0, import_statement)
+
+    @staticmethod
+    def _compare_import_nodes(
+        node1: Union[Import, ImportFrom], node2: Union[Import, ImportFrom]
+    ) -> bool:
+        if type(node1) != type(node2):
+            return False
+
+        if isinstance(node1, Import):
+            return node1.names[0].name == node2.names[0].name
+        elif isinstance(node1, ImportFrom):
+            node1 = cast(ImportFrom, node1)
+            node2 = cast(ImportFrom, node2)
+            return node1.module == node2.module and node1.names == node2.names
+
+        return False

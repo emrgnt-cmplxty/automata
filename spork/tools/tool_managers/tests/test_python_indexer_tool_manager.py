@@ -17,7 +17,7 @@ def python_indexer_tool_builder():
 
 
 def test_init(python_indexer_tool_builder):
-    assert isinstance(python_indexer_tool_builder.python_indexer, PythonIndexer)
+    assert isinstance(python_indexer_tool_builder.indexer, PythonIndexer)
 
 
 def test_build_tools(python_indexer_tool_builder):
@@ -28,10 +28,8 @@ def test_build_tools(python_indexer_tool_builder):
 
 
 def test_tool_execution(python_indexer_tool_builder):
-    python_indexer_tool_builder.python_indexer.retrieve_code = MagicMock(
-        return_value="Sample code"
-    )
-    python_indexer_tool_builder.python_indexer.retrieve_docstring = MagicMock(
+    python_indexer_tool_builder.indexer.retrieve_code = MagicMock(return_value="Sample code")
+    python_indexer_tool_builder.indexer.retrieve_docstring = MagicMock(
         return_value="Sample docstring"
     )
 
