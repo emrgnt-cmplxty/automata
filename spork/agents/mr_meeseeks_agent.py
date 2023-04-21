@@ -140,7 +140,7 @@ class MrMeeseeksAgent:
         self,
     ) -> Optional[List[Dict[str, str]]]:
         """Run the test and report the tool outputs back to the master."""
-        logger.info("\nRunning instruction...")
+        logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
             model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
         )

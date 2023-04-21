@@ -5,6 +5,7 @@ import logging
 import os
 from typing import Any, List, Union
 
+import colorlog
 import regex as re
 import yaml
 from bs4 import BeautifulSoup
@@ -171,16 +172,28 @@ def remove_html_tags(text: str) -> str:
 
 def get_logging_config(log_level=logging.INFO) -> dict:
     """Returns logging configuration."""
+    color_scheme = {
+        "DEBUG": "cyan",
+        "INFO": "white",
+        "WARNING": "yellow",
+        "ERROR": "red",
+        "CRITICAL": "bold_red",
+    }
+
     logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "default": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+            "colored": {
+                "()": colorlog.ColoredFormatter,
+                "format": "%(log_color)s%(levelname)s:%(name)s:%(message)s",
+                "log_colors": color_scheme,
+            }
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "default",
+                "formatter": "colored",
                 "level": log_level,
             }
         },

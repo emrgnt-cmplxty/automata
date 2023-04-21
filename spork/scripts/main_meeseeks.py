@@ -50,6 +50,13 @@ def main():
     logging.config.dictConfig(logging_config)
     logger = logging.getLogger(__name__)
 
+    requests_logger = logging.getLogger("urllib3")
+
+    # Set the logging level for the requests logger to WARNING
+    requests_logger.setLevel(logging.INFO)
+    openai_logger = logging.getLogger("openai")
+    openai_logger.setLevel(logging.INFO)
+
     assert not (
         args.instructions is None and args.session_id is None
     ), "You must provide instructions for the agent if you are not providing a session_id."
