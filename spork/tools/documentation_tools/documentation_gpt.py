@@ -39,7 +39,9 @@ class DocumentationGPT:
             retriever=self.vector_store.as_retriever(),
             return_source_documents=self.verbose,
         )
-        logging_config = get_logging_config()
+        logging_config = get_logging_config(
+            log_level=logging.DEBUG if self.verbose else logging.INFO
+        )
         logging.config.dictConfig(logging_config)
         self.logger = logging.getLogger(__name__)
 

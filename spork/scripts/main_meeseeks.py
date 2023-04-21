@@ -12,10 +12,6 @@ from spork.tools.utils import get_logging_config, root_py_path
 
 
 def main():
-    logging_config = get_logging_config()
-    logging.config.dictConfig(logging_config)
-    logger = logging.getLogger(__name__)
-
     parser = argparse.ArgumentParser(description="Run the MrMeeseeksAgent.")
     parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
     parser.add_argument(
@@ -46,7 +42,14 @@ def main():
         help="Comma-separated list of tools to be used.",
     )
 
+    parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
+
     args = parser.parse_args()
+
+    logging_config = get_logging_config(log_level=logging.DEBUG if args.verbose else logging.INFO)
+    logging.config.dictConfig(logging_config)
+    logger = logging.getLogger(__name__)
+
     assert not (
         args.instructions is None and args.session_id is None
     ), "You must provide instructions for the agent if you are not providing a session_id."
