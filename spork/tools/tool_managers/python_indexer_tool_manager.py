@@ -120,9 +120,10 @@ class PythonIndexerToolManager(BaseToolManager):
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,
+                verbose=False,
             )
-            agent.run()
-            return "Success"
+            result = agent.run()
+            return result
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)
 
