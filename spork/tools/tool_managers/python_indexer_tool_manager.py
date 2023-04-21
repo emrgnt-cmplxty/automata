@@ -15,6 +15,7 @@ Example usage:
     python_parser_tool_builder = PythonIndexerToolManager(python_parser)
     tools = python_parser_tool_builder.build_tools()
 
+TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 """
 from typing import List, Optional, Tuple
 
@@ -22,6 +23,8 @@ from langchain.agents import Tool
 
 from spork.agents.agent_configs.agent_version import AgentVersion
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools.oracle.codebase_oracle import CodebaseOracle
+from spork.tools.tool_managers.codebase_oracle_tool_manager import CodebaseOracleToolManager
 
 from ..python_tools.python_indexer import PythonIndexer
 from .base_tool_manager import BaseToolManager
@@ -84,12 +87,7 @@ class PythonIndexerToolManager(BaseToolManager):
             Tool(
                 name="meeseeks-indexer-retrieve-code",
                 func=lambda path_str: self._meeseeks_indexer_retrieve_code(path_str),
-                description="Mr. Meeseeks retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings.",
-            ),
-            Tool(
-                name="meeseeks-indexer-retrieve-docstring",
-                func=lambda path_str: self._meeseeks_indexer_retrieve_docstring(path_str),
-                description="Mr. Meeseeks retrieves the docstring of the python package, module, standalone function, class, or method at the given python path.",
+                description="Mr. Meeseeks parses a natural language query to retrieve the correct code, docstrings, and import statements necessary to solve an abstract task",
             ),
         ]
         return tools
@@ -118,7 +116,10 @@ class PythonIndexerToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=instructions,
-                tools=self.build_tools(),
+                tools=self.build_tools()
+                + CodebaseOracleToolManager(
+                    CodebaseOracle.get_default_codebase_oracle()
+                ).build_tools(),
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,
@@ -128,22 +129,25 @@ class PythonIndexerToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)
 
-    def _meeseeks_indexer_retrieve_docstring(self, path_str: Optional[str]) -> str:
-        try:
-            initial_payload = {"overview": self.indexer.get_overview()}
-            instructions = f"Retrieve the docstring for {path_str}"
-            agent = MrMeeseeksAgent(
-                initial_payload=initial_payload,
-                instructions=instructions,
-                tools=self.build_tools(),
-                version=AgentVersion.MEESEEKS_RETRIEVER_V2,
-                model="gpt-4",
-                stream=True,
-            )
-            agent.run()
-            return "Success"
-        except Exception as e:
-            return "Failed to retrieve the docstring with error - " + str(e)
+    # def _meeseeks_indexer_retrieve_docstring(self, path_str: Optional[str]) -> str:
+    #     try:
+    #         initial_payload = {"overview": self.indexer.get_overview()}
+    #         instructions = f"Retrieve the docstring for {path_str}"
+    #         agent = MrMeeseeksAgent(
+    #             initial_payload=initial_payload,
+    #             instructions=instructions,
+    #             tools=self.build_tools()
+    #             + CodebaseOracleToolManager(
+    #                 CodebaseOracle.get_default_codebase_oracle()
+    #             ).build_tools(),
+    #             version=AgentVersion.MEESEEKS_RETRIEVER_V2,
+    #             model="gpt-4",
+    #             stream=True,
+    #         )
+    #         agent.run()
+    #         return "Success"
+    #     except Exception as e:
+    #         return "Failed to retrieve the docstring with error - " + str(e)
 
     @staticmethod
     def parse_input_str(input_str: str) -> Tuple[str, Optional[str]]:
