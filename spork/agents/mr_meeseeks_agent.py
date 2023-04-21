@@ -140,12 +140,12 @@ class MrMeeseeksAgent:
         self,
     ) -> Optional[List[Dict[str, str]]]:
         """Run the test and report the tool outputs back to the master."""
-        logger.info("Running instruction...")
+        logger.info("\nRunning instruction...")
         response_summary = openai.ChatCompletion.create(
             model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
         )
         if self.stream:
-            accumulated_output = "Agent:\n"
+            accumulated_output = "Agent: \n> "
             separator = " "
             response_text = ""
             for chunk in response_summary:
@@ -158,7 +158,7 @@ class MrMeeseeksAgent:
                     words = accumulated_output.split(separator)
                     # Print all words except the last one, as it may be an incomplete word
                     for word in words[:-1]:
-                        print(colored(word, "cyan"), end=" ", flush=True)
+                        print(colored(str(word), "cyan"), end=" ", flush=True)
                     # Keep the last (potentially incomplete) word for the next iteration
                     accumulated_output = words[-1]
         else:

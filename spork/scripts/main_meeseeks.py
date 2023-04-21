@@ -63,7 +63,7 @@ def main():
     }
 
     logger.info("Passing in instructions:\n%s", colored(args.instructions, "magenta"))
-    logger.info("-" * 100)
+    logger.info("-" * 60)
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
         instructions=args.instructions,
