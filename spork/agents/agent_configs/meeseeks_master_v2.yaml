@@ -82,8 +82,8 @@ template: >
     Action:
     {
       "tool": "meeseeks-writer-modify-module",
-      "input": "Update the PythonIndexerToolManager.build_tools_with_meeseeks as "...",
-      then, add the method PythonIndexerToolManager._meeseeks_indexer_retrieve_code as "...",
+      "input": "Update the PythonIndexerToolManager.build_tools_with_meeseeks as "INSERT_CODE_HERE",
+      then, add the method PythonIndexerToolManager._meeseeks_indexer_retrieve_code as "INSERT_CODE_HERE",
     }
   User:
     Observation:
@@ -120,7 +120,7 @@ template: >
     Action:
     {
       "tool": "meeseeks-writer-modify-module", 
-      "input": "Update the initialization of MrMeeseeks in PythonIndexer._meeseeks_indexer_retrieve_code to read as follows = '...'"
+      "input": "Update the initialization of MrMeeseeks in PythonIndexer._meeseeks_indexer_retrieve_code to read as follows = 'INSERT_CODE_HERE'"
     }
   User:
     Observation:
