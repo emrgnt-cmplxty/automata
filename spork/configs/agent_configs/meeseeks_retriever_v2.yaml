@@ -136,7 +136,7 @@ template: >
   '  
 
   After receiving your instructions, execute the appropriate tools to gather necessary information.
-  Then, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the
+  Then, AS SOON AS you have sufficient information to complete your task, RETURN THE FULL RESULT in the
   JSON format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle.
 
 template_format: "f-string"

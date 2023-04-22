@@ -55,6 +55,7 @@ class MrMeeseeksAgent:
     """
 
     CONTINUE_MESSAGE = "Continue, and return a result JSON when finished."
+    NUM_DEFAULT_MESSAGES = 3
 
     def __init__(
         self,
@@ -66,6 +67,8 @@ class MrMeeseeksAgent:
         session_id: Optional[str] = None,
         stream: bool = False,
         verbose: bool = True,
+        max_iters: int = 1_000_000,  # default to ~infinite iterations
+        temperature: float = 0.7,
     ):
         """
         Args:
@@ -99,6 +102,8 @@ class MrMeeseeksAgent:
         self.messages: List[Dict[str, str]] = []
         self.stream = stream
         self.verbose = verbose
+        self.max_iters = max_iters
+        self.temperature = temperature
 
         initial_payload["tools"] = "".join(
             [
@@ -142,9 +147,23 @@ class MrMeeseeksAgent:
         self,
     ) -> Optional[List[Dict[str, str]]]:
         """Run the test and report the tool outputs back to the master."""
+
+        context_length = sum(
+            [
+                len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
+                for message in self.messages
+            ]
+        )
+        if self.verbose:
+            logger.info("Chat Context length: %s", context_length)
+            logger.info("-" * 100)
+
         logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
-            model=self.model, messages=self.messages, temperature=0.7, stream=self.stream
+            model=self.model,
+            messages=self.messages,
+            temperature=self.temperature,
+            stream=self.stream,
         )
         if self.stream:
             accumulated_output = ""
@@ -171,6 +190,7 @@ class MrMeeseeksAgent:
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
 
+        # If there are processed inputs, return here
         if len(processed_inputs) > 0:
             message = "Observation:\n{" + "\n"
             for i, output in enumerate(processed_inputs):
@@ -185,15 +205,6 @@ class MrMeeseeksAgent:
         self._save_interaction({"role": "user", "content": MrMeeseeksAgent.CONTINUE_MESSAGE})
         if self.verbose:
             logger.info("Synthetic User Message:\n%s\n" % MrMeeseeksAgent.CONTINUE_MESSAGE)
-        context_length = sum(
-            [
-                len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
-                for message in self.messages
-            ]
-        )
-        if self.verbose:
-            logger.info("Chat Context length: %s", context_length)
-            logger.info("-" * 100)
 
         return None
 
@@ -208,6 +219,9 @@ class MrMeeseeksAgent:
             # Check the previous previous message to see if it is a completion message
             if MrMeeseeksAgent.is_completion_message(self.messages[-2]["content"]):
                 return self.messages[-2]["content"]
+            # Each iteration produces two messages, so the check below is for equalling the max_iters
+            if (len(self.messages) - MrMeeseeksAgent.NUM_DEFAULT_MESSAGES) >= self.max_iters * 2:
+                return "Result was not captured before iterations exceeded max limit."
 
     def replay_messages(self) -> str:
         """Replay the messages in the conversation."""

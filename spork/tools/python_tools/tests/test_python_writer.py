@@ -236,3 +236,26 @@ def test_create_update_write_module(python_writer):
     python_writer.write_module("test_module_2")
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     os.remove(os.path.join(root_dir, "test_module_2.py"))
+
+
+def test_create_function_with_arguments():
+    mock_generator = MockCodeGenerator(has_function=True, has_function_docstring=True)
+    source_code = mock_generator.generate_code()
+    # Add a function with different types of arguments
+    source_code += textwrap.dedent(
+        f"""
+        def {mock_generator.function_name}_with_args(pos_arg, kw_arg=None, *args, **kwargs):
+            pass
+        """
+    )
+    module_obj = ast.parse(source_code)
+    function_obj = PythonWriter._find_function_class_or_method(
+        module_obj, f"{mock_generator.function_name}_with_args"
+    )
+    assert function_obj.name == f"{mock_generator.function_name}_with_args"
+    assert len(function_obj.args.args) == 2
+    assert function_obj.args.args[0].arg == "pos_arg"
+    assert function_obj.args.args[1].arg == "kw_arg"
+    assert not function_obj.args.defaults[0].value
+    assert function_obj.args.vararg.arg == "args"
+    assert function_obj.args.kwarg.arg == "kwargs"
