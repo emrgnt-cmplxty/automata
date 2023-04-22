@@ -1,11 +1,12 @@
 import argparse
 import logging
 import logging.config
+from typing import Dict
 
 from spork.agents.agent_configs.agent_version import AgentVersion
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.tools.base.tool_utils import Toolkit, ToolkitType, load_llm_tools
 from spork.tools.python_tools.python_indexer import PythonIndexer
-from spork.tools.tool_managers.tool_utils import load_llm_tools
 from spork.tools.utils import get_logging_config, root_py_path
 
 
@@ -53,7 +54,7 @@ def main():
     ), "You must provide either instructions for the agent or a session_id."
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
-    _, exec_tools = load_llm_tools(args.tools.split(","), inputs, logger)
+    llm_tools: Dict[ToolkitType, Toolkit] = load_llm_tools(args.tools.split(","), inputs, logger)
     indexer = PythonIndexer(root_py_path())
 
     initial_payload = {
@@ -65,7 +66,7 @@ def main():
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
         instructions=args.instructions,
-        tools=exec_tools,
+        llm_tools=llm_tools,
         version=args.version,
         model=args.model,
         session_id=args.session_id,

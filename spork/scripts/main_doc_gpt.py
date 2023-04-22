@@ -34,4 +34,5 @@ if __name__ == "__main__":
         temperature=args.temperature,
         verbose=args.verbose,
     )
-    doc_gpt.run()
+    input_text = "What is a class?"
+    doc_gpt.run(input_text)

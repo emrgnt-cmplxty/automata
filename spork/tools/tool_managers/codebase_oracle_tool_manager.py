@@ -1,6 +1,6 @@
 from typing import List
 
-from spork.tools import Tool
+from spork.tools.base.tool import Tool
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.tool_managers.base_tool_manager import BaseToolManager
 from spork.tools.utils import run_retrieval_chain_with_sources_format
@@ -14,9 +14,7 @@ class CodebaseOracleToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="codebase-oracle-agent",
-                func=lambda q: run_retrieval_chain_with_sources_format(
-                    self.codebase_oracle.get_chain(), q
-                ),
+                func=lambda query: self._run_codebase_oracle_agent(query),
                 description="Exposes the run command a codebase oracle, which conducts a semantic search on the code repository using natural language queries, and subsequently returns the results to the master",
                 return_direct=True,
                 verbose=True,
@@ -25,4 +23,8 @@ class CodebaseOracleToolManager(BaseToolManager):
         return tools
 
     def build_tools_with_meeseeks(self) -> List[Tool]:
-        return []
+        raise NotImplementedError
+
+    def _run_codebase_oracle_agent(self, query: str) -> str:
+        result = run_retrieval_chain_with_sources_format(self.codebase_oracle.get_chain(), query)
+        return result

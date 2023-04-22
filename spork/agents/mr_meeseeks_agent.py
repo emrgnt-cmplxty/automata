@@ -7,10 +7,10 @@
 
  
         inputs = {"model": args.model}
-        tool_payload, exec_tools = load_llm_tools(tools_list, inputs, logger)
+        llm_tools = load_llm_tools(tools_list, inputs, logger)
 
         initial_payload = {
-            "overview": tool_payload["python_indexer"].get_overview(),
+            "overview": python_inexer.get_overview(),
         }
 
         logger.info("Passing in instructions: %s", args.instructions)
@@ -18,7 +18,7 @@
         agent = MrMeeseeksAgent(
             initial_payload=initial_payload,
             instructions=args.instructions,
-            tools=exec_tools,
+            llm_tools=llm_tools,
             version=args.version,
             model=args.model,
             session_id=args.session_id,
@@ -37,10 +37,10 @@ from typing import Dict, List, Optional, Tuple
 
 import openai
 import yaml
-from langchain.tools.base import BaseTool
 from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
+from spork.tools.base.tool_utils import Toolkit, ToolkitType
 from spork.tools.utils import format_config_path
 
 from .agent_configs.agent_version import AgentVersion
@@ -60,7 +60,7 @@ class MrMeeseeksAgent:
     def __init__(
         self,
         initial_payload: Dict[str, str],
-        tools: List[BaseTool],
+        llm_tools: Dict[ToolkitType, Toolkit],
         instructions: str,
         version: AgentVersion = AgentVersion.MEESEEKS_MASTER_V2,
         model: str = "gpt-4",
@@ -72,7 +72,7 @@ class MrMeeseeksAgent:
         Args:
             initial_payload (Dict[str, str]): The initial payload to be used for the agent.
             initial_instructions (List[Dict[str, str]]): The initial instructions to be used for the agent.
-            tools (List[BaseTool]): The tools to be used for the agent.
+            tools (Dict[ToolkitType, Toolkit] ): The tools to be used for the agent.
             version (AgentVersion, optional): The version of the agent. Defaults to AgentVersion.MEESEEKS_MASTER_V1.
             model (str, optional): The model to be used for the agent. Defaults to "gpt-4".
             session_id (Optional[str], optional): The session id to be used for the agent. Defaults to None.
@@ -80,7 +80,7 @@ class MrMeeseeksAgent:
         Attributes:
             model (str): The model to be used for the agent.
             version (AgentVersion): The version of the agent.
-            tools (List[BaseTool]): The tools to be used for the agent.
+            tools (Dict[ToolkitType, Toolkit] ): The tools to be used for the agent.
             messages (List[Dict[str, str]]): The messages that have been sent to the agent.
             session_id (str): The session id to be used for the agent.
 
@@ -96,14 +96,19 @@ class MrMeeseeksAgent:
         # Initialize state variables
         self.model = model
         self.version = version
-        self.tools = tools
+        self.toolkits = llm_tools
         self.messages: List[Dict[str, str]] = []
         self.stream = stream
         self.verbose = verbose
 
         initial_payload["tools"] = "".join(
-            ["\n%s: %s\n" % (tool.name, tool.description) for tool in self.tools]
+            [
+                f"\n{tool.name}: {tool.description}\n"
+                for toolkit in self.toolkits.values()
+                for tool in toolkit.tools
+            ]
         )
+
         prompt = self._load_prompt(initial_payload)
 
         self._init_database()
@@ -247,24 +252,29 @@ class MrMeeseeksAgent:
         logger.info("Tool Calls: %s" % tool_calls)
         outputs = []
         for tool_request in tool_calls:
-            tool, tool_input = tool_request["tool"], tool_request["input"] or ""
+            requested_tool, requested_tool_input = (
+                tool_request["tool"],
+                tool_request["input"] or "",
+            )
             # Skip the meeseeks-initializer tool
-            if tool == "meeseeks-initializer":
+            if requested_tool == "meeseeks-initializer":
                 continue
-            if tool == "error-reporter":
+            if requested_tool == "error-reporter":
                 # In the event of an error, the tool_input becomes the output, as it is now a parsing error
-                tool_output = tool_input
-                outputs.append(tool_input)
+                tool_output = requested_tool_input
+                outputs.append(requested_tool_input)
             else:
                 tool_found = False
-                for tool_instance in self.tools:
-                    if tool_instance.name == tool:
-                        tool_output = tool_instance.run(tool_input, verbose=False)
-                        outputs.append(tool_output)
-                        tool_found = True
-                        break  # Tool found, no need to continue the loop
-                if not tool_found:
-                    error_message = f"Error: Tool '{tool}' not found."
+                for toolkit in self.toolkits.values():
+                    for tool in toolkit.tools:
+                        if tool.name == requested_tool:
+                            tool_output = tool.run(requested_tool_input, verbose=False)
+                            outputs.append(tool_output)
+                            tool_found = True
+                            break  # Tool found, no need to continue the inner loop
+                    if tool_found:
+                        break  # Tool found, no need to continue the outer loop                if not tool_found:
+                    error_message = f"Error: Tool '{requested_tool}' not found."
                     outputs.append(error_message)
         return outputs
 

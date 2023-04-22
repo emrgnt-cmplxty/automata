@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from typing import List, Tuple
+
 import openai
 from langchain import FAISS, PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
@@ -11,8 +12,11 @@ from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 from langchain.schema import AIMessage, Document, HumanMessage
 from langchain.text_splitter import CharacterTextSplitter
 
+from spork.config import OPENAI_API_KEY
 from spork.tools.utils import NumberedLinesTextLoader, root_path
-from spork.config import *
+
+# TODO - Move to config approach
+# TODO - Fix type errors
 
 prompt_template = """Use the following pieces of context to answer the question about a codebase.
 This codebase is giving to you in context, and it's called improved-spork.
@@ -51,14 +55,14 @@ class CodebaseOracle:
 
     @staticmethod
     def get_default_codebase_oracle() -> "CodebaseOracle":
-        llm = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")
+        llm = ChatOpenAI(streaming=True, temperature=0.7, model_name="gpt-4")  # type: ignore
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
         read_only_memory = ReadOnlySharedMemory(memory=memory)
-        return CodebaseOracle(root_path(), llm, read_only_memory)
+        return CodebaseOracle(root_path(), llm, read_only_memory)  # type: ignore
 
     def _build_chain(self) -> None:
         docs = []
-        embeddings = OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings()  # type: ignore
         for dirpath, dirnames, filenames in os.walk(self.codebase_path):
             if not CodebaseOracle._is_excluded(dirpath):
                 directory_document = Document(

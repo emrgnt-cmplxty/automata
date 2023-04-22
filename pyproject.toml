@@ -56,7 +56,7 @@ skip_glob = "local_env/*"
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(random|local_env|data|results|notebooks)/'
+exclude = '(random|local_env|data|results|notebooks|sample_code)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"

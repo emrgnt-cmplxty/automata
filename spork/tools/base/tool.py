@@ -27,7 +27,7 @@ class Tool(BaseTool):
         self, name: str, func: Callable[[str], str], description: str, **kwargs: Any
     ) -> None:
         """Initialize tool."""
-        super(Tool, self).__init__(name=name, func=func, description=description, **kwargs)
+        super(Tool, self).__init__(name=name, func=func, description=description, **kwargs)  # type: ignore
 
 
 class InvalidTool(BaseTool):
