@@ -20,8 +20,8 @@ TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 import logging
 from typing import List, Optional, Tuple
 
-from spork.agents.agent_configs.agent_version import AgentVersion
-from spork.tools import Tool
+from spork.configs.agent_configs import AgentVersion
+from spork.core.base.tool import Tool
 
 from ..python_tools.python_indexer import PythonIndexer
 from .base_tool_manager import BaseToolManager
@@ -107,8 +107,8 @@ class PythonIndexerToolManager(BaseToolManager):
             return "Failed to retrieve docstring with error - " + str(e)
 
     def _run_meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
-        from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-        from spork.tools.base.tool_utils import load_llm_toolkits
+        from spork.core import load_llm_toolkits
+        from spork.core.agents.mr_meeseeks_agent import MrMeeseeksAgent
 
         """Mr. Meeseeks retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:

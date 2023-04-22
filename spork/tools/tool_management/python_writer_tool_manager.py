@@ -17,8 +17,8 @@ Example -
 import logging
 from typing import List
 
-from spork.agents.agent_configs.agent_version import AgentVersion
-from spork.tools import Tool
+from spork.configs.agent_configs import AgentVersion
+from spork.core.base.tool import Tool
 
 from ..python_tools.python_writer import PythonWriter
 from .base_tool_manager import BaseToolManager
@@ -65,8 +65,8 @@ class PythonWriterToolManager(BaseToolManager):
             return "Failed to update the module with error - " + str(e)
 
     def meeseeks_update_module(self, input_str: str) -> str:
-        from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-        from spork.tools.base.tool_utils import load_llm_toolkits
+        from spork.core import load_llm_toolkits
+        from spork.core.agents.mr_meeseeks_agent import MrMeeseeksAgent
 
         try:
             initial_payload = {

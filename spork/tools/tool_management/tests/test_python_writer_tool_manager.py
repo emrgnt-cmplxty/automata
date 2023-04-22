@@ -5,18 +5,18 @@ import textwrap
 
 import pytest
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
+from spork.core.utils import root_py_path
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.python_tools.python_writer import PythonWriter
-from spork.tools.tool_managers.python_writer_tool_manager import PythonWriterToolManager
-from spork.tools.utils import root_py_path
+from spork.tools.tool_management.python_writer_tool_manager import PythonWriterToolManager
 
 
 @pytest.fixture
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    path_to_here = os.path.join(root_py_path(), "tools", "tool_managers", "tests")
+    path_to_here = os.path.join(root_py_path(), "tools", "tool_management", "tests")
     python_indexer = PythonIndexer(path_to_here)
 
     python_writer = PythonWriter(python_indexer)
@@ -121,7 +121,7 @@ def test_extend_module_with_documented_new_class(python_writer_tool_builder):
     class_str = textwrap.dedent(
         '''from typing import List
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
 
 from spork.tools.python_tools.python_agent import PythonAgent
 
@@ -209,4 +209,4 @@ class PythonAgentToolBuilder:
     code_writer = tools[0]
     code_writer.func(combo_str)
     # # Why?
-    shutil.rmtree(os.path.join(root_py_path(), "tools", "tool_managers", "tests", "temp_code"))
+    shutil.rmtree(os.path.join(root_py_path(), "tools", "tool_management", "tests", "temp_code"))

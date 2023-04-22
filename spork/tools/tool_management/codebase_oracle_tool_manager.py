@@ -1,9 +1,9 @@
 from typing import List
 
-from spork.tools.base.tool import Tool
+from spork.core.base.tool import Tool
+from spork.core.utils import run_retrieval_chain_with_sources_format
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
-from spork.tools.tool_managers.base_tool_manager import BaseToolManager
-from spork.tools.utils import run_retrieval_chain_with_sources_format
+from spork.tools.tool_management.base_tool_manager import BaseToolManager
 
 
 class CodebaseOracleToolManager(BaseToolManager):

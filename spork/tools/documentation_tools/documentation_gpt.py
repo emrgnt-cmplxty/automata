@@ -16,7 +16,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import WebBaseLoader
 from langchain.embeddings import OpenAIEmbeddings
 
-from ..utils import get_logging_config
+from ...core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
 

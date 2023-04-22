@@ -2,8 +2,8 @@ import argparse
 import logging
 import logging.config
 
-from spork.agents.agent_configs.agent_version import AgentVersion
-from spork.tools.utils import get_logging_config
+from spork.configs.agent_configs import AgentVersion
+from spork.core.utils import get_logging_config
 
 
 def update_docstrings():

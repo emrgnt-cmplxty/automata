@@ -40,10 +40,9 @@ import yaml
 from transformers import GPT2Tokenizer
 
 from spork.config import *  # noqa F403
-from spork.tools.base.tool_utils import Toolkit, ToolkitType
-from spork.tools.utils import format_config_path
-
-from .agent_configs.agent_version import AgentVersion
+from spork.configs.agent_configs import AgentVersion
+from spork.core import Toolkit, ToolkitType
+from spork.core.utils import format_config_path
 
 logger = logging.getLogger(__name__)
 

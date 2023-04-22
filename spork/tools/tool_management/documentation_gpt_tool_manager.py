@@ -1,8 +1,8 @@
 from typing import List
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
-from spork.tools.tool_managers.base_tool_manager import BaseToolManager
+from spork.tools.tool_management.base_tool_manager import BaseToolManager
 
 
 class DocumentationGPTToolManager(BaseToolManager):

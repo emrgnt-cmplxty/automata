@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
 
 
 class BaseToolManager(ABC):

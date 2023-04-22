@@ -91,7 +91,7 @@ template: >
     Action:
     {
       "tool": "python-writer-update-module", 
-      "input": "tools.python_tools.tool_managers.base_tool_manager,BaseToolManager,def f(self, x):\n    return x^2\n"
+      "input": "tools.python_tools.tool_management.base_tool_manager,BaseToolManager,def f(self, x):\n    return x^2\n"
     }
   User:
     Observation:

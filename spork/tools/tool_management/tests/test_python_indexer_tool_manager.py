@@ -3,15 +3,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
+from spork.core.utils import root_py_path
 from spork.tools.python_tools.python_indexer import PythonIndexer
-from spork.tools.tool_managers.python_indexer_tool_manager import PythonIndexerToolManager
-from spork.tools.utils import root_py_path
+from spork.tools.tool_management.python_indexer_tool_manager import PythonIndexerToolManager
 
 
 @pytest.fixture
 def python_indexer_tool_builder():
-    path_to_here = os.path.join(root_py_path(), "tools", "tool_managers", "tests")
+    path_to_here = os.path.join(root_py_path(), "tools", "tool_management", "tests")
     python_indexer = PythonIndexer(path_to_here)
     return PythonIndexerToolManager(python_indexer)
 

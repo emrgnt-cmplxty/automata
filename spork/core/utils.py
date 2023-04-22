@@ -59,7 +59,7 @@ def format_config_path(config_dir: str, config_path: str) -> str:
     Returns:
     - The path to the config file.
     """
-    return os.path.join(root_path(), "spork", "agents", config_dir, config_path)
+    return os.path.join(root_path(), "spork", "configs", config_dir, config_path)
 
 
 def get_logging_config(log_level=logging.INFO) -> dict:

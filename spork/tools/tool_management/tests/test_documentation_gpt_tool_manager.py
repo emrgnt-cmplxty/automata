@@ -1,8 +1,8 @@
 import pytest
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
-from spork.tools.tool_managers.documentation_gpt_tool_manager import DocumentationGPTToolManager
+from spork.tools.tool_management.documentation_gpt_tool_manager import DocumentationGPTToolManager
 
 
 @pytest.fixture

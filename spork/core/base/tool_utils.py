@@ -2,11 +2,12 @@ import logging
 from enum import Enum, auto
 from typing import Dict, List, Optional
 
+from spork.core.utils import root_py_path
 from spork.tools.documentation_tools.documentation_gpt import DocumentationGPT
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.python_tools.python_writer import PythonWriter
-from spork.tools.tool_managers import (
+from spork.tools.tool_management import (
     CodebaseOracleToolManager,
     DocumentationGPTToolManager,
     PythonIndexerToolManager,
@@ -14,8 +15,7 @@ from spork.tools.tool_managers import (
     build_tools,
     build_tools_with_meeseeks,
 )
-from spork.tools.tool_managers.base_tool_manager import BaseToolManager
-from spork.tools.utils import root_py_path
+from spork.tools.tool_management.base_tool_manager import BaseToolManager
 
 from .tool import Tool
 
@@ -48,7 +48,7 @@ class ToolkitBuilder:
 
         self.inputs = inputs
         self.logger = logger
-        self._tool_managers: Dict[ToolkitType, BaseToolManager] = {}
+        self._tool_management: Dict[ToolkitType, BaseToolManager] = {}
 
     def _build_toolkit(self, toolkit_type: ToolkitType) -> Optional[Toolkit]:
         """Builds a toolkit of the given type."""

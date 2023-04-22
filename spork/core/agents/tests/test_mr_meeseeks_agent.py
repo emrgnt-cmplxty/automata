@@ -2,10 +2,10 @@ import logging
 
 import pytest
 
-from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-from spork.tools.base.tool_utils import load_llm_toolkits
+from spork.core import load_llm_toolkits
+from spork.core.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.core.utils import root_py_path
 from spork.tools.python_tools.python_indexer import PythonIndexer
-from spork.tools.utils import root_py_path
 
 
 @pytest.fixture

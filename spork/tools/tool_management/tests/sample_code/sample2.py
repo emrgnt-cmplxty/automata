@@ -1,6 +1,6 @@
 from typing import List
 
-from spork.tools import Tool
+from spork.core.base.tool import Tool
 from spork.tools.python_tools.python_agent import PythonAgent
 
 

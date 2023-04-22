@@ -2,7 +2,7 @@
 from inspect import signature
 from typing import Any, Awaitable, Callable, Optional, Union
 
-from spork.tools.base.base import BaseTool
+from spork.core.base.base_tool import BaseTool
 
 
 class Tool(BaseTool):

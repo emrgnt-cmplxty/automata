@@ -4,7 +4,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
 from spork.tools.oracle.codebase_oracle import CodebaseOracle
-from spork.tools.tool_managers.codebase_oracle_tool_manager import CodebaseOracleToolManager
+from spork.tools.tool_management.codebase_oracle_tool_manager import CodebaseOracleToolManager
 
 
 class TestCodebaseOracleToolManager:

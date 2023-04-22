@@ -22,7 +22,7 @@ import os
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
 from typing import Dict, Optional, Union, cast
 
-from spork.tools.utils import root_path
+from spork.core.utils import root_path
 
 logger = logging.getLogger(__name__)
 
