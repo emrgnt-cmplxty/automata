@@ -8,10 +8,10 @@ The PythonIndexerToolManager class builds a list of Tool objects, each represent
 command to interact with the PythonIndexer API.
 
 Attributes:
-- python_parser (PythonIndexer): A PythonIndexer object representing the code parser to work with.
+- indexer (PythonIndexer): A PythonIndexer object representing the code parser to work with.
 
 Example usage:
-    python_parser = PythonIndexer()
+    python_indexer = PythonIndexer()
     python_parser_tool_builder = PythonIndexerToolManager(python_parser)
     tools = python_parser_tool_builder.build_tools()
 

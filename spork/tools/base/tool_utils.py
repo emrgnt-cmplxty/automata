@@ -21,6 +21,8 @@ from .tool import Tool
 
 
 class Toolkit:
+    """A toolkit of tools."""
+
     def __init__(self, tools: List[Tool]):
         self.tools = tools
 
@@ -29,6 +31,8 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
+    """An enum representing the different types of toolkits that can be built."""
+
     PYTHON_INDEXER = auto()
     PYTHON_WRITER = auto()
     CODEBASE_ORACLE = auto()
@@ -40,11 +44,15 @@ class ToolkitType(Enum):
 
 class ToolkitBuilder:
     def __init__(self, inputs: Dict[str, str], logger: logging.Logger):
+        """Initializes a ToolkitBuilder object with the given inputs."""
+
         self.inputs = inputs
         self.logger = logger
         self._tool_managers: Dict[ToolkitType, BaseToolManager] = {}
 
     def _build_toolkit(self, toolkit_type: ToolkitType) -> Optional[Toolkit]:
+        """Builds a toolkit of the given type."""
+
         tool_manager: Optional[BaseToolManager] = None
         if toolkit_type == ToolkitType.PYTHON_INDEXER:
             python_indexer = PythonIndexer(root_py_path())
@@ -103,6 +111,7 @@ def load_llm_toolkits(
     Raises:
         ValueError: If an unknown tool is specified.
     """
+
     toolkits: Dict[ToolkitType, Toolkit] = {}
     toolkit_builder = ToolkitBuilder(inputs, logger)
 

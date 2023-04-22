@@ -4,8 +4,8 @@ choose a work item to work on, and remove HTML tags from text."""
 import logging
 import os
 from typing import Any, List
-import yaml
 
+import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 from langchain.document_loaders import TextLoader
 from langchain.schema import Document

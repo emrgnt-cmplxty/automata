@@ -338,6 +338,7 @@ class MrMeeseeksAgent:
 
     @staticmethod
     def _extract_tool_and_input(json_object_str: List[str]) -> List[Tuple[str, Optional[str]]]:
+        """Extract the tool and input from the JSON object string."""
         results = []
         for json_object in json_object_str:
             tool_tag, input_tag = '"tool":', '"input":'
@@ -359,6 +360,7 @@ class MrMeeseeksAgent:
 
     @staticmethod
     def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
+        """Parse the input string into a list of tool and input pairs."""
         extracted_json_objects = MrMeeseeksAgent._extract_json_objects(input_str)
         tool_input_pairs = MrMeeseeksAgent._extract_tool_and_input(extracted_json_objects)
         parsed_entries = []
@@ -368,6 +370,7 @@ class MrMeeseeksAgent:
 
     @staticmethod
     def is_completion_message(message: str):
+        """Check if the message is a completion message."""
         match_filter = "result_0"
         match_string = '"%s":' % (match_filter)
         return match_string in message

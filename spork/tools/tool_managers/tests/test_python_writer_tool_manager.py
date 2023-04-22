@@ -24,7 +24,7 @@ def python_writer_tool_builder(tmpdir):
 
 
 def test_init(python_writer_tool_builder):
-    assert isinstance(python_writer_tool_builder.python_writer, PythonWriter)
+    assert isinstance(python_writer_tool_builder.writer, PythonWriter)
 
 
 def test_build_tools(python_writer_tool_builder):

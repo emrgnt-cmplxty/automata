@@ -1,3 +1,19 @@
+"""
+PythonWriterToolManager
+
+A class for interacting with the PythonWriter API, which provides functionality to modify
+the code state of a given directory of Python files.
+
+Attributes:
+- writer (PythonWriter): A PythonWriter object for manipulating local pythonf iles.
+
+Example - 
+    Build a list of Tool objects for interacting with PythonWriter:
+    python_indexer = PythonIndexer(root_py_path())
+    python_writer = PythonWriter(python_indexer)
+    python_writer_tool_manager = PythonWriterToolManager(python_writer)
+    tools = build_tools(tool_manager)
+"""
 import logging
 from typing import List
 
@@ -25,19 +41,19 @@ class PythonWriterToolManager(BaseToolManager):
         Initializes a PythonWriterToolManager object with the given inputs.
 
         Args:
-        - python_writer (PythonWriter): A PythonWriter object representing the code writer to work with.
+        - writer (PythonWriter): A PythonWriter object representing the code writer to work with.
 
         Returns:
         - None
         """
-        self.python_writer = python_writer
+        self.writer = python_writer
 
     def writer_update_module(self, input_str: str) -> str:
         module_path = input_str.split(",")[0]
         class_name = input_str.split(",")[1]
         code = ",".join(input_str.split(",")[2:]).strip()
         try:
-            self.python_writer.update_module(
+            self.writer.update_module(
                 source_code=code,
                 extending_module=True,
                 module_path=module_path,
@@ -54,7 +70,7 @@ class PythonWriterToolManager(BaseToolManager):
 
         try:
             initial_payload = {
-                "overview": self.python_writer.indexer.get_overview(),
+                "overview": self.writer.indexer.get_overview(),
             }
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
