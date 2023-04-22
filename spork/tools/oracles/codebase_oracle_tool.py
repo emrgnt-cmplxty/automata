@@ -66,12 +66,12 @@ class CodebaseOracleToolBuilder:
                             docs.extend(loader.load())
                         except Exception as e:
                             print(dirpath, file, e)
-        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=500)
+        text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         texts = text_splitter.split_documents(docs)
         docsearch = FAISS.from_documents(texts, embeddings)
         self._chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
-            retriever=docsearch.as_retriever(),
+            retriever=docsearch.as_retriever(search_type="mmr"),
             qa_prompt=QA_PROMPT,
             memory=self.memory,
             return_source_documents=True,
@@ -109,6 +109,7 @@ class CodebaseOracleToolBuilder:
             "_build",
             "buck-out",
             "random",
+            "sqlite",
         ]
         for exclusion in exclusions:
             if exclusion in path:
