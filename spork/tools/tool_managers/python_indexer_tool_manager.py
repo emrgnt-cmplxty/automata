@@ -17,16 +17,16 @@ Example usage:
 
 TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 """
+import logging
 from typing import List, Optional, Tuple
 
 from spork.agents.agent_configs.agent_version import AgentVersion
-from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools import Tool
-from spork.tools.oracle.codebase_oracle import CodebaseOracle
-from spork.tools.tool_managers.codebase_oracle_tool_manager import CodebaseOracleToolManager
 
 from ..python_tools.python_indexer import PythonIndexer
 from .base_tool_manager import BaseToolManager
+
+logger = logging.getLogger(__name__)
 
 
 class PythonIndexerToolManager(BaseToolManager):
@@ -61,7 +61,7 @@ class PythonIndexerToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="python-indexer-retrieve-code",
-                func=lambda module_comma_object_path: self._indexer_retrieve_code(
+                func=lambda module_comma_object_path: self._run_indexer_retrieve_code(
                     module_comma_object_path
                 ),
                 description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is "my_directory.my_file,my_function". If the function is defined in a class, MyClass, then the correct tool input is "my_directory.my_file,MyClass.my_function".',
@@ -70,7 +70,7 @@ class PythonIndexerToolManager(BaseToolManager):
             ),
             Tool(
                 name="python-indexer-retrieve-docstring",
-                func=lambda module_comma_object_path: self._indexer_retrieve_docstring(
+                func=lambda module_comma_object_path: self._run_indexer_retrieve_docstring(
                     module_comma_object_path
                 ),
                 description=f"Identical to python-indexer-retrieve-code, except returns the docstring instead of raw code.",
@@ -84,13 +84,13 @@ class PythonIndexerToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="meeseeks-indexer-retrieve-code",
-                func=lambda path_str: self._meeseeks_indexer_retrieve_code(path_str),
+                func=lambda path_str: self._run_meeseeks_indexer_retrieve_code(path_str),
                 description="Mr. Meeseeks parses a natural language query to retrieve the correct code, docstrings, and import statements necessary to solve an abstract task",
             ),
         ]
         return tools
 
-    def _indexer_retrieve_code(self, input_str: str) -> str:
+    def _run_indexer_retrieve_code(self, input_str: str) -> str:
         try:
             module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_code(module_path, object_path)
@@ -98,7 +98,7 @@ class PythonIndexerToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
 
-    def _indexer_retrieve_docstring(self, input_str: str) -> str:
+    def _run_indexer_retrieve_docstring(self, input_str: str) -> str:
         try:
             module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_docstring(module_path, object_path)
@@ -106,15 +106,19 @@ class PythonIndexerToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
 
-    def _meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
+    def _run_meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
+        from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+        from spork.tools.base.tool_utils import load_llm_toolkits
+
         """Mr. Meeseeks retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
+            print("Running _run_meeseeks_indexer_retrieve_code with path_str - ", path_str)
             initial_payload = {"overview": self.indexer.get_overview()}
             instructions = f"Retrieve the code for {path_str}"
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=instructions,
-                tools=self.build_tools(),
+                llm_toolkits=load_llm_toolkits(["python_indexer"], inputs={}, logger=logger),
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,

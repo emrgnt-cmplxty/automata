@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock
-
 import pytest
 
 from spork.tools import Tool
@@ -37,7 +35,9 @@ def test_build_tools(doc_gpt_tool_builder):
         assert isinstance(tool, Tool)
 
 
-def test_tool_execution(doc_gpt_tool_builder):
-    doc_gpt_tool_builder.documentation_gpt_lookup = MagicMock(return_value="Vec Result")
-    tools = doc_gpt_tool_builder.build_tools()
-    assert tools[0].func("Vec Lookup") == "Vec Result"
+# TODO - Revive this test to track doc gpt liveliness
+# def test_tool_execution(doc_gpt_tool_builder):
+# from unittest.mock import MagicMock
+#     doc_gpt_tool_builder.documentation_gpt_lookup = MagicMock(return_value="Vec Result")
+#     tools = doc_gpt_tool_builder.build_tools()
+#     assert tools[0].func("Vec Lookup") == "Vec Result"

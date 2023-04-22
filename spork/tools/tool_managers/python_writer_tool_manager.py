@@ -1,11 +1,13 @@
+import logging
 from typing import List
 
 from spork.agents.agent_configs.agent_version import AgentVersion
-from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
 from spork.tools import Tool
 
 from ..python_tools.python_writer import PythonWriter
 from .base_tool_manager import BaseToolManager
+
+logger = logging.getLogger(__name__)
 
 
 class PythonWriterToolManager(BaseToolManager):
@@ -47,6 +49,9 @@ class PythonWriterToolManager(BaseToolManager):
             return "Failed to update the module with error - " + str(e)
 
     def meeseeks_update_module(self, input_str: str) -> str:
+        from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
+        from spork.tools.base.tool_utils import load_llm_toolkits
+
         try:
             initial_payload = {
                 "overview": self.python_writer.indexer.get_overview(),
@@ -54,7 +59,7 @@ class PythonWriterToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=input_str,
-                tools=self.build_tools(),
+                llm_toolkits=load_llm_toolkits(["python_writer"], inputs={}, logger=logger),
                 version=AgentVersion.MEESEEKS_WRITER_V2,
                 model="gpt-4",
                 stream=True,

@@ -1,5 +1,6 @@
 import inspect
 import os
+import shutil
 import textwrap
 
 import pytest
@@ -40,18 +41,15 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     tools = python_writer_tool_builder.build_tools()
     code_writer = tools[0]
-    print("code_writer = ", code_writer)
     function_def = "def f(x):\n    return x + 1"
     package = "sample_code"
     module = "sample3"
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    print("file_py_path = ", file_py_path)
     code_writer.func(f"{file_py_path},,{function_def}")
 
     new_sample_text = None
-    print("file_abs_path = ", file_abs_path)
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
     assert new_sample_text.strip() == function_def
@@ -211,4 +209,4 @@ class PythonAgentToolBuilder:
     code_writer = tools[0]
     code_writer.func(combo_str)
     # # Why?
-    # shutil.rmtree(os.path.join(root_py_path(), "tools", "tool_managers", "tests", "temp_code"))
+    shutil.rmtree(os.path.join(root_py_path(), "tools", "tool_managers", "tests", "temp_code"))
