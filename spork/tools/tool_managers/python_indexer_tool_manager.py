@@ -108,7 +108,7 @@ class PythonIndexerToolManager(BaseToolManager):
 
     def _run_meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
         from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-        from spork.tools.base.tool_utils import load_llm_tools
+        from spork.tools.base.tool_utils import load_llm_toolkits
 
         """Mr. Meeseeks retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
@@ -118,7 +118,7 @@ class PythonIndexerToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=instructions,
-                llm_tools=load_llm_tools(["python_indexer"], inputs={}, logger=logger),
+                llm_toolkits=load_llm_toolkits(["python_indexer"], inputs={}, logger=logger),
                 version=AgentVersion.MEESEEKS_RETRIEVER_V2,
                 model="gpt-4",
                 stream=True,

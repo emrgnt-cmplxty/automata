@@ -50,7 +50,7 @@ class PythonWriterToolManager(BaseToolManager):
 
     def meeseeks_update_module(self, input_str: str) -> str:
         from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-        from spork.tools.base.tool_utils import load_llm_tools
+        from spork.tools.base.tool_utils import load_llm_toolkits
 
         try:
             initial_payload = {
@@ -59,7 +59,7 @@ class PythonWriterToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=input_str,
-                llm_tools=load_llm_tools(["python_writer"], inputs={}, logger=logger),
+                llm_toolkits=load_llm_toolkits(["python_writer"], inputs={}, logger=logger),
                 version=AgentVersion.MEESEEKS_WRITER_V2,
                 model="gpt-4",
                 stream=True,

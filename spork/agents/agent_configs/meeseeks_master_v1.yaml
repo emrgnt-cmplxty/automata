@@ -102,7 +102,7 @@ template: >
                   try:
                       initial_payload = {'overview': self.indexer.get_overview()}
                       instructions = f"Retrieve the code for {path_str}"
-                      agent = MrMeeseeksAgent(initial_payload=initial_payload, instructions=instructions, llm_tools=self.build_tools(), version=AgentVersion.MEESEEKS_WRITER_V1, model='gpt-4', stream=True)
+                      agent = MrMeeseeksAgent(initial_payload=initial_payload, instructions=instructions, llm_toolkits=self.build_tools(), version=AgentVersion.MEESEEKS_WRITER_V1, model='gpt-4', stream=True)
                       agent.run()
                       return 'Success'
                   except Exception as e:

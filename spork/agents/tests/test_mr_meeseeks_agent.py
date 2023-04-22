@@ -3,7 +3,7 @@ import logging
 import pytest
 
 from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-from spork.tools.base.tool_utils import load_llm_tools
+from spork.tools.base.tool_utils import load_llm_toolkits
 from spork.tools.python_tools.python_indexer import PythonIndexer
 from spork.tools.utils import root_py_path
 
@@ -20,7 +20,7 @@ def mr_meeseeks_agent():
     tool_list = ["python_indexer"]
     inputs = {}  # Add any required inputs for the tools here
     logger = logging.getLogger(__name__)
-    mock_llm_tools = load_llm_tools(tool_list, inputs, logger)
+    mock_llm_toolkits = load_llm_toolkits(tool_list, inputs, logger)
 
     overview = python_indexer.get_overview()
 
@@ -29,7 +29,9 @@ def mr_meeseeks_agent():
     }
 
     agent = MrMeeseeksAgent(
-        initial_payload=initial_payload, instructions="Test instruction.", llm_tools=mock_llm_tools
+        initial_payload=initial_payload,
+        instructions="Test instruction.",
+        llm_toolkits=mock_llm_toolkits,
     )
     return agent
 

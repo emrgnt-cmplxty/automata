@@ -43,7 +43,7 @@ def update_docstrings():
     assert "python_indexer" in args.tools, "You must include the python_indexer tool."
     assert "python_writer" in args.tools, "You must include the python_writer tool."
     # inputs = {"documentation_url": args.documentation_url, "model": args.model}
-    # (tool_payload, exec_tools) = load_llm_tools(args.tools.split(","), inputs, logger)
+    # (tool_payload, exec_tools) = load_llm_toolkits(args.tools.split(","), inputs, logger)
     # (python_indexer, _) = (tool_payload["python_indexer"], tool_payload["python_writer"])
     # overview = python_indexer.get_overview()
     # initial_payload = {"overview": overview}
@@ -59,7 +59,7 @@ def update_docstrings():
     #     agent = MrMeeseeksAgent(
     #         initial_payload=initial_payload,
     #         instructions=instructions,
-    #         llm_tools=exec_tools,
+    #         llm_toolkits=exec_tools,
     #         version=args.version,
     #         model=args.model,
     #         session_id=args.session_id,

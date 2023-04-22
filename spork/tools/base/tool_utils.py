@@ -86,7 +86,7 @@ class ToolkitBuilder:
         return Toolkit(tools)
 
 
-def load_llm_tools(
+def load_llm_toolkits(
     tool_list: List[str], inputs: Dict[str, str], logger: logging.Logger
 ) -> Dict[ToolkitType, Toolkit]:
     """

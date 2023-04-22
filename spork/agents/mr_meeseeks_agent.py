@@ -7,7 +7,7 @@
 
  
         inputs = {"model": args.model}
-        llm_tools = load_llm_tools(tools_list, inputs, logger)
+        llm_toolkits = load_llm_toolkits(tools_list, inputs, logger)
 
         initial_payload = {
             "overview": python_inexer.get_overview(),
@@ -18,7 +18,7 @@
         agent = MrMeeseeksAgent(
             initial_payload=initial_payload,
             instructions=args.instructions,
-            llm_tools=llm_tools,
+            llm_toolkits=llm_toolkits,
             version=args.version,
             model=args.model,
             session_id=args.session_id,
@@ -60,7 +60,7 @@ class MrMeeseeksAgent:
     def __init__(
         self,
         initial_payload: Dict[str, str],
-        llm_tools: Dict[ToolkitType, Toolkit],
+        llm_toolkits: Dict[ToolkitType, Toolkit],
         instructions: str,
         version: AgentVersion = AgentVersion.MEESEEKS_MASTER_V2,
         model: str = "gpt-4",
@@ -96,7 +96,7 @@ class MrMeeseeksAgent:
         # Initialize state variables
         self.model = model
         self.version = version
-        self.toolkits = llm_tools
+        self.toolkits = llm_toolkits
         self.messages: List[Dict[str, str]] = []
         self.stream = stream
         self.verbose = verbose
