@@ -19,7 +19,7 @@ Main Packages and Modules:
    - make_planning_task: A function for generating a planning task for an agent.
    - make_execution_task: A function for generating an execution task for an agent.
 
-3. spork.tools.utils:
+3. spork.core.utils:
    A module providing functions to interact with the GitHub API. It includes listing repositories, issues, and pull requests, choosing a work item, and removing HTML tags from text.
 
 4. spork.tools.python_tools.python_indexer:
@@ -35,7 +35,7 @@ Main Packages and Modules:
 7. spork.tools.oracle.codebase_oracle:
    A codebase oracle module. The documentation for this module is currently unavailable.
 
-8. spork.agents.mr_meeseeks_agent:
+8. spork.core.agents.mr_meeseeks_agent:
    MrMeeseeksAgent is an autonomous agent that performs the actual work of the Spork system. Meeseeks are responsible for executing instructions and reporting the results back to the master.
 
 # Getting Started

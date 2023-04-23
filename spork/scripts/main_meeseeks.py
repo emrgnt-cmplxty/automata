@@ -3,11 +3,11 @@ import logging
 import logging.config
 from typing import Dict
 
-from spork.agents.agent_configs.agent_version import AgentVersion
-from spork.agents.mr_meeseeks_agent import MrMeeseeksAgent
-from spork.tools.base.tool_utils import Toolkit, ToolkitType, load_llm_toolkits
+from spork.configs.agent_configs import AgentVersion
+from spork.core import Toolkit, ToolkitType, load_llm_toolkits
+from spork.core.agents.mr_meeseeks_agent import MrMeeseeksAgent
+from spork.core.utils import get_logging_config, root_py_path
 from spork.tools.python_tools.python_indexer import PythonIndexer
-from spork.tools.utils import get_logging_config, root_py_path
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     parser.add_argument(
         "--version",
         type=AgentVersion,
-        default=AgentVersion.MEESEEKS_MASTER_V1,
+        default=AgentVersion.MEESEEKS_MASTER_V2,
         help="The version of the agent.",
     )
     parser.add_argument(

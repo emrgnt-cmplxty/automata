@@ -13,7 +13,7 @@ from langchain.schema import AIMessage, Document, HumanMessage
 from langchain.text_splitter import CharacterTextSplitter
 
 from spork.config import OPENAI_API_KEY
-from spork.tools.utils import NumberedLinesTextLoader, root_path
+from spork.core.utils import NumberedLinesTextLoader, root_path
 
 # TODO - Move to config approach
 # TODO - Fix type errors
