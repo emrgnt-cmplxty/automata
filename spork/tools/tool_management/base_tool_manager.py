@@ -1,17 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import List
-
-from spork.core.base.tool import Tool
+from typing import Any
 
 
 class BaseToolManager(ABC):
-    def __init__(self, code_processor):
-        self.code_processor = code_processor
-
-    @abstractmethod
-    def build_tools(self) -> List[Tool]:
+    def __init__(self, **kwargs):
         pass
 
     @abstractmethod
-    def build_tools_with_meeseeks(self) -> List[Tool]:
+    def build_tools(self) -> Any:
+        pass
+
+    @abstractmethod
+    def build_tools_with_meeseeks(self) -> Any:
         pass

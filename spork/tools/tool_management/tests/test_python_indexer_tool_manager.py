@@ -13,7 +13,7 @@ from spork.tools.tool_management.python_indexer_tool_manager import PythonIndexe
 def python_indexer_tool_builder():
     path_to_here = os.path.join(root_py_path(), "tools", "tool_management", "tests")
     python_indexer = PythonIndexer(path_to_here)
-    return PythonIndexerToolManager(python_indexer)
+    return PythonIndexerToolManager(python_indexer=python_indexer)
 
 
 def test_init(python_indexer_tool_builder):
@@ -22,7 +22,7 @@ def test_init(python_indexer_tool_builder):
 
 def test_build_tools(python_indexer_tool_builder):
     tools = python_indexer_tool_builder.build_tools()
-    assert len(tools) == 2
+    assert len(tools) == 3
     for tool in tools:
         assert isinstance(tool, Tool)
 

@@ -6,8 +6,8 @@ from spork.tools.tool_management.base_tool_manager import BaseToolManager
 
 
 class DocumentationGPTToolManager(BaseToolManager):
-    def __init__(self, documentation_gpt: DocumentationGPT):
-        self.documentation_gpt = documentation_gpt
+    def __init__(self, **kwargs):
+        self.documentation_gpt: DocumentationGPT = kwargs.get("documentation_gpt")
 
     def build_tools(self):
         tools = [

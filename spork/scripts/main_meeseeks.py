@@ -55,19 +55,41 @@ def main():
 
     inputs = {"documentation_url": args.documentation_url, "model": args.model}
     llm_toolkits: Dict[ToolkitType, Toolkit] = load_llm_toolkits(
-        args.toolkits.split(","), inputs, logger
+        args.toolkits.split(","), **inputs
     )
     indexer = PythonIndexer(root_py_path())
 
     initial_payload = {
         "overview": indexer.get_overview(),
     }
+    instructions = '''Write the following module -         
+        '
+        """This is a sample module for testing"""
+
+
+        def test_function() -> bool:
+            """This is my new function"""
+            return True
+
+
+        class TestClass:
+            """This is my test class"""
+
+            def __init__(self):
+                """This initializes TestClass"""
+                pass
+
+            def test_method(self) -> bool:
+                """This is my test method"""
+                return False
+        '
+        to the file core.tests.sample_code.test2'''
 
     logger.info("Passing in instructions: %s", args.instructions)
     logger.info("-" * 100)
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
-        instructions=args.instructions,
+        instructions=instructions,  # args.instructions,
         llm_toolkits=llm_toolkits,
         version=args.version,
         model=args.model,

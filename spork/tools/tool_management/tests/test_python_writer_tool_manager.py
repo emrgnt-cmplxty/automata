@@ -20,7 +20,7 @@ def python_writer_tool_builder(tmpdir):
     python_indexer = PythonIndexer(path_to_here)
 
     python_writer = PythonWriter(python_indexer)
-    return PythonWriterToolManager(python_writer)
+    return PythonWriterToolManager(python_writer=python_writer)
 
 
 def test_init(python_writer_tool_builder):

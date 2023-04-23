@@ -19,6 +19,8 @@ from spork.tools.tool_management.base_tool_manager import BaseToolManager
 
 from .tool import Tool
 
+logger = logging.getLogger(__name__)
+
 
 class Toolkit:
     """A toolkit of tools."""
@@ -43,45 +45,50 @@ class ToolkitType(Enum):
 
 
 class ToolkitBuilder:
-    def __init__(self, inputs: Dict[str, str], logger: logging.Logger):
+    def __init__(self, **kwargs):
         """Initializes a ToolkitBuilder object with the given inputs."""
 
-        self.inputs = inputs
-        self.logger = logger
+        self.inputs = kwargs
         self._tool_management: Dict[ToolkitType, BaseToolManager] = {}
 
     def _build_toolkit(self, toolkit_type: ToolkitType) -> Optional[Toolkit]:
         """Builds a toolkit of the given type."""
 
+        model = self.inputs.get("model") or "gpt-4"
+        documentation_url = self.inputs.get("documentation_url")
+        temperature = self.inputs.get("temperature") or 0.7
+
         tool_manager: Optional[BaseToolManager] = None
         if toolkit_type == ToolkitType.PYTHON_INDEXER:
             python_indexer = PythonIndexer(root_py_path())
-            tool_manager = PythonIndexerToolManager(python_indexer)
+            tool_manager = PythonIndexerToolManager(python_indexer=python_indexer)
         elif toolkit_type == ToolkitType.PYTHON_WRITER:
             python_indexer = PythonIndexer(root_py_path())
-            tool_manager = PythonWriterToolManager(PythonWriter(python_indexer))
+            tool_manager = PythonWriterToolManager(python_writer=PythonWriter(python_indexer))
         elif toolkit_type == ToolkitType.CODEBASE_ORACLE:
-            tool_manager = CodebaseOracleToolManager(CodebaseOracle.get_default_codebase_oracle())
+            tool_manager = CodebaseOracleToolManager(
+                codebase_oracle=CodebaseOracle.get_default_codebase_oracle()
+            )
         elif toolkit_type == ToolkitType.DOCUMENTATION_GPT:
             tool_manager = DocumentationGPTToolManager(
-                DocumentationGPT(
-                    url=self.inputs["documentation_url"],
-                    model=self.inputs["model"],
-                    temperature=0.7,
+                documentation_gpt=DocumentationGPT(
+                    url=documentation_url,
+                    model=model,
+                    temperature=temperature,
                     verbose=True,
                 )
             )
 
         elif toolkit_type == ToolkitType.MEESEEKS_INDEXER:
             python_indexer = PythonIndexer(root_py_path())
-            tool_manager = PythonIndexerToolManager(python_indexer)
+            tool_manager = PythonIndexerToolManager(python_indexer=python_indexer)
         elif toolkit_type == ToolkitType.MEESEEKS_WRITER:
             python_indexer = PythonIndexer(root_py_path())
             python_writer = PythonWriter(python_indexer)
-            tool_manager = PythonWriterToolManager(python_writer)
+            tool_manager = PythonWriterToolManager(python_writer=python_writer)
 
         if not tool_manager:
-            self.logger.warning("Unknown toolkit type: %s", toolkit_type)
+            logger.warning("Unknown toolkit type: %s", toolkit_type)
             return None
 
         if (
@@ -94,16 +101,13 @@ class ToolkitBuilder:
         return Toolkit(tools)
 
 
-def load_llm_toolkits(
-    tool_list: List[str], inputs: Dict[str, str], logger: logging.Logger
-) -> Dict[ToolkitType, Toolkit]:
+def load_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Toolkit]:
     """
     Loads the tools specified in the tool_list and returns a dictionary of the loaded tools.
 
     Args:
         tool_list: A list of tool names to load.
-        inputs: A dictionary of inputs to pass to the tools.
-        logger: A logger to use for logging.
+        kwargs: A dictionary of inputs to pass to the tools.
 
     Returns:
         A dictionary of loaded tools.
@@ -113,7 +117,7 @@ def load_llm_toolkits(
     """
 
     toolkits: Dict[ToolkitType, Toolkit] = {}
-    toolkit_builder = ToolkitBuilder(inputs, logger)
+    toolkit_builder = ToolkitBuilder(**kwargs)
 
     for tool_name in tool_list:
         tool_name = tool_name.strip()

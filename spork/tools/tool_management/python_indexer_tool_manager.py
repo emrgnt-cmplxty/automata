@@ -22,7 +22,7 @@ from typing import List, Optional, Tuple
 
 from spork.configs.agent_configs import AgentVersion
 from spork.core.base.tool import Tool
-from spork.core.utils import clean_result
+from spork.core.utils import clean_agent_result
 
 from ..python_tools.python_indexer import PythonIndexer
 from .base_tool_manager import BaseToolManager
@@ -37,7 +37,7 @@ class PythonIndexerToolManager(BaseToolManager):
     the code state of a of local Python files.
     """
 
-    def __init__(self, python_indexer: PythonIndexer):
+    def __init__(self, **kwargs):
         """
         Initializes a PythonIndexerToolManager object with the given inputs.
 
@@ -47,7 +47,14 @@ class PythonIndexerToolManager(BaseToolManager):
         Returns:
         - None
         """
-        self.indexer = python_indexer
+        self.indexer: PythonIndexer = kwargs.get("python_indexer")
+        self.meeseeks_version = (
+            kwargs.get("meeseeks_version") or AgentVersion.MEESEEKS_RETRIEVER_V2
+        )
+        self.model = kwargs.get("model") or "gpt-4"
+        self.temperature = kwargs.get("temperature") or 0.7
+        self.verbose = kwargs.get("verbose") or False
+        self.stream = kwargs.get("stream") or True
 
     def build_tools(self) -> List[Tool]:
         """
@@ -75,6 +82,15 @@ class PythonIndexerToolManager(BaseToolManager):
                     module_comma_object_path
                 ),
                 description=f"Identical to python-indexer-retrieve-code, except returns the docstring instead of raw code.",
+                return_direct=True,
+                verbose=True,
+            ),
+            Tool(
+                name="python-indexer-retrieve-raw-code",
+                func=lambda module_comma_object_path: self._run_indexer_retrieve_raw_code(
+                    module_comma_object_path
+                ),
+                description=f"Identical to python-indexer-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
                 return_direct=True,
                 verbose=True,
             ),
@@ -107,6 +123,14 @@ class PythonIndexerToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
 
+    def _run_indexer_retrieve_raw_code(self, input_str: str) -> str:
+        try:
+            module_path, object_path = self.parse_input_str(input_str)
+            result = self.indexer.retrieve_raw_code(module_path, object_path)
+            return result
+        except Exception as e:
+            return "Failed to retrieve raw code with error - " + str(e)
+
     def _run_meeseeks_indexer_retrieve_code(self, path_str: str) -> str:
         from spork.core import load_llm_toolkits
         from spork.core.agents.mr_meeseeks_agent import MrMeeseeksAgent
@@ -119,14 +143,15 @@ class PythonIndexerToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=instructions,
-                llm_toolkits=load_llm_toolkits(["python_indexer"], inputs={}, logger=logger),
-                version=AgentVersion.MEESEEKS_RETRIEVER_V2,
-                model="gpt-4",
-                stream=True,
-                verbose=False,
+                llm_toolkits=load_llm_toolkits(["python_indexer"]),
+                version=self.meeseeks_version,
+                model=self.model,
+                stream=self.stream,
+                verbose=self.verbose,
+                temperature=self.temperature,
             )
             result = agent.run()
-            result = clean_result(result)
+            result = clean_agent_result(result)
             return result
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)

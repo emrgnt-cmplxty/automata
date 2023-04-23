@@ -7,7 +7,7 @@
 
  
         inputs = {"model": args.model}
-        llm_toolkits = load_llm_toolkits(tools_list, inputs, logger)
+        llm_toolkits = load_llm_toolkits(tools_list, **inputs)
 
         initial_payload = {
             "overview": python_inexer.get_overview(),
@@ -64,27 +64,24 @@ class MrMeeseeksAgent:
         instructions: str,
         version: AgentVersion = AgentVersion.MEESEEKS_MASTER_V2,
         model: str = "gpt-4",
-        session_id: Optional[str] = None,
         stream: bool = False,
         verbose: bool = True,
         max_iters: int = 1_000_000,  # default to ~infinite iterations
         temperature: float = 0.7,
+        session_id: Optional[str] = None,
     ):
         """
         Args:
-            initial_payload (Dict[str, str]): The initial payload to be used for the agent.
-            initial_instructions (List[Dict[str, str]]): The initial instructions to be used for the agent.
-            tools (Dict[ToolkitType, Toolkit] ): The tools to be used for the agent.
-            version (AgentVersion, optional): The version of the agent. Defaults to AgentVersion.MEESEEKS_MASTER_V1.
-            model (str, optional): The model to be used for the agent. Defaults to "gpt-4".
-            session_id (Optional[str], optional): The session id to be used for the agent. Defaults to None.
-
-        Attributes:
-            model (str): The model to be used for the agent.
-            version (AgentVersion): The version of the agent.
-            tools (Dict[ToolkitType, Toolkit] ): The tools to be used for the agent.
-            messages (List[Dict[str, str]]): The messages that have been sent to the agent.
-            session_id (str): The session id to be used for the agent.
+            initial_payload (Dict[str, str]): Initial payload to send to the agent.
+            llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
+            instructions (str): A string of instructions to execute.
+            version (AgentVersion): The version of the agent to use.
+            model (str): The model to use for the agent.
+            stream (bool): Whether to stream the results back to the master.
+            verbose (bool): Whether to print the results to stdout.
+            max_iters (int): The maximum number of iterations to run.
+            temperature (float): The temperature to use for the agent.
+            session_id (Optional[str]): The session ID to use for the agent.
 
         Methods:
             iter_task(instructions: List[Dict[str, str]]) -> Dict[str, str]: Iterates through the instructions and returns the next instruction.
@@ -102,7 +99,6 @@ class MrMeeseeksAgent:
         self.messages: List[Dict[str, str]] = []
         self.stream = stream
         self.verbose = verbose
-        print("max_iters = ", max_iters)
         self.max_iters = max_iters
         self.temperature = temperature
 

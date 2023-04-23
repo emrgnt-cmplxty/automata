@@ -31,7 +31,7 @@ class MockCodeGenerator:
         self.has_method_docstring = has_method_docstring
         self.has_function_docstring = has_function_docstring
 
-        self.import_class_name = MockCodeGenerator.random_string(5)
+        # self.import_class_name = MockCodeGenerator.random_string(5)
         self.class_name = MockCodeGenerator.random_string(5)
         self.method_name = MockCodeGenerator.random_string(5)
         self.function_name = MockCodeGenerator.random_string(5)
@@ -47,7 +47,7 @@ class MockCodeGenerator:
         function_docstring = (
             f'"""{self.function_docstring}"""\n' if self.has_function_docstring else ""
         )
-        import_statement = f"import {self.import_class_name}\n" if self.has_import else ""
+        import_statement = f"import random\n" if self.has_import else ""
 
         method_code = textwrap.dedent(
             f"""def method(self):
@@ -81,7 +81,7 @@ class MockCodeGenerator:
             else ""
         )
 
-        return f"{import_statement}{module_docstring}{class_code}\n\n{function_code}"
+        return f"{module_docstring}{import_statement}{class_code}\n\n{function_code}"
 
     def _check_function_obj(self, function_obj=None):
         if function_obj is None:
@@ -259,3 +259,108 @@ def test_create_function_with_arguments():
     assert not function_obj.args.defaults[0].value
     assert function_obj.args.vararg.arg == "args"
     assert function_obj.args.kwarg.arg == "kwargs"
+
+
+def test_create_class_with_multiple_methods_properties_attributes():
+    mock_generator = MockCodeGenerator(has_class=True, has_class_docstring=True)
+    source_code = mock_generator.generate_code()
+    # Add class attributes, multiple methods, and a property
+    source_code += textwrap.dedent(
+        f"""
+        class {mock_generator.class_name}_extended:
+            class_attribute = "Some value"
+
+            def method_1(self):
+                pass
+
+            def method_2(self, arg):
+                pass
+
+            @property
+            def some_property(self):
+                return self.class_attribute
+        """
+    )
+    module_obj = ast.parse(source_code)
+    class_obj = PythonWriter._find_function_class_or_method(
+        module_obj, f"{mock_generator.class_name}_extended"
+    )
+    assert len(class_obj.body) == 4  # class_attribute, method_1, method_2, some_property
+
+
+def test_create_class_inheritance():
+    mock_generator = MockCodeGenerator(has_class=True)
+    source_code = mock_generator.generate_code()
+    # Add a subclass that inherits from the parent class
+    source_code += textwrap.dedent(
+        f"""
+        class {mock_generator.class_name}_child({mock_generator.class_name}):
+            pass
+        """
+    )
+    module_obj = ast.parse(source_code)
+    class_obj = PythonWriter._find_function_class_or_method(
+        module_obj, f"{mock_generator.class_name}_child"
+    )
+    assert class_obj.bases[0].id == mock_generator.class_name
+
+
+def test_reduce_module_remove_function(python_writer):
+    mock_generator = MockCodeGenerator(
+        has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
+    )
+    source_code = mock_generator.generate_code()
+
+    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+
+    class_obj = module_obj.body[0]
+    function_obj = module_obj.body[1]
+    python_writer.update_module(
+        source_code=ast.unparse(function_obj), module_obj=module_obj, extending_module=False
+    )
+    assert module_obj.body[0] == class_obj
+    assert len(module_obj.body) == 1
+
+
+def test_update_existing_function(python_writer):
+    mock_generator = MockCodeGenerator(has_function=True)
+    source_code = mock_generator.generate_code()
+    # Create a new version of the function with a different body
+    source_code_updated = textwrap.dedent(
+        f"""
+        def {mock_generator.function_name}():
+            return "Updated"
+        """
+    )
+    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+    python_writer.update_module(
+        source_code=source_code_updated, module_obj=module_obj, extending_module=True
+    )
+    updated_function_obj = PythonWriter._find_function_class_or_method(
+        module_obj, mock_generator.function_name
+    )
+    assert len(updated_function_obj.body) == 1
+    assert isinstance(updated_function_obj.body[0], ast.Return)
+
+
+def test_write_and_retrieve_mock_code(python_writer):
+    mock_generator = MockCodeGenerator(
+        has_class=True,
+        has_method=True,
+        has_function=True,
+        has_import=True,
+        has_module_docstring=True,
+        has_class_docstring=True,
+        has_method_docstring=True,
+        has_function_docstring=True,
+    )
+    source_code = mock_generator.generate_code()
+    python_writer._create_module_from_source_code("test_module_2", source_code)
+
+    python_writer.write_module("test_module_2")
+
+    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    indexer = PythonIndexer(sample_dir)
+
+    module_docstring = indexer.retrieve_docstring("test_module_2", None)
+    assert module_docstring == mock_generator.module_docstring

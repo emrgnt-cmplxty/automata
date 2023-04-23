@@ -7,8 +7,10 @@ from spork.tools.tool_management.base_tool_manager import BaseToolManager
 
 
 class CodebaseOracleToolManager(BaseToolManager):
-    def __init__(self, codebase_oracle: CodebaseOracle):
-        self.codebase_oracle = codebase_oracle
+    def __init__(self, **kwargs):
+        self.codebase_oracle = (
+            kwargs.get("codebase_oracle") or CodebaseOracle.get_default_codebase_oracle()
+        )
 
     def build_tools(self) -> List[Tool]:
         tools = [

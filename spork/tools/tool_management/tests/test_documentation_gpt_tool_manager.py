@@ -7,24 +7,26 @@ from spork.tools.tool_management.documentation_gpt_tool_manager import Documenta
 
 @pytest.fixture
 def doc_gpt_tool_builder():
-    doc_gpt = DocumentationGPT(
+    documentation_gpt = DocumentationGPT(
         url="https://python.langchain.com/en/latest/index.html",
         model="gpt-4",
         temperature=0.7,
         verbose=True,
     )
-    return DocumentationGPTToolManager(doc_gpt)
+    return DocumentationGPTToolManager(documentation_gpt=documentation_gpt)
 
 
 def test_init():
-    doc_gpt = DocumentationGPT(
+    documentation_gpt = DocumentationGPT(
         url="https://python.langchain.com/en/latest/index.html",
         model="gpt-4",
         temperature=0.7,
         verbose=True,
     )
-    documentation_gpt_tool_manager = DocumentationGPTToolManager(doc_gpt)
-    assert documentation_gpt_tool_manager.documentation_gpt == doc_gpt
+    documentation_gpt_tool_manager = DocumentationGPTToolManager(
+        documentation_gpt=documentation_gpt
+    )
+    assert documentation_gpt_tool_manager.documentation_gpt == documentation_gpt
 
 
 def test_build_tools(doc_gpt_tool_builder):

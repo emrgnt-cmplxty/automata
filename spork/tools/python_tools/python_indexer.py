@@ -17,6 +17,7 @@ code = indexer.retrieve_code("module.path", "ClassName.method_name")
 docstring = indexer.retrieve_docstring("module.path", "ClassName.method_name")
 """
 import ast
+import copy
 import logging
 import os
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
@@ -73,7 +74,7 @@ class PythonIndexer:
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-        module = self.module_dict[module_path]
+        module = copy.deepcopy(self.module_dict[module_path])
         result = self._find_module_class_function_or_method(module, object_path)
         if result is not None:
             self._remove_docstrings(result)
@@ -98,10 +99,33 @@ class PythonIndexer:
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
+        module = copy.deepcopy(self.module_dict[module_path])
+        if object_path:
+            result = self._find_module_class_function_or_method(module, object_path)
+        else:
+            result = module
+        if result is not None:
+            return ast.get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_raw_code(self, module_path: str, object_path: Optional[str]) -> str:
+        """
+        Retrieves the raw code for a specified module (code + docstring), class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
         module = self.module_dict[module_path]
         result = self._find_module_class_function_or_method(module, object_path)
         if result is not None:
-            return ast.get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
+            return ast.unparse(result)
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
@@ -179,7 +203,7 @@ class PythonIndexer:
         """
 
         try:
-            module = ast.parse(open(path).read())
+            module = ast.parse(open(path).read(), type_comments=True)
             return module
         except Exception as e:
             logger.error(f"Failed to load module '{path}' due to: {e}")

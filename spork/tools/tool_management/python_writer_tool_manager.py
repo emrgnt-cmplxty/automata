@@ -35,7 +35,7 @@ class PythonWriterToolManager(BaseToolManager):
 
     def __init__(
         self,
-        python_writer: PythonWriter,
+        **kwargs,
     ):
         """
         Initializes a PythonWriterToolManager object with the given inputs.
@@ -46,7 +46,12 @@ class PythonWriterToolManager(BaseToolManager):
         Returns:
         - None
         """
-        self.writer = python_writer
+        self.writer: PythonWriter = kwargs.get("python_writer")
+        self.meeseeks_version = kwargs.get("meeseeks_version") or AgentVersion.MEESEEKS_WRITER_V2
+        self.model = kwargs.get("model") or "gpt-4"
+        self.verbose = kwargs.get("verbose") or False
+        self.stream = kwargs.get("stream") or True
+        self.temperature = kwargs.get("temperature") or 0.7
 
     def writer_update_module(self, input_str: str) -> str:
         module_path = input_str.split(",")[0]
@@ -75,11 +80,12 @@ class PythonWriterToolManager(BaseToolManager):
             agent = MrMeeseeksAgent(
                 initial_payload=initial_payload,
                 instructions=input_str,
-                llm_toolkits=load_llm_toolkits(["python_writer"], inputs={}, logger=logger),
-                version=AgentVersion.MEESEEKS_WRITER_V2,
-                model="gpt-4",
-                stream=True,
-                verbose=False,
+                llm_toolkits=load_llm_toolkits(["python_writer"]),
+                version=self.meeseeks_version,
+                model=self.model,
+                stream=self.stream,
+                verbose=self.verbose,
+                temperature=self.temperature,
             )
             agent.run()
 
