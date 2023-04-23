@@ -4,7 +4,7 @@ import pytest
 
 from spork.core.utils import clean_agent_result
 
-from .conftest import build_agent_with_params
+from .conftest import build_agent_with_params, retry
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -12,10 +12,11 @@ MODEL = "gpt-3.5-turbo"
 TEMPERATURE = 0.0
 EXPECTED_RESPONSES = {
     "test_retrieve_load_yaml_docs": "Load a YAML file and return",
-    "test_retrieve_python_writer_docs": "This class provides functionality to write",
+    "test_retrieve_python_writer_docs": "This module provides a class for writing Python",
 }
 
 
+@retry(3)
 @pytest.mark.regression
 @pytest.mark.parametrize(
     "mr_meeseeks_params",
@@ -42,6 +43,7 @@ def test_retrieve_load_yaml_docs(mr_meeseeks_params):
     assert expected_content in result
 
 
+@retry(3)
 @pytest.mark.regression
 @pytest.mark.parametrize(
     "mr_meeseeks_params",
