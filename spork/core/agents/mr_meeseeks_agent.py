@@ -102,6 +102,7 @@ class MrMeeseeksAgent:
         self.messages: List[Dict[str, str]] = []
         self.stream = stream
         self.verbose = verbose
+        print("max_iters = ", max_iters)
         self.max_iters = max_iters
         self.temperature = temperature
 

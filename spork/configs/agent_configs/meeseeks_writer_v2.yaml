@@ -128,6 +128,18 @@ template: >
   ...
   '
 
+  Example 5 - Write the following class "def h(y):..." to the utils file.
+  '
+  Assistant:
+  ...
+    {
+      "tool": "python-writer-update-module", 
+      "input": "tools.utils,,def h(y):..."
+    }
+  ...
+  '
+
+
   After receiving your instructions, execute the appropriate tools to gather necessary information.
   Then, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the
   JSON format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle.
