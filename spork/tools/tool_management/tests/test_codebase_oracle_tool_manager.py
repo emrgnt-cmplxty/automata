@@ -14,7 +14,7 @@ class TestCodebaseOracleToolManager:
         read_only_memory = ReadOnlySharedMemory(memory=memory)
 
         codebase_oracle = CodebaseOracle(os.getcwd(), llm2, read_only_memory)
-        codebase_oracle_tool_manager = CodebaseOracleToolManager(codebase_oracle)
+        codebase_oracle_tool_manager = CodebaseOracleToolManager(codebase_oracle=codebase_oracle)
         assert codebase_oracle_tool_manager.codebase_oracle == codebase_oracle
 
     def test_build_tools(self):
@@ -24,7 +24,7 @@ class TestCodebaseOracleToolManager:
 
         codebase_oracle = CodebaseOracle(os.getcwd(), llm2, read_only_memory)
 
-        codebase_oracle_tool_manager = CodebaseOracleToolManager(codebase_oracle)
+        codebase_oracle_tool_manager = CodebaseOracleToolManager(codebase_oracle=codebase_oracle)
         tools = codebase_oracle_tool_manager.build_tools()
         assert len(tools) == 1
         assert tools[0].name == "codebase-oracle-agent"

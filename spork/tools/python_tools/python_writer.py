@@ -151,7 +151,7 @@ class PythonWriter:
         Args:
             module_path (str): The path where the new module will be created.
         """
-        parsed = ast.parse(source_code)
+        parsed = ast.parse(source_code, type_comments=True)
         if not isinstance(parsed, Module):
             raise ValueError("The source code does not define a module.")
         self.indexer.module_dict[module_path] = parsed
@@ -203,12 +203,12 @@ class PythonWriter:
                 source_code, cast(ClassDef, existing_class), extending_module
             )
         else:
-            new_ast = ast.parse(source_code)
+            new_ast = ast.parse(source_code, type_comments=True)
             for new_node in new_ast.body:
                 if isinstance(
                     new_node, (Import, ImportFrom)
                 ):  # Check if the node is an import statement
-                    PythonWriter.manage_imports(
+                    PythonWriter._manage_imports(
                         existing_module_obj, new_node, "add" if extending_module else "remove"
                     )  # Handle the import statement
 
@@ -231,7 +231,7 @@ class PythonWriter:
     def _update_class(
         source_code: str, existing_class_obj: ClassDef, extending_module: bool
     ) -> None:
-        new_ast = ast.parse(source_code)
+        new_ast = ast.parse(source_code, type_comments=True)
         for new_node in new_ast.body:
             if isinstance(new_node, FunctionDef):
                 method_name = new_node.name
@@ -388,7 +388,7 @@ class PythonWriter:
         return source_code
 
     @staticmethod
-    def manage_imports(
+    def _manage_imports(
         module_obj: Module, import_statement: Union[Import, ImportFrom], action: str
     ) -> None:
         if action not in ["add", "remove", "modify"]:

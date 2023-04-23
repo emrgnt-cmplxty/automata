@@ -110,7 +110,7 @@ class NumberedLinesTextLoader(TextLoader):
         return [Document(page_content=text, metadata=metadata)]
 
 
-def clean_result(result: str) -> str:
+def clean_agent_result(result: str) -> str:
     result = result.split('"result_0": ')[1]
     result = result.replace("}", "")[1:-1]
     result = result.replace("\\n", "\n").strip()

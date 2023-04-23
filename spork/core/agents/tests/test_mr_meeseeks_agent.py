@@ -1,5 +1,3 @@
-import logging
-
 import pytest
 
 from spork.core import load_llm_toolkits
@@ -12,15 +10,8 @@ from spork.tools.python_tools.python_indexer import PythonIndexer
 def mr_meeseeks_agent():
     python_indexer = PythonIndexer(root_py_path())
 
-    inputs = {
-        "documentation_url": "https://some.documentation.url/",
-        "model": "gpt-4",
-    }
-
     tool_list = ["python_indexer"]
-    inputs = {}  # Add any required inputs for the tools here
-    logger = logging.getLogger(__name__)
-    mock_llm_toolkits = load_llm_toolkits(tool_list, inputs, logger)
+    mock_llm_toolkits = load_llm_toolkits(tool_list)
 
     overview = python_indexer.get_overview()
 
