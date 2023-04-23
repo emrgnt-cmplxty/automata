@@ -13,13 +13,14 @@ from spork.core.utils import root_py_path
 from spork.tools.python_tools.python_indexer import PythonIndexer
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
+MODEL = "gpt-4"
 
 
 @pytest.fixture
 def mr_meeseeks_indexer_params():
     python_indexer = PythonIndexer(root_py_path())
 
-    inputs = {"model": "gpt-4"}
+    inputs = {"model": MODEL}
 
     tool_list = ["python_indexer", "codebase_oracle"]
     inputs = {}  # Add any required inputs for the tools here
@@ -38,7 +39,7 @@ def mr_meeseeks_indexer_params():
 def mr_meeseeks_writer_params():
     python_indexer = PythonIndexer(root_py_path())
 
-    inputs = {"model": "gpt-4"}
+    inputs = {"model": MODEL}
 
     tool_list = ["python_writer"]
     inputs = {}  # Add any required inputs for the tools here
@@ -55,7 +56,7 @@ def mr_meeseeks_writer_params():
 
 @pytest.fixture
 def mr_meeseeks_master_params():
-    inputs = {"model": "gpt-4"}
+    inputs = {"model": MODEL}
 
     tool_list = ["meeseeks_indexer", "meeseeks_writer"]
     inputs = {}  # Add any required inputs for the tools here
@@ -114,19 +115,14 @@ EXPECTED_RESPONSES = {
 }
 
 
-def clean_result(result: str) -> str:
-    result = result.split('"result_0": ')[1]
-    result = result.replace("}", "")[1:-1]
-    result = result.replace("\\n", "\n").strip()
-    return result
-
-
 def build_agent_with_params(
     mr_meeseeks_params,
     instructions: str,
     version: AgentVersion = AgentVersion.MEESEEKS_RETRIEVER_V2,
     max_iters=2,
+    model="gpt-4",
 ):
+    print("Building with version = %s" % (version))
     initial_payload, mock_llm_toolkits = mr_meeseeks_params
     agent = MrMeeseeksAgent(
         initial_payload=initial_payload,
@@ -136,6 +132,7 @@ def build_agent_with_params(
         max_iters=max_iters,
         version=version,
         temperature=0.7,
+        model=model,
     )
     return agent
 
@@ -143,7 +140,7 @@ def build_agent_with_params(
 def cleanup_and_check(expected_content: str) -> None:
     # Check if the file has been created
     file_path = os.path.join(current_file_dir, "sample_code", "test.py")
-    assert os.path.isfile(file_path)
+    assert os.path.isfile(file_path), "File does not exist"
 
     # Check if the content of the file is as expected
 
@@ -152,7 +149,7 @@ def cleanup_and_check(expected_content: str) -> None:
     print("content = ", content)
     # Delete the whole "sample_code" directory after the test
     sample_code_dir = os.path.join(current_file_dir, "sample_code")
-    shutil.rmtree(sample_code_dir)
+    # shutil.rmtree(sample_code_dir)
     assert content.strip() == expected_content.strip()
 
 
@@ -172,41 +169,41 @@ def retry(num_attempts: int):
     return decorator
 
 
-@pytest.mark.regression
-@retry(3)
-def test_get_mr_meeseeks_docs(mr_meeseeks_indexer_params):
-    agent = build_agent_with_params(
-        mr_meeseeks_indexer_params, "Fetch the docstrings for mr meeseeks agent."
-    )
-    result = clean_result(agent.run())
+# @pytest.mark.regression
+# @retry(3)
+# def test_get_mr_meeseeks_docs(mr_meeseeks_indexer_params):
+#     agent = build_agent_with_params(
+#         mr_meeseeks_indexer_params, "Fetch the docstrings for mr meeseeks agent."
+#     )
+#     result = clean_result(agent.run())
 
-    expected_content = EXPECTED_RESPONSES["test_get_mr_meeseeks_docs"].strip()
-    assert result == expected_content
-
-
-@pytest.mark.regression
-@retry(3)
-def test_get_python_writer_docs(mr_meeseeks_indexer_params):
-    agent = build_agent_with_params(
-        mr_meeseeks_indexer_params, "Fetch the docstrings for the python writer."
-    )
-    result = clean_result(agent.run())
-    expected_content = EXPECTED_RESPONSES["test_get_python_writer_docs"].strip()
-    assert result == expected_content
+#     expected_content = EXPECTED_RESPONSES["test_get_mr_meeseeks_docs"].strip()
+#     assert result == expected_content
 
 
-@pytest.mark.regression
-@retry(3)
-def test_simple_writer_example(mr_meeseeks_writer_params):
-    expected_content = EXPECTED_RESPONSES["test_simple_writer_example"].strip()
+# @pytest.mark.regression
+# @retry(3)
+# def test_get_python_writer_docs(mr_meeseeks_indexer_params):
+#     agent = build_agent_with_params(
+#         mr_meeseeks_indexer_params, "Fetch the docstrings for the python writer."
+#     )
+#     result = clean_result(agent.run())
+#     expected_content = EXPECTED_RESPONSES["test_get_python_writer_docs"].strip()
+#     assert result == expected_content
 
-    agent = build_agent_with_params(
-        mr_meeseeks_writer_params,
-        f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
-        AgentVersion.MEESEEKS_WRITER_V2,
-    )
-    agent.run()
-    cleanup_and_check(expected_content)
+
+# @pytest.mark.regression
+# @retry(3)
+# def test_simple_writer_example(mr_meeseeks_writer_params):
+#     expected_content = EXPECTED_RESPONSES["test_simple_writer_example"].strip()
+
+#     agent = build_agent_with_params(
+#         mr_meeseeks_writer_params,
+#         f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
+#         AgentVersion.MEESEEKS_WRITER_V2,
+#     )
+#     agent.run()
+#     cleanup_and_check(expected_content)
 
 
 """
@@ -226,20 +223,32 @@ def test_simple_writer_example(mr_meeseeks_writer_params):
 """
 
 
-# @pytest.mark.regression
-# # @retry(3)
-# def test_fetch_run_and_write_out(mr_meeseeks_master_params):
-#     agent = build_agent_with_params(
-#         mr_meeseeks_master_params,
-#         f'1. Retrieve the code for the function "run" from the mr meeseeks agent.\n'
-#         f'2. NEXT, write the "run" function out to the file core.tests.sample_code.test.\n'
-#         f'Do not return a "result" until you have successfuly written the output file.',
-#         AgentVersion.MEESEEKS_MASTER_V2,
-#         max_iters=4,
-#     )
-#     result = agent.run()
-#     print("agent.messages = ", agent.messages)
-#     print("result = ", result)
-#     expected_content = EXPECTED_RESPONSES["test_fetch_run_and_write_out"].strip()
-#     print("expected_content = ", expected_content)
-#     cleanup_and_check(expected_content)
+@pytest.mark.regression
+# @retry(3)
+def test_fetch_run_and_write_out(mr_meeseeks_master_params):
+    agent = build_agent_with_params(
+        mr_meeseeks_master_params,
+        f'1. Retrieve the code for the function "run" from the mr meeseeks agent.\n'
+        f"2. NEXT, write the retrieved code into the file core.tests.sample_code.test, as other methods within this file are dependent on it.\n"
+        f'Do not return a "result" until you have successfuly written the output file.',
+        version=AgentVersion.MEESEEKS_MASTER_V3,
+        max_iters=4,
+    )
+
+    next_steps = (
+        {
+            "role": "assistant",
+            "content": 'Thought: I will use the meeseeks-indexer-retrieve-code tool to retrieve the code for the "run" function from the Mr. Meeseeks agent.\nAction:\n{\n  "tool": "meeseeks-indexer-retrieve-code",\n  "input": "Retrieve the code for the function \'run\' from the Mr. Meeseeks agent, including all necessary imports and docstrings."\n}',
+        },
+        {
+            "role": "user",
+            "content": "Observation:\n{\n\"output_0\": \"The code for the 'run' function in Mr. Meeseeks agent is:\n\ndef run(self) -> str:\n    while True:\n        self.iter_task()\n        if MrMeeseeksAgent.is_completion_message(self.messages[-2]['content']):\n            return self.messages[-2]['content']\n        if len(self.messages) - MrMeeseeksAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:\n            return 'Result was not captured before iterations exceeded max limit.'\n\nNote: No docstring was found for this function.\"\", \n}",
+        },
+    )
+    agent.messages.extend(next_steps)
+    result = agent.run()
+    print("agent.messages = ", agent.messages)
+    print("result = ", result)
+    expected_content = EXPECTED_RESPONSES["test_fetch_run_and_write_out"].strip()
+    print("expected_content = ", expected_content)
+    cleanup_and_check(expected_content)

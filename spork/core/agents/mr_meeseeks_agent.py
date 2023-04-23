@@ -215,9 +215,9 @@ class MrMeeseeksAgent:
         while True:
             self.iter_task()
 
-            if MrMeeseeksAgent.is_completion_message(self.messages[-1]["content"]):
-                return self.messages[-1]["content"]
-            # Check the previous previous message to see if it is a completion message
+            # if MrMeeseeksAgent.is_completion_message(self.messages[-1]["content"]):
+            #     return self.messages[-1]["content"]
+            # Check the previous previous agent message to see if it is a completion message
             if MrMeeseeksAgent.is_completion_message(self.messages[-2]["content"]):
                 return self.messages[-2]["content"]
             # Each iteration produces two messages, so the check below is for equalling the max_iters
@@ -287,7 +287,8 @@ class MrMeeseeksAgent:
                             tool_found = True
                             break  # Tool found, no need to continue the inner loop
                     if tool_found:
-                        break  # Tool found, no need to continue the outer loop                if not tool_found:
+                        break  # Tool found, no need to continue the outer loop
+                if not tool_found:
                     error_message = f"Error: Tool '{requested_tool}' not found."
                     outputs.append(error_message)
         return outputs

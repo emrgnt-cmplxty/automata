@@ -17,3 +17,6 @@ class Person:
     def say_hello(self):
         """This is a sample method."""
         return f"Hello, I am {self.name}."
+
+    def run(self) -> str:
+        ...

@@ -22,6 +22,7 @@ from typing import List, Optional, Tuple
 
 from spork.configs.agent_configs import AgentVersion
 from spork.core.base.tool import Tool
+from spork.core.utils import clean_result
 
 from ..python_tools.python_indexer import PythonIndexer
 from .base_tool_manager import BaseToolManager
@@ -125,6 +126,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 verbose=False,
             )
             result = agent.run()
+            result = clean_result(result)
             return result
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)

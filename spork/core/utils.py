@@ -108,3 +108,10 @@ class NumberedLinesTextLoader(TextLoader):
                 text += f"{i}: {line}"
         metadata = {"source": self.file_path}
         return [Document(page_content=text, metadata=metadata)]
+
+
+def clean_result(result: str) -> str:
+    result = result.split('"result_0": ')[1]
+    result = result.replace("}", "")[1:-1]
+    result = result.replace("\\n", "\n").strip()
+    return result
