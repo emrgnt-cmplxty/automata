@@ -1,29 +1,27 @@
 import pytest
 
 from automata.core import load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgentBuilder
-from automata.core.utils import root_py_path
-from automata.tools.python_tools.python_indexer import PythonIndexer
+from automata.core.agents.automata_agent import (
+    AutomataAgentBuilder,
+    AutomataAgentConfig,
+    AutomataConfigVersion,
+)
 
 
 @pytest.fixture
 def automata_agent():
-    python_indexer = PythonIndexer(root_py_path())
-
     tool_list = ["python_indexer"]
     mock_llm_toolkits = load_llm_toolkits(tool_list)
 
-    overview = python_indexer.get_overview()
+    initial_payload = {}
 
-    initial_payload = {
-        "overview": overview,
-    }
-
-    # initial_payload=initial_payload,
     instructions = "Test instruction."
 
+    config_version = AutomataConfigVersion.DEFAULT
+    agent_config = AutomataAgentConfig.load(config_version)
+
     agent = (
-        AutomataAgentBuilder()
+        AutomataAgentBuilder(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)

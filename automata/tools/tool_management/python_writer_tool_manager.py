@@ -16,7 +16,7 @@ Example -
 import logging
 from typing import List
 
-from automata.configs.agent_configs import AgentConfig
+from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core.base.tool import Tool
 
 from ..python_tools.python_writer import PythonWriter
@@ -46,7 +46,9 @@ class PythonWriterToolManager(BaseToolManager):
         - None
         """
         self.writer: PythonWriter = kwargs.get("python_writer")
-        self.automata_version = kwargs.get("automata_version") or AgentConfig.AUTOMATA_WRITER_V2
+        self.automata_version = (
+            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_WRITER_V2
+        )
         self.model = kwargs.get("model") or "gpt-4"
         self.verbose = kwargs.get("verbose") or False
         self.stream = kwargs.get("stream") or True
@@ -105,18 +107,19 @@ class PythonWriterToolManager(BaseToolManager):
     def _automata_update_module(self, input_str: str) -> str:
         """Creates an AutomataAgent to write the given task."""
         from automata.core import load_llm_toolkits
-        from automata.core.agents.automata_agent import AutomataAgentBuilder
+        from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
+
+        agent_config = AutomataAgentConfig.load(self.automata_version)
 
         try:
             initial_payload = {
                 "overview": self.writer.indexer.get_overview(),
             }
             agent = (
-                AutomataAgentBuilder()
+                AutomataAgentBuilder(agent_config)
                 .with_initial_payload(initial_payload)
                 .with_instructions(input_str)
                 .with_llm_toolkits(load_llm_toolkits(["python_writer"]))
-                .with_config(self.automata_version)
                 .with_model(self.model)
                 .with_stream(self.stream)
                 .with_verbose(self.verbose)

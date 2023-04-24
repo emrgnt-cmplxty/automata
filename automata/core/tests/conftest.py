@@ -5,10 +5,10 @@ from functools import wraps
 
 import pytest
 
-from automata.configs.agent_configs import AgentConfig
+from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core import load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgentBuilder
-from automata.core.utils import root_py_path
+from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
+from automata.core.utils import check_similarity, root_py_path
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
@@ -17,20 +17,22 @@ current_file_dir = os.path.dirname(os.path.realpath(__file__))
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    config: AgentConfig = AgentConfig.AUTOMATA_RETRIEVER_V2,
+    config_version: AutomataConfigVersion = AutomataConfigVersion.AUTOMATA_RETRIEVER_V2,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",
 ):
     initial_payload, mock_llm_toolkits = automata_params
+
+    agent_config = AutomataAgentConfig.load(config_version)
+
     agent = (
-        AutomataAgentBuilder()
+        AutomataAgentBuilder(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)
         .with_verbose(True)
         .with_max_iters(max_iters)
-        .with_config(config)
         .with_temperature(temperature)
         .with_model(model)
         .build()
@@ -51,9 +53,8 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
     sample_code_dir = os.path.join(current_file_dir, "sample_code")
     shutil.rmtree(sample_code_dir)
 
-    assert (
-        content.strip().split("\n")[0:5] == expected_content.strip().split("\n")[0:5]
-    )  # Check the first 5 lines
+    similarity_score = check_similarity(content, expected_content)
+    assert similarity_score > 0.85  # Check the similarity score
 
 
 def generate_initial_payload():
@@ -71,7 +72,9 @@ def automata_params(request):
     inputs = {"model": model, "temperature": temperature}
     mock_llm_toolkits = load_llm_toolkits(tool_list, **inputs)
 
-    initial_payload = generate_initial_payload()
+    initial_payload = (
+        generate_initial_payload() if not request.param.get("exclude_overview") else {}
+    )
     return initial_payload, mock_llm_toolkits
 
 

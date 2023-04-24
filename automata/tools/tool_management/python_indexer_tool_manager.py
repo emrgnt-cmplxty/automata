@@ -20,7 +20,7 @@ TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 import logging
 from typing import List, Optional, Tuple
 
-from automata.configs.agent_configs import AgentConfig
+from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core.base.tool import Tool
 from automata.core.utils import clean_agent_result
 
@@ -48,7 +48,9 @@ class PythonIndexerToolManager(BaseToolManager):
         - None
         """
         self.indexer: PythonIndexer = kwargs.get("python_indexer")
-        self.automata_version = kwargs.get("automata_version") or AgentConfig.AUTOMATA_RETRIEVER_V2
+        self.automata_version = (
+            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_RETRIEVER_V2
+        )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False
@@ -128,17 +130,17 @@ class PythonIndexerToolManager(BaseToolManager):
     def _run_automata_indexer_retrieve_code(self, path_str: str) -> str:
         """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         from automata.core import load_llm_toolkits
-        from automata.core.agents.automata_agent import AutomataAgentBuilder
+        from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
 
+        agent_config = AutomataAgentConfig.load(self.automata_version)
         try:
             initial_payload = {"overview": self.indexer.get_overview()}
             instructions = f"Retrieve the code for {path_str}"
             agent = (
-                AutomataAgentBuilder()
+                AutomataAgentBuilder(agent_config)
                 .with_initial_payload(initial_payload)
                 .with_instructions(instructions)
                 .with_llm_toolkits(load_llm_toolkits(["python_indexer"]))
-                .with_config(self.automata_version)
                 .with_model(self.model)
                 .with_stream(self.stream)
                 .with_verbose(self.verbose)

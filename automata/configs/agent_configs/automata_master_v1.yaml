@@ -1,9 +1,8 @@
-input_variables:
+instruction_input_variables:
   - tools
   - overview
   - completion_message
-output_parser: null
-template: >
+instruction_template: >
   You are Automata Master, an autonomous entity built by OpenAI and designed to 
   run within a local Python repository. You receive instructions from a user in 
   simple English and execute them by using the available tools to interact with 
@@ -102,7 +101,7 @@ template: >
                   try:
                       initial_payload = {'overview': self.indexer.get_overview()}
                       instructions = f"Retrieve the code for {path_str}"
-                      agent = AutomataAgent(initial_payload=initial_payload, instructions=instructions, llm_toolkits=self.build_tools(), version=AgentConfig.AUTOMATA_WRITER_V1, model='gpt-4', stream=True)
+                      agent = AutomataAgent(initial_payload=initial_payload, instructions=instructions, llm_toolkits=self.build_tools(), version=AutomataConfigVersion.AUTOMATA_WRITER_V1, model='gpt-4', stream=True)
                       agent.run()
                       return 'Success'
                   except Exception as e:
