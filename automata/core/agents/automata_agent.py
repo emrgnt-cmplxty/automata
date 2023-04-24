@@ -22,7 +22,7 @@
 
         agent.run()
 
-        TODO - Add error checking to ensure that we don't terminate when 
+        TODO - Add error checking to ensure that we don't terminate when
         our previous result returned an error
 """
 import logging
@@ -33,6 +33,7 @@ from typing import Dict, List, Optional, Tuple
 import openai
 import yaml
 from pydantic import BaseModel
+from termcolor import colored
 from transformers import GPT2Tokenizer
 
 from automata.config import *  # noqa F403
@@ -193,6 +194,7 @@ class AutomataAgent:
             stream=self.stream,
         )
         if self.stream:
+            print(colored("\n>>>", "green", attrs=["blink"]) + colored(" Agent:", "green"))
             accumulated_output = ""
             separator = " "
             response_text = ""
@@ -206,26 +208,25 @@ class AutomataAgent:
                     words = accumulated_output.split(separator)
                     # Print all words except the last one, as it may be an incomplete word
                     for word in words[:-1]:
-                        print(word, end=" ", flush=True)
+                        print(colored(str(word), "green"), end=" ", flush=True)
                     # Keep the last (potentially incomplete) word for the next iteration
                     accumulated_output = words[-1]
+            # Print the last word
+            print(colored(str(accumulated_output), "green"))
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
-
-        if self.verbose:
-            logger.info("OpenAI Response:\n%s\n" % response_text)
+        logger.debug("OpenAI Response:\n%s\n" % response_text)
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
 
         # If there are processed inputs, return here
         if len(processed_inputs) > 0:
-            message = "Observation:\n{" + "\n"
+            message = "{" + "\n"
             for i, output in enumerate(processed_inputs):
-                message += f'"output_{i}": "{(output)}", \n'
+                message += f'"output_{i}": {(output)}, \n'
             message += "}"
             self._save_interaction({"role": "user", "content": message})
-            if self.verbose:
-                logger.info("Synthetic User Message:\n%s\n" % message)
+            logger.debug("Synthetic User Message:\n%s\n" % message)
             return processed_inputs
 
         # If there are no outputs, then the user has must respond to continue
@@ -237,7 +238,6 @@ class AutomataAgent:
 
     def run(self) -> str:
         """Run until the initial instruction terminates."""
-
         while True:
             self.iter_task()
             # Check the previous previous agent message to see if it is a completion message
@@ -250,18 +250,16 @@ class AutomataAgent:
     def replay_messages(self) -> str:
         """Replay the messages in the conversation."""
         if len(self.messages) == 0:
-            if self.verbose:
-                logger.info("No messages to replay.")
+            logger.debug("No messages to replay.")
             return "No messages to replay."
         for message in self.messages[1:]:
             if AutomataAgent.is_completion_message(message["content"]):
                 return message["content"]
             processed_outputs = self._process_input(message["content"])
-            if self.verbose:
-                logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-                logger.info("Processing message content =  %s" % (message["content"]))
-                logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
-                logger.info("-" * 100)
+            logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+            logger.debug("Processing message content =  %s" % (message["content"]))
+            logger.debug("\nProcessed Outputs:\n%s\n" % processed_outputs)
+            logger.debug("-" * 60)
         return "No completion message found."
 
     def modify_last_instruction(self, new_instruction: str) -> None:
@@ -332,7 +330,7 @@ class AutomataAgent:
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = AutomataAgent._parse_input_string(response_text)
-        logger.info("Tool Calls: %s" % tool_calls)
+        logger.debug("Tool Calls: %s" % tool_calls)
         outputs = []
         for tool_request in tool_calls:
             requested_tool, requested_tool_input = (

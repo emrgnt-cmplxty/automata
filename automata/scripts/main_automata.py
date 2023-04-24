@@ -3,6 +3,8 @@ import logging
 import logging.config
 from typing import Dict
 
+from termcolor import colored
+
 from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core import Toolkit, ToolkitType, load_llm_toolkits
 from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
@@ -51,7 +53,21 @@ def main():
         help="Should the instruction prompt include an overview?",
     )
 
+    parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
+
     args = parser.parse_args()
+
+    logging_config = get_logging_config(log_level=logging.DEBUG if args.verbose else logging.INFO)
+    logging.config.dictConfig(logging_config)
+    logger = logging.getLogger(__name__)
+
+    requests_logger = logging.getLogger("urllib3")
+
+    # Set the logging level for the requests logger to WARNING
+    requests_logger.setLevel(logging.INFO)
+    openai_logger = logging.getLogger("openai")
+    openai_logger.setLevel(logging.INFO)
+
     assert not (
         args.instructions is None and args.session_id is None
     ), "You must provide instructions for the agent if you are not providing a session_id."
@@ -71,8 +87,10 @@ def main():
         }
     else:
         initial_payload = {}
-    logger.info("Passing in instructions: %s", args.instructions)
-    logger.info("-" * 100)
+    logger.info(
+        f"Passing in instructions:\n{colored(args.instructions, color='white', on_color='on_green')}"
+    )
+    logger.info("-" * 60)
 
     agent_config_version = AutomataConfigVersion(args.config_version)
     agent_config = AutomataAgentConfig.load(agent_config_version)
@@ -90,7 +108,6 @@ def main():
 
     logger.info("Running the agent now...")
     if args.session_id is None:
-        logger.info("Running...")
         result = agent.run()
         logger.info("Result: %s", result)
     else:
