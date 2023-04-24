@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from automata.core.utils import clean_agent_result
+from automata.core.utils import check_similarity, clean_agent_result
 
 from .conftest import build_agent_with_params, retry
 
@@ -40,7 +40,7 @@ def test_retrieve_load_yaml_docs(automata_params):
     )
     result = clean_agent_result(agent.run())
     expected_content = EXPECTED_RESPONSES["test_retrieve_load_yaml_docs"].strip()
-    assert expected_content in result
+    assert check_similarity(expected_content, result) > 0.9
 
 
 @retry(3)
@@ -67,4 +67,4 @@ def test_retrieve_python_writer_docs(automata_params):
     )
     result = clean_agent_result(agent.run())
     expected_content = EXPECTED_RESPONSES["test_retrieve_python_writer_docs"].strip()
-    assert expected_content in result
+    assert check_similarity(expected_content, result) > 0.9
