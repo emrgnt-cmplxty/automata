@@ -178,13 +178,14 @@ class AutomataAgent:
 
         context_length = sum(
             [
-                len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
+                len(
+                    self.tokenizer.encode(message["content"], max_length=1024 * 8, truncation=True)
+                )
                 for message in self.messages
             ]
         )
-        if self.verbose:
-            logger.info("Chat Context length: %s", context_length)
-            logger.info("-" * 100)
+        logger.debug("Chat Context length: %s", context_length)
+        logger.debug("-" * 60)
 
         logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
@@ -231,8 +232,7 @@ class AutomataAgent:
 
         # If there are no outputs, then the user has must respond to continue
         self._save_interaction({"role": "user", "content": AutomataAgent.CONTINUE_MESSAGE})
-        if self.verbose:
-            logger.info("Synthetic User Message:\n%s\n" % AutomataAgent.CONTINUE_MESSAGE)
+        logger.debug("Synthetic User Message:\n%s\n" % AutomataAgent.CONTINUE_MESSAGE)
 
         return None
 
@@ -309,16 +309,15 @@ class AutomataAgent:
             for message in initial_messages:
                 self._save_interaction(message)
 
-        if self.verbose:
-            logger.info("Initializing with Prompt:%s\n" % (prompt))
-            logger.info("-" * 100)
+        logger.debug("Initializing with Prompt:%s\n" % (prompt))
+        logger.debug("-" * 60)
 
         # Check that initial_payload contains all input variables
         if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
 
-        logger.info("Session ID: %s" % self.session_id)
-        logger.info("-" * 100)
+        logger.debug("Session ID: %s" % self.session_id)
+        logger.debug("-" * 60)
 
     def _load_prompt(self) -> str:
         """Load the prompt from a config_version specified at initialization."""
