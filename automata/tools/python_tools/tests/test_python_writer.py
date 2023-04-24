@@ -325,7 +325,7 @@ def test_reduce_module_remove_function(python_writer):
 def test_update_existing_function(python_writer):
     mock_generator = MockCodeGenerator(has_function=True)
     source_code = mock_generator.generate_code()
-    # Create a new version of the function with a different body
+    # Create a new config of the function with a different body
     source_code_updated = textwrap.dedent(
         f"""
         def {mock_generator.function_name}():

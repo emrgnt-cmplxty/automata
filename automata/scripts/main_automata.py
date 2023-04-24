@@ -18,10 +18,10 @@ def main():
     parser = argparse.ArgumentParser(description="Run the AutomataAgent.")
     parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
     parser.add_argument(
-        "--version",
+        "--config",
         type=AgentConfig,
         default=AgentConfig.AUTOMATA_MASTER_V2,
-        help="The version of the agent.",
+        help="The config of the agent.",
     )
     parser.add_argument(
         "--model", type=str, default="gpt-4", help="The model to be used for the agent."
@@ -69,7 +69,7 @@ def main():
         .with_initial_payload(initial_payload)
         .with_instructions(args.instructions)
         .with_llm_toolkits(llm_toolkits)
-        .with_version(args.version)
+        .with_config(args.config)
         .with_model(args.model)
         .with_session_id(args.session_id)
         .with_stream(args.stream)
