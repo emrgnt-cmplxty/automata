@@ -138,7 +138,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 .with_initial_payload(initial_payload)
                 .with_instructions(instructions)
                 .with_llm_toolkits(load_llm_toolkits(["python_indexer"]))
-                .with_version(self.automata_version)
+                .with_config(self.automata_version)
                 .with_model(self.model)
                 .with_stream(self.stream)
                 .with_verbose(self.verbose)

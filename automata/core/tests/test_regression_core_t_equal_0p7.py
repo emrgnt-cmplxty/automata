@@ -96,7 +96,7 @@ def test_advanced_writer_example(automata_params):
     agent = build_agent_with_params(
         automata_params,
         f"Write the following module - '{expected_content}' to the file core.tests.sample_code.test2",
-        version=AgentConfig.AUTOMATA_WRITER_V2,
+        config=AgentConfig.AUTOMATA_WRITER_V2,
         max_iters=2,
         temperature=TEMPERATURE,
         model=MODEL,
@@ -125,7 +125,7 @@ def test_retrieve_run_and_write_out(automata_params):
         automata_params,
         f'1. Retrieve the raw code (code + docstrings) for the function "run" from the automata agent.\n'
         f"2. NEXT, write the full raw code into the file core.tests.sample_code.test3",
-        version=AgentConfig.AUTOMATA_MASTER_V3,
+        config=AgentConfig.AUTOMATA_MASTER_V3,
         max_iters=5,
     )
 

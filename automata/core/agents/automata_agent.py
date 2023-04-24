@@ -57,8 +57,8 @@ class AutomataAgentBuilder:
         self._instance.instructions = instructions
         return self
 
-    def with_version(self, version: AgentConfig):
-        self._instance.version = version
+    def with_config(self, config: AgentConfig):
+        self._instance.config = config
         return self
 
     def with_model(self, model: str):
@@ -106,7 +106,7 @@ class AutomataAgent:
             initial_payload (Dict[str, str]): Initial payload to send to the agent.
             llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
             instructions (str): A string of instructions to execute.
-            version (AgentConfig): The version of the agent to use.
+            config (AgentConfig): The config of the agent to use.
             model (str): The model to use for the agent.
             stream (bool): Whether to stream the results back to the master.
             verbose (bool): Whether to print the results to stdout.
@@ -122,7 +122,7 @@ class AutomataAgent:
         self.initial_payload = {}
         self.llm_toolkits = {}
         self.instructions = ""
-        self.version = AgentConfig.AUTOMATA_MASTER_V2
+        self.config = AgentConfig.AUTOMATA_MASTER_V2
         self.model = "gpt-4"
         self.stream = False
         self.verbose = True
@@ -281,7 +281,7 @@ class AutomataAgent:
     def _load_prompt(self) -> str:
         """Load the prompt from a config specified at initialization."""
         with open(
-            format_config_path("agent_configs", f"{self.version.value}.yaml"),
+            format_config_path("agent_configs", f"{self.config.value}.yaml"),
             "r",
         ) as file:
             loaded_yaml = yaml.safe_load(file)

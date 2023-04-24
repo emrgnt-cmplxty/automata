@@ -17,7 +17,7 @@ current_file_dir = os.path.dirname(os.path.realpath(__file__))
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    version: AgentConfig = AgentConfig.AUTOMATA_RETRIEVER_V2,
+    config: AgentConfig = AgentConfig.AUTOMATA_RETRIEVER_V2,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",
@@ -30,7 +30,7 @@ def build_agent_with_params(
         .with_llm_toolkits(mock_llm_toolkits)
         .with_verbose(True)
         .with_max_iters(max_iters)
-        .with_version(version)
+        .with_config(config)
         .with_temperature(temperature)
         .with_model(model)
         .build()

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def update_docstrings():
     logging.config.dictConfig(get_logging_config())
     parser = argparse.ArgumentParser(description="Run the AutomataAgent.")
-    parser.add_argument("--version", type=str, default="automata_docstring_manager_v1")
+    parser.add_argument("--config", type=str, default="automata_docstring_manager_v1")
     parser.add_argument("--file_path", type=Optional[str], default=None)
     args = parser.parse_args()
     llm_toolkits = load_llm_toolkits(["python_indexer", "python_writer"])
@@ -51,7 +51,7 @@ def update_docstrings():
                     f" NOTE the key changes you have made. The code may be written dirrectly in your prompt and a developer will paste it into the file."
                 )
                 .with_llm_toolkits(llm_toolkits)
-                .with_version(AgentConfig(args.version))
+                .with_config(AgentConfig(args.config))
                 .with_model("gpt-4")
                 .with_stream(True)
                 .with_verbose(True)
