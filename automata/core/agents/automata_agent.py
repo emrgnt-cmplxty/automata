@@ -123,7 +123,7 @@ class AutomataAgent:
             initial_messages = [
                 {
                     "role": "assistant",
-                    "content": 'Thought: I will begin by initializing myself. {"tool": "automata-initializer", "input": "Hello, I am Mr. Automata, one OpenAI\'s most skilled coders. What coding challenge can I solve for you today?"}',
+                    "content": 'Thought: I will begin by initializing myself. {"tool": "automata-initializer", "input": "Hello, I am Automata, OpenAI\'s most skilled coding system. How may I assit you today?"}',
                 },
                 {"role": "user", "content": f'Observation:\n{{"task_0":"{instructions}"}}'},
             ]

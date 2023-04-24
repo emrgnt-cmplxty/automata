@@ -155,7 +155,7 @@ class PythonAgentToolBuilder:
 
         tools = [
             Tool(
-                "mr-automata-task",
+                "automata-task",
                 python_agent_python_task,
                 "Execute a Python task using the PythonAgent. Provide the task description in plain English.",
             )
@@ -202,7 +202,7 @@ class PythonAgentToolBuilder:
         self.python_agent = python_agent
 
     def build_tools(self) -> List[Tool]:
-        tools = [Tool(name='mr-automata-task', func=lambda task: self.python_agent.run_agent(task), description=f'A single function that uses PythonAgent to perform a given task.', return_direct=True)]
+        tools = [Tool(name='automata-task', func=lambda task: self.python_agent.run_agent(task), description=f'A single function that uses PythonAgent to perform a given task.', return_direct=True)]
         return tools"""
     )
     tools = python_writer_tool_builder.build_tools()

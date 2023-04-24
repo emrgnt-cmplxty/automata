@@ -99,7 +99,7 @@ template: >
     }
   '
 
-  Example 2 - Check that the method automata_update_module of the class MrPythonIndexerToolManager is using the most
+  Example 2 - Check that the method automata_update_module of the class PythonIndexerToolManager is using the most
   correct configuration to initialize the AutomataAgent, if not, update it accordingly.
 
   '
@@ -108,7 +108,7 @@ template: >
     Action:
     {
       "tool": "automata-indexer-retrieve-code",
-      "input": "Provide the raw code for automata_indexer_retrieve_code in MrPythonIndexerToolManager.
+      "input": "Provide the raw code for automata_indexer_retrieve_code in PythonIndexerToolManager.
       Make sure all necessary imports and docustrngs are included. Next, use provide information around the latest configurations
       for the AutomataAgent."
     }
@@ -125,13 +125,13 @@ template: >
   User:
     Observation:
     {
-      "output_0": "Mr. Automata has been updated."
+      "output_0": "_automata_indexer_retrieve_code has been updated."
     }
   Assistant:
     Thought: The task is completed.
     Action:
     {
-      "result_0": "Mr. Automata has been updated."
+      "result_0": "PythonIndexer has been updated."
     }
   '
 

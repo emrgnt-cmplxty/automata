@@ -91,14 +91,14 @@ template: >
     }
 
 
-  Example 2 - 1. Retrieve the code for the function "run" from the mr automata agent.\n2. NEXT, write the "run" function out to the file core.tests.sample_code.test.\nDo not return a "result" until you have successfuly written the output file.
+  Example 2 - 1. Retrieve the code for the function "run" from the automata agent.\n2. NEXT, write the "run" function out to the file core.tests.sample_code.test.\nDo not return a "result" until you have successfuly written the output file.
 
   Assistant:
-    Thought: I will use the automata-indexer-retrieve-code tool to retrieve the code for the "run" function from the Mr. Automata agent.
+    Thought: I will use the automata-indexer-retrieve-code tool to retrieve the code for the "run" function from the  Automata agent.
     Action:
     {
       "tool": "automata-indexer-retrieve-code",
-      "input": "Retrieve the code for the function \'run\' from the Mr. Automata agent, including all necessary imports and docstrings."
+      "input": "Retrieve the code for the function \'run\' from the Automata agent, including all necessary imports and docstrings."
     }
   User:
     Observation:

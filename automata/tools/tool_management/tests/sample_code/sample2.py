@@ -33,7 +33,7 @@ class PythonAgentToolBuilder:
 
         tools = [
             Tool(
-                "mr-automata-task",
+                "automata-task",
                 python_agent_python_task,
                 "Execute a Python task using the PythonAgent. Provide the task description in plain English.",
             )

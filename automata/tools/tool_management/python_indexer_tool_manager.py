@@ -100,7 +100,7 @@ class PythonIndexerToolManager(BaseToolManager):
             Tool(
                 name="automata-indexer-retrieve-code",
                 func=lambda path_str: self._run_automata_indexer_retrieve_code(path_str),
-                description="Mr. Automata parses a natural language query to retrieve the correct code, docstrings, and import statements necessary to solve an abstract task",
+                description="Automata parses a natural language query to retrieve the correct code, docstrings, and import statements necessary to solve an abstract task",
             ),
         ]
         return tools
@@ -133,7 +133,7 @@ class PythonIndexerToolManager(BaseToolManager):
         from automata.core import load_llm_toolkits
         from automata.core.agents.automata_agent import AutomataAgent
 
-        """Mr. Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
+        """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
             print("Running _run_automata_indexer_retrieve_code with path_str - ", path_str)
             initial_payload = {"overview": self.indexer.get_overview()}
