@@ -11,5 +11,5 @@ class BaseToolManager(ABC):
         pass
 
     @abstractmethod
-    def build_tools_with_automata(self) -> Any:
+    def build_tools_with_automata(self, config: Any) -> Any:
         pass

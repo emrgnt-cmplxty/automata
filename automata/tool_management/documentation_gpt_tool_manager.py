@@ -1,8 +1,8 @@
-from typing import List
+from typing import Any, List
 
 from automata.core.base.tool import Tool
-from automata.tools.documentation_tools.documentation_gpt import DocumentationGPT
-from automata.tools.tool_management.base_tool_manager import BaseToolManager
+from automata.tool_management.base_tool_manager import BaseToolManager
+from automata.tools.documentation.documentation_gpt import DocumentationGPT
 
 
 class DocumentationGPTToolManager(BaseToolManager):
@@ -22,7 +22,7 @@ class DocumentationGPTToolManager(BaseToolManager):
         ]
         return tools
 
-    def build_tools_with_automata(self) -> List[Tool]:
+    def build_tools_with_automata(self, config: Any) -> List[Tool]:
         """Not implemented."""
         raise NotImplementedError
 

@@ -3,10 +3,11 @@ import logging
 import logging.config
 from typing import Dict
 
-from automata.configs.agent_configs import AutomataConfigVersion
-from automata.core import Toolkit, ToolkitType, load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
+from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.core.agents.automata_agent import AutomataAgentBuilder
+from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.utils import get_logging_config, root_py_path
+from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
 
@@ -50,6 +51,18 @@ def main():
         default=False,
         help="Should the instruction prompt include an overview?",
     )
+    parser.add_argument(
+        "--automata_indexer_config_version",
+        type=str,
+        default=AutomataConfigVersion.AUTOMATA_INDEXER_V2.value,
+        help="Should the instruction prompt include an overview?",
+    )
+    parser.add_argument(
+        "--automata_writer_config_version",
+        type=str,
+        default=AutomataConfigVersion.AUTOMATA_WRITER_V2.value,
+        help="Should the instruction prompt include an overview?",
+    )
 
     args = parser.parse_args()
     assert not (
@@ -59,13 +72,21 @@ def main():
         args.instructions and args.session_id
     ), "You must provide either instructions for the agent or a session_id."
 
-    inputs = {"documentation_url": args.documentation_url, "model": args.model}
-    llm_toolkits: Dict[ToolkitType, Toolkit] = load_llm_toolkits(
+    inputs = {
+        "documentation_url": args.documentation_url,
+        "model": args.model,
+        "automata_indexer_config": AutomataAgentConfig.load(
+            AutomataConfigVersion(args.automata_indexer_config_version)
+        ),
+        "automata_writer_config": AutomataAgentConfig.load(
+            AutomataConfigVersion(args.automata_writer_config_version)
+        ),
+    }
+    llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
         args.toolkits.split(","), **inputs
     )
     if args.include_overview:
         indexer = PythonIndexer(root_py_path())
-
         initial_payload = {
             "overview": indexer.get_overview(),
         }

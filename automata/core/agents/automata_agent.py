@@ -6,15 +6,11 @@
     Example:
 
  
-        llm_toolkits = load_llm_toolkits(tools_list, **inputs)
+        llm_toolkits = build_llm_toolkits(tools_list, **inputs)
 
-        initial_payload = {
-            "overview": python_inexer.get_overview(),
-        }
         config_version = AutomataConfigVersion.AUTOMATA_MASTER_V3
         agent_config = AutomataAgentConfig.load(config_version)
         agent = (AutomataAgentBuilder(agent_config)
-            .with_initial_payload(initial_payload)
             .with_llm_toolkits(llm_toolkits)
             .with_instructions(instructions)
             .with_model(model)
@@ -31,61 +27,13 @@ import uuid
 from typing import Dict, List, Optional, Tuple
 
 import openai
-import yaml
-from pydantic import BaseModel
 from transformers import GPT2Tokenizer
 
 from automata.config import *  # noqa F403
-from automata.configs.agent_configs import AutomataConfigVersion
-from automata.core import Toolkit, ToolkitType
-from automata.core.utils import format_config_path
+from automata.configs.agent_configs.config_type import AutomataAgentConfig
+from automata.core.base.tool import Toolkit, ToolkitType
 
 logger = logging.getLogger(__name__)
-
-
-class AutomataAgentConfig(BaseModel):
-
-    """
-    Args:
-        config_version (AutomataConfigVersion): The config_version of the agent to use.
-        initial_payload (Dict[str, str]): Initial payload to send to the agent.
-        llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
-        instructions (str): A string of instructions to execute.
-        instruction_template (str): A string of instructions to execute.
-        instruction_input_variables (List[str]): A list of input variables for the instruction template.
-        model (str): The model to use for the agent.
-        stream (bool): Whether to stream the results back to the master.
-        verbose (bool): Whether to print the results to stdout.
-        max_iters (int): The maximum number of iterations to run.
-        temperature (float): The temperature to use for the agent.
-        session_id (Optional[str]): The session ID to use for the agent.
-    """
-
-    class Config:
-        AGENT_CONFIG_DIRECTORY = "agent_configs"
-        arbitrary_types_allowed = True
-
-    config_version: str = "default"
-    initial_payload: Dict[str, str] = {}
-    llm_toolkits: Dict[ToolkitType, Toolkit] = {}
-    instructions: str = ""
-    instruction_template: str = ""
-    instruction_input_variables: List[str] = []
-    model: str = "gpt-4"
-    stream: bool = False
-    verbose: bool = True
-    max_iters: int = 1_000_000
-    temperature: float = 0.7
-    session_id: Optional[str] = None
-
-    @classmethod
-    def load(cls, config_version: AutomataConfigVersion) -> "AutomataAgentConfig":
-        if config_version == AutomataConfigVersion.DEFAULT:
-            return AutomataAgentConfig()
-        config_path = format_config_path(cls.Config.AGENT_CONFIG_DIRECTORY, config_version.value)
-        with open(f"{config_path}.yaml", "r") as file:
-            loaded_yaml = yaml.safe_load(file)
-            return AutomataAgentConfig(**loaded_yaml)
 
 
 class AutomataAgentBuilder:
@@ -106,25 +54,37 @@ class AutomataAgentBuilder:
 
     def with_model(self, model: str):
         self._instance.model = model
+        if model not in AutomataAgentConfig.Config.SUPPORTED_MDOELS:
+            raise ValueError(f"Model {model} not found in Supported OpenAI list of models.")
         return self
 
     def with_stream(self, stream: bool):
+        if not isinstance(stream, bool):
+            raise ValueError("Stream must be a boolean.")
         self._instance.stream = stream
         return self
 
     def with_verbose(self, verbose: bool):
+        if not isinstance(verbose, bool):
+            raise ValueError("Verbose must be a boolean.")
         self._instance.verbose = verbose
         return self
 
     def with_max_iters(self, max_iters: int):
+        if not isinstance(max_iters, int):
+            raise ValueError("Max iters must be an integer.")
         self._instance.max_iters = max_iters
         return self
 
     def with_temperature(self, temperature: float):
+        if not isinstance(temperature, float):
+            raise ValueError("Temperature iters must be a float.")
         self._instance.temperature = temperature
         return self
 
     def with_session_id(self, session_id: Optional[str]):
+        if session_id and not isinstance(session_id, str):
+            raise ValueError("Session Id must be a str.")
         self._instance.session_id = session_id
         return self
 

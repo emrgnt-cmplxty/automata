@@ -1,6 +1,6 @@
 import argparse
 
-from automata.tools.documentation_tools.documentation_gpt import DocumentationGPT
+from automata.tools.documentation.documentation_gpt import DocumentationGPT
 
 parser = argparse.ArgumentParser(description="Configure documentation chat system")
 parser.add_argument(

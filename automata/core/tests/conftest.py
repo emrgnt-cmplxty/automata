@@ -5,10 +5,10 @@ from functools import wraps
 
 import pytest
 
-from automata.configs.agent_configs import AutomataConfigVersion
-from automata.core import load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
-from automata.core.utils import check_similarity, root_py_path
+from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.core.agents.automata_agent import AutomataAgentBuilder
+from automata.core.utils import calculate_similarity, root_py_path
+from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
@@ -17,7 +17,7 @@ current_file_dir = os.path.dirname(os.path.realpath(__file__))
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    config_version: AutomataConfigVersion = AutomataConfigVersion.AUTOMATA_RETRIEVER_V2,
+    config_version: AutomataConfigVersion = AutomataConfigVersion.AUTOMATA_INDEXER_V2,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",
@@ -53,7 +53,7 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
     sample_code_dir = os.path.join(current_file_dir, "sample_code")
     shutil.rmtree(sample_code_dir)
 
-    similarity_score = check_similarity(content, expected_content)
+    similarity_score = calculate_similarity(content, expected_content)
     assert similarity_score > 0.85  # Check the similarity score
 
 
@@ -70,7 +70,7 @@ def automata_params(request):
     tool_list = request.param.get("tool_list")
 
     inputs = {"model": model, "temperature": temperature}
-    mock_llm_toolkits = load_llm_toolkits(tool_list, **inputs)
+    mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
 
     initial_payload = (
         generate_initial_payload() if not request.param.get("exclude_overview") else {}

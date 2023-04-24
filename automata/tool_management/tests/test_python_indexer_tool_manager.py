@@ -5,8 +5,8 @@ import pytest
 
 from automata.core.base.tool import Tool
 from automata.core.utils import root_py_path
+from automata.tool_management.python_indexer_tool_manager import PythonIndexerToolManager
 from automata.tools.python_tools.python_indexer import PythonIndexer
-from automata.tools.tool_management.python_indexer_tool_manager import PythonIndexerToolManager
 
 
 @pytest.fixture

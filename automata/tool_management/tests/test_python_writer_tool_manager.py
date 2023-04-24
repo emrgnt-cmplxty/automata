@@ -7,16 +7,16 @@ import pytest
 
 from automata.core.base.tool import Tool
 from automata.core.utils import root_py_path
+from automata.tool_management.python_writer_tool_manager import PythonWriterToolManager
 from automata.tools.python_tools.python_indexer import PythonIndexer
 from automata.tools.python_tools.python_writer import PythonWriter
-from automata.tools.tool_management.python_writer_tool_manager import PythonWriterToolManager
 
 
 @pytest.fixture
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    path_to_here = os.path.join(root_py_path(), "tools", "tool_management", "tests")
+    path_to_here = os.path.join(root_py_path(), "tool_management", "tests")
     python_indexer = PythonIndexer(path_to_here)
 
     python_writer = PythonWriter(python_indexer)
@@ -209,4 +209,4 @@ class PythonAgentToolBuilder:
     code_writer = tools[0]
     code_writer.func(combo_str)
     # # Why?
-    shutil.rmtree(os.path.join(root_py_path(), "tools", "tool_management", "tests", "temp_code"))
+    shutil.rmtree(os.path.join(root_py_path(), "tool_management", "tests", "temp_code"))

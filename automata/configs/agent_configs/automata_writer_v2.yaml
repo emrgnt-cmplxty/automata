@@ -63,7 +63,7 @@ instruction_template: >
     Action:
     {
       "tool": "python-writer-update-module", 
-      "input": "tools.python_tools.documentation_tools.documentation_gpt,DocumentationGPT,def hello_world(self):\n    return "Hello World"\n"
+      "input": "tools.python_tools.documentation.documentation_gpt,DocumentationGPT,def hello_world(self):\n    return "Hello World"\n"
     }
   User:
     Observation:

@@ -1,9 +1,9 @@
-from typing import List
+from typing import Any, List
 
 from automata.core.base.tool import Tool
 from automata.core.utils import run_retrieval_chain_with_sources_format
+from automata.tool_management.base_tool_manager import BaseToolManager
 from automata.tools.oracle.codebase_oracle import CodebaseOracle
-from automata.tools.tool_management.base_tool_manager import BaseToolManager
 
 
 class CodebaseOracleToolManager(BaseToolManager):
@@ -33,7 +33,7 @@ class CodebaseOracleToolManager(BaseToolManager):
         ]
         return tools
 
-    def build_tools_with_automata(self) -> List[Tool]:
+    def build_tools_with_automata(self, config: Any) -> List[Tool]:
         """Not implemented."""
         raise NotImplementedError
 

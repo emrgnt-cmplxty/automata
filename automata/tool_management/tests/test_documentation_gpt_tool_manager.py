@@ -1,10 +1,8 @@
 import pytest
 
 from automata.core.base.tool import Tool
-from automata.tools.documentation_tools.documentation_gpt import DocumentationGPT
-from automata.tools.tool_management.documentation_gpt_tool_manager import (
-    DocumentationGPTToolManager,
-)
+from automata.tool_management.documentation_gpt_tool_manager import DocumentationGPTToolManager
+from automata.tools.documentation.documentation_gpt import DocumentationGPT
 
 
 @pytest.fixture

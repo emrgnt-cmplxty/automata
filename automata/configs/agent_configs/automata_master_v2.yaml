@@ -166,7 +166,7 @@ instruction_template: >
     Action:
     {
       "tool": "automata-writer-modify-module",
-      "input": "Update the file at path tools.documentation_tools.DocumentationGPT so that the method DocumentationGPT.generate_documentation now reads "INSERT_CODE", 
+      "input": "Update the file at path tools.documentation.DocumentationGPT so that the method DocumentationGPT.generate_documentation now reads "INSERT_CODE", 
     }
   '  
 

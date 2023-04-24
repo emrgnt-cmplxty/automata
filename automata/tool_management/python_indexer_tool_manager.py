@@ -18,14 +18,14 @@ Example usage:
 TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 """
 import logging
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
-from automata.configs.agent_configs import AutomataConfigVersion
+from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.core.agents.automata_agent import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.core.utils import clean_agent_result
-
-from ..python_tools.python_indexer import PythonIndexer
-from .base_tool_manager import BaseToolManager
+from automata.tool_management.base_tool_manager import BaseToolManager
+from automata.tools.python_tools.python_indexer import PythonIndexer
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class PythonIndexerToolManager(BaseToolManager):
         """
         self.indexer: PythonIndexer = kwargs.get("python_indexer")
         self.automata_version = (
-            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_RETRIEVER_V2
+            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_INDEXER_V2
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
@@ -89,12 +89,12 @@ class PythonIndexerToolManager(BaseToolManager):
         ]
         return tools
 
-    def build_tools_with_automata(self) -> List[Tool]:
+    def build_tools_with_automata(self, config: Any) -> List[Tool]:
         """Builds a list of Automata powered Tool objects for interacting with PythonWriter."""
         tools = [
             Tool(
                 name="automata-indexer-retrieve-code",
-                func=lambda path_str: self._run_automata_indexer_retrieve_code(path_str),
+                func=lambda path_str: self._run_automata_indexer_retrieve_code(path_str, config),
                 description="Automata parses a natural language query to retrieve the correct code, docstrings, and import statements necessary to solve an abstract task",
             ),
         ]
@@ -127,20 +127,20 @@ class PythonIndexerToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
 
-    def _run_automata_indexer_retrieve_code(self, path_str: str) -> str:
+    def _run_automata_indexer_retrieve_code(
+        self, path_str: str, automata_config: AutomataAgentConfig
+    ) -> str:
         """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
-        from automata.core import load_llm_toolkits
-        from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
+        from automata.tool_management.tool_management_utils import build_llm_toolkits
 
-        agent_config = AutomataAgentConfig.load(self.automata_version)
         try:
             initial_payload = {"overview": self.indexer.get_overview()}
             instructions = f"Retrieve the code for {path_str}"
             agent = (
-                AutomataAgentBuilder(agent_config)
+                AutomataAgentBuilder(automata_config)
                 .with_initial_payload(initial_payload)
                 .with_instructions(instructions)
-                .with_llm_toolkits(load_llm_toolkits(["python_indexer"]))
+                .with_llm_toolkits(build_llm_toolkits(["python_indexer"]))
                 .with_model(self.model)
                 .with_stream(self.stream)
                 .with_verbose(self.verbose)

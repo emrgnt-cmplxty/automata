@@ -1,0 +1,9 @@
+initial_payload: {}
+llm_toolkits: {}
+instructions: "Test instructions."
+model: "gpt-4"
+stream: false
+verbose: true
+max_iters: 100
+temperature: 0.8
+session_id: "test-session-id"
