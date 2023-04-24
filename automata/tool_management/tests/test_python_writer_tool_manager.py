@@ -121,6 +121,7 @@ def test_extend_module_with_documented_new_class(python_writer_tool_builder):
     class_str = textwrap.dedent(
         '''from typing import List
 
+
 from automata.core.base.tool import Tool
 
 from automata.tools.python_tools.python_agent import PythonAgent

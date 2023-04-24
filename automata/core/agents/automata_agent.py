@@ -18,7 +18,7 @@
 
         agent.run()
 
-        TODO - Add error checking to ensure that we don't terminate when 
+        TODO - Add error checking to ensure that we don't terminate when
         our previous result returned an error
 """
 import logging
@@ -27,6 +27,7 @@ import uuid
 from typing import Dict, List, Optional, Tuple
 
 import openai
+from termcolor import colored
 from transformers import GPT2Tokenizer
 
 from automata.config import *  # noqa F403
@@ -137,13 +138,14 @@ class AutomataAgent:
 
         context_length = sum(
             [
-                len(self.tokenizer.encode(message["content"], max_length=1024 * 8))
+                len(
+                    self.tokenizer.encode(message["content"], max_length=1024 * 8, truncation=True)
+                )
                 for message in self.messages
             ]
         )
-        if self.verbose:
-            logger.info("Chat Context length: %s", context_length)
-            logger.info("-" * 100)
+        logger.debug("Chat Context length: %s", context_length)
+        logger.debug("-" * 60)
 
         logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
@@ -153,6 +155,7 @@ class AutomataAgent:
             stream=self.stream,
         )
         if self.stream:
+            print(colored("\n>>>", "green", attrs=["blink"]) + colored(" Agent:", "green"))
             accumulated_output = ""
             separator = " "
             response_text = ""
@@ -166,38 +169,35 @@ class AutomataAgent:
                     words = accumulated_output.split(separator)
                     # Print all words except the last one, as it may be an incomplete word
                     for word in words[:-1]:
-                        print(word, end=" ", flush=True)
+                        print(colored(str(word), "green"), end=" ", flush=True)
                     # Keep the last (potentially incomplete) word for the next iteration
                     accumulated_output = words[-1]
+            # Print the last word
+            print(colored(str(accumulated_output), "green"))
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
-
-        if self.verbose:
-            logger.info("OpenAI Response:\n%s\n" % response_text)
+        logger.debug("OpenAI Response:\n%s\n" % response_text)
         processed_inputs = self._process_input(response_text)
         self._save_interaction({"role": "assistant", "content": response_text})
 
         # If there are processed inputs, return here
         if len(processed_inputs) > 0:
-            message = "Observation:\n{" + "\n"
+            message = "{" + "\n"
             for i, output in enumerate(processed_inputs):
-                message += f'"output_{i}": "{(output)}", \n'
+                message += f'"output_{i}": {(output)}, \n'
             message += "}"
             self._save_interaction({"role": "user", "content": message})
-            if self.verbose:
-                logger.info("Synthetic User Message:\n%s\n" % message)
+            logger.debug("Synthetic User Message:\n%s\n" % message)
             return processed_inputs
 
         # If there are no outputs, then the user has must respond to continue
         self._save_interaction({"role": "user", "content": AutomataAgent.CONTINUE_MESSAGE})
-        if self.verbose:
-            logger.info("Synthetic User Message:\n%s\n" % AutomataAgent.CONTINUE_MESSAGE)
+        logger.debug("Synthetic User Message:\n%s\n" % AutomataAgent.CONTINUE_MESSAGE)
 
         return None
 
     def run(self) -> str:
         """Run until the initial instruction terminates."""
-
         while True:
             self.iter_task()
             # Check the previous previous agent message to see if it is a completion message
@@ -210,18 +210,16 @@ class AutomataAgent:
     def replay_messages(self) -> str:
         """Replay the messages in the conversation."""
         if len(self.messages) == 0:
-            if self.verbose:
-                logger.info("No messages to replay.")
+            logger.debug("No messages to replay.")
             return "No messages to replay."
         for message in self.messages[1:]:
             if AutomataAgent.is_completion_message(message["content"]):
                 return message["content"]
             processed_outputs = self._process_input(message["content"])
-            if self.verbose:
-                logger.info("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-                logger.info("Processing message content =  %s" % (message["content"]))
-                logger.info("\nProcessed Outputs:\n%s\n" % processed_outputs)
-                logger.info("-" * 100)
+            logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
+            logger.debug("Processing message content =  %s" % (message["content"]))
+            logger.debug("\nProcessed Outputs:\n%s\n" % processed_outputs)
+            logger.debug("-" * 60)
         return "No completion message found."
 
     def modify_last_instruction(self, new_instruction: str) -> None:
@@ -271,16 +269,15 @@ class AutomataAgent:
             for message in initial_messages:
                 self._save_interaction(message)
 
-        if self.verbose:
-            logger.info("Initializing with Prompt:%s\n" % (prompt))
-            logger.info("-" * 100)
+        logger.debug("Initializing with Prompt:%s\n" % (prompt))
+        logger.debug("-" * 60)
 
         # Check that initial_payload contains all input variables
         if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
 
-        logger.info("Session ID: %s" % self.session_id)
-        logger.info("-" * 100)
+        logger.debug("Session ID: %s" % self.session_id)
+        logger.debug("-" * 60)
 
     def _load_prompt(self) -> str:
         """Load the prompt from a config_version specified at initialization."""
@@ -292,7 +289,7 @@ class AutomataAgent:
     def _process_input(self, response_text: str):
         """Process the messages in the conversation."""
         tool_calls = AutomataAgent._parse_input_string(response_text)
-        logger.info("Tool Calls: %s" % tool_calls)
+        logger.debug("Tool Calls: %s" % tool_calls)
         outputs = []
         for tool_request in tool_calls:
             requested_tool, requested_tool_input = (

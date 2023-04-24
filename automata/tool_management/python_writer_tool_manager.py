@@ -7,7 +7,7 @@ the code state of a given directory of Python files.
 Attributes:
 - writer (PythonWriter): A PythonWriter object for manipulating local pythonf iles.
 
-Example - 
+Example -
     python_indexer = PythonIndexer(root_py_path())
     python_writer = PythonWriter(python_indexer)
     python_writer_tool_manager = PythonWriterToolManager(python_writer)
