@@ -108,8 +108,8 @@ def main():
 
     logger.info("Running the agent now...")
     if args.session_id is None:
-        agent.run()
-        logger.info("Completed.")
+        result = agent.run()
+        logger.info("Result: %s", result)
     else:
         logger.info("Replaying messages...")
         result = agent.replay_messages()
