@@ -128,20 +128,22 @@ class PythonIndexerToolManager(BaseToolManager):
     def _run_automata_indexer_retrieve_code(self, path_str: str) -> str:
         """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         from automata.core import load_llm_toolkits
-        from automata.core.agents.automata_agent import AutomataAgent
+        from automata.core.agents.automata_agent import AutomataAgentBuilder
 
         try:
             initial_payload = {"overview": self.indexer.get_overview()}
             instructions = f"Retrieve the code for {path_str}"
-            agent = AutomataAgent(
-                initial_payload=initial_payload,
-                instructions=instructions,
-                llm_toolkits=load_llm_toolkits(["python_indexer"]),
-                version=self.automata_version,
-                model=self.model,
-                stream=self.stream,
-                verbose=self.verbose,
-                temperature=self.temperature,
+            agent = (
+                AutomataAgentBuilder()
+                .with_initial_payload(initial_payload)
+                .with_instructions(instructions)
+                .with_llm_toolkits(load_llm_toolkits(["python_indexer"]))
+                .with_version(self.automata_version)
+                .with_model(self.model)
+                .with_stream(self.stream)
+                .with_verbose(self.verbose)
+                .with_temperature(self.temperature)
+                .build()
             )
             result = agent.run()
             result = clean_agent_result(result)

@@ -105,22 +105,25 @@ class PythonWriterToolManager(BaseToolManager):
     def _automata_update_module(self, input_str: str) -> str:
         """Creates an AutomataAgent to write the given task."""
         from automata.core import load_llm_toolkits
-        from automata.core.agents.automata_agent import AutomataAgent
+        from automata.core.agents.automata_agent import AutomataAgentBuilder
 
         try:
             initial_payload = {
                 "overview": self.writer.indexer.get_overview(),
             }
-            agent = AutomataAgent(
-                initial_payload=initial_payload,
-                instructions=input_str,
-                llm_toolkits=load_llm_toolkits(["python_writer"]),
-                version=self.automata_version,
-                model=self.model,
-                stream=self.stream,
-                verbose=self.verbose,
-                temperature=self.temperature,
+            agent = (
+                AutomataAgentBuilder()
+                .with_initial_payload(initial_payload)
+                .with_instructions(input_str)
+                .with_llm_toolkits(load_llm_toolkits(["python_writer"]))
+                .with_version(self.automata_version)
+                .with_model(self.model)
+                .with_stream(self.stream)
+                .with_verbose(self.verbose)
+                .with_temperature(self.temperature)
+                .build()
             )
+
             agent.run()
 
             return "Success"
