@@ -7,9 +7,11 @@ from automata.tools.tool_management.base_tool_manager import BaseToolManager
 
 class DocumentationGPTToolManager(BaseToolManager):
     def __init__(self, **kwargs):
+        """Initializes a DocumentationGPTToolManager object with the given inputs."""
         self.documentation_gpt: DocumentationGPT = kwargs.get("documentation_gpt")
 
     def build_tools(self) -> List[Tool]:
+        """Initializes a DocumentationGPTToolManager object with the given inputs."""
         tools = [
             Tool(
                 name="doc-gpt-lookup",
@@ -21,8 +23,10 @@ class DocumentationGPTToolManager(BaseToolManager):
         return tools
 
     def build_tools_with_automata(self) -> List[Tool]:
-        return []
+        """Not implemented."""
+        raise NotImplementedError
 
     def _documentation_gpt_lookup(self, input_text):
+        """Lookup the documentation for the given input text."""
         result = self.documentation_gpt.run(input_text)
         return result

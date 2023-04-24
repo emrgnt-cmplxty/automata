@@ -13,6 +13,15 @@ class CodebaseOracleToolManager(BaseToolManager):
         )
 
     def build_tools(self) -> List[Tool]:
+        """
+        Initializes a CodebaseOracleToolManager object with the given inputs.
+
+        Args:
+        - codebase_oracle (CodebaseOracle): A CodebaseOracle object which facilitates code searches.
+
+        Returns:
+        - None
+        """
         tools = [
             Tool(
                 name="codebase-oracle-agent",
@@ -25,8 +34,10 @@ class CodebaseOracleToolManager(BaseToolManager):
         return tools
 
     def build_tools_with_automata(self) -> List[Tool]:
+        """Not implemented."""
         raise NotImplementedError
 
     def _run_codebase_oracle_agent(self, query: str) -> str:
+        """Lookup the documentation for the given input text."""
         result = run_retrieval_chain_with_sources_format(self.codebase_oracle.get_chain(), query)
         return result
