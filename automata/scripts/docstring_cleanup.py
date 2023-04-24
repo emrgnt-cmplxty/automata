@@ -6,7 +6,7 @@ from typing import Optional
 
 from automata.configs.agent_configs import AgentConfig
 from automata.core import load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgent
+from automata.core.agents.automata_agent import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tools.python_tools import PythonIndexer
 
@@ -40,48 +40,26 @@ def update_docstrings():
                 raw_code = file.read()
             logger.info("Initial Code:\n%s" % (raw_code))
 
-            agent = AutomataAgent(
-                initial_payload={},
-                instructions=f"BEFORE WRITING CODE, begin with a multi-bullet description of what the following file is responsible for:\n {raw_code}"
-                f" FOLLOWING that, your objective is to increase the modularity, readability, and maintainability of the file."
-                f" BE SURE to include module docstrings, and docstrings for every function, class, method, and function."
-                f" You may introduce comments where applicable,"
-                f" and rename functions and variables if it significantly improves the code."
-                f" NOTE the key changes you have made. The code may be written dirrectly in your prompt and a developer will paste it into the file.",
-                llm_toolkits=llm_toolkits,
-                version=AgentConfig(args.version),
-                model="gpt-4",
-                stream=True,
-                verbose=True,
+            agent = (
+                AutomataAgentBuilder()
+                .with_instructions(
+                    f"BEFORE WRITING CODE, begin with a multi-bullet description of what the following file is responsible for:\n {raw_code}"
+                    f" FOLLOWING that, your objective is to increase the modularity, readability, and maintainability of the file."
+                    f" BE SURE to include module docstrings, and docstrings for every function, class, method, and function."
+                    f" You may introduce comments where applicable,"
+                    f" and rename functions and variables if it significantly improves the code."
+                    f" NOTE the key changes you have made. The code may be written dirrectly in your prompt and a developer will paste it into the file."
+                )
+                .with_llm_toolkits(llm_toolkits)
+                .with_version(AgentConfig(args.version))
+                .with_model("gpt-4")
+                .with_stream(True)
+                .with_verbose(True)
+                .build()
             )
             agent.run()
 
             break
-    # for module_path in python_indexer.module
-
-    # (python_indexer, _) = (tool_payload["python_indexer"], tool_payload["python_writer"])
-    # overview = python_indexer.get_overview()
-    # initial_payload = {"overview": overview}
-    # for function in python_parser.function_dict.values():
-    #     path = function.py_path
-    #     raw_code = python_parser.get_raw_code(path)
-    #     docstring = python_parser.get_docstring(path)
-    #     if "No results found." not in docstring:
-    #         continue
-    #     logger.info("Prev Docstring:\n%s" % docstring)
-    #     logger.info("Prev Raw Code:\n%s" % raw_code)
-    #     instructions = f"The following code is located at the path {path}:\n\n{raw_code}\n\nPlease fetch the code from the raw file, then write relevant docstrings for this piece of code, and lastly, use the python-writer to write the result to disk."
-    #     agent = AutomataAgent(
-    #         initial_payload=initial_payload,
-    #         instructions=instructions,
-    #         llm_toolkits=exec_tools,
-    #         version=args.version,
-    #         model=args.model,
-    #         session_id=args.session_id,
-    #         stream=args.stream,
-    #         verbose=True,
-    #     )
-    #     agent.run()
 
 
 if __name__ == "__main__":

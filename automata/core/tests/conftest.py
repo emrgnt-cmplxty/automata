@@ -7,7 +7,7 @@ import pytest
 
 from automata.configs.agent_configs import AgentConfig
 from automata.core import load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgent
+from automata.core.agents.automata_agent import AutomataAgentBuilder
 from automata.core.utils import root_py_path
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -23,15 +23,17 @@ def build_agent_with_params(
     model="gpt-3.5-turbo",
 ):
     initial_payload, mock_llm_toolkits = automata_params
-    agent = AutomataAgent(
-        initial_payload=initial_payload,
-        instructions=instructions,
-        llm_toolkits=mock_llm_toolkits,
-        verbose=True,
-        max_iters=max_iters,
-        version=version,
-        temperature=temperature,
-        model=model,
+    agent = (
+        AutomataAgentBuilder()
+        .with_initial_payload(initial_payload)
+        .with_instructions(instructions)
+        .with_llm_toolkits(mock_llm_toolkits)
+        .with_verbose(True)
+        .with_max_iters(max_iters)
+        .with_version(version)
+        .with_temperature(temperature)
+        .with_model(model)
+        .build()
     )
     return agent
 

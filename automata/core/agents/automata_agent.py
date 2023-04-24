@@ -6,28 +6,22 @@
     Example:
 
  
-        inputs = {"model": args.model}
         llm_toolkits = load_llm_toolkits(tools_list, **inputs)
 
         initial_payload = {
             "overview": python_inexer.get_overview(),
         }
 
-        logger.info("Passing in instructions: %s", args.instructions)
-        logger.info("-" * 100)
-        agent = AutomataAgent(
-            initial_payload=initial_payload,
-            instructions=args.instructions,
-            llm_toolkits=llm_toolkits,
-            version=args.version,
-            model=args.model,
-            session_id=args.session_id,
-            stream=args.stream,
-        )
+        agent = (AutomataAgentBuilder()
+            .with_initial_payload(initial_payload)
+            .with_llm_toolkits(llm_toolkits)
+            .with_instructions(instructions)
+            .with_model(model)
+            .build())
 
-        next_instruction = agent.iter_task(instructions)
-        ...
-        TODO - Add error checking to ensure that we don't terminate when
+        agent.run()
+
+        TODO - Add error checking to ensure that we don't terminate when 
         our previous result returned an error
 """
 import logging
@@ -47,6 +41,55 @@ from automata.core.utils import format_config_path
 logger = logging.getLogger(__name__)
 
 
+class AutomataAgentBuilder:
+    def __init__(self):
+        self._instance = AutomataAgent()
+
+    def with_initial_payload(self, initial_payload: Dict[str, str]):
+        self._instance.initial_payload = initial_payload
+        return self
+
+    def with_llm_toolkits(self, llm_toolkits: Dict[ToolkitType, Toolkit]):
+        self._instance.llm_toolkits = llm_toolkits
+        return self
+
+    def with_instructions(self, instructions: str):
+        self._instance.instructions = instructions
+        return self
+
+    def with_version(self, version: AgentConfig):
+        self._instance.version = version
+        return self
+
+    def with_model(self, model: str):
+        self._instance.model = model
+        return self
+
+    def with_stream(self, stream: bool):
+        self._instance.stream = stream
+        return self
+
+    def with_verbose(self, verbose: bool):
+        self._instance.verbose = verbose
+        return self
+
+    def with_max_iters(self, max_iters: int):
+        self._instance.max_iters = max_iters
+        return self
+
+    def with_temperature(self, temperature: float):
+        self._instance.temperature = temperature
+        return self
+
+    def with_session_id(self, session_id: Optional[str]):
+        self._instance.session_id = session_id
+        return self
+
+    def build(self):
+        self._instance._setup()
+        return self._instance
+
+
 class AutomataAgent:
     """
     AutomataAgent is an autonomous agent that performs the actual work of the Automata
@@ -57,19 +100,7 @@ class AutomataAgent:
     CONTINUE_MESSAGE = "Continue, and return a result JSON when finished."
     NUM_DEFAULT_MESSAGES = 3
 
-    def __init__(
-        self,
-        initial_payload: Dict[str, str],
-        llm_toolkits: Dict[ToolkitType, Toolkit],
-        instructions: str,
-        version: AgentConfig = AgentConfig.AUTOMATA_MASTER_V2,
-        model: str = "gpt-4",
-        stream: bool = False,
-        verbose: bool = True,
-        max_iters: int = 1_000_000,  # default to ~infinite iterations
-        temperature: float = 0.7,
-        session_id: Optional[str] = None,
-    ):
+    def __init__(self):
         """
         Args:
             initial_payload (Dict[str, str]): Initial payload to send to the agent.
@@ -88,34 +119,39 @@ class AutomataAgent:
             replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
 
         """
+        self.initial_payload = {}
+        self.llm_toolkits = {}
+        self.instructions = ""
+        self.version = AgentConfig.AUTOMATA_MASTER_V2
+        self.model = "gpt-4"
+        self.stream = False
+        self.verbose = True
+        self.max_iters = 1_000_000
+        self.temperature = 0.7
+        self.session_id = None
 
+    def _setup(self):
+        # Put the setup logic here that was originally in the __init__ method
         # Initialize OpenAI API Key
         openai.api_key = OPENAI_API_KEY  # noqa F405
 
         # Initialize state variables
-        self.model = model
-        self.version = version
-        self.toolkits = llm_toolkits
-        self.messages: List[Dict[str, str]] = []
-        self.stream = stream
-        self.verbose = verbose
-        self.max_iters = max_iters
-        self.temperature = temperature
+        self.messages = []
+        self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
-        initial_payload["tools"] = "".join(
+        self.initial_payload["tools"] = "".join(
             [
                 f"\n{tool.name}: {tool.description}\n"
-                for toolkit in self.toolkits.values()
+                for toolkit in self.llm_toolkits.values()
                 for tool in toolkit.tools
             ]
         )
 
-        prompt = self._load_prompt(initial_payload)
+        prompt = self._load_prompt()
 
         self._init_database()
 
-        if session_id:
-            self.session_id = session_id
+        if self.session_id:
             self._load_previous_interactions()
         else:
             self.session_id = str(uuid.uuid4())
@@ -125,12 +161,12 @@ class AutomataAgent:
                     "role": "assistant",
                     "content": 'Thought: I will begin by initializing myself. {"tool": "automata-initializer", "input": "Hello, I am Automata, OpenAI\'s most skilled coding system. How may I assit you today?"}',
                 },
-                {"role": "user", "content": f'Observation:\n{{"task_0":"{instructions}"}}'},
+                {"role": "user", "content": f'Observation:\n{{"task_0":"{self.instructions}"}}'},
             ]
 
             for message in initial_messages:
                 self._save_interaction(message)
-        self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+
         if self.verbose:
             logger.info("Initializing with Prompt:%s\n" % (prompt))
             logger.info("-" * 100)
@@ -210,9 +246,6 @@ class AutomataAgent:
 
         while True:
             self.iter_task()
-
-            # if AutomataAgent.is_completion_message(self.messages[-1]["content"]):
-            #     return self.messages[-1]["content"]
             # Check the previous previous agent message to see if it is a completion message
             if AutomataAgent.is_completion_message(self.messages[-2]["content"]):
                 return self.messages[-2]["content"]
@@ -238,13 +271,14 @@ class AutomataAgent:
         return "No completion message found."
 
     def extend_last_instructions(self, new_message: str) -> None:
+        """Extend the last instructions with a new message."""
         previous_message = self.messages[-1]
         self.messages[-1] = {
             "role": previous_message["role"],
             "content": f"{previous_message}\n{new_message}",
         }
 
-    def _load_prompt(self, initial_payload: Dict[str, str]) -> str:
+    def _load_prompt(self) -> str:
         """Load the prompt from a config specified at initialization."""
         with open(
             format_config_path("agent_configs", f"{self.version.value}.yaml"),
@@ -254,7 +288,7 @@ class AutomataAgent:
         prompt = loaded_yaml["template"]
         if loaded_yaml["input_variables"] is not None:
             for arg in loaded_yaml["input_variables"]:
-                prompt = prompt.replace(f"{{{arg}}}", initial_payload[arg])
+                prompt = prompt.replace(f"{{{arg}}}", self.initial_payload[arg])
         return prompt
 
     def _process_input(self, response_text: str):
@@ -276,7 +310,7 @@ class AutomataAgent:
                 outputs.append(requested_tool_input)
             else:
                 tool_found = False
-                for toolkit in self.toolkits.values():
+                for toolkit in self.llm_toolkits.values():
                     for tool in toolkit.tools:
                         if tool.name == requested_tool:
                             tool_output = tool.run(requested_tool_input, verbose=False)

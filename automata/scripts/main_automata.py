@@ -5,7 +5,7 @@ from typing import Dict
 
 from automata.configs.agent_configs import AgentConfig
 from automata.core import Toolkit, ToolkitType, load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgent
+from automata.core.agents.automata_agent import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -64,14 +64,16 @@ def main():
     }
     logger.info("Passing in instructions: %s", args.instructions)
     logger.info("-" * 100)
-    agent = AutomataAgent(
-        initial_payload=initial_payload,
-        instructions=args.instructions,
-        llm_toolkits=llm_toolkits,
-        version=args.version,
-        model=args.model,
-        session_id=args.session_id,
-        stream=args.stream,
+    agent = (
+        AutomataAgentBuilder()
+        .with_initial_payload(initial_payload)
+        .with_instructions(args.instructions)
+        .with_llm_toolkits(llm_toolkits)
+        .with_version(args.version)
+        .with_model(args.model)
+        .with_session_id(args.session_id)
+        .with_stream(args.stream)
+        .build()
     )
 
     logger.info("Running the agent now...")
