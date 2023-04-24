@@ -55,15 +55,7 @@ class PythonIndexerToolManager(BaseToolManager):
         self.stream = kwargs.get("stream") or True
 
     def build_tools(self) -> List[Tool]:
-        """
-        Builds a list of Tool objects for interacting with PythonIndexer.
-
-        Args:
-        - None
-
-        Returns:
-        - tools (List[Tool]): A list of Tool objects representing PythonIndexer commands.
-        """
+        """Builds a list of Tool objects for interacting with PythonIndexer."""
         tools = [
             Tool(
                 name="python-indexer-retrieve-code",
@@ -96,6 +88,7 @@ class PythonIndexerToolManager(BaseToolManager):
         return tools
 
     def build_tools_with_automata(self) -> List[Tool]:
+        """Builds a list of Automata powered Tool objects for interacting with PythonWriter."""
         tools = [
             Tool(
                 name="automata-indexer-retrieve-code",
@@ -106,6 +99,7 @@ class PythonIndexerToolManager(BaseToolManager):
         return tools
 
     def _run_indexer_retrieve_code(self, input_str: str) -> str:
+        """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
             module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_code(module_path, object_path)
@@ -114,6 +108,7 @@ class PythonIndexerToolManager(BaseToolManager):
             return "Failed to retrieve code with error - " + str(e)
 
     def _run_indexer_retrieve_docstring(self, input_str: str) -> str:
+        """PythonIndexer retrieves the docstring of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
             module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_docstring(module_path, object_path)
@@ -122,6 +117,7 @@ class PythonIndexerToolManager(BaseToolManager):
             return "Failed to retrieve docstring with error - " + str(e)
 
     def _run_indexer_retrieve_raw_code(self, input_str: str) -> str:
+        """PythonIndexer retrieves the raw code of the python package, module, standalone function, class, or method at the given python path, with docstrings."""
         try:
             module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_raw_code(module_path, object_path)
@@ -130,12 +126,11 @@ class PythonIndexerToolManager(BaseToolManager):
             return "Failed to retrieve raw code with error - " + str(e)
 
     def _run_automata_indexer_retrieve_code(self, path_str: str) -> str:
+        """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         from automata.core import load_llm_toolkits
         from automata.core.agents.automata_agent import AutomataAgent
 
-        """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            print("Running _run_automata_indexer_retrieve_code with path_str - ", path_str)
             initial_payload = {"overview": self.indexer.get_overview()}
             instructions = f"Retrieve the code for {path_str}"
             agent = AutomataAgent(
@@ -156,6 +151,7 @@ class PythonIndexerToolManager(BaseToolManager):
 
     @staticmethod
     def parse_input_str(input_str: str) -> Tuple[str, Optional[str]]:
+        """Parses the input string into a module path and an optional object path."""
         split_input = input_str.split(",")
         module_path = split_input[0].strip()
         if len(split_input) == 1:
