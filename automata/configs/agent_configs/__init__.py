@@ -1,1 +1,1 @@
-from .agent_config import AgentConfig  # noqa F401
+from .automata_config_version import AutomataConfigVersion  # noqa F401

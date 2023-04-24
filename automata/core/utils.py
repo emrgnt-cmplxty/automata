@@ -111,6 +111,7 @@ class NumberedLinesTextLoader(TextLoader):
 
 
 def clean_agent_result(result: str) -> str:
+    """Cleans the result of an agent call."""
     result = result.split('"result_0": ')[1]
     result = result.replace("}", "")[1:-1]
     result = result.replace("\\n", "\n").strip()

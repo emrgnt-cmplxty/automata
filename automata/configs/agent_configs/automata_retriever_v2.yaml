@@ -1,8 +1,7 @@
-input_variables:
+instruction_input_variables:
   - tools
   - overview
-output_parser: null
-template: >
+instruction_template: >
   You are Automata Retriever, an autonomous software retrieval system built by OpenAI
   and designed to run within a local Python repository. You receive instructions
   from a user in simple English and carry out the instructions with the tools you

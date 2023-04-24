@@ -3,9 +3,9 @@ import logging
 import logging.config
 from typing import Dict
 
-from automata.configs.agent_configs import AgentConfig
+from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core import Toolkit, ToolkitType, load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgentBuilder
+from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -18,10 +18,10 @@ def main():
     parser = argparse.ArgumentParser(description="Run the AutomataAgent.")
     parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
     parser.add_argument(
-        "--config",
-        type=AgentConfig,
-        default=AgentConfig.AUTOMATA_MASTER_V2,
-        help="The config of the agent.",
+        "--config_version",
+        type=AutomataConfigVersion,
+        default=AutomataConfigVersion.AUTOMATA_MASTER_V3,
+        help="The config version of the agent.",
     )
     parser.add_argument(
         "--model", type=str, default="gpt-4", help="The model to be used for the agent."
@@ -64,12 +64,15 @@ def main():
     }
     logger.info("Passing in instructions: %s", args.instructions)
     logger.info("-" * 100)
+
+    agent_config_version = AutomataConfigVersion(args.config_version)
+    agent_config = AutomataAgentConfig.load(agent_config_version)
+
     agent = (
-        AutomataAgentBuilder()
+        AutomataAgentBuilder(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(args.instructions)
         .with_llm_toolkits(llm_toolkits)
-        .with_config(args.config)
         .with_model(args.model)
         .with_session_id(args.session_id)
         .with_stream(args.stream)
@@ -94,7 +97,7 @@ def main():
             break
         else:
             instructions = [{"role": "user", "content": user_input}]
-            agent.extend_last_instructions(instructions)
+            agent.modify_last_instruction(instructions)
             agent.iter_task()
 
 

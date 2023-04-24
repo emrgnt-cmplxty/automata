@@ -12,7 +12,7 @@ MODEL = "gpt-3.5-turbo"
 TEMPERATURE = 0.0
 EXPECTED_RESPONSES = {
     "test_retrieve_load_yaml_docs": "Load a YAML file and return",
-    "test_retrieve_python_writer_docs": "This module provides a class for writing Python",
+    "test_retrieve_python_writer_docs": "This class provides functionality to",
 }
 
 

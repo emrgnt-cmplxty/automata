@@ -1,7 +1,8 @@
 from enum import Enum
 
 
-class AgentConfig(Enum):
+class AutomataConfigVersion(Enum):
+    DEFAULT = "default"
     AUTOMATA_MASTER_V1 = "automata_master_v1"
     AUTOMATA_RETRIEVER_V1 = "automata_retriever_v1"
     AUTOMATA_WRITER_V1 = "automata_writer_v1"

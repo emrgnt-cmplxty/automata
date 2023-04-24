@@ -11,8 +11,9 @@
         initial_payload = {
             "overview": python_inexer.get_overview(),
         }
-
-        agent = (AutomataAgentBuilder()
+        config_version = AutomataConfigVersion.AUTOMATA_MASTER_V3
+        agent_config = AutomataAgentConfig.load(config_version)
+        agent = (AutomataAgentBuilder(agent_config)
             .with_initial_payload(initial_payload)
             .with_llm_toolkits(llm_toolkits)
             .with_instructions(instructions)
@@ -31,19 +32,65 @@ from typing import Dict, List, Optional, Tuple
 
 import openai
 import yaml
+from pydantic import BaseModel
 from transformers import GPT2Tokenizer
 
 from automata.config import *  # noqa F403
-from automata.configs.agent_configs import AgentConfig
+from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core import Toolkit, ToolkitType
 from automata.core.utils import format_config_path
 
 logger = logging.getLogger(__name__)
 
 
+class AutomataAgentConfig(BaseModel):
+
+    """
+    Args:
+        config_version (AutomataConfigVersion): The config_version of the agent to use.
+        initial_payload (Dict[str, str]): Initial payload to send to the agent.
+        llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
+        instructions (str): A string of instructions to execute.
+        instruction_template (str): A string of instructions to execute.
+        instruction_input_variables (List[str]): A list of input variables for the instruction template.
+        model (str): The model to use for the agent.
+        stream (bool): Whether to stream the results back to the master.
+        verbose (bool): Whether to print the results to stdout.
+        max_iters (int): The maximum number of iterations to run.
+        temperature (float): The temperature to use for the agent.
+        session_id (Optional[str]): The session ID to use for the agent.
+    """
+
+    class Config:
+        AGENT_CONFIG_DIRECTORY = "agent_configs"
+        arbitrary_types_allowed = True
+
+    config_version: str = "default"
+    initial_payload: Dict[str, str] = {}
+    llm_toolkits: Dict[ToolkitType, Toolkit] = {}
+    instructions: str = ""
+    instruction_template: str = ""
+    instruction_input_variables: List[str] = []
+    model: str = "gpt-4"
+    stream: bool = False
+    verbose: bool = True
+    max_iters: int = 1_000_000
+    temperature: float = 0.7
+    session_id: Optional[str] = None
+
+    @classmethod
+    def load(cls, config_version: AutomataConfigVersion) -> "AutomataAgentConfig":
+        if config_version == AutomataConfigVersion.DEFAULT:
+            return AutomataAgentConfig()
+        config_path = format_config_path(cls.Config.AGENT_CONFIG_DIRECTORY, config_version.value)
+        with open(f"{config_path}.yaml", "r") as file:
+            loaded_yaml = yaml.safe_load(file)
+            return AutomataAgentConfig(**loaded_yaml)
+
+
 class AutomataAgentBuilder:
-    def __init__(self):
-        self._instance = AutomataAgent()
+    def __init__(self, config: AutomataAgentConfig):
+        self._instance = AutomataAgent(config)
 
     def with_initial_payload(self, initial_payload: Dict[str, str]):
         self._instance.initial_payload = initial_payload
@@ -55,10 +102,6 @@ class AutomataAgentBuilder:
 
     def with_instructions(self, instructions: str):
         self._instance.instructions = instructions
-        return self
-
-    def with_config(self, config: AgentConfig):
-        self._instance.config = config
         return self
 
     def with_model(self, model: str):
@@ -100,80 +143,31 @@ class AutomataAgent:
     CONTINUE_MESSAGE = "Continue, and return a result JSON when finished."
     NUM_DEFAULT_MESSAGES = 3
 
-    def __init__(self):
+    def __init__(self, config: Optional[AutomataAgentConfig] = None):
         """
         Args:
-            initial_payload (Dict[str, str]): Initial payload to send to the agent.
-            llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
-            instructions (str): A string of instructions to execute.
-            config (AgentConfig): The config of the agent to use.
-            model (str): The model to use for the agent.
-            stream (bool): Whether to stream the results back to the master.
-            verbose (bool): Whether to print the results to stdout.
-            max_iters (int): The maximum number of iterations to run.
-            temperature (float): The temperature to use for the agent.
-            session_id (Optional[str]): The session ID to use for the agent.
-
+            config_version (Optional[AutomataAgentConfig]): The config_version of the agent to use.
         Methods:
             iter_task(instructions: List[Dict[str, str]]) -> Dict[str, str]: Iterates through the instructions and returns the next instruction.
             replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
-
         """
-        self.initial_payload = {}
-        self.llm_toolkits = {}
-        self.instructions = ""
-        self.config = AgentConfig.AUTOMATA_MASTER_V2
-        self.model = "gpt-4"
-        self.stream = False
-        self.verbose = True
-        self.max_iters = 1_000_000
-        self.temperature = 0.7
-        self.session_id = None
-
-    def _setup(self):
-        # Put the setup logic here that was originally in the __init__ method
-        # Initialize OpenAI API Key
-        openai.api_key = OPENAI_API_KEY  # noqa F405
-
-        # Initialize state variables
-        self.messages = []
-        self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-
-        self.initial_payload["tools"] = "".join(
-            [
-                f"\n{tool.name}: {tool.description}\n"
-                for toolkit in self.llm_toolkits.values()
-                for tool in toolkit.tools
-            ]
-        )
-
-        prompt = self._load_prompt()
-
-        self._init_database()
-
-        if self.session_id:
-            self._load_previous_interactions()
-        else:
-            self.session_id = str(uuid.uuid4())
-            self._save_interaction({"role": "system", "content": prompt})
-            initial_messages = [
-                {
-                    "role": "assistant",
-                    "content": 'Thought: I will begin by initializing myself. {"tool": "automata-initializer", "input": "Hello, I am Automata, OpenAI\'s most skilled coding system. How may I assit you today?"}',
-                },
-                {"role": "user", "content": f'Observation:\n{{"task_0":"{self.instructions}"}}'},
-            ]
-
-            for message in initial_messages:
-                self._save_interaction(message)
-
-        if self.verbose:
-            logger.info("Initializing with Prompt:%s\n" % (prompt))
-            logger.info("-" * 100)
-        logger.info("Session ID: %s" % self.session_id)
-        logger.info("-" * 100)
+        if config is None:
+            config = AutomataAgentConfig()
+        self.initial_payload = config.initial_payload
+        self.llm_toolkits = config.llm_toolkits
+        self.instructions = config.instructions
+        self.config_version = config.config_version
+        self.instruction_template = config.instruction_template
+        self.instruction_input_variables = config.instruction_input_variables
+        self.model = config.model
+        self.stream = config.stream
+        self.verbose = config.verbose
+        self.max_iters = config.max_iters
+        self.temperature = config.temperature
+        self.session_id = config.session_id
 
     def __del__(self):
+        """Close the connection to the agent."""
         self.conn.close()
 
     def iter_task(
@@ -270,25 +264,69 @@ class AutomataAgent:
                 logger.info("-" * 100)
         return "No completion message found."
 
-    def extend_last_instructions(self, new_message: str) -> None:
+    def modify_last_instruction(self, new_instruction: str) -> None:
         """Extend the last instructions with a new message."""
         previous_message = self.messages[-1]
         self.messages[-1] = {
             "role": previous_message["role"],
-            "content": f"{previous_message}\n{new_message}",
+            "content": f"{new_instruction}",
         }
 
+    def _setup(self):
+        """Setup the agent."""
+        # Put the setup logic here that was originally in the __init__ method
+        # Initialize OpenAI API Key
+        openai.api_key = OPENAI_API_KEY  # noqa F405
+
+        # Initialize state variables
+        self.messages = []
+        self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+
+        if "tools" in self.instruction_input_variables:
+            self.initial_payload["tools"] = "".join(
+                [
+                    f"\n{tool.name}: {tool.description}\n"
+                    for toolkit in self.llm_toolkits.values()
+                    for tool in toolkit.tools
+                ]
+            )
+
+        prompt = self._load_prompt()
+
+        self._init_database()
+
+        if self.session_id:
+            self._load_previous_interactions()
+        else:
+            self.session_id = str(uuid.uuid4())
+            self._save_interaction({"role": "system", "content": prompt})
+            initial_messages = [
+                {
+                    "role": "assistant",
+                    "content": 'Thought: I will begin by initializing myself. {"tool": "automata-initializer", "input": "Hello, I am Automata, OpenAI\'s most skilled coding system. How may I assit you today?"}',
+                },
+                {"role": "user", "content": f'Observation:\n{{"task_0":"{self.instructions}"}}'},
+            ]
+
+            for message in initial_messages:
+                self._save_interaction(message)
+
+        if self.verbose:
+            logger.info("Initializing with Prompt:%s\n" % (prompt))
+            logger.info("-" * 100)
+
+        # Check that initial_payload contains all input variables
+        if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
+            raise ValueError(f"Initial payload does not match instruction_input_variables.")
+
+        logger.info("Session ID: %s" % self.session_id)
+        logger.info("-" * 100)
+
     def _load_prompt(self) -> str:
-        """Load the prompt from a config specified at initialization."""
-        with open(
-            format_config_path("agent_configs", f"{self.config.value}.yaml"),
-            "r",
-        ) as file:
-            loaded_yaml = yaml.safe_load(file)
-        prompt = loaded_yaml["template"]
-        if loaded_yaml["input_variables"] is not None:
-            for arg in loaded_yaml["input_variables"]:
-                prompt = prompt.replace(f"{{{arg}}}", self.initial_payload[arg])
+        """Load the prompt from a config_version specified at initialization."""
+        prompt = ""
+        for arg in self.instruction_input_variables:
+            prompt = self.instruction_template.replace(f"{{{arg}}}", self.initial_payload[arg])
         return prompt
 
     def _process_input(self, response_text: str):

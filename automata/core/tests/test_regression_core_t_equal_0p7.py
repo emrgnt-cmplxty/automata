@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from automata.configs.agent_configs import AgentConfig
+from automata.configs.agent_configs import AutomataConfigVersion
 
 from .conftest import build_agent_with_params, cleanup_and_check, retry
 
@@ -57,7 +57,7 @@ EXPECTED_RESPONSES = {
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["automata_indexer", "automata_writer"],
+            "tool_list": ["python_writer", "python_indexer"],
         },
         # Add more parameter sets as needed
     ],
@@ -68,7 +68,7 @@ def test_write_simple_function(automata_params):
     agent = build_agent_with_params(
         automata_params,
         f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
-        AgentConfig.AUTOMATA_WRITER_V2,
+        AutomataConfigVersion.AUTOMATA_WRITER_V2,
         max_iters=5,
         temperature=TEMPERATURE,
         model=MODEL,
@@ -96,7 +96,7 @@ def test_advanced_writer_example(automata_params):
     agent = build_agent_with_params(
         automata_params,
         f"Write the following module - '{expected_content}' to the file core.tests.sample_code.test2",
-        config=AgentConfig.AUTOMATA_WRITER_V2,
+        config=AutomataConfigVersion.AUTOMATA_WRITER_V2,
         max_iters=2,
         temperature=TEMPERATURE,
         model=MODEL,
@@ -125,7 +125,7 @@ def test_retrieve_run_and_write_out(automata_params):
         automata_params,
         f'1. Retrieve the raw code (code + docstrings) for the function "run" from the automata agent.\n'
         f"2. NEXT, write the full raw code into the file core.tests.sample_code.test3",
-        config=AgentConfig.AUTOMATA_MASTER_V3,
+        config=AutomataConfigVersion.AUTOMATA_MASTER_V3,
         max_iters=5,
     )
 
@@ -141,9 +141,7 @@ def test_retrieve_run_and_write_out(automata_params):
     )
     agent.messages.extend(next_steps)
     agent.run()
-    print("agent.messages = ", agent.messages)
 
     expected_content = EXPECTED_RESPONSES["test_retrieve_run_and_write_out"].strip()
-    print("expected_content = ", expected_content)
 
     cleanup_and_check(expected_content, "test3.py")
