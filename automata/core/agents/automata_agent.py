@@ -236,7 +236,7 @@ class AutomataAgent:
 
         return None
 
-    def run(self) -> None:
+    def run(self) -> str:
         """Run until the initial instruction terminates."""
         while True:
             self.iter_task()
