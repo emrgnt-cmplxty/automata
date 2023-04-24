@@ -1,7 +1,8 @@
+**/sample_modules/**
 interactions.sqlite3
 /.idea/
 .env
-
+local
 # Local Cruft
 improved_spork.egg-info/*
 **/**/.DS_Store
