@@ -29,7 +29,7 @@ Main Packages and Modules:
    A module which provides the ability to change the in-memory representation of a python module in the PythonIndexer and to
    write this out to disk
 
-6. automata.tools.documentation_tools.documentation_gpt:
+6. automata.tools.documentation.documentation_gpt:
    A simple chatbot that uses DocGPT to answer questions about documentation.
 
 7. automata.tools.oracle.codebase_oracle:

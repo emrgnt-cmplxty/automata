@@ -3,8 +3,8 @@ import os
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 
+from automata.tool_management.codebase_oracle_tool_manager import CodebaseOracleToolManager
 from automata.tools.oracle.codebase_oracle import CodebaseOracle
-from automata.tools.tool_management.codebase_oracle_tool_manager import CodebaseOracleToolManager
 
 
 class TestCodebaseOracleToolManager:

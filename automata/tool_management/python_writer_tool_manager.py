@@ -14,12 +14,13 @@ Example -
     tools = build_tools(tool_manager)
 """
 import logging
-from typing import List
+from typing import Any, List
 
-from automata.configs.agent_configs import AutomataConfigVersion
+from automata.configs.agent_configs.config_type import AutomataConfigVersion
+from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
 from automata.core.base.tool import Tool
+from automata.tools.python_tools.python_writer import PythonWriter
 
-from ..python_tools.python_writer import PythonWriter
 from .base_tool_manager import BaseToolManager
 
 logger = logging.getLogger(__name__)
@@ -75,12 +76,14 @@ class PythonWriterToolManager(BaseToolManager):
         ]
         return tools
 
-    def build_tools_with_automata(self) -> List[Tool]:
+    def build_tools_with_automata(self, config: Any) -> List[Tool]:
         """Builds a list of Automata powered tool objects for interacting with PythonWriter."""
         tools = [
             Tool(
                 name="automata-writer-modify-module",
-                func=lambda path_comma_code_str: self._automata_update_module(path_comma_code_str),
+                func=lambda path_comma_code_str: self._automata_update_module(
+                    path_comma_code_str, config
+                ),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Automata.",
             ),
@@ -104,22 +107,19 @@ class PythonWriterToolManager(BaseToolManager):
         except Exception as e:
             return "Failed to update the module with error - " + str(e)
 
-    def _automata_update_module(self, input_str: str) -> str:
+    def _automata_update_module(self, input_str: str, automata_config: AutomataAgentConfig) -> str:
         """Creates an AutomataAgent to write the given task."""
-        from automata.core import load_llm_toolkits
-        from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
-
-        agent_config = AutomataAgentConfig.load(self.automata_version)
+        from automata.tool_management.tool_management_utils import build_llm_toolkits
 
         try:
             initial_payload = {
                 "overview": self.writer.indexer.get_overview(),
             }
             agent = (
-                AutomataAgentBuilder(agent_config)
+                AutomataAgentBuilder(automata_config)
                 .with_initial_payload(initial_payload)
                 .with_instructions(input_str)
-                .with_llm_toolkits(load_llm_toolkits(["python_writer"]))
+                .with_llm_toolkits(build_llm_toolkits(["python_writer"]))
                 .with_model(self.model)
                 .with_stream(self.stream)
                 .with_verbose(self.verbose)

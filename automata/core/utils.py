@@ -53,18 +53,6 @@ def root_path() -> str:
     return data_folder
 
 
-def format_config_path(config_dir: str, config_path: str) -> str:
-    """
-    Returns the path to a config file.
-    Args:
-    - config_dir (str): The name of the directory the config file is in.
-    - config_path (str): The name of the config file.
-    Returns:
-    - The path to the config file.
-    """
-    return os.path.join(root_path(), "automata", "configs", config_dir, config_path)
-
-
 def get_logging_config(log_level=logging.INFO) -> dict:
     """Returns logging configuration."""
     color_scheme = {
@@ -112,7 +100,7 @@ def run_retrieval_chain_with_sources_format(
     return f"Answer: {result['answer']}.\n\n Sources: {result.get('source_documents', [])}"
 
 
-def check_similarity(content_a: str, content_b: str) -> float:
+def calculate_similarity(content_a: str, content_b: str) -> float:
     """Checks the similarity between two pieces of text using OpenAI Embeddings."""
     resp = openai.Embedding.create(
         input=[content_a, content_b], engine="text-similarity-davinci-001"

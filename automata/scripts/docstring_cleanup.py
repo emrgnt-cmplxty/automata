@@ -4,11 +4,11 @@ import logging.config
 import os
 from typing import Optional
 
-from automata.configs.agent_configs import AutomataConfigVersion
-from automata.core import load_llm_toolkits
-from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
+from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.core.agents.automata_agent import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
-from automata.tools.python_tools import PythonIndexer
+from automata.tool_management.tool_management_utils import build_llm_toolkits
+from automata.tools.python_tools.python_indexer import PythonIndexer
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ def update_docstrings():
     parser.add_argument("--config_version", type=str, default="automata_docstring_manager_v1")
     parser.add_argument("--file_path", type=Optional[str], default=None)
     args = parser.parse_args()
-    llm_toolkits = load_llm_toolkits(["python_indexer", "python_writer"])
+    llm_toolkits = build_llm_toolkits(["python_indexer", "python_writer"])
     indexer = PythonIndexer(root_py_path())
     if args.file_path:
         pass
@@ -54,7 +54,6 @@ def update_docstrings():
                     f" NOTE the key changes you have made. The code may be written dirrectly in your prompt and a developer will paste it into the file."
                 )
                 .with_llm_toolkits(llm_toolkits)
-                .with_model("gpt-4")
                 .with_stream(True)
                 .with_verbose(True)
                 .build()

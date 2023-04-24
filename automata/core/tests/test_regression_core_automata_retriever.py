@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from automata.core.utils import check_similarity, clean_agent_result
+from automata.core.utils import calculate_similarity, clean_agent_result
 
-from .conftest import build_agent_with_params, retry
+from .conftest import build_agent_with_params
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -16,7 +16,6 @@ EXPECTED_RESPONSES = {
 }
 
 
-@retry(3)
 @pytest.mark.regression
 @pytest.mark.parametrize(
     "automata_params",
@@ -40,10 +39,9 @@ def test_retrieve_load_yaml_docs(automata_params):
     )
     result = clean_agent_result(agent.run())
     expected_content = EXPECTED_RESPONSES["test_retrieve_load_yaml_docs"].strip()
-    assert check_similarity(expected_content, result) > 0.9
+    assert calculate_similarity(expected_content, result) > 0.9
 
 
-@retry(3)
 @pytest.mark.regression
 @pytest.mark.parametrize(
     "automata_params",
@@ -67,4 +65,4 @@ def test_retrieve_python_writer_docs(automata_params):
     )
     result = clean_agent_result(agent.run())
     expected_content = EXPECTED_RESPONSES["test_retrieve_python_writer_docs"].strip()
-    assert check_similarity(expected_content, result) > 0.9
+    assert calculate_similarity(expected_content, result) > 0.9

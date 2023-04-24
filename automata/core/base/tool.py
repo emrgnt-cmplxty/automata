@@ -1,6 +1,7 @@
 """Interface for tools."""
+from enum import Enum, auto
 from inspect import signature
-from typing import Any, Awaitable, Callable, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional, Union
 
 from automata.core.base.base_tool import BaseTool
 
@@ -99,3 +100,24 @@ def tool(*args: Union[str, Callable], return_direct: bool = False) -> Callable:
         return _partial
     else:
         raise ValueError("Too many arguments for tool decorator")
+
+
+class Toolkit:
+    """A toolkit of tools."""
+
+    def __init__(self, tools: List[Tool]):
+        self.tools = tools
+
+    def __repr__(self) -> str:
+        return f"Toolkit(tools={self.tools})"
+
+
+class ToolkitType(Enum):
+    """An enum representing the different types of toolkits that can be built."""
+
+    PYTHON_INDEXER = auto()
+    PYTHON_WRITER = auto()
+    CODEBASE_ORACLE = auto()
+    DOCUMENTATION_GPT = auto()
+    AUTOMATA_INDEXER = auto()
+    AUTOMATA_WRITER = auto()
