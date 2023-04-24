@@ -5,6 +5,8 @@ import logging
 import os
 from typing import Any, List
 
+import numpy as np
+import openai
 import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 from langchain.document_loaders import TextLoader
@@ -96,6 +98,18 @@ def run_retrieval_chain_with_sources_format(
     """
     result = chain(q)
     return f"Answer: {result['answer']}.\n\n Sources: {result.get('source_documents', [])}"
+
+
+def check_similarity(content_a: str, content_b: str) -> float:
+    """Checks the similarity between two pieces of text using OpenAI Embeddings."""
+    resp = openai.Embedding.create(
+        input=[content_a, content_b], engine="text-similarity-davinci-001"
+    )
+
+    embedding_a = resp["data"][0]["embedding"]
+    embedding_b = resp["data"][1]["embedding"]
+
+    return np.dot(embedding_a, embedding_b)
 
 
 class NumberedLinesTextLoader(TextLoader):

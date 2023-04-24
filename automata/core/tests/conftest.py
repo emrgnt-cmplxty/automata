@@ -3,14 +3,12 @@ import os
 import shutil
 from functools import wraps
 
-import numpy as np
-import openai
 import pytest
 
 from automata.configs.agent_configs import AutomataConfigVersion
 from automata.core import load_llm_toolkits
 from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
-from automata.core.utils import root_py_path
+from automata.core.utils import check_similarity, root_py_path
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
@@ -55,14 +53,7 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
     sample_code_dir = os.path.join(current_file_dir, "sample_code")
     shutil.rmtree(sample_code_dir)
 
-    resp = openai.Embedding.create(
-        input=[content, expected_content], engine="text-similarity-davinci-001"
-    )
-
-    embedding_a = resp["data"][0]["embedding"]
-    embedding_b = resp["data"][1]["embedding"]
-
-    similarity_score = np.dot(embedding_a, embedding_b)
+    similarity_score = check_similarity(content, expected_content)
     assert similarity_score > 0.85  # Check the similarity score
 
 
@@ -81,7 +72,9 @@ def automata_params(request):
     inputs = {"model": model, "temperature": temperature}
     mock_llm_toolkits = load_llm_toolkits(tool_list, **inputs)
 
-    initial_payload = generate_initial_payload()
+    initial_payload = (
+        generate_initial_payload() if not request.param.get("exclude_overview") else {}
+    )
     return initial_payload, mock_llm_toolkits
 
 

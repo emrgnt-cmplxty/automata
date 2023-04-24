@@ -44,6 +44,12 @@ def main():
         default="python_indexer,python_writer,codebase_oracle",
         help="Comma-separated list of toolkits to be used.",
     )
+    parser.add_argument(
+        "--include_overview",
+        type=bool,
+        default=False,
+        help="Should the instruction prompt include an overview?",
+    )
 
     args = parser.parse_args()
     assert not (
@@ -57,11 +63,14 @@ def main():
     llm_toolkits: Dict[ToolkitType, Toolkit] = load_llm_toolkits(
         args.toolkits.split(","), **inputs
     )
-    indexer = PythonIndexer(root_py_path())
+    if args.include_overview:
+        indexer = PythonIndexer(root_py_path())
 
-    initial_payload = {
-        "overview": indexer.get_overview(),
-    }
+        initial_payload = {
+            "overview": indexer.get_overview(),
+        }
+    else:
+        initial_payload = {}
     logger.info("Passing in instructions: %s", args.instructions)
     logger.info("-" * 100)
 
