@@ -14,6 +14,30 @@ from automata.tools.python_tools.python_indexer import PythonIndexer
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
 
 
+@pytest.fixture
+def automata_params(request):
+    model = request.param.get("model")
+    temperature = request.param.get("temperature")
+    tool_list = request.param.get("tool_list")
+
+    inputs = {
+        "model": model,
+        "temperature": temperature,
+        "automata_indexer_config": AutomataAgentConfig.load(
+            AutomataConfigVersion.AUTOMATA_INDEXER_V1
+        ),
+        "automata_writer_config": AutomataAgentConfig.load(
+            AutomataConfigVersion.AUTOMATA_WRITER_V2
+        ),
+    }
+    mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
+
+    initial_payload = (
+        generate_initial_payload() if not request.param.get("exclude_overview") else {}
+    )
+    return initial_payload, mock_llm_toolkits
+
+
 def build_agent_with_params(
     automata_params,
     instructions: str,
@@ -61,21 +85,6 @@ def generate_initial_payload():
     return {
         "overview": PythonIndexer(root_py_path()).get_overview(),
     }
-
-
-@pytest.fixture
-def automata_params(request):
-    model = request.param.get("model")
-    temperature = request.param.get("temperature")
-    tool_list = request.param.get("tool_list")
-
-    inputs = {"model": model, "temperature": temperature}
-    mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
-
-    initial_payload = (
-        generate_initial_payload() if not request.param.get("exclude_overview") else {}
-    )
-    return initial_payload, mock_llm_toolkits
 
 
 def retry(num_attempts: int):
