@@ -20,9 +20,9 @@ instruction_template: >
 
 
     *Assistant*
+      - thoughts
+        - I will begin by initializing myself.
       - actions
-        - thoughts
-          - I will begin by initializing myself.
         - tool_query_0
           - tool
             - automata-initializer
@@ -141,11 +141,11 @@ instruction_template: >
           - tool
             - automata-writer-modify-module
           - inputs
-            - Modify core.tests.sample_code.test to include the function
-            ```
-            def run(self, input_str: str) -> str:
-              ...[INSERT REMAINING CODE HERE]...
-            ```
+            - Modify core.tests.sample_code.test to include the function below
+              ```
+              def run(self, input_str: str) -> str:
+                ...[INSERT REMAINING CODE HERE]...
+              ```
 
     *User*
       - observations

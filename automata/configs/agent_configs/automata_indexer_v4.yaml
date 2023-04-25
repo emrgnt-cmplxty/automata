@@ -99,7 +99,8 @@ instruction_template: >
         - output_1
           - This method retrieves the code for a given function or class...
         - output_2
-          - ```
+          - python
+            ```
             def retrieve_code(self, func_or_class):
               """Retrieves the code for a given function or class."""
               ...
@@ -132,7 +133,8 @@ instruction_template: >
     *User*
       - observations
         - output_0
-          - ```
+          - python
+            ```
             import argparse
             import logging...
             ```
@@ -142,7 +144,8 @@ instruction_template: >
         - I can now return the requested information.
       - actions
         - return_result
-          - ```
+          - python
+            ```
             import argparse
             import logging
             ...
