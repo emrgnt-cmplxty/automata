@@ -22,8 +22,8 @@ def main():
     parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
     parser.add_argument(
         "--config_version",
-        type=AutomataConfigVersion,
-        default=AutomataConfigVersion.AUTOMATA_MASTER_V3,
+        type=str,
+        default=AutomataConfigVersion.AUTOMATA_MASTER_V4.value,
         help="The config version of the agent.",
     )
     parser.add_argument(
@@ -56,13 +56,13 @@ def main():
     parser.add_argument(
         "--automata_indexer_config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_INDEXER_V2.value,
+        default=AutomataConfigVersion.AUTOMATA_INDEXER_V3.value,
         help="Should the instruction prompt include an overview?",
     )
     parser.add_argument(
         "--automata_writer_config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_WRITER_V2.value,
+        default=AutomataConfigVersion.AUTOMATA_WRITER_V3.value,
         help="Should the instruction prompt include an overview?",
     )
 
@@ -113,7 +113,7 @@ def main():
     )
     logger.info("-" * 60)
 
-    agent_config_version = AutomataConfigVersion(args.config_version)
+    agent_config_version = AutomataConfigVersion(AutomataConfigVersion(args.config_version))
     agent_config = AutomataAgentConfig.load(agent_config_version)
 
     agent = (

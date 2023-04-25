@@ -68,9 +68,15 @@ class PythonWriterToolManager(BaseToolManager):
                 f" For example -"
                 f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
                 f" the correct function call is"
-                f' {{"tool": "python-writer-update-module",'
-                f' "input": "my_folder.my_file,MyClass,def my_function() -> None:\n   """My Function"""\n    print("hello world")"}}.'
-                f" If new import statements are necessary, then introduce them to the module separately. Do not forget to wrap your input in double quotes.",
+                f" <tool_query>"
+                f"   <tool>"
+                f"     python-writer-update-module"
+                f"   </tool>"
+                f"   <input>"
+                f'     my_folder.my_file,MyClass,def my_method() -> None:\n   """My Method"""\n    print("hello world")'
+                f"   </input>"
+                f" </tool_query>"
+                f" If new import statements are necessary, then introduce them at the top of the submitted input code.",
                 return_direct=True,
             ),
         ]

@@ -27,6 +27,7 @@ import uuid
 from typing import Dict, List, Optional, Tuple
 
 import openai
+from lxml import etree, objectify
 from termcolor import colored
 from transformers import GPT2Tokenizer
 
@@ -357,22 +358,20 @@ class AutomataAgent:
             {"role": role, "content": content} for role, content in self.cursor.fetchall()
         ]
 
-    @staticmethod
     def _extract_json_objects(input_str: str) -> List[str]:
-        """Extract non-nested JSON objects from the input string."""
+        """Extract JSON objects from the input string, including those with nested objects."""
         json_objects = []
-        stack = []
         start_idx = -1
+        brace_count = 0
 
         for idx, char in enumerate(input_str):
             if char == "{":
-                stack.append(char)
-                if len(stack) == 1:
+                brace_count += 1
+                if brace_count == 1:
                     start_idx = idx
             elif char == "}":
-                if stack and stack[-1] == "{":
-                    stack.pop()
-                if not stack:
+                brace_count -= 1
+                if brace_count == 0:
                     json_objects.append(input_str[start_idx : idx + 1])
 
         return json_objects
@@ -402,12 +401,39 @@ class AutomataAgent:
     @staticmethod
     def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
         """Parse the input string into a list of tool and input pairs."""
-        extracted_json_objects = AutomataAgent._extract_json_objects(input_str)
-        tool_input_pairs = AutomataAgent._extract_tool_and_input(extracted_json_objects)
-        parsed_entries = []
-        for tool_input_pair in tool_input_pairs:
-            parsed_entries.append({"tool": tool_input_pair[0], "input": tool_input_pair[1]})
-        return [{"tool": entry["tool"], "input": entry.get("input")} for entry in parsed_entries]
+
+        # Parse the input string using the recover option
+        element = etree.fromstring(input_str, parser=etree.XMLParser(recover=True))
+
+        # Convert the element to an objectify.Element object
+        root = objectify.fromstring(etree.tostring(element))
+
+        if root.tool_query:
+            parsed_entries = []
+            for tool_query in root.tool_query:
+                tool = tool_query.tool.text
+                input_value = tool_query.input.text
+                parsed_entries.append({"tool": tool, "input": input_value})
+
+            return [
+                {"tool": entry["tool"], "input": entry.get("input")} for entry in parsed_entries
+            ]
+        else:
+            return []
+
+    # def _parse_input_string(input_str: str) -> List[Dict[str, Optional[str]]]:
+    #     """Parse the input string into a list of tool and input pairs."""
+    #     # import pdb
+
+    #     # pdb.set_trace()
+    #     # extracted_json_objects = AutomataAgent._extract_json_objects(input_str)
+    #     # tool_input_pairs = AutomataAgent._extract_tool_and_input(extracted_json_objects)
+    #     # parsed_entries = []
+    #     # for tool_input_pair in tool_input_pairs:
+    #     tree = etree.fromstring(input_str, parser=etree.XMLParser(recover=True))
+    #     root = objectify.fromstring(etree.tostring(tree))
+    #     #     parsed_entries.append({"tool": tool_input_pair[0], "input": tool_input_pair[1]})
+    #     return [{"tool": entry["tool"], "input": entry.get("input")} for entry in parsed_entries]
 
     @staticmethod
     def is_completion_message(message: str):

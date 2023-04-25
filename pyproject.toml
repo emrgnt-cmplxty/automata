@@ -2,9 +2,9 @@
 requires = ["setuptools", "wheel"]
 
 [tool.poetry]
-name = "improved_spork"
+name = "agentic_automata"
 version = "0.1.0"
-description = "A sentient automata."
+description = "An agentic automata."
 authors = ["maks@sporker.com"]
 
 [tool.poetry.dependencies]

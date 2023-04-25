@@ -10,17 +10,27 @@ class AutomataConfigVersion(Enum):
     DEFAULT = "default"
     TEST = "test"
 
-    AUTOMATA_MASTER_V1 = "automata_master_v1"
     AUTOMATA_INDEXER_V1 = "automata_indexer_v1"
-    AUTOMATA_WRITER_V1 = "automata_writer_v1"
-
-    AUTOMATA_MASTER_V2 = "automata_master_v2"
     AUTOMATA_INDEXER_V2 = "automata_indexer_v2"
-    AUTOMATA_WRITER_V2 = "automata_writer_v2"
+    AUTOMATA_INDEXER_V3 = "automata_indexer_v3"
+    AUTOMATA_INDEXER_V4 = "automata_indexer_v4"
 
+    AUTOMATA_WRITER_V1 = "automata_writer_v1"
+    AUTOMATA_WRITER_V2 = "automata_writer_v2"
+    AUTOMATA_WRITER_V3 = "automata_writer_v3"
+    AUTOMATA_WRITER_V4 = "automata_writer_v4"
+
+    AUTOMATA_MASTER_V1 = "automata_master_v1"
+    AUTOMATA_MASTER_V2 = "automata_master_v2"
     AUTOMATA_MASTER_V3 = "automata_master_v3"
+    AUTOMATA_MASTER_V4 = "automata_master_v4"
+    AUTOMATA_MASTER_V5 = "automata_master_v5"
 
     AUTOMATA_DOCSTRING_MANAGER_V1 = "automata_docstring_manager_v1"
+
+    AUTOMATA_INDEXER_PROD = AUTOMATA_INDEXER_V4
+    AUTOMATA_WRITER_PROD = AUTOMATA_WRITER_V4
+    AUTOMATA_MASTER_PROD = AUTOMATA_MASTER_V5
 
 
 class AutomataAgentConfig(BaseModel):
