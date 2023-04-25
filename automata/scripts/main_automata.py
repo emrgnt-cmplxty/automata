@@ -23,7 +23,7 @@ def main():
     parser.add_argument(
         "--config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_MASTER_V4.value,
+        default=AutomataConfigVersion.AUTOMATA_MASTER_PROD.value,
         help="The config version of the agent.",
     )
     parser.add_argument(
@@ -56,13 +56,13 @@ def main():
     parser.add_argument(
         "--automata_indexer_config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_INDEXER_V3.value,
+        default=AutomataConfigVersion.AUTOMATA_INDEXER_PROD.value,
         help="Should the instruction prompt include an overview?",
     )
     parser.add_argument(
         "--automata_writer_config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_WRITER_V3.value,
+        default=AutomataConfigVersion.AUTOMATA_WRITER_PROD.value,
         help="Should the instruction prompt include an overview?",
     )
 

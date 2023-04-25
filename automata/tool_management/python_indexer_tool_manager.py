@@ -49,7 +49,7 @@ class PythonIndexerToolManager(BaseToolManager):
         """
         self.indexer: PythonIndexer = kwargs.get("python_indexer")
         self.automata_version = (
-            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_INDEXER_V2
+            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_INDEXER_PROD
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7

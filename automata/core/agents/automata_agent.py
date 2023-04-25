@@ -8,7 +8,7 @@
  
         llm_toolkits = build_llm_toolkits(tools_list, **inputs)
 
-        config_version = AutomataConfigVersion.AUTOMATA_MASTER_V3
+        config_version = AutomataConfigVersion.AUTOMATA_MASTER_PROD
         agent_config = AutomataAgentConfig.load(config_version)
         agent = (AutomataAgentBuilder(agent_config)
             .with_llm_toolkits(llm_toolkits)

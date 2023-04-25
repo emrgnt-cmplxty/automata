@@ -48,7 +48,7 @@ class PythonWriterToolManager(BaseToolManager):
         """
         self.writer: PythonWriter = kwargs.get("python_writer")
         self.automata_version = (
-            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_WRITER_V2
+            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_WRITER_PROD
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.verbose = kwargs.get("verbose") or False
