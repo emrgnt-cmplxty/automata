@@ -15,7 +15,8 @@ from langchain.schema import Document
 
 
 def load_yaml(file_path: str) -> Any:
-    """Load a YAML file.
+    """
+    Loads a YAML file.
 
     Args:
         file_path (str): The path to the YAML file.

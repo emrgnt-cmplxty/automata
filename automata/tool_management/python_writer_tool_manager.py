@@ -70,14 +70,13 @@ class PythonWriterToolManager(BaseToolManager):
                 f" For example -"
                 f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
                 f" the correct function call is"
-                f" <tool_query>"
-                f"   <tool>"
-                f"     python-writer-update-module"
-                f"   </tool>"
-                f"   <input>"
-                f'     my_folder.my_file,MyClass,def my_method() -> None:\n   """My Method"""\n    print("hello world")'
-                f"   </input>"
-                f" </tool_query>"
+                f" - tool_query_1"
+                f"   - tool"
+                f"     - python-writer-update-module"
+                f"   - inputs"
+                f"     - my_folder.my_file"
+                f"     - MyClass"
+                f'     - def my_method() -> None:\n   """My Method"""\n    print("hello world")'
                 f" If new import statements are necessary, then introduce them at the top of the submitted input code.",
                 return_direct=True,
             ),
@@ -113,10 +112,6 @@ class PythonWriterToolManager(BaseToolManager):
     def _automata_update_module(self, input_str: str, automata_config: AutomataAgentConfig) -> str:
         """Creates an AutomataAgent to write the given task."""
         from automata.tool_management.tool_management_utils import build_llm_toolkits
-
-        print("-" * 100)
-        print("_automata_update_module Input Instructions: ", input_str)
-        print("-" * 100)
 
         try:
             initial_payload = {

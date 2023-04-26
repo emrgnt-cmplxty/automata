@@ -143,6 +143,7 @@ instruction_template: >
           - inputs
             - Modify core.tests.sample_code.test to include the function below
               ```
+              import ...[INSERT NECESSARY IMPORTS HERE]...
               def run(self, input_str: str) -> str:
                 ...[INSERT REMAINING CODE HERE]...
               ```

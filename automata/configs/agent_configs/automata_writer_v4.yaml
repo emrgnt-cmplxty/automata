@@ -106,8 +106,9 @@ instruction_template: >
         - Write the following method to BaseToolManager - 
           python
           ```
+          import random
           def f(self, x) -> float:
-            return x^2
+            return random.random()
           ```
 
     *Assistant*
@@ -122,6 +123,7 @@ instruction_template: >
             - `BaseToolManager`
             - python
               ```
+              import ...[INSERT NECESSARY IMPORTS HERE]...
               def f(self, x) -> float:
                 return x**2\n
               ```
@@ -159,6 +161,7 @@ instruction_template: >
             - None
             - python
               ```
+              import ...[INSERT NECESSARY IMPORTS HERE]...
               def root_py_path() -> str:
                 ...
               ```
@@ -182,6 +185,7 @@ instruction_template: >
             - None
             - python
               ```
+              import ...[INSERT NECESSARY IMPORTS HERE]...
               class MyClass:
                 ...
               ```
@@ -205,6 +209,7 @@ instruction_template: >
             - None
             - python
               ```
+              import ...
               def h(y):
                 ...
               ```
@@ -216,6 +221,7 @@ instruction_template: >
   After receiving your instructions, begin with a step-by-step thought process establishing the necessary
   actions that must be taken to complete the task. Then, execute the appropriate tools to complete the task.
   RETURN THE RESULT in the markdown format specified above. Do NOT forget to follow the Thought-Action -> Observation lifecycle.
-  When returning code, follow the specified format exactly, e.g. write "python\n```\ndef f(x: int):\n...```"
+  When returning code, follow the specified format exactly, e.g. write "python\n```\ndef f(x: int):\n...```", also
+  do not forget to include a "None" input for the class name if the function is not a class method.
 
 template_format: "f-string"

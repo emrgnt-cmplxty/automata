@@ -63,7 +63,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 func=lambda module_object_tuple: self._run_indexer_retrieve_code(
                     *module_object_tuple
                 ),
-                description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is "my_directory.my_file,my_function". If the function is defined in a class, MyClass, then the correct tool input is "my_directory.my_file,MyClass.my_function".',
+                description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is - inputs\n  - my_directory.my_file\n  - my_function. If the function is defined in a class, MyClass, then the correct tool input is - inputs\n  - my_directory.my_file\n  - MyClass.my_function',
                 return_direct=True,
                 verbose=True,
             ),
@@ -131,10 +131,6 @@ class PythonIndexerToolManager(BaseToolManager):
 
         try:
             initial_payload = {"overview": self.indexer.get_overview()}
-            print("-" * 100)
-            print("_run_automata_indexer_retrieve_code Input Instructions: ", input_str)
-            print("-" * 100)
-
             agent = (
                 AutomataAgentBuilder(automata_config)
                 .with_initial_payload(initial_payload)
@@ -147,9 +143,6 @@ class PythonIndexerToolManager(BaseToolManager):
                 .build()
             )
             result = agent.run()
-            print("-" * 100)
-            print("Automata result: ", result)
-            print("-" * 100)
             return result
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)

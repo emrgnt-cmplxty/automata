@@ -27,6 +27,8 @@
              - Right now, multiple results are not handled properly
                Moreover, messages with results + tool outputs will
                not be handled properly, as outputs are discarded
+        TODO - Check logic around this `if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2
+        TODO - Add tests for input instructions assembly
 """
 import logging
 import sqlite3
@@ -209,12 +211,9 @@ class AutomataAgent:
     def run(self) -> str:
         latest_responses = self.iter_task()
         while latest_responses is not None:
-            latest_responses = self.iter_task()
             if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:
                 return "Result was not captured before iterations exceeded max limit."
-            print("IN RUN, self.messages[-1][content]=", self.messages[-1]["content"])
-            print("IN RUN, self.messages[-2][content]=", self.messages[-2]["content"])
-            print("IN RUN, latest_responses=", latest_responses)
+            latest_responses = self.iter_task()
 
         return self.messages[-1]["content"]
 
@@ -252,6 +251,7 @@ class AutomataAgent:
                     for tool in toolkit.tools
                 ]
             )
+
         prompt = self._load_prompt()
         self._init_database()
         if self.session_id:
@@ -284,15 +284,14 @@ class AutomataAgent:
 
     def _load_prompt(self) -> str:
         """Load the prompt from a config_version specified at initialization."""
-        prompt = ""
+        prompt = self.instruction_template
         for arg in self.instruction_input_variables:
-            prompt = self.instruction_template.replace(f"{{{arg}}}", self.initial_payload[arg])
+            prompt = prompt.replace(f"{{{arg}}}", self.initial_payload[arg])
         return prompt
 
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
         """Process the messages in the conversation."""
         actions = AutomataAgent._extract_actions(response_text)
-        print("EXTRACTED ACTIONS:", actions)
         logger.debug("Actions: %s" % actions)
         outputs = {}
         (result_counter, tool_counter) = (0, 0)
@@ -302,6 +301,7 @@ class AutomataAgent:
                     action_request["tool"],
                     action_request["input"] or "",
                 )
+
                 if requested_tool == "automata-initializer":
                     continue
                 if AutomataAgent.ActionExtractor.return_result_indicator in requested_tool:
@@ -320,7 +320,10 @@ class AutomataAgent:
                     for toolkit in self.llm_toolkits.values():
                         for tool in toolkit.tools:
                             if tool.name == requested_tool:
-                                tool_output = tool.run(tuple(requested_tool_input), verbose=False)
+                                processed_tool_input = [
+                                    ele if ele != "None" else None for ele in requested_tool_input
+                                ]
+                                tool_output = tool.run(tuple(processed_tool_input), verbose=False)
                                 outputs["%s_%i" % ("output", tool_counter)] = cast(
                                     str, tool_output
                                 )
@@ -486,6 +489,7 @@ class AutomataAgent:
                 inputs = cast(List[str], action["input"])
                 if AutomataAgent.ActionExtractor._is_code_start(lines, index) and (not is_code):
                     is_code = True
+                    contains_language_definition = False
                     for language in AutomataAgent.ActionExtractor.expected_coded_languages:
                         if language in line:
                             contains_language_definition = True
