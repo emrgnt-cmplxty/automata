@@ -211,3 +211,31 @@ def test_extract_actions_6(automata_agent):
         """
     )
     assert user_observation_message.strip() == expected_observations.strip()
+
+
+def test_extract_actions_7(automata_agent):
+    text = textwrap.dedent(
+        """
+        - thoughts
+        - I can retrieve this information directly with the python indexer.
+        - actions
+        - tool_query_0
+            - tool_name
+                - python-indexer-retrieve-docstring
+            - tool_args
+                - core.utils
+                - calculate_similarity
+        - tool_query_1
+            - tool_name
+                - python-indexer-retrieve-code
+            - tool_args
+                - core.utils
+                - calculate_similarity
+        """
+    )
+    actions = ActionExtractor.extract_actions(text)
+    assert actions[0]["tool_name"] == "python-indexer-retrieve-docstring"
+    assert actions[0]["tool_args"] == ["core.utils", "calculate_similarity"]
+
+    assert actions[1]["tool_name"] == "python-indexer-retrieve-code"
+    assert actions[1]["tool_args"] == ["core.utils", "calculate_similarity"]

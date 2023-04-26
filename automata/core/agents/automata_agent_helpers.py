@@ -50,22 +50,22 @@ class ActionExtractor:
         actions: List[AutomataAction] = []
         action: Optional[AutomataAction] = None
         is_code = False
-        skip_next = False
+        skip_lines = 0
         # Iterate through the lines and extract actions
         for index, line in enumerate(lines):
             # We set "skip_next" when encountering accumulation phrases
             # e.g. "inputs"
-            if skip_next:
-                skip_next = False
+            if skip_lines > 0:
+                skip_lines -= 1
                 continue
             if cls._is_new_tool_action(lines, index):
-                action = cls._process_new_tool_action(line, action, actions)
-                skip_next = True
+                action = cls._process_new_tool_action(lines[index + 2], action, actions)
+                skip_lines = 3
             elif cls._is_return_result_action(line):
                 action = cls._process_new_return_result_action(line, action, actions)
             else:
-                (is_code, skip_next) = cls._process_action_input(
-                    index, line, lines, action, is_code, skip_next
+                (is_code, skip_lines) = cls._process_action_input(
+                    index, line, lines, action, is_code, skip_lines
                 )
         # Add the last action if it exists
         if action is not None:
@@ -76,16 +76,17 @@ class ActionExtractor:
     def _is_new_tool_action(lines, index):
         """Check if the current line is a new action."""
         return (
-            f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_NAME_FIELD}"
-            in lines[index - 1]
+            len(lines) > index + 1
             and f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_INDICATOR}"
-            in lines[index - 2]
-            and (ActionExtractor.ACTION_INDICATOR in lines[index])
-            and (len(lines) > index + 1)
-            and (
-                f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_ARGS_FIELD}"
-                in lines[index + 1]
-            )
+            in lines[index]
+            and f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_NAME_FIELD}"
+            in lines[index + 1]
+            # and (ActionExtractor.ACTION_INDICATOR in lines[index])
+            # and (len(lines) > index + 1)
+            # and (
+            #     f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_ARGS_FIELD}"
+            #     in lines[index + 1]
+            # )
         )
 
     @staticmethod
@@ -126,7 +127,7 @@ class ActionExtractor:
         lines: List[str],
         action: Optional[AutomataAction],
         is_code: bool,
-        skip_next: bool,
+        skip_lines: int,
     ):
         """Process an action input."""
         if action is not None:
@@ -141,7 +142,7 @@ class ActionExtractor:
                     inputs.append("")
                 else:
                     inputs.append(line + "\n")
-                skip_next = True
+                skip_lines = 1
             elif not ActionExtractor._is_code_indicator(line) and is_code:
                 inputs[-1] += line + "\n"
             elif ActionExtractor._is_code_end(line) and (not is_code):
@@ -152,7 +153,7 @@ class ActionExtractor:
             elif ActionExtractor.ACTION_INDICATOR in line:
                 clean_line = line.split(ActionExtractor.ACTION_INDICATOR)[1].strip()
                 inputs.append(clean_line)
-        return (is_code, skip_next)
+        return (is_code, skip_lines)
 
     @staticmethod
     def _is_code_start(
