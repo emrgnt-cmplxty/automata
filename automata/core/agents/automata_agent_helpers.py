@@ -81,12 +81,6 @@ class ActionExtractor:
             in lines[index]
             and f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_NAME_FIELD}"
             in lines[index + 1]
-            # and (ActionExtractor.ACTION_INDICATOR in lines[index])
-            # and (len(lines) > index + 1)
-            # and (
-            #     f"{ActionExtractor.ACTION_INDICATOR}{ActionExtractor.TOOL_ARGS_FIELD}"
-            #     in lines[index + 1]
-            # )
         )
 
     @staticmethod
