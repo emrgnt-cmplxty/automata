@@ -23,7 +23,6 @@ from typing import Any, List, Optional, Tuple
 from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
 from automata.core.agents.automata_agent import AutomataAgentBuilder
 from automata.core.base.tool import Tool
-from automata.core.utils import clean_agent_result
 from automata.tool_management.base_tool_manager import BaseToolManager
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -61,8 +60,8 @@ class PythonIndexerToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="python-indexer-retrieve-code",
-                func=lambda module_comma_object_path: self._run_indexer_retrieve_code(
-                    module_comma_object_path
+                func=lambda module_object_tuple: self._run_indexer_retrieve_code(
+                    *module_object_tuple
                 ),
                 description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is "my_directory.my_file,my_function". If the function is defined in a class, MyClass, then the correct tool input is "my_directory.my_file,MyClass.my_function".',
                 return_direct=True,
@@ -70,8 +69,8 @@ class PythonIndexerToolManager(BaseToolManager):
             ),
             Tool(
                 name="python-indexer-retrieve-docstring",
-                func=lambda module_comma_object_path: self._run_indexer_retrieve_docstring(
-                    module_comma_object_path
+                func=lambda module_object_tuple: self._run_indexer_retrieve_docstring(
+                    *module_object_tuple
                 ),
                 description=f"Identical to python-indexer-retrieve-code, except returns the docstring instead of raw code.",
                 return_direct=True,
@@ -79,8 +78,8 @@ class PythonIndexerToolManager(BaseToolManager):
             ),
             Tool(
                 name="python-indexer-retrieve-raw-code",
-                func=lambda module_comma_object_path: self._run_indexer_retrieve_raw_code(
-                    module_comma_object_path
+                func=lambda module_object_tuple: self._run_indexer_retrieve_raw_code(
+                    *module_object_tuple
                 ),
                 description=f"Identical to python-indexer-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
                 return_direct=True,
@@ -100,46 +99,46 @@ class PythonIndexerToolManager(BaseToolManager):
         ]
         return tools
 
-    def _run_indexer_retrieve_code(self, input_str: str) -> str:
+    def _run_indexer_retrieve_code(self, module_path: str, object_path: str) -> str:
         """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
 
-    def _run_indexer_retrieve_docstring(self, input_str: str) -> str:
+    def _run_indexer_retrieve_docstring(self, module_path: str, object_path: str) -> str:
         """PythonIndexer retrieves the docstring of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_docstring(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
 
-    def _run_indexer_retrieve_raw_code(self, input_str: str) -> str:
+    def _run_indexer_retrieve_raw_code(self, module_path: str, object_path: str) -> str:
         """PythonIndexer retrieves the raw code of the python package, module, standalone function, class, or method at the given python path, with docstrings."""
         try:
-            module_path, object_path = self.parse_input_str(input_str)
             result = self.indexer.retrieve_raw_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
 
     def _run_automata_indexer_retrieve_code(
-        self, path_str: str, automata_config: AutomataAgentConfig
+        self, input_str: str, automata_config: AutomataAgentConfig
     ) -> str:
         """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         from automata.tool_management.tool_management_utils import build_llm_toolkits
 
         try:
             initial_payload = {"overview": self.indexer.get_overview()}
-            instructions = f"Retrieve the code for {path_str}"
+            print("-" * 100)
+            print("_run_automata_indexer_retrieve_code Input Instructions: ", input_str)
+            print("-" * 100)
+
             agent = (
                 AutomataAgentBuilder(automata_config)
                 .with_initial_payload(initial_payload)
-                .with_instructions(instructions)
+                .with_instructions(input_str)
                 .with_llm_toolkits(build_llm_toolkits(["python_indexer"]))
                 .with_model(self.model)
                 .with_stream(self.stream)
@@ -148,7 +147,9 @@ class PythonIndexerToolManager(BaseToolManager):
                 .build()
             )
             result = agent.run()
-            result = clean_agent_result(result)
+            print("-" * 100)
+            print("Automata result: ", result)
+            print("-" * 100)
             return result
         except Exception as e:
             return "Failed to retrieve the code with error - " + str(e)

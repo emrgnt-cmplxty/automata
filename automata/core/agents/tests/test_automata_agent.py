@@ -244,7 +244,6 @@ def test_extract_actions_with_code():
     )
 
     result = AutomataAgent._extract_actions(input_text)
-    print("result = ", result)
     assert result[0]["tool"] == "automata-indexer-retrieve-code"
     assert (
         result[0]["input"][0]
@@ -350,7 +349,7 @@ def test_iter_task_core_logic(automata_agent):
         """
     )
     observations = automata_agent._generate_observations(text)
-    is_return_result = automata_agent._contains_return_result(observations)
+    is_return_result = automata_agent._retrieve_completion_message(observations)
 
     user_observation_message = AutomataAgent._generate_user_observation_message(observations)
     assert is_return_result

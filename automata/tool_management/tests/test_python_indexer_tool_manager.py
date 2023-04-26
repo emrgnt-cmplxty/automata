@@ -34,5 +34,5 @@ def test_tool_execution(python_indexer_tool_builder):
     )
 
     tools = python_indexer_tool_builder.build_tools()
-    assert tools[0].func("module.path,func") == "Sample code"
-    assert tools[1].func("module.path,func") == "Sample docstring"
+    assert tools[0].func(("module.path", "func")) == "Sample code"
+    assert tools[1].func(("module.path", "func")) == "Sample docstring"

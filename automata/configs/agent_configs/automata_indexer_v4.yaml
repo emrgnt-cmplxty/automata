@@ -184,5 +184,13 @@ instruction_template: >
   After receiving your instructions, execute the appropriate tools to gather necessary information.
   Then, AS SOON AS you have sufficient information to complete your task, RETURN THE FULL RESULT in the
   XML format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle.
+  Lastly, when returning code, be sure to format it as shown:
+  - return_result_0
+    - python
+      ```
+      import argparse
+      import logging
+      ...
+      ```
 
 template_format: "f-string"

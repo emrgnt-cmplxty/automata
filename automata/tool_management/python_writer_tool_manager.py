@@ -14,7 +14,7 @@ Example -
     tools = build_tools(tool_manager)
 """
 import logging
-from typing import Any, List
+from typing import Any, List, Optional
 
 from automata.configs.agent_configs.config_type import AutomataConfigVersion
 from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
@@ -60,7 +60,9 @@ class PythonWriterToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="python-writer-update-module",
-                func=lambda path_comma_code_str: self._writer_update_module(path_comma_code_str),
+                func=lambda module_object_code_tuple: self._writer_update_module(
+                    *module_object_code_tuple
+                ),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. If the specified object or dependencies do not exist,"
                 f" then they are created automatically. If the object already exists,"
@@ -87,20 +89,15 @@ class PythonWriterToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="automata-writer-modify-module",
-                func=lambda path_comma_code_str: self._automata_update_module(
-                    path_comma_code_str, config
-                ),
+                func=lambda input_str: self._automata_update_module(input_str, config),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Automata.",
             ),
         ]
         return tools
 
-    def _writer_update_module(self, input_str: str) -> str:
+    def _writer_update_module(self, module_path: str, class_name: Optional[str], code: str) -> str:
         """Writes the given code to the given module path and class name."""
-        module_path = input_str.split(",")[0]
-        class_name = input_str.split(",")[1]
-        code = ",".join(input_str.split(",")[2:]).strip()
         try:
             self.writer.update_module(
                 source_code=code,
@@ -116,6 +113,10 @@ class PythonWriterToolManager(BaseToolManager):
     def _automata_update_module(self, input_str: str, automata_config: AutomataAgentConfig) -> str:
         """Creates an AutomataAgent to write the given task."""
         from automata.tool_management.tool_management_utils import build_llm_toolkits
+
+        print("-" * 100)
+        print("_automata_update_module Input Instructions: ", input_str)
+        print("-" * 100)
 
         try:
             initial_payload = {

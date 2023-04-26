@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from automata.core.utils import calculate_similarity, clean_agent_result
+from automata.core.utils import calculate_similarity
 
 from .conftest import build_agent_with_params
 
@@ -37,7 +37,7 @@ def test_retrieve_load_yaml_docs(automata_params):
         temperature=TEMPERATURE,
         model=MODEL,
     )
-    result = clean_agent_result(agent.run())
+    result = agent.run()
     expected_content = EXPECTED_RESPONSES["test_retrieve_load_yaml_docs"].strip()
     assert calculate_similarity(expected_content, result) > 0.9
 
@@ -63,6 +63,6 @@ def test_retrieve_python_writer_docs(automata_params):
         temperature=TEMPERATURE,
         model=MODEL,
     )
-    result = clean_agent_result(agent.run())
+    result = agent.run()
     expected_content = EXPECTED_RESPONSES["test_retrieve_python_writer_docs"].strip()
     assert calculate_similarity(expected_content, result) > 0.9

@@ -22,6 +22,11 @@
         our previous result returned an error
         TODO - Move action to a separate class
              - Cleanup cruft associated w/ old actiion definition
+        TODO - Add more unit tests to the iter_task workflow
+        TODO - Cleanup approach behind _retrieve_completion_message
+             - Right now, multiple results are not handled properly
+               Moreover, messages with results + tool outputs will
+               not be handled properly, as outputs are discarded
 """
 import logging
 import sqlite3
@@ -33,12 +38,11 @@ import openai
 from termcolor import colored
 from transformers import GPT2Tokenizer
 
-from automata.config import *  # noqa F403
+from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
 from automata.configs.agent_configs.config_type import AutomataAgentConfig
 from automata.core.base.tool import Toolkit, ToolkitType
 
 logger = logging.getLogger(__name__)
-
 ActionType = Dict[str, Union[str, List[str]]]
 
 
@@ -89,7 +93,7 @@ class AutomataAgentBuilder:
         return self
 
     def with_session_id(self, session_id: Optional[str]):
-        if session_id and not isinstance(session_id, str):
+        if session_id and (not isinstance(session_id, str)):
             raise ValueError("Session Id must be a str.")
         self._instance.session_id = session_id
         return self
@@ -115,7 +119,9 @@ class AutomataAgent:
             config_version (Optional[AutomataAgentConfig]): The config_version of the agent to use.
         Methods:
             iter_task(instructions: List[Dict[str, str]]) -> Dict[str, str]: Iterates through the instructions and returns the next instruction.
+            modify_last_instruction(new_instruction: str) -> None
             replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
+            run() -> str: Runs the agent.
         """
         if config is None:
             config = AutomataAgentConfig()
@@ -137,13 +143,10 @@ class AutomataAgent:
         """Close the connection to the agent."""
         self.conn.close()
 
-    def iter_task(
-        self,
-    ) -> Optional[Tuple[Dict[str, str], Dict[str, str]]]:
+    def iter_task(self) -> Optional[Tuple[Dict[str, str], Dict[str, str]]]:
         """Run the test and report the tool outputs back to the master."""
         if self.completed:
-            return None
-
+            raise ValueError("Cannot run an agent that has already completed.")
         context_length = sum(
             [
                 len(
@@ -154,7 +157,6 @@ class AutomataAgent:
         )
         logger.debug("Chat Context length: %s", context_length)
         logger.debug("-" * 60)
-
         logger.info("Running instruction...")
         response_summary = openai.ChatCompletion.create(
             model=self.model,
@@ -173,54 +175,48 @@ class AutomataAgent:
                     accumulated_output += chunk_content
                     response_text += chunk_content
                 if separator in accumulated_output:
-                    # Split the accumulated output into words
                     words = accumulated_output.split(separator)
-                    # Print all words except the last one, as it may be an incomplete word
                     for word in words[:-1]:
                         print(colored(str(word), "green"), end=" ", flush=True)
-                    # Keep the last (potentially incomplete) word for the next iteration
                     accumulated_output = words[-1]
-            # Print the last word
             print(colored(str(accumulated_output), "green"))
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
         logger.debug("OpenAI Response:\n%s\n" % response_text)
-
         assistant_message = {"role": "assistant", "content": response_text}
         responses: List[Dict[str, str]] = []
         responses.append(assistant_message)
         self._save_interaction(assistant_message)
-
         observations = self._generate_observations(response_text)
-        self.completed = AutomataAgent._contains_return_result(observations)
-        # # If there are processed inputs, return here
+        completion_message = AutomataAgent._retrieve_completion_message(observations)
+        if completion_message:
+            self.completed = True
+            self._save_interaction({"role": "assistant", "content": completion_message})
+            return None
         if len(observations) > 0:
             user_observation_message = AutomataAgent._generate_user_observation_message(
                 observations
             )
             user_message = {"role": "user", "content": user_observation_message}
-            print("user_observations = ", user_observation_message)
-            print("observations:", observations)
             logger.debug("Synthetic User Message:\n%s\n" % user_observation_message)
         else:
             user_message = {"role": "user", "content": AutomataAgent.CONTINUE_MESSAGE}
-            # If there are no outputs, then the user has must respond to continue
             logger.debug("Synthetic User Message:\n%s\n" % AutomataAgent.CONTINUE_MESSAGE)
         responses.append(user_message)
+        self._save_interaction(user_message)
         return (assistant_message, user_message)
 
     def run(self) -> str:
-        """Run until the initial instruction terminates."""
-        while True:
-            response = self.iter_task()
-            if not response:
-                return "Task Completed."
-            # Check the previous previous agent message to see if it is a completion message
-            # if AutomataAgent._is_completion_message(response):
-            #     return responses[-2]["content"]
-            # Each iteration produces two messages, so the check below is for equalling the max_iters
-            if (len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES) >= self.max_iters * 2:
+        latest_responses = self.iter_task()
+        while latest_responses is not None:
+            latest_responses = self.iter_task()
+            if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:
                 return "Result was not captured before iterations exceeded max limit."
+            print("IN RUN, self.messages[-1][content]=", self.messages[-1]["content"])
+            print("IN RUN, self.messages[-2][content]=", self.messages[-2]["content"])
+            print("IN RUN, latest_responses=", latest_responses)
+
+        return self.messages[-1]["content"]
 
     def replay_messages(self) -> str:
         """Replay the messages in the conversation."""
@@ -229,10 +225,11 @@ class AutomataAgent:
             return "No messages to replay."
         for message in self.messages[1:]:
             observations = self._generate_observations(message["content"])
-            if AutomataAgent._contains_return_result(observations):
-                return message["content"]
+            completion_message = AutomataAgent._retrieve_completion_message(observations)
+            if completion_message:
+                return completion_message
             logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-            logger.debug("Processing message content =  %s" % (message["content"]))
+            logger.debug("Processing message content =  %s" % message["content"])
             logger.debug("\nProcessed Outputs:\n%s\n" % observations)
             logger.debug("-" * 60)
         return "No completion message found."
@@ -240,21 +237,13 @@ class AutomataAgent:
     def modify_last_instruction(self, new_instruction: str) -> None:
         """Extend the last instructions with a new message."""
         previous_message = self.messages[-1]
-        self.messages[-1] = {
-            "role": previous_message["role"],
-            "content": f"{new_instruction}",
-        }
+        self.messages[-1] = {"role": previous_message["role"], "content": f"{new_instruction}"}
 
     def _setup(self):
         """Setup the agent."""
-        # Put the setup logic here that was originally in the __init__ method
-        # Initialize OpenAI API Key
-        openai.api_key = OPENAI_API_KEY  # noqa F405
-
-        # Initialize state variables
+        openai.api_key = OPENAI_API_KEY
         self.messages = []
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-
         if "tools" in self.instruction_input_variables:
             self.initial_payload["tools"] = "".join(
                 [
@@ -263,11 +252,8 @@ class AutomataAgent:
                     for tool in toolkit.tools
                 ]
             )
-
         prompt = self._load_prompt()
-
         self._init_database()
-
         if self.session_id:
             self._load_previous_interactions()
         else:
@@ -277,40 +263,22 @@ class AutomataAgent:
                 {
                     "role": "assistant",
                     "content": textwrap.dedent(
-                        """
-                        - thoughts
-                            - I will begin by initializing myself.
-                        - actions
-                            - tool_query_0
-                            - tool
-                                - automata-initializer
-                            - input
-                                - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
-                        """
+                        "\n                        - thoughts\n                            - I will begin by initializing myself.\n                        - actions\n                            - tool_query_0\n                            - tool\n                                - automata-initializer\n                            - input\n                                - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?\n                        "
                     ),
                 },
                 {
                     "role": "user",
                     "content": textwrap.dedent(
-                        f"""
-                        - observation:
-                          - task_0
-                            - Please carry out the following instruction {self.instructions},
-                        """
+                        f"\n                        - observation:\n                          - task_0\n                            - Please carry out the following instruction {self.instructions},\n                        "
                     ),
                 },
             ]
-
             for message in initial_messages:
                 self._save_interaction(message)
-
-        logger.debug("Initializing with Prompt:%s\n" % (prompt))
+        logger.debug("Initializing with Prompt:%s\n" % prompt)
         logger.debug("-" * 60)
-
-        # Check that initial_payload contains all input variables
         if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
-
         logger.debug("Session ID: %s" % self.session_id)
         logger.debug("-" * 60)
 
@@ -324,17 +292,16 @@ class AutomataAgent:
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
         """Process the messages in the conversation."""
         actions = AutomataAgent._extract_actions(response_text)
+        print("EXTRACTED ACTIONS:", actions)
         logger.debug("Actions: %s" % actions)
         outputs = {}
-        result_counter, tool_counter = 0, 0
-
+        (result_counter, tool_counter) = (0, 0)
         for action_request in actions:
             if "tool" in action_request:
-                requested_tool, requested_tool_input = (
+                (requested_tool, requested_tool_input) = (
                     action_request["tool"],
                     action_request["input"] or "",
                 )
-                # Skip the automata-initializer tool since it is a dummy
                 if requested_tool == "automata-initializer":
                     continue
                 if AutomataAgent.ActionExtractor.return_result_indicator in requested_tool:
@@ -345,7 +312,6 @@ class AutomataAgent:
                     result_counter += 1
                     continue
                 if requested_tool == "error-reporter":
-                    # In the event of an error, the tool_input becomes the output, as it is now a parsing error
                     tool_output = requested_tool_input
                     outputs["%s_%i" % ("output", tool_counter)] = cast(str, tool_output)
                     tool_counter += 1
@@ -354,15 +320,15 @@ class AutomataAgent:
                     for toolkit in self.llm_toolkits.values():
                         for tool in toolkit.tools:
                             if tool.name == requested_tool:
-                                tool_output = tool.run(requested_tool_input, verbose=False)
+                                tool_output = tool.run(tuple(requested_tool_input), verbose=False)
                                 outputs["%s_%i" % ("output", tool_counter)] = cast(
                                     str, tool_output
                                 )
                                 tool_counter += 1
                                 tool_found = True
-                                break  # Tool found, no need to continue the inner loop
+                                break
                         if tool_found:
-                            break  # Tool found, no need to continue the outer loop
+                            break
                     if not tool_found:
                         error_message = f"Error: Tool '{requested_tool}' not found."
                         outputs["%s_%i" % ("output", tool_counter)] = error_message
@@ -371,18 +337,10 @@ class AutomataAgent:
 
     def _init_database(self):
         """Initialize the database connection."""
-        self.conn = sqlite3.connect(CONVERSATION_DB_NAME)  # noqa F405
+        self.conn = sqlite3.connect(CONVERSATION_DB_NAME)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS interactions (
-                session_id INTEGER,
-                interaction_id INTEGER,
-                role TEXT,
-                content TEXT,
-                PRIMARY KEY (session_id, interaction_id)
-            )
-            """
+            "\n            CREATE TABLE IF NOT EXISTS interactions (\n                session_id INTEGER,\n                interaction_id INTEGER,\n                role TEXT,\n                content TEXT,\n                PRIMARY KEY (session_id, interaction_id)\n            )\n            "
         )
         self.conn.commit()
 
@@ -405,7 +363,7 @@ class AutomataAgent:
             (self.session_id,),
         )
         self.messages = [
-            {"role": role, "content": content} for role, content in self.cursor.fetchall()
+            {"role": role, "content": content} for (role, content) in self.cursor.fetchall()
         ]
 
     @staticmethod
@@ -414,12 +372,12 @@ class AutomataAgent:
         return AutomataAgent.ActionExtractor.extract_actions(text)
 
     @staticmethod
-    def _contains_return_result(processed_inputs: Dict[str, str]) -> bool:
+    def _retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[str]:
         """Check if the result is a return result indicator."""
         for processed_input in processed_inputs.keys():
             if AutomataAgent.ActionExtractor.return_result_indicator in processed_input:
-                return True
-        return False
+                return processed_inputs[processed_input]
+        return None
 
     @staticmethod
     def _generate_user_observation_message(observations: Dict[str, str]) -> str:
@@ -436,6 +394,7 @@ class AutomataAgent:
         code_indicator = "```"
         tool_indicator = "tool_query"
         return_result_indicator = "return_result"
+        expected_coded_languages = ["python"]
 
         @classmethod
         def extract_actions(cls, text: str) -> List[ActionType]:
@@ -448,31 +407,26 @@ class AutomataAgent:
             Returns:
                 A list of dictionaries containing actions and their inputs.
             """
-
             lines = text.split("\n")
             actions: List[ActionType] = []
             action: Optional[ActionType] = None
             is_code = False
             skip_next = False
-
             for index, line in enumerate(lines):
                 if skip_next:
                     skip_next = False
                     continue
-
                 if cls._is_new_tool_action(lines, index):
                     action = cls._process_new_tool_action(action, line, actions)
                     skip_next = True
                 elif cls._is_return_result_action(line):
                     action = cls._process_new_return_result_action(action, line, actions)
                 else:
-                    is_code, skip_next = cls._process_action_input(
+                    (is_code, skip_next) = cls._process_action_input(
                         lines, index, line, action, is_code, skip_next
                     )
-
             if action is not None:
                 actions.append(action)
-
             return actions
 
         @staticmethod
@@ -482,16 +436,14 @@ class AutomataAgent:
                 f"{AutomataAgent.ActionExtractor.action_indicator}tool" in lines[index - 1]
                 and f"{AutomataAgent.ActionExtractor.action_indicator}{AutomataAgent.ActionExtractor.tool_indicator}"
                 in lines[index - 2]
-                and AutomataAgent.ActionExtractor.action_indicator in lines[index]
-                and len(lines) > index + 1
-                and f"{AutomataAgent.ActionExtractor.action_indicator}inputs" in lines[index + 1]
+                and (AutomataAgent.ActionExtractor.action_indicator in lines[index])
+                and (len(lines) > index + 1)
+                and (f"{AutomataAgent.ActionExtractor.action_indicator}inputs" in lines[index + 1])
             )
 
         @staticmethod
         def _process_new_tool_action(
-            action: Optional[ActionType],
-            line: str,
-            actions: List[ActionType],
+            action: Optional[ActionType], line: str, actions: List[ActionType]
         ):
             """Process a new action."""
             if action is not None and "tool" in action:
@@ -507,14 +459,11 @@ class AutomataAgent:
 
         @staticmethod
         def _process_new_return_result_action(
-            action: Optional[ActionType],
-            line: str,
-            actions: List[ActionType],
+            action: Optional[ActionType], line: str, actions: List[ActionType]
         ):
             """Process a new return result action."""
             if action is not None and "tool" in action:
                 actions.append(action)
-
             return {
                 "tool": line.strip()
                 .split(AutomataAgent.ActionExtractor.action_indicator)[1]
@@ -535,13 +484,19 @@ class AutomataAgent:
             """Process an action input."""
             if action is not None:
                 inputs = cast(List[str], action["input"])
-                if AutomataAgent.ActionExtractor._is_code_start(lines, index) and not is_code:
+                if AutomataAgent.ActionExtractor._is_code_start(lines, index) and (not is_code):
                     is_code = True
-                    inputs.append("")
+                    for language in AutomataAgent.ActionExtractor.expected_coded_languages:
+                        if language in line:
+                            contains_language_definition = True
+                    if contains_language_definition:
+                        inputs.append("")
+                    else:
+                        inputs.append(line + "\n")
                     skip_next = True
                 elif not AutomataAgent.ActionExtractor._is_code_indicator(line) and is_code:
                     inputs[-1] += line + "\n"
-                elif AutomataAgent.ActionExtractor._is_code_end(line) and not is_code:
+                elif AutomataAgent.ActionExtractor._is_code_end(line) and (not is_code):
                     raise ValueError(f"Invalid action format: {line}")
                 elif AutomataAgent.ActionExtractor._is_code_end(line) and is_code:
                     is_code = False
@@ -551,7 +506,7 @@ class AutomataAgent:
                         1
                     ].strip()
                     inputs.append(clean_line)
-            return is_code, skip_next
+            return (is_code, skip_next)
 
         @staticmethod
         def _is_code_start(lines: List[str], index: int):

@@ -216,5 +216,6 @@ instruction_template: >
   After receiving your instructions, begin with a step-by-step thought process establishing the necessary
   actions that must be taken to complete the task. Then, execute the appropriate tools to complete the task.
   RETURN THE RESULT in the markdown format specified above. Do NOT forget to follow the Thought-Action -> Observation lifecycle.
+  When returning code, follow the specified format exactly, e.g. write "python\n```\ndef f(x: int):\n...```"
 
 template_format: "f-string"
