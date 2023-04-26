@@ -18,15 +18,16 @@
         agent.run()
 
         TODO - Add error checking to ensure that we don't terminate when
-        our previous result returned an error
-        TODO - Add more unit tests to the iter_task workflow
-        TODO - Cleanup approach behind _retrieve_completion_message
-             - Right now, multiple results are not handled properly
-               Moreover, messages with results + tool outputs will
-               not be handled properly, as outputs are discarded
-        TODO - Check logic around this `if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2
-        TODO - Add tests for input instructions assembly
-        TODO - Split this config up into multiple configs
+               our previous result returned an error
+
+        TODO - Think about approach behind retrieve_completion_message
+             - Right now, the job terminates when we get our first completion message
+               e.g. return_result_0
+               The correct thing to do would be to ensure we complete all tasks
+               But before adding this cpability, we need to continue
+               polishing the framework
+
+        TODO - Think about how to introduce the starting instructions to configs
 """
 import logging
 import sqlite3
@@ -42,7 +43,8 @@ from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
 from automata.configs.agent_configs.config_type import AutomataAgentConfig
 from automata.core.agents.automata_agent_helpers import (
     ActionExtractor,
-    _generate_user_observation_message,
+    generate_user_observation_message,
+    retrieve_completion_message,
 )
 
 logger = logging.getLogger(__name__)
@@ -56,7 +58,7 @@ class AutomataAgent:
     """
 
     CONTINUE_MESSAGE: Final = "Continue, and return a result JSON when finished."
-    NUM_DEFAULT_MESSAGES: Final = 3
+    NUM_DEFAULT_MESSAGES: Final = 3  # Prompt + Assistant Initialization + User Task
     INITIALIZER_DUMMY_TOOL: Final = "automata-initializer"
     ERROR_DUMMY_TOOL: Final = "error-reporter"
 
@@ -93,8 +95,11 @@ class AutomataAgent:
     def run(self) -> str:
         latest_responses = self.iter_task()
         while latest_responses is not None:
+            # Each iteration adds two messages, one from the assistant and one from the user
+            # If we have equal to or more than 2 * max_iters messages (less the default messages),
+            # then we have exceeded the max_iters
             if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:
-                return "Result was not captured before iterations exceeded max limit."
+                return "Result was not found before iterations exceeded max limit."
             latest_responses = self.iter_task()
         return self.messages[-1]["content"]
 
@@ -121,35 +126,38 @@ class AutomataAgent:
         )
         if self.stream:
             print(colored("\n>>>", "green", attrs=["blink"]) + colored(" Agent:", "green"))
-            accumulated_output = ""
-            separator = " "
+            latest_accumulation = ""
+            stream_separator = " "
             response_text = ""
             for chunk in response_summary:
                 if "content" in chunk["choices"][0]["delta"]:
                     chunk_content = chunk["choices"][0]["delta"]["content"]
-                    accumulated_output += chunk_content
+                    latest_accumulation += chunk_content
                     response_text += chunk_content
-                if separator in accumulated_output:
-                    words = accumulated_output.split(separator)
+                if stream_separator in latest_accumulation:
+                    words = latest_accumulation.split(stream_separator)
                     for word in words[:-1]:
                         print(colored(str(word), "green"), end=" ", flush=True)
-                    accumulated_output = words[-1]
-            print(colored(str(accumulated_output), "green"))
+                    latest_accumulation = words[-1]
+            print(colored(str(latest_accumulation), "green"))
         else:
             response_text = response_summary["choices"][0]["message"]["content"]
         logger.debug("OpenAI Response:\n%s\n" % response_text)
         assistant_message = {"role": "assistant", "content": response_text}
+
         responses: List[Dict[str, str]] = []
         responses.append(assistant_message)
         self._save_interaction(assistant_message)
+
         observations = self._generate_observations(response_text)
-        completion_message = AutomataAgent._retrieve_completion_message(observations)
+        completion_message = retrieve_completion_message(observations)
+
         if completion_message:
             self.completed = True
             self._save_interaction({"role": "assistant", "content": completion_message})
             return None
         if len(observations) > 0:
-            user_observation_message = _generate_user_observation_message(observations)
+            user_observation_message = generate_user_observation_message(observations)
             user_message = {"role": "user", "content": user_observation_message}
             logger.debug("Synthetic User Message:\n%s\n" % user_observation_message)
         else:
@@ -166,7 +174,7 @@ class AutomataAgent:
             return "No messages to replay."
         for message in self.messages[1:]:
             observations = self._generate_observations(message["content"])
-            completion_message = AutomataAgent._retrieve_completion_message(observations)
+            completion_message = retrieve_completion_message(observations)
             if completion_message:
                 return completion_message
             logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
@@ -186,13 +194,8 @@ class AutomataAgent:
         self.messages = []
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
         if "tools" in self.instruction_input_variables:
-            self.initial_payload["tools"] = "".join(
-                [
-                    f"\n{tool.name}: {tool.description}\n"
-                    for toolkit in self.llm_toolkits.values()
-                    for tool in toolkit.tools
-                ]
-            )
+            self.initial_payload["tools"] = self._build_tool_message()
+
         prompt = self._load_prompt()
         self._init_database()
         if self.session_id:
@@ -204,13 +207,26 @@ class AutomataAgent:
                 {
                     "role": "assistant",
                     "content": textwrap.dedent(
-                        "\n                        - thoughts\n                            - I will begin by initializing myself.\n                        - actions\n                            - tool_query_0\n                            - tool_name\n                                - {AutomataAgent.INITIALIZER_DUMMY_TOOL}\n                            - tool_args\n                                - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?\n                        "
+                        """
+                        - thoughts
+                          - I will begin by initializing myself.
+                            - actions
+                              - tool_query_0
+                                - tool_name
+                                  - {AutomataAgent.INITIALIZER_DUMMY_TOOL}
+                                - tool_args
+                                  - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
+                        """
                     ),
                 },
                 {
                     "role": "user",
                     "content": textwrap.dedent(
-                        f"\n                        - observation:\n                          - task_0\n                            - Please carry out the following instruction {self.instructions},\n                        "
+                        f"""
+                        - observation:
+                          - task_0                            
+                            - Please carry out the following instruction {self.instructions}.
+                        """
                     ),
                 },
             ]
@@ -237,29 +253,29 @@ class AutomataAgent:
         outputs = {}
         (result_counter, tool_counter) = (0, 0)
         for action_request in actions:
-            (requested_tool_name, requested_tool_input) = (
+            (tool_name, tool_input) = (
                 action_request[ActionExtractor.TOOL_NAME_FIELD],
                 action_request[ActionExtractor.TOOL_ARGS_FIELD] or "",
             )
-            if requested_tool_name == AutomataAgent.INITIALIZER_DUMMY_TOOL:
+            if tool_name == AutomataAgent.INITIALIZER_DUMMY_TOOL:
                 continue
-            if ActionExtractor.RETURN_RESULT_INDICATOR in requested_tool_name:
+            if ActionExtractor.RETURN_RESULT_INDICATOR in tool_name:
                 outputs[
                     "%s_%i" % (ActionExtractor.RETURN_RESULT_INDICATOR, result_counter)
-                ] = "\n".join(requested_tool_input)
+                ] = "\n".join(tool_input)
                 result_counter += 1
                 continue
-            if requested_tool_name == AutomataAgent.ERROR_DUMMY_TOOL:
-                tool_output = requested_tool_input
+            if tool_name == AutomataAgent.ERROR_DUMMY_TOOL:
+                tool_output = tool_input
                 outputs["%s_%i" % ("output", tool_counter)] = cast(str, tool_output)
                 tool_counter += 1
             else:
                 tool_found = False
                 for toolkit in self.llm_toolkits.values():
                     for tool in toolkit.tools:
-                        if tool.name == requested_tool_name:
+                        if tool.name == tool_name:
                             processed_tool_input = [
-                                ele if ele != "None" else None for ele in requested_tool_input
+                                ele if ele != "None" else None for ele in tool_input
                             ]
                             tool_output = tool.run(tuple(processed_tool_input), verbose=False)
                             outputs["%s_%i" % ("output", tool_counter)] = cast(str, tool_output)
@@ -269,7 +285,7 @@ class AutomataAgent:
                     if tool_found:
                         break
                 if not tool_found:
-                    error_message = f"Error: Tool '{requested_tool_name}' not found."
+                    error_message = f"Error: Tool '{tool_name}' not found."
                     outputs["%s_%i" % ("output", tool_counter)] = error_message
                     tool_counter += 1
         return outputs
@@ -305,10 +321,12 @@ class AutomataAgent:
             {"role": role, "content": content} for (role, content) in self.cursor.fetchall()
         ]
 
-    @staticmethod
-    def _retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[str]:
-        """Check if the result is a return result indicator."""
-        for processed_input in processed_inputs.keys():
-            if ActionExtractor.RETURN_RESULT_INDICATOR in processed_input:
-                return processed_inputs[processed_input]
-        return None
+    def _build_tool_message(self):
+        """Builds a message containing all tools and their descriptions."""
+        return "".join(
+            [
+                f"\n{tool.name}: {tool.description}\n"
+                for toolkit in self.llm_toolkits.values()
+                for tool in toolkit.tools
+            ]
+        )

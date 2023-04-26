@@ -70,15 +70,16 @@ class PythonWriterToolManager(BaseToolManager):
                 f" then the existing code is modified."
                 f" For example -"
                 f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
-                f" the correct function call is"
-                f" - tool_query_1"
-                f"   - tool_name"
-                f"     - python-writer-update-module"
-                f"   - tool_args"
-                f"     - my_folder.my_file"
-                f"     - MyClass"
-                f'     - def my_method() -> None:\n   """My Method"""\n    print("hello world")'
-                f" If new import statements are necessary, then introduce them at the top of the submitted input code.",
+                f" the correct function call follows:\n"
+                f" - tool_query_1\n"
+                f"   - tool_name\n"
+                f"     - python-writer-update-module\n"
+                f"   - tool_args\n"
+                f"     - my_folder.my_file\n"
+                f"     - MyClass\n"
+                f'     - def my_method() -> None:\n   """My Method"""\n    print("hello world")\n'
+                f"If new import statements are necessary, then introduce them at the top of the submitted input code.\n"
+                f"Provide the full code as input, as this tool has no context outside of passed arguments.\n",
                 return_direct=True,
             ),
         ]

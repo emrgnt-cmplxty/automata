@@ -63,7 +63,19 @@ class PythonIndexerToolManager(BaseToolManager):
                 func=lambda module_object_tuple: self._run_indexer_retrieve_code(
                     *module_object_tuple
                 ),
-                description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is - tool_args\n  - my_directory.my_file\n  - my_function. If the function is defined in a class, MyClass, then the correct tool input is - tool_args\n  - my_directory.my_file\n  - MyClass.my_function',
+                description=f"Returns the code of the python package, module, standalone function, class,"
+                f" or method at the given python path, without docstrings."
+                f' If no match is found, then "{PythonIndexer.NO_RESULT_FOUND_STR}" is returned.\n\n'
+                f'For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory,'
+                f"Then the correct tool input for the parser follows:\n"
+                f"  - tool_args\n"
+                f"    - my_file\n"
+                f"    - my_function\n\n"
+                f"Suppose instead the file is located in a subdirectory called my_directory,"
+                f" then the correct tool input for the parser is:\n"
+                f"  - tool_args\n    - my_directory.my_file\n    - my_function\n\n"
+                f"Lastly, if the function is defined in a class, MyClass, then the correct tool input is:\n"
+                f"  - tool_args\n    - my_directory.my_file\n    - MyClass.my_function",
                 return_direct=True,
                 verbose=True,
             ),
