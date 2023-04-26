@@ -14,7 +14,7 @@ Example -
     tools = build_tools(tool_manager)
 """
 import logging
-from typing import Any, List
+from typing import Any, List, Optional
 
 from automata.configs.agent_configs.config_type import AutomataConfigVersion
 from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
@@ -48,7 +48,7 @@ class PythonWriterToolManager(BaseToolManager):
         """
         self.writer: PythonWriter = kwargs.get("python_writer")
         self.automata_version = (
-            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_WRITER_V2
+            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_WRITER_PROD
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.verbose = kwargs.get("verbose") or False
@@ -60,7 +60,9 @@ class PythonWriterToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="python-writer-update-module",
-                func=lambda path_comma_code_str: self._writer_update_module(path_comma_code_str),
+                func=lambda module_object_code_tuple: self._writer_update_module(
+                    *module_object_code_tuple
+                ),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. If the specified object or dependencies do not exist,"
                 f" then they are created automatically. If the object already exists,"
@@ -68,9 +70,14 @@ class PythonWriterToolManager(BaseToolManager):
                 f" For example -"
                 f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
                 f" the correct function call is"
-                f' {{"tool": "python-writer-update-module",'
-                f' "input": "my_folder.my_file,MyClass,def my_function() -> None:\n   """My Function"""\n    print("hello world")"}}.'
-                f" If new import statements are necessary, then introduce them to the module separately. Do not forget to wrap your input in double quotes.",
+                f" - tool_query_1"
+                f"   - tool"
+                f"     - python-writer-update-module"
+                f"   - inputs"
+                f"     - my_folder.my_file"
+                f"     - MyClass"
+                f'     - def my_method() -> None:\n   """My Method"""\n    print("hello world")'
+                f" If new import statements are necessary, then introduce them at the top of the submitted input code.",
                 return_direct=True,
             ),
         ]
@@ -81,20 +88,15 @@ class PythonWriterToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="automata-writer-modify-module",
-                func=lambda path_comma_code_str: self._automata_update_module(
-                    path_comma_code_str, config
-                ),
+                func=lambda input_str: self._automata_update_module(input_str, config),
                 description=f"Modifies the python code of a function, class, method, or module after receiving"
                 f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Automata.",
             ),
         ]
         return tools
 
-    def _writer_update_module(self, input_str: str) -> str:
+    def _writer_update_module(self, module_path: str, class_name: Optional[str], code: str) -> str:
         """Writes the given code to the given module path and class name."""
-        module_path = input_str.split(",")[0]
-        class_name = input_str.split(",")[1]
-        code = ",".join(input_str.split(",")[2:]).strip()
         try:
             self.writer.update_module(
                 source_code=code,

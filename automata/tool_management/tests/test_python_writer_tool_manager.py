@@ -47,7 +47,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    code_writer.func(f"{file_py_path},,{function_def}")
+    code_writer.func((file_py_path, None, function_def))
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -74,7 +74,7 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.func(f"{file_py_path},,{function_def}")
+    code_writer.func((file_py_path, None, function_def))
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -104,7 +104,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
-    code_writer.func(f"{file_py_path},,{function_def}")
+    code_writer.func((file_py_path, None, function_def))
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -175,7 +175,7 @@ class PythonAgentToolBuilder:
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.func(f"{file_py_path},PythonAgentToolBuilder,{class_str}")
+    code_writer.func((file_py_path, "PythonAgentToolBuilder", class_str))
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
@@ -191,8 +191,8 @@ class PythonAgentToolBuilder:
 
 
 def test_extend_module_with_documented_new_module(python_writer_tool_builder):
-    combo_str = textwrap.dedent(
-        """temp_code.python_agent_tool_builder,,from typing import List, Optional
+    module_str = textwrap.dedent(
+        """from typing import List, Optional
 from automata.buffer import PassThroughBuffer
 from automata.tools.tool import Tool
 from automata.tools.python_tools.python_agent import PythonAgent
@@ -208,6 +208,6 @@ class PythonAgentToolBuilder:
     )
     tools = python_writer_tool_builder.build_tools()
     code_writer = tools[0]
-    code_writer.func(combo_str)
+    code_writer.func(("temp_code.python_agent_tool_builder", None, module_str))
     # # Why?
     shutil.rmtree(os.path.join(root_py_path(), "tool_management", "tests", "temp_code"))

@@ -24,10 +24,10 @@ def automata_params(request):
         "model": model,
         "temperature": temperature,
         "automata_indexer_config": AutomataAgentConfig.load(
-            AutomataConfigVersion.AUTOMATA_INDEXER_V1
+            AutomataConfigVersion.AUTOMATA_INDEXER_PROD
         ),
         "automata_writer_config": AutomataAgentConfig.load(
-            AutomataConfigVersion.AUTOMATA_WRITER_V2
+            AutomataConfigVersion.AUTOMATA_WRITER_PROD
         ),
     }
     mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
@@ -41,7 +41,7 @@ def automata_params(request):
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    config_version: AutomataConfigVersion = AutomataConfigVersion.AUTOMATA_INDEXER_V2,
+    config_version: AutomataConfigVersion = AutomataConfigVersion.AUTOMATA_INDEXER_PROD,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",
