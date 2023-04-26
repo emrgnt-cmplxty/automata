@@ -17,7 +17,8 @@ import logging
 from typing import Any, List, Optional
 
 from automata.configs.agent_configs.config_type import AutomataConfigVersion
-from automata.core.agents.automata_agent import AutomataAgentBuilder, AutomataAgentConfig
+from automata.core.agents.automata_agent import AutomataAgentConfig
+from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -71,9 +72,9 @@ class PythonWriterToolManager(BaseToolManager):
                 f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
                 f" the correct function call is"
                 f" - tool_query_1"
-                f"   - tool"
+                f"   - tool_name"
                 f"     - python-writer-update-module"
-                f"   - inputs"
+                f"   - tool_args"
                 f"     - my_folder.my_file"
                 f"     - MyClass"
                 f'     - def my_method() -> None:\n   """My Method"""\n    print("hello world")'

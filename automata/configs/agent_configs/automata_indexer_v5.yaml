@@ -103,7 +103,16 @@ instruction_template: >
             ```
             def retrieve_code(self, func_or_class):
               """Retrieves the code for a given function or class."""
-              ...
+              if module_path not in self.module_dict:
+                return PythonIndexer.NO_RESULT_FOUND_STR
+
+              module = copy.deepcopy(self.module_dict[module_path])
+              result = self._find_module_class_function_or_method(module, object_path)
+              if result is not None:
+                self._remove_docstrings(result)
+                return ast.unparse(result)
+              else:
+                return PythonIndexer.NO_RESULT_FOUND_STR
             ```
         
     *Assistant*
@@ -136,7 +145,8 @@ instruction_template: >
           - python
             ```
             import argparse
-            import logging...
+            import logging
+            ...[CONTINUE CODE HERE]...
             ```
 
     *Assistant*
@@ -148,7 +158,7 @@ instruction_template: >
             ```
             import argparse
             import logging
-            ...
+            ...[CONTINUE CODE HERE]...
             ```
 
 
@@ -190,7 +200,7 @@ instruction_template: >
       ```
       import argparse
       import logging
-      ...
+      ...[CONTINUE CODE HERE]...
       ```
 
 template_format: "f-string"

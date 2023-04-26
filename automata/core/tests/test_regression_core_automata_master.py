@@ -50,17 +50,17 @@ def test_retrieve_run_and_write_out(automata_params):
         max_iters=5,
     )
 
-    next_steps = (
-        {
-            "role": "assistant",
-            "content": 'Thought: I will use the automata-indexer-retrieve-code tool to retrieve the raw code for the "run" function from the Automata agent.\nAction:\n{\n  "tool": "automata-indexer-retrieve-code",\n  "input": "Retrieve the raw code for the function \'run\' from the Automata agent, including all necessary imports and docstrings."\n}',
-        },
-        {
-            "role": "user",
-            "content": """Observation:\n{\n"output_0": "def run(self) -> str:\n    \\"\\"\\"Run until the initial instruction terminates.\\"\\"\\"\n    while True:\n        self.iter_task()\n        if AutomataAgent.is_completion_message(self.messages[-2][\'content\']):\n            return self.messages[-2][\'content\']\n        if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:\n            return \'Result was not captured before iterations exceeded max limit.\'"", \n}"printObservation:\n{\n\"output_0\": \"The code for the 'run' function in Automata agent is:\n\ndef run(self) -> str:\n    while True:\n        self.iter_task()\n        if AutomataAgent.is_completion_message(self.messages[-2]['content']):\n            return self.messages[-2]['content']\n        if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:\n            return 'Result was not captured before iterations exceeded max limit.'\n\nNote: No docstring was found for this function.\"\", \n}""",
-        },
-    )
-    agent.messages.extend(next_steps)
+    # next_steps = (
+    #     {
+    #         "role": "assistant",
+    #         "content": 'Thought: I will use the automata-indexer-retrieve-code tool to retrieve the raw code for the "run" function from the Automata agent.\nAction:\n{\n  "-tool": "automata-indexer-retrieve-code",\n  "input": "Retrieve the raw code for the function \'run\' from the Automata agent, including all necessary imports and docstrings."\n}',
+    #     },
+    #     {
+    #         "role": "user",
+    #         "content": """Observation:\n{\n"output_0": "def run(self) -> str:\n    \\"\\"\\"Run until the initial instruction terminates.\\"\\"\\"\n    while True:\n        self.iter_task()\n        if AutomataAgent.is_completion_message(self.messages[-2][\'content\']):\n            return self.messages[-2][\'content\']\n        if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:\n            return \'Result was not captured before iterations exceeded max limit.\'"", \n}"printObservation:\n{\n\"output_0\": \"The code for the 'run' function in Automata agent is:\n\ndef run(self) -> str:\n    while True:\n        self.iter_task()\n        if AutomataAgent.is_completion_message(self.messages[-2]['content']):\n            return self.messages[-2]['content']\n        if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:\n            return 'Result was not captured before iterations exceeded max limit.'\n\nNote: No docstring was found for this function.\"\", \n}""",
+    #     },
+    # )
+    # agent.messages.extend(next_steps)
     agent.run()
 
     expected_content = EXPECTED_RESPONSES["test_retrieve_run_and_write_out"].strip()

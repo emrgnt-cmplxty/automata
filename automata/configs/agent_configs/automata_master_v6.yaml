@@ -11,7 +11,10 @@ instruction_template: >
 
   Persistently execute multiple actions until you have amassed enough information to ensure an extremely high likelihood of successfully completing the given task.
   Tool output is returned by the User after the Automata Master submits a message with markdown containing one or more "tool_queries".
-  The return is formatted as an message in markdown which contains an "observation".
+  The return is formatted as an message in markdown which contains an "observation". Throughout this prompt we insert the text "...[INSERT_X_HERE]" as 
+  a placeholder where user input is expected to be provided and which must be propagated accurately by the assistant. Be aware that provided tools do
+  not have the same context available to themselves as you have, so be sure to provide all necessary information to the tool. For example, if you are
+  asked to provide a function definition, be sure to include the function signature, docstring, and any necessary imports.
 
   An example of the Thoughts->Actions --> Observations --> Thoughts->Actions --> ... chain follows below.
 
@@ -77,7 +80,13 @@ instruction_template: >
           - Here's an example of initializing a AutomataAgent with the necessary imports:
             ```
             from automata.core.agents.automata_agent import AutomataAgent
-            ...[INSERT REMAINING CODE HERE]...
+            ...[IMPORTS_CONTNUED]
+              class AutomataAgent:
+                def __init__(self, config: Optional[AutomataAgentConfig] = None):
+                  if config is None:
+                      config = AutomataAgentConfig()
+                  self.initial_payload = config.initial_payload
+                  ...
             ```
 
     *Assistant*
@@ -90,8 +99,14 @@ instruction_template: >
           - tool_args
             - Modify PythonIndexerToolManager.build_tools_with_automata to read 
               ```
-              from automata.core.agents.automata_agent import AutomataAgent 
-              ...[INSERT REMAINING CODE HERE]...
+              from automata.core.agents.automata_agent import AutomataAgent
+              ...[IMPORTS_CONTNUED]
+                class AutomataAgent:
+                  def __init__(self, config: Optional[AutomataAgentConfig] = None):
+                    if config is None:
+                        config = AutomataAgentConfig()
+                    self.initial_payload = config.initial_payload
+                    ...
               ```
     *User*
       - observations
@@ -130,7 +145,7 @@ instruction_template: >
           - The code for the function 'run' is as follows: 
             ```
             def run(self, input_str: str) -> str:
-              ...[INSERT REMAINING CODE HERE]...
+              ...[CODE IS PROVIDED HERE]...
             ```
 
     *Assistant*
@@ -143,9 +158,8 @@ instruction_template: >
           - tool_args
             - Modify core.tests.sample_code.test to include the function below
               ```
-              import ...[INSERT NECESSARY IMPORTS HERE]...
               def run(self, input_str: str) -> str:
-                ...[INSERT REMAINING CODE HERE]...
+                ...[PROVIDED CODE HERE]...
               ```
 
     *User*

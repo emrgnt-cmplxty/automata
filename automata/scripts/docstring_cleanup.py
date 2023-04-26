@@ -5,7 +5,7 @@ import os
 from typing import Optional
 
 from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
-from automata.core.agents.automata_agent import AutomataAgentBuilder
+from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
