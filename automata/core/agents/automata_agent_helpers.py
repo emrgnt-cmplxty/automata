@@ -2,6 +2,23 @@ import textwrap
 from typing import Dict, Final, List, Optional, TypedDict, cast
 
 
+def generate_user_observation_message(observations: Dict[str, str]) -> str:
+    """Generate a message for the user based on the observations."""
+    message = f"{ActionExtractor.ACTION_INDICATOR} observations\n"
+    for observation_name in observations.keys():
+        message += f"    - {observation_name}" + "\n"
+        message += f"      - {observations[observation_name]}" + "\n"
+    return message
+
+
+def retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[str]:
+    """Check if the result is a return result indicator."""
+    for processed_input in processed_inputs.keys():
+        if ActionExtractor.RETURN_RESULT_INDICATOR in processed_input:
+            return processed_inputs[processed_input]
+    return None
+
+
 class AutomataAction(TypedDict):
     tool_name: str
     tool_args: List[str]
@@ -154,11 +171,3 @@ class ActionExtractor:
     def _is_code_indicator(line: str) -> bool:
         """Check if the current line is a code indicator."""
         return line.strip() == ActionExtractor.CODE_INDICATOR
-
-
-def _generate_user_observation_message(observations: Dict[str, str]) -> str:
-    message = f"{ActionExtractor.ACTION_INDICATOR} observations\n"
-    for observation_name in observations.keys():
-        message += f"    - {observation_name}" + "\n"
-        message += f"      - {observations[observation_name]}" + "\n"
-    return message
