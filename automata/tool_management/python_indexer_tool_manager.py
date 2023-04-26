@@ -21,7 +21,7 @@ import logging
 from typing import Any, List, Optional, Tuple
 
 from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
-from automata.core.agents.automata_agent import AutomataAgentBuilder
+from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.tool_management.base_tool_manager import BaseToolManager
 from automata.tools.python_tools.python_indexer import PythonIndexer
@@ -63,7 +63,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 func=lambda module_object_tuple: self._run_indexer_retrieve_code(
                     *module_object_tuple
                 ),
-                description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is - inputs\n  - my_directory.my_file\n  - my_function. If the function is defined in a class, MyClass, then the correct tool input is - inputs\n  - my_directory.my_file\n  - MyClass.my_function',
+                description=f'Returns the code of the python package, module, standalone function, class, or method at the given python path, without docstrings. "No results found" is returned if no match is found.\n For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory, then the correct tool input is my_file,my_function Suppose instead the file is located in a subdirectory called my_directory, then the correct tool input for the parser is - tool_args\n  - my_directory.my_file\n  - my_function. If the function is defined in a class, MyClass, then the correct tool input is - tool_args\n  - my_directory.my_file\n  - MyClass.my_function',
                 return_direct=True,
                 verbose=True,
             ),

@@ -10,7 +10,7 @@ instruction_template: >
 
   Persistently execute multiple actions until you have amassed enough information to ensure an extremely high likelihood of successfully completing the given task.
   Tool output is returned by the User after the Automata Master submits a message with markdown containing one or more "tool_queries".
-  The return is formatted as an message in markdown which contains an "observation".
+  The return is formatted as an message in markdown which contains an "observation". 
 
   An example of the Thoughts->Actions --> Observations --> Thoughts->Actions --> ... chain follows below.
 
@@ -103,11 +103,11 @@ instruction_template: >
 
     *User*
       - task_0
-        - Write the following method to BaseToolManager - 
+        - Write the following method to BaseToolManager class - 
           python
           ```
           import random
-          def f(self, x) -> float:
+          def get_random_num() -> float:
             return random.random()
           ```
 
@@ -123,9 +123,9 @@ instruction_template: >
             - `BaseToolManager`
             - python
               ```
-              import ...[INSERT NECESSARY IMPORTS HERE]...
-              def f(self, x) -> float:
-                return x**2\n
+              import random
+              def get_random_num() -> float:
+                return random.random()
               ```
 
     *User*
@@ -146,7 +146,7 @@ instruction_template: >
 
     *User*
       - task_0
-        - Write the following function "def root_py_path() -> str:..." to the utils file.
+        - Write the following function with imports "[PROVIDED_IMPORTS]\ndef root_py_path() -> str:..." to the utils file.
 
 
     *Assistant*
@@ -161,9 +161,11 @@ instruction_template: >
             - None
             - python
               ```
-              import ...[INSERT NECESSARY IMPORTS HERE]...
+              [USER PROVIDES IMPORTS HERE]
               def root_py_path() -> str:
-                ...
+                script_dir = os.path.dirname(os.path.realpath(__file__))
+                data_folder = os.path.join(script_dir, "..")
+                return data_folder
               ```
 
     ...
@@ -185,9 +187,9 @@ instruction_template: >
             - None
             - python
               ```
-              import ...[INSERT NECESSARY IMPORTS HERE]...
-              class MyClass:
-                ...
+              [USER PROVIDES IMPORTS HERE]
+              class PythonIndexer:
+                ...[INSERT REMAINDER OF PROVIDED CODE HERE]...
               ```
 
     ...
@@ -209,9 +211,9 @@ instruction_template: >
             - None
             - python
               ```
-              import ...
+              [USER PROVIDES IMPORTS HERE]
               def h(y):
-                ...
+                ...[INSERT REMAINDER OF PROVIDED CODE HERE]...
               ```
 
     ...
@@ -223,5 +225,9 @@ instruction_template: >
   RETURN THE RESULT in the markdown format specified above. Do NOT forget to follow the Thought-Action -> Observation lifecycle.
   When returning code, follow the specified format exactly, e.g. write "python\n```\ndef f(x: int):\n...```", also
   do not forget to include a "None" input for the class name if the function is not a class method.
+
+  Note, if the user provides a request that you are unable to complete, such as a write request without provided
+  code, then you should return a message with markdown containing the tag "return_result_0" and the message
+  "I am unable to complete the given task. Please provide the necessary code to complete the task.".
 
 template_format: "f-string"

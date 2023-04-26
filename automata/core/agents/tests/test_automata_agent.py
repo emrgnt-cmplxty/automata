@@ -3,7 +3,12 @@ import textwrap
 import pytest
 
 from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
-from automata.core.agents.automata_agent import AutomataAgent, AutomataAgentBuilder
+from automata.core.agents.automata_agent import AutomataAgent
+from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agents.automata_agent_helpers import (
+    ActionExtractor,
+    _generate_user_observation_message,
+)
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
@@ -171,17 +176,17 @@ def test_extract_action():
             - I will use the automata-indexer-retrieve-code tool to retrieve the code for the "run" function from the Automata agent.
         - actions
             - tool_query_0
-                - tool
+                - tool_name
                     - automata-indexer-retrieve-code
-                - inputs
+                - tool_args
                     - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
         """
     )
 
-    result = AutomataAgent._extract_actions(input_text)
-    assert result[0]["tool"] == "automata-indexer-retrieve-code"
+    result = ActionExtractor.extract_actions(input_text)
+    assert result[0]["tool_name"] == "automata-indexer-retrieve-code"
     assert (
-        result[0]["input"][0]
+        result[0]["tool_args"][0]
         == "Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings."
     )
 
@@ -193,30 +198,30 @@ def test_extract_actions():
             - I will use the automata-indexer-retrieve-code tool to retrieve the code for the "run" function from the Automata agent.
         - actions
             - tool_query_0
-                - tool
+                - tool_name
                     - automata-indexer-retrieve-code
-                - inputs
+                - tool_args
                     - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
             - tool_query_1
-                - tool
+                - tool_name
                     - automata-writer-modify-module
-                - inputs
+                - tool_args
                     - Modify the code in the Automata agent.
                     - A dummy input....
         """
     )
 
-    result = AutomataAgent._extract_actions(input_text)
-    assert result[0]["tool"] == "automata-indexer-retrieve-code"
+    result = ActionExtractor.extract_actions(input_text)
+    assert result[0]["tool_name"] == "automata-indexer-retrieve-code"
     assert (
-        result[0]["input"][0]
+        result[0]["tool_args"][0]
         == "Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings."
     )
 
-    assert result[1]["tool"] == "automata-writer-modify-module"
-    assert result[1]["input"][0] == "Modify the code in the Automata agent."
+    assert result[1]["tool_name"] == "automata-writer-modify-module"
+    assert result[1]["tool_args"][0] == "Modify the code in the Automata agent."
 
-    assert result[1]["input"][1] == "A dummy input...."
+    assert result[1]["tool_args"][1] == "A dummy input...."
 
 
 def test_extract_actions_with_code():
@@ -226,14 +231,14 @@ def test_extract_actions_with_code():
             - I will use the automata-indexer-retrieve-code tool to retrieve the code for the "run" function from the Automata agent.
         - actions
             - tool_query_0
-                - tool
+                - tool_name
                     - automata-indexer-retrieve-code
-                - inputs
+                - tool_args
                     - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
             - tool_query_1
-                - tool
+                - tool_name
                     - automata-writer-modify-module
-                - inputs
+                - tool_args
                     - Modify the code in the Automata agent.
                     - python
                     ```
@@ -243,17 +248,17 @@ def test_extract_actions_with_code():
         """
     )
 
-    result = AutomataAgent._extract_actions(input_text)
-    assert result[0]["tool"] == "automata-indexer-retrieve-code"
+    result = ActionExtractor.extract_actions(input_text)
+    assert result[0]["tool_name"] == "automata-indexer-retrieve-code"
     assert (
-        result[0]["input"][0]
+        result[0]["tool_args"][0]
         == "Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings."
     )
 
-    assert result[1]["tool"] == "automata-writer-modify-module"
-    assert result[1]["input"][0] == "Modify the code in the Automata agent."
+    assert result[1]["tool_name"] == "automata-writer-modify-module"
+    assert result[1]["tool_args"][0] == "Modify the code in the Automata agent."
 
-    assert result[1]["input"][1] == "def f(x: int) -> int:\n    return 0\n"
+    assert result[1]["tool_args"][1] == "def f(x: int) -> int:\n    return 0\n"
 
 
 def test_extract_actions_with_return():
@@ -268,11 +273,14 @@ def test_extract_actions_with_return():
         """
     )
 
-    extractor = AutomataAgent.ActionExtractor()
+    extractor = ActionExtractor()
     result = extractor.extract_actions(text)
 
-    assert result[0]["tool"] == "return_result_0"
-    assert result[0]["input"][0] == "Function 'run' has been added to core.tests.sample_code.test."
+    assert result[0]["tool_name"] == "return_result_0"
+    assert (
+        result[0]["tool_args"][0]
+        == "Function 'run' has been added to core.tests.sample_code.test."
+    )
 
 
 def test_extract_actions_tools_and_with_return():
@@ -283,9 +291,9 @@ def test_extract_actions_tools_and_with_return():
                 - Having successfully written the output file, I can now return the result.
             - actions
                 - tool_query_0
-                    - tool
+                    - tool_name
                         - automata-indexer-retrieve-code
-                    - inputs
+                    - tool_args
                         - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
 
                 - return_result_0
@@ -293,16 +301,19 @@ def test_extract_actions_tools_and_with_return():
         """
     )
 
-    extractor = AutomataAgent.ActionExtractor()
+    extractor = ActionExtractor()
     result = extractor.extract_actions(text)
-    assert result[0]["tool"] == "automata-indexer-retrieve-code"
+    assert result[0]["tool_name"] == "automata-indexer-retrieve-code"
     assert (
-        result[0]["input"][0]
+        result[0]["tool_args"][0]
         == "Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings."
     )
 
-    assert result[1]["tool"] == "return_result_0"
-    assert result[1]["input"][0] == "Function 'run' has been added to core.tests.sample_code.test."
+    assert result[1]["tool_name"] == "return_result_0"
+    assert (
+        result[1]["tool_args"][0]
+        == "Function 'run' has been added to core.tests.sample_code.test."
+    )
 
 
 def test_extract_actions_tools_and_with_return_processed(automata_agent):
@@ -312,9 +323,9 @@ def test_extract_actions_tools_and_with_return_processed(automata_agent):
             - Having successfully written the output file, I can now return the result.
         - actions
             - tool_query_0
-                - tool
+                - tool_name
                     - automata-indexer-retrieve-code
-                - inputs
+                - tool_args
                     - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
 
             - return_result_0
@@ -339,9 +350,9 @@ def test_iter_task_core_logic(automata_agent):
             - Having successfully written the output file, I can now return the result.
         - actions
             - tool_query_0
-                - tool
+                - tool_name
                     - automata-indexer-retrieve-code
-                - inputs
+                - tool_args
                     - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
 
             - return_result_0
@@ -351,7 +362,7 @@ def test_iter_task_core_logic(automata_agent):
     observations = automata_agent._generate_observations(text)
     is_return_result = automata_agent._retrieve_completion_message(observations)
 
-    user_observation_message = AutomataAgent._generate_user_observation_message(observations)
+    user_observation_message = _generate_user_observation_message(observations)
     assert is_return_result
     expected_observations = textwrap.dedent(
         """-  observations
