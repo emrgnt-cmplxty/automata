@@ -12,7 +12,16 @@ current_file_dir = os.path.dirname(os.path.realpath(__file__))
 MODEL = "gpt-4"
 TEMPERATURE = 0.7
 EXPECTED_RESPONSES = {
-    "test_retrieve_load_yaml_docs": "Loads a YAML file.",
+    "test_retrieve_load_yaml_docs": textwrap.dedent(
+        """Loads a YAML config file.
+
+Args:
+    file_path (str): The path to the YAML file.
+
+Returns:
+    Any: The content of the YAML file as a Python object.
+"""
+    ),
     "test_retrieve_python_writer_docs": textwrap.dedent(
         """A utility class for working with Python AST nodes.
 

@@ -56,7 +56,7 @@ def test_write_simple_function(automata_params):
     agent = build_agent_with_params(
         automata_params,
         f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
-        AgentConfigVersion.AUTOMATA_WRITER_V2,
+        AgentConfigVersion.AUTOMATA_WRITER_PROD,
         max_iters=5,
         temperature=TEMPERATURE,
         model=MODEL,

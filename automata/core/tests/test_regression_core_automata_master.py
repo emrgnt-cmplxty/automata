@@ -62,7 +62,7 @@ def test_retrieve_run_and_write_out(automata_params):
     # )
     # agent.messages.extend(next_steps)
     agent.run()
-
+    print("messages", agent.messages)
     expected_content = EXPECTED_RESPONSES["test_retrieve_run_and_write_out"].strip()
 
     cleanup_and_check(expected_content, "test3.py")
