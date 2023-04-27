@@ -70,12 +70,13 @@ class PythonIndexerToolManager(BaseToolManager):
                 f"Then the correct tool input for the parser follows:\n"
                 f"  - tool_args\n"
                 f"    - my_file\n"
+                f"    - None\n"
                 f"    - my_function\n\n"
                 f"Suppose instead the file is located in a subdirectory called my_directory,"
                 f" then the correct tool input for the parser is:\n"
                 f"  - tool_args\n    - my_directory.my_file\n    - my_function\n\n"
                 f"Lastly, if the function is defined in a class, MyClass, then the correct tool input is:\n"
-                f"  - tool_args\n    - my_directory.my_file\n    - MyClass.my_function",
+                f"  - tool_args\n    - my_directory.my_file\n    - MyClass.my_function\n\n",
                 return_direct=True,
                 verbose=True,
             ),

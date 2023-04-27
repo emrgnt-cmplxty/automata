@@ -20,7 +20,6 @@ instruction_template: >
 
   **- Example pattern-**
 
-
     *Assistant*
       - thoughts
         - I will begin by initializing myself.
@@ -33,26 +32,30 @@ instruction_template: >
 
     *User*
       - observations
-        - task_0
+        - tool_output_0
+          - task_0
           - Please carry out the following instruction ...
 
     *Assistant*
       - thoughts
         - I can accomplish this by...
-      - tool_query_1
-        - ...
+      - actions
+        - tool_query_1
+          - ...
 
     *User*
       - observations
+        - tool_output_1
+          - ...
         - ...
 
     *Assistant*
       - actions
         - return_result_0
-          - The output is ...
+          - The output is {tool_output_1}  ...
 
 
-  Note, as soon as possible, return the result for the ith task in an markdown object with tag "return_result_i".
+  Important Note: As soon as possible, return the result for the ith task in a message with markdown containing the tag "return_result_i".
 
   An overview of the available python modules, and their internal functions and classes follows below.
 
@@ -65,9 +68,13 @@ instruction_template: >
 
   **- Example 1 -**
 
+    ...
+
     *User*
-      - task_0
-        - Retrieve the docstrings for the PythonIndexer class, and code and docstrings for it's retrieve_code method.
+      - observations
+        - tool_output_0
+          - task_0
+          - Retrieve the docstrings for the PythonIndexer class, and code and docstrings for it's retrieve_code method.
 
     *Assistant*
       - thoughts
@@ -120,14 +127,18 @@ instruction_template: >
         - I can now return the requested information.
       - actions
         - return_result_0
-          - This module provides a Python Abstract Syntax Tree (AST)...
+          - The docstrings for the PythonIndexer class are {tool_output_1} and the code and docstrings for it's retrieve_code method are {tool_output_2} and {tool_output_3}, respectively.
 
 
   **- Example 2 -**
+
     ...
+
     *User*
-      - task_0
-        - Retrieve the source code for the docstring_cleanup script
+      - observations
+        - tool_output_0
+          - task_0
+          - Retrieve the source code for the docstring_cleanup script
 
     *Assistant*
       - thoughts
@@ -153,20 +164,19 @@ instruction_template: >
       - thoughts
         - I can now return the requested information.
       - actions
-        - return_result
-          - python
-            ```
-            import argparse
-            import logging
-            ...[CONTINUE CODE HERE]...
-            ```
+        - return_result_0
+          - {tool_output_0}
 
 
   **- Example 3 -**
+
     ...
+
     *User*
-      - task_0
-        - Examine the docstring_cleanup script, note how it is broken, and fetch the relevant information to fix the script. Then, write these changes to disk.
+      - observations
+        - tool_output_0
+          - task_0
+          - Examine the docstring_cleanup script, note how it is broken, and fetch the relevant information to fix the script. Then, write these changes to disk.
 
     *Assistant*
       - thoughts 
@@ -188,19 +198,20 @@ instruction_template: >
       - thoughts
         - I can now return the requested information.
       - actions
-        - return_result
-          - AutomataAgent is imported in the following files: 1. tools.tool_management.automata_agent_tool_manager.py, 2. scripts.main_automata.py, 3. agents.automata_agent.py
+        - return_result_0
+          - {tool_output_1}
 
   After receiving your instructions, execute the appropriate tools to gather necessary information.
-  Then, AS SOON AS you have sufficient information to complete your task, RETURN THE FULL RESULT in the
-  markdown format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle.
-  Lastly, when returning code, be sure to format it as shown:
+  Then, AS SOON AS you have sufficient information to complete your task, return the result in the
+  markdown format specified above.
+
+  If you are returning verbatim output from the ith tool call, YOU MUST use the following format:
   - return_result_0
-    - python
-      ```
-      import argparse
-      import logging
-      ...[CONTINUE CODE HERE]...
-      ```
+    - {tool_output_i}
+
+  A post-processor will then extract the i-th tool input and place it into this spot. This is done to
+  ensure that no error occurs the transcription process.
+
+  Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
 
 template_format: "f-string"

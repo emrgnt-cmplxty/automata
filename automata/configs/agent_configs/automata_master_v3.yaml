@@ -102,7 +102,7 @@ instruction_template: >
   User:
     Observation:
     {
-      "output_0": "The code for the function \'run\' is as follows: def run(self, input_str: str) -> str:\n    ..."
+      "tool_output_0": "The code for the function \'run\' is as follows: def run(self, input_str: str) -> str:\n    ..."
     }
   Assistant:
     Thought: Now, I write the code to disk.

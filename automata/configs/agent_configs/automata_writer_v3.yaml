@@ -79,7 +79,7 @@ instruction_template: >
     
   User:
     <observation>
-      <output_0>Success</output_0>
+      <tool_output_0>Success</tool_output_0>
     </observation>
 
   Assistant:
@@ -103,7 +103,7 @@ instruction_template: >
 
   User:
     <observation>
-      <output_0>Success</output_0>
+      <tool_output_0>Success</tool_output_0>
     </observation>
 
   Assistant:

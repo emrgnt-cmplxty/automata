@@ -172,7 +172,7 @@ def test_extract_actions_5(automata_agent):
     )
     processed_input = automata_agent._generate_observations(text)
     assert (
-        processed_input["output_0"]
+        processed_input["tool_output_0"]
         == """Error: Tool 'automata-indexer-retrieve-code' not found."""
     )
     assert (
@@ -204,7 +204,7 @@ def test_extract_actions_6(automata_agent):
     assert is_return_result
     expected_observations = textwrap.dedent(
         """-  observations
-    - output_0
+    - tool_output_0
       - Error: Tool 'automata-indexer-retrieve-code' not found.
     - return_result_0
       - Function 'run' has been added to core.tests.sample_code.test.

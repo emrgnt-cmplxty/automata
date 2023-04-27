@@ -184,9 +184,6 @@ class PythonIndexer:
             for node in module.body:
                 if isinstance(node, ClassDef):
                     result += " " * LINE_SPACING + " - " + node.name + "\n"
-                    # for subnode in node.body:
-                    #     if isinstance(subnode, FunctionDef) or isinstance(subnode, AsyncFunctionDef):
-                    #         result += " " * 2 * LINE_SPACING + " -- " + subnode.name + "\n"
                 elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
                     result += " " * LINE_SPACING + " - " + node.name + "\n"
 

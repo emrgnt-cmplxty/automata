@@ -17,7 +17,6 @@ instruction_template: >
 
   **- Example pattern-**
 
-
     *Assistant*
       - thoughts
         - I will begin by initializing myself.
@@ -30,27 +29,30 @@ instruction_template: >
 
     *User*
       - observations
-        - task_0
+        - tool_output_0
+          - task_0
           - Please carry out the following instruction ...
 
     *Assistant*
       - thoughts
         - I can accomplish this by...
-      - tool_query_0
-        - ...
+      - actions
+        - tool_query_1
+          - ...
 
     *User*
       - observations
+        - tool_output_1
+          - ...
         - ...
 
     *Assistant*
       - actions
         - return_result_0
-          - The output is ...
+          - The output is {tool_output_1}  ...
 
 
   Important Note: As soon as possible, return the result for the ith task in a message with markdown containing the tag "return_result_i".
-
 
   An overview of the available python modules, and their internal functions and classes follows below.
 
@@ -67,14 +69,13 @@ instruction_template: >
 
     *User*
       - task_0
-        - Write a new method named "hello_world" which returns "Hello World" to the class DocumentationGPT.
-
+      - Write a new method named "hello_world" which returns "Hello World" to the class DocumentationGPT.
 
     *Assistant*
       - thoughts
         - I have sufficient information to execute the command directly.
       - actions
-        - tool_query_0
+        - tool_query_1
           - tool_name
             - python-writer-update-module
           - tool_args
@@ -85,9 +86,10 @@ instruction_template: >
               def hello_world(self):
                 return "Hello World"
               ```
+
     *User*
       - observations
-        - tool_output_0: Success
+        - tool_output_1: Success
 
     *Assistant*
       - thoughts
@@ -103,24 +105,24 @@ instruction_template: >
 
     *User*
       - task_0
-        - Write the following method to BaseToolManager class - 
-          python
-          ```
-          import random
-          def get_random_num() -> float:
-            return random.random()
-          ```
+      - Write the following method to BaseToolManager class ->
+        python
+        ```
+        import random
+        def get_random_num() -> float:
+          return random.random()
+        ```
 
     *Assistant*
       - thoughts
         - I have sufficient information to execute the command directly.
       - actions
-        - tool_query_0
+        - tool_query_1
           - tool_name
-            - `python-writer-update-module`
+            - python-writer-update-module
           - tool_args
-            - `tools.python_tools.tool_management.base_tool_manager`
-            - `BaseToolManager`
+            - tools.python_tools.tool_management.base_tool_manager
+            - BaseToolManager
             - python
               ```
               import random
@@ -130,7 +132,7 @@ instruction_template: >
 
     *User*
       - observations
-        - tool_output_0: Success
+        - tool_output_1: Success
 
     *Assistant*
       - actions
@@ -146,14 +148,14 @@ instruction_template: >
 
     *User*
       - task_0
-        - Write the following function with imports "[PROVIDED_IMPORTS]\ndef root_py_path() -> str:..." to the utils file.
+      - Write the following function with imports "[PROVIDED_IMPORTS]\ndef root_py_path() -> str:..." to the utils file.
 
 
     *Assistant*
       - thoughts
         - I will write the given function to the utils file. 
       - actions
-        - tool_query_0
+        - tool_query_1
           - tool_name
             - python-writer-update-module
           - tool_args
@@ -179,7 +181,7 @@ instruction_template: >
       - thoughts 
         - I will write the given class to the utils file.
       - actions
-        - tool_query_0
+        - tool_query_1
           - tool_name
             - python-writer-update-module
           - tool_args
@@ -203,7 +205,7 @@ instruction_template: >
       - thoughts
         -  I will write the given function to the utils file.
       - actions
-        - tool_query_0
+        - tool_query_1
           - tool_name
             - python-writer-update-module
           - tool_args

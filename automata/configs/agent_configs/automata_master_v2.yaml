@@ -50,7 +50,7 @@ instruction_template: >
   User:
     Observation:
       {
-        "output_0": "task_0 Successfully Completed."
+        "tool_output_0": "task_0 Successfully Completed."
       }'
 
   Note, as soon as possible, return the result for the ith task in a JSON object denoted "result_i".
@@ -124,7 +124,7 @@ instruction_template: >
   User:
     Observation:
     {
-      "output_0": "_automata_indexer_retrieve_code has been updated."
+      "tool_output_0": "_automata_indexer_retrieve_code has been updated."
     }
   Assistant:
     Thought: The task is completed.
@@ -147,7 +147,7 @@ instruction_template: >
   User:
     Observation:
       {
-        "output_0": "To initialize a `AutomataAgent` object, you can refer to the example in the `main_automata.py` script. Here's a simplified version:\n\n```python\nfrom....."
+        "tool_output_0": "To initialize a `AutomataAgent` object, you can refer to the example in the `main_automata.py` script. Here's a simplified version:\n\n```python\nfrom....."
       }
   Assistant:
     Thought: Now I can investigate the documentation tool workflow, now I am ready to write the code and save it to disk.
@@ -159,7 +159,7 @@ instruction_template: >
   User:
     Observation:
       {
-        "output_0": "The documentation tool workflow works as follows: ...."
+        "tool_output_0": "The documentation tool workflow works as follows: ...."
       }
   Assistant:
     Thought: I now have sufficient information to write the code and save it to disk

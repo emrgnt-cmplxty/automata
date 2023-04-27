@@ -67,6 +67,7 @@ def mock_openai_response_with_completion_message():
                         - thoughts
                           - I can now return the requested information.
                         - actions
+                          
                           - return_result_0
                             - AutomataAgent is imported in the following files: 1. tools.tool_management.automata_agent_tool_manager.py, 2. scripts.main_automata.py, 3. agents.automata_agent.py
                         """
@@ -97,3 +98,41 @@ def test_iter_task_with_completion_message(
     # Check if the completion message is stored correctly
     completion_message = automata_agent.messages[-1]["content"]
     assert "AutomataAgent is imported in the following files:" in completion_message
+
+
+def mock_openai_response_with_completion_message_to_parse():
+    return {
+        "choices": [
+            {
+                "message": {
+                    "content": textwrap.dedent(
+                        """
+                        - thoughts
+                          - I can now return the requested information.
+                        - actions
+                          
+                          - return_result_0
+                            - {tool_output_0}
+                        """
+                    )
+                }
+            }
+        ]
+    }
+
+
+@pytest.mark.parametrize("api_response", [mock_openai_response_with_completion_message_to_parse()])
+@patch("openai.ChatCompletion.create")
+def test_iter_task_with_parsed_completion_message(
+    mock_openai_chatcompletion_create, api_response, automata_agent
+):
+    # Mock the API response
+    mock_openai_chatcompletion_create.return_value = api_response
+    automata_agent.iter_task()
+    completion_message = automata_agent.messages[-1]["content"]
+    stripped_completion_message = [ele.strip() for ele in completion_message.split("\n")]
+    assert stripped_completion_message[0] == "task_0"
+    assert (
+        stripped_completion_message[1]
+        == "- Please carry out the following instruction Test instruction.."
+    )

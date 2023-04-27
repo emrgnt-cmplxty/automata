@@ -6,8 +6,10 @@ def generate_user_observation_message(observations: Dict[str, str]) -> str:
     """Generate a message for the user based on the observations."""
     message = f"{ActionExtractor.ACTION_INDICATOR} observations\n"
     for observation_name in observations.keys():
-        message += f"    - {observation_name}" + "\n"
-        message += f"      - {observations[observation_name]}" + "\n"
+        message += f"    {ActionExtractor.ACTION_INDICATOR}{observation_name}" + "\n"
+        message += (
+            f"      {ActionExtractor.ACTION_INDICATOR}{observations[observation_name]}" + "\n"
+        )
     return message
 
 
@@ -20,7 +22,10 @@ def retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[st
 
 
 class AutomataAction(TypedDict):
+    """A dictionary containing an action and its inputs."""
+
     tool_name: str
+    tool_query: str
     tool_args: List[str]
 
 
@@ -32,8 +37,11 @@ class ActionExtractor:
     TOOL_INDICATOR: Final = "tool_query"
     TOOL_NAME_FIELD: Final = "tool_name"
     TOOL_ARGS_FIELD: Final = "tool_args"
+    TOOL_QUERY_FIELD: Final = "tool_query"
     RETURN_RESULT_INDICATOR: Final = "return_result"
     EXPECTED_CODING_LANGUAGES: Final = ["python"]
+
+    TOOL_SPEC_LINES: Final = 3
 
     @classmethod
     def extract_actions(cls, text: str) -> List[AutomataAction]:
@@ -59,8 +67,14 @@ class ActionExtractor:
                 skip_lines -= 1
                 continue
             if cls._is_new_tool_action(lines, index):
-                action = cls._process_new_tool_action(lines[index + 2], action, actions)
-                skip_lines = 3
+                if len(lines) <= index + cls.TOOL_SPEC_LINES - 1:
+                    raise ValueError(f"Invalid action format: {line}")
+                tool_query_line = lines[index]
+                tool_name_line = lines[index + 2]
+                action = cls._process_new_tool_action(
+                    tool_query_line, tool_name_line, action, actions
+                )
+                skip_lines = cls.TOOL_SPEC_LINES
             elif cls._is_return_result_action(line):
                 action = cls._process_new_return_result_action(line, action, actions)
             else:
@@ -85,13 +99,17 @@ class ActionExtractor:
 
     @staticmethod
     def _process_new_tool_action(
-        line: str, action: Optional[AutomataAction], actions: List[AutomataAction]
+        tool_query_line: str,
+        tool_name_line: str,
+        action: Optional[AutomataAction],
+        actions: List[AutomataAction],
     ):
         """Process a new action."""
         if action is not None:
             actions.append(action)
-        tool_name = line.split(ActionExtractor.ACTION_INDICATOR)[1].strip()
-        return AutomataAction(tool_name=tool_name, tool_args=[])
+        tool_query = tool_query_line.split(ActionExtractor.ACTION_INDICATOR)[1].strip()
+        tool_name = tool_name_line.split(ActionExtractor.ACTION_INDICATOR)[1].strip()
+        return AutomataAction(tool_name=tool_name, tool_query=tool_query, tool_args=[])
 
     @staticmethod
     def _is_return_result_action(line: str) -> bool:
@@ -112,6 +130,7 @@ class ActionExtractor:
             .split(ActionExtractor.ACTION_INDICATOR)[0]
             .strip(),
             ActionExtractor.TOOL_ARGS_FIELD: [],
+            ActionExtractor.TOOL_QUERY_FIELD: "",
         }
 
     @staticmethod

@@ -1,6 +1,5 @@
 """This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
 choose a work item to work on, and remove HTML tags from text."""
-
 import logging
 import os
 from typing import Any, List
@@ -102,15 +101,15 @@ def run_retrieval_chain_with_sources_format(
 
 
 def calculate_similarity(content_a: str, content_b: str) -> float:
-    """Checks the similarity between two pieces of text using OpenAI Embeddings."""
     resp = openai.Embedding.create(
         input=[content_a, content_b], engine="text-similarity-davinci-001"
     )
-
     embedding_a = resp["data"][0]["embedding"]
     embedding_b = resp["data"][1]["embedding"]
-
-    return np.dot(embedding_a, embedding_b)
+    dot_product = np.dot(embedding_a, embedding_b)
+    magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
+    magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
+    return dot_product / (magnitude_a * magnitude_b)
 
 
 class NumberedLinesTextLoader(TextLoader):

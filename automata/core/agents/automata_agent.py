@@ -30,6 +30,7 @@
         TODO - Think about how to introduce the starting instructions to configs
 """
 import logging
+import re
 import sqlite3
 import textwrap
 import uuid
@@ -147,15 +148,22 @@ class AutomataAgent:
 
         responses: List[Dict[str, str]] = []
         responses.append(assistant_message)
-        self._save_interaction(assistant_message)
 
         observations = self._generate_observations(response_text)
         completion_message = retrieve_completion_message(observations)
 
         if completion_message:
             self.completed = True
-            self._save_interaction({"role": "assistant", "content": completion_message})
+            self._save_interaction(
+                {
+                    "role": "assistant",
+                    "content": self._parse_completion_message(completion_message),
+                }
+            )
             return None
+
+        self._save_interaction(assistant_message)
+
         if len(observations) > 0:
             user_observation_message = generate_user_observation_message(observations)
             user_message = {"role": "user", "content": user_observation_message}
@@ -224,7 +232,8 @@ class AutomataAgent:
                     "content": textwrap.dedent(
                         f"""
                         - observation:
-                          - task_0                            
+                          - tool_output_0
+                            - task_0                            
                             - Please carry out the following instruction {self.instructions}.
                         """
                     ),
@@ -253,12 +262,15 @@ class AutomataAgent:
         outputs = {}
         (result_counter, tool_counter) = (0, 0)
         for action_request in actions:
-            (tool_name, tool_input) = (
+            (tool_query, tool_name, tool_input) = (
+                action_request[ActionExtractor.TOOL_QUERY_FIELD],
                 action_request[ActionExtractor.TOOL_NAME_FIELD],
-                action_request[ActionExtractor.TOOL_ARGS_FIELD] or "",
+                action_request[ActionExtractor.TOOL_ARGS_FIELD],
             )
+            # Skip the initializer dummy tool which exists only for providing context
             if tool_name == AutomataAgent.INITIALIZER_DUMMY_TOOL:
                 continue
+            # Skip the return result indicator which exists only for marking the return result
             if ActionExtractor.RETURN_RESULT_INDICATOR in tool_name:
                 outputs[
                     "%s_%i" % (ActionExtractor.RETURN_RESULT_INDICATOR, result_counter)
@@ -266,29 +278,34 @@ class AutomataAgent:
                 result_counter += 1
                 continue
             if tool_name == AutomataAgent.ERROR_DUMMY_TOOL:
-                tool_output = tool_input
-                outputs["%s_%i" % ("output", tool_counter)] = cast(str, tool_output)
+                # Input becomes the output when an error is registered
+                outputs[tool_query.replace("query", "output")] = cast(str, tool_input)
                 tool_counter += 1
             else:
-                tool_found = False
-                for toolkit in self.llm_toolkits.values():
-                    for tool in toolkit.tools:
-                        if tool.name == tool_name:
-                            processed_tool_input = [
-                                ele if ele != "None" else None for ele in tool_input
-                            ]
-                            tool_output = tool.run(tuple(processed_tool_input), verbose=False)
-                            outputs["%s_%i" % ("output", tool_counter)] = cast(str, tool_output)
-                            tool_counter += 1
-                            tool_found = True
-                            break
-                    if tool_found:
-                        break
-                if not tool_found:
-                    error_message = f"Error: Tool '{tool_name}' not found."
-                    outputs["%s_%i" % ("output", tool_counter)] = error_message
-                    tool_counter += 1
+                tool_output = self._execute_tool(tool_name, tool_input)
+                outputs[tool_query.replace("query", "output")] = tool_output
+                tool_counter += 1
         return outputs
+
+    def _execute_tool(self, tool_name: str, tool_input: List[str]) -> str:
+        tool_found = False
+        tool_output = None
+
+        for toolkit in self.llm_toolkits.values():
+            for tool in toolkit.tools:
+                if tool.name == tool_name:
+                    processed_tool_input = [ele if ele != "None" else None for ele in tool_input]
+                    tool_output = tool.run(tuple(processed_tool_input), verbose=False)
+                    tool_found = True
+                    break
+            if tool_found:
+                break
+
+        if not tool_found:
+            error_message = f"Error: Tool '{tool_name}' not found."
+            return error_message
+
+        return cast(str, tool_output)
 
     def _init_database(self):
         """Initialize the database connection."""
@@ -330,3 +347,18 @@ class AutomataAgent:
                 for tool in toolkit.tools
             ]
         )
+
+    def _parse_completion_message(self, completion_message: str) -> str:
+        """Parse the completion message and replace the tool outputs."""
+        tool_outputs = {}
+        for message in self.messages:
+            pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
+            matches = re.finditer(pattern, message["content"], re.DOTALL)
+            for match in matches:
+                tool_name, tool_output = match.group(1), match.group(2).strip()
+                tool_outputs[tool_name] = tool_output
+        for tool_name in tool_outputs:
+            completion_message = completion_message.replace(
+                f"{{{tool_name}}}", tool_outputs[tool_name]
+            )
+        return completion_message

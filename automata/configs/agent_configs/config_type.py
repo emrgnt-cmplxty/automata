@@ -15,12 +15,14 @@ class AutomataConfigVersion(Enum):
     AUTOMATA_INDEXER_V3 = "automata_indexer_v3"
     AUTOMATA_INDEXER_V4 = "automata_indexer_v4"
     AUTOMATA_INDEXER_V5 = "automata_indexer_v5"
+    AUTOMATA_INDEXER_V6 = "automata_indexer_v6"
 
     AUTOMATA_WRITER_V1 = "automata_writer_v1"
     AUTOMATA_WRITER_V2 = "automata_writer_v2"
     AUTOMATA_WRITER_V3 = "automata_writer_v3"
     AUTOMATA_WRITER_V4 = "automata_writer_v4"
     AUTOMATA_WRITER_V5 = "automata_writer_v5"
+    AUTOMATA_WRITER_V6 = "automata_writer_v6"
 
     AUTOMATA_MASTER_V1 = "automata_master_v1"
     AUTOMATA_MASTER_V2 = "automata_master_v2"
@@ -31,8 +33,8 @@ class AutomataConfigVersion(Enum):
 
     AUTOMATA_DOCSTRING_MANAGER_V1 = "automata_docstring_manager_v1"
 
-    AUTOMATA_INDEXER_PROD = AUTOMATA_INDEXER_V5
-    AUTOMATA_WRITER_PROD = AUTOMATA_WRITER_V5
+    AUTOMATA_INDEXER_PROD = AUTOMATA_INDEXER_V6
+    AUTOMATA_WRITER_PROD = AUTOMATA_WRITER_V6
     AUTOMATA_MASTER_PROD = AUTOMATA_MASTER_V6
 
 
