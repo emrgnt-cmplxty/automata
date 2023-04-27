@@ -7,7 +7,7 @@
 
         llm_toolkits = build_llm_toolkits(tools_list, **inputs)
 
-        config_version = AutomataConfigVersion.AUTOMATA_MASTER_PROD
+        config_version = AgentConfigVersion.AUTOMATA_MASTER_PROD
         agent_config = AutomataAgentConfig.load(config_version)
         agent = (AutomataAgentBuilder(agent_config)
             .with_llm_toolkits(llm_toolkits)
@@ -32,7 +32,6 @@
 import logging
 import re
 import sqlite3
-import textwrap
 import uuid
 from typing import Dict, Final, List, Optional, Tuple, cast
 
@@ -41,12 +40,17 @@ from termcolor import colored
 from transformers import GPT2Tokenizer
 
 from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
-from automata.configs.agent_configs.config_type import AutomataAgentConfig
+from automata.configs.config_types import (
+    AutomataAgentConfig,
+    ConfigCategory,
+    InstructionConfigVersion,
+)
 from automata.core.agents.automata_agent_helpers import (
     ActionExtractor,
     generate_user_observation_message,
     retrieve_completion_message,
 )
+from automata.core.utils import format_config, load_yaml_config
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +83,7 @@ class AutomataAgent:
         self.llm_toolkits = config.llm_toolkits
         self.instructions = config.instructions
         self.config_version = config.config_version
-        self.instruction_template = config.instruction_template
+        self.system_instruction_template = config.system_instruction_template
         self.instruction_input_variables = config.instruction_input_variables
         self.model = config.model
         self.stream = config.stream
@@ -204,56 +208,24 @@ class AutomataAgent:
         if "tools" in self.instruction_input_variables:
             self.initial_payload["tools"] = self._build_tool_message()
 
-        prompt = self._load_prompt()
+        system_instruction = format_config(self.initial_payload, self.system_instruction_template)
         self._init_database()
         if self.session_id:
             self._load_previous_interactions()
         else:
             self.session_id = str(uuid.uuid4())
-            self._save_interaction({"role": "system", "content": prompt})
-            initial_messages = [
-                {
-                    "role": "assistant",
-                    "content": textwrap.dedent(
-                        """
-                        - thoughts
-                          - I will begin by initializing myself.
-                            - actions
-                              - tool_query_0
-                                - tool_name
-                                  - {AutomataAgent.INITIALIZER_DUMMY_TOOL}
-                                - tool_args
-                                  - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
-                        """
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": textwrap.dedent(
-                        f"""
-                        - observation:
-                          - tool_output_0
-                            - task_0                            
-                            - Please carry out the following instruction {self.instructions}.
-                        """
-                    ),
-                },
-            ]
+            self._save_interaction({"role": "system", "content": system_instruction})
+            initial_messages = self._build_initial_messages(
+                {"user_input_instructions": self.instructions}
+            )
             for message in initial_messages:
                 self._save_interaction(message)
-        logger.debug("Initializing with Prompt:%s\n" % prompt)
+        logger.debug("Initializing with System Instruction:%s\n" % system_instruction)
         logger.debug("-" * 60)
         if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
         logger.debug("Session ID: %s" % self.session_id)
         logger.debug("-" * 60)
-
-    def _load_prompt(self) -> str:
-        """Load the prompt from a config_version specified at initialization."""
-        prompt = self.instruction_template
-        for arg in self.instruction_input_variables:
-            prompt = prompt.replace(f"{{{arg}}}", self.initial_payload[arg])
-        return prompt
 
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
         """Process the messages in the conversation."""
@@ -362,3 +334,20 @@ class AutomataAgent:
                 f"{{{tool_name}}}", tool_outputs[tool_name]
             )
         return completion_message
+
+    def _build_initial_messages(self, formatters: Dict[str, str]) -> List[Dict[str, str]]:
+        assert "user_input_instructions" in formatters
+        formatters["initializer_dummy_tool"] = AutomataAgent.INITIALIZER_DUMMY_TOOL
+
+        messages_config = load_yaml_config(
+            ConfigCategory.INSTRUCTION.value,
+            InstructionConfigVersion.AGENT_INTRODUCTION_PROD.value,
+        )
+        initial_messages = messages_config["initial_messages"]
+
+        input_messages = []
+        for message in initial_messages:
+            input_message = format_config(formatters, message["content"])
+            input_messages.append({"role": message["role"], "content": input_message})
+
+        return input_messages

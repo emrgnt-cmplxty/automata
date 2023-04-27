@@ -21,6 +21,17 @@ def test_build_tool_message(automata_agent_builder):
     assert "codebase-oracle-agent" in messages
 
 
+def test_build_initial_messages(automata_agent):
+    formatters = {
+        "user_input_instructions": "DUMMY_INSTRUCTIONS",
+    }
+    initial_messages = automata_agent._build_initial_messages(formatters)
+    assert AutomataAgent.INITIALIZER_DUMMY_TOOL in initial_messages[0]["content"]
+    assert "assistant" == initial_messages[0]["role"]
+    assert "DUMMY_INSTRUCTIONS" in initial_messages[1]["content"]
+    assert "user" == initial_messages[1]["role"]
+
+
 def test_init_database(automata_agent):
     automata_agent._init_database()
     assert automata_agent.conn is not None

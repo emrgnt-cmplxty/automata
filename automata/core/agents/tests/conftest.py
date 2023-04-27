@@ -1,6 +1,6 @@
 import pytest
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
@@ -14,7 +14,7 @@ def automata_agent():
 
     instructions = "Test instruction."
 
-    config_version = AutomataConfigVersion.DEFAULT
+    config_version = AgentConfigVersion.DEFAULT
     agent_config = AutomataAgentConfig.load(config_version)
 
     agent = (
@@ -29,7 +29,7 @@ def automata_agent():
 
 @pytest.fixture
 def automata_agent_builder():
-    config_version = AutomataConfigVersion.DEFAULT
+    config_version = AgentConfigVersion.DEFAULT
     agent_config = AutomataAgentConfig.load(config_version)
     agent_builder = AutomataAgentBuilder(agent_config)
     return agent_builder

@@ -2,7 +2,7 @@ import importlib
 import logging
 from typing import Dict, List, Optional
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig
+from automata.configs.config_types import AutomataAgentConfig
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.utils import root_py_path
 from automata.tool_management.base_tool_manager import BaseToolManager

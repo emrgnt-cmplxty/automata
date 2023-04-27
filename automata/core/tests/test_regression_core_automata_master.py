@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from automata.configs.agent_configs.config_type import AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion
 
 from .conftest import build_agent_with_params, cleanup_and_check
 
@@ -46,7 +46,7 @@ def test_retrieve_run_and_write_out(automata_params):
         automata_params,
         f'1. Retrieve the raw code (code + docstrings) for the function "run" from the automata agent.\n'
         f"2. NEXT, write the full raw code into the file core.tests.sample_code.test3",
-        AutomataConfigVersion.AUTOMATA_MASTER_PROD,
+        AgentConfigVersion.AUTOMATA_MASTER_PROD,
         max_iters=5,
     )
 
