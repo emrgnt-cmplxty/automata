@@ -159,7 +159,9 @@ class ActionExtractor:
             elif not ActionExtractor._is_code_indicator(line) and is_code:
                 inputs[-1] += line + "\n"
             elif ActionExtractor._is_code_end(line) and (not is_code):
-                raise ValueError(f"Invalid action format: {line}")
+                count = line.count("`")
+                if count != 6:
+                    raise ValueError(f"Invalid action format: {line}")
             elif ActionExtractor._is_code_end(line) and is_code:
                 is_code = False
                 inputs[-1] = textwrap.dedent(action[ActionExtractor.TOOL_ARGS_FIELD][-1])

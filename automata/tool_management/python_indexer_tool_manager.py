@@ -15,7 +15,6 @@ Example usage:
     python_parser_tool_builder = PythonIndexerToolManager(python_parser)
     tools = python_parser_tool_builder.build_tools()
 
-TODO - Do not put codebase-oracle in this workflow, that is a bad hack.
 """
 import logging
 from typing import Any, List, Optional, Tuple
