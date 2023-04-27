@@ -87,7 +87,7 @@ instruction_template: >
               ```
     *User*
       - observations
-        - output_0: Success
+        - tool_output_0: Success
 
     *Assistant*
       - thoughts
@@ -130,7 +130,7 @@ instruction_template: >
 
     *User*
       - observations
-        - output_0: Success
+        - tool_output_0: Success
 
     *Assistant*
       - actions

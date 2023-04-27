@@ -44,7 +44,7 @@ instruction_template: >
   User:
     Observation:
       {
-        "output_0": "task_0 Successfully Completed."
+        "tool_output_0": "task_0 Successfully Completed."
       }
 
 
@@ -68,7 +68,7 @@ instruction_template: >
   User:
     Observation:
     {
-      "output_0": "Success"
+      "tool_output_0": "Success"
     }
     Assistant:
     Thought: I completed the task.
@@ -88,7 +88,7 @@ instruction_template: >
   User:
     Observation:
     {
-      "output_0": "Success"
+      "tool_output_0": "Success"
     }
     Assistant:
     Thought: I completed the task.

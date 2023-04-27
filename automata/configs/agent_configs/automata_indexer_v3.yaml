@@ -84,7 +84,7 @@ instruction_template: >
 
   User:
     <observation>
-      <output_0>This module provides a Python Abstract Syntax Tree (AST)...</output_0>
+      <tool_output_0>This module provides a Python Abstract Syntax Tree (AST)...</tool_output_0>
       ...
     </observation>
 
@@ -109,7 +109,7 @@ instruction_template: >
 
   User:
     <observation>
-      <output_0>import argparse\nimport logging...</output_0>
+      <tool_output_0>import argparse\nimport logging...</tool_output_0>
     </observation>
 
   Assistant:
@@ -134,7 +134,7 @@ instruction_template: >
 
   User:
     <observation>
-      <output_0>AutomataAgent is imported in the following files:\n1. tools.tool_management.automata_agent_tool_manager.py\n2. scripts.main_automata.py\n3. agents.automata_agent.py</output_0>
+      <tool_output_0>AutomataAgent is imported in the following files:\n1. tools.tool_management.automata_agent_tool_manager.py\n2. scripts.main_automata.py\n3. agents.automata_agent.py</tool_output_0>
     </observation>
 
   Assistant:

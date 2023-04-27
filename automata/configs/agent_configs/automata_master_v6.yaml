@@ -141,7 +141,7 @@ instruction_template: >
 
     *User*
       - observations
-        - output_0
+        - tool_output_0
           - The code for the function 'run' is as follows: 
             ```
             def run(self, input_str: str) -> str:
