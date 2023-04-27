@@ -4,7 +4,7 @@ import logging.config
 import os
 from typing import Optional
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
@@ -40,7 +40,7 @@ def update_docstrings():
                 raw_code = file.read()
             logger.info("Initial Code:\n%s" % (raw_code))
 
-            agent_config_version = AutomataConfigVersion(args.config_version)
+            agent_config_version = AgentConfigVersion(args.config_version)
             agent_config = AutomataAgentConfig.load(agent_config_version)
 
             agent = (

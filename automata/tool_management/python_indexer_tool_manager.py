@@ -19,7 +19,7 @@ Example usage:
 import logging
 from typing import Any, List, Optional, Tuple
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.tool_management.base_tool_manager import BaseToolManager
@@ -47,7 +47,7 @@ class PythonIndexerToolManager(BaseToolManager):
         """
         self.indexer: PythonIndexer = kwargs.get("python_indexer")
         self.automata_version = (
-            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_INDEXER_PROD
+            kwargs.get("automata_version") or AgentConfigVersion.AUTOMATA_INDEXER_PROD
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7

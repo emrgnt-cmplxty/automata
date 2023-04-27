@@ -5,7 +5,7 @@ from typing import Dict
 
 from termcolor import colored
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.utils import get_logging_config, root_py_path
@@ -23,7 +23,7 @@ def main():
     parser.add_argument(
         "--config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_MASTER_PROD.value,
+        default=AgentConfigVersion.AUTOMATA_MASTER_PROD.value,
         help="The config version of the agent.",
     )
     parser.add_argument(
@@ -56,13 +56,13 @@ def main():
     parser.add_argument(
         "--automata_indexer_config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_INDEXER_PROD.value,
+        default=AgentConfigVersion.AUTOMATA_INDEXER_PROD.value,
         help="Should the instruction prompt include an overview?",
     )
     parser.add_argument(
         "--automata_writer_config_version",
         type=str,
-        default=AutomataConfigVersion.AUTOMATA_WRITER_PROD.value,
+        default=AgentConfigVersion.AUTOMATA_WRITER_PROD.value,
         help="Should the instruction prompt include an overview?",
     )
 
@@ -92,10 +92,10 @@ def main():
         "documentation_url": args.documentation_url,
         "model": args.model,
         "automata_indexer_config": AutomataAgentConfig.load(
-            AutomataConfigVersion(args.automata_indexer_config_version)
+            AgentConfigVersion(args.automata_indexer_config_version)
         ),
         "automata_writer_config": AutomataAgentConfig.load(
-            AutomataConfigVersion(args.automata_writer_config_version)
+            AgentConfigVersion(args.automata_writer_config_version)
         ),
     }
     llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
@@ -113,7 +113,7 @@ def main():
     )
     logger.info("-" * 60)
 
-    agent_config_version = AutomataConfigVersion(AutomataConfigVersion(args.config_version))
+    agent_config_version = AgentConfigVersion(AgentConfigVersion(args.config_version))
     agent_config = AutomataAgentConfig.load(agent_config_version)
 
     agent = (

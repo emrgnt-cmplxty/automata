@@ -5,7 +5,7 @@ from functools import wraps
 
 import pytest
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig, AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import calculate_similarity, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
@@ -24,10 +24,10 @@ def automata_params(request):
         "model": model,
         "temperature": temperature,
         "automata_indexer_config": AutomataAgentConfig.load(
-            AutomataConfigVersion.AUTOMATA_INDEXER_PROD
+            AgentConfigVersion.AUTOMATA_INDEXER_PROD
         ),
         "automata_writer_config": AutomataAgentConfig.load(
-            AutomataConfigVersion.AUTOMATA_WRITER_PROD
+            AgentConfigVersion.AUTOMATA_WRITER_PROD
         ),
     }
     mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
@@ -41,7 +41,7 @@ def automata_params(request):
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    config_version: AutomataConfigVersion = AutomataConfigVersion.AUTOMATA_INDEXER_PROD,
+    config_version: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_PROD,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",

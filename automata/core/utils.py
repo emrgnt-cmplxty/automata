@@ -2,7 +2,7 @@
 choose a work item to work on, and remove HTML tags from text."""
 import logging
 import os
-from typing import Any, List
+from typing import Any, Dict, List
 
 import colorlog
 import numpy as np
@@ -13,18 +13,11 @@ from langchain.document_loaders import TextLoader
 from langchain.schema import Document
 
 
-def load_yaml(file_path: str) -> Any:
-    """
-    Loads a YAML file.
-
-    Args:
-        file_path (str): The path to the YAML file.
-
-    Returns:
-        Any: The content of the YAML file as a Python object.
-    """
-    with open(file_path, "r") as file:
-        return yaml.safe_load(file)
+def format_config(format_variables: Dict[str, str], input_text: str) -> str:
+    """Format expected strings into the config."""
+    for arg in format_variables:
+        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
+    return input_text
 
 
 def root_py_path() -> str:
@@ -38,6 +31,23 @@ def root_py_path() -> str:
     script_dir = os.path.dirname(os.path.realpath(__file__))
     data_folder = os.path.join(script_dir, "..")
     return data_folder
+
+
+def load_yaml_config(config_type: str, file_name: str) -> Any:
+    """
+    Loads a YAML config file.
+
+    Args:
+        file_path (str): The path to the YAML file.
+
+    Returns:
+        Any: The content of the YAML file as a Python object.
+    """
+    with open(
+        os.path.join(root_py_path(), "configs", config_type, f"{file_name}.yaml"),
+        "r",
+    ) as file:
+        return yaml.safe_load(file)
 
 
 def root_path() -> str:

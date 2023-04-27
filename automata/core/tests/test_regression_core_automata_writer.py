@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from automata.configs.agent_configs.config_type import AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion
 
 from .conftest import build_agent_with_params, cleanup_and_check
 
@@ -56,7 +56,7 @@ def test_write_simple_function(automata_params):
     agent = build_agent_with_params(
         automata_params,
         f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
-        AutomataConfigVersion.AUTOMATA_WRITER_V2,
+        AgentConfigVersion.AUTOMATA_WRITER_PROD,
         max_iters=5,
         temperature=TEMPERATURE,
         model=MODEL,
@@ -83,7 +83,7 @@ def test_advanced_writer_example(automata_params):
     agent = build_agent_with_params(
         automata_params,
         f"Write the following module - '{expected_content}' to the file core.tests.sample_code.test2",
-        AutomataConfigVersion.AUTOMATA_WRITER_PROD,
+        AgentConfigVersion.AUTOMATA_WRITER_PROD,
         max_iters=2,
         temperature=TEMPERATURE,
         model=MODEL,

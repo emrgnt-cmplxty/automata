@@ -16,7 +16,7 @@ Example -
 import logging
 from typing import Any, List, Optional
 
-from automata.configs.agent_configs.config_type import AutomataConfigVersion
+from automata.configs.config_types import AgentConfigVersion
 from automata.core.agents.automata_agent import AutomataAgentConfig
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
@@ -49,7 +49,7 @@ class PythonWriterToolManager(BaseToolManager):
         """
         self.writer: PythonWriter = kwargs.get("python_writer")
         self.automata_version = (
-            kwargs.get("automata_version") or AutomataConfigVersion.AUTOMATA_WRITER_PROD
+            kwargs.get("automata_version") or AgentConfigVersion.AUTOMATA_WRITER_PROD
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.verbose = kwargs.get("verbose") or False

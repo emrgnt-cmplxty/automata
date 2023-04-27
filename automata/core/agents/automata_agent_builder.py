@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from automata.configs.agent_configs.config_type import AutomataAgentConfig
+from automata.configs.config_types import AutomataAgentConfig
 from automata.core.base.tool import Toolkit, ToolkitType
 
 from .automata_agent import AutomataAgent
