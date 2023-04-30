@@ -45,4 +45,5 @@ To run the code, follow these steps:
 4. Upgrade to the latest pip by running `python3 -m pip install --upgrade pip`
 5. Install the project in editable mode by running `pip3 install -e .`
 6. Install pre-commit hooks by running `pre-commit install`
-7. Execute the main script by running `python -m automata.main`
+7. Build appropriate .env file
+8. Execute the main script by running `python -m automata.main_coordinator ...[INSERT ARGS]`
