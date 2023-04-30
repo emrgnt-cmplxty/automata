@@ -4,7 +4,8 @@ import logging.config
 import os
 from typing import Optional
 
-from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits

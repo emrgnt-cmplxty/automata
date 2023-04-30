@@ -5,7 +5,8 @@ from typing import Dict
 
 from termcolor import colored
 
-from automata.configs.config_types import AgentConfigVersion, AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.utils import get_logging_config, root_py_path

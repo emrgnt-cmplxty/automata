@@ -2,7 +2,7 @@ from typing import Dict, List, Optional, Type
 
 from pydantic import BaseModel
 
-from automata.configs.config_types import AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.core.agents.automata_agent import MasterAutomataAgent
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.agents.automata_agent_helpers import AgentAction

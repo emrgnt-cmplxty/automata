@@ -39,7 +39,9 @@ import openai
 from termcolor import colored
 
 from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
-from automata.configs.config_types import AutomataAgentConfig, ConfigCategory
+from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.config_enums import ConfigCategory
+
 from automata.core.agents.agent import Agent
 from automata.core.agents.automata_agent_helpers import (
     ActionExtractor,
