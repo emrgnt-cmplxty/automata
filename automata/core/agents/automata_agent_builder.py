@@ -2,7 +2,8 @@ from typing import Dict, Optional
 
 from pydantic import BaseModel, PrivateAttr
 
-from automata.configs.config_types import AutomataAgentConfig, InstructionConfigVersion
+from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.config_enums import InstructionConfigVersion
 from automata.core.base.tool import Toolkit, ToolkitType
 
 from .automata_agent import AutomataAgent

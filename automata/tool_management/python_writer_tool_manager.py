@@ -16,8 +16,8 @@ Example -
 import logging
 from typing import Any, List, Optional
 
-from automata.configs.config_types import AgentConfigVersion
-from automata.core.agents.automata_agent import AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.tools.python_tools.python_writer import PythonWriter

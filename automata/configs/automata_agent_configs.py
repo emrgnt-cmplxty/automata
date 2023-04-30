@@ -6,30 +6,7 @@ import yaml
 from pydantic import BaseModel
 
 from automata.core.base.tool import Toolkit, ToolkitType
-
-
-class ConfigCategory(Enum):
-    AGENT = "agent_configs"
-    INSTRUCTION = "instruction_configs"
-
-
-class InstructionConfigVersion(Enum):
-    AGENT_INTRODUCTION_DEV = "agent_introduction_dev"
-    AGENT_INTRODUCTION_PROD = "agent_introduction_prod"
-
-
-class AgentConfigVersion(Enum):
-    DEFAULT = "default"
-    TEST = "test"
-
-    AUTOMATA_INDEXER_DEV = "automata_indexer_dev"
-    AUTOMATA_WRITER_DEV = "automata_writer_dev"
-    AUTOMATA_MASTER_DEV = "automata_master_dev"
-
-    AUTOMATA_INDEXER_PROD = "automata_indexer_prod"
-    AUTOMATA_WRITER_PROD = "automata_writer_prod"
-    AUTOMATA_MASTER_PROD = "automata_master_prod"
-    AUTOMATA_DOCSTRING_MANAGER_PROD = "automata_docstring_manager_prod"
+from .config_enums import AgentConfigVersion, ConfigCategory, InstructionConfigVersion
 
 
 class AutomataAgentConfig(BaseModel):
@@ -71,11 +48,9 @@ class AutomataAgentConfig(BaseModel):
     instruction_version: str = InstructionConfigVersion.AGENT_INTRODUCTION_PROD.value
 
     @classmethod
-    def load(cls, config_version: AgentConfigVersion) -> "AutomataAgentConfig":
+    def load_yaml_config(cls, config_version: AgentConfigVersion) -> Dict:
         from automata.tool_management.tool_management_utils import build_llm_toolkits
 
-        if config_version == AgentConfigVersion.DEFAULT:
-            return AutomataAgentConfig()
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
         config_abs_path = os.path.join(
             file_dir_path, ConfigCategory.AGENT.value, f"{config_version.value}.yaml"
@@ -83,17 +58,29 @@ class AutomataAgentConfig(BaseModel):
 
         with open(config_abs_path, "r") as file:
             loaded_yaml = yaml.safe_load(file)
-            if "tools" in loaded_yaml:
-                tools = loaded_yaml["tools"].split(",")
-                loaded_yaml["llm_toolkits"] = build_llm_toolkits(tools)
 
-        config = AutomataAgentConfig(**loaded_yaml)
+        if "tools" in loaded_yaml:
+            tools = loaded_yaml["tools"].split(",")
+            loaded_yaml["llm_toolkits"] = build_llm_toolkits(tools)
+
+        return loaded_yaml
+
+    @classmethod
+    def handle_overview_input(cls, config: "AutomataAgentConfig") -> None:
+        from automata.core.utils import root_py_path
+        from automata.tools.python_tools.python_indexer import PythonIndexer
 
         if "overview" in config.instruction_input_variables:
-            from automata.core.utils import root_py_path
-            from automata.tools.python_tools.python_indexer import PythonIndexer
-
             indexer = PythonIndexer(root_py_path())
             config.initial_payload["overview"] = indexer.get_overview()
+
+    @classmethod
+    def load(cls, config_version: AgentConfigVersion) -> "AutomataAgentConfig":
+        if config_version == AgentConfigVersion.DEFAULT:
+            return AutomataAgentConfig()
+
+        loaded_yaml = cls.load_yaml_config(config_version)
+        config = AutomataAgentConfig(**loaded_yaml)
+        cls.handle_overview_input(config)
 
         return config
