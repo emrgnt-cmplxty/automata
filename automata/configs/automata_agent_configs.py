@@ -29,7 +29,7 @@ class AutomataAgentConfig(BaseModel):
     """
 
     class Config:
-        SUPPORTED_MDOELS = ["gpt-4", "gpt-3.5-turbo"]
+        SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo"]
         arbitrary_types_allowed = True
 
     config_version: str = "default"

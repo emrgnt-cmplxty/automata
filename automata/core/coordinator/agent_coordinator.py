@@ -3,9 +3,9 @@ from typing import Dict, List, Optional, Type
 from pydantic import BaseModel
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.core.agents.automata_agent import MasterAutomataAgent
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
-from automata.core.agents.automata_agent_helpers import AgentAction
+from automata.core.agent.automata_agent import MasterAutomataAgent
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_actions import AgentAction
 from automata.core.base.tool import Toolkit, ToolkitType
 
 
@@ -60,10 +60,7 @@ class AgentCoordinator:
         # Run the selected agent and return the result
         try:
             agent_instance = self._select_agent_instance(action.agent_name)
-            print("Running agent instance = %s" % (agent_instance))
             output = agent_instance.run("\n".join(action.agent_instruction))
-            print("-" * 100)
-            print("Run  Agent produced output = %s" % (output))
             return output
         except Exception as e:
             return str("Execution fail with error: " + str(e))

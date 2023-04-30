@@ -7,7 +7,7 @@ from termcolor import colored
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
@@ -118,7 +118,7 @@ def main():
     agent_config = AutomataAgentConfig.load(agent_config_version)
 
     agent = (
-        AutomataAgentBuilder(agent_config)
+        AutomataAgentBuilder.from_config(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(args.instructions)
         .with_llm_toolkits(llm_toolkits)

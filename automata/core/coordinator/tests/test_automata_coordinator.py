@@ -3,10 +3,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.core.agents.automata_agent import MasterAutomataAgent
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
-from automata.core.agents.automata_agent_helpers import AgentAction
-from automata.core.agents.tests.conftest import automata_agent as automata_agent_fixture  # noqa
+from automata.core.agent.automata_agent import MasterAutomataAgent
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_actions import AgentAction
+from automata.core.agent.tests.conftest import automata_agent as automata_agent_fixture  # noqa
 from automata.core.coordinator.agent_coordinator import AgentCoordinator, AgentInstance
 
 
@@ -295,7 +295,6 @@ def test_run_agent(coordinator_with_mock_agent, master_agent):
         agent_instruction=["Test instruction."],
     )
     result = coordinator.run_agent(action)
-    print("result = ", result)
     assert result == "Running Test instruction. on mock_agent."
 
 

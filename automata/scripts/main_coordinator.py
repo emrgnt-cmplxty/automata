@@ -7,8 +7,8 @@ from termcolor import colored
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agents.automata_agent import MasterAutomataAgent
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent import MasterAutomataAgent
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.coordinator.agent_coordinator import AgentCoordinator, AgentInstance
 from automata.core.utils import get_logging_config, root_py_path
@@ -131,7 +131,7 @@ def main():
     initial_payload["agents"] = coordinator.build_agent_message()
 
     master_agent = MasterAutomataAgent.from_agent(
-        AutomataAgentBuilder(agent_config)
+        AutomataAgentBuilder.from_config(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(args.instructions)
         .with_llm_toolkits(master_llm_toolkits)

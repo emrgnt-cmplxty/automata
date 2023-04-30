@@ -6,7 +6,7 @@ from typing import Optional
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
@@ -45,7 +45,7 @@ def update_docstrings():
             agent_config = AutomataAgentConfig.load(agent_config_version)
 
             agent = (
-                AutomataAgentBuilder(agent_config)
+                AutomataAgentBuilder.from_config(agent_config)
                 .with_instructions(
                     f"BEFORE WRITING CODE, begin with a multi-bullet description of what the following file is responsible for:\n {raw_code}"
                     f" FOLLOWING that, your objective is to increase the modularity, readability, and maintainability of the file."

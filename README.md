@@ -1,5 +1,3 @@
-
-
 Automata Code Repository
 
 This repository contains a collection of tools and utilities for various tasks.
@@ -32,7 +30,7 @@ Main Packages and Modules:
 7. automata.tools.oracle.codebase_oracle:
    A codebase oracle module. The documentation for this module is currently unavailable.
 
-8. automata.core.agents.automata_agent:
+8. automata.core.agent.automata_agent:
    AutomataAgent is an autonomous agent that performs the actual work of the Automata system. Automata are responsible for executing instructions and reporting the results back to the master.
 
 # Getting Started

@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.core.agents.automata_agent import AutomataAgent, MasterAutomataAgent
+from automata.core.agent.automata_agent import AutomataAgent, MasterAutomataAgent
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
