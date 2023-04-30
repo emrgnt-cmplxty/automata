@@ -2,9 +2,9 @@
 requires = ["setuptools", "wheel"]
 
 [tool.poetry]
-name = "improved-spork"
+name = "agentic_automata"
 version = "0.1.0"
-description = "A sentient spork."
+description = "An agentic automata."
 authors = ["maks@sporker.com"]
 
 [tool.poetry.dependencies]
@@ -57,10 +57,14 @@ skip_glob = "local_env/*"
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(random|local_env|data|results|notebooks)/'
+exclude = '(random|local_env|data|results|notebooks|sample_code)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "yaml"
 ignore_missing_imports = true
 
 [tool.coverage.run]

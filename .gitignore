@@ -1,8 +1,11 @@
+**/sample_modules/**
+interactions.sqlite3
+dump/
 /.idea/
 .env
-
+local
 # Local Cruft
-improved_spork.egg-info/*
+automata.egg-info/*
 **/**/.DS_Store
 local_env/*
 __pycache__/
