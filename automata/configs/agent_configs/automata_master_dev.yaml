@@ -52,7 +52,7 @@ system_instruction_template: >
         - agent_output_1
           - Here's an example of initializing a AutomataAgent with the necessary imports:
             ```
-            from automata.core.agents.automata_agent import AutomataAgent
+            from automata.core.agent.automata_agent import AutomataAgent
             ...[IMPORTS_CONTNUED]
               class AutomataAgent:
                 def __init__(self, config: Optional[AutomataAgentConfig] = None):
@@ -71,7 +71,7 @@ system_instruction_template: >
           - agent_instruction
             - Modify PythonIndexerToolManager.build_tools_with_automata to read 
               ```
-              from automata.core.agents.automata_agent import AutomataAgent
+              from automata.core.agent.automata_agent import AutomataAgent
               ...[IMPORTS_CONTNUED]
                 class AutomataAgent:
                   def __init__(self, config: Optional[AutomataAgentConfig] = None):

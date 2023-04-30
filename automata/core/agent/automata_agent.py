@@ -9,7 +9,7 @@
 
         config_version = AgentConfigVersion.AUTOMATA_MASTER_PROD
         agent_config = AutomataAgentConfig.load(config_version)
-        agent = (AutomataAgentBuilder(agent_config)
+        agent = (AutomataAgentBuilder.from_config(agent_config)
             .with_llm_toolkits(llm_toolkits)
             .with_instructions(instructions)
             .with_model(model)
@@ -42,12 +42,10 @@ from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import ConfigCategory
 
-from automata.core.agents.agent import Agent
-from automata.core.agents.automata_agent_helpers import (
-    ActionExtractor,
-    AgentAction,
-    ResultAction,
-    ToolAction,
+from automata.core.agent.agent import Agent
+from automata.core.agent.automata_action_extractor import AutomataActionExtractor as ActionExtractor
+from automata.core.agent.automata_actions import (AgentAction, ResultAction, ToolAction)
+from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
@@ -374,14 +372,7 @@ class MasterAutomataAgent(AutomataAgent):
                     continue
                 agent_output = self._execute_agent(agent_action)
                 query_name = agent_action.agent_query.replace("query", "output")
-                print("query_name = %s" % (query_name))
                 outputs[query_name] = agent_output
-                print("-" * 100)
-                print("self._execute_agent produced results = %s" % (agent_output))
-                print("-" * 100)
-
-                # agent_observations = self._generate_observations(agent_results)
-                # self._add_agent_observations(outputs, agent_observations, agent_action)
         return outputs
 
     def _execute_agent(self, agent_action) -> str:

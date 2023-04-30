@@ -7,7 +7,7 @@ import pytest
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import calculate_similarity, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
@@ -52,7 +52,7 @@ def build_agent_with_params(
     agent_config = AutomataAgentConfig.load(config_version)
 
     agent = (
-        AutomataAgentBuilder(agent_config)
+        AutomataAgentBuilder.from_config(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)

@@ -1,7 +1,7 @@
 import pytest
 
 from automata.configs.automata_agent_configs import AgentConfigVersion, AutomataAgentConfig
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
@@ -18,7 +18,7 @@ def automata_agent():
     agent_config = AutomataAgentConfig.load(config_version)
 
     agent = (
-        AutomataAgentBuilder(agent_config)
+        AutomataAgentBuilder.from_config(agent_config)
         .with_initial_payload(initial_payload)
         .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)
@@ -31,7 +31,7 @@ def automata_agent():
 def automata_agent_builder():
     config_version = AgentConfigVersion.DEFAULT
     agent_config = AutomataAgentConfig.load(config_version)
-    agent_builder = AutomataAgentBuilder(agent_config)
+    agent_builder = AutomataAgentBuilder.from_config(agent_config)
     return agent_builder
 
 
@@ -39,5 +39,5 @@ def automata_agent_builder():
 def automata_agent_with_dev_master_builder():
     config_version = AgentConfigVersion.AUTOMATA_MASTER_DEV
     agent_config = AutomataAgentConfig.load(config_version)
-    agent_builder = AutomataAgentBuilder(agent_config)
+    agent_builder = AutomataAgentBuilder.from_config(agent_config)
     return agent_builder

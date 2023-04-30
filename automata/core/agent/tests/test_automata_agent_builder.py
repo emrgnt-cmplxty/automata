@@ -3,8 +3,8 @@ import pytest
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
 
-from automata.core.agents.automata_agent import AutomataAgent
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent import AutomataAgent
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
@@ -116,7 +116,7 @@ def test_config_loading_different_versions():
 def test_builder_gets_default_params_from_test_config():
     config_version = AgentConfigVersion.TEST
     agent_config = AutomataAgentConfig.load(config_version)
-    agent = AutomataAgentBuilder(agent_config).build()
+    agent = AutomataAgentBuilder.from_config(agent_config).build()
 
     assert agent.instructions == "Test instructions."
     assert agent.model == "gpt-4"

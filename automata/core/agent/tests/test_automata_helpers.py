@@ -1,11 +1,10 @@
 import textwrap
 
-from automata.core.agents.automata_agent_helpers import (
-    ActionExtractor,
+from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-
+from automata.core.agent.automata_action_extractor import AutomataActionExtractor as ActionExtractor
 
 def test_extract_actions_0():
     input_text = textwrap.dedent(

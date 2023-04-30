@@ -18,7 +18,7 @@ from typing import Any, List, Optional
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -120,7 +120,7 @@ class PythonWriterToolManager(BaseToolManager):
                 "overview": self.writer.indexer.get_overview(),
             }
             agent = (
-                AutomataAgentBuilder(automata_config)
+                AutomataAgentBuilder.from_config(automata_config)
                 .with_initial_payload(initial_payload)
                 .with_instructions(input_str)
                 .with_llm_toolkits(build_llm_toolkits(["python_writer"]))
