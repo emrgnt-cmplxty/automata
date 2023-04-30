@@ -6,7 +6,7 @@ class ActionIndicator(Enum):
     ACTION = "- "
     CODE = "```"
 
-EXPECTED_CODING_LANGUAGES = ["python"]
+SUPPORTED_CODING_LANGUAGES = ["python"]
 
 class ToolField(Enum):
     INDICATOR = "tool_query"

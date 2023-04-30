@@ -15,10 +15,13 @@ class AutomataAgentBuilder(BaseModel):
     """
     _instance: AutomataAgent = PrivateAttr()
 
+    def __init__(self, config: Optional[AutomataAgentConfig]):
+        super().__init__()
+        self._instance = AutomataAgent(config)
+
     @classmethod
     def from_config(cls, config: Optional[AutomataAgentConfig]) -> "AutomataAgentBuilder":
-        instance = cls()
-        instance._instance = AutomataAgent(config)
+        instance = cls(config)
         return instance
 
     def with_initial_payload(self, initial_payload: Dict[str, str]) -> "AutomataAgentBuilder":

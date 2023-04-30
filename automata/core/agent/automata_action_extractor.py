@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 from .automata_actions import ActionTypes, AgentAction, ResultAction, ToolAction
 from .automata_agent_utils import (
     ActionIndicator,
-    EXPECTED_CODING_LANGUAGES,
+    SUPPORTED_CODING_LANGUAGES,
     ToolField,
     AgentField,
     ResultField,
@@ -99,7 +99,7 @@ class AutomataActionExtractor:
             ):
                 is_code = True
                 contains_language_definition = False
-                for language in EXPECTED_CODING_LANGUAGES:
+                for language in SUPPORTED_CODING_LANGUAGES:
                     if language in line:
                         contains_language_definition = True
                 if contains_language_definition:

@@ -353,10 +353,6 @@ class MasterAutomataAgent(AutomataAgent):
         self.coordinator = None
         self.is_master_agent = True
 
-    def _setup(self, *args, **kwargs):
-        super()._setup(*args, **kwargs)
-        # Add your custom setup logic for the MasterAutomataAgent here
-
     def set_coordinator(self, coordinator: "AgentCoordinator"):
         """Set the coordinator."""
         self.coordinator = coordinator
