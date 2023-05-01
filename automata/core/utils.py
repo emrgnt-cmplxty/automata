@@ -3,15 +3,13 @@ choose a work item to work on, and remove HTML tags from text."""
 import logging
 import os
 from typing import Any, Dict, List
-
 import colorlog
 import numpy as np
 import openai
 import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
-from langchain.document_loaders import TextLoader
 from langchain.schema import Document
-
+from automata.configs.config_enums import AgentConfigVersion
 
 def format_config(format_variables: Dict[str, str], input_text: str) -> str:
     """Format expected strings into the config."""
@@ -33,7 +31,7 @@ def root_py_path() -> str:
     return data_folder
 
 
-def load_yaml_config(config_type: str, file_name: str) -> Any:
+def load_yaml_config(config_version: str, file_name: str) -> Any:
     """
     Loads a YAML config file.
 
@@ -44,7 +42,7 @@ def load_yaml_config(config_type: str, file_name: str) -> Any:
         Any: The content of the YAML file as a Python object.
     """
     with open(
-        os.path.join(root_py_path(), "configs", config_type, f"{file_name}.yaml"),
+        os.path.join(root_py_path(), "configs", config_version, f"{file_name}.yaml"),
         "r",
     ) as file:
         return yaml.safe_load(file)
@@ -111,6 +109,7 @@ def run_retrieval_chain_with_sources_format(
 
 
 def calculate_similarity(content_a: str, content_b: str) -> float:
+    """Calculate the similarity between two strings."""
     resp = openai.Embedding.create(
         input=[content_a, content_b], engine="text-similarity-davinci-001"
     )
@@ -121,14 +120,3 @@ def calculate_similarity(content_a: str, content_b: str) -> float:
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
 
-
-class NumberedLinesTextLoader(TextLoader):
-    def load(self) -> List[Document]:
-        """Load from file path."""
-        with open(self.file_path, encoding=self.encoding) as f:
-            lines = f.readlines()
-            text = f"{self.file_path}"
-            for i, line in enumerate(lines):
-                text += f"{i}: {line}"
-        metadata = {"source": self.file_path}
-        return [Document(page_content=text, metadata=metadata)]

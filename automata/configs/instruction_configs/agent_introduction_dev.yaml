@@ -8,7 +8,7 @@ initial_messages:
         - I will begin by initializing myself.
       - actions
         - agent_query_0
-          - agent_name
+          - agent_config_version
             - {initializer_dummy_tool}
           - agent_instruction
             - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?

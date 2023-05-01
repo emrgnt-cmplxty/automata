@@ -7,12 +7,13 @@ from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.agent.automata_actions import AgentAction
 from automata.core.agent.tests.conftest import automata_agent as automata_agent_fixture  # noqa
-from automata.core.coordinator.agent_coordinator import AgentCoordinator, AgentInstance
+from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
+from automata.configs.config_enums import AgentConfigVersion
 
 
 @pytest.fixture
 def coordinator():  # noqa
-    coordinator = AgentCoordinator()
+    coordinator = AutomataCoordinator()
     return coordinator
 
 
@@ -22,33 +23,33 @@ def master_agent(automata_agent_fixture):  # noqa
     return master_agent
 
 
-# Mock AgentInstance to be added to the coordinator
-class MockAgentInstance(AgentInstance):
-    def __init__(self, name: str, description: str, builder: AutomataAgentBuilder):
-        super().__init__(name=name, description=description, builder=builder)
+# Mock AutomataInstance to be added to the coordinator
+class MockAutomataInstance(AutomataInstance):
+    def __init__(self, config_version: AgentConfigVersion, description: str, builder: AutomataAgentBuilder):
+        super().__init__(config_version=config_version, description=description, builder=builder)
 
     def run(self, instruction):
-        return f"Running {instruction} on {self.name}."
+        return f"Running {instruction} on {self.config_version.value}."
 
 
 @pytest.fixture
 def coordinator_with_mock_agent():
-    coordinator = AgentCoordinator()
+    coordinator = AutomataCoordinator()
     agent_builder = AutomataAgentBuilder
-    mock_agent_instance = MockAgentInstance(
-        name="mock_agent", description="Mock agent for testing.", builder=agent_builder
+    mock_agent_instance = MockAutomataInstance(
+        config_version=AgentConfigVersion.TEST, description="Mock agent for testing.", builder=agent_builder
     )
     coordinator.add_agent_instance(mock_agent_instance)
     return coordinator
 
 
 def test_initialize_coordinator(coordinator):
-    assert isinstance(coordinator, AgentCoordinator)
+    assert isinstance(coordinator, AutomataCoordinator)
 
 
 def test_add_agent(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AgentInstance(name="agent_0", builder=agent_builder)
+    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
 
     coordinator.add_agent_instance(agent_instance)
     assert len(coordinator.agent_instances) == 1
@@ -61,7 +62,7 @@ def test_set_coordinator_master(coordinator, master_agent):
 
 def test_cannot_add_agent_twice(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AgentInstance(name="agent_0", builder=agent_builder)
+    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
 
     coordinator.add_agent_instance(agent_instance)
 
@@ -71,25 +72,25 @@ def test_cannot_add_agent_twice(coordinator):
 
 def test_remove_agent(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AgentInstance(name="agent_0", builder=agent_builder)
+    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
 
     coordinator.add_agent_instance(agent_instance)
-    coordinator.remove_agent_instance("agent_0")
+    coordinator.remove_agent_instance(config_version=AgentConfigVersion.TEST)
     assert len(coordinator.agent_instances) == 0
 
 
 def test_cannot_remove_missing_agent(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AgentInstance(name="agent_0", builder=agent_builder)
+    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
 
     coordinator.add_agent_instance(agent_instance)
     with pytest.raises(ValueError):
-        coordinator.remove_agent_instance("agent_1")
+        coordinator.remove_agent_instance(config_version=AgentConfigVersion.DEFAULT)
 
 
 def test_add_agent_set_coordinator(coordinator, master_agent):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AgentInstance(name="agent_0", builder=agent_builder)
+    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
     coordinator.add_agent_instance(agent_instance)
 
     coordinator.set_master_agent(master_agent)
@@ -103,13 +104,13 @@ def test_build_agent_message(coordinator, master_agent):
     master_agent.set_coordinator(coordinator)
     agent_builder = AutomataAgentBuilder
 
-    agent_instance = AgentInstance(
-        name="agent_0", builder=agent_builder, description="Test agent."
+    agent_instance = AutomataInstance(
+        config_version=AgentConfigVersion.TEST, builder=agent_builder, description="Test agent."
     )
     coordinator.add_agent_instance(agent_instance)
 
     agent_message = coordinator.build_agent_message()
-    assert agent_message == "\nagent_0: Test agent.\n"
+    assert agent_message == "\ntest: Test agent.\n"
 
 
 def mock_openai_response_with_agent_query():
@@ -123,8 +124,8 @@ def mock_openai_response_with_agent_query():
                             - I can retrieve this information directly with the python indexer.
                         - actions
                             - agent_query_0
-                                - agent_name
-                                    - agent_0
+                                - agent_config_version
+                                    - test
                                 - agent_instruction
                                     - Begin
                         """
@@ -191,8 +192,8 @@ def mock_openai_response_with_agent_query_and_tool_queries():
                                     - core.utils
                                     - calculate_similarity
                             - agent_query_1
-                                - agent_name
-                                    - agent_0
+                                - agent_config_version
+                                    - test
                                 - agent_instruction
                                     - Begin
                         """
@@ -254,8 +255,8 @@ def mock_openai_response_with_agent_query_1():
                             - I can retrieve this information directly with the python indexer.
                         - actions
                         - agent_query_1
-                            - agent_name
-                                - agent_0
+                            - agent_config_version
+                                - test
                             - agent_instruction
                                 - Begin
                         """
@@ -290,12 +291,12 @@ def test_run_agent(coordinator_with_mock_agent, master_agent):
     coordinator.set_master_agent(master_agent)
     master_agent.set_coordinator(coordinator)
     action = AgentAction(
-        agent_name="mock_agent",
+        agent_config_version=AgentConfigVersion.TEST,
         agent_query="mock_agent_query",
         agent_instruction=["Test instruction."],
     )
     result = coordinator.run_agent(action)
-    assert result == "Running Test instruction. on mock_agent."
+    assert result == "Running Test instruction. on test."
 
 
 # Test the _execute_agent method of MasterAutomataAgent
@@ -306,7 +307,7 @@ def test_execute_agent(automata_agent_fixture, coordinator_with_mock_agent):  # 
 
     # Create a mock AgentAction
     mock_agent_action = AgentAction(
-        agent_name="mock_agent",
+        agent_config_version=AgentConfigVersion.TEST,
         agent_instruction="Test instruction.",
         agent_query="AutomataAgentBuilder",
     )

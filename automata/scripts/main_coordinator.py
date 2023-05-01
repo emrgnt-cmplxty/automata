@@ -10,7 +10,7 @@ from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Toolkit, ToolkitType
-from automata.core.coordinator.agent_coordinator import AgentCoordinator, AgentInstance
+from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
@@ -100,19 +100,19 @@ def main():
     )
     logger.info("-" * 60)
 
-    coordinator = AgentCoordinator()
+    coordinator = AutomataCoordinator()
     agent_configs = {
-        config_name.replace("_dev", "").replace("_prod", ""): AutomataAgentConfig.load(
-            AgentConfigVersion(config_name)
+        AgentConfigVersion(config_version): AutomataAgentConfig.load(
+            AgentConfigVersion(config_version)
         )
-        for config_name in args.agent_config_versions.split(",")
+        for config_version in args.agent_config_versions.split(",")
     }
-    for config_name in agent_configs.keys():
-        config = agent_configs[config_name]
+    for config_version in agent_configs.keys():
+        config = agent_configs[config_version]
         logger.info(
-            f"Adding Agent with name={config_name}, config={config}, description={config.description}"
+            f"Adding Agent with name={config_version.value}, description={config.description}"
         )
-        agent = AgentInstance(name=config_name, config=config, description=config.description)
+        agent = AutomataInstance(config_version=config_version, description=config.description)
         coordinator.add_agent_instance(agent)
 
     agent_config_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))

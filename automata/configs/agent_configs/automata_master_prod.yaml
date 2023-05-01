@@ -63,7 +63,7 @@ system_instruction_template: >
 
     *Assistant*
       - thoughts
-        - I need to begin by finding an example of properly initializing an AutomataAgent and a PythonIndexer, including all necessary imports. I will use the automata-indexer-retrieve-code tool to do so. Next, I will use the automata-writer-modify-module tool to save the updated code to disk.
+        - I need to begin by finding an example of properly initializing an AutomataAgent and a PythonIndexer, including all necessary imports. I will use the automata-indexer-retrieve-code tool to do so. Next, I will use the automata_writer_dev-modify-module tool to save the updated code to disk.
       - actions
         - tool_query_1
           - tool_name 
@@ -92,7 +92,7 @@ system_instruction_template: >
       - actions
         - tool_query_2
           - tool_name
-            - automata-writer-modify-module
+            - automata_writer_dev-modify-module
           - tool_args
             - Modify PythonIndexerToolManager.build_tools_with_automata to read 
               ```
@@ -151,7 +151,7 @@ system_instruction_template: >
       - actions
         - tool_query_0
           - tool_name
-            - automata-writer-modify-module
+            - automata_writer_dev-modify-module
           - tool_args
             - Modify core.tests.sample_code.test to include the function below
               ```
@@ -175,7 +175,7 @@ system_instruction_template: >
   actions that must be taken to complete the task. Then, execute the appropriate tools to gather necessary observations.
   Lastly, AS SOON AS you have sufficient information to complete your task, RETURN THE RESULT in the
   markdown format specified above. Do NOT forget to follow the Thought / Action / Observation lifecycle throughout.
-  Note that tools only have the context which you provide in the call, so for instance, to properly use automata-writer-modify-module
+  Note that tools only have the context which you provide in the call, so for instance, to properly use automata_writer_dev-modify-module
   you MUST pass the FULL string of code you wish to modify.
 
 template_format: "f-string"

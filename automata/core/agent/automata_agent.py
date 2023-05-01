@@ -54,8 +54,8 @@ from automata.core.utils import format_config, load_yaml_config
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from automata.core.coordinator.agent_coordinator import (  # This import will only happen during type checking
-        AgentCoordinator,
+    from automata.core.coordinator.automata_coordinator import (  # This import will only happen during type checking
+        AutomataCoordinator,
     )
 
 
@@ -74,7 +74,7 @@ class AutomataAgent(Agent):
     def __init__(self, config: Optional[AutomataAgentConfig] = None):
         """
         Args:
-            config_version (Optional[AutomataAgentConfig]): The config_version of the agent to use.
+            config (Optional[AutomataAgentConfig]): The agent config to use
         Methods:
             iter_task(instructions: List[Dict[str, str]]) -> Dict[str, str]: Iterates through the instructions and returns the next instruction.
             modify_last_instruction(new_instruction: str) -> None
@@ -353,7 +353,7 @@ class MasterAutomataAgent(AutomataAgent):
         self.coordinator = None
         self.is_master_agent = True
 
-    def set_coordinator(self, coordinator: "AgentCoordinator"):
+    def set_coordinator(self, coordinator: "AutomataCoordinator"):
         """Set the coordinator."""
         self.coordinator = coordinator
 
@@ -364,7 +364,7 @@ class MasterAutomataAgent(AutomataAgent):
 
         for agent_action in actions:
             if isinstance(agent_action, AgentAction):
-                if agent_action.agent_name == AutomataAgent.INITIALIZER_DUMMY:
+                if agent_action.agent_config_version.value == AutomataAgent.INITIALIZER_DUMMY:
                     continue
                 agent_output = self._execute_agent(agent_action)
                 query_name = agent_action.agent_query.replace("query", "output")
@@ -396,8 +396,8 @@ class MasterAutomataAgent(AutomataAgent):
             pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
             matches = re.finditer(pattern, message["content"], re.DOTALL)
             for match in matches:
-                agent_name, agent_output = match.group(1), match.group(2).strip()
-                outputs[agent_name] = agent_output
+                agent_config_version, agent_output = match.group(1), match.group(2).strip()
+                outputs[agent_config_version] = agent_output
 
         for output_name in outputs:
             completion_message = completion_message.replace(
