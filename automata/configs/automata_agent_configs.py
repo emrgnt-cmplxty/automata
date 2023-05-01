@@ -1,16 +1,15 @@
 import os
-from enum import Enum
 from typing import Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel
 
 from automata.core.base.tool import Toolkit, ToolkitType
+
 from .config_enums import AgentConfigVersion, ConfigCategory, InstructionConfigVersion
 
 
 class AutomataAgentConfig(BaseModel):
-
     """
     Args:
         config_version (AgentConfigVersion): The config_version of the agent to use.
@@ -49,6 +48,7 @@ class AutomataAgentConfig(BaseModel):
 
     @classmethod
     def load_automata_yaml_config(cls, config_version: AgentConfigVersion) -> Dict:
+        """Loads the automata.yaml config file."""
         from automata.tool_management.tool_management_utils import build_llm_toolkits
 
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -68,6 +68,7 @@ class AutomataAgentConfig(BaseModel):
 
     @classmethod
     def handle_overview_input(cls, config: "AutomataAgentConfig") -> None:
+        """Handles the overview input for the agent."""
         from automata.core.utils import root_py_path
         from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -77,6 +78,7 @@ class AutomataAgentConfig(BaseModel):
 
     @classmethod
     def load(cls, config_version: AgentConfigVersion) -> "AutomataAgentConfig":
+        """Loads the config for the agent."""
         if config_version == AgentConfigVersion.DEFAULT:
             return AutomataAgentConfig()
 
