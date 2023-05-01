@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple, Union
 from .automata_agent_utils import AgentField, ActionIndicator
 from .automata_agent_utils import ResultField, ActionIndicator
-
+from automata.configs.config_enums import AgentConfigVersion
 
 class Action(ABC):
     @classmethod
@@ -25,16 +25,16 @@ class ToolAction(Action):
 
 
 class AgentAction(Action):
-    def __init__(self, agent_name: str, agent_query: str, agent_instruction: List[str]):
-        self.agent_name = agent_name
+    def __init__(self, agent_config_version: AgentConfigVersion, agent_query: str, agent_instruction: List[str]):
+        self.agent_config_version = agent_config_version
         self.agent_query = agent_query
         self.agent_instruction = agent_instruction
 
     @classmethod
     def from_lines(cls, lines: List[str], index: int):
         agent_query = lines[index].split(ActionIndicator.ACTION.value)[1].strip()
-        agent_name = lines[index + 2].split(ActionIndicator.ACTION.value)[1].strip()
-        return cls(agent_name, agent_query, [])
+        agent_config_version = AgentConfigVersion(lines[index + 2].split(ActionIndicator.ACTION.value)[1].strip())
+        return cls(agent_config_version, agent_query, [])
 
 
 class ResultAction(Action):

@@ -221,7 +221,7 @@ system_instruction_template: >
     ...
 
 description: >
-  This agent is automata-writer, an agent which parses natural language queries to write code to the local Python repository.
+  This agent is automata_writer_dev, an agent which parses natural language queries to write code to the local Python repository.
 
 tools: >
   python_writer

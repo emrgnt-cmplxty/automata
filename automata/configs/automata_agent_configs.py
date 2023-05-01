@@ -32,7 +32,7 @@ class AutomataAgentConfig(BaseModel):
         SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo"]
         arbitrary_types_allowed = True
 
-    config_version: str = "default"
+    config_version: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_DEV
     initial_payload: Dict[str, str] = {}
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
@@ -48,7 +48,7 @@ class AutomataAgentConfig(BaseModel):
     instruction_version: str = InstructionConfigVersion.AGENT_INTRODUCTION_PROD.value
 
     @classmethod
-    def load_yaml_config(cls, config_version: AgentConfigVersion) -> Dict:
+    def load_automata_yaml_config(cls, config_version: AgentConfigVersion) -> Dict:
         from automata.tool_management.tool_management_utils import build_llm_toolkits
 
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -63,6 +63,7 @@ class AutomataAgentConfig(BaseModel):
             tools = loaded_yaml["tools"].split(",")
             loaded_yaml["llm_toolkits"] = build_llm_toolkits(tools)
 
+        loaded_yaml["config_version"] = config_version
         return loaded_yaml
 
     @classmethod
@@ -79,7 +80,7 @@ class AutomataAgentConfig(BaseModel):
         if config_version == AgentConfigVersion.DEFAULT:
             return AutomataAgentConfig()
 
-        loaded_yaml = cls.load_yaml_config(config_version)
+        loaded_yaml = cls.load_automata_yaml_config(config_version)
         config = AutomataAgentConfig(**loaded_yaml)
         cls.handle_overview_input(config)
 

@@ -124,8 +124,8 @@ def mock_openai_response_with_agent_query():
                             - I can retrieve this information directly with the python indexer.
                         - actions
                             - agent_query_0
-                                - agent_name
-                                    - agent_0
+                                - agent_config_version
+                                    - test
                                 - agent_instruction
                                     - Begin
                         """
@@ -192,8 +192,8 @@ def mock_openai_response_with_agent_query_and_tool_queries():
                                     - core.utils
                                     - calculate_similarity
                             - agent_query_1
-                                - agent_name
-                                    - agent_0
+                                - agent_config_version
+                                    - test
                                 - agent_instruction
                                     - Begin
                         """
@@ -255,8 +255,8 @@ def mock_openai_response_with_agent_query_1():
                             - I can retrieve this information directly with the python indexer.
                         - actions
                         - agent_query_1
-                            - agent_name
-                                - agent_0
+                            - agent_config_version
+                                - test
                             - agent_instruction
                                 - Begin
                         """
@@ -291,12 +291,12 @@ def test_run_agent(coordinator_with_mock_agent, master_agent):
     coordinator.set_master_agent(master_agent)
     master_agent.set_coordinator(coordinator)
     action = AgentAction(
-        agent_name=AgentConfigVersion.TEST.value,
+        agent_config_version=AgentConfigVersion.TEST,
         agent_query="mock_agent_query",
         agent_instruction=["Test instruction."],
     )
     result = coordinator.run_agent(action)
-    assert result == "Running Test instruction. on mock_agent."
+    assert result == "Running Test instruction. on test."
 
 
 # Test the _execute_agent method of MasterAutomataAgent
@@ -307,7 +307,7 @@ def test_execute_agent(automata_agent_fixture, coordinator_with_mock_agent):  # 
 
     # Create a mock AgentAction
     mock_agent_action = AgentAction(
-        agent_name=AgentConfigVersion.TEST.value,
+        agent_config_version=AgentConfigVersion.TEST,
         agent_instruction="Test instruction.",
         agent_query="AutomataAgentBuilder",
     )

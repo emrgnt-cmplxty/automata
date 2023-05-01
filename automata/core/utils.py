@@ -3,14 +3,13 @@ choose a work item to work on, and remove HTML tags from text."""
 import logging
 import os
 from typing import Any, Dict, List
-
 import colorlog
 import numpy as np
 import openai
 import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 from langchain.schema import Document
-
+from automata.configs.config_enums import AgentConfigVersion
 
 def format_config(format_variables: Dict[str, str], input_text: str) -> str:
     """Format expected strings into the config."""
@@ -32,7 +31,7 @@ def root_py_path() -> str:
     return data_folder
 
 
-def load_yaml_config(config_type: str, file_name: str) -> Any:
+def load_yaml_config(config_version: str, file_name: str) -> Any:
     """
     Loads a YAML config file.
 
@@ -43,7 +42,7 @@ def load_yaml_config(config_type: str, file_name: str) -> Any:
         Any: The content of the YAML file as a Python object.
     """
     with open(
-        os.path.join(root_py_path(), "configs", config_type, f"{file_name}.yaml"),
+        os.path.join(root_py_path(), "configs", config_version, f"{file_name}.yaml"),
         "r",
     ) as file:
         return yaml.safe_load(file)

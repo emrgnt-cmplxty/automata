@@ -102,17 +102,17 @@ def main():
 
     coordinator = AutomataCoordinator()
     agent_configs = {
-        AgentConfigVersion(config_name): AutomataAgentConfig.load(
-            AgentConfigVersion(config_name)
+        AgentConfigVersion(config_version): AutomataAgentConfig.load(
+            AgentConfigVersion(config_version)
         )
-        for config_name in args.agent_config_versions.split(",")
+        for config_version in args.agent_config_versions.split(",")
     }
-    for config_name in agent_configs.keys():
-        config = agent_configs[config_name]
+    for config_version in agent_configs.keys():
+        config = agent_configs[config_version]
         logger.info(
-            f"Adding Agent with name={config_name}, config={config}, description={config.description}"
+            f"Adding Agent with name={config_version.value}, description={config.description}"
         )
-        agent = AutomataInstance(agent_name=config_name.value, config=config, description=config.description)
+        agent = AutomataInstance(config_version=config_version, description=config.description)
         coordinator.add_agent_instance(agent)
 
     agent_config_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
