@@ -232,4 +232,9 @@ system_instruction_template: >
   code, then you should return a message with markdown containing the tag "return_result_0" and the message
   "I am unable to complete the given task. Please provide the necessary code to complete the task.".
 
+number_of_expected_actions: 9
+
+description: >
+  This agent is automata_writer_prod, an agent which parses natural language queries to write code to the local Python repository.
+
 template_format: "f-string"

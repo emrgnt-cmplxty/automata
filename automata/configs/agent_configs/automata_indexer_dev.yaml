@@ -217,6 +217,8 @@ system_instruction_template: >
 description: >
   This agent is automata_indexer_dev, an agent which parses natural language queries to retrieve code from the local Python repository.
 
+number_of_expected_actions: 11
+
 tools: >
   python_indexer
 

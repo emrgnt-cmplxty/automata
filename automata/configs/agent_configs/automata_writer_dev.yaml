@@ -220,10 +220,9 @@ system_instruction_template: >
 
     ...
 
+number_of_expected_actions: 9
 description: >
   This agent is automata_writer_dev, an agent which parses natural language queries to write code to the local Python repository.
-
 tools: >
   python_writer
-
 template_format: "f-string"
