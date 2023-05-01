@@ -54,8 +54,8 @@ from automata.core.utils import format_config, load_yaml_config
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from automata.core.coordinator.agent_coordinator import (  # This import will only happen during type checking
-        AgentCoordinator,
+    from automata.core.coordinator.automata_coordinator import (  # This import will only happen during type checking
+        AutomataCoordinator,
     )
 
 
@@ -353,7 +353,7 @@ class MasterAutomataAgent(AutomataAgent):
         self.coordinator = None
         self.is_master_agent = True
 
-    def set_coordinator(self, coordinator: "AgentCoordinator"):
+    def set_coordinator(self, coordinator: "AutomataCoordinator"):
         """Set the coordinator."""
         self.coordinator = coordinator
 

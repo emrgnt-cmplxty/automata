@@ -9,7 +9,6 @@ import numpy as np
 import openai
 import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
-from langchain.document_loaders import TextLoader
 from langchain.schema import Document
 
 
@@ -111,6 +110,7 @@ def run_retrieval_chain_with_sources_format(
 
 
 def calculate_similarity(content_a: str, content_b: str) -> float:
+    """Calculate the similarity between two strings."""
     resp = openai.Embedding.create(
         input=[content_a, content_b], engine="text-similarity-davinci-001"
     )
@@ -121,14 +121,3 @@ def calculate_similarity(content_a: str, content_b: str) -> float:
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
 
-
-class NumberedLinesTextLoader(TextLoader):
-    def load(self) -> List[Document]:
-        """Load from file path."""
-        with open(self.file_path, encoding=self.encoding) as f:
-            lines = f.readlines()
-            text = f"{self.file_path}"
-            for i, line in enumerate(lines):
-                text += f"{i}: {line}"
-        metadata = {"source": self.file_path}
-        return [Document(page_content=text, metadata=metadata)]
