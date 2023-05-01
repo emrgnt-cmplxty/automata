@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import List
 
 from automata.core.base.tool import Tool
 from automata.tool_management.base_tool_manager import BaseToolManager
@@ -21,10 +21,6 @@ class DocumentationGPTToolManager(BaseToolManager):
             ),
         ]
         return tools
-
-    def build_tools_with_automata(self, config: Any) -> List[Tool]:
-        """Not implemented."""
-        raise NotImplementedError
 
     def _documentation_gpt_lookup(self, input_text):
         """Lookup the documentation for the given input text."""

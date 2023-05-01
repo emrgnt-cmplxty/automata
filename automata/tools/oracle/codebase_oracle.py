@@ -74,7 +74,9 @@ class CodebaseOracle:
                 for file in filenames:
                     if not CodebaseOracle._is_excluded(os.path.join(dirpath, file)):
                         try:
-                            loader = NumberedLinesTextLoader(os.path.join(dirpath, file))
+                            loader = CodebaseOracle.NumberedLinesTextLoader(
+                                os.path.join(dirpath, file)
+                            )
                             docs.extend(loader.load())
                         except Exception as e:
                             print(dirpath, file, e)
@@ -126,7 +128,6 @@ class CodebaseOracle:
             ai = "Assistant: " + str(ai_m)
             buffer += "\n" + "\n".join([human, ai])
         return buffer
-
 
     class NumberedLinesTextLoader(TextLoader):
         def load(self) -> List[Document]:
