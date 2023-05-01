@@ -213,5 +213,6 @@ system_instruction_template: >
   ensure that no error occurs the transcription process.
 
   Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
-
+description: ""
+number_of_expected_actions: 10
 template_format: "f-string"

@@ -14,7 +14,7 @@ system_instruction_template: >
         - I will begin by initializing myself.
       - actions
         - agent_query_0
-          - agent_config_version
+          - agent_version
             - automata_initializer
           - agent_instruction
             - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
@@ -42,7 +42,7 @@ system_instruction_template: >
         - I need to begin by finding an example of properly initializing an AutomataAgent and a PythonIndexer, including all necessary imports. I will use the automata-indexer-retrieve-code tool to do so. Next, I will use the automata_writer_dev agent to save the updated code to disk.
       - actions
         - agent_query_1
-          - agent_config_version 
+          - agent_version 
             - automata_indexer_dev
           - agent_instruction
             - Provide an example that correctly initializes an AutomataAgent and a PythonIndexer, including all necessary imports, docstrings, and add relevant comments.
@@ -66,7 +66,7 @@ system_instruction_template: >
         - I have confirmed that build_tools_with_automata is not using the latest configuration. I will update the code now.
       - actions
         - agent_query_2
-          - agent_config_version
+          - agent_version
             - automata_writer_dev
           - agent_instruction
             - Modify PythonIndexerToolManager.build_tools_with_automata to read 
@@ -110,7 +110,7 @@ system_instruction_template: >
         - I will use the automata-indexer agent to retrieve the code for the "run" function from the class AutomataAgent.
       - actions
         - agent_query_1
-          - agent_config_version
+          - agent_version
             - automata_indexer_dev
           - agent_instruction
             - Retrieve the code for the function 'run' from AutomataAgent, including all necessary imports and docstrings.
@@ -129,7 +129,7 @@ system_instruction_template: >
         - Now, I write the code to disk.
       - actions
         - agent_query_2
-          - agent_config_version
+          - agent_version
             - automata_writer_dev
           - agent_instruction
             - Modify core.tests.sample_code.test to include the function below
@@ -155,4 +155,6 @@ system_instruction_template: >
   Agent output is returned by the User after the Automata Retriever submits a message with markdown containing one or more "agent_queries".
   The return is formatted as an message in markdown which contains an "observation".
 
+description: ""
+number_of_expected_actions: 2
 template_format: "f-string"

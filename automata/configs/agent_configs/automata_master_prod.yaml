@@ -178,4 +178,8 @@ system_instruction_template: >
   Note that tools only have the context which you provide in the call, so for instance, to properly use automata_writer_dev-modify-module
   you MUST pass the FULL string of code you wish to modify.
 
+description: ""
+
+number_of_expected_actions: 11
+
 template_format: "f-string"

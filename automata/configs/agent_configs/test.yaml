@@ -7,3 +7,8 @@ verbose: true
 max_iters: 100
 temperature: 0.8
 session_id: "test-session-id"
+instruction_input_variables: []
+description: ""
+system_instruction_template: ""
+number_of_expected_actions: 0
+template_format: "f-string"
