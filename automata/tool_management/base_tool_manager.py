@@ -9,7 +9,3 @@ class BaseToolManager(ABC):
     @abstractmethod
     def build_tools(self) -> Any:
         pass
-
-    @abstractmethod
-    def build_tools_with_automata(self, config: Any) -> Any:
-        pass

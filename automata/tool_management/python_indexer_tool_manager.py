@@ -17,11 +17,8 @@ Example usage:
 
 """
 import logging
-from typing import Any, List, Optional, Tuple
+from typing import List
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.tool import Tool
 from automata.tool_management.base_tool_manager import BaseToolManager
 from automata.tools.python_tools.python_indexer import PythonIndexer
@@ -47,9 +44,6 @@ class PythonIndexerToolManager(BaseToolManager):
         - None
         """
         self.indexer: PythonIndexer = kwargs.get("python_indexer")
-        self.automata_version = (
-            kwargs.get("automata_version") or AgentConfigVersion.AUTOMATA_INDEXER_PROD
-        )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False
@@ -101,17 +95,6 @@ class PythonIndexerToolManager(BaseToolManager):
         ]
         return tools
 
-    def build_tools_with_automata(self, config: Any) -> List[Tool]:
-        """Builds a list of Automata powered Tool objects for interacting with PythonWriter."""
-        tools = [
-            Tool(
-                name="automata-indexer-retrieve-code",
-                func=lambda path_str: self._run_automata_indexer_retrieve_code(path_str, config),
-                description="Automata parses a natural language query to retrieve the correct code, docstrings, and import statements necessary to solve an abstract task",
-            ),
-        ]
-        return tools
-
     def _run_indexer_retrieve_code(self, module_path: str, object_path: str) -> str:
         """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
@@ -135,38 +118,3 @@ class PythonIndexerToolManager(BaseToolManager):
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
-
-    def _run_automata_indexer_retrieve_code(
-        self, input_str: str, automata_config: AutomataAgentConfig
-    ) -> str:
-        """Automata retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
-        from automata.tool_management.tool_management_utils import build_llm_toolkits
-
-        try:
-            initial_payload = {"overview": self.indexer.get_overview()}
-            agent = (
-                AutomataAgentBuilder.from_config(automata_config)
-                .with_initial_payload(initial_payload)
-                .with_instructions(input_str)
-                .with_llm_toolkits(build_llm_toolkits(["python_indexer"]))
-                .with_model(self.model)
-                .with_stream(self.stream)
-                .with_verbose(self.verbose)
-                .with_temperature(self.temperature)
-                .build()
-            )
-            result = agent.run()
-            return result
-        except Exception as e:
-            return "Failed to retrieve the code with error - " + str(e)
-
-    @staticmethod
-    def parse_input_str(input_str: str) -> Tuple[str, Optional[str]]:
-        """Parses the input string into a module path and an optional object path."""
-        split_input = input_str.split(",")
-        module_path = split_input[0].strip()
-        if len(split_input) == 1:
-            object_path = None
-        else:
-            object_path = input_str.split(",")[1].strip()
-        return (module_path, object_path)
