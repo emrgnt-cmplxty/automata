@@ -44,4 +44,4 @@ To run the code, follow these steps:
 5. Install the project in editable mode by running `pip3 install -e .`
 6. Install pre-commit hooks by running `pre-commit install`
 7. Build appropriate .env file
-8. Execute the main script as in this example - `python -m automata.main_coordinator  --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`
+8. Execute the main script as in this example - `automata master --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`

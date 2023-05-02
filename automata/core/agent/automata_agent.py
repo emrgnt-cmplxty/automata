@@ -123,7 +123,6 @@ class AutomataAgent(Agent):
         """Run the test and report the tool outputs back to the master."""
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
-        print("Messages = %s" % (self.messages))
         response_summary = openai.ChatCompletion.create(
             model=self.model,
             messages=self.messages,
@@ -137,7 +136,6 @@ class AutomataAgent(Agent):
         )
 
         observations = self._generate_observations(response_text)
-        print("Observations = %s" % (observations))
 
         completion_message = retrieve_completion_message(observations)
         if completion_message is not None:
