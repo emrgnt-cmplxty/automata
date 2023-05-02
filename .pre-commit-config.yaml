@@ -33,6 +33,6 @@ repos:
         pass_filenames: false
       - id: agent_config_validation
         name: Agent Config Validation
-        entry: python -m automata.scripts.agent_config_validation
+        entry: python -m automata.cli.scripts.agent_config_validation
         language: system
         types: [python]

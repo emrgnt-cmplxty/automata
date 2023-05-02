@@ -1,10 +1,13 @@
 import textwrap
 
+from automata.core.agent.automata_action_extractor import (
+    AutomataActionExtractor as ActionExtractor,
+)
 from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-from automata.core.agent.automata_action_extractor import AutomataActionExtractor as ActionExtractor
+
 
 def test_extract_actions_0():
     input_text = textwrap.dedent(
@@ -237,3 +240,20 @@ def test_extract_actions_7():
 
     assert actions[1].tool_name == "python-indexer-retrieve-code"
     assert actions[1].tool_args == ["core.utils", "calculate_similarity"]
+
+
+def test_extract_actions_8():
+    text = textwrap.dedent(
+        """
+    - thoughts
+        - I will use the automata-indexer agent to retrieve the code for the "run" function from the class AutomataAgent.
+    - actions
+        - agent_query_1
+            - agent_version
+                - automata_indexer_dev
+            - agent_instruction
+                - Retrieve the code for the function 'run' from AutomataAgent, including all necessary imports and docstrings.
+    """
+    )
+    actions = ActionExtractor.extract_actions(text)
+    assert len(actions) == 1

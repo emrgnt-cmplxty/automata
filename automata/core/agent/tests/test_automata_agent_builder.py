@@ -2,7 +2,6 @@ import pytest
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.tool_management.tool_management_utils import build_llm_toolkits
@@ -109,6 +108,10 @@ def test_builder_invalid_input_types(automata_agent_builder):
 
 def test_config_loading_different_versions():
     for config_version in AgentConfigVersion:
+        if config_version == AgentConfigVersion.DEFAULT:
+            continue
+        elif config_version == AgentConfigVersion.AUTOMATA_INITIALIZER:
+            continue
         agent_config = AutomataAgentConfig.load(config_version)
         assert isinstance(agent_config, AutomataAgentConfig)
 

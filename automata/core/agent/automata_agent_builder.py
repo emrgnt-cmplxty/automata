@@ -13,6 +13,7 @@ class AutomataAgentBuilder(BaseModel):
     """
     A builder class for constructing instances of AutomataAgent.
     """
+
     _instance: AutomataAgent = PrivateAttr()
 
     def __init__(self, config: Optional[AutomataAgentConfig]):

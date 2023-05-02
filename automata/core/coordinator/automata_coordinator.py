@@ -1,10 +1,9 @@
 from typing import List
 
-
-from automata.core.agent.automata_agent import MasterAutomataAgent
-from automata.core.agent.automata_actions import AgentAction
-from automata.core.coordinator.automata_instance import AutomataInstance
 from automata.configs.config_enums import AgentConfigVersion
+from automata.core.agent.automata_actions import AgentAction
+from automata.core.agent.automata_agent import MasterAutomataAgent
+from automata.core.coordinator.automata_instance import AutomataInstance
 
 
 class AutomataCoordinator:
@@ -25,7 +24,9 @@ class AutomataCoordinator:
         if config_version not in [ele.config_version for ele in self.agent_instances]:
             raise ValueError("Agent does not exist.")
         self.agent_instances = [
-            instance for instance in self.agent_instances if instance.config_version != config_version
+            instance
+            for instance in self.agent_instances
+            if instance.config_version != config_version
         ]
 
     def set_master_agent(self, master_agent: MasterAutomataAgent):
@@ -36,7 +37,7 @@ class AutomataCoordinator:
         """Runs the selected agent and returns the result."""
         # Run the selected agent and return the result
         try:
-            agent_instance = self._select_agent_instance(action.agent_config_version)
+            agent_instance = self._select_agent_instance(action.agent_version)
             output = agent_instance.run("\n".join(action.agent_instruction))
             return output
         except Exception as e:
@@ -45,7 +46,10 @@ class AutomataCoordinator:
     def build_agent_message(self) -> str:
         """Builds a message containing all agents and their descriptions."""
         return "".join(
-            [f"\n{agent.config_version.value}: {agent.description}\n" for agent in self.agent_instances]
+            [
+                f"\n{agent.config_version.value}: {agent.description}\n"
+                for agent in self.agent_instances
+            ]
         )
 
     def _select_agent_instance(self, config_version: AgentConfigVersion) -> AutomataInstance:

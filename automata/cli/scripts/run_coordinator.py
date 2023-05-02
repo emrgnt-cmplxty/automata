@@ -1,4 +1,3 @@
-import argparse
 import logging
 import logging.config
 from typing import Dict
@@ -59,64 +58,6 @@ def create_coordinator(agent_config_versions: str):
     return coordinator
 
 
-def parse_arguments():
-    """
-    Parse command line arguments.
-
-    :return: Parsed arguments namespace.
-    """
-    parser = argparse.ArgumentParser(description="Run the AutomataAgent.")
-    parser.add_argument("--instructions", type=str, help="The initial instructions for the agent.")
-    parser.add_argument(
-        "--model", type=str, default="gpt-4", help="The model to be used for the agent."
-    )
-    parser.add_argument(
-        "--documentation_url",
-        type=str,
-        default="https://python.langchain.com/en/latest",
-        help="The model to be used for the agent.",
-    )
-    parser.add_argument(
-        "--session_id", type=str, default=None, help="The session id for the agent."
-    )
-    parser.add_argument(
-        "--stream", type=bool, default=True, help="Should we stream the responses?"
-    )
-    parser.add_argument(
-        "--toolkits",
-        type=str,
-        default="python_indexer,python_writer,codebase_oracle",
-        help="Comma-separated list of toolkits to be used.",
-    )
-    parser.add_argument(
-        "--include_overview",
-        type=bool,
-        default=False,
-        help="Should the instruction prompt include an overview?",
-    )
-    parser.add_argument(
-        "--master_config_version",
-        type=str,
-        default=AgentConfigVersion.AUTOMATA_MASTER_DEV.value,
-        help="The config version of the agent.",
-    )
-    parser.add_argument(
-        "--agent_config_versions",
-        type=str,
-        default=f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
-        help="Should the instruction prompt include an overview?",
-    )
-    parser.add_argument(
-        "--instruction_version",
-        type=str,
-        default="agent_introduction_dev",
-        help="The instruction version.",
-    )
-    parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
-
-    return parser.parse_args()
-
-
 def create_initial_payload(include_overview: bool, coordinator: AutomataCoordinator):
     """
     Create initial payload for the master agent.
@@ -146,14 +87,13 @@ def create_master_agent(args, initial_payload):
     :param initial_payload: Dictionary containing the initial payload.
     :return: MasterAutomataAgent instance.
     """
-    agent_config_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
-    agent_config = AutomataAgentConfig.load(agent_config_version)
+    agent_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
+    agent_config = AutomataAgentConfig.load(agent_version)
     inputs = {
-        "documentation_url": args.documentation_url,
         "model": args.model,
     }
     master_llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
-        args.toolkits.split(","), **inputs
+        args.master_toolkits.split(","), **inputs
     )
 
     master_agent = MasterAutomataAgent.from_agent(
@@ -200,18 +140,18 @@ def run(args):
 
     coordinator.set_master_agent(master_agent)
     master_agent.set_coordinator(coordinator)
+    if not args.session_id:
+        return master_agent.run()
+    else:
+        master_agent.replay_messages()
+        import pdb
 
-    return master_agent.run()
+        pdb.set_trace()
 
 
-def main():
-    args = parse_arguments()
-
+def main(args):
     configure_logging(args.verbose)
 
     result = run(args)
-    logger.info("Final Result = ", result)
-
-
-if __name__ == "__main__":
-    main()
+    logger.info(f"Final Result = {result}")
+    return result

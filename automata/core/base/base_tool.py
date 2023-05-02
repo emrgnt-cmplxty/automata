@@ -121,7 +121,7 @@ class BaseTool(BaseModel):
             verbose_ = self.verbose
         self.callback_manager.on_tool_start(
             {"name": self.name, "description": self.description},
-            tool_input,
+            tool_input,  # type: ignore
             verbose=verbose_,
             color=start_color,
             **kwargs,
@@ -152,7 +152,7 @@ class BaseTool(BaseModel):
         if self.callback_manager.is_async:
             await self.callback_manager.on_tool_start(
                 {"name": self.name, "description": self.description},
-                tool_input,
+                tool_input,  # type: ignore
                 verbose=verbose_,
                 color=start_color,
                 **kwargs,
@@ -160,7 +160,7 @@ class BaseTool(BaseModel):
         else:
             self.callback_manager.on_tool_start(
                 {"name": self.name, "description": self.description},
-                tool_input,
+                tool_input,  # type: ignore
                 verbose=verbose_,
                 color=start_color,
                 **kwargs,
