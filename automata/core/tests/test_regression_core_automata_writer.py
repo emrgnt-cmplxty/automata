@@ -3,6 +3,7 @@ import textwrap
 import pytest
 
 from automata.configs.config_enums import AgentConfigVersion
+
 from .conftest import build_agent_with_params, cleanup_and_check
 
 MODEL = "gpt-4"
