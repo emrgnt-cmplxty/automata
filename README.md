@@ -1,8 +1,3 @@
-Overview of code in each file and what it is meant to do
-Getting started guide to run the code for new users
-
-# Overview
-
 Automata Code Repository
 
 This repository contains a collection of tools and utilities for various tasks.
@@ -35,7 +30,7 @@ Main Packages and Modules:
 7. automata.tools.oracle.codebase_oracle:
    A codebase oracle module. The documentation for this module is currently unavailable.
 
-8. automata.core.agents.automata_agent:
+8. automata.core.agent.automata_agent:
    AutomataAgent is an autonomous agent that performs the actual work of the Automata system. Automata are responsible for executing instructions and reporting the results back to the master.
 
 # Getting Started
@@ -48,4 +43,5 @@ To run the code, follow these steps:
 4. Upgrade to the latest pip by running `python3 -m pip install --upgrade pip`
 5. Install the project in editable mode by running `pip3 install -e .`
 6. Install pre-commit hooks by running `pre-commit install`
-7. Execute the main script by running `python -m automata.main`
+7. Build appropriate .env file
+8. Execute the main script as in this example - `python -m automata.main_coordinator  --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`

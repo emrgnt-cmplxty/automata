@@ -1,7 +1,7 @@
 """Interface for tools."""
 from enum import Enum, auto
 from inspect import signature
-from typing import Any, Awaitable, Callable, List, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional, Tuple, Union
 
 from automata.core.base.base_tool import BaseTool
 
@@ -10,14 +10,14 @@ class Tool(BaseTool):
     """Tool that takes in function or coroutine directly."""
 
     description: str = ""
-    func: Callable[[str], str]
-    coroutine: Optional[Callable[[str], Awaitable[str]]] = None
+    func: Callable[..., str]
+    coroutine: Optional[Callable[..., Awaitable[str]]] = None
 
-    def _run(self, tool_input: str) -> str:
+    def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Use the tool."""
         return self.func(tool_input)
 
-    async def _arun(self, tool_input: str) -> str:
+    async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Use the tool asynchronously."""
         if self.coroutine:
             return await self.coroutine(tool_input)
@@ -37,11 +37,11 @@ class InvalidTool(BaseTool):
     name = "invalid_tool"
     description = "Called when tool name is invalid."
 
-    def _run(self, tool_name: str) -> str:
+    def _run(self, tool_name: Tuple[Optional[str], ...]) -> str:
         """Use the tool."""
         return f"{tool_name} is not a valid tool, try another one."
 
-    async def _arun(self, tool_name: str) -> str:
+    async def _arun(self, tool_name: Tuple[Optional[str], ...]) -> str:
         """Use the tool asynchronously."""
         return f"{tool_name} is not a valid tool, try another one."
 
@@ -119,5 +119,3 @@ class ToolkitType(Enum):
     PYTHON_WRITER = auto()
     CODEBASE_ORACLE = auto()
     DOCUMENTATION_GPT = auto()
-    AUTOMATA_INDEXER = auto()
-    AUTOMATA_WRITER = auto()

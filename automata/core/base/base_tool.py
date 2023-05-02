@@ -1,7 +1,7 @@
 """Base implementation for tools or skills."""
 
 from abc import abstractmethod
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 from langchain.callbacks import get_callback_manager
 from langchain.callbacks.base import BaseCallbackManager
@@ -95,20 +95,20 @@ class BaseTool(BaseModel):
         return callback_manager or get_callback_manager()
 
     @abstractmethod
-    def _run(self, tool_input: str) -> str:
+    def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Use the tool."""
 
     @abstractmethod
-    async def _arun(self, tool_input: str) -> str:
+    async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Use the tool asynchronously."""
 
-    def __call__(self, tool_input: str) -> str:
+    def __call__(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Make tools callable with str input."""
         return self.run(tool_input)
 
     def run(
         self,
-        tool_input: str,
+        tool_input: Tuple[Optional[str], ...],
         verbose: Optional[bool] = None,
         start_color: Optional[str] = "green",
         color: Optional[str] = "green",
@@ -138,7 +138,7 @@ class BaseTool(BaseModel):
 
     async def arun(
         self,
-        tool_input: str,
+        tool_input: Tuple[Optional[str], ...],
         verbose: Optional[bool] = None,
         start_color: Optional[str] = "green",
         color: Optional[str] = "green",

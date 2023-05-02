@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import List
 
 from automata.core.base.tool import Tool
 from automata.core.utils import run_retrieval_chain_with_sources_format
@@ -32,10 +32,6 @@ class CodebaseOracleToolManager(BaseToolManager):
             )
         ]
         return tools
-
-    def build_tools_with_automata(self, config: Any) -> List[Tool]:
-        """Not implemented."""
-        raise NotImplementedError
 
     def _run_codebase_oracle_agent(self, query: str) -> str:
         """Lookup the documentation for the given input text."""

@@ -26,7 +26,7 @@ system_instruction_template: >
       - actions
         - tool_query_0
           - tool_name
-            - automata-initializer
+            - automata_initializer
           - tool_args
             - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
 
@@ -213,5 +213,6 @@ system_instruction_template: >
   ensure that no error occurs the transcription process.
 
   Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
-
+description: ""
+number_of_expected_actions: 10
 template_format: "f-string"

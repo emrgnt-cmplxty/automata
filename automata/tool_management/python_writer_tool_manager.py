@@ -14,11 +14,9 @@ Example -
     tools = build_tools(tool_manager)
 """
 import logging
-from typing import Any, List, Optional
+from typing import List, Optional
 
-from automata.configs.config_types import AgentConfigVersion
-from automata.core.agents.automata_agent import AutomataAgentConfig
-from automata.core.agents.automata_agent_builder import AutomataAgentBuilder
+from automata.configs.config_enums import AgentConfigVersion
 from automata.core.base.tool import Tool
 from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -85,18 +83,6 @@ class PythonWriterToolManager(BaseToolManager):
         ]
         return tools
 
-    def build_tools_with_automata(self, config: Any) -> List[Tool]:
-        """Builds a list of Automata powered tool objects for interacting with PythonWriter."""
-        tools = [
-            Tool(
-                name="automata-writer-modify-module",
-                func=lambda input_str: self._automata_update_module(input_str, config),
-                description=f"Modifies the python code of a function, class, method, or module after receiving"
-                f" an input module path, source code, and optional class name. The actual work is carried out by an autonomous agent called Automata.",
-            ),
-        ]
-        return tools
-
     def _writer_update_module(self, module_path: str, class_name: Optional[str], code: str) -> str:
         """Writes the given code to the given module path and class name."""
         try:
@@ -107,32 +93,6 @@ class PythonWriterToolManager(BaseToolManager):
                 write_to_disk=True,
                 class_name=class_name,
             )
-            return "Success"
-        except Exception as e:
-            return "Failed to update the module with error - " + str(e)
-
-    def _automata_update_module(self, input_str: str, automata_config: AutomataAgentConfig) -> str:
-        """Creates an AutomataAgent to write the given task."""
-        from automata.tool_management.tool_management_utils import build_llm_toolkits
-
-        try:
-            initial_payload = {
-                "overview": self.writer.indexer.get_overview(),
-            }
-            agent = (
-                AutomataAgentBuilder(automata_config)
-                .with_initial_payload(initial_payload)
-                .with_instructions(input_str)
-                .with_llm_toolkits(build_llm_toolkits(["python_writer"]))
-                .with_model(self.model)
-                .with_stream(self.stream)
-                .with_verbose(self.verbose)
-                .with_temperature(self.temperature)
-                .build()
-            )
-
-            agent.run()
-
             return "Success"
         except Exception as e:
             return "Failed to update the module with error - " + str(e)

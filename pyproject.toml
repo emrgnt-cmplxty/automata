@@ -16,7 +16,7 @@ pytest = "^6.0"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression'"
+addopts = "-m 'not regression' --ignore=**/sample_modules/*"
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]
@@ -37,6 +37,7 @@ exclude = '''
     | dist
     | random
     | local_env
+    | build
   )/
   | foo.py           # also separately exclude a file named foo.py in
                       # the root of the project
@@ -50,7 +51,7 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 line_length = 99
-skip_glob = "local_env/*"
+skip_glob = ["local_env/*", "**/sample_code/*"]
 
 [tool.mypy]
 # other mypy configurations go here

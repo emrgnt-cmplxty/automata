@@ -1,3 +1,4 @@
+automata/local_work/*
 **/sample_modules/**
 interactions.sqlite3
 dump/
@@ -10,3 +11,5 @@ automata.egg-info/*
 local_env/*
 __pycache__/
 *.pyc
+/build/
+/dist/
