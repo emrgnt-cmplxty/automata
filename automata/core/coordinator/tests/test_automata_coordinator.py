@@ -3,12 +3,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from automata.configs.config_enums import AgentConfigVersion
+from automata.core.agent.automata_actions import AgentAction
 from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
-from automata.core.agent.automata_actions import AgentAction
 from automata.core.agent.tests.conftest import automata_agent as automata_agent_fixture  # noqa
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
-from automata.configs.config_enums import AgentConfigVersion
 
 
 @pytest.fixture
@@ -25,7 +25,9 @@ def master_agent(automata_agent_fixture):  # noqa
 
 # Mock AutomataInstance to be added to the coordinator
 class MockAutomataInstance(AutomataInstance):
-    def __init__(self, config_version: AgentConfigVersion, description: str, builder: AutomataAgentBuilder):
+    def __init__(
+        self, config_version: AgentConfigVersion, description: str, builder: AutomataAgentBuilder
+    ):
         super().__init__(config_version=config_version, description=description, builder=builder)
 
     def run(self, instruction):
@@ -37,7 +39,9 @@ def coordinator_with_mock_agent():
     coordinator = AutomataCoordinator()
     agent_builder = AutomataAgentBuilder
     mock_agent_instance = MockAutomataInstance(
-        config_version=AgentConfigVersion.TEST, description="Mock agent for testing.", builder=agent_builder
+        config_version=AgentConfigVersion.TEST,
+        description="Mock agent for testing.",
+        builder=agent_builder,
     )
     coordinator.add_agent_instance(mock_agent_instance)
     return coordinator
@@ -49,7 +53,9 @@ def test_initialize_coordinator(coordinator):
 
 def test_add_agent(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(
+        config_version=AgentConfigVersion.TEST, builder=agent_builder
+    )
 
     coordinator.add_agent_instance(agent_instance)
     assert len(coordinator.agent_instances) == 1
@@ -62,7 +68,9 @@ def test_set_coordinator_master(coordinator, master_agent):
 
 def test_cannot_add_agent_twice(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(
+        config_version=AgentConfigVersion.TEST, builder=agent_builder
+    )
 
     coordinator.add_agent_instance(agent_instance)
 
@@ -72,7 +80,9 @@ def test_cannot_add_agent_twice(coordinator):
 
 def test_remove_agent(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(
+        config_version=AgentConfigVersion.TEST, builder=agent_builder
+    )
 
     coordinator.add_agent_instance(agent_instance)
     coordinator.remove_agent_instance(config_version=AgentConfigVersion.TEST)
@@ -81,7 +91,9 @@ def test_remove_agent(coordinator):
 
 def test_cannot_remove_missing_agent(coordinator):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(
+        config_version=AgentConfigVersion.TEST, builder=agent_builder
+    )
 
     coordinator.add_agent_instance(agent_instance)
     with pytest.raises(ValueError):
@@ -90,7 +102,9 @@ def test_cannot_remove_missing_agent(coordinator):
 
 def test_add_agent_set_coordinator(coordinator, master_agent):
     agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_version=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(
+        config_version=AgentConfigVersion.TEST, builder=agent_builder
+    )
     coordinator.add_agent_instance(agent_instance)
 
     coordinator.set_master_agent(master_agent)

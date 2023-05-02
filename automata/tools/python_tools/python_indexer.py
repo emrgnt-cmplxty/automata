@@ -25,7 +25,8 @@ import copy
 import logging
 import os
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
-from typing import Dict, Optional, Union, cast
+from collections import defaultdict
+from typing import Dict, List, Optional, Union, cast
 
 from automata.core.utils import root_path
 
@@ -58,6 +59,7 @@ class PythonIndexer:
 
         self.abs_path = os.path.join(root_path(), rel_path)
         self.module_dict = self._build_module_dict()
+        self.module_lines_dict = self._build_module_lines_dict()
 
     def retrieve_code(self, module_path: str, object_path: Optional[str]) -> str:
         """
@@ -83,6 +85,36 @@ class PythonIndexer:
             return ast.unparse(result)
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_code_by_line(
+        self, module_path: str, line_number: int
+    ) -> Union[str, List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]]:
+        """
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            line_number (int): The line number of the code to retrieve.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
+
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        nodes = self.module_lines_dict[module_path][line_number]
+        outer_node = nodes[0]
+        start = outer_node.lineno
+        end = outer_node.end_lineno if outer_node.end_lineno else outer_node.lineno + 1
+        code_lines = ast.unparse(outer_node).split("\n")
+        for i in range(start, end + 1):
+            code_lines[i - start] = f"{i}: " + code_lines[i - start]
+            if i == line_number:
+                code_lines[i - start] = f"{code_lines[i - start]}    <------"
+
+        return "\n".join(code_lines)
 
     def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """
@@ -133,6 +165,29 @@ class PythonIndexer:
                         )[:-3]
                         module_dict[module_rel_path] = module
         return module_dict
+
+    def _build_module_lines_dict(
+        self,
+    ) -> Dict[str, Dict[int, List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]]]:
+        """
+        Builds the module dictionary by walking through the root directory and creating AST Module objects
+        for each Python source file. The module paths are used as keys in the dictionary.
+
+        Returns:
+            Dict[str, Module]: A dictionary with module paths as keys and AST Module objects as values.
+        """
+
+        module_line_dict: Dict[str, Dict[int, List]] = {}
+        for module_path, module in self.module_dict.items():
+            module_line_dict[module_path] = defaultdict(list)
+            for node in ast.walk(module):
+                if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                    start = node.lineno
+                    end = node.end_lineno if node.end_lineno else node.lineno
+                    for i in range(start, end + 1):
+                        module_line_dict[module_path][i].append(node)
+
+        return module_line_dict
 
     def retrieve_raw_code(self, module_path: str, object_path: Optional[str]) -> str:
         """

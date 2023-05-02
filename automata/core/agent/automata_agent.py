@@ -41,10 +41,11 @@ from termcolor import colored
 from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import ConfigCategory
-
 from automata.core.agent.agent import Agent
-from automata.core.agent.automata_action_extractor import AutomataActionExtractor as ActionExtractor
-from automata.core.agent.automata_actions import (AgentAction, ResultAction, ToolAction)
+from automata.core.agent.automata_action_extractor import (
+    AutomataActionExtractor as ActionExtractor,
+)
+from automata.core.agent.automata_actions import AgentAction, ResultAction, ToolAction
 from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
