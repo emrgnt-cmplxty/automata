@@ -156,5 +156,5 @@ system_instruction_template: >
   The return is formatted as an message in markdown which contains an "observation".
 
 description: ""
-number_of_expected_actions: 2
+number_of_expected_actions: 7
 template_format: "f-string"

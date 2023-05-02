@@ -1,10 +1,9 @@
-# Add this import at the beginning of your file
 import click
 
 from automata.configs.config_enums import AgentConfigVersion
 
 
-def common_options(f: click.Command) -> click.Command:
+def common_options(command: click.Command, *args, **kwargs) -> click.Command:
     options = [
         click.option("--instructions", type=str, help="The initial instructions for the agent."),
         click.option(
@@ -39,5 +38,5 @@ def common_options(f: click.Command) -> click.Command:
         ),
     ]
     for option in reversed(options):
-        f = option(f)
-    return f
+        command = option(command)
+    return command

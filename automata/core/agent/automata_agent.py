@@ -123,7 +123,7 @@ class AutomataAgent(Agent):
         """Run the test and report the tool outputs back to the master."""
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
-
+        print("Messages = %s" % (self.messages))
         response_summary = openai.ChatCompletion.create(
             model=self.model,
             messages=self.messages,
@@ -137,6 +137,8 @@ class AutomataAgent(Agent):
         )
 
         observations = self._generate_observations(response_text)
+        print("Observations = %s" % (observations))
+
         completion_message = retrieve_completion_message(observations)
         if completion_message is not None:
             self.completed = True
@@ -162,7 +164,7 @@ class AutomataAgent(Agent):
         if len(self.messages) == 0:
             logger.debug("No messages to replay.")
             return "No messages to replay."
-        for message in self.messages[1:]:
+        for message in self.messages[2:]:
             observations = self._generate_observations(message["content"])
             completion_message = retrieve_completion_message(observations)
             if completion_message:
@@ -363,11 +365,12 @@ class MasterAutomataAgent(AutomataAgent):
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
         """Process the messages in the conversation."""
         outputs = super()._generate_observations(response_text)
+        print("ResponseText = %s" % (response_text))
         actions = ActionExtractor.extract_actions(response_text)
-
+        print("Actions = %s" % (actions))
         for agent_action in actions:
             if isinstance(agent_action, AgentAction):
-                if agent_action.agent_config_version.value == AutomataAgent.INITIALIZER_DUMMY:
+                if agent_action.agent_version.value == AutomataAgent.INITIALIZER_DUMMY:
                     continue
                 agent_output = self._execute_agent(agent_action)
                 query_name = agent_action.agent_query.replace("query", "output")
@@ -399,8 +402,8 @@ class MasterAutomataAgent(AutomataAgent):
             pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
             matches = re.finditer(pattern, message["content"], re.DOTALL)
             for match in matches:
-                agent_config_version, agent_output = match.group(1), match.group(2).strip()
-                outputs[agent_config_version] = agent_output
+                agent_version, agent_output = match.group(1), match.group(2).strip()
+                outputs[agent_version] = agent_output
 
         for output_name in outputs:
             completion_message = completion_message.replace(

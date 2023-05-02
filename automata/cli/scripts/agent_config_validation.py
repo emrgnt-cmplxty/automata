@@ -79,7 +79,6 @@ def test_action_extraction(file_path):
         yaml_data = yaml.safe_load(file)
     actions = AutomataActionExtractor.extract_actions(yaml_data["system_instruction_template"])
     number_of_expected_actions = yaml_data["number_of_expected_actions"]
-
     if len(actions) != int(number_of_expected_actions):
         raise ValidationError(f"Action extraction test for {file_path} failed.")
 

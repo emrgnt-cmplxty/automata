@@ -87,8 +87,8 @@ def create_master_agent(args, initial_payload):
     :param initial_payload: Dictionary containing the initial payload.
     :return: MasterAutomataAgent instance.
     """
-    agent_config_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
-    agent_config = AutomataAgentConfig.load(agent_config_version)
+    agent_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
+    agent_config = AutomataAgentConfig.load(agent_version)
     inputs = {
         "model": args.model,
     }
@@ -140,8 +140,13 @@ def run(args):
 
     coordinator.set_master_agent(master_agent)
     master_agent.set_coordinator(coordinator)
+    if not args.session_id:
+        return master_agent.run()
+    else:
+        master_agent.replay_messages()
+        import pdb
 
-    return master_agent.run()
+        pdb.set_trace()
 
 
 def main(args):

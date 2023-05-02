@@ -20,7 +20,7 @@ class ToolField(Enum):
 
 class AgentField(Enum):
     INDICATOR = "agent_query"
-    NAME = "agent_config_version"
+    NAME = "agent_version"
     ARGS = "agent_instruction"
     QUERY = "agent_query"
     SPEC_LINES = 3

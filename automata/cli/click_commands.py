@@ -17,8 +17,8 @@ def cli(ctx):
     pass
 
 
-@cli.command()
 @common_options
+@cli.command()
 @click.option(
     "--instruction_version",
     type=str,
@@ -32,7 +32,7 @@ def cli(ctx):
 )
 @click.pass_context
 def master(ctx, *args, **kwargs):
-    from .scripts.main_coordinator import main
+    from .scripts.run_coordinator import main
 
     namespace = Namespace(**kwargs)
     main(namespace)

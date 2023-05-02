@@ -44,7 +44,6 @@ async def test_tool_arun(test_tool):
 def test_invalid_tool():
     invalid_tool = InvalidTool()
     response = invalid_tool.run(("InvalidToolName",))
-    print("response = ", response)
     assert response == "('InvalidToolName',) is not a valid tool, try another one."
 
 
