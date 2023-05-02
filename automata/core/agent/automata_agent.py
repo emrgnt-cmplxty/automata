@@ -363,9 +363,7 @@ class MasterAutomataAgent(AutomataAgent):
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
         """Process the messages in the conversation."""
         outputs = super()._generate_observations(response_text)
-        print("ResponseText = %s" % (response_text))
         actions = ActionExtractor.extract_actions(response_text)
-        print("Actions = %s" % (actions))
         for agent_action in actions:
             if isinstance(agent_action, AgentAction):
                 if agent_action.agent_version.value == AutomataAgent.INITIALIZER_DUMMY:
