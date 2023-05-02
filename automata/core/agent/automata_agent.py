@@ -41,15 +41,17 @@ from termcolor import colored
 from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import ConfigCategory
-
 from automata.core.agent.agent import Agent
-from automata.core.agent.automata_action_extractor import AutomataActionExtractor as ActionExtractor
-from automata.core.agent.automata_actions import (AgentAction, ResultAction, ToolAction)
+from automata.core.agent.automata_action_extractor import (
+    AutomataActionExtractor as ActionExtractor,
+)
+from automata.core.agent.automata_actions import AgentAction, ResultAction, ToolAction
 from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-from automata.core.utils import format_config, load_yaml_config
+from automata.core.base.openai import OpenAIChatCompletionResult
+from automata.core.utils import format_prompt, load_yaml_config
 
 logger = logging.getLogger(__name__)
 
@@ -131,8 +133,9 @@ class AutomataAgent(Agent):
         response_text = (
             self._stream_message(response_summary)
             if self.stream
-            else response_summary["choices"][0]["message"]["content"]
+            else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
         )
+
         observations = self._generate_observations(response_text)
         completion_message = retrieve_completion_message(observations)
         if completion_message is not None:
@@ -181,7 +184,7 @@ class AutomataAgent(Agent):
         self.messages = []
         if "tools" in self.instruction_input_variables:
             self.initial_payload["tools"] = self._build_tool_message()
-        system_instruction = format_config(self.initial_payload, self.system_instruction_template)
+        system_instruction = format_prompt(self.initial_payload, self.system_instruction_template)
         self._init_database()
         if self.session_id:
             self._load_previous_interactions()
@@ -319,7 +322,7 @@ class AutomataAgent(Agent):
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_config(formatters, message["content"])
+            input_message = format_prompt(formatters, message["content"])
             input_messages.append({"role": message["role"], "content": input_message})
 
         return input_messages

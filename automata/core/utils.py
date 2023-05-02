@@ -2,16 +2,16 @@
 choose a work item to work on, and remove HTML tags from text."""
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict
+
 import colorlog
 import numpy as np
 import openai
 import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
-from langchain.schema import Document
-from automata.configs.config_enums import AgentConfigVersion
 
-def format_config(format_variables: Dict[str, str], input_text: str) -> str:
+
+def format_prompt(format_variables: Dict[str, str], input_text: str) -> str:
     """Format expected strings into the config."""
     for arg in format_variables:
         input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
@@ -119,4 +119,3 @@ def calculate_similarity(content_a: str, content_b: str) -> float:
     magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
-

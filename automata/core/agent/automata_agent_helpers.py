@@ -1,6 +1,8 @@
 from typing import Dict, Optional
-from .automata_action_extractor import AutomataActionExtractor as ActionExtractor
+
 from .automata_agent_utils import ActionIndicator, ResultField
+
+
 def generate_user_observation_message(observations: Dict[str, str], include_prefix=True) -> str:
     """Generate a message for the user based on the observations."""
     message = ""
@@ -14,9 +16,7 @@ def generate_user_observation_message(observations: Dict[str, str], include_pref
 def append_observation_message(observation_name: str, observations: Dict[str, str], message: str):
     new_message = ""
     new_message += f"    {ActionIndicator.ACTION.value}{observation_name}" + "\n"
-    new_message += (
-        f"      {ActionIndicator.ACTION.value}{observations[observation_name]}" + "\n"
-    )
+    new_message += f"      {ActionIndicator.ACTION.value}{observations[observation_name]}" + "\n"
     return message + new_message
 
 
