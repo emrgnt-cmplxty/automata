@@ -26,3 +26,16 @@ def retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[st
         if ResultField.INDICATOR.value in processed_input:
             return processed_inputs[processed_input]
     return None
+
+
+def create_instruction_payload(overview: str, agents_message: str) -> Dict[str, str]:
+    """Create initial payload for the master agent."""
+    instruction_payload: Dict[str, str] = {}
+
+    if overview != "":
+        instruction_payload["overview"] = overview
+
+    if agents_message != "":
+        instruction_payload["agents"] = agents_message
+
+    return instruction_payload

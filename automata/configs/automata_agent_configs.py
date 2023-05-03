@@ -13,7 +13,7 @@ class AutomataAgentConfig(BaseModel):
     """
     Args:
         config_version (AgentConfigVersion): The config_version of the agent to use.
-        initial_payload (Dict[str, str]): Initial payload to send to the agent.
+        instruction_payload (Dict[str, str]): Initial payload to send to the agent.
         llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
         instructions (str): A string of instructions to execute.
         system_instruction_template (str): A string of instructions to execute.
@@ -32,7 +32,7 @@ class AutomataAgentConfig(BaseModel):
         arbitrary_types_allowed = True
 
     config_version: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_DEV
-    initial_payload: Dict[str, str] = {}
+    instruction_payload: Dict[str, str] = {}
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
     description: str = ""
@@ -74,7 +74,7 @@ class AutomataAgentConfig(BaseModel):
 
         if "overview" in config.instruction_input_variables:
             indexer = PythonIndexer(root_py_path())
-            config.initial_payload["overview"] = indexer.get_overview()
+            config.instruction_payload["overview"] = indexer.build_overview()
 
     @classmethod
     def load(cls, config_version: AgentConfigVersion) -> "AutomataAgentConfig":

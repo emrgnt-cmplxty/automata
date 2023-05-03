@@ -82,10 +82,11 @@ class AutomataAgent(Agent):
             modify_last_instruction(new_instruction: str) -> None
             replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
             run() -> str: Runs the agent.
+            get_non_instruction_messages() -> List[Dict[str, str]]: Returns all messages that are not instructions.
         """
         if config is None:
             config = AutomataAgentConfig()
-        self.initial_payload = config.initial_payload
+        self.instruction_payload = config.instruction_payload
         self.llm_toolkits = config.llm_toolkits
         self.instructions = config.instructions
         self.config_version = config.config_version
@@ -96,11 +97,10 @@ class AutomataAgent(Agent):
         self.verbose = config.verbose
         self.max_iters = config.max_iters
         self.temperature = config.temperature
-        self.session_id = config.session_id
         self.instruction_version = config.instruction_version
         self.completed = False
-        self.is_master_agent = False
-        self.latest_observations: Dict[str, str] = {}
+        self.eval_mode = False
+        self.session_id = config.session_id
         self.conn: Optional[sqlite3.Connection] = None
 
     def __del__(self):
@@ -142,7 +142,9 @@ class AutomataAgent(Agent):
             self.completed = True
             self._save_interaction(
                 "assistant",
-                self._parse_completion_message(completion_message),
+                self._parse_completion_message(completion_message)
+                if not self.eval_mode
+                else completion_message,
             )
             return None
 
@@ -154,7 +156,6 @@ class AutomataAgent(Agent):
             else AutomataAgent.CONTINUE_MESSAGE,
         )
 
-        self.latest_observations = observations
         return (assistant_message, user_message)
 
     def replay_messages(self) -> str:
@@ -178,13 +179,19 @@ class AutomataAgent(Agent):
         previous_message = self.messages[-1]
         self.messages[-1] = {"role": previous_message["role"], "content": f"{new_instruction}"}
 
+    def get_non_instruction_messages(self) -> List[Dict[str, str]]:
+        """Get the non-instruction messages."""
+        return self.messages[self.NUM_DEFAULT_MESSAGES :]
+
     def _setup(self):
         """Setup the agent."""
         openai.api_key = OPENAI_API_KEY
         self.messages = []
         if "tools" in self.instruction_input_variables:
-            self.initial_payload["tools"] = self._build_tool_message()
-        system_instruction = format_prompt(self.initial_payload, self.system_instruction_template)
+            self.instruction_payload["tools"] = self._build_tool_message()
+        system_instruction = format_prompt(
+            self.instruction_payload, self.system_instruction_template
+        )
         self._init_database()
         if self.session_id:
             self._load_previous_interactions()
@@ -198,7 +205,7 @@ class AutomataAgent(Agent):
                 self._save_interaction(message["role"], message["content"])
         logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
         logger.debug("-" * 60)
-        if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
+        if set(self.instruction_input_variables) != set(list(self.instruction_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
         logger.debug("Session ID: %s" % self.session_id)
         logger.debug("-" * 60)
@@ -354,7 +361,6 @@ class MasterAutomataAgent(AutomataAgent):
         """Initialize the master automata agent."""
         super().__init__(agent_config, *args, **kwargs)
         self.coordinator = None
-        self.is_master_agent = True
 
     def set_coordinator(self, coordinator: "AutomataCoordinator"):
         """Set the coordinator."""
@@ -415,7 +421,7 @@ class MasterAutomataAgent(AutomataAgent):
         master_agent.llm_toolkits = agent.llm_toolkits
         master_agent.instructions = agent.instructions
         master_agent.model = agent.model
-        master_agent.initial_payload = agent.initial_payload
+        master_agent.instruction_payload = agent.instruction_payload
         master_agent.config_version = agent.config_version
         master_agent.system_instruction_template = agent.system_instruction_template
         master_agent.instruction_input_variables = agent.instruction_input_variables

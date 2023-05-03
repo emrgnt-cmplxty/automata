@@ -36,3 +36,13 @@ def master(ctx, *args, **kwargs):
 
     namespace = Namespace(**kwargs)
     main(namespace)
+
+
+@common_options
+@cli.command()
+@click.pass_context
+def evaluator(ctx, *args, **kwargs):
+    from .scripts.run_evaluator import main
+
+    namespace = Namespace(**kwargs)
+    main(namespace)
