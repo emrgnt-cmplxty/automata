@@ -6,7 +6,6 @@ from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.utils import root_py_path
 from automata.tool_management.base_tool_manager import BaseToolManager
-from automata.tools.documentation.documentation_gpt import DocumentationGPT
 from automata.tools.oracle.codebase_oracle import CodebaseOracle
 from automata.tools.python_tools.python_indexer import PythonIndexer
 from automata.tools.python_tools.python_writer import PythonWriter
@@ -17,10 +16,6 @@ logger = logging.getLogger(__name__)
 class ToolManagerFactory:
     @staticmethod
     def create_tool_manager(toolkit_type: ToolkitType, inputs: dict) -> Optional[BaseToolManager]:
-        model = inputs.get("model") or "gpt-4"
-        documentation_url = inputs.get("documentation_url") or ""
-        temperature = inputs.get("temperature") or 0.7
-
         if toolkit_type == ToolkitType.PYTHON_INDEXER:
             python_indexer = PythonIndexer(root_py_path())
             PythonIndexerToolManager = importlib.import_module(
@@ -39,15 +34,6 @@ class ToolManagerFactory:
             ).CodebaseOracleToolManager
             return CodebaseOracleToolManager(
                 codebase_oracle=CodebaseOracle.get_default_codebase_oracle()
-            )
-        elif toolkit_type == ToolkitType.DOCUMENTATION_GPT:
-            DocumentationGPTToolManager = importlib.import_module(
-                "automata.tool_management.documentation_gpt_tool_manager"
-            ).DocumentationGPTToolManager
-            return DocumentationGPTToolManager(
-                documentation_gpt=DocumentationGPT(
-                    url=documentation_url, model=model, temperature=temperature, verbose=True
-                )
             )
         else:
             return None
@@ -104,8 +90,6 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
             toolkit_type = ToolkitType.PYTHON_WRITER
         elif tool_name == "codebase_oracle":
             toolkit_type = ToolkitType.CODEBASE_ORACLE
-        elif tool_name == "documentation_gpt":
-            toolkit_type = ToolkitType.DOCUMENTATION_GPT
         else:
             logger.warning("Unknown tool: %s", tool_name)
             raise ValueError(f"Unknown tool: {tool_name}")
