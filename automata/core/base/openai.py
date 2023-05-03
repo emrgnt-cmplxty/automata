@@ -6,7 +6,7 @@ import logging
 import threading
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, NamedTuple, Union
 
 logger = logging.getLogger(__name__)
 ENCODER_LOCK = threading.Lock()
@@ -14,8 +14,16 @@ ENCODER_LOCK = threading.Lock()
 # This is an approximation to the type accepted as the `prompt` field to `openai.Completion.create` calls
 OpenAICreatePrompt = Union[str, List[str], List[int], List[List[int]]]
 
+
 # This is the type accepted as the `prompt` field to `openai.ChatCompletion.create` calls
-OpenAIChatMessage = Dict[str, str]  # A message is a dictionary with "role" and "content" keys
+class OpenAIChatMessage(NamedTuple):
+    role: str
+    content: str
+
+    def to_dict(self) -> Dict[str, str]:
+        return {"role": self.role, "content": self.content}
+
+
 OpenAICreateChatPrompt = List[OpenAIChatMessage]  # A chat log is a list of messages
 
 
@@ -36,13 +44,13 @@ def chat_prompt_to_text_prompt(prompt: OpenAICreateChatPrompt, for_completion: b
 
     # For a single message, be it system, user, or assistant, just return the message
     if len(prompt) == 1:
-        return prompt[0]["content"]
+        return prompt[0].content
 
     text = ""
     for msg in prompt:
-        role = msg["name"] if "name" in msg else msg["role"]
+        role = msg.role
         prefix = chat_to_prefixes.get(role, role.capitalize() + ": ")
-        content = msg["content"]
+        content = msg.content
         text += f"{prefix}{content}\n"
     if for_completion:
         text += "Assistant: "
@@ -52,7 +60,7 @@ def chat_prompt_to_text_prompt(prompt: OpenAICreateChatPrompt, for_completion: b
 def text_prompt_to_chat_prompt(prompt: str, role: str = "system") -> OpenAICreateChatPrompt:
     assert isinstance(prompt, str), f"Expected a text prompt, got {prompt}"
     return [
-        {"role": role, "content": prompt},
+        OpenAIChatMessage(role=role, content=prompt),
     ]
 
 

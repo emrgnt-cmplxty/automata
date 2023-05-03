@@ -182,7 +182,7 @@ def test_iter_task_with_agent_query(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- agent_output_0" in completion_message
     assert "- This is a mock return " in completion_message
 
@@ -237,7 +237,7 @@ def test_iter_task_with_agent_and_tool_query(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- tool_output_0" in completion_message
     assert "- tool_output_1" in completion_message
     assert "- agent_output_1" in completion_message
@@ -257,7 +257,7 @@ def test_iter_task_with_agent_and_tool_query_2(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- agent_output_0" in completion_message
     assert "- This is a mock return " in completion_message
 
@@ -298,7 +298,7 @@ def test_iter_task_with_agent_and_tool_query_3(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- agent_output_1" in completion_message
     assert "- This is a mock return " in completion_message
 

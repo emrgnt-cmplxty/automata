@@ -26,10 +26,10 @@ def test_build_initial_messages(automata_agent):
         "user_input_instructions": "DUMMY_INSTRUCTIONS",
     }
     initial_messages = automata_agent._build_initial_messages(formatters)
-    assert AutomataAgent.INITIALIZER_DUMMY in initial_messages[0]["content"]
-    assert "assistant" == initial_messages[0]["role"]
-    assert "DUMMY_INSTRUCTIONS" in initial_messages[1]["content"]
-    assert "user" == initial_messages[1]["role"]
+    assert AutomataAgent.INITIALIZER_DUMMY in initial_messages[0].content
+    assert "assistant" == initial_messages[0].role
+    assert "DUMMY_INSTRUCTIONS" in initial_messages[1].content
+    assert "user" == initial_messages[1].role
 
 
 def test_init_database(automata_agent):
@@ -46,8 +46,8 @@ def test_save_and_load_interaction(automata_agent):
     automata_agent._load_previous_interactions()
     saved_results = automata_agent.messages
     assert len(saved_results) == 4
-    assert saved_results[-1]["role"] == "assistant"
-    assert saved_results[-1]["content"] == "Test message."
+    assert saved_results[-1].role == "assistant"
+    assert saved_results[-1].content == "Test message."
 
 
 @patch("openai.ChatCompletion.create")
@@ -62,8 +62,8 @@ def test_iter_task_without_api_call(mock_openai_chatcompletion_create, automata_
 
     # Check if the result is as expected
     assistant_message, user_message = result
-    assert assistant_message["content"] == "The dummy_tool has been tested successfully."
-    assert user_message["content"], AutomataAgent.CONTINUE_MESSAGE
+    assert assistant_message.content == "The dummy_tool has been tested successfully."
+    assert user_message.content, AutomataAgent.CONTINUE_MESSAGE
     assert len(automata_agent.messages) == 5
 
 
@@ -106,7 +106,7 @@ def test_iter_task_with_completion_message(
     assert automata_agent.completed is True
 
     # Check if the completion message is stored correctly
-    completion_message = automata_agent.messages[-1]["content"]
+    completion_message = automata_agent.messages[-1].content
     assert "AutomataAgent is imported in the following files:" in completion_message
 
 
@@ -141,7 +141,7 @@ def test_iter_task_with_parsed_completion_message(
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = api_response
     automata_agent.iter_task()
-    completion_message = automata_agent.messages[-1]["content"]
+    completion_message = automata_agent.messages[-1].content
     stripped_completion_message = [ele.strip() for ele in completion_message.split("\n")]
     assert stripped_completion_message[0] == "task_0"
     assert (
@@ -188,7 +188,7 @@ def test_iter_task_with_parsed_completion_message_2(
     mock_openai_chatcompletion_create.return_value = api_response
     automata_agent.iter_task()
 
-    completion_message = automata_agent.messages[-1]["content"]
+    completion_message = automata_agent.messages[-1].content
     stripped_completion_message = [ele.strip() for ele in completion_message.split("\n")]
     assert stripped_completion_message[0] == "{agent_query_0}"
 
@@ -210,6 +210,6 @@ def test_iter_task_with_parsed_completion_message_2_master(
     mock_openai_chatcompletion_create.return_value = api_response
     automata_agent.iter_task()
 
-    completion_message = automata_agent.messages[-1]["content"]
+    completion_message = automata_agent.messages[-1].content
     stripped_completion_message = [ele.strip() for ele in completion_message.split("\n")]
     assert stripped_completion_message[0] == "{agent_query_0}"
