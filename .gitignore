@@ -13,3 +13,5 @@ __pycache__/
 *.pyc
 /build/
 /dist/
+/coverage.xml
+/.coverage
