@@ -10,7 +10,7 @@ from automata.config import REPOSITORY_PATH
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
 
-class CoverageManager:
+class CoverageGenerator:
     """
     A class to produce a coverage report, load it and parse it into memory
     # TODO: right now this only supports functions and methods.
@@ -80,7 +80,6 @@ class CoverageManager:
         )
         # sort by percent covered ascending
         uncovered_lines = uncovered_lines.sort_values(by=["percent_covered"], ascending=True)
-        breakpoint()
         return uncovered_lines
 
     def _get_nodes_from_row(self, row) -> List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]:
@@ -128,8 +127,15 @@ class CoverageManager:
         percent_covered = 1 - (num_uncovered / num_total)
         return percent_covered
 
+    def clean_up(self):
+        """
+        Removes the coverage.xml file
+        """
+        os.remove(self.COVERAGE_FILE_PATH)
+
 
 if __name__ == "__main__":
-    cm = CoverageManager()
-    cm.write_coverage_xml()
-    cm.parse_coverage_xml()
+    coverage_generator = CoverageGenerator()
+    coverage_generator.write_coverage_xml()
+    coverage_generator.parse_coverage_xml()
+    coverage_generator.clean_up()
