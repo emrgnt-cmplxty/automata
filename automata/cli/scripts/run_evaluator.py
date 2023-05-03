@@ -57,4 +57,4 @@ def main(args):
     )
 
     generate_eval_result = evaluator.generate_eval_result(instruction, expected_actions)
-    logger.info("generate_eval_result = ", generate_eval_result)
+    print("generate_eval_result = ", generate_eval_result)

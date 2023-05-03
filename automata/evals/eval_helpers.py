@@ -42,10 +42,6 @@ class EvalAction:
         return extracted_action == expected_action
 
 
-# def full_match(extracted_action, expected_action):
-#     return extracted_action == expected_action
-
-
 def calc_eval_result(
     extracted_actions: List[Action], expected_actions: List[EvalAction]
 ) -> EvalResult:
@@ -62,9 +58,8 @@ def calc_eval_result(
             # Check if actions are of the same type
             if type(extracted_action) == type(expected_action):
                 if isinstance(extracted_action, ToolAction):
-                    # extracted_action = cast(ToolAction, extracted_action)
-                    expected_action = cast(ToolAction, expected_action)
                     # Compare tool_name and tool_query
+                    expected_action = cast(ToolAction, expected_action)
                     if (
                         extracted_action.tool_name == expected_action.tool_name
                         and extracted_action.tool_query == expected_action.tool_query
