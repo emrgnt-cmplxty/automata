@@ -86,7 +86,7 @@ class PythonIndexer:
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def retrieve_code_by_line(
+    def retrieve_outer_code_by_line(
         self, module_path: str, line_number: int
     ) -> Union[str, List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]]:
         """
@@ -115,6 +115,13 @@ class PythonIndexer:
                 code_lines[i - start] = f"{code_lines[i - start]}    <------"
 
         return "\n".join(code_lines)
+
+    def retrieve_nodes_by_line(
+        self, module_path: str, line_number: int
+    ) -> List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]:
+        if module_path not in self.module_dict:
+            return []
+        return self.module_lines_dict[module_path][line_number]
 
     def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """

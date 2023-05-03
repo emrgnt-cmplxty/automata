@@ -72,11 +72,11 @@ def test_docstring_module(indexer):
 def test_retrieve_code_by_line(indexer):
     module_name = "test_module"
     line_number = 4
-    result = indexer.retrieve_code_by_line(module_name, line_number)
+    result = indexer.retrieve_outer_code_by_line(module_name, line_number)
     expected_match = '4: def test_function() -> bool:    <------\n5:     """This is my new function"""\n6:     return True'
     assert result == expected_match
 
     line_number = 18
-    result = indexer.retrieve_code_by_line(module_name, line_number)
+    result = indexer.retrieve_outer_code_by_line(module_name, line_number)
     expected_match = '9: class TestClass:\n10:     """This is my test class"""\n11: \n12:     def __init__(self):\n13:         """This initializes TestClass"""\n14:         pass\n15: \n16:     def test_method(self) -> bool:\n17:         """This is my test method"""\n18:         return False    <------'
     assert result == expected_match

@@ -2,7 +2,6 @@ import pytest
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.tool_management.tool_management_utils import build_llm_toolkits
