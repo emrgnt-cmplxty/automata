@@ -220,21 +220,9 @@ system_instruction_template: >
 
     ...
 
-
-
-  After receiving your instructions, begin with a step-by-step thought process establishing the necessary
-  actions that must be taken to complete the task. Then, execute the appropriate tools to complete the task.
-  RETURN THE RESULT in the markdown format specified above. Do NOT forget to follow the Thought-Action -> Observation lifecycle.
-  When returning code, follow the specified format exactly, e.g. write "python\n```\ndef f(x: int):\n...```", also
-  do not forget to include a "None" input for the class name if the function is not a class method.
-
-  Note, if the user provides a request that you are unable to complete, such as a write request without provided
-  code, then you should return a message with markdown containing the tag "return_result_0" and the message
-  "I am unable to complete the given task. Please provide the necessary code to complete the task.".
-
 number_of_expected_actions: 9
-
 description: >
-  This agent is automata_writer_prod, an agent which parses natural language queries to write code to the local Python repository.
-
+  This agent is automata_writer_dev, an agent which parses natural language queries to write code to the local Python repository.
+tools: >
+  python_writer
 template_format: "f-string"

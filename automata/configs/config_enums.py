@@ -22,4 +22,3 @@ class AgentConfigVersion(Enum):
     AUTOMATA_INDEXER_PROD = "automata_indexer_prod"
     AUTOMATA_WRITER_PROD = "automata_writer_prod"
     AUTOMATA_MASTER_PROD = "automata_master_prod"
-    AUTOMATA_DOCSTRING_MANAGER_PROD = "automata_docstring_manager_prod"

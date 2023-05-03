@@ -58,7 +58,7 @@ system_instruction_template: >
                 def __init__(self, config: Optional[AutomataAgentConfig] = None):
                   if config is None:
                       config = AutomataAgentConfig()
-                  self.initial_payload = config.initial_payload
+                  self.instruction_payload = config.instruction_payload
                   ...
             ```
     *Assistant*
@@ -77,7 +77,7 @@ system_instruction_template: >
                   def __init__(self, config: Optional[AutomataAgentConfig] = None):
                     if config is None:
                         config = AutomataAgentConfig()
-                    self.initial_payload = config.initial_payload
+                    self.instruction_payload = config.instruction_payload
                     ...
               ```
     *User*

@@ -10,7 +10,7 @@ def automata_agent():
     tool_list = ["python_indexer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
-    initial_payload = {}
+    instruction_payload = {}
 
     instructions = "Test instruction."
 
@@ -19,7 +19,7 @@ def automata_agent():
 
     agent = (
         AutomataAgentBuilder.from_config(agent_config)
-        .with_initial_payload(initial_payload)
+        .with_instruction_payload(instruction_payload)
         .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)
         .build()

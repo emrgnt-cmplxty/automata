@@ -8,6 +8,7 @@ from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_helpers import create_instruction_payload
 from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
 from automata.core.utils import get_logging_config, root_py_path
@@ -58,33 +59,13 @@ def create_coordinator(agent_config_versions: str):
     return coordinator
 
 
-def create_initial_payload(include_overview: bool, coordinator: AutomataCoordinator):
-    """
-    Create initial payload for the master agent.
-
-    :param include_overview: Boolean, if True, include overview in the initial payload.
-    :param coordinator: AutomataCoordinator instance.
-    :return: Dictionary containing the initial payload.
-    """
-    if include_overview:
-        indexer = PythonIndexer(root_py_path())
-        initial_payload = {
-            "overview": indexer.get_overview(),
-        }
-    else:
-        initial_payload = {}
-    initial_payload["agents"] = coordinator.build_agent_message()
-
-    return initial_payload
-
-
-def create_master_agent(args, initial_payload):
+def create_master_agent(args, instruction_payload):
     """
     Create the master AutomataAgent instance.
 
     :param args: Parsed command line arguments.
     :param coordinator: AutomataCoordinator instance.
-    :param initial_payload: Dictionary containing the initial payload.
+    :param instruction_payload: Dictionary containing the initial payload.
     :return: MasterAutomataAgent instance.
     """
     agent_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
@@ -98,7 +79,7 @@ def create_master_agent(args, initial_payload):
 
     master_agent = MasterAutomataAgent.from_agent(
         AutomataAgentBuilder.from_config(agent_config)
-        .with_initial_payload(initial_payload)
+        .with_instruction_payload(instruction_payload)
         .with_instructions(args.instructions)
         .with_llm_toolkits(master_llm_toolkits)
         .with_model(args.model)
@@ -121,11 +102,11 @@ def check_input(args):
 
 
 def run(args):
-    """
+    """get_overview
     Create coordinator and agents based on the provided arguments.
 
     :param args: Parsed command line arguments.
-    :return: Tuple containing the AutomataCoordinator and initial_payload.
+    :return: Tuple containing the AutomataCoordinator and instruction_payload.
     """
     check_input(args)
     logger.info(
@@ -134,9 +115,10 @@ def run(args):
     logger.info("-" * 60)
 
     coordinator = create_coordinator(args.agent_config_versions)
-
-    initial_payload = create_initial_payload(args.include_overview, coordinator)
-    master_agent = create_master_agent(args, initial_payload)
+    agents_message = coordinator.build_agent_message()
+    overview = PythonIndexer(root_py_path()).build_overview() if args.include_overview else ""
+    instruction_payload = create_instruction_payload(overview, agents_message)
+    master_agent = create_master_agent(args, instruction_payload)
 
     coordinator.set_master_agent(master_agent)
     master_agent.set_coordinator(coordinator)
@@ -144,9 +126,6 @@ def run(args):
         return master_agent.run()
     else:
         master_agent.replay_messages()
-        import pdb
-
-        pdb.set_trace()
 
 
 def main(args):
