@@ -44,7 +44,6 @@ async def test_tool_arun(test_tool):
 def test_invalid_tool():
     invalid_tool = InvalidTool()
     response = invalid_tool.run(("InvalidToolName",))
-    print("response = ", response)
     assert response == "('InvalidToolName',) is not a valid tool, try another one."
 
 
@@ -92,8 +91,7 @@ def test_toolkit():
 
 
 def test_toolkit_type():
-    assert len(ToolkitType) == 4
+    assert len(ToolkitType) == 3
     assert ToolkitType.PYTHON_INDEXER.name == "PYTHON_INDEXER"
     assert ToolkitType.PYTHON_WRITER.name == "PYTHON_WRITER"
     assert ToolkitType.CODEBASE_ORACLE.name == "CODEBASE_ORACLE"
-    assert ToolkitType.DOCUMENTATION_GPT.name == "DOCUMENTATION_GPT"

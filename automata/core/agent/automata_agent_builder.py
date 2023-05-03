@@ -6,7 +6,7 @@ from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import InstructionConfigVersion
 from automata.core.base.tool import Toolkit, ToolkitType
 
-from .automata_agent import AutomataAgent
+from .automata_agent import AutomataAgent, MasterAutomataAgent
 
 
 class AutomataAgentBuilder(BaseModel):
@@ -25,11 +25,13 @@ class AutomataAgentBuilder(BaseModel):
         instance = cls(config)
         return instance
 
-    def with_initial_payload(self, initial_payload: Dict[str, str]) -> "AutomataAgentBuilder":
+    def with_instruction_payload(
+        self, instruction_payload: Dict[str, str]
+    ) -> "AutomataAgentBuilder":
         """
         Set the initial payload for the AutomataAgent instance.
         """
-        self._instance.initial_payload = initial_payload
+        self._instance.instruction_payload = instruction_payload
         return self
 
     def with_llm_toolkits(
@@ -74,6 +76,11 @@ class AutomataAgentBuilder(BaseModel):
         self._instance.session_id = session_id
         return self
 
+    def with_eval_mode(self, eval_mode: bool) -> "AutomataAgentBuilder":
+        self._validate_type(eval_mode, bool, "Eval mode")
+        self._instance.eval_mode = eval_mode
+        return self
+
     def with_instruction_version(self, instruction_version: str) -> "AutomataAgentBuilder":
         self._validate_type(instruction_version, str, "Instruction version")
         InstructionConfigVersion(instruction_version)
@@ -83,6 +90,10 @@ class AutomataAgentBuilder(BaseModel):
     def build(self) -> AutomataAgent:
         self._instance._setup()
         return self._instance
+
+    def build_master(self) -> MasterAutomataAgent:
+        self._instance._setup()
+        return MasterAutomataAgent.from_agent(self._instance)
 
     @staticmethod
     def _validate_type(value, expected_type, param_name: str):

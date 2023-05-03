@@ -23,4 +23,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Agent Config Validation
-        run: python -m automata.scripts.agent_config_validation
+        run: python -m automata.cli.scripts.agent_config_validation

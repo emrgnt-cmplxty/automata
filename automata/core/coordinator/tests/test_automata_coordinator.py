@@ -1,4 +1,5 @@
 import textwrap
+from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -26,7 +27,10 @@ def master_agent(automata_agent_fixture):  # noqa
 # Mock AutomataInstance to be added to the coordinator
 class MockAutomataInstance(AutomataInstance):
     def __init__(
-        self, config_version: AgentConfigVersion, description: str, builder: AutomataAgentBuilder
+        self,
+        config_version: AgentConfigVersion,
+        description: str,
+        builder: Type[AutomataAgentBuilder],
     ):
         super().__init__(config_version=config_version, description=description, builder=builder)
 
@@ -138,7 +142,7 @@ def mock_openai_response_with_agent_query():
                             - I can retrieve this information directly with the python indexer.
                         - actions
                             - agent_query_0
-                                - agent_config_version
+                                - agent_version
                                     - test
                                 - agent_instruction
                                     - Begin
@@ -178,7 +182,7 @@ def test_iter_task_with_agent_query(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- agent_output_0" in completion_message
     assert "- This is a mock return " in completion_message
 
@@ -206,7 +210,7 @@ def mock_openai_response_with_agent_query_and_tool_queries():
                                     - core.utils
                                     - calculate_similarity
                             - agent_query_1
-                                - agent_config_version
+                                - agent_version
                                     - test
                                 - agent_instruction
                                     - Begin
@@ -233,7 +237,7 @@ def test_iter_task_with_agent_and_tool_query(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- tool_output_0" in completion_message
     assert "- tool_output_1" in completion_message
     assert "- agent_output_1" in completion_message
@@ -253,7 +257,7 @@ def test_iter_task_with_agent_and_tool_query_2(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- agent_output_0" in completion_message
     assert "- This is a mock return " in completion_message
 
@@ -269,7 +273,7 @@ def mock_openai_response_with_agent_query_1():
                             - I can retrieve this information directly with the python indexer.
                         - actions
                         - agent_query_1
-                            - agent_config_version
+                            - agent_version
                                 - test
                             - agent_instruction
                                 - Begin
@@ -294,7 +298,7 @@ def test_iter_task_with_agent_and_tool_query_3(
 
     master_agent.iter_task()
 
-    completion_message = master_agent.messages[-1]["content"]
+    completion_message = master_agent.messages[-1].content
     assert "- agent_output_1" in completion_message
     assert "- This is a mock return " in completion_message
 
@@ -305,7 +309,7 @@ def test_run_agent(coordinator_with_mock_agent, master_agent):
     coordinator.set_master_agent(master_agent)
     master_agent.set_coordinator(coordinator)
     action = AgentAction(
-        agent_config_version=AgentConfigVersion.TEST,
+        agent_version=AgentConfigVersion.TEST,
         agent_query="mock_agent_query",
         agent_instruction=["Test instruction."],
     )
@@ -321,7 +325,7 @@ def test_execute_agent(automata_agent_fixture, coordinator_with_mock_agent):  # 
 
     # Create a mock AgentAction
     mock_agent_action = AgentAction(
-        agent_config_version=AgentConfigVersion.TEST,
+        agent_version=AgentConfigVersion.TEST,
         agent_instruction="Test instruction.",
         agent_query="AutomataAgentBuilder",
     )

@@ -37,7 +37,7 @@ class AutomataCoordinator:
         """Runs the selected agent and returns the result."""
         # Run the selected agent and return the result
         try:
-            agent_instance = self._select_agent_instance(action.agent_config_version)
+            agent_instance = self._select_agent_instance(action.agent_version)
             output = agent_instance.run("\n".join(action.agent_instruction))
             return output
         except Exception as e:

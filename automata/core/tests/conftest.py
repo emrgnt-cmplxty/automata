@@ -33,10 +33,10 @@ def automata_params(request):
     }
     mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
 
-    initial_payload = (
-        generate_initial_payload() if not request.param.get("exclude_overview") else {}
+    instruction_payload = (
+        generate_instruction_payload() if not request.param.get("exclude_overview") else {}
     )
-    return initial_payload, mock_llm_toolkits
+    return instruction_payload, mock_llm_toolkits
 
 
 def build_agent_with_params(
@@ -47,13 +47,13 @@ def build_agent_with_params(
     temperature=0.0,
     model="gpt-3.5-turbo",
 ):
-    initial_payload, mock_llm_toolkits = automata_params
+    instruction_payload, mock_llm_toolkits = automata_params
 
     agent_config = AutomataAgentConfig.load(config_version)
 
     agent = (
         AutomataAgentBuilder.from_config(agent_config)
-        .with_initial_payload(initial_payload)
+        .with_instruction_payload(instruction_payload)
         .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)
         .with_verbose(True)
@@ -82,9 +82,9 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
     assert similarity_score > 0.85  # Check the similarity score
 
 
-def generate_initial_payload():
+def generate_instruction_payload():
     return {
-        "overview": PythonIndexer(root_py_path()).get_overview(),
+        "overview": PythonIndexer(root_py_path()).build_overview(),
     }
 
 

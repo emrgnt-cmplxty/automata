@@ -50,7 +50,7 @@ from automata.core.agents.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-from automata.core.utils import format_config, load_yaml_config
+from automata.core.utils import format_prompt, load_yaml_config
 
 logger = logging.getLogger(__name__)
 
@@ -208,7 +208,7 @@ class AutomataAgent:
         if "tools" in self.instruction_input_variables:
             self.initial_payload["tools"] = self._build_tool_message()
 
-        system_instruction = format_config(self.initial_payload, self.system_instruction_template)
+        system_instruction = format_prompt(self.initial_payload, self.system_instruction_template)
         self._init_database()
         if self.session_id:
             self._load_previous_interactions()
@@ -347,7 +347,7 @@ class AutomataAgent:
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_config(formatters, message["content"])
+            input_message = format_prompt(formatters, message["content"])
             input_messages.append({"role": message["role"], "content": input_message})
 
         return input_messages

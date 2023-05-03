@@ -29,21 +29,21 @@ class ToolAction(Action):
 class AgentAction(Action):
     def __init__(
         self,
-        agent_config_version: AgentConfigVersion,
+        agent_version: AgentConfigVersion,
         agent_query: str,
         agent_instruction: List[str],
     ):
-        self.agent_config_version = agent_config_version
+        self.agent_version = agent_version
         self.agent_query = agent_query
         self.agent_instruction = agent_instruction
 
     @classmethod
     def from_lines(cls, lines: List[str], index: int):
         agent_query = lines[index].split(ActionIndicator.ACTION.value)[1].strip()
-        agent_config_version = AgentConfigVersion(
+        agent_version = AgentConfigVersion(
             lines[index + 2].split(ActionIndicator.ACTION.value)[1].strip()
         )
-        return cls(agent_config_version, agent_query, [])
+        return cls(agent_version, agent_query, [])
 
 
 class ResultAction(Action):

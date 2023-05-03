@@ -50,7 +50,8 @@ from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-from automata.core.utils import format_config, load_yaml_config
+from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
+from automata.core.utils import format_prompt, load_yaml_config
 
 logger = logging.getLogger(__name__)
 
@@ -81,10 +82,11 @@ class AutomataAgent(Agent):
             modify_last_instruction(new_instruction: str) -> None
             replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
             run() -> str: Runs the agent.
+            get_non_instruction_messages() -> List[Dict[str, str]]: Returns all messages that are not instructions.
         """
         if config is None:
             config = AutomataAgentConfig()
-        self.initial_payload = config.initial_payload
+        self.instruction_payload = config.instruction_payload
         self.llm_toolkits = config.llm_toolkits
         self.instructions = config.instructions
         self.config_version = config.config_version
@@ -95,11 +97,11 @@ class AutomataAgent(Agent):
         self.verbose = config.verbose
         self.max_iters = config.max_iters
         self.temperature = config.temperature
-        self.session_id = config.session_id
         self.instruction_version = config.instruction_version
         self.completed = False
-        self.is_master_agent = False
-        self.latest_observations: Dict[str, str] = {}
+        self.eval_mode = False
+        self.messages: List[OpenAIChatMessage] = []
+        self.session_id = config.session_id
         self.conn: Optional[sqlite3.Connection] = None
 
     def __del__(self):
@@ -116,31 +118,34 @@ class AutomataAgent(Agent):
             if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:
                 return "Result was not found before iterations exceeded max limit."
             latest_responses = self.iter_task()
-        return self.messages[-1]["content"]
+        return self.messages[-1].content
 
-    def iter_task(self) -> Optional[Tuple[Dict[str, str], Dict[str, str]]]:
+    def iter_task(self) -> Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]:
         """Run the test and report the tool outputs back to the master."""
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
-
         response_summary = openai.ChatCompletion.create(
             model=self.model,
-            messages=self.messages,
+            messages=[ele.to_dict() for ele in self.messages],
             temperature=self.temperature,
             stream=self.stream,
         )
         response_text = (
             self._stream_message(response_summary)
             if self.stream
-            else response_summary["choices"][0]["message"]["content"]
+            else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
         )
+
         observations = self._generate_observations(response_text)
+
         completion_message = retrieve_completion_message(observations)
         if completion_message is not None:
             self.completed = True
             self._save_interaction(
                 "assistant",
-                self._parse_completion_message(completion_message),
+                self._parse_completion_message(completion_message)
+                if not self.eval_mode
+                else completion_message,
             )
             return None
 
@@ -152,7 +157,6 @@ class AutomataAgent(Agent):
             else AutomataAgent.CONTINUE_MESSAGE,
         )
 
-        self.latest_observations = observations
         return (assistant_message, user_message)
 
     def replay_messages(self) -> str:
@@ -160,13 +164,13 @@ class AutomataAgent(Agent):
         if len(self.messages) == 0:
             logger.debug("No messages to replay.")
             return "No messages to replay."
-        for message in self.messages[1:]:
-            observations = self._generate_observations(message["content"])
+        for message in self.messages[self.NUM_DEFAULT_MESSAGES :]:
+            observations = self._generate_observations(message.content)
             completion_message = retrieve_completion_message(observations)
             if completion_message:
                 return completion_message
-            logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message["role"], message["content"]))
-            logger.debug("Processing message content =  %s" % message["content"])
+            logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message.role, message.content))
+            logger.debug("Processing message content =  %s" % message.content)
             logger.debug("\nProcessed Outputs:\n%s\n" % observations)
             logger.debug("-" * 60)
         return "No completion message found."
@@ -174,15 +178,22 @@ class AutomataAgent(Agent):
     def modify_last_instruction(self, new_instruction: str) -> None:
         """Extend the last instructions with a new message."""
         previous_message = self.messages[-1]
-        self.messages[-1] = {"role": previous_message["role"], "content": f"{new_instruction}"}
+        if previous_message.role != "user":
+            raise ValueError("Cannot modify the last instruction if it was not a user message.")
+        self.messages[-1] = OpenAIChatMessage(role=previous_message.role, content=new_instruction)
+
+    def get_non_instruction_messages(self) -> List[OpenAIChatMessage]:
+        """Get the non-instruction messages."""
+        return self.messages[self.NUM_DEFAULT_MESSAGES :]
 
     def _setup(self):
         """Setup the agent."""
         openai.api_key = OPENAI_API_KEY
-        self.messages = []
         if "tools" in self.instruction_input_variables:
-            self.initial_payload["tools"] = self._build_tool_message()
-        system_instruction = format_config(self.initial_payload, self.system_instruction_template)
+            self.instruction_payload["tools"] = self._build_tool_message()
+        system_instruction = format_prompt(
+            self.instruction_payload, self.system_instruction_template
+        )
         self._init_database()
         if self.session_id:
             self._load_previous_interactions()
@@ -193,10 +204,10 @@ class AutomataAgent(Agent):
                 {"user_input_instructions": self.instructions}
             )
             for message in initial_messages:
-                self._save_interaction(message["role"], message["content"])
+                self._save_interaction(message.role, message.content)
         logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
         logger.debug("-" * 60)
-        if set(self.instruction_input_variables) != set(list(self.initial_payload.keys())):
+        if set(self.instruction_input_variables) != set(list(self.instruction_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
         logger.debug("Session ID: %s" % self.session_id)
         logger.debug("-" * 60)
@@ -258,11 +269,11 @@ class AutomataAgent(Agent):
         )
         self.conn.commit()
 
-    def _save_interaction(self, role: str, content: str) -> Dict[str, str]:
+    def _save_interaction(self, role: str, content: str) -> OpenAIChatMessage:
         """Save the interaction to the database."""
         assert self.session_id is not None, "Session ID is not set."
         assert self.conn is not None, "Database connection is not set."
-        interaction = {"role": role, "content": content}
+        interaction = OpenAIChatMessage(role=role, content=content)
         interaction_id = len(self.messages)
         self.cursor.execute(
             "INSERT INTO interactions (session_id, interaction_id, role, content) VALUES (?, ?, ?, ?)",
@@ -279,7 +290,8 @@ class AutomataAgent(Agent):
             (self.session_id,),
         )
         self.messages = [
-            {"role": role, "content": content} for (role, content) in self.cursor.fetchall()
+            OpenAIChatMessage(role=role, content=content)
+            for (role, content) in self.cursor.fetchall()
         ]
 
     def _build_tool_message(self):
@@ -297,7 +309,7 @@ class AutomataAgent(Agent):
         outputs = {}
         for message in self.messages:
             pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
-            matches = re.finditer(pattern, message["content"], re.DOTALL)
+            matches = re.finditer(pattern, message.content, re.DOTALL)
             for match in matches:
                 tool_name, tool_output = match.group(1), match.group(2).strip()
                 outputs[tool_name] = tool_output
@@ -308,7 +320,7 @@ class AutomataAgent(Agent):
             )
         return completion_message
 
-    def _build_initial_messages(self, formatters: Dict[str, str]) -> List[Dict[str, str]]:
+    def _build_initial_messages(self, formatters: Dict[str, str]) -> List[OpenAIChatMessage]:
         """Build the initial messages."""
         assert "user_input_instructions" in formatters
         formatters["initializer_dummy_tool"] = AutomataAgent.INITIALIZER_DUMMY
@@ -320,8 +332,8 @@ class AutomataAgent(Agent):
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_config(formatters, message["content"])
-            input_messages.append({"role": message["role"], "content": input_message})
+            input_message = format_prompt(formatters, message["content"])
+            input_messages.append(OpenAIChatMessage(role=message["role"], content=input_message))
 
         return input_messages
 
@@ -352,7 +364,6 @@ class MasterAutomataAgent(AutomataAgent):
         """Initialize the master automata agent."""
         super().__init__(agent_config, *args, **kwargs)
         self.coordinator = None
-        self.is_master_agent = True
 
     def set_coordinator(self, coordinator: "AutomataCoordinator"):
         """Set the coordinator."""
@@ -362,10 +373,9 @@ class MasterAutomataAgent(AutomataAgent):
         """Process the messages in the conversation."""
         outputs = super()._generate_observations(response_text)
         actions = ActionExtractor.extract_actions(response_text)
-
         for agent_action in actions:
             if isinstance(agent_action, AgentAction):
-                if agent_action.agent_config_version.value == AutomataAgent.INITIALIZER_DUMMY:
+                if agent_action.agent_version.value == AutomataAgent.INITIALIZER_DUMMY:
                     continue
                 agent_output = self._execute_agent(agent_action)
                 query_name = agent_action.agent_query.replace("query", "output")
@@ -395,10 +405,10 @@ class MasterAutomataAgent(AutomataAgent):
         outputs = {}
         for message in self.messages:
             pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
-            matches = re.finditer(pattern, message["content"], re.DOTALL)
+            matches = re.finditer(pattern, message.content, re.DOTALL)
             for match in matches:
-                agent_config_version, agent_output = match.group(1), match.group(2).strip()
-                outputs[agent_config_version] = agent_output
+                agent_version, agent_output = match.group(1), match.group(2).strip()
+                outputs[agent_version] = agent_output
 
         for output_name in outputs:
             completion_message = completion_message.replace(
@@ -414,7 +424,7 @@ class MasterAutomataAgent(AutomataAgent):
         master_agent.llm_toolkits = agent.llm_toolkits
         master_agent.instructions = agent.instructions
         master_agent.model = agent.model
-        master_agent.initial_payload = agent.initial_payload
+        master_agent.instruction_payload = agent.instruction_payload
         master_agent.config_version = agent.config_version
         master_agent.system_instruction_template = agent.system_instruction_template
         master_agent.instruction_input_variables = agent.instruction_input_variables

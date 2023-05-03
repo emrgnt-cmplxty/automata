@@ -118,4 +118,3 @@ class ToolkitType(Enum):
     PYTHON_INDEXER = auto()
     PYTHON_WRITER = auto()
     CODEBASE_ORACLE = auto()
-    DOCUMENTATION_GPT = auto()

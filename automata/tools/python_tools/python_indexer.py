@@ -232,7 +232,7 @@ class PythonIndexer:
                 return module_path
         return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def get_overview(self) -> str:
+    def build_overview(self) -> str:
         """
         Loops over the PythonParser's dictionaries and returns a string that provides an overview of the PythonParser's state.
         Returns:

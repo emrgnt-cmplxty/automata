@@ -137,5 +137,5 @@ class CoverageGenerator:
 if __name__ == "__main__":
     coverage_generator = CoverageGenerator()
     coverage_generator.write_coverage_xml()
-    coverage_generator.parse_coverage_xml()
+    df = coverage_generator.parse_coverage_xml()
     coverage_generator.clean_up()
