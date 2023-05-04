@@ -1,5 +1,6 @@
 """This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
 choose a work item to work on, and remove HTML tags from text."""
+import json
 import logging
 import os
 from typing import Any, Dict
@@ -31,9 +32,11 @@ def root_py_path() -> str:
     return data_folder
 
 
-def load_yaml_config(config_version: str, file_name: str) -> Any:
+def load_config(
+    config_version: str, file_name: str, config_type: str = "yaml", custom_decoder: Any = None
+) -> Any:
     """
-    Loads a YAML config file.
+    Loads a config file.
 
     Args:
         file_path (str): The path to the YAML file.
@@ -42,10 +45,14 @@ def load_yaml_config(config_version: str, file_name: str) -> Any:
         Any: The content of the YAML file as a Python object.
     """
     with open(
-        os.path.join(root_py_path(), "configs", config_version, f"{file_name}.yaml"),
+        os.path.join(root_py_path(), "configs", config_version, f"{file_name}.{config_type}"),
         "r",
     ) as file:
-        return yaml.safe_load(file)
+        if config_type == "yaml":
+            return yaml.safe_load(file)
+        elif config_type == "json":
+            samples_json_string = file.read()
+            return json.loads(samples_json_string, object_hook=custom_decoder)
 
 
 def root_path() -> str:

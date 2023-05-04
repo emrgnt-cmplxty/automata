@@ -41,6 +41,9 @@ class EvalAction:
         """
         return extracted_action == expected_action
 
+    def __str__(self):
+        return f"EvalAction(action={self.action}, tokens={self.tokens})"
+
 
 def calc_eval_result(
     extracted_actions: List[Action], expected_actions: List[EvalAction]
@@ -48,11 +51,11 @@ def calc_eval_result(
     all_token_matches = True
     all_full_matches = True
 
-    for extracted_action in extracted_actions:
+    for expected_eval_action in expected_actions:
         has_token_match = False
         has_full_match = False
 
-        for expected_eval_action in expected_actions:
+        for extracted_action in extracted_actions:
             expected_action = expected_eval_action.action
 
             # Check if actions are of the same type
@@ -101,7 +104,6 @@ def calc_eval_result(
                         )
                         if has_token_match:
                             break
-
         if not has_token_match:
             all_token_matches = False
 

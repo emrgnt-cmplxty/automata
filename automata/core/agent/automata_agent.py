@@ -28,6 +28,7 @@
                polishing the framework
 
         TODO - Add field for instruction config version to agent + builder
+        TODO - Change _parse_completion_message to take action string from extractor
 """
 import logging
 import re
@@ -51,7 +52,7 @@ from automata.core.agent.automata_agent_helpers import (
     retrieve_completion_message,
 )
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
-from automata.core.utils import format_prompt, load_yaml_config
+from automata.core.utils import format_prompt, load_config
 
 logger = logging.getLogger(__name__)
 
@@ -145,7 +146,7 @@ class AutomataAgent(Agent):
                 "assistant",
                 self._parse_completion_message(completion_message)
                 if not self.eval_mode
-                else completion_message,
+                else response_text,
             )
             return None
 
@@ -325,9 +326,7 @@ class AutomataAgent(Agent):
         assert "user_input_instructions" in formatters
         formatters["initializer_dummy_tool"] = AutomataAgent.INITIALIZER_DUMMY
 
-        messages_config = load_yaml_config(
-            ConfigCategory.INSTRUCTION.value, self.instruction_version
-        )
+        messages_config = load_config(ConfigCategory.INSTRUCTION.value, self.instruction_version)
         initial_messages = messages_config["initial_messages"]
 
         input_messages = []

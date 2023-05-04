@@ -10,6 +10,7 @@ from automata.core.agent.automata_actions import Action
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.openai import OpenAIChatMessage
 from automata.evals.eval_helpers import EvalAction, calc_eval_result
+from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 logger = logging.getLogger(__name__)
 
@@ -47,10 +48,12 @@ class Eval(abc.ABC):
         if "with_max_iters" in kwargs:
             self.builder = self.builder.with_max_iters(kwargs["with_max_iters"])
 
+        if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
+            llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","))
+            self.builder = self.builder.with_llm_toolkits(llm_toolkits)
+
         if "with_master" in kwargs:
             self.with_master = kwargs["with_master"]
-            if "master_llm_toolkits" in kwargs:
-                self.builder = self.builder.with_llm_toolkits(kwargs["master_llm_toolkits"])
 
     def generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]):
         """
@@ -60,9 +63,7 @@ class Eval(abc.ABC):
         agent = self.builder.with_instructions(instruction).build()
         agent.run()
         messages = agent.get_non_instruction_messages()
-
         extracted_actions = Eval._extract_actions(messages)
-
         return calc_eval_result(extracted_actions, expected_actions)
 
     @staticmethod

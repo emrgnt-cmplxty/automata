@@ -11,7 +11,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option("--session_id", type=str, help="The session id for the agent."),
         click.option(
-            "--master_toolkits",
+            "--llm_toolkits",
             type=str,
             default="python_indexer,python_writer,codebase_oracle",
             help="Comma-separated list of toolkits to be used master agent.",
