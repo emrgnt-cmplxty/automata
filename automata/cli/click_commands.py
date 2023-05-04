@@ -40,6 +40,12 @@ def master(ctx, *args, **kwargs):
 
 @common_options
 @cli.command()
+@click.option(
+    "--eval_config",
+    type=str,
+    help="What config are we evaluating on?",
+    default="python_indexer_payload",
+)
 @click.pass_context
 def evaluator(ctx, *args, **kwargs):
     from .scripts.run_evaluator import main

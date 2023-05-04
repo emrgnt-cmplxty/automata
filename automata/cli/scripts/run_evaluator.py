@@ -3,7 +3,7 @@ import logging.config
 from typing import Dict, List, Union
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigVersion, ConfigCategory
 from automata.core.agent.automata_actions import ResultAction, ToolAction
 from automata.core.agent.automata_agent_helpers import create_instruction_payload
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator
@@ -30,7 +30,7 @@ def evaluator_decoder(
 
 
 def main(args):
-    samples = load_config("eval_configs", "python_indexer_payload", "json", evaluator_decoder)
+    samples = load_config(ConfigCategory.EVAL.value, args.eval_config, "json", evaluator_decoder)
     eval_results = []
     for sample in samples:
         instruction = sample["instruction"]
