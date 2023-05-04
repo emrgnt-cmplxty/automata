@@ -74,7 +74,7 @@ def create_master_agent(args, instruction_payload):
         "model": args.model,
     }
     master_llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
-        args.master_toolkits.split(","), **inputs
+        args.llm_toolkits.split(","), **inputs
     )
 
     master_agent = MasterAutomataAgent.from_agent(
