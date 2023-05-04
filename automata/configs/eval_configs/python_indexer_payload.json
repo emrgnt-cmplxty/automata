@@ -6,7 +6,7 @@
                 "tool_name": "python-indexer-retrieve-raw-code",
                 "tool_query": "tool_query_1",
                 "tool_args": ["core.agent.automata_agent", "AutomataAgent.run"],
-                "check_tokens": ["evals.eval", "Eval.generate_eval_result"]
+                "check_tokens": ["core.agent.automata_agent", "AutomataAgent.run"]
             },
             {
                 "result_name": "return_result_0",
@@ -85,5 +85,4 @@
             }
         ]
     }
-
 ]

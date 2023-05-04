@@ -68,6 +68,7 @@ class Eval(abc.ABC):
 
     @staticmethod
     def _extract_actions(messages: List[OpenAIChatMessage]) -> List[Action]:
+        """Extracts actions from a list of messages."""
         extracted_actions: List[Action] = []
         for message in messages:
             actions = AutomataActionExtractor.extract_actions(message.content)

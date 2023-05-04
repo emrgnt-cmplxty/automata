@@ -4,6 +4,7 @@ from enum import Enum
 class ConfigCategory(Enum):
     AGENT = "agent_configs"
     INSTRUCTION = "instruction_configs"
+    EVAL = "eval_configs"
 
 
 class InstructionConfigVersion(Enum):
