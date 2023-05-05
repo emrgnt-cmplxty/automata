@@ -36,6 +36,74 @@ result = agent.run()
 print(result)
 ```
 
+# Advanced Implementation Examples
+
+In this section, we will demonstrate some advanced examples of using the AutomataAgent, MasterAutomataAgent, and associated classes.
+
+## Example 1: Running Multiple Agents
+
+In this example, we will create an AutomataCoordinator, add multiple agents, and run them to perform different tasks.
+
+```python
+from core.agent.automata_agent import MasterAutomataAgent
+from core.coordinator.automata_coordinator import AutomataCoordinator
+from core.agent.automata_actions import AgentAction
+from core.coordinator.automata_instance import AutomataInstance
+from core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.configs.config_enums import AgentConfigVersion
+
+# Create an AutomataCoordinator
+coordinator = AutomataCoordinator()
+
+# Create an AutomataAgent
+builder = AutomataAgentBuilder()
+agent = builder.with_model("gpt-3.5-turbo").with_instructions("Generate a response.").build()
+
+# Convert the AutomataAgent to a MasterAutomataAgent
+master_agent = MasterAutomataAgent.from_agent(agent)
+
+# Set the coordinator for the MasterAutomataAgent
+master_agent.set_coordinator(coordinator)
+
+# Set the master agent for the AutomataCoordinator
+coordinator.set_master_agent(master_agent)
+
+# Add two AutomataInstances to the coordinator
+agent_instance1 = AutomataInstance(
+    config_version=AgentConfigVersion.TEST,
+    description="Agent 1",
+    builder=AutomataAgentBuilder
+)
+coordinator.add_agent_instance(agent_instance1)
+
+agent_instance2 = AutomataInstance(
+    config_version=AgentConfigVersion.TEST2,
+    description="Agent 2",
+    builder=AutomataAgentBuilder
+)
+coordinator.add_agent_instance(agent_instance2)
+
+# Create AgentActions for the agents
+action1 = AgentAction(
+    agent_version=AgentConfigVersion.TEST,
+    agent_query="agent1_query",
+    agent_instruction=["Instruction for Agent 1."]
+)
+
+action2 = AgentAction(
+    agent_version=AgentConfigVersion.TEST2,
+    agent_query="agent2_query",
+    agent_instruction=["Instruction for Agent 2."]
+)
+
+# Run the agents and get the results
+result1 = coordinator.run_agent(action1)
+result2 = coordinator.run_agent(action2)
+
+print("Result 1:", result1)
+print("Result 2:", result2)
+```
+
 ## References
 
 ### AutomataAgent

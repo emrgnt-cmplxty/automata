@@ -15,7 +15,19 @@ class AutomataInstance(BaseModel):
     llm_toolkits: Optional[Dict[ToolkitType, Toolkit]] = None
 
     def run(self, instructions: str) -> str:
-        """Runs the agent with the given instructions."""
+        """
+        Executes the specified instructions on an agent built from this instance's configuration
+        and returns the result.
+
+        Args:
+            instructions (str): The instructions to be executed by the agent.
+
+        Returns:
+            str: The output produced by the agent.
+
+        Raises:
+            Exception: If any error occurs during agent execution.
+        """
         config = AutomataAgentConfig.load(self.config_version)
         agent_builder = self.builder(config=config)
         if self.llm_toolkits:
