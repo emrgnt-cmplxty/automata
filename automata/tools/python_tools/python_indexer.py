@@ -218,10 +218,8 @@ class PythonIndexer:
         for module_path in self.module_dict:
             result += module_path + ":\n"
             module = self.module_dict[module_path]
-            for node in module.body:
-                if isinstance(node, ClassNode):
-                    result += " " * LINE_SPACING + " - " + node.name + "\n"
-                elif isinstance(node, DefNode):
+            for node in module:
+                if isinstance(node, (ClassNode, DefNode)):
                     result += " " * LINE_SPACING + " - " + node.name + "\n"
 
         return result
