@@ -113,58 +113,6 @@ class PythonIndexer:
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def find_expression_context(
-        self,
-        expression: str,
-        root_dir: str = root_py_path(),
-        symmetric_width: int = 0,
-        file_extension: str = ".py",
-    ) -> str:
-        """
-        Inspects the codebase for lines containing the expression and returns the line number and
-        surrounding lines.
-
-        Args:
-            root_dir (str): The root directory to search.
-            expression (str): The expression to search for.
-
-        Returns:
-            str: The context associated with the expression.
-        """
-        result = ""
-        pattern = re.compile(expression)
-        for root, _, files in os.walk(root_dir):
-            for file in files:
-                if file.endswith(file_extension):
-                    file_path = os.path.join(root, file)
-                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                        lines = f.readlines()
-
-                        for line_no, line in enumerate(lines):
-                            if pattern.search(line):
-                                rel_module_path = (
-                                    file_path.split("core/../")[1]
-                                    .replace("/", ".")
-                                    .replace(".py", "")
-                                )
-                                parent_obj = self._find_object_by_line_number(
-                                    rel_module_path, line_no
-                                )
-                                lower = line_no - symmetric_width
-                                upper = line_no + symmetric_width
-                                raw_code = (
-                                    "\n".join([raw_line for raw_line in lines[lower : upper + 1]])
-                                    + "\n"
-                                )
-                                if parent_obj:
-                                    line_span = (
-                                        f"L{line_no+1}"
-                                        if symmetric_width == 0
-                                        else f"L{lower+1}-L{upper+1}"
-                                    )
-                                    result += f"{rel_module_path}.{parent_obj.name}\n{line_span}:\n{raw_code}\n\n"
-        return result
-
     def _build_module_dict(self) -> Dict[str, Module]:
         """
         Builds the module dictionary by walking through the root directory and creating AST Module objects
