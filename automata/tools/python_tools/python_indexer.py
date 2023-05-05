@@ -349,8 +349,10 @@ class PythonIndexer:
         """
 
         if isinstance(node, (DefNode, ClassNode, RedBaron)):
-            if isinstance(node[0], StringNode):
-                node.pop(0)
+            filtered_node = node.filtered()
+            if isinstance(filtered_node[0], StringNode):
+                index = filtered_node[0].index_on_parent
+                node.pop(index)
             child_nodes = node.find_all(lambda identifier: identifier in ("def", "class"))
             for child_node in child_nodes:
                 if child_node is not node:
