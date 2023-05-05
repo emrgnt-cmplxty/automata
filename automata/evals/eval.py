@@ -1,5 +1,43 @@
 """
-This file defines the base class for evals.
+Eval Class
+
+The Eval class provides a base implementation for evaluating an agent's performance when given a set of instructions. The class expects an agent_config to be provided during initialization. Subclasses of Eval should override the eval_sample and run methods to customize evaluation behavior.
+
+Class Methods -
+
+    __init__(self, *args, **kwargs): Initializes an Eval object with the following optional keyword arguments:
+
+    agent_config: Configuration for the AutomataAgentBuilder (required).
+    instruction_payload: Instruction payload for the AutomataAgentBuilder.
+    model: Model to use for the agent.
+    session_id: Session ID for the agent.
+    stream: Stream for the agent.
+    with_max_iters: Maximum number of iterations for the agent.
+    llm_toolkits: Low-level model toolkits for the agent.
+    with_master: Option to use the master model.
+
+    generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]) -> EvalResult
+    Evaluates a single sample by constructing an agent using the provided instruction, running the agent, extracting the actions performed by the agent, and comparing them to the expected_actions. Returns an EvalResult object with the evaluation results.
+
+    _extract_actions(messages: List[OpenAIChatMessage]) -> List[Action]
+    A static method that extracts a list of Action objects from a list of OpenAIChatMessage objects.
+
+Example -
+
+    overview = PythonIndexer(root_py_path()).build_overview()
+    agent_messages = AutomataCoordinator().build_agent_message()
+    instruction_payload = create_instruction_payload(overview, agent_messages)
+
+    evaluator = Eval(
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
+        llm_toolkits=args.llm_toolkits,
+        model=args.model,
+        instruction_payload=instruction_payload,
+        stream=args.stream,
+    )
+
+    eval_result = evaluator.generate_eval_result(instruction, expected_actions)
+
 """
 import abc
 import logging
@@ -18,11 +56,8 @@ logger = logging.getLogger(__name__)
 class Eval(abc.ABC):
     """
     Evaluation classes generally should override two methods:
-    `eval_sample`: Takes in a test sample and a random number generator and
-        records the metrics of interest.
-    `run`: Takes in a recorder and runs the evaluation. Generally, most `run`
-        methods will follow this same pattern: loading the data, calling
-        `eval_all_samples`, and aggregating the recorded results.
+    `generate_eval_result`: Takes an instruction and a list of expected actions and evaluates the correctness of the agent's actions.
+    `_extract_actions`: Removes the actions from a passed list of messages.
     """
 
     def __init__(self, *args, **kwargs):
