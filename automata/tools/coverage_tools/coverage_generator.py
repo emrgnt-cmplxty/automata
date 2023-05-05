@@ -39,7 +39,6 @@ class CoverageGenerator:
                 "pytest",
             ],
             cwd=self.ROOT_DIR,
-            check=True,
         )
         subprocess.run(
             ["coverage", "xml"],
@@ -79,7 +78,9 @@ class CoverageGenerator:
             lambda x: self._percent_covered_function_from_row(x), axis=1
         )
         # sort by percent covered ascending
-        uncovered_lines = uncovered_lines.sort_values(by=["percent_covered"], ascending=True)
+        uncovered_lines = uncovered_lines.sort_values(
+            by=["percent_covered"], ascending=True
+        ).reset_index(drop=True)
         return uncovered_lines
 
     def _get_nodes_from_row(self, row) -> List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]:

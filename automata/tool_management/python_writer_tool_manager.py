@@ -88,7 +88,7 @@ class PythonWriterToolManager(BaseToolManager):
         try:
             self.writer.update_module(
                 source_code=code,
-                extending_module=True,
+                do_extend=True,
                 module_path=module_path,
                 write_to_disk=True,
                 class_name=class_name,

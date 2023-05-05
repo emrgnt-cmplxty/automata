@@ -98,7 +98,7 @@ class PythonIndexerToolManager(BaseToolManager):
     def _run_indexer_retrieve_code(self, module_path: str, object_path: str) -> str:
         """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            result = self.indexer.retrieve_code(module_path, object_path)
+            result = self.indexer.retrieve_code_without_docstrings(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
