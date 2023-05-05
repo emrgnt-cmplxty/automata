@@ -386,10 +386,10 @@ class MasterAutomataAgent(AutomataAgent):
         return self.coordinator.run_agent(agent_action)
 
     def _add_agent_observations(
-            self,
-            observations: Dict[str, str],
-            agent_observations: Dict[str, str],
-            agent_action: AgentAction,
+        self,
+        observations: Dict[str, str],
+        agent_observations: Dict[str, str],
+        agent_action: AgentAction,
     ) -> None:
         """Generate the agent observations."""
         for observation in agent_observations:

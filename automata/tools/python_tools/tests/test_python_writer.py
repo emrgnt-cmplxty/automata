@@ -89,7 +89,7 @@ class MockCodeGenerator:
             function_obj = RedBaron(source_code).find("def")
         assert function_obj.name == self.function_name
         if self.has_function_docstring:
-            assert function_obj[0].value.replace('"""', '') == self.function_docstring
+            assert function_obj[0].value.replace('"""', "") == self.function_docstring
             assert isinstance(function_obj[0], StringNode)
             assert isinstance(function_obj[1], EndlNode)
             assert isinstance(function_obj[2], PassNode)
@@ -100,7 +100,7 @@ class MockCodeGenerator:
     def _check_class_obj(self, class_obj=None):
         if class_obj is None:
             source_code = self.generate_code()
-            class_obj = RedBaron(source_code).find('class')
+            class_obj = RedBaron(source_code).find("class")
 
         assert class_obj.name == self.class_name
         if self.has_class_docstring:

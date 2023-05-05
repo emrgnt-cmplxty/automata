@@ -304,7 +304,10 @@ class PythonWriter:
     ) -> None:
         """Manage the imports in the module."""
         for new_import_statement in new_import_statements:
-            existing_import_statement = module_obj.find(lambda identifier: identifier in ("import", "from_import"), name=new_import_statement.name)
+            existing_import_statement = module_obj.find(
+                lambda identifier: identifier in ("import", "from_import"),
+                name=new_import_statement.name,
+            )
             if do_extend:
                 if existing_import_statement:
                     existing_import_statement.replace(new_import_statement)
