@@ -4,10 +4,10 @@ import string
 import textwrap
 
 import pytest
+from redbaron import ClassNode, DefNode, EndlNode, PassNode, RedBaron, ReturnNode, StringNode
 
 from automata.tools.python_tools.python_indexer import PythonIndexer
 from automata.tools.python_tools.python_writer import PythonWriter
-from redbaron import RedBaron, ClassNode, StringNode, PassNode, DefNode, ReturnNode, EndlNode
 
 
 class MockCodeGenerator:

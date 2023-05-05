@@ -37,7 +37,7 @@ import re
 import subprocess
 from typing import Optional, Union, cast
 
-from redbaron import RedBaron, ClassNode, Node, NodeList, ImportNode, FromImportNode
+from redbaron import ClassNode, Node, NodeList, RedBaron
 
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -105,6 +105,9 @@ class PythonWriter:
         self._validate_args(module_obj, module_path, write_to_disk)
         source_code = PythonWriter._clean_input_code(source_code)
 
+        if module_path:
+            module_path = cast(str, module_path)
+
         # christ on a bike
         is_new_module = (
             not module_obj and module_path and module_path not in self.indexer.module_dict
@@ -167,7 +170,7 @@ class PythonWriter:
             module_path (str): The path where the new module will be created.
         """
         parsed = RedBaron(source_code)
-        self.indexer.module_dict[module_path] = parsed
+        self.indexer.module_dict[module_path] = parsed  # TODO refactor to pure function
         return parsed
 
     @staticmethod
@@ -203,13 +206,11 @@ class PythonWriter:
         """
 
         new_fst = RedBaron(source_code)
-        new_import_nodes = new_fst.find_all(
-            lambda identifier: identifier in ("import", "from_import")
-        )
+        new_import_nodes = PythonIndexer.find_imports(new_fst)
 
-        new_class_or_function_nodes = new_fst.find_all(
-            lambda identifier: identifier in ("def", "class")
-        )
+        PythonWriter._manage_imports(existing_module_obj, new_import_nodes, do_extend)
+
+        new_class_or_function_nodes = PythonIndexer.find_all_functions_and_classes(new_fst)
         # handle imports here later
         if class_name:  # splice the class
             existing_class = PythonIndexer.find_module_class_function_or_method(
@@ -304,9 +305,8 @@ class PythonWriter:
     ) -> None:
         """Manage the imports in the module."""
         for new_import_statement in new_import_statements:
-            existing_import_statement = module_obj.find(
-                lambda identifier: identifier in ("import", "from_import"),
-                name=new_import_statement.name,
+            existing_import_statement = PythonIndexer.find_import_by_name(
+                module_obj, new_import_statement.name
             )
             if do_extend:
                 if existing_import_statement:

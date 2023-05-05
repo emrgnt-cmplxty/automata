@@ -24,8 +24,16 @@ import logging
 import os
 from typing import Dict, Optional, Union
 
-from redbaron import DefNode, ClassNode, StringNode, Node
-from redbaron import RedBaron
+from redbaron import (
+    ClassNode,
+    DefNode,
+    FromImportNode,
+    ImportNode,
+    Node,
+    NodeList,
+    RedBaron,
+    StringNode,
+)
 
 from automata.core.utils import root_path
 
@@ -163,10 +171,10 @@ class PythonIndexer:
     @staticmethod
     def _get_docstring(node) -> str:
         if isinstance(node, (ClassNode, DefNode, RedBaron)):
-            if isinstance(node[0], StringNode):
+            filtered_nodes = node.filtered()  # get rid of extra whitespace
+            if isinstance(filtered_nodes[0], StringNode):
                 return node[0].value.replace('"""', "").replace("'''", "")
-        else:
-            return ""
+        return ""
 
     def _build_module_dict(self) -> Dict[str, RedBaron]:
         """
@@ -237,7 +245,6 @@ class PythonIndexer:
         """
 
         try:
-
             module = RedBaron(open(path).read())
             return module
         except Exception as e:
@@ -286,6 +293,50 @@ class PythonIndexer:
                 AsyncFunctionDef, or ClassDef node, or None if not found.
         """
         return code_obj.find(lambda identifier: identifier in ("def", "class"), name=obj_name)
+
+    @staticmethod
+    def find_imports(module: RedBaron) -> Optional[NodeList]:
+        """
+        Find all imports in a module.
+
+        Args:
+            module (RedBaron): The module to search.
+
+        Returns:
+            Optional[NodeList]: A list of ImportNode objects.
+        """
+        return module.find_all(lambda identifier: identifier in ("import", "from_import"))
+
+    @staticmethod
+    def find_import_by_name(
+        module: RedBaron, import_name: str
+    ) -> Optional[Union[ImportNode, FromImportNode]]:
+        """
+        Find an import by name.
+
+        Args:
+            module (RedBaron): The module to search.
+            import_name (str): The name of the import to find.
+
+        Returns:
+            Optional[Union[ImportNode, FromImportNode]]: The found import, or None if not found.
+        """
+        return module.find(
+            lambda identifier: identifier in ("import", "from_import"), name=import_name
+        )
+
+    @staticmethod
+    def find_all_functions_and_classes(module: RedBaron) -> NodeList:
+        """
+        Find all imports in a module.
+
+        Args:
+            module (RedBaron): The module to search.
+
+        Returns:
+            NodeList: A list of ClassNode and DefNode objects.
+        """
+        return module.find_all(lambda identifier: identifier in ("class", "def"))
 
     @staticmethod
     def _remove_docstrings(result: Node):
