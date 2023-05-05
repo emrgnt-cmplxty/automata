@@ -26,8 +26,7 @@ import logging
 import os
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
 from typing import Dict, Optional, Union, cast
-import re
-from automata.core.utils import root_path, root_py_path
+from automata.core.utils import root_path
 
 logger = logging.getLogger(__name__)
 
