@@ -143,7 +143,7 @@ class PythonWriter:
 
     def write_module(self, module_path: str) -> None:
         """
-        Write the modified AST module to a file at the specified output path.
+        Write the modified module to a file at the specified output path.
 
         Args:
             module_path (str): The file path where the modified module should be written.
@@ -254,7 +254,7 @@ class PythonWriter:
 
     @staticmethod
     def delete_node(node: Node) -> None:
-        """Delete a node from the AST."""
+        """Delete a node from the FST."""
         parent = node.parent
         parent_index = node.index_on_parent
         parent.pop(parent_index)
@@ -262,7 +262,7 @@ class PythonWriter:
     @staticmethod
     def _clean_input_code(source_code: str) -> str:
         """
-        Take the input source code and remove formatting issues that will cause the AST to fail.
+        Take the input source code and remove formatting issues that will cause the FST to fail.
 
         Args:
             source_code (str): The source code to clean.

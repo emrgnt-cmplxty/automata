@@ -19,6 +19,7 @@ Example:
     code = indexer.retrieve_code("module.path", "ClassName.method_name")
     docstring = indexer.retrieve_docstring("module.path", "ClassName.method_name")
 """
+from __future__ import annotations
 
 import logging
 import os
@@ -173,16 +174,16 @@ class PythonIndexer:
         if isinstance(node, (ClassNode, DefNode, RedBaron)):
             filtered_nodes = node.filtered()  # get rid of extra whitespace
             if isinstance(filtered_nodes[0], StringNode):
-                return node[0].value.replace('"""', "").replace("'''", "")
+                return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
         return ""
 
     def _build_module_dict(self) -> Dict[str, RedBaron]:
         """
-        Builds the module dictionary by walking through the root directory and creating AST Module objects
+        Builds the module dictionary by walking through the root directory and creating FST Module objects
         for each Python source file. The module paths are used as keys in the dictionary.
 
         Returns:
-            Dict[str, Module]: A dictionary with module paths as keys and AST Module objects as values.
+            Dict[str, Module]: A dictionary with module paths as keys and RedBaron objects as values.
         """
 
         module_dict = {}
@@ -285,12 +286,11 @@ class PythonIndexer:
         AST code object.
 
         Args:
-            code_obj (Union[Module, ClassDef]): The AST code object (Module or ClassDef) to search.
+            code_obj (RedBaron): The FST code object (RedBaron or Node) to search.
             obj_name (str): The name of the object to find.
 
         Returns:
-            Optional[Union[FunctionDef, AsyncFunctionDef, ClassDef]]: The found FunctionDef,
-                AsyncFunctionDef, or ClassDef node, or None if not found.
+            Optional[Union[DefNode, ClassNode]]: The found node, or None.
         """
         return code_obj.find(lambda identifier: identifier in ("def", "class"), name=obj_name)
 
@@ -303,7 +303,7 @@ class PythonIndexer:
             module (RedBaron): The module to search.
 
         Returns:
-            Optional[NodeList]: A list of ImportNode objects.
+            Optional[NodeList]: A list of ImportNode and FromImportNode objects.
         """
         return module.find_all(lambda identifier: identifier in ("import", "from_import"))
 
@@ -339,19 +339,19 @@ class PythonIndexer:
         return module.find_all(lambda identifier: identifier in ("class", "def"))
 
     @staticmethod
-    def _remove_docstrings(result: Node):
+    def _remove_docstrings(node: Union[Node, RedBaron]) -> None:
         """
-        Remove docstrings from the specified AST node and its child nodes (if any).
+        Remove docstrings from the specified node, recursively.
 
         Args:
-            result (Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]): The AST node
+            node: The FST node
                 to remove docstrings from.
         """
 
-        if isinstance(result, (DefNode, ClassNode, RedBaron)):
-            if isinstance(result[0], StringNode):
-                result.pop(0)
-            child_nodes = result.find_all(lambda identifier: identifier in ("def", "class"))
+        if isinstance(node, (DefNode, ClassNode, RedBaron)):
+            if isinstance(node[0], StringNode):
+                node.pop(0)
+            child_nodes = node.find_all(lambda identifier: identifier in ("def", "class"))
             for child_node in child_nodes:
-                if child_node is not result:
+                if child_node is not node:
                     PythonIndexer._remove_docstrings(child_node)
