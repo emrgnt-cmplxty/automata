@@ -41,9 +41,8 @@ class EvalAction:
         """
         return extracted_action == expected_action
 
-
-# def full_match(extracted_action, expected_action):
-#     return extracted_action == expected_action
+    def __str__(self):
+        return f"EvalAction(action={self.action}, tokens={self.tokens})"
 
 
 def calc_eval_result(
@@ -52,19 +51,18 @@ def calc_eval_result(
     all_token_matches = True
     all_full_matches = True
 
-    for extracted_action in extracted_actions:
+    for expected_eval_action in expected_actions:
         has_token_match = False
         has_full_match = False
 
-        for expected_eval_action in expected_actions:
+        for extracted_action in extracted_actions:
             expected_action = expected_eval_action.action
 
             # Check if actions are of the same type
             if type(extracted_action) == type(expected_action):
                 if isinstance(extracted_action, ToolAction):
-                    # extracted_action = cast(ToolAction, extracted_action)
-                    expected_action = cast(ToolAction, expected_action)
                     # Compare tool_name and tool_query
+                    expected_action = cast(ToolAction, expected_action)
                     if (
                         extracted_action.tool_name == expected_action.tool_name
                         and extracted_action.tool_query == expected_action.tool_query
@@ -106,7 +104,6 @@ def calc_eval_result(
                         )
                         if has_token_match:
                             break
-
         if not has_token_match:
             all_token_matches = False
 
