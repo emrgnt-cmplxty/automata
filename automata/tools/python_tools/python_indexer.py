@@ -183,7 +183,7 @@ class PythonIndexer:
         for each Python source file. The module paths are used as keys in the dictionary.
 
         Returns:
-            Dict[str, Module]: A dictionary with module paths as keys and RedBaron objects as values.
+            Dict[str, RedBaron]: A dictionary with module paths as keys and RedBaron objects as values.
         """
 
         module_dict = {}
@@ -282,8 +282,8 @@ class PythonIndexer:
     @staticmethod
     def _find_node(code_obj: RedBaron, obj_name: str) -> Optional[Union[DefNode, ClassNode]]:
         """
-        Find a FunctionDef, AsyncFunctionDef, or ClassDef node with the specified name within the given
-        AST code object.
+        Find a DefNode or ClassNode node with the specified name within the given
+        FST code object.
 
         Args:
             code_obj (RedBaron): The FST code object (RedBaron or Node) to search.
