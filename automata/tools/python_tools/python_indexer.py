@@ -25,7 +25,7 @@ import copy
 import logging
 import os
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
-from typing import Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, Union, cast
 
 from automata.core.utils import root_path
 
@@ -201,23 +201,19 @@ class PythonIndexer:
         LINE_SPACING = 2
         result_str += module_path + ":\n"
 
-        def process_node(result_str: str, node: PythonObject, spacing: int) -> str:
+        def process_node(result_str: str, node: Any, spacing: int) -> str:
             if isinstance(node, ClassDef):
                 result_str += " " * spacing + " - " + node.name + "\n"
-                result_str += (
-                    " " * (spacing + LINE_SPACING) + ast.get_docstring(node) + "\n"
-                    if ast.get_docstring(node)
-                    else ""
-                )
+                docstring = ast.get_docstring(node)
+                if docstring:
+                    result_str += " " * (spacing + LINE_SPACING) + docstring + "\n"
             elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
                 if node.name.startswith("_"):
                     return result_str
                 result_str += " " * spacing + " - " + node.name + "\n"
-                result_str += (
-                    " " * (spacing + 2 * LINE_SPACING) + ast.get_docstring(node) + "\n"
-                    if ast.get_docstring(node)
-                    else ""
-                )
+                docstring = ast.get_docstring(node)
+                if docstring:
+                    result_str += " " * (spacing + 2 * LINE_SPACING) + docstring + "\n"
             if (
                 isinstance(node, ClassDef)
                 or isinstance(node, FunctionDef)
@@ -362,7 +358,7 @@ class PythonIndexer:
                 and node.lineno <= line_number
                 and (
                     not hasattr(node, "end_lineno")
-                    or (hasattr(node, "end_lineno") and node.end_lineno >= line_number)
+                    or (hasattr(node, "end_lineno") and node.end_lineno >= line_number)  # type: ignore
                 )
             ):
                 parent_node = node
