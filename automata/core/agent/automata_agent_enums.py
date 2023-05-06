@@ -1,4 +1,3 @@
-# automata_agent_utils.py
 from enum import Enum
 
 

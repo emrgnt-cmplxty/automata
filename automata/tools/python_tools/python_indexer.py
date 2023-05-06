@@ -25,11 +25,13 @@ import copy
 import logging
 import os
 from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
-from typing import Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, Union, cast
 
 from automata.core.utils import root_path
 
 logger = logging.getLogger(__name__)
+
+PythonObject = Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]
 
 
 class PythonIndexer:
@@ -189,6 +191,43 @@ class PythonIndexer:
 
         return result
 
+    def build_module_overview(self, module_path: str) -> str:
+        """
+        Loops over the module and returns a string that provides an overview of the Module.
+        Returns:
+            str: A string that provides an overview of the PythonParser's state.
+        """
+        result_str = ""
+        LINE_SPACING = 2
+        result_str += module_path + ":\n"
+
+        def process_node(result_str: str, node: Any, spacing: int) -> str:
+            if isinstance(node, ClassDef):
+                result_str += " " * spacing + " - " + node.name + "\n"
+                docstring = ast.get_docstring(node)
+                if docstring:
+                    result_str += " " * (spacing + LINE_SPACING) + docstring + "\n"
+            elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
+                if node.name.startswith("_"):
+                    return result_str
+                result_str += " " * spacing + " - " + node.name + "\n"
+                docstring = ast.get_docstring(node)
+                if docstring:
+                    result_str += " " * (spacing + 2 * LINE_SPACING) + docstring + "\n"
+            if (
+                isinstance(node, ClassDef)
+                or isinstance(node, FunctionDef)
+                or isinstance(node, AsyncFunctionDef)
+            ):
+                for sub_node in node.body:
+                    result_str = process_node(result_str, sub_node, spacing + LINE_SPACING)
+            return result_str
+
+        module = self.module_dict[module_path]
+        for node in module.body:
+            result_str = process_node(result_str, node, LINE_SPACING)
+        return result_str
+
     @staticmethod
     def _load_module_from_path(path) -> Optional[Module]:
         """
@@ -211,7 +250,7 @@ class PythonIndexer:
     @staticmethod
     def _find_module_class_function_or_method(
         code_obj: Union[Module, ClassDef], object_path: Optional[str]
-    ) -> Optional[Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]]:
+    ) -> Optional[PythonObject]:
         """
         Find a module, or find a function, method, or class inside a module.
 
@@ -221,7 +260,7 @@ class PythonIndexer:
                 the module is returned.
 
         Returns:
-            Optional[Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]]: The found FunctionDef,
+            Optional[PythonObject]: The found FunctionDef,
                 AsyncFunctionDef, or ClassDef node, or None if not found.
         """
 
@@ -264,12 +303,12 @@ class PythonIndexer:
         return None
 
     @staticmethod
-    def _remove_docstrings(result: Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]):
+    def _remove_docstrings(result: PythonObject):
         """
         Remove docstrings from the specified AST node and its child nodes (if any).
 
         Args:
-            result (Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]): The AST node
+            result (PythonObject): The AST node
                 to remove docstrings from.
         """
 
@@ -298,3 +337,47 @@ class PythonIndexer:
                     or isinstance(node, Module)
                 ):
                     PythonIndexer._remove_docstrings(node)
+
+    def _find_object_by_line_number(
+        self, module_path: str, line_number: int
+    ) -> Optional[PythonObject]:
+        """
+        Find a Python object (FunctionDef, AsyncFunctionDef, ClassDef) by its line number in the specified module.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            line_number (int): The line number of the Python object to find.
+
+        Returns:
+            Optional[PythonObject]: The found Python object, or None if not found.
+        """
+
+        def _find_object_in_node(node: ast.AST, line_number: int) -> Optional[PythonObject]:
+            if (
+                isinstance(node, (FunctionDef, AsyncFunctionDef, ClassDef))
+                and node.lineno <= line_number
+                and (
+                    not hasattr(node, "end_lineno")
+                    or (hasattr(node, "end_lineno") and node.end_lineno >= line_number)  # type: ignore
+                )
+            ):
+                parent_node = node
+            else:
+                parent_node = None
+
+            if isinstance(node, (ClassDef, FunctionDef, AsyncFunctionDef)):
+                for child_node in node.body:
+                    found_node = _find_object_in_node(child_node, line_number)
+                    if found_node:
+                        return found_node
+
+            return parent_node
+
+        module = self.module_dict.get(module_path)
+        if module:
+            for node in module.body:
+                found_node = _find_object_in_node(node, line_number)
+                if found_node:
+                    return found_node
+
+        return None
