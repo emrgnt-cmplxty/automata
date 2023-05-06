@@ -122,7 +122,7 @@ print("Result 2:", result2)
 ### AutomataAgentBuilder
 
 - `from_config(config: Optional[AutomataAgentConfig])`: Create an AutomataAgentBuilder instance using the provided configuration object.
-- `with_instruction_payload(instruction_payload: Dict[str, str])`: Set the initial payload for the AutomataAgent instance.
+- `with_instruction_payload(instruction_payload: AutomataInstructionPayload)`: Set the initial payload for the AutomataAgent instance.
 - `with_llm_toolkits(llm_toolkits: Dict[ToolkitType, Toolkit])`: Set the low-level manipulation (LLM) toolkits for the AutomataAgent instance.
 - `with_instructions(instructions: str)`: Set the instructions for the AutomataAgent instance.
 - `with_model(model: str)`: Set the model for the AutomataAgent instance and validate if it is supported.

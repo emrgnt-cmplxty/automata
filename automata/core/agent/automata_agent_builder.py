@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from pydantic import BaseModel, PrivateAttr
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import InstructionConfigVersion
 from automata.core.base.tool import Toolkit, ToolkitType
 from automata.tool_management.tool_management_utils import build_llm_toolkits
@@ -43,13 +43,13 @@ class AutomataAgentBuilder(BaseModel):
         return instance
 
     def with_instruction_payload(
-        self, instruction_payload: Dict[str, str]
+        self, instruction_payload: AutomataInstructionPayload
     ) -> "AutomataAgentBuilder":
         """
         Set the initial payload for the AutomataAgent instance.
 
         Args:
-            instruction_payload (Dict[str, str]): A dictionary containing the initial payload for the AutomataAgent.
+            instruction_payload (AutomataInstructionPayload): A dictionary containing the initial payload for the AutomataAgent.
 
         Returns:
             AutomataAgentBuilder: The current AutomataAgentBuilder instance with the updated instruction_payload.

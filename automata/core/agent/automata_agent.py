@@ -15,13 +15,14 @@ from automata.core.agent.automata_action_extractor import (
 )
 from automata.core.agent.automata_actions import AgentAction, ResultAction, ToolAction
 from automata.core.agent.automata_agent_helpers import (
+    format_prompt,
     generate_user_observation_message,
     retrieve_completion_message,
 )
 from automata.core.agent.automata_database_manager import AutomataDatabaseManager
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
 from automata.core.base.tool import ToolNotFoundError
-from automata.core.utils import format_prompt, load_config
+from automata.core.utils import format_text, load_config
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,6 @@ class AutomataAgent(Agent):
         observations = self._generate_observations(response_text)
 
         completion_message = retrieve_completion_message(observations)
-        print("completion_message = ", completion_message)
         if completion_message is not None:
             self.completed = True
             self._save_message(
@@ -187,7 +187,7 @@ class AutomataAgent(Agent):
         """
         openai.api_key = OPENAI_API_KEY
         if "tools" in self.instruction_input_variables:
-            self.instruction_payload["tools"] = self._build_tool_message()
+            self.instruction_payload.tools = self._build_tool_message()
         system_instruction = format_prompt(
             self.instruction_payload, self.system_instruction_template
         )
@@ -206,8 +206,7 @@ class AutomataAgent(Agent):
             for message in initial_messages:
                 self._save_message(message.role, message.content)
 
-        if set(self.instruction_input_variables) != set(list(self.instruction_payload.keys())):
-            raise ValueError(f"Initial payload does not match instruction_input_variables.")
+        self.instruction_payload.validate_fields(self.instruction_input_variables)
 
         logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
         logger.debug("-" * 60)
@@ -335,7 +334,7 @@ class AutomataAgent(Agent):
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_prompt(formatters, message["content"])
+            input_message = format_text(formatters, message["content"])
             input_messages.append(OpenAIChatMessage(role=message["role"], content=input_message))
 
         return input_messages
