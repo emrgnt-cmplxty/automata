@@ -12,7 +12,7 @@ import yaml
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 
 
-def format_prompt(format_variables: Dict[str, str], input_text: str) -> str:
+def format_text(format_variables: Dict[str, str], input_text: str) -> str:
     """Format expected strings into the config."""
     for arg in format_variables:
         input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])

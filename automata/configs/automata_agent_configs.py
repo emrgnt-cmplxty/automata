@@ -9,11 +9,29 @@ from automata.core.base.tool import Toolkit, ToolkitType
 from .config_enums import AgentConfigVersion, ConfigCategory, InstructionConfigVersion
 
 
+class AutomataInstructionPayload:
+    """
+    The AutomataInstructionPayload class is used to store the payload for formatting the introduction instruction.
+    Fields on this class are used to format the introduction instruction.
+    """
+
+    agents: Optional[str] = None
+    overview: Optional[str] = None
+    tools: Optional[str] = None
+
+    def validate_fields(self, required_fields: List[str]):
+        initialized_fields = {field for field, value in self.__dict__.items() if value is not None}
+        missing_fields = set(required_fields) - set(initialized_fields)
+
+        if missing_fields:
+            raise ValueError(f"Missing fields in AutomataInstructionPayload: {missing_fields}")
+
+
 class AutomataAgentConfig(BaseModel):
     """
     Args:
         config_version (AgentConfigVersion): The config_version of the agent to use.
-        instruction_payload (Dict[str, str]): Initial payload to send to the agent.
+        instruction_payload (AutomataInstructionPayload): Initial payload to format input instructions.
         llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
         instructions (str): A string of instructions to execute.
         system_instruction_template (str): A string of instructions to execute.
@@ -32,7 +50,7 @@ class AutomataAgentConfig(BaseModel):
         arbitrary_types_allowed = True
 
     config_version: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_DEV
-    instruction_payload: Dict[str, str] = {}
+    instruction_payload: AutomataInstructionPayload = AutomataInstructionPayload()
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
     description: str = ""
@@ -67,14 +85,14 @@ class AutomataAgentConfig(BaseModel):
         return loaded_yaml
 
     @classmethod
-    def handle_overview_input(cls, config: "AutomataAgentConfig") -> None:
+    def add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig") -> None:
         """Handles the overview input for the agent."""
         from automata.core.utils import root_py_path
         from automata.tools.python_tools.python_indexer import PythonIndexer
 
         if "overview" in config.instruction_input_variables:
             indexer = PythonIndexer(root_py_path())
-            config.instruction_payload["overview"] = indexer.build_overview()
+            config.instruction_payload.overview = indexer.build_overview()
 
     @classmethod
     def load(cls, config_version: AgentConfigVersion) -> "AutomataAgentConfig":
@@ -84,6 +102,6 @@ class AutomataAgentConfig(BaseModel):
 
         loaded_yaml = cls.load_automata_yaml_config(config_version)
         config = AutomataAgentConfig(**loaded_yaml)
-        cls.handle_overview_input(config)
+        cls.add_overview_to_instruction_payload(config)
 
         return config

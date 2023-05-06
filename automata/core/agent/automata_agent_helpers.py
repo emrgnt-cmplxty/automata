@@ -1,5 +1,7 @@
 from typing import Dict, Optional
 
+from automata.configs.automata_agent_configs import AutomataInstructionPayload
+
 from .automata_agent_enums import ActionIndicator, ResultField
 
 
@@ -56,7 +58,7 @@ def retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[st
     return None
 
 
-def create_instruction_payload(overview: str, agents_message: str) -> Dict[str, str]:
+def create_instruction_payload(overview: str, agents_message: str) -> AutomataInstructionPayload:
     """
     Create an initial payload for the MasterAutomataAgent based on the provided overview and agents_message.
 
@@ -67,12 +69,19 @@ def create_instruction_payload(overview: str, agents_message: str) -> Dict[str, 
     Returns:
         Dict[str, str]: A dictionary containing the created instruction payload.
     """
-    instruction_payload: Dict[str, str] = {}
+    instruction_payload = AutomataInstructionPayload()
 
     if overview != "":
-        instruction_payload["overview"] = overview
+        instruction_payload.overview = overview
 
     if agents_message != "":
-        instruction_payload["agents"] = agents_message
+        instruction_payload.agents = agents_message
 
     return instruction_payload
+
+
+def format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:
+    """Format expected strings into the config."""
+    for arg in format_variables.__dict__.keys():
+        input_text = input_text.replace(f"{{{arg}}}", format_variables.__dict__[arg])
+    return input_text
