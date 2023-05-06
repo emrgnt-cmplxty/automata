@@ -1,62 +1,66 @@
-# AutomataCoordinator and AutomataInstance Documentation
+# Eval Class Documentation
 
 ## Overview
 
-The AutomataCoordinator is responsible for managing multiple AutomataAgents, including the MasterAutomataAgent. It allows them to work together to perform various tasks and generate results. The AutomataInstance is a representation of an AutomataAgent, including its configuration, description, and builder class.
-
-In this documentation, you will learn how to create and use an AutomataCoordinator and AutomataInstance, as well as how to run multiple AutomataAgents and handle their actions and results.
+The Eval class is a base class for evaluating the performance of an AutomataAgent given a set of instructions. It provides methods for generating evaluation results and extracting actions from the agent's responses. Subclasses of the Eval class should override the eval_sample and run methods to customize evaluation behavior.
 
 ## Usage
 
-To use the AutomataCoordinator, first create an instance of it. Then, you can create and add multiple AutomataInstances with different configurations and builders. After setting the master agent for the AutomataCoordinator, you can run the agents and retrieve their results.
-
-To create an AutomataInstance, you need to provide its configuration version, description, and builder class. You can then add the AutomataInstance to the AutomataCoordinator.
+To use the Eval class, first create an instance of the class with the required agent_config parameter and any optional keyword arguments. Then, call the generate_eval_result method with an instruction and a list of expected actions to evaluate the agent's performance.
 
 ## Examples
 
-### Creating an AutomataCoordinator and AutomataInstance
+### Creating an Eval Instance
 
 ```python
-from core.coordinator.automata_coordinator import AutomataCoordinator
-from core.coordinator.automata_instance import AutomataInstance
-from core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.evals.eval import Eval
 from automata.configs.config_enums import AgentConfigVersion
 
-# Create an AutomataCoordinator
-coordinator = AutomataCoordinator()
-
-# Create an AutomataInstance
-agent_instance = AutomataInstance(
-    config_version=AgentConfigVersion.TEST,
-    description="Agent 1",
-    builder=AutomataAgentBuilder
+evaluator = Eval(
+    agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
+    llm_toolkits=args.llm_toolkits,
+    model=args.model,
+    instruction_payload=instruction_payload,
+    stream=args.stream,
 )
-
-# Add the AutomataInstance to the coordinator
-coordinator.add_agent_instance(agent_instance)
 ```
 
-### Running Multiple Agents
+### Generating an Eval Result
 
-Refer to the "Advanced Implementation Examples" section in the AutomataAgent documentation for a comprehensive example of creating an AutomataCoordinator, adding multiple AutomataInstances, and running the agents to perform different tasks.
+```python
+eval_result = evaluator.generate_eval_result(instruction, expected_actions)
+```
 
 ## References
 
-### AutomataCoordinator
-
-- `add_agent_instance(instance: AutomataInstance)`: Add an AutomataInstance to the AutomataCoordinator.
-- `set_master_agent(agent: MasterAutomataAgent)`: Set the master agent for the AutomataCoordinator.
-- `run_agent(action: AgentAction)`: Run an agent based on the given AgentAction instance and return the results.
-- `build_agent_message()`: Build a message containing a list of agent instances and descriptions.
-
-### AutomataInstance
-
-- `__init__(self, config_version: AgentConfigVersion, description: str, builder: Type[AutomataAgentBuilder])`: Initialize an AutomataInstance with the provided configuration version, description, and builder class.
-
 ### Eval
 
-Refer to the provided "Eval Class" code and docstring for a detailed description of the Eval class, its methods, and usage in evaluating an agent's performance when given a set of instructions.
+`**init**(self, *args, **kwargs)`: Initializes an Eval object with the following optional keyword arguments:
 
-## Additional Resources
+`agent_config`: Configuration for the AutomataAgentBuilder (required).
 
-For more information on the AutomataAgent, MasterAutomataAgent, and associated classes, refer to the AutomataAgent documentation provided.
+`instruction_payload`: Instruction payload for the AutomataAgentBuilder.
+
+`model`: Model to use for the agent.
+session_id: Session ID for the agent.
+stream: Stream for the agent.
+with_max_iters: Maximum number of iterations for the agent.
+llm_toolkits: Low-level model toolkits for the agent.
+with_master: Option to use the master model.
+generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]) -> EvalResult: Evaluates a single sample by constructing an agent using the provided instruction, running the agent, extracting the actions performed by the agent, and comparing them to the expected_actions. Returns an EvalResult object with the evaluation results.
+\_extract_actions(messages: List[OpenAIChatMessage]) -> List[Action]: A static method that extracts a list of Action objects from a list of OpenAIChatMessage objects.
+
+### Helper Classes and Functions
+
+### EvalResult
+
+A class to represent the result of an evaluation.
+Contains the following attributes:
+token_match: A boolean indicating whether there was a token match between expected and extracted actions.
+full_match: A boolean indicating whether there was a full match between expected and extracted actions.
+EvalAction
+A class to represent an action in an evaluation. Contains the following methods:
+token_match(self, action_str: str) -> bool: Performs a relative comparison between an action string and the action's tokens.
+full_match(self, extracted_action: Action, expected_action: Action) -> bool: Performs an exact comparison between two actions.
+calc_eval_result
+calc_eval_result(extracted_actions: List[Action], expected_actions: List[EvalAction]) -> EvalResult: A function that calculates the evaluation result based on the extracted actions and expected actions, returning an EvalResult object.
