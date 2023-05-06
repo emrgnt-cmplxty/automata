@@ -1,13 +1,12 @@
 import logging
 import re
-import sqlite3
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional, Tuple, cast
 
 import openai
 from termcolor import colored
 
-from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
+from automata.config import OPENAI_API_KEY
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import ConfigCategory
 from automata.core.agent.agent import Agent
@@ -19,7 +18,9 @@ from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
+from automata.core.agent.automata_database_manager import AutomataDatabaseManager
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
+from automata.core.base.tool import ToolNotFoundError
 from automata.core.utils import format_prompt, load_config
 
 logger = logging.getLogger(__name__)
@@ -67,12 +68,6 @@ class AutomataAgent(Agent):
         self.eval_mode = False
         self.messages: List[OpenAIChatMessage] = []
         self.session_id = config.session_id
-        self.conn: Optional[sqlite3.Connection] = None
-
-    def __del__(self):
-        """Close the connection to the agent."""
-        if self.conn:
-            self.conn.close()
 
     def run(self) -> str:
         """
@@ -118,9 +113,10 @@ class AutomataAgent(Agent):
         observations = self._generate_observations(response_text)
 
         completion_message = retrieve_completion_message(observations)
+        print("completion_message = ", completion_message)
         if completion_message is not None:
             self.completed = True
-            self._save_interaction(
+            self._save_message(
                 "assistant",
                 self._parse_completion_message(completion_message)
                 if not self.eval_mode
@@ -128,8 +124,8 @@ class AutomataAgent(Agent):
             )
             return None
 
-        assistant_message = self._save_interaction("assistant", response_text)
-        user_message = self._save_interaction(
+        assistant_message = self._save_message("assistant", response_text)
+        user_message = self._save_message(
             "user",
             generate_user_observation_message(observations)
             if len(observations) > 0
@@ -186,28 +182,35 @@ class AutomataAgent(Agent):
         return self.messages[self.NUM_DEFAULT_MESSAGES :]
 
     def _setup(self):
-        """Sets up the agent, initializing the session and loading previous interactions if applicable."""
+        """
+        Sets up the agent, initializing the session and loading previous interactions if applicable.
+        """
         openai.api_key = OPENAI_API_KEY
         if "tools" in self.instruction_input_variables:
             self.instruction_payload["tools"] = self._build_tool_message()
         system_instruction = format_prompt(
             self.instruction_payload, self.system_instruction_template
         )
-        self._init_database()
+        session_id = self.session_id if self.session_id else str(uuid.uuid4())
+        self.database_manager: AutomataDatabaseManager = AutomataDatabaseManager(session_id)
+
+        self.database_manager._init_database()
         if self.session_id:
-            self._load_previous_interactions()
+            self.messages = self.database_manager._load_previous_interactions()
         else:
-            self.session_id = str(uuid.uuid4())
-            self._save_interaction("system", system_instruction)
+            self.session_id = session_id
+            self._save_message("system", system_instruction)
             initial_messages = self._build_initial_messages(
                 {"user_input_instructions": self.instructions}
             )
             for message in initial_messages:
-                self._save_interaction(message.role, message.content)
-        logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
-        logger.debug("-" * 60)
+                self._save_message(message.role, message.content)
+
         if set(self.instruction_input_variables) != set(list(self.instruction_payload.keys())):
             raise ValueError(f"Initial payload does not match instruction_input_variables.")
+
+        logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
+        logger.debug("-" * 60)
         logger.debug("Session ID: %s" % self.session_id)
         logger.debug("-" * 60)
 
@@ -271,53 +274,9 @@ class AutomataAgent(Agent):
                 break
 
         if not tool_found:
-            error_message = f"Error: Tool '{tool_name}' not found."
-            return error_message
+            return ToolNotFoundError(tool_name).__str__()
 
         return cast(str, tool_output)
-
-    def _init_database(self):
-        """Initializes the database connection and creates the interactions table if it does not exist."""
-        self.conn = sqlite3.connect(CONVERSATION_DB_NAME)
-        self.cursor = self.conn.cursor()
-        self.cursor.execute(
-            "\n            CREATE TABLE IF NOT EXISTS interactions (\n                session_id INTEGER,\n                interaction_id INTEGER,\n                role TEXT,\n                content TEXT,\n                PRIMARY KEY (session_id, interaction_id)\n            )\n            "
-        )
-        self.conn.commit()
-
-    def _save_interaction(self, role: str, content: str) -> OpenAIChatMessage:
-        """
-        Saves an interaction to the database and appends it to the messages list.
-
-        Args:
-            role (str): The role of the message sender (e.g., "user" or "assistant").
-            content (str): The content of the message.
-
-        Returns:
-            OpenAIChatMessage: The saved interaction.
-        """
-        assert self.session_id is not None, "Session ID is not set."
-        assert self.conn is not None, "Database connection is not set."
-        interaction = OpenAIChatMessage(role=role, content=content)
-        interaction_id = len(self.messages)
-        self.cursor.execute(
-            "INSERT INTO interactions (session_id, interaction_id, role, content) VALUES (?, ?, ?, ?)",
-            (self.session_id, interaction_id, role, content),
-        )
-        self.conn.commit()
-        self.messages.append(interaction)
-        return interaction
-
-    def _load_previous_interactions(self):
-        """Loads previous interactions from the database and populates the messages list."""
-        self.cursor.execute(
-            "SELECT role, content FROM interactions WHERE session_id = ? ORDER BY interaction_id ASC",
-            (self.session_id,),
-        )
-        self.messages = [
-            OpenAIChatMessage(role=role, content=content)
-            for (role, content) in self.cursor.fetchall()
-        ]
 
     def _build_tool_message(self):
         """
@@ -407,6 +366,19 @@ class AutomataAgent(Agent):
                 latest_accumulation = words[-1]
         print(colored(str(latest_accumulation), "green"))
         return response_text
+
+    def _save_message(self, role: str, content: str) -> OpenAIChatMessage:
+        """
+        Saves the messagee for the agent.
+
+        Args:
+            role (str): The role of the messagee.
+            content (str): The content of the messagee.
+        """
+        self.database_manager.put_message(role, content, len(self.messages))
+        message = OpenAIChatMessage(role=role, content=content)
+        self.messages.append(message)
+        return message
 
 
 class MasterAutomataAgent(AutomataAgent):
