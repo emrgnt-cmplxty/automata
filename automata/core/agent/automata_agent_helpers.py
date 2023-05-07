@@ -1,8 +1,8 @@
 from typing import Dict, Optional
 
 from automata.configs.automata_agent_configs import AutomataInstructionPayload
-
-from .automata_agent_enums import ActionIndicator, ResultField
+from automata.core.agent.automata_agent_enums import ActionIndicator, ResultField
+from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
 def generate_user_observation_message(observations: Dict[str, str], include_prefix=True) -> str:
@@ -78,6 +78,44 @@ def create_instruction_payload(overview: str, agents_message: str) -> AutomataIn
         instruction_payload.agents = agents_message
 
     return instruction_payload
+
+
+def create_builder_from_args(*args, **kwargs):
+    from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+
+    if "agent_config" not in kwargs:
+        raise ValueError("agent_config must be provided")
+
+    builder = AutomataAgentBuilder.from_config(kwargs["agent_config"]).with_eval_mode(
+        kwargs.get("eval_mode", False)
+    )
+
+    if "instruction_payload" in kwargs and kwargs["instruction_payload"] != {}:
+        builder = builder.with_instruction_payload(kwargs["instruction_payload"])
+
+    if "instructions" in kwargs:
+        builder = builder.with_instructions(kwargs["instructions"])
+
+    if "model" in kwargs:
+        builder = builder.with_model(kwargs["model"])
+
+    if "session_id" in kwargs:
+        builder = builder.with_session_id(kwargs["session_id"])
+
+    if "stream" in kwargs:
+        builder = builder.with_stream(kwargs["stream"])
+
+    if "with_max_iters" in kwargs:
+        builder = builder.with_max_iters(kwargs["with_max_iters"])
+
+    if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
+        llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","))
+        builder = builder.with_llm_toolkits(llm_toolkits)
+
+    if "with_master" in kwargs:
+        builder.with_master(kwargs["with_master"])
+
+    return builder
 
 
 def format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:

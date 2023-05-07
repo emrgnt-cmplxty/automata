@@ -5,7 +5,6 @@ from pydantic import BaseModel, PrivateAttr
 from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import InstructionConfigVersion
 from automata.core.base.tool import Toolkit, ToolkitType
-from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 from .automata_agent import AutomataAgent, MasterAutomataAgent
 
@@ -230,39 +229,3 @@ class AutomataAgentBuilder(BaseModel):
         """
         if not isinstance(value, expected_type):
             raise ValueError(f"{param_name} must be a {expected_type.__name__}.")
-
-
-def create_builder_from_args(*args, **kwargs):
-    if "agent_config" not in kwargs:
-        raise ValueError("agent_config must be provided")
-
-    builder = AutomataAgentBuilder.from_config(kwargs["agent_config"]).with_eval_mode(
-        kwargs.get("eval_mode", False)
-    )
-
-    if "instruction_payload" in kwargs and kwargs["instruction_payload"] != {}:
-        builder = builder.with_instruction_payload(kwargs["instruction_payload"])
-
-    if "instructions" in kwargs:
-        builder = builder.with_instructions(kwargs["instructions"])
-
-    if "model" in kwargs:
-        builder = builder.with_model(kwargs["model"])
-
-    if "session_id" in kwargs:
-        builder = builder.with_session_id(kwargs["session_id"])
-
-    if "stream" in kwargs:
-        builder = builder.with_stream(kwargs["stream"])
-
-    if "with_max_iters" in kwargs:
-        builder = builder.with_max_iters(kwargs["with_max_iters"])
-
-    if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
-        llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","))
-        builder = builder.with_llm_toolkits(llm_toolkits)
-
-    if "with_master" in kwargs:
-        builder.with_master(kwargs["with_master"])
-
-    return builder
