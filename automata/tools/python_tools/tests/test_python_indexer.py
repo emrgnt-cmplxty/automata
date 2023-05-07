@@ -83,3 +83,10 @@ def test_retrieve_code_by_line(indexer):
     result = indexer.retrieve_parent_code_by_line(module_name, line_number)
     expected_match = 'class TestClass:\n    """This is my test class"""\n\n    def __init__(self):\n        """This initializes TestClass"""\n        pass\n\n    def test_method(self) -> bool:\n        """This is my test method"""\n        return False\n'
     assert result == expected_match
+
+
+def test_find_expression_context(indexer):
+    expression = "test_function"
+    result = indexer.find_expression_context(expression)
+    expected_match = 'test_module.test_function\nL2-6\n```\n\ndef test_function() -> bool:\n    """This is my new function"""\n    return True```\n\n'
+    assert result == expected_match

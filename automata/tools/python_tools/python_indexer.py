@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from typing import Dict, Optional, Union
 
 from redbaron import (
@@ -123,7 +124,53 @@ class PythonIndexer:
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def retrieve_parent_code_by_line(self, module_path: str, line_number: int) -> str:
+    def find_expression_context(
+        self,
+        expression: str,
+        symmetric_width: int = 2,
+    ) -> str:
+        """
+        Inspects the codebase for lines containing the expression and returns the line number and
+        surrounding lines.
+
+        Args:
+            root_dir (str): The root directory to search.
+            expression (str): The expression to search for.
+
+        Returns:
+            str: The context associated with the expression.
+        """
+
+        result = ""
+        pattern = re.compile(expression)
+        for module_path, module in self.module_dict.items():
+            lines = module.dumps().splitlines()
+            for i, line in enumerate(lines):
+                lineno = i + 1  # rebardon lines are 1 indexed, same as in an editor
+                if pattern.search(line):
+                    lower_index = max(i - symmetric_width, 0)
+                    upper_index = min(i + symmetric_width, len(lines))
+
+                    raw_code = "\n".join(lines[lower_index : upper_index + 1])
+                    result += f"{module_path}"
+
+                    node = module.at(lineno)
+                    if node.type not in ("def", "class"):
+                        node = node.parent_find(lambda identifier: identifier in ("def", "class"))
+
+                    if node:
+                        result += f".{node.name}"
+
+                    linespan_str = (
+                        f"L{lineno}"
+                        if not symmetric_width
+                        else f"L{lower_index + 1}-{upper_index + 1}"
+                    )
+                    result += f"\n{linespan_str}\n```{raw_code}```\n\n"
+
+        return result
+
+    def retrieve_parent_function_name_by_line(self, module_path: str, line_number: int) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
@@ -140,9 +187,64 @@ class PythonIndexer:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
         node = self.module_dict[module_path].at(line_number)
+        if node.type != "def":
+            node = node.parent_find("def")
+        if node:
+            if node.parent[0].type == "class":
+                return f"{node.parent.name}.{node.name}"
+            else:
+                return node.name
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_parent_function_node_lines(
+        self, module_path: str, line_number: int
+    ) -> Union[str, tuple]:
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        node = self.module_dict[module_path].at(line_number)
+        if node.type != "def":
+            node = node.parent_find("def")
+        if node:
+            return (
+                node.absolute_bounding_box.top_left.line,
+                node.absolute_bounding_box.bottom_right.line,
+            )
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_parent_code_by_line(
+        self, module_path: str, line_number: int, return_numbered=False
+    ) -> str:
+        """
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            line_number (int): The line number of the code to retrieve.
+            return_numbered (bool): Whether to return the code with line numbers prepended.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
+
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        node = self.module_dict[module_path].at(line_number)
         while node.parent_find(lambda identifier: identifier in ("def", "class")):
             node = node.parent_find(lambda identifier: identifier in ("def", "class"))
-        return node.dumps()
+        source_code = node.dumps()
+        if return_numbered:
+            start = node.absolute_bounding_box.top_left.line
+            numbered_source_code = "\n".join(
+                [f"{i+start}: {line}" for i, line in enumerate(source_code.split("\n"))]
+            )
+            return numbered_source_code
+        else:
+            return source_code
 
     def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """
