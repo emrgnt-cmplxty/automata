@@ -76,3 +76,7 @@ The AutomataTools provide capabilities to index, write, and search Python codeba
 ## Automata Tool Management
 
 This Automata Tool Management workflow provides agents with managers that interact with different APIs and provide functionality to read and modify the code state of Python files, build low-level manipulation (LLM) toolkits, and facilitate code searches. More information can be found in the [Automata Tool Management Documentation](automata/tool_management/tool_management.md).
+
+## Evaluation Suite
+
+The Eval class is a base class for evaluating the performance of an AutomataAgent given a set of instructions. It provides methods for generating evaluation results and extracting actions from the agent's responses. Subclasses of the Eval class should override the eval_sample and run methods to customize evaluation behavior. More information can be found in the [Automata Eval Documentation](automata/evals/eval.md).

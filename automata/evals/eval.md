@@ -42,25 +42,37 @@ eval_result = evaluator.generate_eval_result(instruction, expected_actions)
 `instruction_payload`: Instruction payload for the AutomataAgentBuilder.
 
 `model`: Model to use for the agent.
-session_id: Session ID for the agent.
-stream: Stream for the agent.
-with_max_iters: Maximum number of iterations for the agent.
-llm_toolkits: Low-level model toolkits for the agent.
-with_master: Option to use the master model.
-generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]) -> EvalResult: Evaluates a single sample by constructing an agent using the provided instruction, running the agent, extracting the actions performed by the agent, and comparing them to the expected_actions. Returns an EvalResult object with the evaluation results.
-\_extract_actions(messages: List[OpenAIChatMessage]) -> List[Action]: A static method that extracts a list of Action objects from a list of OpenAIChatMessage objects.
 
-### Helper Classes and Functions
+`session_id`: Session ID for the agent.
+
+`stream`: Stream for the agent.
+
+`with_max_iters`: Maximum number of iterations for the agent.
+
+`llm_toolkits`: Low-level model toolkits for the agent.
+
+`with_master`: Option to use the master model.
+
+`generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]) -> EvalResult`: Evaluates a single sample by constructing an agent using the provided instruction, running the agent, extracting the actions performed by the agent, and comparing them to the expected_actions. Returns an EvalResult object with the evaluation results.
+
+`_extract_actions(messages: List[OpenAIChatMessage]) -> List[Action]`: A static method that extracts a list of Action objects from a list of OpenAIChatMessage objects.
+
+## Helper Classes and Functions
 
 ### EvalResult
 
 A class to represent the result of an evaluation.
 Contains the following attributes:
-token_match: A boolean indicating whether there was a token match between expected and extracted actions.
-full_match: A boolean indicating whether there was a full match between expected and extracted actions.
-EvalAction
+`token_match`: A boolean indicating whether there was a token match between expected and extracted actions.
+`full_match`: A boolean indicating whether there was a full match between expected and extracted actions.
+
+### EvalAction
+
 A class to represent an action in an evaluation. Contains the following methods:
-token_match(self, action_str: str) -> bool: Performs a relative comparison between an action string and the action's tokens.
-full_match(self, extracted_action: Action, expected_action: Action) -> bool: Performs an exact comparison between two actions.
-calc_eval_result
-calc_eval_result(extracted_actions: List[Action], expected_actions: List[EvalAction]) -> EvalResult: A function that calculates the evaluation result based on the extracted actions and expected actions, returning an EvalResult object.
+
+`token_match(self, action_str: str) -> bool`: Performs a relative comparison between an action string and the action's tokens.
+`full_match(self, extracted_action: Action, expected_action: Action) -> bool`: Performs an exact comparison between two actions.
+
+### Helpers
+
+`calc_eval_result(extracted_actions: List[Action], expected_actions: List[EvalAction]) -> EvalResult`: A function that calculates the evaluation result based on the extracted actions and expected actions, returning an EvalResult object.
