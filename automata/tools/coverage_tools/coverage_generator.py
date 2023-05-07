@@ -1,8 +1,6 @@
 import os
 import subprocess
 import xml.etree.ElementTree as ET
-from _ast import AsyncFunctionDef, ClassDef, FunctionDef
-from typing import List, Union
 
 import pandas as pd
 
@@ -67,9 +65,11 @@ class CoverageGenerator:
         df = pd.DataFrame(data)
         uncovered_lines = df[df["hits"] == 0]
         uncovered_lines["object"] = uncovered_lines.apply(
-            lambda x: self._object_name_from_row(x), axis=1
+            lambda x: self._function_name_from_row(x), axis=1
         )
-        uncovered_lines = uncovered_lines[uncovered_lines["object"] != "None"]
+        uncovered_lines = uncovered_lines[
+            uncovered_lines["object"] != self.indexer.NO_RESULT_FOUND_STR
+        ]
 
         uncovered_lines = (
             uncovered_lines.groupby(["module", "object"]).agg({"line_number": list}).reset_index()
@@ -83,29 +83,14 @@ class CoverageGenerator:
         ).reset_index(drop=True)
         return uncovered_lines
 
-    def _get_nodes_from_row(self, row) -> List[Union[ClassDef, FunctionDef, AsyncFunctionDef]]:
-        line_number = row.line_number[0] if isinstance(row.line_number, list) else row.line_number
-        return self.indexer.retrieve_nodes_by_line(row.module, line_number)
-
-    def _object_name_from_row(self, row) -> str:
+    def _function_name_from_row(self, row) -> str:
         """
         Helper function to retrieve the function name from metadata in the row of a dataframe
         :param row: A row of a dataframe that has package, module and line number entries
         see TODO in class docstring
         """
-        nodes = self._get_nodes_from_row(row)
-        class_nodes = [node for node in nodes if isinstance(node, ClassDef)]
-        function_nodes = [
-            node for node in nodes if isinstance(node, (FunctionDef, AsyncFunctionDef))
-        ]
-        name = ""
-        if function_nodes:
-            node = function_nodes[0]
-            name = node.name
-            if class_nodes:
-                name = f"{class_nodes[0].name}.{name}"
-
-        return name or "None"
+        name = self.indexer.retrieve_parent_function_name_by_line(row.module, row.line_number)
+        return name
 
     def _percent_covered_function_from_row(self, row):
         """
@@ -113,18 +98,11 @@ class CoverageGenerator:
         :param row:
         see TODO in class docstring
         """
-        nodes = self._get_nodes_from_row(row)
-        function_nodes = [
-            node for node in nodes if isinstance(node, (FunctionDef, AsyncFunctionDef))
-        ]
-        class_nodes = [node for node in nodes if isinstance(node, ClassDef)]
-        if function_nodes:
-            node = function_nodes[0]
-        elif class_nodes:
-            node = class_nodes[0]
-
+        start, end = self.indexer.retrieve_parent_function_node_lines(
+            row.module, row.line_number[0]
+        )
         num_uncovered = len(row.line_number)
-        num_total = node.end_lineno - node.lineno + 1  # to account for inclusivity
+        num_total = end - start + 1  # to account for inclusivity
         percent_covered = 1 - (num_uncovered / num_total)
         return percent_covered
 
@@ -139,4 +117,5 @@ if __name__ == "__main__":
     coverage_generator = CoverageGenerator()
     coverage_generator.write_coverage_xml()
     df = coverage_generator.parse_coverage_xml()
+    print(df.list_items())
     coverage_generator.clean_up()

@@ -15,38 +15,37 @@ class CoverageManager(BaseSelector):
         module_path = item["module"]
         function_name = item["object"]
         uncovered_line_numbers = sorted(item["line_number"])
-        breakpoint()
-        lines = self.coverage_generator.indexer.retrieve_outer_code_by_line(
-            module_path, uncovered_line_numbers[-1]
-        )
-        breakpoint()
-        # marked_lines = []
-        # for line in lines:
-        #     if uncovered_line_numbers:
-        #         if line.startswith(str(uncovered_line_numbers[0])):
-        #             line = f"{line}    <---"
-        #             uncovered_line_numbers.pop(0)
-        #     marked_lines.append(line[:])
-        #
-        # marked_code = '\n'.join(marked_lines)
+        uncovered_line_numbers_queue = uncovered_line_numbers[:]
 
-        output = f"""
-Write a test to satisfy the following coverage gap:\n\n
-Module: {module_path}\n\n
-Function: {function_name}\n\n
-Uncovered lines: {uncovered_line_numbers}\n\n
-Code:
-```
-{lines}
-```
-        """
+        lines = self.coverage_generator.indexer.retrieve_parent_code_by_line(
+            module_path, uncovered_line_numbers[0], True
+        ).splitlines()
+        marked_lines = []
+        for line in lines:
+            if uncovered_line_numbers_queue and line.startswith(
+                str(uncovered_line_numbers_queue[0])
+            ):
+                marked_lines.append(f"*** {line}")
+                uncovered_line_numbers_queue.pop(0)
+            else:
+                marked_lines.append(line)
+        marked_code = "\n".join(marked_lines)
+
+        output = (
+            f"Write a test to satisfy the following coverage gap:\n"
+            f"Module: {module_path}\n"
+            f"Function: {function_name}\n"
+            f"Uncovered lines: {uncovered_line_numbers}\n"
+            f"Code:\n"
+            f"```"
+            f"{marked_code}"
+            f"```"
+        )
 
         return output
 
 
 if __name__ == "__main__":
-    coverage_manager = CoverageManager(write=False)
-    breakpoint()
+    coverage_manager = CoverageManager(write=True)
     print(coverage_manager.list_items())
-    breakpoint()
-    print(coverage_manager.select_and_process_item(3))
+    print(coverage_manager.select_and_process_item(0))
