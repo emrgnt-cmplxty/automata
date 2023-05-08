@@ -1,11 +1,11 @@
 from automata.core.base.base_selector import BaseSelector
-from automata.tools.coverage_tools.coverage_generator import CoverageGenerator
+from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
 
 
 class CoverageManager(BaseSelector):
-    def __init__(self, write=False, num_items_to_show=10):
-        self.coverage_generator = CoverageGenerator()
-        if write:
+    def __init__(self, write_fresh_report=False, num_items_to_show=10):
+        self.coverage_generator = CoverageAnalyzer()
+        if write_fresh_report:
             self.coverage_generator.write_coverage_xml()
         coverage_df = self.coverage_generator.parse_coverage_xml()
         iterable = [(i, row.to_dict()) for i, row in coverage_df.iterrows()]
@@ -46,6 +46,6 @@ class CoverageManager(BaseSelector):
 
 
 if __name__ == "__main__":
-    coverage_manager = CoverageManager(write=True)
+    coverage_manager = CoverageManager(write_fresh_report=True)
     print(coverage_manager.list_items())
     print(coverage_manager.select_and_process_item(0))

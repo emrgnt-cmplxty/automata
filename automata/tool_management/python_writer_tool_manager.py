@@ -46,6 +46,7 @@ class PythonWriterToolManager(BaseToolManager):
         - None
         """
         self.writer: PythonWriter = kwargs.get("python_writer")
+        # TODO: unused
         self.automata_version = (
             kwargs.get("automata_version") or AgentConfigVersion.AUTOMATA_WRITER_PROD
         )

@@ -8,11 +8,11 @@ from automata.config import REPOSITORY_PATH
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
 
-class CoverageGenerator:
+class CoverageAnalyzer:
     """
-    A class to produce a coverage report, load it and parse it into memory
-    # TODO: right now this only supports functions and methods.
-    # TODO: It doesn't handle nested definitions (besides class.method) well.
+    A class to produce a coverage report, load it and parse it into a dataframe.
+    The df is generated so the info could be consumed by python indexer.
+    # TODO: The nested definitions are not super consistently handled but the indexer should be robust against that given good naming
     """
 
     ROOT_DIR = REPOSITORY_PATH
@@ -114,7 +114,7 @@ class CoverageGenerator:
 
 
 if __name__ == "__main__":
-    coverage_generator = CoverageGenerator()
+    coverage_generator = CoverageAnalyzer()
     coverage_generator.write_coverage_xml()
     df = coverage_generator.parse_coverage_xml()
     print(df.list_items())
