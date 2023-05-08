@@ -1,25 +1,53 @@
-from automata.core.base.base_selector import BaseSelector
+from typing import Any
+
 from automata.core.utils import create_issue_on_github
 from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
 
 
-class CoverageProcessor(BaseSelector):
-    def __init__(self, write_fresh_report=False, do_create_issue=False, num_items_to_show=10):
-        self.coverage_generator = CoverageAnalyzer()
+class CoverageProcessor:
+    def __init__(self, coverage_analyzer, do_create_issue=False, num_items_to_show=10):
+        self.coverage_analyzer = coverage_analyzer
         self.do_create_issue = do_create_issue
-        if write_fresh_report:
-            self.coverage_generator.write_coverage_xml()
-        coverage_df = self.coverage_generator.parse_coverage_xml()
-        iterable = [(i, row.to_dict()) for i, row in coverage_df.iterrows()]
-        super().__init__(iterable, num_items_to_show)
+        self.num_items_to_show = num_items_to_show
+        # lazy fields
+        self.coverage_df = None
+        self.item_iterable = []
+        self._item_iterator = None
 
-    def process_item(self, item):
+    def _refresh(self):
+        if self.coverage_df is None:
+            self.coverage_analyzer.write_coverage_xml()
+            self.coverage_df = self.coverage_analyzer.parse_coverage_xml()
+            self.item_iterable = [(i, row.to_dict()) for i, row in self.coverage_df.iterrows()]
+            self.coverage_analyzer.clean_up()
+
+    @property
+    def item_iterator(self):
+        if not self._item_iterator:
+            self._item_iterator = iter(self.item_iterable)
+        return self._item_iterator
+
+    def list_items(self) -> str:
+        self._refresh()
+        items = []
+        for i in range(self.num_items_to_show):
+            index, item = next(self.item_iterator)
+            items.append(f"{index}. {item}")
+        return "\n".join(items)
+
+    def select_and_process_item(self, index) -> Any:
+        self._refresh()
+        if index not in range(len(self.item_iterable)):
+            raise ValueError(f"Index {index} not in coverage dataframe")
+        return self._process_item(self.item_iterable[index][1])
+
+    def _process_item(self, item):
         module_path = item["module"]
         function_name = item["object"]
         uncovered_line_numbers = sorted(item["line_number"])
         uncovered_line_numbers_queue = uncovered_line_numbers[:]
 
-        lines = self.coverage_generator.indexer.retrieve_parent_code_by_line(
+        lines = self.coverage_analyzer.indexer.retrieve_parent_code_by_line(
             module_path, uncovered_line_numbers[0], True
         ).splitlines()
         marked_lines = []
@@ -46,10 +74,12 @@ class CoverageProcessor(BaseSelector):
         issue_title = f"Test coverage gap: {module_path} - {function_name}"
         if self.do_create_issue:
             create_issue_on_github(issue_title, issue_body, ["test-coverage-gap"])
-        return f"Processed coverage gap in {module_path} - {function_name}"
+        return f"Processed - {issue_title}\n{issue_body}"
 
 
 if __name__ == "__main__":
-    coverage_manager = CoverageProcessor(write_fresh_report=True)
+    coverage_analyzer = CoverageAnalyzer()
+    coverage_manager = CoverageProcessor(coverage_analyzer)
+
     print(coverage_manager.list_items())
     print(coverage_manager.select_and_process_item(0))

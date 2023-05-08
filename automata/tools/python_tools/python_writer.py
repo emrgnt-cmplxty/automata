@@ -207,7 +207,6 @@ class PythonWriter:
 
         new_fst = RedBaron(source_code)
         new_import_nodes = PythonIndexer.find_imports(new_fst)
-
         PythonWriter._manage_imports(existing_module_obj, new_import_nodes, do_extend)
 
         new_class_or_function_nodes = PythonIndexer.find_all_functions_and_classes(new_fst)

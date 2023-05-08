@@ -13,6 +13,7 @@ class CoverageAnalyzer:
     A class to produce a coverage report, load it and parse it into a dataframe.
     The df is generated so the info could be consumed by python indexer.
     # TODO: The nested definitions are not super consistently handled but the indexer should be robust against that given good naming
+    # TODO: this is pretty slow
     """
 
     ROOT_DIR = REPOSITORY_PATH
@@ -29,19 +30,8 @@ class CoverageAnalyzer:
         Writes a coverage report to the coverage.xml file
         """
         subprocess.run(
-            [
-                "coverage",
-                "run",
-                f"--source={self.ROOT_MODULE}",
-                "-m",
-                "pytest",
-            ],
+            ["pytest", "-n", "4", f"--cov={self.ROOT_MODULE}", "--cov-report=xml"],
             cwd=self.ROOT_DIR,
-        )
-        subprocess.run(
-            ["coverage", "xml"],
-            cwd=self.ROOT_DIR,
-            check=True,
         )
 
     def parse_coverage_xml(self):
@@ -54,10 +44,10 @@ class CoverageAnalyzer:
             if package_name.startswith("automata."):
                 package_name = package_name[9:]
             for cls in package.findall(".//class"):
-                class_name = cls.get("name")
+                class_name = cls.get("name")  # not a real class name, merely the name of the file
                 for line in cls.findall(".//line"):
                     line_data = {
-                        "module": f"{package_name}.{class_name[:-3]}",
+                        "module": f"{package_name}.{class_name[:-3]}",  # see above, remove .py
                         "line_number": int(line.get("number")),
                         "hits": int(line.get("hits")),
                     }
