@@ -31,7 +31,7 @@ class Task:
 
     def __init__(self, *args, **kwargs):
         self.task_id = (
-            self._deterministic_session_id(**kwargs)
+            self._deterministic_task_id(**kwargs)
             if kwargs.get("generate_deterministic_id", True)
             else uuid.uuid4()
         )
@@ -40,7 +40,7 @@ class Task:
         self.status = TaskStatus(kwargs.get("status", "setup"))
         self.retry_count = 0
 
-    def _deterministic_session_id(self, **kwargs):
+    def _deterministic_task_id(self, **kwargs):
         """
         Returns a deterministic session id for the task.
         """

@@ -80,7 +80,7 @@ def test_commit_task(task, mocker):
     )
 
 
-def test_deterministic_session_id():
+def test_deterministic_task_id():
     task_1 = AutomataTask(
         MockRepositoryManager(),
         test1="arg1",
@@ -123,7 +123,7 @@ def test_deterministic_session_id():
     assert isinstance(task_4.task_id, uuid.UUID)
 
 
-def test_deterministic_vs_non_deterministic_session_id():
+def test_deterministic_vs_non_deterministic_task_id():
     task_1 = AutomataTask(
         MockRepositoryManager(),
         test1="arg1",
