@@ -43,10 +43,10 @@ class CoverageProcessor(BaseSelector):
             f"{marked_code}"
             f"```"
         )
-        issue_title = f"Test coverage gap: {module_path} {function_name}"
+        issue_title = f"Test coverage gap: {module_path} - {function_name}"
         if self.do_create_issue:
             create_issue_on_github(issue_title, issue_body, ["test-coverage-gap"])
-        return f"Processed coverage gap in {module_path} {function_name}"
+        return f"Processed coverage gap in {module_path} - {function_name}"
 
 
 if __name__ == "__main__":

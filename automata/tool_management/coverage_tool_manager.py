@@ -30,7 +30,7 @@ class CoverageToolManager(BaseToolManager):
                 func=self._run_show_coverage_gaps,  # no input necessary
             ),
             Tool(
-                name="Select and process coverage gap",
+                name="Process coverage gap",
                 description="Useful for creating the context needed to write a test to satisfy a coverage gap. Input should be the index of the coverage gap item. "
                 "Returns relevant info, like the module, function, uncovered lines, and raw code with uncovered lines marked.",
                 func=self._run_select_and_process_coverage_gap,
