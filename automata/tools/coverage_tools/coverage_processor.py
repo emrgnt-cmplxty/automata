@@ -1,10 +1,12 @@
 from automata.core.base.base_selector import BaseSelector
+from automata.core.utils import create_issue_on_github
 from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
 
 
 class CoverageProcessor(BaseSelector):
-    def __init__(self, write_fresh_report=False, num_items_to_show=10):
+    def __init__(self, write_fresh_report=False, do_create_issue=False, num_items_to_show=10):
         self.coverage_generator = CoverageAnalyzer()
+        self.do_create_issue = do_create_issue
         if write_fresh_report:
             self.coverage_generator.write_coverage_xml()
         coverage_df = self.coverage_generator.parse_coverage_xml()
@@ -31,7 +33,7 @@ class CoverageProcessor(BaseSelector):
                 marked_lines.append(line)
         marked_code = "\n".join(marked_lines)
 
-        output = (
+        issue_body = (
             f"Write a test to satisfy the following coverage gap:\n"
             f"Module: {module_path}\n"
             f"Function: {function_name}\n"
@@ -41,8 +43,10 @@ class CoverageProcessor(BaseSelector):
             f"{marked_code}"
             f"```"
         )
-
-        return output
+        issue_title = f"Test coverage gap: {module_path} {function_name}"
+        if self.do_create_issue:
+            create_issue_on_github(issue_title, issue_body, ["test-coverage-gap"])
+        return f"Processed coverage gap in {module_path} {function_name}"
 
 
 if __name__ == "__main__":

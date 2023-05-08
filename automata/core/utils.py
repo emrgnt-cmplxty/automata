@@ -1,5 +1,3 @@
-"""This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
-choose a work item to work on, and remove HTML tags from text."""
 import json
 import logging
 import os
@@ -9,7 +7,10 @@ import colorlog
 import numpy as np
 import openai
 import yaml
+from github import Github
 from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
+
+from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 
 
 def format_prompt(format_variables: Dict[str, str], input_text: str) -> str:
@@ -126,3 +127,14 @@ def calculate_similarity(content_a: str, content_b: str) -> float:
     magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
+
+
+def create_issue_on_github(
+    title: str,
+    body: str,
+    labels: list = [],
+) -> None:
+    """Create an issue on Github."""
+    g = Github(GITHUB_API_KEY)
+    repo = g.get_repo(REPOSITORY_NAME)
+    repo.create_issue(title=title, body=body, labels=labels)
