@@ -6,7 +6,7 @@ from typing import Optional
 
 from retrying import retry
 
-from automata.core.task.task import AutomataTask, TaskStatus
+from automata.core.tasks.task import AutomataTask, TaskStatus
 from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)

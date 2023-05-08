@@ -3,7 +3,7 @@ from typing import Optional
 
 from automata.config import GITHUB_API_KEY
 from automata.core.base.github_manager import GitHubManager
-from automata.core.task.task import AutomataTask, TaskStatus
+from automata.core.tasks.task import AutomataTask, TaskStatus
 
 
 class TaskDatabase:
