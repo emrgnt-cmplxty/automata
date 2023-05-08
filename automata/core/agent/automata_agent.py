@@ -338,7 +338,7 @@ class AutomataAgent(Agent):
 
     def _stream_message(self, response_summary: Any):
         """Stream the response message."""
-        print(colored("\n>>>", "green", attrs=["blink"]) + colored(" Agent:", "green"))
+        print(colored("\n>>> Agent:", "green"))
         latest_accumulation = ""
         stream_separator = " "
         response_text = ""
