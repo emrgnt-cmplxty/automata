@@ -345,6 +345,7 @@ class AutomataAgent(Agent):
         for chunk in response_summary:
             if "content" in chunk["choices"][0]["delta"]:
                 chunk_content = chunk["choices"][0]["delta"]["content"]
+                chunk_content.replace("\\n", "\n")
                 latest_accumulation += chunk_content
                 response_text += chunk_content
             if stream_separator in latest_accumulation:
