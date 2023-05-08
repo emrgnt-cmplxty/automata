@@ -2,22 +2,22 @@ from typing import List
 
 from automata.core.base.tool import Tool
 from automata.tool_management.base_tool_manager import BaseToolManager
-from automata.tools.coverage_tools.coverage_manager import CoverageManager
+from automata.tools.coverage_tools.coverage_processor import CoverageProcessor
 
 
 class CoverageToolManager(BaseToolManager):
     def __init__(self):
-        self.coverage_manager = CoverageManager(write_fresh_report=True)
+        self.coverage_processor = CoverageProcessor(write_fresh_report=True)
 
     def _run_show_coverage_gaps(self, input_str):
         try:
-            return self.coverage_manager.list_items()
+            return self.coverage_processor.list_items()
         except Exception as e:
             return str(e)
 
     def _run_select_and_process_coverage_gap(self, index):
         try:
-            return self.coverage_manager.select_and_process_item(int(index))
+            return self.coverage_processor.select_and_process_item(int(index))
         except Exception as e:
             return str(e)
 

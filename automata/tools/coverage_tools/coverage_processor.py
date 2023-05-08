@@ -2,7 +2,7 @@ from automata.core.base.base_selector import BaseSelector
 from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
 
 
-class CoverageManager(BaseSelector):
+class CoverageProcessor(BaseSelector):
     def __init__(self, write_fresh_report=False, num_items_to_show=10):
         self.coverage_generator = CoverageAnalyzer()
         if write_fresh_report:
@@ -46,6 +46,6 @@ class CoverageManager(BaseSelector):
 
 
 if __name__ == "__main__":
-    coverage_manager = CoverageManager(write_fresh_report=True)
+    coverage_manager = CoverageProcessor(write_fresh_report=True)
     print(coverage_manager.list_items())
     print(coverage_manager.select_and_process_item(0))
