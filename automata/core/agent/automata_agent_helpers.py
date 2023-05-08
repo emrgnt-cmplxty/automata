@@ -105,6 +105,9 @@ def create_builder_from_args(*args, **kwargs):
     if "stream" in kwargs:
         builder = builder.with_stream(kwargs["stream"])
 
+    if "verbose" in kwargs:
+        builder = builder.with_stream(kwargs["verbose"])
+
     if "with_max_iters" in kwargs:
         builder = builder.with_max_iters(kwargs["with_max_iters"])
 

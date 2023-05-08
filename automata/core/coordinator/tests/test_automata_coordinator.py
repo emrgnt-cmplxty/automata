@@ -1,5 +1,4 @@
 import textwrap
-from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -30,9 +29,8 @@ class MockAutomataInstance(AutomataInstance):
         self,
         config_version: AgentConfigVersion,
         description: str,
-        builder: Type[AutomataAgentBuilder],
     ):
-        super().__init__(config_version=config_version, description=description, builder=builder)
+        super().__init__(config_version=config_version, description=description)
 
     def run(self, instruction):
         return f"Running {instruction} on {self.config_version.value}."
@@ -41,11 +39,9 @@ class MockAutomataInstance(AutomataInstance):
 @pytest.fixture
 def coordinator_with_mock_agent():
     coordinator = AutomataCoordinator()
-    agent_builder = AutomataAgentBuilder
     mock_agent_instance = MockAutomataInstance(
         config_version=AgentConfigVersion.TEST,
         description="Mock agent for testing.",
-        builder=agent_builder,
     )
     coordinator.add_agent_instance(mock_agent_instance)
     return coordinator

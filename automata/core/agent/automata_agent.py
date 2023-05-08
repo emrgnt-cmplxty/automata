@@ -97,6 +97,7 @@ class AutomataAgent(Agent):
         Returns:
             Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]: Latest assistant and user messages, or None if the task is completed.
         """
+
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
         response_summary = openai.ChatCompletion.create(

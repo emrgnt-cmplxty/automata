@@ -72,14 +72,12 @@ coordinator.set_master_agent(master_agent)
 agent_instance1 = AutomataInstance(
     config_version=AgentConfigVersion.TEST,
     description="Agent 1",
-    builder=AutomataAgentBuilder
 )
 coordinator.add_agent_instance(agent_instance1)
 
 agent_instance2 = AutomataInstance(
     config_version=AgentConfigVersion.TEST2,
     description="Agent 2",
-    builder=AutomataAgentBuilder
 )
 coordinator.add_agent_instance(agent_instance2)
 

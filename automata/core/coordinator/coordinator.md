@@ -69,8 +69,7 @@ from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 coordinator = AutomataCoordinator()
 
 # Create an agent instance with a specific configuration
-config = AgentConfigVersion.V1
-instance = AutomataInstance(config)
+instance = AutomataInstance(config_version=AgentConfigVersion.V1)
 
 # Add the agent instance to the coordinator
 coordinator.add_agent_instance(instance)
@@ -95,8 +94,7 @@ from automata.core.coordinator.automata_instance import AutomataInstance
 from automata.configs.config_enums import AgentConfigVersion
 
 # Create an agent instance with a specific configuration
-config = AgentConfigVersion.V1
-instance = AutomataInstance(config)
+instance = AutomataInstance(config_version = AgentConfigVersion.V1)
 
 # Execute instructions on the agent instance
 instructions = "some_instruction"

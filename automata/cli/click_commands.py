@@ -2,13 +2,9 @@
 import click
 
 from automata.configs.config_enums import InstructionConfigVersion
+from automata.core.utils import Namespace
 
 from .click_options import common_options
-
-
-class Namespace:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
 
 
 @click.group()

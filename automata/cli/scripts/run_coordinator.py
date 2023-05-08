@@ -53,7 +53,12 @@ def create_coordinator(agent_config_versions: str):
         logger.info(
             f"Adding Agent with name={config_version.value}, description={config.description}"
         )
-        agent = AutomataInstance(config_version=config_version, description=config.description)
+        agent = AutomataInstance(
+            config_version=config_version,
+            description=config.description,
+            verbose=True,
+            stream=True,
+        )
         coordinator.add_agent_instance(agent)
 
     return coordinator

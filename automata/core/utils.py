@@ -126,3 +126,8 @@ def calculate_similarity(content_a: str, content_b: str) -> float:
     magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
+
+
+class Namespace:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)

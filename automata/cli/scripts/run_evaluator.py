@@ -50,7 +50,6 @@ def main(args):
 
         try:
             eval_result = evaluator.generate_eval_result(instruction, expected_actions)
-            print("EvalResult = ", eval_result)
             eval_results.append(eval_result)
         except Exception as e:
             logger.exception(f"Error {e} when generating eval result.")
