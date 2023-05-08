@@ -33,7 +33,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
             "-v",
             "--verbose",
             type=bool,
-            default=False,
+            is_flag=True,
             help="Execute script in verbose mode?",
         ),
     ]

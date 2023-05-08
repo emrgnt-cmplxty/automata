@@ -6,7 +6,6 @@ astor==0.8.1
 astunparse==1.6.3
 async-timeout==4.0.2
 attrs==22.2.0
--e git+ssh://git@github.com/maks-ivanov/improved-spork.git@81dacd9da82164bf613ba3877feae30fa19f06b6#egg=automata
 backoff==2.2.1
 baron==0.10.1
 beautifulsoup4==4.12.2
