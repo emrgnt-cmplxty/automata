@@ -1,3 +1,6 @@
+# TODO - Make sure the registry and database work as expected
+# They have not been tested yet and are already out of date
+# so some work is expected to bring them up to speed
 import sqlite3
 from typing import Optional
 

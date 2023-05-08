@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
@@ -76,3 +78,67 @@ def test_commit_task(task, mocker):
     task.github_manager.create_pull_request.assert_called_once_with(
         "test_branch", "This is a test", "I am testing this..."
     )
+
+
+def test_deterministic_session_id():
+    task_1 = AutomataTask(
+        MockRepositoryManager(),
+        test1="arg1",
+        test2="arg2",
+        priority=5,
+        generate_deterministic_id=True,
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+    )
+
+    task_2 = AutomataTask(
+        MockRepositoryManager(),
+        test1="arg1",
+        test2="arg2",
+        priority=5,
+        generate_deterministic_id=True,
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+    )
+
+    task_3 = AutomataTask(
+        MockRepositoryManager(),
+        test1="arg1",
+        test2="arg3",
+        priority=5,
+        generate_deterministic_id=True,
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+    )
+
+    task_4 = AutomataTask(
+        MockRepositoryManager(),
+        test1="arg1",
+        test2="arg2",
+        priority=5,
+        generate_deterministic_id=False,
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+    )
+
+    assert task_1.task_id == task_2.task_id
+    assert task_1.task_id != task_3.task_id
+    assert task_1.task_id != task_4.task_id
+    assert isinstance(task_4.task_id, uuid.UUID)
+
+
+def test_deterministic_vs_non_deterministic_session_id():
+    task_1 = AutomataTask(
+        MockRepositoryManager(),
+        test1="arg1",
+        test2="arg2",
+        priority=5,
+        generate_deterministic_id=True,
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+    )
+
+    task_2 = AutomataTask(
+        MockRepositoryManager(),
+        test1="arg1",
+        test2="arg2",
+        priority=5,
+        generate_deterministic_id=False,
+        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+    )
+    assert task_1.task_id != task_2.task_id

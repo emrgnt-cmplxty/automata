@@ -2,6 +2,7 @@ import logging
 import logging.config
 import os
 import uuid
+from collections.abc import Hashable
 from enum import Enum
 from typing import Optional
 
@@ -29,12 +30,29 @@ class Task:
     """
 
     def __init__(self, *args, **kwargs):
-        # priority=0, max_retries=3, status="setup"):
-        self.task_id = uuid.uuid4()
-        self.priority = kwargs.get("priority", 0)  # priority
-        self.max_retries = 3  # kwargs.get("max_retries", 3)  # max_retries
+        self.task_id = (
+            self._deterministic_session_id(**kwargs)
+            if kwargs.get("generate_deterministic_id", True)
+            else uuid.uuid4()
+        )
+        self.priority = kwargs.get("priority", 0)
+        self.max_retries = kwargs.get("max_retries", 3)
         self.status = TaskStatus(kwargs.get("status", "setup"))
         self.retry_count = 0
+
+    def _deterministic_session_id(self, **kwargs):
+        """
+        Returns a deterministic session id for the task.
+        """
+        # Generate the hash of the hashable kwargs
+        hashable_items = sorted([item for item in kwargs.items() if isinstance(item[1], Hashable)])
+        kwargs_hash = hash(tuple(hashable_items))
+
+        # Combine the hashes and use it as a seed for generating a deterministic UUID
+        seed = f"{kwargs_hash}"
+        deterministic_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, seed)
+
+        return deterministic_uuid
 
 
 class GitHubTask(Task):
@@ -111,8 +129,8 @@ class AutomataTask(GitHubTask):
     A task that is to be executed by the AutomataAgent via the TaskExecutor.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, github_manager: GitHubManager, *args, **kwargs):
+        super().__init__(github_manager, *args, **kwargs)
         self.rel_py_path = kwargs.get("rel_py_path", "")
         builder = create_builder_from_args(*args, **kwargs)
         self.agent = builder.build()
