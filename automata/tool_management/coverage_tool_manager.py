@@ -17,7 +17,7 @@ class CoverageToolManager(BaseToolManager):
 
     def _run_show_coverage_gaps(self, input_tuple):
         try:
-            return self.coverage_processor.list_items()
+            return self.coverage_processor.list_next_items()
         except Exception as e:
             return str(e)
 
@@ -30,7 +30,7 @@ class CoverageToolManager(BaseToolManager):
     def build_tools(self) -> List[Tool]:
         tools = [
             Tool(
-                name="list-coverage-gaps",
+                name="list-next-coverage-gaps",
                 description="Useful for listing coverage gaps, a few at a time. Calling this repeatedly will yield the next gaps, until there are no more left, at which point the iteration resets. "
                 "Returns a list of coverage gaps including the module, function, uncovered lines, and the overall covered percentage.",
                 func=self._run_show_coverage_gaps,  # no input necessary

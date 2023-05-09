@@ -81,11 +81,11 @@ system_instruction_template: >
 
       *Assistant*
         - thoughts
-          - I can use list-coverage-gaps tool to get this information
+          - I can use list-next-coverage-gaps tool to get this information
         - actions
           - tool_query_1
             - tool_name
-              - list-coverage-gaps
+              - list-next-coverage-gaps
             - tool_args
               - None
 

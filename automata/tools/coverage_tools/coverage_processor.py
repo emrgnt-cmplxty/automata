@@ -29,7 +29,7 @@ class CoverageProcessor:
             self._item_iterator = iter(self.item_iterable)
         return self._item_iterator
 
-    def list_items(self) -> str:
+    def list_next_items(self) -> str:
         self._refresh()
         items = []
         for i in range(self.num_items_to_show):
@@ -84,6 +84,6 @@ if __name__ == "__main__":
     coverage_analyzer = CoverageAnalyzer()
     coverage_manager = CoverageProcessor(coverage_analyzer)
 
-    print(coverage_manager.list_items())
+    print(coverage_manager.list_next_items())
     print(coverage_manager.select_and_process_item(0))
     coverage_analyzer.clean_up()

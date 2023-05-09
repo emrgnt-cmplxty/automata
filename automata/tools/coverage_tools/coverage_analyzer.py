@@ -123,5 +123,5 @@ if __name__ == "__main__":
     coverage_generator = CoverageAnalyzer()
     coverage_generator.write_coverage_xml()
     df = coverage_generator.parse_coverage_xml()
-    print(df.list_items())
+    print(df.list_next_items())
     coverage_generator.clean_up()
