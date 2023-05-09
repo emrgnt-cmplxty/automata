@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import xml.etree.ElementTree as ET
@@ -6,6 +7,8 @@ import pandas as pd
 
 from automata.config import REPOSITORY_PATH
 from automata.tools.python_tools.python_indexer import PythonIndexer
+
+logger = logging.getLogger(__name__)
 
 
 class CoverageAnalyzer:
@@ -19,22 +22,33 @@ class CoverageAnalyzer:
     ROOT_DIR = REPOSITORY_PATH
     ROOT_MODULE = "automata"
     DIR_TO_INDEX = os.path.join(ROOT_DIR, ROOT_MODULE)
-    COVERAGE_FILE_NAME = "coverage.xml"
+    COVERAGE_FILE_NAME = "coverage_analyzer_report.xml"
     COVERAGE_FILE_PATH = os.path.join(ROOT_DIR, COVERAGE_FILE_NAME)
 
     def __init__(self):
         self.indexer = PythonIndexer(self.DIR_TO_INDEX)
 
-    def write_coverage_xml(self):
+    def write_coverage_xml(self, force=False):
         """
         Writes a coverage report to the coverage.xml file
         """
-        subprocess.run(
-            ["pytest", "-n", "4", f"--cov={self.ROOT_MODULE}", "--cov-report=xml"],
-            cwd=self.ROOT_DIR,
-        )
+        logger.debug("Writing coverage data...")
+        if force or not os.path.exists(self.COVERAGE_FILE_PATH):
+            subprocess.run(
+                [
+                    "pytest",
+                    "-n",
+                    "4",
+                    f"--cov={self.ROOT_MODULE}",
+                    f"--cov-report=xml:{self.COVERAGE_FILE_NAME}",
+                ],
+                cwd=self.ROOT_DIR,
+                stdout=subprocess.DEVNULL,  # suppress output
+            )
+        logger.debug("Done writing coverage data.")
 
     def parse_coverage_xml(self):
+        logger.debug("Parsing coverage data...")
         tree = ET.parse(self.COVERAGE_FILE_PATH)
         root = tree.getroot()
 
@@ -71,6 +85,8 @@ class CoverageAnalyzer:
         uncovered_lines = uncovered_lines.sort_values(
             by=["percent_covered"], ascending=True
         ).reset_index(drop=True)
+
+        logger.debug("Coverage data parsed.")
         return uncovered_lines
 
     def _function_name_from_row(self, row) -> str:

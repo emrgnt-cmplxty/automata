@@ -1,3 +1,6 @@
+name: Coverage Processor
+verbose: True
+stream: True
 instruction_input_variables:
   - tools
   - overview
@@ -97,8 +100,7 @@ system_instruction_template: >
           - I can now return the requested information.
         - actions
           - return_result_0
-            - 1: {module: my_module, object: my_object, uncovered_lines: [1, 2, 3, 4, 5], percent_covered: 0.2}
-              2: {module: my_module, object: my_object, uncovered_lines: [321, 325], percent_covered: 0.5}
+            - {tool_output_1}
 
 
     **- Example 2 -**
@@ -147,7 +149,7 @@ system_instruction_template: >
     Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
 
 description: >
-  This agent is automata_coverage_dev, an agent which parses natural language queries to list coverage gaps in local python repository, as well as process them by index.
+  This agent is automata_coverage_dev, an agent which parses natural language queries to list coverage gaps in local python repository, as well as process a coverage gap by given index.
 
 number_of_expected_actions: 7
 

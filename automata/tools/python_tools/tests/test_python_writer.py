@@ -142,9 +142,6 @@ class MockCodeGenerator:
         return "".join(random.choice(string.ascii_letters) for _ in range(length))
 
 
-pytestmark = pytest.mark.serial  # to protect from races when running parallel
-
-
 @pytest.fixture
 def python_writer():
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")

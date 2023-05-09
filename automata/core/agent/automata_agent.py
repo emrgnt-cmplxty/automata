@@ -104,6 +104,7 @@ class AutomataAgent(Agent):
         self.messages: List[OpenAIChatMessage] = []
         self.session_id = config.session_id
         self.conn: Optional[sqlite3.Connection] = None
+        self.name: str = config.name
 
     def __del__(self):
         """Close the connection to the agent."""
@@ -338,7 +339,7 @@ class AutomataAgent(Agent):
 
     def _stream_message(self, response_summary: Any):
         """Stream the response message."""
-        print(colored("\n>>> Agent:", "green"))
+        print(colored(f"\n>>> {self.name} Agent:", "green"))
         latest_accumulation = ""
         stream_separator = " "
         response_text = ""

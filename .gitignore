@@ -16,3 +16,4 @@ __pycache__/
 /coverage.xml
 /.coverage
 /.coverage*
+/coverage_analyzer_report.xml

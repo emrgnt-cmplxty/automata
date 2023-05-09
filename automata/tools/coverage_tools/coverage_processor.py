@@ -1,7 +1,10 @@
+import logging
 from typing import Any
 
 from automata.core.utils import create_issue_on_github
 from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
+
+logger = logging.getLogger(__name__)
 
 
 class CoverageProcessor:
@@ -19,7 +22,6 @@ class CoverageProcessor:
             self.coverage_analyzer.write_coverage_xml()
             self.coverage_df = self.coverage_analyzer.parse_coverage_xml()
             self.item_iterable = [(i, row.to_dict()) for i, row in self.coverage_df.iterrows()]
-            self.coverage_analyzer.clean_up()
 
     @property
     def item_iterator(self):
@@ -37,6 +39,7 @@ class CoverageProcessor:
 
     def select_and_process_item(self, index) -> Any:
         self._refresh()
+        logger.debug(f"Processing coverage data {index}...")
         if index not in range(len(self.item_iterable)):
             raise ValueError(f"Index {index} not in coverage dataframe")
         return self._process_item(self.item_iterable[index][1])
@@ -74,7 +77,7 @@ class CoverageProcessor:
         issue_title = f"Test coverage gap: {module_path} - {function_name}"
         if self.do_create_issue:
             create_issue_on_github(issue_title, issue_body, ["test-coverage-gap"])
-        return f"Processed - {issue_title}\n{issue_body}"
+        return f"Processed - {issue_title}"
 
 
 if __name__ == "__main__":
@@ -83,3 +86,4 @@ if __name__ == "__main__":
 
     print(coverage_manager.list_items())
     print(coverage_manager.select_and_process_item(0))
+    coverage_analyzer.clean_up()
