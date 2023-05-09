@@ -8,6 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 class CoverageProcessor:
+    """
+    CoverageProcessor uses a CoverageAnalyzer to process coverage gaps, show them to the user and selectively create issues for them
+    TODO: this is pretty slow with parsing, maybe we can cache the coverage_df and only re-parse when we need to
+    TODO: coverage report is being "cached" right now but it would be nice to clean it up when the user is done, or make the agent more stateful
+    """
+
     def __init__(self, coverage_analyzer, do_create_issue=False, num_items_to_show=10):
         self.coverage_analyzer = coverage_analyzer
         self.do_create_issue = do_create_issue
