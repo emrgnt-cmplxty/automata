@@ -1,3 +1,6 @@
+name: Code Writer
+verbose: True
+stream: True
 instruction_input_variables:
   - tools
   - overview

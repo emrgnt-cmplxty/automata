@@ -110,7 +110,7 @@ def run(args):
     """
     check_input(args)
     logger.info(
-        f"Passing in instructions:\n{colored(args.instructions, color='white', on_color='on_green')}"
+        f"Passing in instructions:\n{colored(args.instructions, color='green', attrs=['reverse'])}"
     )
     logger.info("-" * 60)
 

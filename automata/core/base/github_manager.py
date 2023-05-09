@@ -35,10 +35,10 @@ class RepositoryManager(ABC):
 
 
 class GitHubManager:
-    def __init__(self, access_token: str, remote_url: str, primary_branch: str = "main"):
+    def __init__(self, access_token: str, repository_name: str, primary_branch: str = "main"):
         self.access_token = access_token
         self.client = Github(access_token)
-        self.remote_name = remote_url.replace("https://github.com/", "")
+        self.remote_name = repository_name
         self.repo = self.client.get_repo(self.remote_name)
 
         self.primary_branch = primary_branch

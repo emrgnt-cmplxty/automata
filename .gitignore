@@ -13,4 +13,8 @@ __pycache__/
 *.pyc
 /build/
 /dist/
+/coverage.xml
+/.coverage
+/.coverage*
+/coverage_analyzer_report.xml
 jobs/*
