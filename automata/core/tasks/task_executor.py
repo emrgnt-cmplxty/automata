@@ -116,13 +116,13 @@ class TaskExecutor:
 if __name__ == "__main__":
     import random
 
-    from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY
+    from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
     from automata.configs.automata_agent_configs import AutomataAgentConfig
     from automata.configs.config_enums import AgentConfigVersion
     from automata.core.agent.automata_agent_helpers import create_instruction_payload
     from automata.core.base.github_manager import GitHubManager
 
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, repository_name=REPOSITORY_NAME)
     executor = TaskExecutor(TestExecuteBehavior())
 
     instruction_payload = create_instruction_payload(overview="Overview", agents_message="Message")
