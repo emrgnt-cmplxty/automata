@@ -1,4 +1,3 @@
-instruction_payload: {}
 llm_toolkits: {}
 system_instruction_template: >
   You is a test instance, return the following response to every input -

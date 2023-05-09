@@ -1,45 +1,12 @@
-"""
-    AutomataAgent is an autonomous agent that performs the actual work of the Automata
-    system. Automata are responsible for executing instructions and reporting
-    the results back to the master.
-
-    Example:
-
-        llm_toolkits = build_llm_toolkits(tools_list, **inputs)
-
-        config_version = AgentConfigVersion.AUTOMATA_MASTER_PROD
-        agent_config = AutomataAgentConfig.load(config_version)
-        agent = (AutomataAgentBuilder.from_config(agent_config)
-            .with_llm_toolkits(llm_toolkits)
-            .with_instructions(instructions)
-            .with_model(model)
-            .build())
-
-        agent.run()
-
-        TODO - Add error checking to ensure that we don't terminate when
-               our previous result returned an error
-
-        TODO - Think about approach behind retrieve_completion_message
-             - Right now, the job terminates when we get our first completion message
-               e.g. return_result_0
-               The correct thing to do would be to ensure we complete all tasks
-               But before adding this cpability, we need to continue
-               polishing the framework
-
-        TODO - Add field for instruction config version to agent + builder
-        TODO - Change _parse_completion_message to take action string from extractor
-"""
 import logging
 import re
-import sqlite3
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional, Tuple, cast
 
 import openai
 from termcolor import colored
 
-from automata.config import CONVERSATION_DB_NAME, OPENAI_API_KEY
+from automata.config import OPENAI_API_KEY
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import ConfigCategory
 from automata.core.agent.agent import Agent
@@ -48,11 +15,14 @@ from automata.core.agent.automata_action_extractor import (
 )
 from automata.core.agent.automata_actions import AgentAction, ResultAction, ToolAction
 from automata.core.agent.automata_agent_helpers import (
+    format_prompt,
     generate_user_observation_message,
     retrieve_completion_message,
 )
+from automata.core.agent.automata_database_manager import AutomataDatabaseManager
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
-from automata.core.utils import format_prompt, load_config
+from automata.core.base.tool import ToolNotFoundError
+from automata.core.utils import format_text, load_config
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +34,9 @@ if TYPE_CHECKING:
 
 class AutomataAgent(Agent):
     """
-    AutomataAgent is an autonomous agent that performs the actual work of the Automata
-    system. Automata are responsible for executing instructions and reporting
-    the results back to the master.
+    AutomataAgent is an autonomous agent designed to execute instructions and report
+    the results back to the master system. It communicates with the OpenAI API to generate responses
+    based on given instructions and manages interactions with various tools.
     """
 
     CONTINUE_MESSAGE: Final = "Continue, and return a result JSON when finished."
@@ -76,14 +46,10 @@ class AutomataAgent(Agent):
 
     def __init__(self, config: Optional[AutomataAgentConfig] = None):
         """
+        Initialize the AutomataAgent with a given configuration.
+
         Args:
-            config (Optional[AutomataAgentConfig]): The agent config to use
-        Methods:
-            iter_task(instructions: List[Dict[str, str]]) -> Dict[str, str]: Iterates through the instructions and returns the next instruction.
-            modify_last_instruction(new_instruction: str) -> None
-            replay_messages() -> List[Dict[str, str]]: Replays agent messages buffer.
-            run() -> str: Runs the agent.
-            get_non_instruction_messages() -> List[Dict[str, str]]: Returns all messages that are not instructions.
+            config (Optional[AutomataAgentConfig]): The agent configuration to use.
         """
         if config is None:
             config = AutomataAgentConfig()
@@ -103,15 +69,15 @@ class AutomataAgent(Agent):
         self.eval_mode = False
         self.messages: List[OpenAIChatMessage] = []
         self.session_id = config.session_id
-        self.conn: Optional[sqlite3.Connection] = None
         self.name: str = config.name
 
-    def __del__(self):
-        """Close the connection to the agent."""
-        if self.conn:
-            self.conn.close()
-
     def run(self) -> str:
+        """
+        Runs the agent and iterates through the tasks until a result is produced or the max iterations are exceeded.
+
+        Returns:
+            str: The final result or an error message if the result wasn't found in time.
+        """
         latest_responses = self.iter_task()
         while latest_responses is not None:
             # Each iteration adds two messages, one from the assistant and one from the user
@@ -123,7 +89,15 @@ class AutomataAgent(Agent):
         return self.messages[-1].content
 
     def iter_task(self) -> Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]:
-        """Run the test and report the tool outputs back to the master."""
+        """
+        Executes a single iteration of the task and returns the latest assistant and user messages.
+
+        Raises:
+            ValueError: If the agent has already completed its task.
+
+        Returns:
+            Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]: Latest assistant and user messages, or None if the task is completed.
+        """
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
         response_summary = openai.ChatCompletion.create(
@@ -143,7 +117,7 @@ class AutomataAgent(Agent):
         completion_message = retrieve_completion_message(observations)
         if completion_message is not None:
             self.completed = True
-            self._save_interaction(
+            self._save_message(
                 "assistant",
                 self._parse_completion_message(completion_message)
                 if not self.eval_mode
@@ -151,8 +125,8 @@ class AutomataAgent(Agent):
             )
             return None
 
-        assistant_message = self._save_interaction("assistant", response_text)
-        user_message = self._save_interaction(
+        assistant_message = self._save_message("assistant", response_text)
+        user_message = self._save_message(
             "user",
             generate_user_observation_message(observations)
             if len(observations) > 0
@@ -162,7 +136,12 @@ class AutomataAgent(Agent):
         return (assistant_message, user_message)
 
     def replay_messages(self) -> str:
-        """Replay the messages in the conversation."""
+        """
+        Replays the messages in the conversation and returns the completion message if found.
+
+        Returns:
+            str: The completion message if found, otherwise a message indicating that no completion message was found.
+        """
         if len(self.messages) == 0:
             logger.debug("No messages to replay.")
             return "No messages to replay."
@@ -177,45 +156,74 @@ class AutomataAgent(Agent):
             logger.debug("-" * 60)
         return "No completion message found."
 
-    def modify_last_instruction(self, new_instruction: str) -> None:
-        """Extend the last instructions with a new message."""
+    def modify_last_instruction(self, updated_instruction: str) -> None:
+        """
+        Modifies the last instruction in the conversation with a new message.
+
+        Args:
+            new_instruction (str): The new instruction to replace the last message.
+
+        Raises:
+            ValueError: If the last message is not a user message.
+        """
         previous_message = self.messages[-1]
         if previous_message.role != "user":
             raise ValueError("Cannot modify the last instruction if it was not a user message.")
-        self.messages[-1] = OpenAIChatMessage(role=previous_message.role, content=new_instruction)
+        self.messages[-1] = OpenAIChatMessage(
+            role=previous_message.role, content=updated_instruction
+        )
 
     def get_non_instruction_messages(self) -> List[OpenAIChatMessage]:
-        """Get the non-instruction messages."""
+        """
+        Retrieves all messages in the conversation that are not system instructions.
+
+        Returns:
+            List[OpenAIChatMessage]: A list of non-instruction messages.
+        """
         return self.messages[self.NUM_DEFAULT_MESSAGES :]
 
     def _setup(self):
-        """Setup the agent."""
+        """
+        Sets up the agent, initializing the session and loading previous interactions if applicable.
+        """
         openai.api_key = OPENAI_API_KEY
         if "tools" in self.instruction_input_variables:
-            self.instruction_payload["tools"] = self._build_tool_message()
+            self.instruction_payload.tools = self._build_tool_message()
         system_instruction = format_prompt(
             self.instruction_payload, self.system_instruction_template
         )
-        self._init_database()
+        session_id = self.session_id if self.session_id else str(uuid.uuid4())
+        self.database_manager: AutomataDatabaseManager = AutomataDatabaseManager(session_id)
+
+        self.database_manager._init_database()
         if self.session_id:
-            self._load_previous_interactions()
+            self.messages = self.database_manager._load_previous_interactions()
         else:
-            self.session_id = str(uuid.uuid4())
-            self._save_interaction("system", system_instruction)
+            self.session_id = session_id
+            self._save_message("system", system_instruction)
             initial_messages = self._build_initial_messages(
                 {"user_input_instructions": self.instructions}
             )
             for message in initial_messages:
-                self._save_interaction(message.role, message.content)
+                self._save_message(message.role, message.content)
+
+        self.instruction_payload.validate_fields(self.instruction_input_variables)
+
         logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
         logger.debug("-" * 60)
-        if set(self.instruction_input_variables) != set(list(self.instruction_payload.keys())):
-            raise ValueError(f"Initial payload does not match instruction_input_variables.")
         logger.debug("Session ID: %s" % self.session_id)
         logger.debug("-" * 60)
 
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
-        """Process the messages in the conversation."""
+        """
+        Processes the agent's response text and generates observations.
+
+        Args:
+            response_text (str): The agent's response text.
+
+        Returns:
+            Dict[str, str]: A dictionary of observations.
+        """
         outputs = {}
         actions = ActionExtractor.extract_actions(response_text)
         for action in actions:
@@ -242,7 +250,16 @@ class AutomataAgent(Agent):
         return outputs
 
     def _execute_tool(self, tool_name: str, tool_input: List[str]) -> str:
-        """Execute the tool with the given name and input."""
+        """
+        Executes a tool with the given name and input.
+
+        Args:
+            tool_name (str): The name of the tool to execute.
+            tool_input (List[str]): The input arguments for the tool.
+
+        Returns:
+            str: The output of the executed tool.
+        """
         tool_found = False
         tool_output = None
 
@@ -257,47 +274,17 @@ class AutomataAgent(Agent):
                 break
 
         if not tool_found:
-            error_message = f"Error: Tool '{tool_name}' not found."
-            return error_message
+            return ToolNotFoundError(tool_name).__str__()
 
         return cast(str, tool_output)
 
-    def _init_database(self):
-        """Initialize the database connection."""
-        self.conn = sqlite3.connect(CONVERSATION_DB_NAME)
-        self.cursor = self.conn.cursor()
-        self.cursor.execute(
-            "\n            CREATE TABLE IF NOT EXISTS interactions (\n                session_id INTEGER,\n                interaction_id INTEGER,\n                role TEXT,\n                content TEXT,\n                PRIMARY KEY (session_id, interaction_id)\n            )\n            "
-        )
-        self.conn.commit()
-
-    def _save_interaction(self, role: str, content: str) -> OpenAIChatMessage:
-        """Save the interaction to the database."""
-        assert self.session_id is not None, "Session ID is not set."
-        assert self.conn is not None, "Database connection is not set."
-        interaction = OpenAIChatMessage(role=role, content=content)
-        interaction_id = len(self.messages)
-        self.cursor.execute(
-            "INSERT INTO interactions (session_id, interaction_id, role, content) VALUES (?, ?, ?, ?)",
-            (self.session_id, interaction_id, role, content),
-        )
-        self.conn.commit()
-        self.messages.append(interaction)
-        return interaction
-
-    def _load_previous_interactions(self):
-        """Load the previous interactions from the database."""
-        self.cursor.execute(
-            "SELECT role, content FROM interactions WHERE session_id = ? ORDER BY interaction_id ASC",
-            (self.session_id,),
-        )
-        self.messages = [
-            OpenAIChatMessage(role=role, content=content)
-            for (role, content) in self.cursor.fetchall()
-        ]
-
     def _build_tool_message(self):
-        """Builds a message containing all tools and their descriptions."""
+        """
+        Builds a message containing information about all available tools.
+
+        Returns:
+            str: A formatted string containing the names and descriptions of all available tools.
+        """
         return "Tools:\n" + "".join(
             [
                 f"\n{tool.name}: {tool.description}\n"
@@ -307,7 +294,15 @@ class AutomataAgent(Agent):
         )
 
     def _parse_completion_message(self, completion_message: str) -> str:
-        """Parse the completion message and replace the tool outputs."""
+        """
+        Parses the completion message and replaces placeholders with actual tool outputs.
+
+        Args:
+            completion_message (str): The completion message with placeholders.
+
+        Returns:
+            str: The parsed completion message with placeholders replaced by tool outputs.
+        """
         outputs = {}
         for message in self.messages:
             pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
@@ -323,7 +318,15 @@ class AutomataAgent(Agent):
         return completion_message
 
     def _build_initial_messages(self, formatters: Dict[str, str]) -> List[OpenAIChatMessage]:
-        """Build the initial messages."""
+        """
+        Builds the initial messages for the agent's conversation.
+
+        Args:
+            formatters (Dict[str, str]): A dictionary of formatters used to format the messages.
+
+        Returns:
+            List[OpenAIChatMessage]: A list of initial messages for the conversation.
+        """
         assert "user_input_instructions" in formatters
         formatters["initializer_dummy_tool"] = AutomataAgent.INITIALIZER_DUMMY
 
@@ -332,13 +335,21 @@ class AutomataAgent(Agent):
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_prompt(formatters, message["content"])
+            input_message = format_text(formatters, message["content"])
             input_messages.append(OpenAIChatMessage(role=message["role"], content=input_message))
 
         return input_messages
 
     def _stream_message(self, response_summary: Any):
-        """Stream the response message."""
+        """
+        Streams the response message from the agent.
+
+        Args:
+            response_summary (Any): The response summary from the agent.
+
+        Returns:
+            str: The streamed response text.
+        """
         print(colored(f"\n>>> {self.name} Agent:", "green"))
         latest_accumulation = ""
         stream_separator = " "
@@ -357,21 +368,49 @@ class AutomataAgent(Agent):
         print(colored(str(latest_accumulation), "green"))
         return response_text
 
+    def _save_message(self, role: str, content: str) -> OpenAIChatMessage:
+        """
+        Saves the messagee for the agent.
+
+        Args:
+            role (str): The role of the messagee.
+            content (str): The content of the messagee.
+        """
+        self.database_manager.put_message(role, content, len(self.messages))
+        message = OpenAIChatMessage(role=role, content=content)
+        self.messages.append(message)
+        return message
+
 
 class MasterAutomataAgent(AutomataAgent):
-    """A master automata agent that works with the coordinater to manipulate other automata agents."""
+    """
+    A MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator
+    to execute and manipulate other AutomataAgents as part of the conversation.
+    """
 
     def __init__(self, agent_config, *args, **kwargs):
-        """Initialize the master automata agent."""
+        """Initialize the MasterAutomataAgent with agent_config and other optional arguments."""
         super().__init__(agent_config, *args, **kwargs)
         self.coordinator = None
 
     def set_coordinator(self, coordinator: "AutomataCoordinator"):
-        """Set the coordinator."""
+        """
+        Set the coordinator for the MasterAutomataAgent.
+
+        Args:
+            coordinator (AutomataCoordinator): An instance of an AutomataCoordinator.
+        """
         self.coordinator = coordinator
 
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
-        """Process the messages in the conversation."""
+        """Process the messages in the conversation and extract agent actions.
+
+        Args:
+            response_text (str): The response text from the conversation.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the agent outputs, indexed by their query names.
+        """
         outputs = super()._generate_observations(response_text)
         actions = ActionExtractor.extract_actions(response_text)
         for agent_action in actions:
@@ -384,7 +423,15 @@ class MasterAutomataAgent(AutomataAgent):
         return outputs
 
     def _execute_agent(self, agent_action) -> str:
-        """Generate the agent result."""
+        """
+        Generate the result from the specified agent_action using the coordinator.
+
+        Args:
+            agent_action (AgentAction): An instance of an AgentAction to be executed.
+
+        Returns:
+            str: The output generated by the agent.
+        """
         return self.coordinator.run_agent(agent_action)
 
     def _add_agent_observations(
@@ -393,7 +440,14 @@ class MasterAutomataAgent(AutomataAgent):
         agent_observations: Dict[str, str],
         agent_action: AgentAction,
     ) -> None:
-        """Generate the agent observations."""
+        """
+        Add agent observations to the given observations dictionary.
+
+        Args:
+            observations (Dict[str, str]): The existing observations dictionary.
+            agent_observations (Dict[str, str]): The agent observations to be added.
+            agent_action (AgentAction): An instance of an AgentAction for which the observations are generated.
+        """
         for observation in agent_observations:
             agent_observation = observation.replace(
                 "return_result_0", agent_action.agent_query.replace("query", "output")
@@ -401,7 +455,15 @@ class MasterAutomataAgent(AutomataAgent):
             observations[agent_observation] = agent_observations[observation]
 
     def _parse_completion_message(self, completion_message: str) -> str:
-        """Parse the completion message and replace the tool outputs."""
+        """
+        Parse the completion message and replace the tool outputs with their appropriate values.
+
+        Args:
+            completion_message (str): The completion message to be parsed and modified.
+
+        Returns:
+            str: The modified completion message with replaced tool outputs.
+        """
         completion_message = super()._parse_completion_message(completion_message)
         outputs = {}
         for message in self.messages:
@@ -420,7 +482,15 @@ class MasterAutomataAgent(AutomataAgent):
     # TODO - Can we implement this more cleanly?
     @classmethod
     def from_agent(cls, agent: AutomataAgent) -> "MasterAutomataAgent":
-        """Create a master automata agent from an automata agent."""
+        """
+        Create a MasterAutomataAgent from an existing AutomataAgent.
+
+        Args:
+            agent (AutomataAgent): An instance of an AutomataAgent to be converted to a MasterAutomataAgent.
+
+        Returns:
+            MasterAutomataAgent: A new instance of MasterAutomataAgent with the same properties as the input agent.
+        """
         master_agent = cls(None)
         master_agent.llm_toolkits = agent.llm_toolkits
         master_agent.instructions = agent.instructions

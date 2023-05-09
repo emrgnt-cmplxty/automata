@@ -17,3 +17,4 @@ __pycache__/
 /.coverage
 /.coverage*
 /coverage_analyzer_report.xml
+jobs/*

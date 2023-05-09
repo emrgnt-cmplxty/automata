@@ -1,8 +1,7 @@
 import importlib
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.utils import root_py_path
 from automata.tool_management.base_tool_manager import BaseToolManager
@@ -14,8 +13,24 @@ logger = logging.getLogger(__name__)
 
 
 class ToolManagerFactory:
+    """
+    A class for creating tool managers.
+    """
+
     @staticmethod
-    def create_tool_manager(toolkit_type: ToolkitType, inputs: dict) -> Optional[BaseToolManager]:
+    def create_tool_manager(toolkit_type: ToolkitType) -> BaseToolManager:
+        """
+        Creates a tool manager of the given type.
+
+        Args:
+        - toolkit_type (ToolkitType): The type of toolkit to create.
+
+        Returns:
+        - BaseToolManager: A tool manager of the given type.
+
+        Raises:
+        - ValueError: If the toolkit type is unknown.
+        """
         if toolkit_type == ToolkitType.PYTHON_INDEXER:
             python_indexer = PythonIndexer(root_py_path())
             PythonIndexerToolManager = importlib.import_module(
@@ -41,21 +56,18 @@ class ToolManagerFactory:
             ).CoverageToolManager
             return CoverageToolManager()
         else:
-            return None
+            raise ValueError("Unknown toolkit type: %s" % toolkit_type)
 
 
 class ToolkitBuilder:
-    def __init__(self, **kwargs):
+    def __init__(self):
         """Initializes a ToolkitBuilder object with the given inputs."""
 
-        self.inputs = kwargs
         self._tool_management: Dict[ToolkitType, BaseToolManager] = {}
 
-    def _build_toolkit(
-        self, toolkit_type: ToolkitType, config: Optional[AutomataAgentConfig]
-    ) -> Toolkit:
+    def _build_toolkit(self, toolkit_type: ToolkitType) -> Toolkit:
         """Builds a toolkit of the given type."""
-        tool_manager = ToolManagerFactory.create_tool_manager(toolkit_type, self.inputs)
+        tool_manager = ToolManagerFactory.create_tool_manager(toolkit_type)
 
         if not tool_manager:
             raise ValueError("Unknown toolkit type: %s" % toolkit_type)
@@ -88,7 +100,6 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
     for tool_name in tool_list:
         tool_name = tool_name.strip()
         toolkit_type = None
-        config = None
         if tool_name == "python_indexer":
             toolkit_type = ToolkitType.PYTHON_INDEXER
         elif tool_name == "python_writer":
@@ -103,7 +114,7 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
         if not toolkit_type:
             raise ValueError(f"Unknown tool: {tool_name}")
 
-        toolkit = toolkit_builder._build_toolkit(toolkit_type, config)  # type: ignore
+        toolkit = toolkit_builder._build_toolkit(toolkit_type)  # type: ignore
         toolkits[toolkit_type] = toolkit
 
     return toolkits

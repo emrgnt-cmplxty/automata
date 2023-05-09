@@ -7,6 +7,7 @@ from automata.core.agent.automata_agent_helpers import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
+from automata.core.base.tool import ToolNotFoundError
 
 
 def test_extract_actions_0():
@@ -172,9 +173,8 @@ def test_extract_actions_5(automata_agent):
         """
     )
     processed_input = automata_agent._generate_observations(text)
-    assert (
-        processed_input["tool_output_0"]
-        == """Error: Tool 'automata-indexer-retrieve-code' not found."""
+    assert "%s" % (processed_input["tool_output_0"]) == "%s" % (
+        ToolNotFoundError("automata-indexer-retrieve-code")
     )
     assert (
         processed_input["return_result_0"]

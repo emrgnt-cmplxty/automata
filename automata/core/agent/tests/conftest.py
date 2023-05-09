@@ -1,6 +1,10 @@
 import pytest
 
-from automata.configs.automata_agent_configs import AgentConfigVersion, AutomataAgentConfig
+from automata.configs.automata_agent_configs import (
+    AgentConfigVersion,
+    AutomataAgentConfig,
+    AutomataInstructionPayload,
+)
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
@@ -10,7 +14,7 @@ def automata_agent():
     tool_list = ["python_indexer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
-    instruction_payload = {}
+    instruction_payload = AutomataInstructionPayload()
 
     instructions = "Test instruction."
 

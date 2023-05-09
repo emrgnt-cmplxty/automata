@@ -5,7 +5,7 @@ from functools import wraps
 
 import pytest
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.utils import calculate_similarity, root_py_path
@@ -83,9 +83,7 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
 
 
 def generate_instruction_payload():
-    return {
-        "overview": PythonIndexer(root_py_path()).build_overview(),
-    }
+    return AutomataInstructionPayload(overview=PythonIndexer(root_py_path()).build_overview())
 
 
 def retry(num_attempts: int):

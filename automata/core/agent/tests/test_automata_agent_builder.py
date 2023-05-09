@@ -1,6 +1,6 @@
 import pytest
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.tool_management.tool_management_utils import build_llm_toolkits
@@ -68,7 +68,9 @@ def test_builder_accepts_all_fields(automata_agent_builder):
         .with_session_id("test-session-id")
         .build()
     )
-    assert agent.instruction_payload == {}
+    assert (
+        agent.instruction_payload.__dict__.items() == AutomataInstructionPayload().__dict__.items()
+    )
     assert agent.llm_toolkits == mock_llm_toolkits
     assert agent.instructions == instructions
     assert agent.model == "gpt-3.5-turbo"

@@ -2,7 +2,7 @@ import textwrap
 from typing import List, Optional, Tuple
 
 from .automata_actions import ActionTypes, AgentAction, ResultAction, ToolAction
-from .automata_agent_utils import (
+from .automata_agent_enums import (
     SUPPORTED_CODING_LANGUAGES,
     ActionIndicator,
     AgentField,
@@ -14,7 +14,15 @@ from .automata_agent_utils import (
 class AutomataActionExtractor:
     @classmethod
     def extract_actions(cls, text: str) -> List[ActionTypes]:
-        """Extract the actions from the text."""
+        """
+        Extract the actions from the given text.
+
+        Args:
+            text (str): The input text containing actions.
+
+        Returns:
+            List[ActionTypes]: A list of extracted actions.
+        """
         lines = text.split("\n")
         actions: List[ActionTypes] = []
         action: Optional[ActionTypes] = None
@@ -50,7 +58,16 @@ class AutomataActionExtractor:
 
     @staticmethod
     def _is_new_tool_action(lines, index) -> bool:
-        """Check if the line is a new tool action."""
+        """
+        Check if the current line represents the start of a new tool action.
+
+        Args:
+            lines (List[str]): The list of lines in the input text.
+            index (int): The index of the current line.
+
+        Returns:
+            bool: True if the line is a new tool action, False otherwise.
+        """
         return (
             len(lines) > index + 1
             and f"{ActionIndicator.ACTION.value}{ToolField.INDICATOR.value}" in lines[index]
@@ -59,7 +76,16 @@ class AutomataActionExtractor:
 
     @staticmethod
     def _is_new_agent_action(lines, index) -> bool:
-        """Check if the line is a new agent action."""
+        """
+        Check if the current line represents the start of a new agent action.
+
+        Args:
+            lines (List[str]): The list of lines in the input text.
+            index (int): The index of the current line.
+
+        Returns:
+            bool: True if the line is a new agent action, False otherwise.
+        """
         return (
             len(lines) > index + 1
             and f"{ActionIndicator.ACTION.value}{AgentField.INDICATOR.value}" in lines[index]
@@ -68,7 +94,15 @@ class AutomataActionExtractor:
 
     @staticmethod
     def _is_return_result_action(line: str) -> bool:
-        """Check if the line is a return result action."""
+        """
+        Check if the current line represents a return result action.
+
+        Args:
+            line (str): The current line of the input text.
+
+        Returns:
+            bool: True if the line is a return result action, False otherwise.
+        """
         return line.strip().startswith(
             f"{ActionIndicator.ACTION.value}{ResultField.INDICATOR.value}"
         )
@@ -82,7 +116,20 @@ class AutomataActionExtractor:
         is_code: bool,
         skip_lines: int,
     ) -> Tuple[bool, int]:
-        """Process the action input."""
+        """
+        Process the action input, handling code blocks and appending input to the current action.
+
+        Args:
+            index (int): The index of the current line in the input text.
+            line (str): The current line of the input text.
+            lines (List[str]): The list of lines in the input text.
+            action (Optional[ActionTypes]): The current action being processed.
+            is_code (bool): Indicates if the current line is part of a code block.
+            skip_lines (int): The number of lines to skip for the current action.
+
+        Returns:
+            Tuple[bool, int]: A tuple containing the updated is_code and skip_lines values.
+        """
         if action is not None:
             if isinstance(action, AgentAction):
                 inputs = action.agent_instruction
@@ -128,15 +175,40 @@ class AutomataActionExtractor:
         index: int,
         lines: List[str],
     ):
-        """Check if the current line is the start of a code block."""
+        """
+        Check if the current line represents the start of a code block.
+
+        Args:
+            index (int): The index of the current line in the input text.
+            lines (List[str]): The list of lines in the input text.
+
+        Returns:
+            bool: True if the line is the start of a code block, False otherwise.
+        """
         return len(lines) > index + 1 and ActionIndicator.CODE.value in lines[index + 1]
 
     @staticmethod
     def _is_code_end(line: str) -> bool:
-        """Check if the current line is the end of a code block."""
+        """
+        Check if the current line represents the end of a code block.
+
+        Args:
+            line (str): The current line of the input text.
+
+        Returns:
+            bool: True if the line is the end of a code block, False otherwise.
+        """
         return ActionIndicator.CODE.value in line
 
     @staticmethod
     def _is_code_indicator(line: str) -> bool:
-        """Check if the current line is a code indicator."""
+        """
+        Check if the current line is a code indicator.
+
+        Args:
+            line (str): The current line of the input text.
+
+        Returns:
+            bool: True if the line is a code indicator, False otherwise.
+        """
         return line.strip() == ActionIndicator.CODE.value
