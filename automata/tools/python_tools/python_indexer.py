@@ -19,19 +19,27 @@ Example:
     code = indexer.retrieve_code("module.path", "ClassName.method_name")
     docstring = indexer.retrieve_docstring("module.path", "ClassName.method_name")
 """
+from __future__ import annotations
 
-import ast
-import copy
 import logging
 import os
-from ast import AsyncFunctionDef, ClassDef, FunctionDef, Module
-from typing import Any, Dict, Optional, Union, cast
+import re
+from typing import Dict, Optional, Union
+
+from redbaron import (
+    ClassNode,
+    DefNode,
+    FromImportNode,
+    ImportNode,
+    Node,
+    NodeList,
+    RedBaron,
+    StringNode,
+)
 
 from automata.core.utils import root_path
 
 logger = logging.getLogger(__name__)
-
-PythonObject = Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]
 
 
 class PythonIndexer:
@@ -61,7 +69,9 @@ class PythonIndexer:
         self.abs_path = os.path.join(root_path(), rel_path)
         self.module_dict = self._build_module_dict()
 
-    def retrieve_code(self, module_path: str, object_path: Optional[str]) -> str:
+    def retrieve_code_without_docstrings(
+        self, module_path: str, object_path: Optional[str]
+    ) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
@@ -78,13 +88,163 @@ class PythonIndexer:
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-        module = copy.deepcopy(self.module_dict[module_path])
-        result = self._find_module_class_function_or_method(module, object_path)
-        if result is not None:
-            self._remove_docstrings(result)
-            return ast.unparse(result)
+        module = RedBaron(
+            self.module_dict[module_path].dumps()
+        )  # create a copy because we'll remove docstrings
+        result = self.find_module_class_function_or_method(module, object_path)
+
+        if result:
+            PythonIndexer._remove_docstrings(result)
+            return result.dumps()
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_code(self, module_path: str, object_path: Optional[str] = None) -> str:
+        """
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
+
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        module = self.module_dict[module_path]
+        result = self.find_module_class_function_or_method(module, object_path)
+
+        if result:
+            return result.dumps()
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def find_expression_context(
+        self,
+        expression: str,
+        symmetric_width: int = 2,
+    ) -> str:
+        """
+        Inspects the codebase for lines containing the expression and returns the line number and
+        surrounding lines.
+
+        Args:
+            root_dir (str): The root directory to search.
+            expression (str): The expression to search for.
+
+        Returns:
+            str: The context associated with the expression.
+        """
+
+        result = ""
+        pattern = re.compile(expression)
+        for module_path, module in self.module_dict.items():
+            lines = module.dumps().splitlines()
+            for i, line in enumerate(lines):
+                lineno = i + 1  # rebardon lines are 1 indexed, same as in an editor
+                if pattern.search(line):
+                    lower_index = max(i - symmetric_width, 0)
+                    upper_index = min(i + symmetric_width, len(lines))
+
+                    raw_code = "\n".join(lines[lower_index : upper_index + 1])
+                    result += f"{module_path}"
+
+                    node = module.at(lineno)
+                    if node.type not in ("def", "class"):
+                        node = node.parent_find(lambda identifier: identifier in ("def", "class"))
+
+                    if node:
+                        result += f".{node.name}"
+
+                    linespan_str = (
+                        f"L{lineno}"
+                        if not symmetric_width
+                        else f"L{lower_index + 1}-{upper_index + 1}"
+                    )
+                    result += f"\n{linespan_str}\n```{raw_code}```\n\n"
+
+        return result
+
+    def retrieve_parent_function_name_by_line(self, module_path: str, line_number: int) -> str:
+        """
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            line_number (int): The line number of the code to retrieve.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
+
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        node = self.module_dict[module_path].at(line_number)
+        if node.type != "def":
+            node = node.parent_find("def")
+        if node:
+            if node.parent[0].type == "class":
+                return f"{node.parent.name}.{node.name}"
+            else:
+                return node.name
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_parent_function_node_lines(
+        self, module_path: str, line_number: int
+    ) -> Union[str, tuple]:
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        node = self.module_dict[module_path].at(line_number)
+        if node.type != "def":
+            node = node.parent_find("def")
+        if node:
+            return (
+                node.absolute_bounding_box.top_left.line,
+                node.absolute_bounding_box.bottom_right.line,
+            )
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+    def retrieve_parent_code_by_line(
+        self, module_path: str, line_number: int, return_numbered=False
+    ) -> str:
+        """
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            line_number (int): The line number of the code to retrieve.
+            return_numbered (bool): Whether to return the code with line numbers prepended.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
+
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        node = self.module_dict[module_path].at(line_number)
+        while node.parent_find(lambda identifier: identifier in ("def", "class")):
+            node = node.parent_find(lambda identifier: identifier in ("def", "class"))
+        source_code = node.dumps()
+        if return_numbered:
+            start = node.absolute_bounding_box.top_left.line
+            numbered_source_code = "\n".join(
+                [f"{i+start}: {line}" for i, line in enumerate(source_code.split("\n"))]
+            )
+            return numbered_source_code
+        else:
+            return source_code
 
     def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """
@@ -103,23 +263,29 @@ class PythonIndexer:
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-        module = copy.deepcopy(self.module_dict[module_path])
-        if object_path:
-            result = self._find_module_class_function_or_method(module, object_path)
-        else:
-            result = module
-        if result is not None:
-            return ast.get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
+        module = self.module_dict[module_path]
+        result = self.find_module_class_function_or_method(module, object_path)
+
+        if result:
+            return PythonIndexer._get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def _build_module_dict(self) -> Dict[str, Module]:
+    @staticmethod
+    def _get_docstring(node) -> str:
+        if isinstance(node, (ClassNode, DefNode, RedBaron)):
+            filtered_nodes = node.filtered()  # get rid of extra whitespace
+            if isinstance(filtered_nodes[0], StringNode):
+                return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
+        return ""
+
+    def _build_module_dict(self) -> Dict[str, RedBaron]:
         """
-        Builds the module dictionary by walking through the root directory and creating AST Module objects
+        Builds the module dictionary by walking through the root directory and creating FST Module objects
         for each Python source file. The module paths are used as keys in the dictionary.
 
         Returns:
-            Dict[str, Module]: A dictionary with module paths as keys and AST Module objects as values.
+            Dict[str, RedBaron]: A dictionary with module paths as keys and RedBaron objects as values.
         """
 
         module_dict = {}
@@ -136,27 +302,7 @@ class PythonIndexer:
                         module_dict[module_rel_path] = module
         return module_dict
 
-    def retrieve_raw_code(self, module_path: str, object_path: Optional[str]) -> str:
-        """
-        Retrieves the raw code for a specified module (code + docstring), class, or function/method.
-
-        Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
-            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
-
-        Returns:
-            str: The code for the specified module, class, or function/method, or "No Result Found."
-                if not found.
-        """
-        module = self.module_dict[module_path]
-        result = self._find_module_class_function_or_method(module, object_path)
-        if result is not None:
-            return ast.unparse(result)
-        else:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-
-    def get_module_path(self, module_obj: Module) -> str:
+    def get_module_path(self, module_obj: RedBaron) -> str:
         """
         Returns the module path for the specified module object.
 
@@ -183,201 +329,133 @@ class PythonIndexer:
         for module_path in self.module_dict:
             result += module_path + ":\n"
             module = self.module_dict[module_path]
-            for node in module.body:
-                if isinstance(node, ClassDef):
-                    result += " " * LINE_SPACING + " - " + node.name + "\n"
-                elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
+            for node in module:
+                if isinstance(node, (ClassNode, DefNode)):
                     result += " " * LINE_SPACING + " - " + node.name + "\n"
 
         return result
 
-    def build_module_overview(self, module_path: str) -> str:
-        """
-        Loops over the module and returns a string that provides an overview of the Module.
-        Returns:
-            str: A string that provides an overview of the PythonParser's state.
-        """
-        result_str = ""
-        LINE_SPACING = 2
-        result_str += module_path + ":\n"
-
-        def process_node(result_str: str, node: Any, spacing: int) -> str:
-            if isinstance(node, ClassDef):
-                result_str += " " * spacing + " - " + node.name + "\n"
-                docstring = ast.get_docstring(node)
-                if docstring:
-                    result_str += " " * (spacing + LINE_SPACING) + docstring + "\n"
-            elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
-                if node.name.startswith("_"):
-                    return result_str
-                result_str += " " * spacing + " - " + node.name + "\n"
-                docstring = ast.get_docstring(node)
-                if docstring:
-                    result_str += " " * (spacing + 2 * LINE_SPACING) + docstring + "\n"
-            if (
-                isinstance(node, ClassDef)
-                or isinstance(node, FunctionDef)
-                or isinstance(node, AsyncFunctionDef)
-            ):
-                for sub_node in node.body:
-                    result_str = process_node(result_str, sub_node, spacing + LINE_SPACING)
-            return result_str
-
-        module = self.module_dict[module_path]
-        for node in module.body:
-            result_str = process_node(result_str, node, LINE_SPACING)
-        return result_str
-
     @staticmethod
-    def _load_module_from_path(path) -> Optional[Module]:
+    def _load_module_from_path(path) -> Optional[RedBaron]:
         """
-        Loads and returns an AST Module object for the given file path.
+        Loads and returns an FST object for the given file path.
 
         Args:
             path (str): The file path of the Python source code.
 
         Returns:
-            Module: The AST Module object for the given file path, or None if the module cannot be loaded.
+            Module: RedBaron FST object.
         """
 
         try:
-            module = ast.parse(open(path).read(), type_comments=True)
+            module = RedBaron(open(path).read())
             return module
         except Exception as e:
             logger.error(f"Failed to load module '{path}' due to: {e}")
             return None
 
     @staticmethod
-    def _find_module_class_function_or_method(
-        code_obj: Union[Module, ClassDef], object_path: Optional[str]
-    ) -> Optional[PythonObject]:
+    def find_module_class_function_or_method(
+        code_obj: Union[RedBaron, ClassNode], object_path: Optional[str]
+    ) -> Optional[Node]:
         """
         Find a module, or find a function, method, or class inside a module.
 
         Args:
-            code_obj (Union[Module, ClassDef]): The AST code object (Module or ClassDef) to search.
+            code_obj (RedBaron): The  red baron FST object.
             object_path (Optional[str]): The dot-separated object path (e.g., 'ClassName.method_name'). If None,
                 the module is returned.
 
         Returns:
-            Optional[PythonObject]: The found FunctionDef,
-                AsyncFunctionDef, or ClassDef node, or None if not found.
+            Optional[Union[Def, Class, Module]]: The found def, or class node, or None if not found.
         """
 
-        if object_path is None:
-            assert isinstance(code_obj, Module)
-            return cast(Module, code_obj)
+        if not object_path:
+            return code_obj
 
         obj_parts = object_path.split(PythonIndexer.PATH_SEP)
 
-        if len(obj_parts) == 1:
-            return PythonIndexer._find_node(code_obj, obj_parts[0])
-        elif len(obj_parts) == 2:
-            class_node = PythonIndexer._find_node(code_obj, obj_parts[0])
-            if class_node and isinstance(class_node, ClassDef):
-                return PythonIndexer._find_node(class_node, obj_parts[1])
-        return None
+        node = code_obj
+        while node and obj_parts:
+            obj_name = obj_parts.pop(0)
+            node = PythonIndexer._find_node(node, obj_name)
+        return node
 
     @staticmethod
-    def _find_node(
-        code_obj: Union[Module, ClassDef], obj_name: str
-    ) -> Optional[Union[FunctionDef, AsyncFunctionDef, ClassDef]]:
+    def _find_node(code_obj: RedBaron, obj_name: str) -> Optional[Union[DefNode, ClassNode]]:
         """
-        Find a FunctionDef, AsyncFunctionDef, or ClassDef node with the specified name within the given
-        AST code object.
+        Find a DefNode or ClassNode node with the specified name within the given
+        FST code object.
 
         Args:
-            code_obj (Union[Module, ClassDef]): The AST code object (Module or ClassDef) to search.
+            code_obj (RedBaron): The FST code object (RedBaron or Node) to search.
             obj_name (str): The name of the object to find.
 
         Returns:
-            Optional[Union[FunctionDef, AsyncFunctionDef, ClassDef]]: The found FunctionDef,
-                AsyncFunctionDef, or ClassDef node, or None if not found.
+            Optional[Union[DefNode, ClassNode]]: The found node, or None.
         """
-
-        for node in code_obj.body:
-            if isinstance(node, FunctionDef) and node.name == obj_name:
-                return node
-            elif isinstance(node, ClassDef) and node.name == obj_name:
-                return node
-        return None
+        return code_obj.find(lambda identifier: identifier in ("def", "class"), name=obj_name)
 
     @staticmethod
-    def _remove_docstrings(result: PythonObject):
+    def find_imports(module: RedBaron) -> Optional[NodeList]:
         """
-        Remove docstrings from the specified AST node and its child nodes (if any).
+        Find all imports in a module.
 
         Args:
-            result (PythonObject): The AST node
+            module (RedBaron): The module to search.
+
+        Returns:
+            Optional[NodeList]: A list of ImportNode and FromImportNode objects.
+        """
+        return module.find_all(lambda identifier: identifier in ("import", "from_import"))
+
+    @staticmethod
+    def find_import_by_name(
+        module: RedBaron, import_name: str
+    ) -> Optional[Union[ImportNode, FromImportNode]]:
+        """
+        Find an import by name.
+
+        Args:
+            module (RedBaron): The module to search.
+            import_name (str): The name of the import to find.
+
+        Returns:
+            Optional[Union[ImportNode, FromImportNode]]: The found import, or None if not found.
+        """
+        return module.find(
+            lambda identifier: identifier in ("import", "from_import"), name=import_name
+        )
+
+    @staticmethod
+    def find_all_functions_and_classes(module: RedBaron) -> NodeList:
+        """
+        Find all imports in a module.
+
+        Args:
+            module (RedBaron): The module to search.
+
+        Returns:
+            NodeList: A list of ClassNode and DefNode objects.
+        """
+        return module.find_all(lambda identifier: identifier in ("class", "def"))
+
+    @staticmethod
+    def _remove_docstrings(node: Union[Node, RedBaron]) -> None:
+        """
+        Remove docstrings from the specified node, recursively.
+
+        Args:
+            node: The FST node
                 to remove docstrings from.
         """
 
-        if isinstance(result, (FunctionDef, AsyncFunctionDef, ClassDef)):
-            if isinstance(result.body[0], ast.Expr) and isinstance(result.body[0].value, ast.Str):
-                result.body.pop(0)
-
-        if isinstance(result, ClassDef):
-            for node in result.body:
-                if (
-                    isinstance(node, FunctionDef)
-                    or isinstance(node, AsyncFunctionDef)
-                    or isinstance(node, ClassDef)
-                    or isinstance(node, Module)
-                ):
-                    PythonIndexer._remove_docstrings(node)
-
-        if isinstance(result, Module):
-            if isinstance(result.body[0], ast.Expr) and isinstance(result.body[0].value, ast.Str):
-                result.body.pop(0)
-            for node in result.body:
-                if (
-                    isinstance(node, FunctionDef)
-                    or isinstance(node, AsyncFunctionDef)
-                    or isinstance(node, ClassDef)
-                    or isinstance(node, Module)
-                ):
-                    PythonIndexer._remove_docstrings(node)
-
-    def _find_object_by_line_number(
-        self, module_path: str, line_number: int
-    ) -> Optional[PythonObject]:
-        """
-        Find a Python object (FunctionDef, AsyncFunctionDef, ClassDef) by its line number in the specified module.
-
-        Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
-            line_number (int): The line number of the Python object to find.
-
-        Returns:
-            Optional[PythonObject]: The found Python object, or None if not found.
-        """
-
-        def _find_object_in_node(node: ast.AST, line_number: int) -> Optional[PythonObject]:
-            if (
-                isinstance(node, (FunctionDef, AsyncFunctionDef, ClassDef))
-                and node.lineno <= line_number
-                and (
-                    not hasattr(node, "end_lineno")
-                    or (hasattr(node, "end_lineno") and node.end_lineno >= line_number)  # type: ignore
-                )
-            ):
-                parent_node = node
-            else:
-                parent_node = None
-
-            if isinstance(node, (ClassDef, FunctionDef, AsyncFunctionDef)):
-                for child_node in node.body:
-                    found_node = _find_object_in_node(child_node, line_number)
-                    if found_node:
-                        return found_node
-
-            return parent_node
-
-        module = self.module_dict.get(module_path)
-        if module:
-            for node in module.body:
-                found_node = _find_object_in_node(node, line_number)
-                if found_node:
-                    return found_node
-
-        return None
+        if isinstance(node, (DefNode, ClassNode, RedBaron)):
+            filtered_node = node.filtered()
+            if isinstance(filtered_node[0], StringNode):
+                index = filtered_node[0].index_on_parent
+                node.pop(index)
+            child_nodes = node.find_all(lambda identifier: identifier in ("def", "class"))
+            for child_node in child_nodes:
+                if child_node is not node:
+                    PythonIndexer._remove_docstrings(child_node)

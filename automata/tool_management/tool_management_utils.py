@@ -50,6 +50,11 @@ class ToolManagerFactory:
             return CodebaseOracleToolManager(
                 codebase_oracle=CodebaseOracle.get_default_codebase_oracle()
             )
+        elif toolkit_type == ToolkitType.COVERAGE_PROCESSOR:
+            CoverageToolManager = importlib.import_module(
+                "automata.tool_management.coverage_tool_manager"
+            ).CoverageToolManager
+            return CoverageToolManager()
         else:
             raise ValueError("Unknown toolkit type: %s" % toolkit_type)
 
@@ -101,6 +106,8 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
             toolkit_type = ToolkitType.PYTHON_WRITER
         elif tool_name == "codebase_oracle":
             toolkit_type = ToolkitType.CODEBASE_ORACLE
+        elif tool_name == "coverage_processor":
+            toolkit_type = ToolkitType.COVERAGE_PROCESSOR
         else:
             logger.warning("Unknown tool: %s", tool_name)
             raise ValueError(f"Unknown tool: {tool_name}")

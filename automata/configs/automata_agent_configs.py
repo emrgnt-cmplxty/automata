@@ -66,6 +66,7 @@ class AutomataAgentConfig(BaseModel):
     temperature: float = 0.7
     session_id: Optional[str] = None
     instruction_version: str = InstructionConfigVersion.AGENT_INTRODUCTION_PROD.value
+    name: str = "Automata"
 
     @classmethod
     def load_automata_yaml_config(cls, config_version: AgentConfigVersion) -> Dict:

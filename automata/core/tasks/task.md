@@ -61,7 +61,7 @@ Here's an example of how to create and execute an AutomataTask:
 from automata.core.task.task import AutomataTask
 from automata.core.base.github_manager import GitHubManager
 
-github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url = DEFAULT_REMOTE_URL)
 executor = TaskExecutor(TestExecuteBehavior())
 
 instruction_payload = create_instruction_payload(overview="Overview", agents_message="Message")

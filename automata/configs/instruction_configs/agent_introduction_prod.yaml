@@ -6,12 +6,12 @@ initial_messages:
     content: >
       - thoughts
         - I will begin by initializing myself.
-      - actions
-        - tool_query_0
-          - tool_name
-            - {initializer_dummy_tool}
-          - tool_args
-            - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
+          - actions
+            - tool_query_0
+              - tool_name
+                - {initializer_dummy_tool}
+              - tool_args
+                - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
 
   - role: "user"
     content: >

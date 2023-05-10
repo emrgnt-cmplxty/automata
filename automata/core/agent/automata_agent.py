@@ -69,6 +69,7 @@ class AutomataAgent(Agent):
         self.eval_mode = False
         self.messages: List[OpenAIChatMessage] = []
         self.session_id = config.session_id
+        self.name: str = config.name
 
     def run(self) -> str:
         """
@@ -350,13 +351,14 @@ class AutomataAgent(Agent):
         Returns:
             str: The streamed response text.
         """
-        print(colored("\n>>>", "green", attrs=["blink"]) + colored(" Agent:", "green"))
+        print(colored(f"\n>>> {self.name} Agent:", "green"))
         latest_accumulation = ""
         stream_separator = " "
         response_text = ""
         for chunk in response_summary:
             if "content" in chunk["choices"][0]["delta"]:
                 chunk_content = chunk["choices"][0]["delta"]["content"]
+                chunk_content.replace("\\n", "\n")
                 latest_accumulation += chunk_content
                 response_text += chunk_content
             if stream_separator in latest_accumulation:

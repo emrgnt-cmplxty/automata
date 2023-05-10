@@ -1,4 +1,3 @@
-MagicMock/*
 automata/local_work/*
 **/sample_modules/**
 interactions.sqlite3
@@ -14,4 +13,8 @@ __pycache__/
 *.pyc
 /build/
 /dist/
+/coverage.xml
+/.coverage
+/.coverage*
+/coverage_analyzer_report.xml
 jobs/*

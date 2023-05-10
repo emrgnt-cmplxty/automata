@@ -93,6 +93,14 @@ class GitHubManager:
         repo = self.client.get_repo(self.remote_name)
         repo.create_pull(title=title, body=body, head=branch_name, base=self.primary_branch)
 
+    def create_issue(self, title: str, body: str, labels: str):
+        """
+        Creates a new issue on GitHub
+        """
+        # Create a new pull request on GitHub
+        repo = self.client.get_repo(self.remote_name)
+        repo.create_issue(title=title, body=body, labels=labels)
+
     def branch_exists(self, branch_name: str) -> bool:
         """
         Checks if the specified branch exists

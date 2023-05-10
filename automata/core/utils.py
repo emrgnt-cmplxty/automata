@@ -1,5 +1,3 @@
-"""This module provides functions to interact with the GitHub API, specifically to list repositories, issues, and pull requests,
-choose a work item to work on, and remove HTML tags from text."""
 import json
 import logging
 import os

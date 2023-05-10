@@ -46,6 +46,7 @@ class PythonWriterToolManager(BaseToolManager):
         - None
         """
         self.writer: PythonWriter = kwargs.get("python_writer")
+        # TODO: unused
         self.automata_version = (
             kwargs.get("automata_version") or AgentConfigVersion.AUTOMATA_WRITER_PROD
         )
@@ -88,7 +89,7 @@ class PythonWriterToolManager(BaseToolManager):
         try:
             self.writer.update_module(
                 source_code=code,
-                extending_module=True,
+                do_extend=True,
                 module_path=module_path,
                 write_to_disk=True,
                 class_name=class_name,
