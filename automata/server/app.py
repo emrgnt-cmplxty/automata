@@ -1,13 +1,25 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.utils import Namespace
 
 app = Flask(__name__)
+cors = CORS(app)
+
+
+@app.before_request
+def before_request():
+    if request.method == "POST":
+        for key in ["stream", "verbose", "include_overview"]:
+            if request.form.get(key) is not None:
+                request.form = request.form.copy()  # to make it mutable
+                request.form.setlist(key, [request.form.get(key) == "true"])
 
 
 @app.route("/master", methods=["POST"])
 def master():
+    print("request.form = ", request.form)
     kwargs = {
         "session_id": request.form.get("session_id"),
         "instructions": request.form.get("instructions"),
@@ -29,6 +41,7 @@ def master():
     }
     from automata.cli.scripts.run_coordinator import main
 
+    print("Calling main with args = ", kwargs)
     namespace = Namespace(**kwargs)
     result = main(namespace)
     return jsonify(result)

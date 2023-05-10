@@ -382,6 +382,7 @@ class AutomataAgent(Agent):
 
 
 class MasterAutomataAgent(AutomataAgent):
+
     """
     A MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator
     to execute and manipulate other AutomataAgents as part of the conversation.

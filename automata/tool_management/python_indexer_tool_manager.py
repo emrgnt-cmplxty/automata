@@ -54,9 +54,7 @@ class PythonIndexerToolManager(BaseToolManager):
         tools = [
             Tool(
                 name="python-indexer-retrieve-code",
-                func=lambda module_object_tuple: self._run_indexer_retrieve_code(
-                    *module_object_tuple
-                ),
+                func=self._func_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given python path, without docstrings."
                 f' If no match is found, then "{PythonIndexer.NO_RESULT_FOUND_STR}" is returned.\n\n'
@@ -76,18 +74,14 @@ class PythonIndexerToolManager(BaseToolManager):
             ),
             Tool(
                 name="python-indexer-retrieve-docstring",
-                func=lambda module_object_tuple: self._run_indexer_retrieve_docstring(
-                    *module_object_tuple
-                ),
+                func=self._func_retrieve_docstring,
                 description=f"Identical to python-indexer-retrieve-code, except returns the docstring instead of raw code.",
                 return_direct=True,
                 verbose=True,
             ),
             Tool(
                 name="python-indexer-retrieve-raw-code",
-                func=lambda module_object_tuple: self._run_indexer_retrieve_raw_code(
-                    *module_object_tuple
-                ),
+                func=self._func_retrieve_raw_code,
                 description=f"Identical to python-indexer-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
                 return_direct=True,
                 verbose=True,
@@ -124,3 +118,12 @@ class PythonIndexerToolManager(BaseToolManager):
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
+
+    def _func_retrieve_code(self, module_object_tuple):
+        return self._run_indexer_retrieve_code(*module_object_tuple)
+
+    def _func_retrieve_docstring(self, module_object_tuple):
+        return self._run_indexer_retrieve_docstring(*module_object_tuple)
+
+    def _func_retrieve_raw_code(self, module_object_tuple):
+        return self._run_indexer_retrieve_raw_code(*module_object_tuple)

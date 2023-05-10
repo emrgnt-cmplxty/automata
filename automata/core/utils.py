@@ -3,7 +3,7 @@ choose a work item to work on, and remove HTML tags from text."""
 import json
 import logging
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
 import colorlog
 import numpy as np
@@ -68,7 +68,30 @@ def root_path() -> str:
     return data_folder
 
 
-def get_logging_config(log_level=logging.INFO) -> dict:
+class HandlerDict(TypedDict):
+    class_: str
+    formatter: str
+    level: int
+    filename: Optional[str]
+
+
+class RootDict(TypedDict):
+    handlers: List[str]
+    level: int
+
+
+class LoggingConfig(TypedDict, total=False):
+    version: int
+    disable_existing_loggers: bool
+    formatters: dict
+    handlers: dict[str, Union[HandlerDict, dict]]
+    root: RootDict
+
+
+def get_logging_config(
+    log_level: int = logging.INFO, log_file: Optional[str] = None
+) -> dict[str, Any]:
+    print("log_file = ", log_file)
     """Returns logging configuration."""
     color_scheme = {
         "DEBUG": "cyan",
@@ -77,7 +100,7 @@ def get_logging_config(log_level=logging.INFO) -> dict:
         "ERROR": "red",
         "CRITICAL": "bold_red",
     }
-    logging_config = {
+    logging_config: LoggingConfig = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -85,7 +108,10 @@ def get_logging_config(log_level=logging.INFO) -> dict:
                 "()": colorlog.ColoredFormatter,
                 "format": "%(log_color)s%(levelname)s:%(name)s:%(message)s",
                 "log_colors": color_scheme,
-            }
+            },
+            "standard": {  # a standard formatter for file handler
+                "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+            },
         },
         "handlers": {
             "console": {
@@ -96,7 +122,17 @@ def get_logging_config(log_level=logging.INFO) -> dict:
         },
         "root": {"handlers": ["console"], "level": log_level},
     }
-    return logging_config
+
+    if log_file:  # if log_file is provided, add file handler
+        logging_config["handlers"]["file"] = {
+            "class": "logging.FileHandler",
+            "filename": log_file,
+            "formatter": "standard",
+            "level": log_level,
+        }
+        logging_config["root"]["handlers"].append("file")  # add "file" to handlers
+
+    return cast(dict[str, Any], logging_config)
 
 
 def run_retrieval_chain_with_sources_format(

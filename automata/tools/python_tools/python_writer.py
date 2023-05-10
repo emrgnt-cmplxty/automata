@@ -33,6 +33,7 @@ Example usage:
     TODO - Add explicit check of module contents after extension and reduction of module.
 """
 import ast
+import logging
 import os
 import re
 import subprocess
@@ -40,6 +41,8 @@ from ast import ClassDef, FunctionDef, Import, ImportFrom, Module
 from typing import Optional, Union, cast
 
 from automata.tools.python_tools.python_indexer import PythonIndexer
+
+logger = logging.getLogger(__name__)
 
 
 class PythonWriter:
@@ -100,8 +103,13 @@ class PythonWriter:
         module_obj = kwargs.get("module_obj")
         module_path = kwargs.get("module_path")
         class_name = kwargs.get("class_name") or ""
-
         write_to_disk = kwargs.get("write_to_disk") or False
+
+        logger.info(
+            "\n---Updating module---\nPath:\n%s\nClass Name:\n%s\nSource Code:\n%s\nExtending Module:\n%s\nWriting to disk:\n%s\n"
+            % (module_path, class_name, source_code, extending_module, write_to_disk)
+        )
+
         self._validate_args(module_obj, module_path, write_to_disk)
         source_code = PythonWriter._clean_input_code(source_code)
         if not module_obj and module_path:
