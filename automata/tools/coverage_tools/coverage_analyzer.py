@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 import xml.etree.ElementTree as ET
+from typing import cast
 
 import pandas as pd
 
@@ -22,8 +23,11 @@ class CoverageAnalyzer:
     ROOT_DIR = REPOSITORY_PATH
     ROOT_MODULE = "automata"
     DIR_TO_INDEX = os.path.join(ROOT_DIR, ROOT_MODULE)
-    COVERAGE_FILE_NAME = "coverage_analyzer_report.xml"
+    COVERAGE_FILE_NAME = ".coverage_analyzer_report.xml"
     COVERAGE_FILE_PATH = os.path.join(ROOT_DIR, COVERAGE_FILE_NAME)
+
+    AGGREGATED_COVERAGE_FILE_NAME = ".coverage_df.csv"
+    AGGREGATED_COVERAGE_FILE_PATH = os.path.join(ROOT_DIR, AGGREGATED_COVERAGE_FILE_NAME)
 
     def __init__(self):
         self.indexer = PythonIndexer(self.DIR_TO_INDEX)
@@ -47,47 +51,58 @@ class CoverageAnalyzer:
             )
         logger.debug("Done writing coverage data.")
 
-    def parse_coverage_xml(self):
-        logger.debug("Parsing coverage data...")
-        tree = ET.parse(self.COVERAGE_FILE_PATH)
-        root = tree.getroot()
+    def parse_coverage_xml(self, force=False) -> pd.DataFrame:
+        if force or not os.path.exists(self.AGGREGATED_COVERAGE_FILE_PATH):
+            logger.debug("Parsing coverage data...")
+            tree = ET.parse(self.COVERAGE_FILE_PATH)
+            root = tree.getroot()
 
-        data = []
-        for package in root.findall(".//package"):
-            package_name = package.get("name")
-            if package_name.startswith("automata."):
-                package_name = package_name[9:]
-            for cls in package.findall(".//class"):
-                class_name = cls.get("name")  # not a real class name, merely the name of the file
-                for line in cls.findall(".//line"):
-                    line_data = {
-                        "module": f"{package_name}.{class_name[:-3]}",  # see above, remove .py
-                        "line_number": int(line.get("number")),
-                        "hits": int(line.get("hits")),
-                    }
-                    data.append(line_data)
-        df = pd.DataFrame(data)
-        uncovered_lines = df[df["hits"] == 0]
-        uncovered_lines["object"] = uncovered_lines.apply(
-            lambda x: self._function_name_from_row(x), axis=1
-        )
-        uncovered_lines = uncovered_lines[
-            uncovered_lines["object"] != self.indexer.NO_RESULT_FOUND_STR
-        ]
+            data = []
+            for package in root.findall(".//package"):
+                package_name = cast(str, package.get("name"))
+                if package_name.startswith("automata."):
+                    package_name = package_name[9:]
+                for cls in package.findall(".//class"):
+                    class_name = cast(
+                        str, cls.get("name")
+                    )  # not a real class name, merely the name of the file
+                    for line in cls.findall(".//line"):
+                        line_data = {
+                            "module": f"{package_name}.{class_name[:-3]}",  # see above, remove .py
+                            "line_number": int(cast(str, line.get("number"))),
+                            "hits": int(cast(str, line.get("hits"))),
+                        }
+                        data.append(line_data)
+            df = pd.DataFrame(data)
+            df_uncovered_lines = df[df["hits"] == 0]
+            df_uncovered_lines["object"] = df_uncovered_lines.apply(
+                lambda x: self._function_name_from_row(x), axis=1
+            )
+            df_uncovered_lines = df_uncovered_lines[
+                df_uncovered_lines["object"] != self.indexer.NO_RESULT_FOUND_STR
+            ]
 
-        uncovered_lines = (
-            uncovered_lines.groupby(["module", "object"]).agg({"line_number": list}).reset_index()
-        )
-        uncovered_lines["percent_covered"] = uncovered_lines.apply(
-            lambda x: self._percent_covered_function_from_row(x), axis=1
-        )
-        # sort by percent covered ascending
-        uncovered_lines = uncovered_lines.sort_values(
-            by=["percent_covered"], ascending=True
-        ).reset_index(drop=True)
+            df_uncovered_lines = (
+                df_uncovered_lines.groupby(["module", "object"])
+                .agg({"line_number": list})
+                .reset_index()
+            )
+            df_uncovered_lines["percent_covered"] = df_uncovered_lines.apply(
+                lambda x: self._percent_covered_function_from_row(x), axis=1
+            )
+            # sort by percent covered ascending
+            df_uncovered_lines = df_uncovered_lines.sort_values(
+                by=["percent_covered"], ascending=True
+            ).reset_index(drop=True)
 
-        logger.debug("Coverage data parsed.")
-        return uncovered_lines
+            logger.debug("Coverage data parsed.")
+
+            df_uncovered_lines.to_csv(self.AGGREGATED_COVERAGE_FILE_PATH, index=False)
+            return df_uncovered_lines
+        else:
+            logger.debug("Loading cached coverage df...")
+            df = pd.read_csv(self.AGGREGATED_COVERAGE_FILE_PATH)
+            return df
 
     def _function_name_from_row(self, row) -> str:
         """
