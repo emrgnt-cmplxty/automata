@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AutomataAgent is an autonomous agent designed to execute instructions and report the results back to the master system. It communicates with the OpenAI API to generate responses based on given instructions and manages interactions with various tools. The MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator to execute and manipulate other AutomataAgents as part of the conversation.
+The AutomataAgent is an autonomous agent designed to execute instructions and report the results back to the main system. It communicates with the OpenAI API to generate responses based on given instructions and manages interactions with various tools. The MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator to execute and manipulate other AutomataAgents as part of the conversation.
 
 ## Usage
 
@@ -26,7 +26,7 @@ agent = builder.with_model("gpt-3.5-turbo").with_instructions("Generate a respon
 ```python
 from core.agent.automata_agent import MasterAutomataAgent
 
-master_agent = MasterAutomataAgent.from_agent(agent)
+main_agent = MasterAutomataAgent.from_agent(agent)
 ```
 
 ### Running the Agent
@@ -60,26 +60,24 @@ builder = AutomataAgentBuilder()
 agent = builder.with_model("gpt-3.5-turbo").with_instructions("Generate a response.").build()
 
 # Convert the AutomataAgent to a MasterAutomataAgent
-master_agent = MasterAutomataAgent.from_agent(agent)
+main_agent = MasterAutomataAgent.from_agent(agent)
 
 # Set the coordinator for the MasterAutomataAgent
-master_agent.set_coordinator(coordinator)
+main_agent.set_coordinator(coordinator)
 
-# Set the master agent for the AutomataCoordinator
-coordinator.set_master_agent(master_agent)
+# Set the main agent for the AutomataCoordinator
+coordinator.set_main_agent(main_agent)
 
 # Add two AutomataInstances to the coordinator
 agent_instance1 = AutomataInstance(
-    config_version=AgentConfigVersion.TEST,
+    config_name=AgentConfigVersion.TEST,
     description="Agent 1",
-    builder=AutomataAgentBuilder
 )
 coordinator.add_agent_instance(agent_instance1)
 
 agent_instance2 = AutomataInstance(
-    config_version=AgentConfigVersion.TEST2,
+    config_name=AgentConfigVersion.TEST2,
     description="Agent 2",
-    builder=AutomataAgentBuilder
 )
 coordinator.add_agent_instance(agent_instance2)
 
@@ -134,7 +132,7 @@ print("Result 2:", result2)
 - `with_eval_mode(eval_mode: bool)`: Set the evaluation mode for the AutomataAgent instance.
 - `with_instruction_version(instruction_version: str)`: Set the instruction version for the AutomataAgent instance.
 - `build()`: Build and return an AutomataAgent instance with the current configuration.
-- `build_master()`: Build and return an MasterAutomataAgent instance with the current configuration.
+- `build_main()`: Build and return an MasterAutomataAgent instance with the current configuration.
 
 ### AutomataActionExtractor
 
@@ -145,7 +143,6 @@ print("Result 2:", result2)
 - `generate_user_observation_message(observations: Dict[str, str], include_prefix: bool)`: Create a formatted message for the user based on the provided observations.
 - `append_observation_message(observation_name: str, observations: Dict[str, str], message: str)`: Append an observation message to an existing message.
 - `retrieve_completion_message(processed_inputs: Dict[str, str])`: Retrieve a completion message from the processed inputs, if it exists.
-- `create_instruction_payload(overview: str, agents_message: str)`: Create an initial payload for the MasterAutomataAgent based on the provided overview and agents_message.
 
 ### AutomataActions
 

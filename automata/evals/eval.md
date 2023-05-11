@@ -51,7 +51,7 @@ eval_result = evaluator.generate_eval_result(instruction, expected_actions)
 
 `llm_toolkits`: Low-level model toolkits for the agent.
 
-`with_master`: Option to use the master model.
+`with_main`: Option to use the main model.
 
 `generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]) -> EvalResult`: Evaluates a single sample by constructing an agent using the provided instruction, running the agent, extracting the actions performed by the agent, and comparing them to the expected_actions. Returns an EvalResult object with the evaluation results.
 

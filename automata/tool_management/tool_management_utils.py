@@ -60,7 +60,7 @@ class ToolManagerFactory:
 
 
 class ToolkitBuilder:
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Initializes a ToolkitBuilder object with the given inputs."""
 
         self._tool_management: Dict[ToolkitType, BaseToolManager] = {}
