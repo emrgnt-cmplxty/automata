@@ -28,7 +28,7 @@ class AutomataExecuteBehavior(IExecuteBehavior):
     def execute(self, task: AutomataTask):
         task.status = TaskStatus.RUNNING
         try:
-            result = task.build_agent().run()
+            result = task.build_agent_manager().run()
             task.result = result
             task.status = TaskStatus.SUCCESS
         except Exception as e:

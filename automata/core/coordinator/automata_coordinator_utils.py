@@ -27,7 +27,7 @@ class AutomataCoordinatorFactory:
             logger.info(
                 f"Adding Agent with name={config_name.value}, description={config.description}"
             )
-            agent = AutomataInstance(
+            agent = AutomataInstance.create(
                 config_name=config_name,
                 description=config.description,
                 verbose=True,

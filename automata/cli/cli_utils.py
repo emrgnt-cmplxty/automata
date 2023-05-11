@@ -1,9 +1,42 @@
 import logging
 from typing import Any, Dict
+
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
+from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
+
+
+def configure_logging(verbose: bool):
+    """
+    Configure the logging settings.
+
+    :param verbose: Boolean, if True, set log level to DEBUG, else set to INFO.
+    """
+    logging_config = get_logging_config(log_level=logging.DEBUG if verbose else logging.INFO)
+    logging.config.dictConfig(logging_config)
+
+    # Set the logging level for the requests logger to WARNING
+    requests_logger = logging.getLogger("urllib3")
+    requests_logger.setLevel(logging.INFO)
+    openai_logger = logging.getLogger("openai")
+    openai_logger.setLevel(logging.INFO)
+
+
+def check_kwargs(kwargs):
+    assert not (
+        kwargs.get("instructions") is None and kwargs.get("session_id") is None
+    ), "You must provide instructions for the agent if you are not providing a session_id."
+    assert not (
+        kwargs.get("instructions") and kwargs.get("session_id")
+    ), "You must provide either instructions for the agent or a session_id."
+    assert (
+        "helper_agent_names" in kwargs
+    ), "You must provide a list of helper agents, with field helper_agent_names."
+    assert (
+        "main_config_name" in kwargs
+    ), "You must provide a main agent config name, with field main_config_name."
 
 
 def process_kwargs(**kwargs) -> Dict[str, Any]:

@@ -10,6 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 class AutomataManagerFactory:
+    """
+    Class for creating AutomataManager instances.
+    """
+
     @staticmethod
     def create_manager(
         main_agent: AutomataAgent,

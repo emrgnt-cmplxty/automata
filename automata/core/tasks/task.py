@@ -4,6 +4,10 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Dict, Optional
 
+from automata.cli.cli_utils import check_kwargs, process_kwargs
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
+from automata.core.manager.automata_manager_factory import AutomataManagerFactory
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,36 +103,38 @@ class AutomataTask(Task):
         self.result = None
         self.error: Optional[str] = None
 
-    def build_agent(self):
+    def build_agent_manager(self):
         """
         Builds the agent from the task args.
         """
         pass
-        # helper_agent_names = self.kwargs.get("helper_agent_names", None)
-        # has_sub_agents = helper_agent_names is not None
-        # if has_sub_agents:
-        #     coordinator = create_coordinator(helper_agent_names)
-        #     agents_message = coordinator.build_agent_message()
-        #     overview = (
-        #         PythonIndexer(self.path_to_root_py).build_overview()
-        #         if self.kwargs.get("include_overview", "")
-        #         else ""
-        #     )
-        #     self.kwargs["instruction_payload"] = AutomataInstructionPayload(
-        #         overview=overview, agents_message=agents_message
-        #     )
-        #     main_agent = create_builder_from_args(*self.args, **self.kwargs).build()
-        #     coordinator.set_main_agent(main_agent)
-        #     main_agent.set_coordinator(coordinator)
-        #     return main_agent
-        # else:
-        #     return create_builder_from_args(*self.args, **self.kwargs).build()
+        helper_agent_names = self.kwargs.get("helper_agent_names", None)
+        has_sub_agents = helper_agent_names is not None
+        if has_sub_agents:
+            check_kwargs(self.kwargs)
+            kwargs = process_kwargs(**self.kwargs)
+            logger.info(f"Passing in instructions:\n %s" % (kwargs.get("instructions")))
+            logger.info("-" * 60)
+
+            logger.info("Creating main agent...")
+            main_agent = AutomataAgentFactory.create_agent(**kwargs)
+
+            logger.info("Creating agent manager...")
+            agent_manager = AutomataManagerFactory.create_manager(
+                main_agent, kwargs.get("helper_agent_configs")
+            )
+
+            return agent_manager
+        else:
+            return AutomataManagerFactory.create_manager(
+                AutomataAgentFactory.create_agent(*self.args, **self.kwargs), {}
+            )
 
     def validate_initialization(self):
         """
         Validates that the task can be initialized.
         """
-        self.build_agent()
+        self.build_agent_manager()
 
     def validate_pending(self):
         """

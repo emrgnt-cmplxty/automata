@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
@@ -12,9 +12,9 @@ class AutomataInstance(BaseModel):
     description: str = ""
     kwargs: Dict[str, Any] = {}
 
-    @validator("kwargs", pre=True, always=True)
-    def gather_kwargs(cls, v, values, **kwargs):
-        return kwargs
+    @classmethod
+    def create(cls, config_name: AgentConfigVersion, description: str = "", **kwargs):
+        return cls(config_name=config_name, description=description, kwargs=kwargs)
 
     def run(self, instructions: str) -> str:
         """
