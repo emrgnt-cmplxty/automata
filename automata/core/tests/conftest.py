@@ -83,7 +83,7 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
 
 
 def generate_instruction_payload():
-    return AutomataInstructionPayload(overview=PythonIndexer(root_py_path()).build_overview())
+    return AutomataInstructionPayload(overview=PythonIndexer.build_overview(root_py_path()))
 
 
 def retry(num_attempts: int):

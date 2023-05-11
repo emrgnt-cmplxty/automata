@@ -26,6 +26,7 @@ def run(kwargs):
     logger.info("-" * 60)
 
     logger.info("Creating main agent...")
+
     main_agent = AutomataAgentFactory.create_agent(**kwargs)
 
     logger.info("Creating agent manager...")

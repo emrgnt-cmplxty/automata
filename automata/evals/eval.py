@@ -27,7 +27,7 @@ class Eval(abc.ABC):
         """
         Evaluates a single sample.
         """
-        logger.info("Evaluating Instruction: %s", instruction)
+        logger.debug("Evaluating Instruction: %s", instruction)
         agent = self.builder.with_instructions(instruction).build()
         agent.run()
         messages = agent.get_non_instruction_messages()

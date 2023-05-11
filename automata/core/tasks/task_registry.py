@@ -99,7 +99,7 @@ class TaskRegistry:
         """
         Commits the task to the remote repository.
         """
-        logger.info("Comitting task...")
+        logger.debug("Comitting task...")
 
         task_dir = self._get_task_dir(task)
         if task.status != TaskStatus.SUCCESS:
@@ -124,13 +124,13 @@ class TaskRegistry:
 
         # Create a pull request
         github_manager.create_pull_request(pull_branch_name, pull_title, pull_body)
-        logger.info(
+        logger.debug(
             "Task committed successfully with Title:\n%s\n\nBody:\n%s\n\nBranch: %s"
             % (pull_title, pull_body, pull_branch_name),
         )
 
         task.status = TaskStatus.COMMITTED
-        logger.info("Task committed successfully")
+        logger.debug("Task committed successfully")
 
     def get_task_by_id(self, task_id: str) -> Optional[AutomataTask]:
         results = self.db.get_tasks_by(
@@ -160,7 +160,7 @@ class TaskRegistry:
         """
         Creates the environment for the task.
         """
-        logger.info("Creating task environment...")
+        logger.debug("Creating task environment...")
 
         # Create the jobs directory if it does not exist
         TaskRegistry._setup_jobs_dir()
@@ -170,7 +170,7 @@ class TaskRegistry:
         task.status = TaskStatus.PENDING
         log_file = os.path.join(task_dir, TaskRegistry.TASK_LOG_NAME)
         logging.config.dictConfig(get_logging_config(log_file=log_file))
-        logger.info("Task environment created successfully")
+        logger.debug("Task environment created successfully")
 
     @staticmethod
     def _get_jobs_dir() -> str:

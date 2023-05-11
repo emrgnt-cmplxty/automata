@@ -39,6 +39,7 @@ def task(ctx, *args, **kwargs):
     main(kwargs)
 
 
+@common_options
 @cli.command()
 @click.option(
     "--instruction_version",

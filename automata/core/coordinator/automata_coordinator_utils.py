@@ -24,7 +24,7 @@ class AutomataCoordinatorFactory:
         coordinator = AutomataCoordinator()
         for config_name in helper_agent_configs.keys():
             config = helper_agent_configs[config_name]
-            logger.info(
+            logger.debug(
                 f"Adding Agent with name={config_name.value}, description={config.description}"
             )
             agent = AutomataInstance.create(

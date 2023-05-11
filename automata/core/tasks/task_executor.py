@@ -48,7 +48,7 @@ class TestExecuteBehavior(IExecuteBehavior):
         from automata.tools.python_tools.python_indexer import PythonIndexer
         from automata.tools.python_tools.python_writer import PythonWriter
 
-        logger.info("Running a test execution...")
+        logger.debug("Running a test execution...")
         if not isinstance(task.path_to_root_py, str):
             raise TypeError("A relative python path must be set for the test executor.")
 
@@ -81,11 +81,11 @@ class TaskExecutor:
         task.validate_pending()
         for attempt in range(task.max_retries):
             try:
-                logger.info("Executing task %s" % (task.task_id))
+                logger.debug("Executing task %s" % (task.task_id))
                 task.status = TaskStatus.RUNNING
                 self.execute_behavior.execute(task)
 
-                logger.info("Task executed successfully")
+                logger.debug("Task executed successfully")
                 task.status = TaskStatus.SUCCESS
                 break
 

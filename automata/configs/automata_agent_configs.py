@@ -96,8 +96,7 @@ class AutomataAgentConfig(BaseModel):
         from automata.tools.python_tools.python_indexer import PythonIndexer
 
         if "overview" in config.instruction_input_variables:
-            indexer = PythonIndexer(root_py_path())
-            config.instruction_payload.overview = indexer.build_overview()
+            config.instruction_payload.overview = PythonIndexer.build_overview(root_py_path())
 
     @classmethod
     def load(cls, config_name: AgentConfigVersion) -> "AutomataAgentConfig":

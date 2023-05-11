@@ -113,13 +113,13 @@ class AutomataTask(Task):
         if has_sub_agents:
             check_kwargs(self.kwargs)
             kwargs = process_kwargs(**self.kwargs)
-            logger.info(f"Passing in instructions:\n %s" % (kwargs.get("instructions")))
-            logger.info("-" * 60)
+            logger.debug(f"Passing in instructions:\n %s" % (kwargs.get("instructions")))
+            logger.debug("-" * 60)
 
-            logger.info("Creating main agent...")
+            logger.debug("Creating main agent...")
             main_agent = AutomataAgentFactory.create_agent(**kwargs)
 
-            logger.info("Creating agent manager...")
+            logger.debug("Creating agent manager...")
             agent_manager = AutomataManagerFactory.create_manager(
                 main_agent, kwargs.get("helper_agent_configs")
             )
