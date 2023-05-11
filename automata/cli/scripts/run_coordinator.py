@@ -116,7 +116,7 @@ def run(args):
 
     coordinator = create_coordinator(args.agent_config_versions)
     agents_message = coordinator.build_agent_message()
-    overview = PythonIndexer(root_py_path()).build_overview() if args.include_overview else ""
+    overview = PythonIndexer.build_overview(root_py_path()) if args.include_overview else ""
     instruction_payload = create_instruction_payload(overview, agents_message)
     master_agent = create_master_agent(args, instruction_payload)
 

@@ -36,7 +36,7 @@ def main(args):
         instruction = sample["instruction"]
         expected_actions = sample["expected_actions"]
 
-        overview = PythonIndexer(root_py_path()).build_overview()
+        overview = PythonIndexer.build_overview(root_py_path())
         agent_messages = AutomataCoordinator().build_agent_message()
         instruction_payload = create_instruction_payload(overview, agent_messages)
 
