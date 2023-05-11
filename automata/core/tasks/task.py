@@ -2,7 +2,7 @@ import logging
 import uuid
 from collections.abc import Hashable
 from enum import Enum
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional
 
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_agent_helpers import create_builder_from_args
@@ -122,3 +122,21 @@ class AutomataTask(Task):
             raise ValueError("Task must have a task_dir set to be executed.")
         if self.status != TaskStatus.PENDING:
             raise ValueError("Task must be in pending state to be executed.")
+
+    def to_json(self) -> Dict[str, str]:
+        result = {
+            "task_id": str(self.task_id),
+            "status": self.status.value,
+            "priority": self.priority,
+            "max_retries": self.max_retries,
+            "retry_count": self.retry_count,
+            "rel_py_path": self.rel_py_path,
+            "result": self.result,
+            "error": self.error,
+        }
+        result["instructions"] = self.kwargs.get("instructions", None)
+        result["instruction_payload"] = self.kwargs.get("instruction_payload", None)
+        agent_config = self.kwargs.get("agent_config", None)
+        if agent_config:
+            result["agent_config"] = agent_config.config_version.value
+        return result

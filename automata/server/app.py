@@ -6,7 +6,7 @@ from flask_cors import CORS
 from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY, TASK_DB_NAME
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.base.github_manager import GitHubManager
-from automata.core.tasks.task import TaskStatus
+from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
 from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
 from automata.core.utils import Namespace, root_path
 
@@ -20,6 +20,7 @@ def before_request():
     g.task_registry = TaskRegistry(
         AutomataTaskDatabase(os.path.join(root_path(), TASK_DB_NAME)), g.github_manager
     )
+    g.task_executor = TaskExecutor(TestExecuteBehavior(), g.task_registry)
 
     if request.method == "POST":
         for key in ["stream", "verbose", "include_overview"]:
@@ -52,7 +53,6 @@ def master():
     }
     from automata.cli.scripts.run_coordinator import main
 
-    print("Calling main with args = ", kwargs)
     namespace = Namespace(**kwargs)
     result = main(namespace)
     return jsonify(result)
@@ -88,19 +88,7 @@ def evaluator():
 @app.route("/tasks", methods=["GET"])
 def get_all_tasks():
     tasks = g.task_registry.get_all_tasks()
-    print("tasks = ", tasks)
-    task = tasks[-1]
-    print("task.__dict__ = ", task.__dict__)
-    print("tasks[0].task_id = ", tasks[-1].task_id)
-    print("tasks[0].status = ", tasks[-1].status)
-    print("tasks[0].builder = ", tasks[-1].builder)
-    print("tasks[0].builder.instance = ", tasks[-1].builder._instance)
-    print(
-        "tasks[0].builder._instance.instruction_payload = ",
-        tasks[-1].builder._instance.instruction_payload,
-    )
-    tasks_as_dict = [task.__dict__ for task in tasks]
-    return jsonify(tasks_as_dict)
+    return jsonify([task.to_json() for task in tasks])
 
 
 @app.route("/task/<task_id>/initialize", methods=["POST"])
@@ -108,7 +96,7 @@ def initialize_task(task_id):
     task = g.task_registry.get_task(task_id)
     if task is None:
         return jsonify({"error": "Task not found"}), 404
-    task.status = TaskStatus.SETUP  # Assuming setting the status to SETUP initializes the task
+    g.task_registry.initialize_task(task)
     return jsonify({"message": "Task initialized"})
 
 
@@ -117,9 +105,8 @@ def execute_task(task_id):
     task = g.task_registry.get_task(task_id)
     if task is None:
         return jsonify({"error": "Task not found"}), 404
-    # Assuming execute() is a method of AutomataTask that starts the task execution
     try:
-        task.execute()
+        g.task_executor.execute_task(task)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     return jsonify({"message": "Task execution started"})
@@ -144,15 +131,6 @@ def commit_task(task_id):
         return jsonify({"error": str(e)}), 500
 
     return jsonify({"message": "Task committed"})
-
-
-@app.route("/task/<task_id>/logs", methods=["GET"])
-def get_task_logs(task_id):
-    task = g.task_registry.get_task(task_id)
-    if task is None:
-        return jsonify({"error": "Task not found"}), 404
-    # Assuming logs are stored as a list of strings in a 'logs' attribute of the AutomataTask
-    return jsonify({"logs": task.logs})
 
 
 if __name__ == "__main__":
