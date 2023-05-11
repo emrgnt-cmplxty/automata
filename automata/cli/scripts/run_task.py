@@ -76,25 +76,6 @@ def run(kwargs):
     for task in tasks:
         print("Task = ", task)
 
-    # instructions = kwargs.get("instructions")
-    # logger.info(
-    #     f"Passing in instructions:\n{colored(instructions, color='green', attrs=['reverse'])}"
-    # )
-    # logger.info("-" * 60)
-
-    # logger.info("Creating main agent...")
-    # main_agent = AutomataAgentFactory.create_agent(**kwargs)
-
-    # logger.info("Creating agent manager...")
-    # agent_manager = AutomataManagerFactory.create_manager(
-    #     main_agent, kwargs.get("helper_agent_configs")
-    # )
-
-    # if not kwargs.get("session_id"):
-    #     return agent_manager.run()
-    # else:
-    #     agent_manager.replay_messages()
-
 
 def main(kwargs):
     verbose = kwargs.pop("verbose")
