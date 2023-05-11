@@ -39,8 +39,6 @@ class Task:
         self._status = TaskStatus(kwargs.get("status", "setup"))
 
     def notify_observer(self):
-        print("We are observing ourself..")
-        print("self.observer = ", self.observer)
         if self.observer:
             self.observer(self)
 
@@ -59,7 +57,6 @@ class Task:
 
     @status.setter
     def status(self, new_status) -> None:
-        print("We are setting the status")
         if new_status == TaskStatus.RETRYING:
             self.retry_count += 1
             if self.retry_count == self.max_retries:
@@ -91,13 +88,30 @@ class Task:
 
 class AutomataTask(Task):
     """
-    A task that is to be executed by the AutomataAgent via the TaskExecutor.
+    A task that is to be executed by the TaskExecutor.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Save args and kwargs as JSON strings
+        # Check that we can create a builder from the args
+        self.args = args
+        self.kwargs = kwargs
+        self.validate_initialization()
         self.rel_py_path = kwargs.get("rel_py_path", "")
-        self.builder = create_builder_from_args(*args, **kwargs)
         self.result = None
         self.error: Optional[str] = None
+
+    def validate_initialization(self):
+        """
+        Validates that the task can be initialized.
+        """
+        create_builder_from_args(*self.args, **self.kwargs)
+
+    def validate_pending(self):
+        """
+        Validates that the task can be executed.
+        """
+        if self.task_dir is None:
+            raise ValueError("Task must have a task_dir set to be executed.")
+        if self.status != TaskStatus.PENDING:
+            raise ValueError("Task must be in pending state to be executed.")

@@ -89,7 +89,6 @@ class LoggingConfig(TypedDict, total=False):
 def get_logging_config(
     log_level: int = logging.INFO, log_file: Optional[str] = None
 ) -> dict[str, Any]:
-    print("log_file = ", log_file)
     """Returns logging configuration."""
     color_scheme = {
         "DEBUG": "cyan",

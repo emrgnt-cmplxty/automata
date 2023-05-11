@@ -3,8 +3,8 @@ import logging.config
 import os
 import time
 from abc import ABC, abstractmethod
-from typing import Optional
 
+from automata.core.agent.automata_agent_helpers import create_builder_from_args
 from automata.core.tasks.task import AutomataTask, TaskStatus
 from automata.core.tasks.task_registry import TaskRegistry
 
@@ -17,7 +17,7 @@ class IExecuteBehavior(ABC):
     """
 
     @abstractmethod
-    def execute(self, task: "AutomataTask") -> Optional[str]:
+    def execute(self, task: "AutomataTask"):
         pass
 
 
@@ -26,10 +26,10 @@ class AutomataExecuteBehavior(IExecuteBehavior):
     Class for executing general tasks.
     """
 
-    def execute(self, task: AutomataTask) -> Optional[str]:
+    def execute(self, task: AutomataTask):
         task.status = TaskStatus.RUNNING
         try:
-            result = task.builder.build().run()
+            result = create_builder_from_args(*task.args, **task.kwargs).build().run()
             task.result = result
             task.status = TaskStatus.SUCCESS
         except Exception as e:
@@ -39,15 +39,13 @@ class AutomataExecuteBehavior(IExecuteBehavior):
             task.retry_count += 1
             raise
 
-        return task.result
-
 
 class TestExecuteBehavior(IExecuteBehavior):
     """
     Class for executing test tasks.
     """
 
-    def execute(self, task: AutomataTask) -> Optional[str]:
+    def execute(self, task: AutomataTask):
         from automata.tools.python_tools.python_indexer import PythonIndexer
         from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -62,7 +60,7 @@ class TestExecuteBehavior(IExecuteBehavior):
             source_code="def test123(x): return True",
             write_to_disk=True,
         )
-        return None
+        task.result = "Test result"
 
 
 class TaskExecutor:
@@ -77,26 +75,21 @@ class TaskExecutor:
     def initialize_task(self, task: AutomataTask):
         self.task_registry.initialize_task(task)
 
-    def execute(self, task: AutomataTask) -> Optional[str]:
+    def execute(self, task: AutomataTask):
         """
         Executes the task using the specified behavior.
         """
-        if task.status != TaskStatus.PENDING:
-            raise ValueError("Task must be in pending state to be executed.")
-
-        if task.task_dir is None:
-            raise ValueError("Task must have a task_dir set to be executed.")
-
+        task.validate_pending()
         for attempt in range(task.max_retries):
             try:
-                logger.info("Executing task %s", task.task_id)
+                logger.info("Executing task %s" % (task.task_id))
                 task.status = TaskStatus.RUNNING
-                execution_result = self.execute_behavior.execute(task)
+                self.execute_behavior.execute(task)
 
                 logger.info("Task executed successfully")
                 task.status = TaskStatus.SUCCESS
+                break
 
-                return execution_result
             except Exception as e:
                 logging.exception(f"AutomataTask failed: {e}")
                 task.status = TaskStatus.RETRYING
@@ -108,7 +101,6 @@ class TaskExecutor:
 
                 # Otherwise, wait before retrying
                 time.sleep(self._exponential_backoff(attempt))
-        return None
 
     @staticmethod
     def _exponential_backoff(attempt_number: int) -> int:
@@ -142,6 +134,7 @@ if __name__ == "__main__":
         llm_toolkits="",
         instruction_payload=instruction_payload,
         stream=True,
+        instructions="Test instructions",
         rel_py_path="automata",
     )
 
@@ -157,6 +150,7 @@ if __name__ == "__main__":
         pull_body="I am testing this...",
         pull_branch_name="test_branch_%s" % (rand_branch),
     )
+    print("Committed successfully")
     tasks = task_registry.get_all_tasks()
     for task in tasks:
         print("Task = ", task)

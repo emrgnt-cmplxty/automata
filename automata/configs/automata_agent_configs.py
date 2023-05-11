@@ -1,4 +1,3 @@
-import json
 import os
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -109,17 +108,3 @@ class AutomataAgentConfig(BaseModel):
         cls.add_overview_to_instruction_payload(config)
 
         return config
-
-    def to_json(self):
-        """
-        Serializes the AutomataInstructionPayload object to a JSON string.
-        """
-        return json.dumps(self, default=lambda o: o.__dict__)
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        Deserializes a JSON string to an AutomataInstructionPayload object.
-        """
-        data = json.loads(json_str)
-        return AutomataInstructionPayload(**data)

@@ -1,9 +1,10 @@
 import logging
 import logging.config
 import os
-import pickle
 import sqlite3
 from typing import List, Optional, Tuple
+
+import jsonpickle
 
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task import AutomataTask, TaskStatus
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class AutomataTaskDatabase:
-    def __init__(self, db_name: str):
-        self.conn = sqlite3.connect(db_name)
+    def __init__(self, db_path: str):
+        self.conn = sqlite3.connect(db_path)
         self.create_table()
 
     def create_table(self) -> None:
@@ -23,7 +24,7 @@ class AutomataTaskDatabase:
             """
             CREATE TABLE IF NOT EXISTS tasks (
                 task_id TEXT PRIMARY KEY,
-                task_blob BLOB
+                task_json TEXT
             )
         """
         )
@@ -32,26 +33,25 @@ class AutomataTaskDatabase:
     def insert_task(self, task: AutomataTask) -> None:
         cursor = self.conn.cursor()
         task_id = task.task_id
-        task_blob = pickle.dumps(task)
+        task_json = jsonpickle.encode(task)
         cursor.execute(
             """
-            INSERT INTO tasks (task_id, task_blob)
+            INSERT INTO tasks (task_id, task_json)
             VALUES (?, ?)
         """,
-            (str(task_id), task_blob),
+            (str(task_id), task_json),
         )
-        print("success")
         self.conn.commit()
 
     def update_task(self, task: AutomataTask) -> None:
         cursor = self.conn.cursor()
-        task_blob = pickle.dumps(task)
+        task_json = jsonpickle.encode(task)
         cursor.execute(
             """
-            UPDATE tasks SET task_blob = ?
+            UPDATE tasks SET task_json = ?
             WHERE task_id = ?
         """,
-            (task_blob, str(task.task_id)),
+            (task_json, str(task.task_id)),
         )
         self.conn.commit()
 
@@ -62,8 +62,8 @@ class AutomataTaskDatabase:
 
         tasks = []
         for row in rows:
-            task_blob = row[0]
-            task = pickle.loads(task_blob)
+            task_json = row[0]
+            task = jsonpickle.decode(task_json)
             tasks.append(task)
 
         return tasks
@@ -83,7 +83,6 @@ class TaskRegistry:
         task.observer = self.update_task
 
     def update_task(self, task: AutomataTask) -> None:
-        print("calling update task...")
         task.observer = None
         self.db.update_task(task)
         task.observer = self.update_task
@@ -114,7 +113,6 @@ class TaskRegistry:
         # Check if the branch already exists, if not create it
         if not github_manager.branch_exists(pull_branch_name):
             github_manager.create_branch(pull_branch_name)
-        print("task_dir = ", task_dir)
         # Checkout the new branch
         github_manager.checkout_branch(task_dir, pull_branch_name)
 
@@ -136,7 +134,7 @@ class TaskRegistry:
 
     def get_task_by_id(self, task_id: str) -> Optional[AutomataTask]:
         results = self.db.get_tasks_by(
-            query="SELECT task_blob FROM tasks WHERE task_id = ?", params=(task_id,)
+            query="SELECT task_json FROM tasks WHERE task_id = ?", params=(task_id,)
         )
         if not results:
             return None
@@ -148,7 +146,7 @@ class TaskRegistry:
             return result
 
     def get_all_tasks(self) -> list[AutomataTask]:
-        results = self.db.get_tasks_by(query="SELECT task_blob FROM tasks")
+        results = self.db.get_tasks_by(query="SELECT task_json FROM tasks")
         for result in results:
             result.observer = self.update_task
         return results

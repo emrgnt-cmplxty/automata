@@ -123,7 +123,6 @@ def create_builder_from_args(*args, **kwargs):
 
 def format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:
     """Format expected strings into the config."""
-    print("format_variables = ", format_variables)
     for arg in format_variables.__dict__.keys():
         if format_variables.__dict__[arg]:
             input_text = input_text.replace(f"{{{arg}}}", format_variables.__dict__[arg])
