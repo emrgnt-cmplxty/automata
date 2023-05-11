@@ -110,7 +110,7 @@ class TaskExecutor:
 
 
 if __name__ == "__main__":
-    from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY, TASK_DB_NAME
+    from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_NAME
     from automata.configs.automata_agent_configs import (
         AutomataAgentConfig,
         AutomataInstructionPayload,
@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
     logging.config.dictConfig(get_logging_config())
 
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_NAME), github_manager)
     executor = TaskExecutor(TestExecuteBehavior(), task_registry)
 

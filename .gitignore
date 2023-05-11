@@ -1,4 +1,4 @@
-*.sqlite
+*.sqlite*
 automata/local_work/*
 **/sample_modules/**
 dump/

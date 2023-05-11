@@ -13,6 +13,15 @@ def indexer():
     return PythonIndexer(sample_dir)
 
 
+def test_build_overview():
+    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    result = PythonIndexer.build_overview(sample_dir)
+    first_module_overview = "test_module\n     - func test_function\n     - cls TestClass\n       - func __init__\n       - func test_method"
+    assert result.startswith(
+        first_module_overview
+    )  # the other module gets randomly overwritten each time
+
+
 def test_retrieve_docstring_function(indexer):
     module_name = "test_module"
     object_path = "test_function"
