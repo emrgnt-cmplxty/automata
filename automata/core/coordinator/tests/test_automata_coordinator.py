@@ -2,13 +2,14 @@ import textwrap
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_actions import AgentAction
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.core.agent.automata_agent_utils import build_agent_message
 from automata.core.agent.tests.conftest import automata_agent as automata_agent_fixture  # noqa
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
-from automata.core.agent.automata_agent_utils import build_agent_message
 
 
 @pytest.fixture

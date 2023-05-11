@@ -20,3 +20,8 @@ class Person:
 
     def run(self) -> str:
         ...
+
+
+def f(x) -> int:
+    """This is my new function"""
+    return x + 1

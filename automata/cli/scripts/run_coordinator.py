@@ -3,7 +3,7 @@ import logging.config
 from typing import Dict
 
 from termcolor import colored
-
+from automata.cli.cli_utils import process_kwargs
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
@@ -70,6 +70,12 @@ def check_input(kwargs):
     assert not (
         kwargs.get("instructions") and kwargs.get("session_id")
     ), "You must provide either instructions for the agent or a session_id."
+    assert (
+        "helper_agent_names" in kwargs
+    ), "You must provide a list of helper agents, with field helper_agent_names."
+    assert (
+        "main_config_name" in kwargs
+    ), "You must provide a main agent config name, with field main_config_name."
 
 
 def run(kwargs):
@@ -80,31 +86,20 @@ def run(kwargs):
     :return: Tuple containing the AutomataCoordinator and instruction_payload.
     """
     check_input(kwargs)
+    kwargs = process_kwargs(**kwargs)
     instructions = kwargs.get("instructions")
     logger.info(
         f"Passing in instructions:\n{colored(instructions, color='green', attrs=['reverse'])}"
     )
     logger.info("-" * 60)
 
-    logger.info(f"Loading helper configs...")
-    helper_agent_configs = {
-        AgentConfigVersion(config_name): AutomataAgentConfig.load(AgentConfigVersion(config_name))
-        for config_name in kwargs.get("helper_agent_names").split(",")
-    }
-    kwargs["helper_agent_configs"] = helper_agent_configs
-    del kwargs["helper_agent_names"]
-
-    logger.info(f"Loading main agent config..   .")
-    kwargs["agent_config"] = AutomataAgentConfig.load(
-        AgentConfigVersion(kwargs.get("main_config_name"))
-    )
-    del kwargs["main_config_name"]
-
     logger.info("Creating main agent...")
     main_agent = AutomataAgentFactory.create_agent(**kwargs)
 
     logger.info("Creating agent manager...")
-    agent_manager = AutomataManagerFactory.create_manager(main_agent, helper_agent_configs)
+    agent_manager = AutomataManagerFactory.create_manager(
+        main_agent, kwargs.get("helper_agent_configs")
+    )
 
     if not kwargs.get("session_id"):
         return agent_manager.run()
