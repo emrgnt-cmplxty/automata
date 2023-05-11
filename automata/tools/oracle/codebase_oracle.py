@@ -38,7 +38,6 @@ class CodebaseOracle:
         self.llm = llm
         self.memory = memory
         # check that the codebase is a git repo
-        print("self.codebase_path = ", self.codebase_path)
         assert (
             Path(self.codebase_path).joinpath(".git").exists()
         ), "Codebase path must be a git repo"

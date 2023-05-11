@@ -34,7 +34,7 @@ The GitHubTask class inherits from the Task class and represents a task that is 
 - `task_dir`: Directory path for the task.
   Methods:
 
-- `create_task_env()`: Creates the environment for the task.
+- `setup_task_env()`: Creates the environment for the task.
 - `commit_task(commit_message, pull_title, pull_body, pull_branch_name)`: Commits the task to the remote repository.
 
 ### `AutomataTask`
@@ -61,10 +61,10 @@ Here's an example of how to create and execute an AutomataTask:
 from automata.core.task.task import AutomataTask
 from automata.core.base.github_manager import GitHubManager
 
-github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url = DEFAULT_REMOTE_URL)
 executor = TaskExecutor(TestExecuteBehavior())
 
-instruction_payload = create_instruction_payload(overview="Overview", agents_message="Message")
+instruction_payload = AutomataInstructionPayload(overview="Overview", agents_message="Message")
 task = AutomataTask(
     agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
     llm_toolkits="",
@@ -74,7 +74,7 @@ task = AutomataTask(
     github_manager=github_manager,rel_py_path="automata"
 )
 
-task.create_task_env()
+task.setup_task_env()
 executor.execute(task)
 
 rand_branch = random.randint(0, 100000)
@@ -90,7 +90,7 @@ task.commit_task(
 
 In this example, we first create a `GitHubManager` instance and a `TaskExecutor` instance with the desired behavior (`TestExecuteBehavior`). Then, we create an `AutomataTask` object with the required parameters, including the `GitHubManager` instance and the relative path to the Python file.
 
-Next, we create the task environment by calling `create_task_env()` on the `AutomataTask` object. After that, we execute the task using the `TaskExecutor` by calling its `execute()` method and passing in the `AutomataTask` object.
+Next, we create the task environment by calling `setup_task_env()` on the `AutomataTask` object. After that, we execute the task using the `TaskExecutor` by calling its `execute()` method and passing in the `AutomataTask` object.
 
 Finally, after the task has been executed, we commit the task to the remote repository by calling the `commit_task()` method on the `AutomataTask` object, providing the necessary commit message, pull request title, pull request body, and branch name.
 

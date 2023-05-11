@@ -1,19 +1,14 @@
 import logging
-import logging.config
-import os
 import uuid
 from collections.abc import Hashable
 from enum import Enum
-from typing import Optional
+from typing import Callable, Dict, Optional
 
-from automata.core.agent.automata_agent_helpers import create_builder_from_args
-from automata.core.base.github_manager import GitHubManager
-from automata.core.utils import get_logging_config, root_path
+from automata.cli.cli_utils import check_kwargs, process_kwargs
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
+from automata.core.manager.automata_manager_factory import AutomataManagerFactory
 
 logger = logging.getLogger(__name__)
-logging.config.dictConfig(get_logging_config())
-
-JOB_DIR_NAME = "jobs"
 
 
 class TaskStatus(Enum):
@@ -21,7 +16,9 @@ class TaskStatus(Enum):
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
+    COMMITTED = "committed"
     FAILED = "failed"
+    RETRYING = "retrying"
 
 
 class Task:
@@ -37,8 +34,41 @@ class Task:
         )
         self.priority = kwargs.get("priority", 0)
         self.max_retries = kwargs.get("max_retries", 3)
-        self.status = TaskStatus(kwargs.get("status", "setup"))
+        self.observer: Optional[Callable] = None
         self.retry_count = 0
+
+        self._task_dir: Optional[str] = None
+        self._status = TaskStatus(kwargs.get("status", "setup"))
+
+    def notify_observer(self):
+        if self.observer:
+            self.observer(self)
+
+    @property
+    def task_dir(self) -> Optional[str]:
+        return self._task_dir
+
+    @task_dir.setter
+    def task_dir(self, new_task_dir: str) -> None:
+        self._task_dir = new_task_dir
+        self.notify_observer()
+
+    @property
+    def status(self) -> TaskStatus:
+        return self._status
+
+    @status.setter
+    def status(self, new_status) -> None:
+        if new_status == TaskStatus.RETRYING:
+            self.retry_count += 1
+            if self.retry_count == self.max_retries:
+                self._status = TaskStatus.FAILED
+            else:
+                self._status = new_status
+        else:
+            self._status = new_status
+
+        self.notify_observer()
 
     def _deterministic_task_id(self, **kwargs):
         """
@@ -54,85 +84,87 @@ class Task:
 
         return deterministic_uuid
 
+    def __str__(self):
+        return f"Task {self.task_id} ({self.status})"
 
-class GitHubTask(Task):
+
+class AutomataTask(Task):
     """
-    A task that is to be committed to a GitHub repository.
+    A task that is to be executed by the TaskExecutor.
     """
 
-    def __init__(self, github_manager: GitHubManager, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.github_manager = github_manager
-        self.task_dir = None
-
-    def create_task_env(self):
-        """
-        Creates the environment for the task.
-        """
-        # Generate a unique directory name for the task
-        task_dir_name = f"task_{self.task_id}"
-        job_dir = os.path.join(root_path(), JOB_DIR_NAME)
-
-        # Create the jobs directory if it does not exist
-        if not os.path.exists(job_dir):
-            os.makedirs(job_dir)
-
-        self.task_dir = os.path.join(job_dir, task_dir_name)
-        self.github_manager.clone_repository(self.task_dir)
-        self.status = TaskStatus.PENDING
-        logger.info("Task environment created successfully")
-
-    def commit_task(
-        self,
-        commit_message: str,
-        pull_title: str,
-        pull_body: str,
-        pull_branch_name: str = "feature/test",
-    ):
-        """
-        Commits the task to the remote repository.
-        """
-        if self.status != TaskStatus.SUCCESS:
-            raise Exception(
-                "Cannot commit task to repository because the task has not been successfully executed."
-            )
-        if self.task_dir is None:
-            raise Exception(
-                "Cannot commit task to repository because the task directory has not been created."
-            )
-        # Check if the branch already exists, if not create it
-        if not self.github_manager.branch_exists(pull_branch_name):
-            self.github_manager.create_branch(pull_branch_name)
-
-        # Checkout the new branch
-        repo_local_path = self.task_dir
-        self.github_manager.checkout_branch(repo_local_path, pull_branch_name)
-
-        # Stage all changes
-        self.github_manager.stage_all_changes(repo_local_path)
-
-        # Commit and push changes
-        self.github_manager.commit_and_push_changes(
-            repo_local_path, pull_branch_name, commit_message
-        )
-
-        # Create a pull request
-        self.github_manager.create_pull_request(pull_branch_name, pull_title, pull_body)
-        logger.info(
-            "Task committed successfully with Title: %s\n\nBody: %s\n\nBranch: %s"
-            % (pull_title, pull_body, pull_branch_name),
-        )
-
-
-class AutomataTask(GitHubTask):
-    """
-    A task that is to be executed by the AutomataAgent via the TaskExecutor.
-    """
-
-    def __init__(self, github_manager: GitHubManager, *args, **kwargs):
-        super().__init__(github_manager, *args, **kwargs)
-        self.rel_py_path = kwargs.get("rel_py_path", "")
-        builder = create_builder_from_args(*args, **kwargs)
-        self.agent = builder.build()
+        self.args = args
+        self.kwargs = kwargs
+        # Check that args build a valid agent
+        self.validate_initialization()
+        self.path_to_root_py = kwargs.get("path_to_root_py", "")
         self.result = None
         self.error: Optional[str] = None
+
+    def build_agent_manager(self):
+        """
+        Builds the agent from the task args.
+        """
+        pass
+        helper_agent_names = self.kwargs.get("helper_agent_names", None)
+        has_sub_agents = helper_agent_names is not None
+        if has_sub_agents:
+            check_kwargs(self.kwargs)
+            kwargs = process_kwargs(**self.kwargs)
+            logger.debug(f"Passing in instructions:\n %s" % (kwargs.get("instructions")))
+            logger.debug("-" * 60)
+
+            logger.debug("Creating main agent...")
+            main_agent = AutomataAgentFactory.create_agent(**kwargs)
+
+            logger.debug("Creating agent manager...")
+            agent_manager = AutomataManagerFactory.create_manager(
+                main_agent, kwargs.get("helper_agent_configs")
+            )
+
+            return agent_manager
+        else:
+            return AutomataManagerFactory.create_manager(
+                AutomataAgentFactory.create_agent(*self.args, **self.kwargs), {}
+            )
+
+    def validate_initialization(self):
+        """
+        Validates that the task can be initialized.
+        """
+        self.build_agent_manager()
+
+    def validate_pending(self):
+        """
+        Validates that the task can be executed.
+        """
+        if self.task_dir is None:
+            raise ValueError("Task must have a task_dir set to be executed.")
+        if self.status != TaskStatus.PENDING:
+            raise ValueError("Task must be in pending state to be executed.")
+
+    def to_partial_json(self) -> Dict[str, str]:
+        """
+        Returns a JSON representation of key attributes of the task.
+        """
+        result = {
+            "task_id": str(self.task_id),
+            "status": self.status.value,
+            "priority": self.priority,
+            "max_retries": self.max_retries,
+            "retry_count": self.retry_count,
+            "path_to_root_py": self.path_to_root_py,
+            "result": self.result,
+            "error": self.error,
+        }
+        result["model"] = self.kwargs.get("model", "gpt-4")
+        result["llm_toolkits"] = self.kwargs.get("llm_toolkits", "")
+        result["instructions"] = self.kwargs.get("instructions", None)
+        result["instruction_payload"] = self.kwargs.get("instruction_payload", None)
+        agent_config = self.kwargs.get("agent_config", None)
+        if agent_config:
+            result["agent_config"] = agent_config.config_name.value
+            result["instruction_config"] = agent_config.instruction_version.value
+        return result

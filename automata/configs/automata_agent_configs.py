@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import yaml
@@ -9,13 +10,14 @@ from automata.core.base.tool import Toolkit, ToolkitType
 from .config_enums import AgentConfigVersion, ConfigCategory, InstructionConfigVersion
 
 
+@dataclass
 class AutomataInstructionPayload:
     """
     The AutomataInstructionPayload class is used to store the payload for formatting the introduction instruction.
     Fields on this class are used to format the introduction instruction.
     """
 
-    agents: Optional[str] = None
+    agents_message: Optional[str] = None
     overview: Optional[str] = None
     tools: Optional[str] = None
 
@@ -30,14 +32,14 @@ class AutomataInstructionPayload:
 class AutomataAgentConfig(BaseModel):
     """
     Args:
-        config_version (AgentConfigVersion): The config_version of the agent to use.
+        config_name (AgentConfigVersion): The config_name of the agent to use.
         instruction_payload (AutomataInstructionPayload): Initial payload to format input instructions.
         llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
         instructions (str): A string of instructions to execute.
         system_instruction_template (str): A string of instructions to execute.
         instruction_input_variables (List[str]): A list of input variables for the instruction template.
         model (str): The model to use for the agent.
-        stream (bool): Whether to stream the results back to the master.
+        stream (bool): Whether to stream the results back to the main.
         verbose (bool): Whether to print the results to stdout.
         max_iters (int): The maximum number of iterations to run.
         temperature (float): The temperature to use for the agent.
@@ -49,7 +51,7 @@ class AutomataAgentConfig(BaseModel):
         SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo"]
         arbitrary_types_allowed = True
 
-    config_version: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_DEV
+    config_name: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_DEV
     instruction_payload: AutomataInstructionPayload = AutomataInstructionPayload()
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
@@ -62,17 +64,19 @@ class AutomataAgentConfig(BaseModel):
     max_iters: int = 1_000_000
     temperature: float = 0.7
     session_id: Optional[str] = None
-    instruction_version: str = InstructionConfigVersion.AGENT_INTRODUCTION_PROD.value
+    instruction_version: InstructionConfigVersion = (
+        InstructionConfigVersion.AGENT_INTRODUCTION_PROD
+    )
     name: str = "Automata"
 
     @classmethod
-    def load_automata_yaml_config(cls, config_version: AgentConfigVersion) -> Dict:
+    def load_automata_yaml_config(cls, config_name: AgentConfigVersion) -> Dict:
         """Loads the automata.yaml config file."""
         from automata.tool_management.tool_management_utils import build_llm_toolkits
 
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
         config_abs_path = os.path.join(
-            file_dir_path, ConfigCategory.AGENT.value, f"{config_version.value}.yaml"
+            file_dir_path, ConfigCategory.AGENT.value, f"{config_name.value}.yaml"
         )
 
         with open(config_abs_path, "r") as file:
@@ -82,7 +86,7 @@ class AutomataAgentConfig(BaseModel):
             tools = loaded_yaml["tools"].split(",")
             loaded_yaml["llm_toolkits"] = build_llm_toolkits(tools)
 
-        loaded_yaml["config_version"] = config_version
+        loaded_yaml["config_name"] = config_name
         return loaded_yaml
 
     @classmethod
@@ -92,16 +96,15 @@ class AutomataAgentConfig(BaseModel):
         from automata.tools.python_tools.python_indexer import PythonIndexer
 
         if "overview" in config.instruction_input_variables:
-            indexer = PythonIndexer(root_py_path())
-            config.instruction_payload.overview = indexer.build_overview()
+            config.instruction_payload.overview = PythonIndexer.build_overview(root_py_path())
 
     @classmethod
-    def load(cls, config_version: AgentConfigVersion) -> "AutomataAgentConfig":
+    def load(cls, config_name: AgentConfigVersion) -> "AutomataAgentConfig":
         """Loads the config for the agent."""
-        if config_version == AgentConfigVersion.DEFAULT:
+        if config_name == AgentConfigVersion.DEFAULT:
             return AutomataAgentConfig()
 
-        loaded_yaml = cls.load_automata_yaml_config(config_version)
+        loaded_yaml = cls.load_automata_yaml_config(config_name)
         config = AutomataAgentConfig(**loaded_yaml)
         cls.add_overview_to_instruction_payload(config)
 

@@ -21,9 +21,12 @@ Example:
 """
 from __future__ import annotations
 
+import ast
 import logging
 import os
 import re
+from _ast import AsyncFunctionDef, ClassDef, FunctionDef
+from functools import cached_property
 from typing import Dict, Optional, Union
 
 from redbaron import (
@@ -67,7 +70,11 @@ class PythonIndexer:
         """
 
         self.abs_path = os.path.join(root_path(), rel_path)
-        self.module_dict = self._build_module_dict()
+
+    @cached_property
+    def module_dict(self) -> Dict[str, RedBaron]:
+        # TODO: cache by module
+        return self._build_module_dict()
 
     def retrieve_code_without_docstrings(
         self, module_path: str, object_path: Optional[str]
@@ -296,11 +303,18 @@ class PythonIndexer:
                     module_path = os.path.join(root, file)
                     module = self._load_module_from_path(module_path)
                     if module:
-                        module_rel_path = (
-                            os.path.relpath(module_path, self.abs_path).replace(os.path.sep, ".")
-                        )[:-3]
+                        module_rel_path = PythonIndexer._relative_module_path(
+                            self.abs_path, module_path
+                        )
                         module_dict[module_rel_path] = module
         return module_dict
+
+    @staticmethod
+    def _relative_module_path(root_abs_path, module_path):
+        module_rel_path = (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[
+            :-3
+        ]
+        return module_rel_path
 
     def get_module_path(self, module_obj: RedBaron) -> str:
         """
@@ -318,22 +332,35 @@ class PythonIndexer:
                 return module_path
         return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def build_overview(self) -> str:
+    @staticmethod
+    def build_overview(path) -> str:
         """
-        Loops over the PythonParser's dictionaries and returns a string that provides an overview of the PythonParser's state.
+        Loops over the directory python files and returns a string that provides an overview of the PythonParser's state.
         Returns:
             str: A string that provides an overview of the PythonParser's state.
+        **NOTE: This method uses AST, not RedBaron, because RedBaron initialization is slow and unnecessary for this method.
         """
-        result = ""
-        LINE_SPACING = 2
-        for module_path in self.module_dict:
-            result += module_path + ":\n"
-            module = self.module_dict[module_path]
-            for node in module:
-                if isinstance(node, (ClassNode, DefNode)):
-                    result += " " * LINE_SPACING + " - " + node.name + "\n"
+        result_lines = []
 
-        return result
+        for root, _, files in os.walk(path):
+            for file in files:
+                if file.endswith(".py"):
+                    module_path = os.path.join(root, file)
+                    module = ast.parse(open(module_path).read())
+                    relative_module_path = PythonIndexer._relative_module_path(path, module_path)
+                    result_lines.append(relative_module_path)
+                    PythonIndexer._overview_traverse_helper(module, result_lines)
+        return "\n".join(result_lines)
+
+    @staticmethod
+    def _overview_traverse_helper(node, line_items, num_spaces=1):
+        if isinstance(node, ClassDef):
+            line_items.append("  " * num_spaces + " - cls " + node.name)
+        elif isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
+            line_items.append("  " * num_spaces + " - func " + node.name)
+
+        for child in ast.iter_child_nodes(node):
+            PythonIndexer._overview_traverse_helper(child, line_items, num_spaces + 1)
 
     @staticmethod
     def _load_module_from_path(path) -> Optional[RedBaron]:
@@ -357,7 +384,7 @@ class PythonIndexer:
     @staticmethod
     def find_module_class_function_or_method(
         code_obj: Union[RedBaron, ClassNode], object_path: Optional[str]
-    ) -> Optional[Node]:
+    ) -> Optional[Union[Node, RedBaron]]:
         """
         Find a module, or find a function, method, or class inside a module.
 

@@ -6,12 +6,12 @@ from automata.configs.automata_agent_configs import AutomataAgentConfig, Automat
 from automata.configs.config_enums import InstructionConfigVersion
 from automata.core.base.tool import Toolkit, ToolkitType
 
-from .automata_agent import AutomataAgent, MasterAutomataAgent
+from .automata_agent import AutomataAgent
 
 
 class AutomataAgentBuilder(BaseModel):
     """
-    The AutomataAgentBuilder class is a builder for constructing instances of AutomataAgent and MasterAutomataAgent.
+    The AutomataAgentBuilder class is a builder for constructing instances of AutomataAgents.
     It offers a flexible and easy-to-use interface for setting various properties of the agent before instantiation.
     """
 
@@ -198,8 +198,7 @@ class AutomataAgentBuilder(BaseModel):
             AutomataAgentBuilder: The current AutomataAgentBuilder instance with the updated instruction_version value.
         """
         self._validate_type(instruction_version, str, "Instruction version")
-        InstructionConfigVersion(instruction_version)
-        self._instance.instruction_version = instruction_version
+        self._instance.instruction_version = InstructionConfigVersion(instruction_version)
         return self
 
     def build(self) -> AutomataAgent:
@@ -211,16 +210,6 @@ class AutomataAgentBuilder(BaseModel):
         """
         self._instance._setup()
         return self._instance
-
-    def build_master(self) -> MasterAutomataAgent:
-        """
-        Build and return an MasterAutomataAgent instance with the current configuration.
-
-        Returns:
-            MasterAutomataAgent: An MasterAutomataAgent instance with the current configuration.
-        """
-        self._instance._setup()
-        return MasterAutomataAgent.from_agent(self._instance)
 
     @staticmethod
     def _validate_type(value, expected_type, param_name: str):

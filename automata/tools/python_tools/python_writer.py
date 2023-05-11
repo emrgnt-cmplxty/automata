@@ -18,7 +18,7 @@ Example usage:
             def new_method(self):
                 print("New method added")
     '''
-    extended_module = ast_wrapper.extend_module(code_to_extend, extending_module=True, module_obj=existing_module)
+    extended_module = ast_wrapper.extend_module(code_to_extend, module_obj=existing_module)
 
     # Reduce a module by removing code
     code_to_reduce = '''
@@ -28,10 +28,11 @@ Example usage:
         class ClassToRemove:
             pass
     '''
-    reduced_module = ast_wrapper.update_module(code_to_reduce, extending_module=False, module_obj=existing_module)
+    reduced_module = ast_wrapper.update_module(code_to_reduce, module_obj=existing_module)
 
     TODO - Add explicit check of module contents after extension and reduction of module.
 """
+import logging
 import os
 import re
 import subprocess
@@ -40,6 +41,8 @@ from typing import Optional, Union, cast
 from redbaron import ClassNode, Node, NodeList, RedBaron
 
 from automata.tools.python_tools.python_indexer import PythonIndexer
+
+logger = logging.getLogger(__name__)
 
 
 class PythonWriter:
@@ -50,7 +53,6 @@ class PythonWriter:
 
         update_module(
             source_code: str,
-            extending_module: bool,
             module_obj (Optional[Module], keyword),
             module_path (Optional[str], keyword)
         ) -> None:
@@ -100,8 +102,13 @@ class PythonWriter:
         module_obj = kwargs.get("module_obj")
         module_path = kwargs.get("module_path")
         class_name = kwargs.get("class_name") or ""
-
         write_to_disk = kwargs.get("write_to_disk") or False
+
+        logger.info(
+            "\n---Updating module---\nPath:\n%s\nClass Name:\n%s\nSource Code:\n%s\nWriting to disk:\n%s\n"
+            % (module_path, class_name, source_code, write_to_disk)
+        )
+
         self._validate_args(module_obj, module_path, write_to_disk)
         source_code = PythonWriter._clean_input_code(source_code)
 

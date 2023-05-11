@@ -1,6 +1,6 @@
+*.sqlite*
 automata/local_work/*
 **/sample_modules/**
-interactions.sqlite3
 dump/
 /.idea/
 .env
