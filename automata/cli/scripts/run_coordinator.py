@@ -6,14 +6,12 @@ from termcolor import colored
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
-from automata.core.agent.automata_agent_helpers import create_instruction_payload
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.base.tool import Toolkit, ToolkitType
-from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
-from automata.core.utils import get_logging_config, root_py_path
+from automata.core.manager.automata_manager_factory import AutomataManagerFactory
+from automata.core.utils import get_logging_config
 from automata.tool_management.tool_management_utils import build_llm_toolkits
-from automata.tools.python_tools.python_indexer import PythonIndexer
 
 logger = logging.getLogger(__name__)
 
@@ -34,108 +32,90 @@ def configure_logging(verbose: bool):
     openai_logger.setLevel(logging.INFO)
 
 
-def create_coordinator(agent_config_versions: str):
+def create_main_agent(args, instruction_payload, coordinator):
     """
-    Create AutomataCoordinator and add agent instances.
-
-    :param agent_config_versions: String containing comma-separated agent config versions.
-    :return: AutomataCoordinator instance.
-    """
-    coordinator = AutomataCoordinator()
-    agent_configs = {
-        AgentConfigVersion(config_version): AutomataAgentConfig.load(
-            AgentConfigVersion(config_version)
-        )
-        for config_version in agent_config_versions.split(",")
-    }
-    for config_version in agent_configs.keys():
-        config = agent_configs[config_version]
-        logger.info(
-            f"Adding Agent with name={config_version.value}, description={config.description}"
-        )
-        agent = AutomataInstance(
-            config_version=config_version,
-            description=config.description,
-            verbose=True,
-            stream=True,
-        )
-        coordinator.add_agent_instance(agent)
-
-    return coordinator
-
-
-def create_master_agent(args, instruction_payload):
-    """
-    Create the master AutomataAgent instance.
+    Create the main AutomataAgent instance.
 
     :param args: Parsed command line arguments.
     :param coordinator: AutomataCoordinator instance.
     :param instruction_payload: Dictionary containing the initial payload.
-    :return: MasterAutomataAgent instance.
+    :return: AutomataAgent instance.
     """
-    agent_version = AgentConfigVersion(AgentConfigVersion(args.master_config_version))
+    agent_version = AgentConfigVersion(AgentConfigVersion(args.main_config_name))
     agent_config = AutomataAgentConfig.load(agent_version)
-    inputs = {
-        "model": args.model,
-    }
-    master_llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
-        args.llm_toolkits.split(","), **inputs
+    main_llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
+        args.llm_toolkits.split(",")
     )
 
-    master_agent = MasterAutomataAgent.from_agent(
+    main_agent = (
         AutomataAgentBuilder.from_config(agent_config)
         .with_instruction_payload(instruction_payload)
         .with_instructions(args.instructions)
-        .with_llm_toolkits(master_llm_toolkits)
+        .with_llm_toolkits(main_llm_toolkits)
         .with_model(args.model)
         .with_session_id(args.session_id)
         .with_stream(args.stream)
         .with_instruction_version(args.instruction_version)
         .build()
     )
+    main_agent.set_coordinator(coordinator)
 
-    return master_agent
+    return main_agent
 
 
-def check_input(args):
+def check_input(kwargs):
     assert not (
-        args.instructions is None and args.session_id is None
+        kwargs.get("instructions") is None and kwargs.get("session_id") is None
     ), "You must provide instructions for the agent if you are not providing a session_id."
     assert not (
-        args.instructions and args.session_id
+        kwargs.get("instructions") and kwargs.get("session_id")
     ), "You must provide either instructions for the agent or a session_id."
 
 
-def run(args):
-    """get_overview
+def run(kwargs):
+    """
     Create coordinator and agents based on the provided arguments.
 
     :param args: Parsed command line arguments.
     :return: Tuple containing the AutomataCoordinator and instruction_payload.
     """
-    check_input(args)
+    check_input(kwargs)
+    instructions = kwargs.get("instructions")
     logger.info(
-        f"Passing in instructions:\n{colored(args.instructions, color='green', attrs=['reverse'])}"
+        f"Passing in instructions:\n{colored(instructions, color='green', attrs=['reverse'])}"
     )
     logger.info("-" * 60)
 
-    coordinator = create_coordinator(args.agent_config_versions)
-    agents_message = coordinator.build_agent_message()
-    overview = PythonIndexer(root_py_path()).build_overview() if args.include_overview else ""
-    instruction_payload = create_instruction_payload(overview, agents_message)
-    master_agent = create_master_agent(args, instruction_payload)
+    logger.info(f"Loading helper configs...")
+    helper_agent_configs = {
+        AgentConfigVersion(config_name): AutomataAgentConfig.load(AgentConfigVersion(config_name))
+        for config_name in kwargs.get("helper_agent_names").split(",")
+    }
+    kwargs["helper_agent_configs"] = helper_agent_configs
+    del kwargs["helper_agent_names"]
 
-    coordinator.set_master_agent(master_agent)
-    master_agent.set_coordinator(coordinator)
-    if not args.session_id:
-        return master_agent.run()
+    logger.info(f"Loading main agent config..   .")
+    kwargs["agent_config"] = AutomataAgentConfig.load(
+        AgentConfigVersion(kwargs.get("main_config_name"))
+    )
+    del kwargs["main_config_name"]
+
+    logger.info("Creating main agent...")
+    main_agent = AutomataAgentFactory.create_agent(**kwargs)
+
+    logger.info("Creating agent manager...")
+    agent_manager = AutomataManagerFactory.create_manager(main_agent, helper_agent_configs)
+
+    if not kwargs.get("session_id"):
+        return agent_manager.run()
     else:
-        master_agent.replay_messages()
+        agent_manager.replay_messages()
 
 
-def main(args):
-    configure_logging(args.verbose)
+def main(kwargs):
+    verbose = kwargs.pop("verbose")
+    configure_logging(verbose)
 
-    result = run(args)
+    result = run(kwargs)
     logger.info(f"Final Result = {result}")
     return result

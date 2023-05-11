@@ -1,8 +1,12 @@
+import logging
 from typing import Dict, Optional
 
-from automata.configs.automata_agent_configs import AutomataInstructionPayload
+from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
+from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_agent_enums import ActionIndicator, ResultField
 from automata.tool_management.tool_management_utils import build_llm_toolkits
+
+logger = logging.getLogger(__name__)
 
 
 def generate_user_observation_message(observations: Dict[str, str], include_prefix=True) -> str:
@@ -58,26 +62,28 @@ def retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[st
     return None
 
 
-def create_instruction_payload(overview: str, agents_message: str) -> AutomataInstructionPayload:
-    """
-    Create an initial payload for the MasterAutomataAgent based on the provided overview and agents_message.
+def format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:
+    """Format expected strings into the config."""
+    for arg in format_variables.__dict__.keys():
+        if format_variables.__dict__[arg]:
+            input_text = input_text.replace(f"{{{arg}}}", format_variables.__dict__[arg])
+    return input_text
 
-    Args:
-        overview (str): The overview text for the instruction payload.
-        agents_message (str): The agents' message for the instruction payload.
+
+def build_agent_message(agent_configs: Dict[AgentConfigVersion, AutomataAgentConfig]) -> str:
+    """
+    Constructs a string message containing the configuration version and description
+    of all managed agent instances.
 
     Returns:
-        Dict[str, str]: A dictionary containing the created instruction payload.
+        str: The generated message.
     """
-    instruction_payload = AutomataInstructionPayload()
-
-    if overview != "":
-        instruction_payload.overview = overview
-
-    if agents_message != "":
-        instruction_payload.agents = agents_message
-
-    return instruction_payload
+    return "".join(
+        [
+            f"\n{agent_config.config_name.value}: {agent_config.description}\n"
+            for agent_config in agent_configs.values()
+        ]
+    )
 
 
 def create_builder_from_args(*args, **kwargs):
@@ -90,8 +96,14 @@ def create_builder_from_args(*args, **kwargs):
         kwargs.get("eval_mode", False)
     )
 
-    if "instruction_payload" in kwargs and kwargs["instruction_payload"] != {}:
-        builder = builder.with_instruction_payload(kwargs["instruction_payload"])
+    instruction_payload = kwargs.get("instruction_payload", {})
+
+    if "helper_agent_configs" in kwargs:
+        instruction_payload["agents_message"] = build_agent_message(kwargs["helper_agent_configs"])
+
+    if instruction_payload != {}:
+        instruction_payload = AutomataInstructionPayload(**instruction_payload)
+        builder = builder.with_instruction_payload(instruction_payload)
 
     if "instructions" in kwargs:
         builder = builder.with_instructions(kwargs["instructions"])
@@ -115,15 +127,11 @@ def create_builder_from_args(*args, **kwargs):
         llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","))
         builder = builder.with_llm_toolkits(llm_toolkits)
 
-    if "with_master" in kwargs:
-        builder.with_master(kwargs["with_master"])
-
     return builder
 
 
-def format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:
-    """Format expected strings into the config."""
-    for arg in format_variables.__dict__.keys():
-        if format_variables.__dict__[arg]:
-            input_text = input_text.replace(f"{{{arg}}}", format_variables.__dict__[arg])
-    return input_text
+class AutomataAgentFactory:
+    @staticmethod
+    def create_agent(*args, **kwargs):
+        builder = create_builder_from_args(*args, **kwargs)
+        return builder.build()

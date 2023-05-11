@@ -5,9 +5,9 @@ This repository contains a collection of tools and utilities for various tasks.
 Main Packages and Modules:
 
 1. automata.core.agent.automata_agent:
-   AutomataAgent is an autonomous agent that performs the actual work of the Automata system. Automata are responsible for executing instructions and reporting the results back to the master.
+   AutomataAgent is an autonomous agent that performs the actual work of the Automata system. Automata are responsible for executing instructions and reporting the results back to the main.
 
-2. automata.core.agent.master_automata_agent:
+2. automata.core.agent.main_automata_agent:
    MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator to execute and manipulate other AutomataAgents as part of the conversation.
 
 3. automata.core.agent.automata_agent_builder:
@@ -37,7 +37,7 @@ To run the code, follow these steps:
 5. Install the project in editable mode by running `pip3 install -e .`
 6. Install pre-commit hooks by running `pre-commit install`
 7. Build appropriate .env file
-8. Execute the main script as in this example - `automata master --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`
+8. Execute the main script as in this example - `automata main --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`
 
 # References
 
@@ -47,7 +47,7 @@ The Automata Agent CLI provides a simple and convenient way to interact with the
 
 ## Automata Agent
 
-The AutomataAgent is an autonomous agent designed to execute instructions and report the results back to the master system. It communicates with the OpenAI API to generate responses based on given instructions and manages interactions with various tools. More information can be found in the [Automata Agent Documentation](automata/core/agent/agent.md).
+The AutomataAgent is an autonomous agent designed to execute instructions and report the results back to the main system. It communicates with the OpenAI API to generate responses based on given instructions and manages interactions with various tools. More information can be found in the [Automata Agent Documentation](automata/core/agent/agent.md).
 
 ## Automata Coordinator
 

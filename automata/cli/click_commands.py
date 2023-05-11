@@ -27,11 +27,10 @@ def cli(ctx):
     help="Should the instruction prompt include an overview?",
 )
 @click.pass_context
-def master(ctx, *args, **kwargs):
+def main(ctx, *args, **kwargs):
     from .scripts.run_coordinator import main
 
-    namespace = Namespace(**kwargs)
-    main(namespace)
+    main(kwargs)
 
 
 @common_options

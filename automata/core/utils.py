@@ -31,7 +31,7 @@ def root_py_path() -> str:
 
 
 def load_config(
-    config_version: str, file_name: str, config_type: str = "yaml", custom_decoder: Any = None
+    config_name: str, file_name: str, config_type: str = "yaml", custom_decoder: Any = None
 ) -> Any:
     """
     Loads a config file.
@@ -43,7 +43,7 @@ def load_config(
         Any: The content of the YAML file as a Python object.
     """
     with open(
-        os.path.join(root_py_path(), "configs", config_version, f"{file_name}.{config_type}"),
+        os.path.join(root_py_path(), "configs", config_name, f"{file_name}.{config_type}"),
         "r",
     ) as file:
         if config_type == "yaml":

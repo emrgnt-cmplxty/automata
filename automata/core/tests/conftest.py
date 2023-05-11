@@ -42,14 +42,14 @@ def automata_params(request):
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    config_version: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_PROD,
+    config_name: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_PROD,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",
 ):
     instruction_payload, mock_llm_toolkits = automata_params
 
-    agent_config = AutomataAgentConfig.load(config_version)
+    agent_config = AutomataAgentConfig.load(config_name)
 
     agent = (
         AutomataAgentBuilder.from_config(agent_config)

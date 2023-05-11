@@ -4,9 +4,6 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Dict, Optional
 
-from automata.core.agent.automata_agent import AutomataAgent
-from automata.core.agent.automata_agent_helpers import create_builder_from_args
-
 logger = logging.getLogger(__name__)
 
 
@@ -94,25 +91,44 @@ class AutomataTask(Task):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Check that we can create a builder from the args
         self.args = args
         self.kwargs = kwargs
+        # Check that args build a valid agent
         self.validate_initialization()
-        self.rel_py_path = kwargs.get("rel_py_path", "")
+        self.path_to_root_py = kwargs.get("path_to_root_py", "")
         self.result = None
         self.error: Optional[str] = None
 
-    def build_agent(self) -> AutomataAgent:
+    def build_agent(self):
         """
         Builds the agent from the task args.
         """
-        return create_builder_from_args(*self.args, **self.kwargs).build()
+        pass
+        # helper_agent_names = self.kwargs.get("helper_agent_names", None)
+        # has_sub_agents = helper_agent_names is not None
+        # if has_sub_agents:
+        #     coordinator = create_coordinator(helper_agent_names)
+        #     agents_message = coordinator.build_agent_message()
+        #     overview = (
+        #         PythonIndexer(self.path_to_root_py).build_overview()
+        #         if self.kwargs.get("include_overview", "")
+        #         else ""
+        #     )
+        #     self.kwargs["instruction_payload"] = AutomataInstructionPayload(
+        #         overview=overview, agents_message=agents_message
+        #     )
+        #     main_agent = create_builder_from_args(*self.args, **self.kwargs).build()
+        #     coordinator.set_main_agent(main_agent)
+        #     main_agent.set_coordinator(coordinator)
+        #     return main_agent
+        # else:
+        #     return create_builder_from_args(*self.args, **self.kwargs).build()
 
     def validate_initialization(self):
         """
         Validates that the task can be initialized.
         """
-        create_builder_from_args(*self.args, **self.kwargs)
+        self.build_agent()
 
     def validate_pending(self):
         """
@@ -123,20 +139,26 @@ class AutomataTask(Task):
         if self.status != TaskStatus.PENDING:
             raise ValueError("Task must be in pending state to be executed.")
 
-    def to_json(self) -> Dict[str, str]:
+    def to_partial_json(self) -> Dict[str, str]:
+        """
+        Returns a JSON representation of key attributes of the task.
+        """
         result = {
             "task_id": str(self.task_id),
             "status": self.status.value,
             "priority": self.priority,
             "max_retries": self.max_retries,
             "retry_count": self.retry_count,
-            "rel_py_path": self.rel_py_path,
+            "path_to_root_py": self.path_to_root_py,
             "result": self.result,
             "error": self.error,
         }
+        result["model"] = self.kwargs.get("model", "gpt-4")
+        result["llm_toolkits"] = self.kwargs.get("llm_toolkits", "")
         result["instructions"] = self.kwargs.get("instructions", None)
         result["instruction_payload"] = self.kwargs.get("instruction_payload", None)
         agent_config = self.kwargs.get("agent_config", None)
         if agent_config:
-            result["agent_config"] = agent_config.config_version.value
+            result["agent_config"] = agent_config.config_name.value
+            result["instruction_config"] = agent_config.instruction_version.value
         return result

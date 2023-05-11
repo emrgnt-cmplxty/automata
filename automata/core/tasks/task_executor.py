@@ -49,10 +49,10 @@ class TestExecuteBehavior(IExecuteBehavior):
         from automata.tools.python_tools.python_writer import PythonWriter
 
         logger.info("Running a test execution...")
-        if not isinstance(task.rel_py_path, str):
+        if not isinstance(task.path_to_root_py, str):
             raise TypeError("A relative python path must be set for the test executor.")
 
-        indexer = PythonIndexer(os.path.join(task.task_dir, task.rel_py_path))  # type: ignore
+        indexer = PythonIndexer(os.path.join(task.task_dir, task.path_to_root_py))  # type: ignore
         writer = PythonWriter(indexer)
         writer.update_module(
             module_path="core.agent.automata_agent",
@@ -110,12 +110,12 @@ class TaskExecutor:
 
 
 if __name__ == "__main__":
-    import random
-
     from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY, TASK_DB_NAME
-    from automata.configs.automata_agent_configs import AutomataAgentConfig
+    from automata.configs.automata_agent_configs import (
+        AutomataAgentConfig,
+        AutomataInstructionPayload,
+    )
     from automata.configs.config_enums import AgentConfigVersion
-    from automata.core.agent.automata_agent_helpers import create_instruction_payload
     from automata.core.base.github_manager import GitHubManager
     from automata.core.tasks.task_registry import AutomataTaskDatabase
     from automata.core.utils import get_logging_config
@@ -127,29 +127,29 @@ if __name__ == "__main__":
     executor = TaskExecutor(TestExecuteBehavior(), task_registry)
 
     agent_config = AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV)
-    instruction_payload = create_instruction_payload(overview="Overview", agents_message="Message")
+    instruction_payload = AutomataInstructionPayload(overview="Overview", agents_message="Message")
     task = AutomataTask(
         agent_config=agent_config,
         llm_toolkits="",
         instruction_payload=instruction_payload,
         stream=True,
         instructions="Test instructions",
-        rel_py_path="automata",
+        path_to_root_py="automata",
     )
 
     executor.initialize_task(task)
     executor.execute(task)
 
-    rand_branch = random.randint(0, 100000)
-    task_registry.commit_task(
-        task,
-        github_manager=github_manager,
-        commit_message="This is a commit message",
-        pull_title="This is a test",
-        pull_body="I am testing this...",
-        pull_branch_name="test_branch_%s" % (rand_branch),
-    )
-    print("Committed successfully")
+    # rand_branch = random.randint(0, 100000)
+    # task_registry.commit_task(
+    #     task,
+    #     github_manager=github_manager,
+    #     commit_message="This is a commit message",
+    #     pull_title="This is a test",
+    #     pull_body="I am testing this...",
+    #     pull_branch_name="test_branch_%s" % (rand_branch),
+    # )
+    # print("Committed successfully")
     tasks = task_registry.get_all_tasks()
     for task in tasks:
         print("Task = ", task)

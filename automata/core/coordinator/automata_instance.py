@@ -4,11 +4,11 @@ from pydantic import BaseModel, validator
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent_helpers import create_builder_from_args
+from automata.core.agent.automata_agent_utils import create_builder_from_args
 
 
 class AutomataInstance(BaseModel):
-    config_version: AgentConfigVersion = AgentConfigVersion.DEFAULT
+    config_name: AgentConfigVersion = AgentConfigVersion.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}
 
@@ -30,7 +30,7 @@ class AutomataInstance(BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        self.kwargs["agent_config"] = AutomataAgentConfig.load(self.config_version)
+        self.kwargs["agent_config"] = AutomataAgentConfig.load(self.config_name)
 
         agent_builder = create_builder_from_args(**self.kwargs)
 

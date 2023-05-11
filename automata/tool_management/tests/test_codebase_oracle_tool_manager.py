@@ -29,5 +29,5 @@ class TestCodebaseOracleToolManager:
         assert tools[0].name == "codebase-oracle-agent"
         assert (
             tools[0].description
-            == "Exposes the run command a codebase oracle, which conducts a semantic search on the code repository using natural language queries, and subsequently returns the results to the master"
+            == "Exposes the run command a codebase oracle, which conducts a semantic search on the code repository using natural language queries, and subsequently returns the results to the main"
         )

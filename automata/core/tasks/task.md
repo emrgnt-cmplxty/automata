@@ -64,7 +64,7 @@ from automata.core.base.github_manager import GitHubManager
 github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url = DEFAULT_REMOTE_URL)
 executor = TaskExecutor(TestExecuteBehavior())
 
-instruction_payload = create_instruction_payload(overview="Overview", agents_message="Message")
+instruction_payload = AutomataInstructionPayload(overview="Overview", agents_message="Message")
 task = AutomataTask(
     agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
     llm_toolkits="",

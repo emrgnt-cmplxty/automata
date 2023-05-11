@@ -212,7 +212,7 @@ def test_execute_test_task_success(task):
 
     task_executor.initialize_task(task)
     task.status = TaskStatus.PENDING
-    task.rel_py_path = "test_path.py"
+    task.path_to_root_py = "test_path"
     result = task_executor.execute(task)
 
     assert task.status == TaskStatus.SUCCESS

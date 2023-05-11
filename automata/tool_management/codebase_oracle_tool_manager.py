@@ -26,7 +26,7 @@ class CodebaseOracleToolManager(BaseToolManager):
             Tool(
                 name="codebase-oracle-agent",
                 func=lambda query: self._run_codebase_oracle_agent(query),
-                description="Exposes the run command a codebase oracle, which conducts a semantic search on the code repository using natural language queries, and subsequently returns the results to the master",
+                description="Exposes the run command a codebase oracle, which conducts a semantic search on the code repository using natural language queries, and subsequently returns the results to the main",
                 return_direct=True,
                 verbose=True,
             )

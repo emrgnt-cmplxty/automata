@@ -2,10 +2,9 @@ import logging
 import logging.config
 from typing import Dict, List, Union
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
+from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import AgentConfigVersion, ConfigCategory
 from automata.core.agent.automata_actions import ResultAction, ToolAction
-from automata.core.agent.automata_agent_helpers import create_instruction_payload
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 from automata.core.utils import load_config, root_py_path
 from automata.evals.eval import Eval
@@ -38,7 +37,9 @@ def main(args):
 
         overview = PythonIndexer(root_py_path()).build_overview()
         agent_messages = AutomataCoordinator().build_agent_message()
-        instruction_payload = create_instruction_payload(overview, agent_messages)
+        instruction_payload = AutomataInstructionPayload(
+            overview=overview, agent_messages=agent_messages
+        )
 
         evaluator = Eval(
             agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),

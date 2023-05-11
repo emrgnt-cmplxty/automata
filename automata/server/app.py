@@ -29,8 +29,8 @@ def before_request():
                 request.form.setlist(key, [request.form.get(key) == "true"])
 
 
-@app.route("/master", methods=["POST"])
-def master():
+@app.route("/main", methods=["POST"])
+def main():
     print("request.form = ", request.form)
     kwargs = {
         "session_id": request.form.get("session_id"),
@@ -39,11 +39,11 @@ def master():
         "llm_toolkits": request.form.get(
             "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
         ),
-        "master_config_version": request.form.get(
-            "master_config_version", AgentConfigVersion.AUTOMATA_MASTER_DEV.value
+        "main_config_name": request.form.get(
+            "main_config_name", AgentConfigVersion.AUTOMATA_MASTER_DEV.value
         ),
-        "agent_config_versions": request.form.get(
-            "agent_config_versions",
+        "helper_agent_names": request.form.get(
+            "helper_agent_names",
             f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
         ),
         "stream": request.form.get("stream", True),
@@ -67,11 +67,11 @@ def evaluator():
         "llm_toolkits": request.form.get(
             "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
         ),
-        "master_config_version": request.form.get(
-            "master_config_version", AgentConfigVersion.AUTOMATA_MASTER_DEV.value
+        "main_config_name": request.form.get(
+            "main_config_name", AgentConfigVersion.AUTOMATA_MASTER_DEV.value
         ),
-        "agent_config_versions": request.form.get(
-            "agent_config_versions",
+        "helper_agent_names": request.form.get(
+            "helper_agent_names",
             f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
         ),
         "stream": request.form.get("stream", True),
@@ -88,7 +88,15 @@ def evaluator():
 @app.route("/tasks", methods=["GET"])
 def get_all_tasks():
     tasks = g.task_registry.get_all_tasks()
-    return jsonify([task.to_json() for task in tasks])
+    return jsonify([task.to_partial_json() for task in tasks])
+
+
+@app.route("/task/<task_id>", methods=["GET"])
+def get_task(task_id):
+    task = g.task_registry.get_task_by_id(task_id)
+    if task is None:
+        return jsonify({"error": "Task not found"}), 404
+    return jsonify(task.to_partial_json())
 
 
 @app.route("/task/<task_id>/initialize", methods=["POST"])
@@ -112,6 +120,7 @@ def execute_task(task_id):
     return jsonify({"message": "Task execution started"})
 
 
+@app.route("/task/<task_id>/commit", methods=["POST"])
 def commit_task(task_id):
     task = g.task_registry.get_task(task_id)
     if task is None:
