@@ -4,6 +4,7 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Optional
 
+from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_agent_helpers import create_builder_from_args
 
 logger = logging.getLogger(__name__)
@@ -100,6 +101,12 @@ class AutomataTask(Task):
         self.rel_py_path = kwargs.get("rel_py_path", "")
         self.result = None
         self.error: Optional[str] = None
+
+    def build_agent(self) -> AutomataAgent:
+        """
+        Builds the agent from the task args.
+        """
+        return create_builder_from_args(*self.args, **self.kwargs).build()
 
     def validate_initialization(self):
         """

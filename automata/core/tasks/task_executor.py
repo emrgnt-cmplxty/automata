@@ -4,7 +4,6 @@ import os
 import time
 from abc import ABC, abstractmethod
 
-from automata.core.agent.automata_agent_helpers import create_builder_from_args
 from automata.core.tasks.task import AutomataTask, TaskStatus
 from automata.core.tasks.task_registry import TaskRegistry
 
@@ -29,7 +28,7 @@ class AutomataExecuteBehavior(IExecuteBehavior):
     def execute(self, task: AutomataTask):
         task.status = TaskStatus.RUNNING
         try:
-            result = create_builder_from_args(*task.args, **task.kwargs).build().run()
+            result = task.build_agent().run()
             task.result = result
             task.status = TaskStatus.SUCCESS
         except Exception as e:

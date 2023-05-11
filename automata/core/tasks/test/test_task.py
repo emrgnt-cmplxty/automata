@@ -195,12 +195,13 @@ def test_execute_automata_task_success(task, registry):
     task_executor = TaskExecutor(execute_behavior, task_registry)
 
     task_executor.initialize_task(task)
-    task.builder.build.return_value.run.return_value = "Success"
+    task.build_agent.return_value.run.return_value = "Success"
+
     result = task_executor.execute(task)
 
     assert task.status == TaskStatus.SUCCESS
     assert task.result == "Success"
-    assert result == "Success"
+    assert result is None
 
 
 @patch("logging.config.dictConfig", return_value=None)
@@ -227,7 +228,7 @@ def test_execute_automata_task_fail(task):
 
     task_executor.initialize_task(task)
     task.status = TaskStatus.PENDING
-    task.builder.build.return_value.run.side_effect = Exception("Execution failed")
+    task.build_agent.return_value.run.side_effect = Exception("Execution failed")
     task.max_retries = 2
 
     with pytest.raises(Exception, match="Execution failed"):
