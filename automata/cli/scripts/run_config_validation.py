@@ -40,7 +40,7 @@ def test_yaml_validation(file_path):
 
     try:
         validate(instance=yaml_data, schema=yaml_schema)
-        logger.info(f"Validation test for {file_path} passed.")
+        logger.debug(f"Validation test for {file_path} passed.")
     except ValidationError as e:
         raise ValidationError(f"Validation test for {file_path} failed: {e}")
 
@@ -72,7 +72,7 @@ def test_yaml_compatibility(file_path):
                 f"Compatibility test '{test['test_name']}' for {file_path} failed."
             )
         else:
-            logger.info(f"Compatibility test '{test['test_name']}' for {file_path} passed.")
+            logger.debug(f"Compatibility test '{test['test_name']}' for {file_path} passed.")
 
 
 def test_action_extraction(file_path):
@@ -83,7 +83,7 @@ def test_action_extraction(file_path):
     if len(actions) != int(number_of_expected_actions):
         raise ValidationError(f"Action extraction test for {file_path} failed.")
 
-    logger.info(f"Action extraction test for {file_path} passed.")
+    logger.debug(f"Action extraction test for {file_path} passed.")
 
 
 if __name__ == "__main__":
@@ -94,8 +94,8 @@ if __name__ == "__main__":
 
     # Run validation and compatibility tests on each YAML file
     for yaml_file in yaml_files:
-        logger.info(f"Processing yaml_file={yaml_file}")
-        logger.info(f"yaml_file={yaml_file}")
+        logger.debug(f"Processing yaml_file={yaml_file}")
+        logger.debug(f"yaml_file={yaml_file}")
         test_yaml_validation(yaml_file)
         test_yaml_compatibility(yaml_file)
         test_action_extraction(yaml_file)

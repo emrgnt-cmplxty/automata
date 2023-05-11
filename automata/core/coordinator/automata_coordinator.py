@@ -1,9 +1,11 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.agent.automata_actions import AgentAction
-from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.coordinator.automata_instance import AutomataInstance
+
+if TYPE_CHECKING:
+    from automata.core.agent.automata_agent import AutomataAgent
 
 
 class AutomataCoordinator:
@@ -22,40 +24,38 @@ class AutomataCoordinator:
             agent_instance (AutomataInstance): The agent instance to be added.
 
         Raises:
-            ValueError: If an agent with the same config_version already exists in the list.
+            ValueError: If an agent with the same config_name already exists in the list.
         """
         # Check agent has not already been added via name field
-        if agent_instance.config_version in [ele.config_version for ele in self.agent_instances]:
+        if agent_instance.config_name in [ele.config_name for ele in self.agent_instances]:
             raise ValueError("Agent already exists.")
         self.agent_instances.append(agent_instance)
 
-    def remove_agent_instance(self, config_version: AgentConfigVersion) -> None:
+    def remove_agent_instance(self, config_name: AgentConfigVersion) -> None:
         """
-        Removes an AutomataInstance from the list of managed agent instances by its config_version.
+        Removes an AutomataInstance from the list of managed agent instances by its config_name.
 
         Args:
-            config_version (AgentConfigVersion): The configuration version of the agent instance to be removed.
+            config_name (AgentConfigVersion): The configuration version of the agent instance to be removed.
 
         Raises:
             ValueError: If the specified agent instance does not exist in the list.
         """
         # Check agent has already been added via name field
-        if config_version not in [ele.config_version for ele in self.agent_instances]:
+        if config_name not in [ele.config_name for ele in self.agent_instances]:
             raise ValueError("Agent does not exist.")
         self.agent_instances = [
-            instance
-            for instance in self.agent_instances
-            if instance.config_version != config_version
+            instance for instance in self.agent_instances if instance.config_name != config_name
         ]
 
-    def set_master_agent(self, master_agent: MasterAutomataAgent):
+    def set_main_agent(self, main_agent: "AutomataAgent"):
         """
-        Sets the master agent for the AutomataCoordinator.
+        Sets the main agent for the AutomataCoordinator.
 
         Args:
-            master_agent (MasterAutomataAgent): The master agent to be set.
+            main_agent (AutomataAgent): The main agent to be set.
         """
-        self.master_agent = master_agent
+        self.main_agent = main_agent
 
     def run_agent(self, action: AgentAction) -> str:
         """
@@ -78,27 +78,12 @@ class AutomataCoordinator:
         except Exception as e:
             return str("Execution fail with error: " + str(e))
 
-    def build_agent_message(self) -> str:
+    def _select_agent_instance(self, config_name: AgentConfigVersion) -> AutomataInstance:
         """
-        Constructs a string message containing the configuration version and description
-        of all managed agent instances.
-
-        Returns:
-            str: The generated message.
-        """
-        return "".join(
-            [
-                f"\n{agent.config_version.value}: {agent.description}\n"
-                for agent in self.agent_instances
-            ]
-        )
-
-    def _select_agent_instance(self, config_version: AgentConfigVersion) -> AutomataInstance:
-        """
-        Retrieves an AutomataInstance from the list of managed agent instances by its config_version.
+        Retrieves an AutomataInstance from the list of managed agent instances by its config_name.
 
         Args:
-            config_version (AgentConfigVersion): The configuration version of the desired agent instance.
+            config_name (AgentConfigVersion): The configuration version of the desired agent instance.
 
         Returns:
             AutomataInstance: The selected agent instance.
@@ -107,6 +92,6 @@ class AutomataCoordinator:
             ValueError: If the specified agent instance does not exist.
         """
         for agent in self.agent_instances:
-            if agent.config_version == config_version:
+            if agent.config_name == config_name:
                 return agent
         raise ValueError("Agent does not exist.")

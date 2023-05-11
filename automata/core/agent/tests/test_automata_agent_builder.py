@@ -108,10 +108,10 @@ def test_builder_invalid_input_types(automata_agent_builder):
 
 
 def test_config_loading_different_versions():
-    for config_version in AgentConfigVersion:
-        if config_version == AgentConfigVersion.DEFAULT:
+    for config_name in AgentConfigVersion:
+        if config_name == AgentConfigVersion.DEFAULT:
             continue
-        elif config_version == AgentConfigVersion.AUTOMATA_INITIALIZER:
+        elif config_name == AgentConfigVersion.AUTOMATA_INITIALIZER:
             continue
-        agent_config = AutomataAgentConfig.load(config_version)
+        agent_config = AutomataAgentConfig.load(config_name)
         assert isinstance(agent_config, AutomataAgentConfig)

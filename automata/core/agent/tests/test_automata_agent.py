@@ -1,10 +1,10 @@
 import textwrap
 import uuid
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.core.agent.automata_agent import AutomataAgent, MasterAutomataAgent
+from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_database_manager import AutomataDatabaseManager
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
@@ -202,15 +202,15 @@ def test_iter_task_with_parsed_completion_message_2(
     "api_response", [mock_openai_response_with_completion_agent_message_to_parse()]
 )
 @patch("openai.ChatCompletion.create")
-def test_iter_task_with_parsed_completion_message_2_master(
+def test_iter_task_with_parsed_completion_message_2_main(
     mock_openai_chatcompletion_create,
     api_response,
     automata_agent_builder,
 ):
-    automata_agent = MasterAutomataAgent.from_agent(
-        automata_agent_builder.with_instruction_version("agent_introduction_dev").build()
-    )
-
+    automata_agent = automata_agent_builder.with_instruction_version(
+        "agent_introduction_dev"
+    ).build()
+    automata_agent.set_coordinator(MagicMock())  # set a dumm
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = api_response
     automata_agent.iter_task()

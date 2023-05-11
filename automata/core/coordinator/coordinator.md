@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AutomataCoordinator is responsible for managing multiple AutomataInstances. It provides methods for adding and removing agent instances, setting a master agent, executing actions on agent instances, and building agent messages.
+The AutomataCoordinator is responsible for managing multiple AutomataInstances. It provides methods for adding and removing agent instances, setting a main agent, executing actions on agent instances, and building agent messages.
 
 The AutomataInstance represents an individual agent instance with a specific configuration. It provides a method to execute instructions on the agent.
 
@@ -22,16 +22,16 @@ The AutomataInstance represents an individual agent instance with a specific con
    coordinator.add_agent_instance(agent_instance)
    ```
 
-3. Remove an AutomataInstance from the coordinator by its config_version:
+3. Remove an AutomataInstance from the coordinator by its config_name:
 
    ```python
-   coordinator.remove_agent_instance(config_version)
+   coordinator.remove_agent_instance(config_name)
    ```
 
-4. Set the master agent for the AutomataCoordinator:
+4. Set the main agent for the AutomataCoordinator:
 
    ```python
-   coordinator.set_master_agent(master_agent)
+   coordinator.set_main_agent(main_agent)
    ```
 
 5. Execute an action on the selected agent instance:
@@ -69,8 +69,7 @@ from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 coordinator = AutomataCoordinator()
 
 # Create an agent instance with a specific configuration
-config = AgentConfigVersion.V1
-instance = AutomataInstance(config)
+instance = AutomataInstance(config_name=AgentConfigVersion.V1)
 
 # Add the agent instance to the coordinator
 coordinator.add_agent_instance(instance)
@@ -95,8 +94,7 @@ from automata.core.coordinator.automata_instance import AutomataInstance
 from automata.configs.config_enums import AgentConfigVersion
 
 # Create an agent instance with a specific configuration
-config = AgentConfigVersion.V1
-instance = AutomataInstance(config)
+instance = AutomataInstance(config_name = AgentConfigVersion.V1)
 
 # Execute instructions on the agent instance
 instructions = "some_instruction"
@@ -114,13 +112,13 @@ print(result)
   - AutomataCoordinator
     - add_agent_instance
     - remove_agent_instance
-    - set_master_agent
+    - set_main_agent
     - run_agent
     - build_agent_message
 - cli.scripts.run_coordinator
   - configure_logging
   - create_coordinator
-  - create_master_agent
+  - create_main_agent
   - check_input
   - run
   - main

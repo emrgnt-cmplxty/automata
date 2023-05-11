@@ -4,7 +4,7 @@ from typing import List
 
 from automata.core.agent.automata_action_extractor import AutomataActionExtractor
 from automata.core.agent.automata_actions import Action
-from automata.core.agent.automata_agent_helpers import create_builder_from_args
+from automata.core.agent.automata_agent_utils import create_builder_from_args
 from automata.core.base.openai import OpenAIChatMessage
 from automata.evals.eval_helpers import EvalAction, calc_eval_result
 
@@ -27,7 +27,7 @@ class Eval(abc.ABC):
         """
         Evaluates a single sample.
         """
-        logger.info("Evaluating Instruction: %s", instruction)
+        logger.debug("Evaluating Instruction: %s", instruction)
         agent = self.builder.with_instructions(instruction).build()
         agent.run()
         messages = agent.get_non_instruction_messages()

@@ -3,7 +3,7 @@ import textwrap
 from automata.core.agent.automata_action_extractor import (
     AutomataActionExtractor as ActionExtractor,
 )
-from automata.core.agent.automata_agent_helpers import (
+from automata.core.agent.automata_agent_utils import (
     generate_user_observation_message,
     retrieve_completion_message,
 )

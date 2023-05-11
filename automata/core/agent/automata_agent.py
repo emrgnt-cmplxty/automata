@@ -14,7 +14,7 @@ from automata.core.agent.automata_action_extractor import (
     AutomataActionExtractor as ActionExtractor,
 )
 from automata.core.agent.automata_actions import AgentAction, ResultAction, ToolAction
-from automata.core.agent.automata_agent_helpers import (
+from automata.core.agent.automata_agent_utils import (
     format_prompt,
     generate_user_observation_message,
     retrieve_completion_message,
@@ -27,15 +27,13 @@ from automata.core.utils import format_text, load_config
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from automata.core.coordinator.automata_coordinator import (  # This import will only happen during type checking
-        AutomataCoordinator,
-    )
+    from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 
 
 class AutomataAgent(Agent):
     """
     AutomataAgent is an autonomous agent designed to execute instructions and report
-    the results back to the master system. It communicates with the OpenAI API to generate responses
+    the results back to the main system. It communicates with the OpenAI API to generate responses
     based on given instructions and manages interactions with various tools.
     """
 
@@ -56,7 +54,7 @@ class AutomataAgent(Agent):
         self.instruction_payload = config.instruction_payload
         self.llm_toolkits = config.llm_toolkits
         self.instructions = config.instructions
-        self.config_version = config.config_version
+        self.config_name = config.config_name
         self.system_instruction_template = config.system_instruction_template
         self.instruction_input_variables = config.instruction_input_variables
         self.model = config.model
@@ -70,6 +68,16 @@ class AutomataAgent(Agent):
         self.messages: List[OpenAIChatMessage] = []
         self.session_id = config.session_id
         self.name: str = config.name
+        self.coordinator: Optional["AutomataCoordinator"] = None
+
+    def set_coordinator(self, coordinator: "AutomataCoordinator"):
+        """
+        Set the coordinator for the AutomataAgent.
+
+        Args:
+            coordinator (AutomataCoordinator): An instance of an AutomataCoordinator.
+        """
+        self.coordinator = coordinator
 
     def run(self) -> str:
         """
@@ -98,6 +106,7 @@ class AutomataAgent(Agent):
         Returns:
             Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]: Latest assistant and user messages, or None if the task is completed.
         """
+
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
         response_summary = openai.ChatCompletion.create(
@@ -246,6 +255,12 @@ class AutomataAgent(Agent):
                 (result_name, result_outputs) = (action.result_name, action.result_outputs)
                 # Skip the return result indicator which exists only for marking the return result
                 outputs[result_name] = "\n".join(result_outputs)
+            elif isinstance(action, AgentAction):
+                if action.agent_version.value == AutomataAgent.INITIALIZER_DUMMY:
+                    continue
+                agent_output = self._execute_agent(action)
+                query_name = action.agent_query.replace("query", "output")
+                outputs[query_name] = agent_output
 
         return outputs
 
@@ -293,6 +308,9 @@ class AutomataAgent(Agent):
             ]
         )
 
+    def _has_sub_agents(self) -> bool:
+        return self.coordinator is not None
+
     def _parse_completion_message(self, completion_message: str) -> str:
         """
         Parses the completion message and replaces placeholders with actual tool outputs.
@@ -310,6 +328,18 @@ class AutomataAgent(Agent):
             for match in matches:
                 tool_name, tool_output = match.group(1), match.group(2).strip()
                 outputs[tool_name] = tool_output
+        if self._has_sub_agents():
+            for message in self.messages:
+                pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
+                matches = re.finditer(pattern, message.content, re.DOTALL)
+                for match in matches:
+                    agent_version, agent_output = match.group(1), match.group(2).strip()
+                    outputs[agent_version] = agent_output
+
+            for output_name in outputs:
+                completion_message = completion_message.replace(
+                    f"{{{output_name}}}", outputs[output_name]
+                )
 
         for output_name in outputs:
             completion_message = completion_message.replace(
@@ -330,7 +360,9 @@ class AutomataAgent(Agent):
         assert "user_input_instructions" in formatters
         formatters["initializer_dummy_tool"] = AutomataAgent.INITIALIZER_DUMMY
 
-        messages_config = load_config(ConfigCategory.INSTRUCTION.value, self.instruction_version)
+        messages_config = load_config(
+            ConfigCategory.INSTRUCTION.value, self.instruction_version.value
+        )
         initial_messages = messages_config["initial_messages"]
 
         input_messages = []
@@ -381,48 +413,7 @@ class AutomataAgent(Agent):
         self.messages.append(message)
         return message
 
-
-class MasterAutomataAgent(AutomataAgent):
-    """
-    A MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator
-    to execute and manipulate other AutomataAgents as part of the conversation.
-    """
-
-    def __init__(self, agent_config, *args, **kwargs):
-        """Initialize the MasterAutomataAgent with agent_config and other optional arguments."""
-        super().__init__(agent_config, *args, **kwargs)
-        self.coordinator = None
-
-    def set_coordinator(self, coordinator: "AutomataCoordinator"):
-        """
-        Set the coordinator for the MasterAutomataAgent.
-
-        Args:
-            coordinator (AutomataCoordinator): An instance of an AutomataCoordinator.
-        """
-        self.coordinator = coordinator
-
-    def _generate_observations(self, response_text: str) -> Dict[str, str]:
-        """Process the messages in the conversation and extract agent actions.
-
-        Args:
-            response_text (str): The response text from the conversation.
-
-        Returns:
-            Dict[str, str]: A dictionary containing the agent outputs, indexed by their query names.
-        """
-        outputs = super()._generate_observations(response_text)
-        actions = ActionExtractor.extract_actions(response_text)
-        for agent_action in actions:
-            if isinstance(agent_action, AgentAction):
-                if agent_action.agent_version.value == AutomataAgent.INITIALIZER_DUMMY:
-                    continue
-                agent_output = self._execute_agent(agent_action)
-                query_name = agent_action.agent_query.replace("query", "output")
-                outputs[query_name] = agent_output
-        return outputs
-
-    def _execute_agent(self, agent_action) -> str:
+    def _execute_agent(self, agent_action: AgentAction) -> str:
         """
         Generate the result from the specified agent_action using the coordinator.
 
@@ -432,78 +423,7 @@ class MasterAutomataAgent(AutomataAgent):
         Returns:
             str: The output generated by the agent.
         """
+        if not self.coordinator:
+            raise Exception("Agent has no coordinator.")
+
         return self.coordinator.run_agent(agent_action)
-
-    def _add_agent_observations(
-        self,
-        observations: Dict[str, str],
-        agent_observations: Dict[str, str],
-        agent_action: AgentAction,
-    ) -> None:
-        """
-        Add agent observations to the given observations dictionary.
-
-        Args:
-            observations (Dict[str, str]): The existing observations dictionary.
-            agent_observations (Dict[str, str]): The agent observations to be added.
-            agent_action (AgentAction): An instance of an AgentAction for which the observations are generated.
-        """
-        for observation in agent_observations:
-            agent_observation = observation.replace(
-                "return_result_0", agent_action.agent_query.replace("query", "output")
-            )
-            observations[agent_observation] = agent_observations[observation]
-
-    def _parse_completion_message(self, completion_message: str) -> str:
-        """
-        Parse the completion message and replace the tool outputs with their appropriate values.
-
-        Args:
-            completion_message (str): The completion message to be parsed and modified.
-
-        Returns:
-            str: The modified completion message with replaced tool outputs.
-        """
-        completion_message = super()._parse_completion_message(completion_message)
-        outputs = {}
-        for message in self.messages:
-            pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
-            matches = re.finditer(pattern, message.content, re.DOTALL)
-            for match in matches:
-                agent_version, agent_output = match.group(1), match.group(2).strip()
-                outputs[agent_version] = agent_output
-
-        for output_name in outputs:
-            completion_message = completion_message.replace(
-                f"{{{output_name}}}", outputs[output_name]
-            )
-        return completion_message
-
-    # TODO - Can we implement this more cleanly?
-    @classmethod
-    def from_agent(cls, agent: AutomataAgent) -> "MasterAutomataAgent":
-        """
-        Create a MasterAutomataAgent from an existing AutomataAgent.
-
-        Args:
-            agent (AutomataAgent): An instance of an AutomataAgent to be converted to a MasterAutomataAgent.
-
-        Returns:
-            MasterAutomataAgent: A new instance of MasterAutomataAgent with the same properties as the input agent.
-        """
-        master_agent = cls(None)
-        master_agent.llm_toolkits = agent.llm_toolkits
-        master_agent.instructions = agent.instructions
-        master_agent.model = agent.model
-        master_agent.instruction_payload = agent.instruction_payload
-        master_agent.config_version = agent.config_version
-        master_agent.system_instruction_template = agent.system_instruction_template
-        master_agent.instruction_input_variables = agent.instruction_input_variables
-        master_agent.stream = agent.stream
-        master_agent.verbose = agent.verbose
-        master_agent.max_iters = agent.max_iters
-        master_agent.temperature = agent.temperature
-        master_agent.session_id = agent.session_id
-        master_agent.completed = False
-        master_agent._setup()
-        return master_agent

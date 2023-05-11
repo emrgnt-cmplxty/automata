@@ -1,7 +1,8 @@
 import logging
 from typing import Any
 
-from automata.core.utils import create_issue_on_github
+from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY
+from automata.core.base.github_manager import GitHubManager
 from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,9 @@ class CoverageProcessor:
         )
         issue_title = f"Test coverage gap: {module_path} - {function_name}"
         if self.do_create_issue:
-            create_issue_on_github(issue_title, issue_body, ["test-coverage-gap"])
+            GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL).create_issue(
+                issue_title, issue_body, ["test-coverage-gap"]
+            )
         return f"Processed - {issue_title}"
 
 

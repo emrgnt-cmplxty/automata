@@ -35,10 +35,10 @@ class RepositoryManager(ABC):
 
 
 class GitHubManager:
-    def __init__(self, access_token: str, repository_name: str, primary_branch: str = "main"):
+    def __init__(self, access_token: str, remote_url: str, primary_branch: str = "main"):
         self.access_token = access_token
         self.client = Github(access_token)
-        self.remote_name = repository_name
+        self.remote_name = remote_url.replace("https://github.com/", "")
         self.repo = self.client.get_repo(self.remote_name)
 
         self.primary_branch = primary_branch
@@ -92,6 +92,14 @@ class GitHubManager:
         # Create a new pull request on GitHub
         repo = self.client.get_repo(self.remote_name)
         repo.create_pull(title=title, body=body, head=branch_name, base=self.primary_branch)
+
+    def create_issue(self, title: str, body: str, labels: str):
+        """
+        Creates a new issue on GitHub
+        """
+        # Create a new pull request on GitHub
+        repo = self.client.get_repo(self.remote_name)
+        repo.create_issue(title=title, body=body, labels=labels)
 
     def branch_exists(self, branch_name: str) -> bool:
         """

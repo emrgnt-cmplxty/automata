@@ -1,18 +1,20 @@
-from typing import Dict, Optional, Type
+from typing import Any, Dict
 
 from pydantic import BaseModel
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
-from automata.core.base.tool import Toolkit, ToolkitType
+from automata.core.agent.automata_agent_utils import create_builder_from_args
 
 
 class AutomataInstance(BaseModel):
-    config_version: AgentConfigVersion = AgentConfigVersion.DEFAULT
+    config_name: AgentConfigVersion = AgentConfigVersion.DEFAULT
     description: str = ""
-    builder: Type[AutomataAgentBuilder] = AutomataAgentBuilder
-    llm_toolkits: Optional[Dict[ToolkitType, Toolkit]] = None
+    kwargs: Dict[str, Any] = {}
+
+    @classmethod
+    def create(cls, config_name: AgentConfigVersion, description: str = "", **kwargs):
+        return cls(config_name=config_name, description=description, kwargs=kwargs)
 
     def run(self, instructions: str) -> str:
         """
@@ -28,10 +30,9 @@ class AutomataInstance(BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        config = AutomataAgentConfig.load(self.config_version)
-        agent_builder = self.builder(config=config)
-        if self.llm_toolkits:
-            agent_builder = agent_builder.with_llm_toolkits(self.llm_toolkits)
+        self.kwargs["agent_config"] = AutomataAgentConfig.load(self.config_name)
+
+        agent_builder = create_builder_from_args(**self.kwargs)
 
         agent = agent_builder.with_instructions(instructions).build()
         result = agent.run()

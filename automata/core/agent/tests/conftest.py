@@ -18,8 +18,8 @@ def automata_agent():
 
     instructions = "Test instruction."
 
-    config_version = AgentConfigVersion.DEFAULT
-    agent_config = AutomataAgentConfig.load(config_version)
+    config_name = AgentConfigVersion.DEFAULT
+    agent_config = AutomataAgentConfig.load(config_name)
 
     agent = (
         AutomataAgentBuilder.from_config(agent_config)
@@ -33,15 +33,15 @@ def automata_agent():
 
 @pytest.fixture
 def automata_agent_builder():
-    config_version = AgentConfigVersion.DEFAULT
-    agent_config = AutomataAgentConfig.load(config_version)
+    config_name = AgentConfigVersion.DEFAULT
+    agent_config = AutomataAgentConfig.load(config_name)
     agent_builder = AutomataAgentBuilder.from_config(agent_config)
     return agent_builder
 
 
 @pytest.fixture
-def automata_agent_with_dev_master_builder():
-    config_version = AgentConfigVersion.AUTOMATA_MASTER_DEV
-    agent_config = AutomataAgentConfig.load(config_version)
+def automata_agent_with_dev_main_builder():
+    config_name = AgentConfigVersion.AUTOMATA_MASTER_DEV
+    agent_config = AutomataAgentConfig.load(config_name)
     agent_builder = AutomataAgentBuilder.from_config(agent_config)
     return agent_builder

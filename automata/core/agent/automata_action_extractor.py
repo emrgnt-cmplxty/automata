@@ -211,4 +211,11 @@ class AutomataActionExtractor:
         Returns:
             bool: True if the line is a code indicator, False otherwise.
         """
-        return line.strip() == ActionIndicator.CODE.value
+        contains_indicator = line.strip() == ActionIndicator.CODE.value
+        for language in SUPPORTED_CODING_LANGUAGES:
+            contains_indicator = (
+                contains_indicator
+                or "%s%s" % (ActionIndicator.CODE.value, language) in line.strip()
+            )
+
+        return contains_indicator
