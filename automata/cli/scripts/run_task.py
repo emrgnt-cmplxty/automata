@@ -1,14 +1,9 @@
 import logging
 import logging.config
-from typing import Dict
 
 from automata.cli.cli_utils import process_kwargs
 from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY, TASK_DB_NAME
-from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
 from automata.core.base.github_manager import GitHubManager
-from automata.core.base.tool import Toolkit, ToolkitType
 from automata.core.tasks.task import AutomataTask
 from automata.core.tasks.task_executor import (
     AutomataExecuteBehavior,
@@ -17,7 +12,6 @@ from automata.core.tasks.task_executor import (
 )
 from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
 from automata.core.utils import get_logging_config
-from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 logger = logging.getLogger(__name__)
 
@@ -36,37 +30,6 @@ def configure_logging(verbose: bool):
     requests_logger.setLevel(logging.INFO)
     openai_logger = logging.getLogger("openai")
     openai_logger.setLevel(logging.INFO)
-
-
-def create_main_agent(args, instruction_payload, coordinator):
-    """
-    Create the main AutomataAgent instance.
-
-    :param args: Parsed command line arguments.
-    :param coordinator: AutomataCoordinator instance.
-    :param instruction_payload: Dictionary containing the initial payload.
-    :return: AutomataAgent instance.
-    """
-    agent_version = AgentConfigVersion(AgentConfigVersion(args.main_config_name))
-    agent_config = AutomataAgentConfig.load(agent_version)
-    main_llm_toolkits: Dict[ToolkitType, Toolkit] = build_llm_toolkits(
-        args.llm_toolkits.split(",")
-    )
-
-    main_agent = (
-        AutomataAgentBuilder.from_config(agent_config)
-        .with_instruction_payload(instruction_payload)
-        .with_instructions(args.instructions)
-        .with_llm_toolkits(main_llm_toolkits)
-        .with_model(args.model)
-        .with_session_id(args.session_id)
-        .with_stream(args.stream)
-        .with_instruction_version(args.instruction_version)
-        .build()
-    )
-    main_agent.set_coordinator(coordinator)
-
-    return main_agent
 
 
 def check_input(kwargs):
