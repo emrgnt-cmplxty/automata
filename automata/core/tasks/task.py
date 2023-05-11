@@ -6,14 +6,13 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import Optional
 
+from automata.config import JOB_DIR_PATH
 from automata.core.agent.automata_agent_helpers import create_builder_from_args
 from automata.core.base.github_manager import GitHubManager
 from automata.core.utils import get_logging_config, root_path
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
-
-JOB_DIR_NAME = "jobs"
 
 
 class TaskStatus(Enum):
@@ -71,7 +70,7 @@ class GitHubTask(Task):
         """
         # Generate a unique directory name for the task
         task_dir_name = f"task_{self.task_id}"
-        job_dir = os.path.join(root_path(), JOB_DIR_NAME)
+        job_dir = os.path.join(root_path(), JOB_DIR_PATH)
 
         # Create the jobs directory if it does not exist
         if not os.path.exists(job_dir):

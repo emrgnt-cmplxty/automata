@@ -37,8 +37,6 @@ class CoverageAnalyzer:
             subprocess.run(
                 [
                     "pytest",
-                    "-n",
-                    "4",
                     f"--cov={self.ROOT_MODULE}",
                     f"--cov-report=xml:{self.COVERAGE_FILE_NAME}",
                 ],
