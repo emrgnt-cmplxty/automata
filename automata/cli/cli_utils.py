@@ -60,23 +60,17 @@ def create_config_from_kwargs(**kwargs) -> AutomataAgentConfig:
     if helper_agent_names:
         if not isinstance(helper_agent_names, str):
             raise ValueError("helper_agent_names must be a comma-separated string.")
-
         helper_agent_configs = {
             AgentConfigName(helper_config_name): AutomataAgentConfigFactory.create_config(
-                main_config_name=AgentConfigName(helper_config_name)
+                main_config_name=helper_config_name
             )
             for helper_config_name in helper_agent_names.split(",")
         }
-        print("helper_agent_configs = ", helper_agent_configs)
         kwargs["helper_agent_configs"] = helper_agent_configs
         del kwargs["helper_agent_names"]
 
     logger.debug(f"Loading main agent config..   .")
-    print("calling AutomataAgentConfigFactory.create_config")
-    kwargs["main_config"] = AutomataAgentConfigFactory.create_config(
-        main_config_name=AgentConfigName(kwargs.get("main_config_name"))
-    )
-    print("success....")
+    kwargs["main_config"] = AutomataAgentConfigFactory.create_config(**kwargs)
     del kwargs["main_config_name"]
 
     if kwargs.get("include_overview"):

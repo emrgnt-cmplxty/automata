@@ -30,7 +30,9 @@ class AutomataInstance(BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        main_config = AutomataAgentConfigFactory.create_config(**self.kwargs)
+        main_config = AutomataAgentConfigFactory.create_config(
+            main_config_name=self.config_name, **self.kwargs
+        )
 
         agent = AutomataAgentFactory.create_agent(instructions, config=main_config)
         result = agent.run()

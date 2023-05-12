@@ -207,12 +207,13 @@ class AutomataAgentConfigBuilder(BaseModel):
         Returns:
             AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated instruction_version value.
         """
-        self._validate_type(
-            helper_agent_configs,
-            Dict[AgentConfigName, AutomataAgentConfig],
-            "Helper agent configs",
-        )
-        self.helper_agent_configs = helper_agent_configs
+        for agent in helper_agent_configs.values():
+            self._validate_type(
+                agent,
+                AutomataAgentConfig,
+                "Helper agent configs",
+            )
+        self._config.helper_agent_configs = helper_agent_configs
         return self
 
     def build(self) -> AutomataAgentConfig:
@@ -255,21 +256,19 @@ class AutomataAgentConfigFactory:
     def create_config(*args, **kwargs) -> AutomataAgentConfig:
         from automata.configs.automata_agent_config_utils import AutomataAgentConfigBuilder
 
-        print("kwargs = ", kwargs)
         main_config_name = kwargs.get("main_config_name", None)
         main_config = kwargs.get("main_config", None)
 
         if not main_config_name and not main_config:
             raise ValueError("Main config name or config must be specified.")
         if main_config_name:
-            builder = AutomataAgentConfigBuilder.from_name(main_config_name)
+            builder = AutomataAgentConfigBuilder.from_name(AgentConfigName(main_config_name))
         else:
             builder = AutomataAgentConfigBuilder.from_config(main_config)
 
         instruction_payload = kwargs.get("instruction_payload", {})
 
         if "helper_agent_configs" in kwargs:
-            print("kwargs helper_agent_configs= ", kwargs["helper_agent_configs"])
             instruction_payload["agents_message"] = build_agent_message(
                 kwargs["helper_agent_configs"]
             )

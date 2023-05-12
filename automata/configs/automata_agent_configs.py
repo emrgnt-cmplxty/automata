@@ -140,7 +140,6 @@ class AutomataAgentConfig(BaseModel):
         Returns:
             str: A formatted string containing the names and descriptions of all available tools.
         """
-        print("self.llm_toolkits = ", self.llm_toolkits)
         return "Tools:\n" + "".join(
             [
                 f"\n{tool.name}: {tool.description}\n"

@@ -109,9 +109,7 @@ class AutomataTask(Task):
         """
         helper_agent_names = self.kwargs.get("helper_agent_names", None)
         has_sub_agents = helper_agent_names is not None
-        print("helper_agent_names = ", helper_agent_names)
         instructions, main_config = create_instructions_and_config_from_kwargs(**self.kwargs)
-        print("main_config=", main_config)
         if has_sub_agents:
             check_kwargs(self.kwargs)
             logger.debug(f"Passing in instructions:\n %s" % (instructions))

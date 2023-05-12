@@ -132,7 +132,6 @@ class AutomataAgent(Agent):
             self.config.session_id
         )
         self.database_manager._init_database()
-
         if not self.config.is_new_agent:
             self.messages = self.database_manager._load_previous_interactions()
         else:

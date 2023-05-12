@@ -16,7 +16,6 @@ def test_build_tool_message(automata_agent_config_builder):
 
     config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()
     tools_messages = config._build_tool_message()
-    print("tools_messages - ", tools_messages)
     assert len(tools_messages) > 1_000
     assert "python-indexer-retrieve-code" in tools_messages
     assert "python-indexer-retrieve-docstring" in tools_messages

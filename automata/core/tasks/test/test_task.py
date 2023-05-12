@@ -44,7 +44,7 @@ def task():
     repo_manager = MockRepositoryManager()
     return AutomataTask(
         repo_manager,
-        main_config_name=AgentConfigName.TEST,
+        main_config_name=AgentConfigName.TEST.value,
         generate_deterministic_id=False,
         instructions="This is a test.",
     )
@@ -136,7 +136,7 @@ def test_deterministic_task_id():
         priority=5,
         generate_deterministic_id=True,
         main_config=AutomataAgentConfigFactory.create_config(
-            main_config_name=AgentConfigName.TEST
+            main_config_name=AgentConfigName.TEST.value
         ),
         helper_agent_names="test",
         instructions="test1",
@@ -148,7 +148,7 @@ def test_deterministic_task_id():
         priority=5,
         generate_deterministic_id=True,
         main_config=AutomataAgentConfigFactory.create_config(
-            main_config_name=AgentConfigName.TEST
+            main_config_name=AgentConfigName.TEST.value
         ),
         helper_agent_names="test",
         instructions="test1",
@@ -160,7 +160,7 @@ def test_deterministic_task_id():
         priority=5,
         generate_deterministic_id=True,
         main_config=AutomataAgentConfigFactory.create_config(
-            main_config_name=AgentConfigName.TEST
+            main_config_name=AgentConfigName.TEST.value
         ),
         helper_agent_names="test",
         instructions="test1",
@@ -172,7 +172,7 @@ def test_deterministic_task_id():
         priority=5,
         generate_deterministic_id=False,
         main_config=AutomataAgentConfigFactory.create_config(
-            main_config_name=AgentConfigName.TEST
+            main_config_name=AgentConfigName.TEST.value
         ),
         helper_agent_names="test",
         instructions="test1",
