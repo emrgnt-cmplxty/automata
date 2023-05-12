@@ -16,7 +16,7 @@ Example -
 import logging
 from typing import List, Optional
 
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 from automata.core.base.tool import Tool
 from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -48,7 +48,7 @@ class PythonWriterToolManager(BaseToolManager):
         self.writer: PythonWriter = kwargs.get("python_writer")
         # TODO: unused
         self.automata_version = (
-            kwargs.get("automata_version") or AgentConfigVersion.AUTOMATA_WRITER_PROD
+            kwargs.get("automata_version") or AgentConfigName.AUTOMATA_WRITER_PROD
         )
         self.model = kwargs.get("model") or "gpt-4"
         self.verbose = kwargs.get("verbose") or False

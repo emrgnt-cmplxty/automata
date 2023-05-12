@@ -1,7 +1,6 @@
 import logging
 import logging.config
 
-from automata.cli.cli_utils import process_kwargs
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task import AutomataTask
@@ -55,14 +54,13 @@ def initialize_task(kwargs) -> AutomataTask:
     :return: AutomataTask instance.
     """
     check_input(kwargs)
-    kwargs = process_kwargs(**kwargs)
-
+    print("kwargs = ", kwargs.keys())
     logging.config.dictConfig(get_logging_config())
 
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
     executor = TaskExecutor(
-        TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),
+        TestExecuteBehavior(),  # Execution does not occur here so a test instance is sufficient
         task_registry,
     )
 
@@ -72,7 +70,7 @@ def initialize_task(kwargs) -> AutomataTask:
     return task
 
 
-def run(task_id: str, kwargs) -> None:
+def run(kwargs) -> None:
     """
     Run the provided task.
 
@@ -84,7 +82,9 @@ def run(task_id: str, kwargs) -> None:
         TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),
         task_registry,
     )
-
+    if not kwargs.get("task_id"):
+        raise ValueError("You must provide a task_id.")
+    task_id = kwargs.pop("task_id")
     task = task_registry.get_task_by_id(task_id)
     if task is None:
         raise ValueError(f"Task with id {task_id} does not exist.")
@@ -92,9 +92,10 @@ def run(task_id: str, kwargs) -> None:
 
 
 def main(kwargs):
+    print("kwargs = ", kwargs)
     verbose = kwargs.pop("verbose")
     configure_logging(verbose)
-
-    result = run(kwargs)
+    task = initialize_task(kwargs)
+    result = run(task_id=task.task_id)
     logger.info(f"Final Result = {result}")
     return result

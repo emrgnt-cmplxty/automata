@@ -5,22 +5,23 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from automata.core.agent.automata_agent import AutomataAgent
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.agent.automata_database_manager import AutomataDatabaseManager
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
-def test_build_tool_message(automata_agent_builder):
+def test_build_tool_message(automata_agent_config_builder):
     tool_list = ["python_indexer", "python_writer", "codebase_oracle"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
-    agent = automata_agent_builder.with_llm_toolkits(mock_llm_toolkits).build()
-    messages = agent._build_tool_message()
-    assert len(messages) > 1_000
-    assert "python-indexer-retrieve-code" in messages
-    assert "python-indexer-retrieve-docstring" in messages
-    assert "python-indexer-retrieve-raw-code" in messages
-    assert "python-writer-update-module" in messages
-    assert "codebase-oracle-agent" in messages
+    config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()
+    tools_messages = config._build_tool_message()
+    assert len(tools_messages) > 1_000
+    assert "python-indexer-retrieve-code" in tools_messages
+    assert "python-indexer-retrieve-docstring" in tools_messages
+    assert "python-indexer-retrieve-raw-code" in tools_messages
+    assert "python-writer-update-module" in tools_messages
+    assert "codebase-oracle-agent" in tools_messages
 
 
 def test_build_initial_messages(automata_agent):
@@ -183,12 +184,16 @@ def mock_openai_response_with_completion_agent_message_to_parse():
 def test_iter_task_with_parsed_completion_message_2(
     mock_openai_chatcompletion_create,
     api_response,
-    automata_agent_builder,
+    automata_agent_config_builder,
 ):
-    automata_agent = automata_agent_builder.with_instruction_version(
+    instructions = "This is a test instruction."
+    automata_agent_config = automata_agent_config_builder.with_instruction_version(
         "agent_introduction_dev"
     ).build()
 
+    automata_agent = AutomataAgentFactory.create_agent(
+        instructions=instructions, config=automata_agent_config
+    )
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = api_response
     automata_agent.iter_task()
@@ -205,11 +210,16 @@ def test_iter_task_with_parsed_completion_message_2(
 def test_iter_task_with_parsed_completion_message_2_main(
     mock_openai_chatcompletion_create,
     api_response,
-    automata_agent_builder,
+    automata_agent_config_builder,
 ):
-    automata_agent = automata_agent_builder.with_instruction_version(
+    instructions = "This is a test instruction."
+    automata_agent_config = automata_agent_config_builder.with_instruction_version(
         "agent_introduction_dev"
     ).build()
+
+    automata_agent = AutomataAgentFactory.create_agent(
+        instructions=instructions, config=automata_agent_config
+    )
     automata_agent.set_coordinator(MagicMock())  # set a dumm
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = api_response

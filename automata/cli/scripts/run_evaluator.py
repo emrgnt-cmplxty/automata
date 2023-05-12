@@ -3,7 +3,7 @@ import logging.config
 from typing import Dict, List, Union
 
 from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
-from automata.configs.config_enums import AgentConfigVersion, ConfigCategory
+from automata.configs.config_enums import AgentConfigName, ConfigCategory
 from automata.core.agent.automata_actions import ResultAction, ToolAction
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 from automata.core.utils import load_config, root_py_path
@@ -42,7 +42,7 @@ def main(args):
         )
 
         evaluator = Eval(
-            agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
+            main_config=AutomataAgentConfig.load(AgentConfigName.AUTOMATA_INDEXER_DEV),
             llm_toolkits=args.llm_toolkits,
             model=args.model,
             instruction_payload=instruction_payload,

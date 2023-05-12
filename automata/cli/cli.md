@@ -18,8 +18,8 @@ Common options shared by both `main` and `evaluator` commands:
 - `--model`: The model to use across the framework (default: "gpt-4").
 - `--session_id`: The session ID for the agent.
 - `--llm_toolkits`: A comma-separated list of toolkits to be used by the main agent (default: "python_indexer,python_writer,codebase_oracle").
-- `--main_config_name`: The config version of the agent (default: AgentConfigVersion.AUTOMATA_MAIN_DEV.value).
-- `--helper_agent_names`: The config version of the agent (default: AgentConfigVersion.AUTOMATA_INDEXER_DEV.value,AgentConfigVersion.AUTOMATA_WRITER_DEV.value).
+- `--main_config_name`: The config version of the agent (default: AgentConfigName.AUTOMATA_MAIN_DEV.value).
+- `--helper_agent_names`: The config version of the agent (default: AgentConfigName.AUTOMATA_INDEXER_DEV.value,AgentConfigName.AUTOMATA_WRITER_DEV.value).
 - `--stream`: Whether to stream the responses (default: True).
 - `-v`/`--verbose`: Execute script in verbose mode (default: False).
 

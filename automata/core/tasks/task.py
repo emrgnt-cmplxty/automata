@@ -4,7 +4,7 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Dict, Optional
 
-from automata.cli.cli_utils import check_kwargs, process_kwargs
+from automata.cli.cli_utils import check_kwargs, create_instructions_and_config_from_kwargs
 from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.manager.automata_manager_factory import AutomataManagerFactory
 
@@ -107,27 +107,29 @@ class AutomataTask(Task):
         """
         Builds the agent from the task args.
         """
-        pass
         helper_agent_names = self.kwargs.get("helper_agent_names", None)
         has_sub_agents = helper_agent_names is not None
+        instructions, main_config = create_instructions_and_config_from_kwargs(**self.kwargs)
         if has_sub_agents:
             check_kwargs(self.kwargs)
-            kwargs = process_kwargs(**self.kwargs)
-            logger.debug(f"Passing in instructions:\n %s" % (kwargs.get("instructions")))
+            logger.debug(f"Passing in instructions:\n %s" % (instructions))
             logger.debug("-" * 60)
 
             logger.debug("Creating main agent...")
-            main_agent = AutomataAgentFactory.create_agent(**kwargs)
+            main_agent = AutomataAgentFactory.create_agent(
+                instructions=instructions, config=main_config
+            )
 
             logger.debug("Creating agent manager...")
             agent_manager = AutomataManagerFactory.create_manager(
-                main_agent, kwargs.get("helper_agent_configs")
+                main_agent, main_config.helper_agent_configs
             )
 
             return agent_manager
         else:
             return AutomataManagerFactory.create_manager(
-                AutomataAgentFactory.create_agent(*self.args, **self.kwargs), {}
+                AutomataAgentFactory.create_agent(instructions=instructions, config=main_config),
+                {},
             )
 
     def validate_initialization(self):
@@ -163,15 +165,15 @@ class AutomataTask(Task):
         result["llm_toolkits"] = self.kwargs.get("llm_toolkits", "").split(",")
         result["instructions"] = self.kwargs.get("instructions", None)
         result["instruction_payload"] = self.kwargs.get("instruction_payload", None)
-        agent_config = self.kwargs.get("agent_config", None)
-        if agent_config:
-            result["agent_config"] = agent_config.config_name.value
-            result["instruction_config"] = agent_config.instruction_version.value
+        main_config = self.kwargs.get("main_config", None)
+        if main_config:
+            result["main_config"] = main_config.config_name.value
+            result["instruction_config"] = main_config.instruction_version.value
 
         helper_agent_configs = self.kwargs.get("helper_agent_configs", None)
         if helper_agent_configs:
             result["helper_agent_names"] = [
-                agent_config.config_name.value for agent_config in helper_agent_configs.values()
+                main_config.config_name.value for main_config in helper_agent_configs.values()
             ]
 
         return result

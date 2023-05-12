@@ -4,7 +4,7 @@ from flask import Flask, g, jsonify, request
 from flask_cors import CORS
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
 from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
@@ -50,11 +50,11 @@ def initialize_task():
             "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
         ),
         "main_config_name": request.form.get(
-            "main_config_name", AgentConfigVersion.AUTOMATA_MAIN_DEV.value
+            "main_config_name", AgentConfigName.AUTOMATA_MAIN_DEV.value
         ),
         "helper_agent_names": request.form.get(
             "helper_agent_names",
-            f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
+            f"{AgentConfigName.AUTOMATA_INDEXER_DEV.value},{AgentConfigName.AUTOMATA_WRITER_DEV.value}",
         ),
         "instruction_version": request.form.get("instruction_version", "agent_introduction_dev"),
         "stream": request.form.get("stream", True),

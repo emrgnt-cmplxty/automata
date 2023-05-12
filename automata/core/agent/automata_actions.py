@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 
 from .automata_agent_enums import ActionIndicator
 
@@ -76,7 +76,7 @@ class ToolAction(Action):
 class AgentAction(Action):
     def __init__(
         self,
-        agent_version: AgentConfigVersion,
+        agent_version: AgentConfigName,
         agent_query: str,
         agent_instruction: List[str],
     ):
@@ -84,7 +84,7 @@ class AgentAction(Action):
         Initialize an AgentAction instance.
 
         Args:
-            agent_version (AgentConfigVersion): The version of the agent configuration.
+            agent_version (AgentConfigName): The version of the agent configuration.
             agent_query (str): The query to be executed by the agent.
             agent_instruction (List[str]): A list of instructions for the agent.
         """
@@ -105,7 +105,7 @@ class AgentAction(Action):
             AgentAction: An instance of the AgentAction class.
         """
         agent_query = lines[index].split(ActionIndicator.ACTION.value)[1].strip()
-        agent_version = AgentConfigVersion(
+        agent_version = AgentConfigName(
             lines[index + 2].split(ActionIndicator.ACTION.value)[1].strip()
         )
         return cls(agent_version, agent_query, [])

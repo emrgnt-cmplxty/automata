@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from automata.configs.automata_agent_configs import AgentConfigVersion, AutomataAgentConfig
+from automata.configs.automata_agent_configs import AgentConfigName, AutomataAgentConfig
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 from automata.core.coordinator.automata_instance import AutomataInstance
@@ -13,7 +13,7 @@ class AutomataCoordinatorFactory:
     @staticmethod
     def create_coordinator(
         main_agent: AutomataAgent,
-        helper_agent_configs: Dict[AgentConfigVersion, AutomataAgentConfig],
+        helper_agent_configs: Dict[AgentConfigName, AutomataAgentConfig],
     ) -> AutomataCoordinator:
         """
         Create AutomataCoordinator and setup agent-main linkage.

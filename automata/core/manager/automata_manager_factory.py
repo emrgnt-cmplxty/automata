@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from automata.configs.automata_agent_configs import AgentConfigVersion, AutomataAgentConfig
+from automata.configs.automata_agent_configs import AgentConfigName, AutomataAgentConfig
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.coordinator.automata_coordinator_utils import AutomataCoordinatorFactory
 from automata.core.manager.automata_manager import AutomataManager
@@ -17,12 +17,12 @@ class AutomataManagerFactory:
     @staticmethod
     def create_manager(
         main_agent: AutomataAgent,
-        helper_agent_configs: Dict[AgentConfigVersion, AutomataAgentConfig],
+        helper_agent_configs: Dict[AgentConfigName, AutomataAgentConfig],
     ) -> AutomataManager:
         """
         Create AutomataManager instance from a coordinator and a main agent.
         :param main_agent: AutomataAgent instance.
-        :param helper_agent_configs: Dictionary of AutomataAgentConfig instances, keyed on AgentConfigVersion.
+        :param helper_agent_configs: Dictionary of AutomataAgentConfig instances, keyed on AgentConfigName.
         :return: AutomataManager instance.
         """
         logging.info(

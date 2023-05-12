@@ -1,13 +1,13 @@
 import os
+import uuid
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel
 
+from automata.configs.config_enums import AgentConfigName, ConfigCategory, InstructionConfigVersion
 from automata.core.base.tool import Toolkit, ToolkitType
-
-from .config_enums import AgentConfigVersion, ConfigCategory, InstructionConfigVersion
 
 
 @dataclass
@@ -32,7 +32,7 @@ class AutomataInstructionPayload:
 class AutomataAgentConfig(BaseModel):
     """
     Args:
-        config_name (AgentConfigVersion): The config_name of the agent to use.
+        config_name (AgentConfigName): The config_name of the agent to use.
         instruction_payload (AutomataInstructionPayload): Initial payload to format input instructions.
         llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
         instructions (str): A string of instructions to execute.
@@ -51,7 +51,7 @@ class AutomataAgentConfig(BaseModel):
         SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo"]
         arbitrary_types_allowed = True
 
-    config_name: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_DEV
+    config_name: AgentConfigName = AgentConfigName.AUTOMATA_INDEXER_DEV
     instruction_payload: AutomataInstructionPayload = AutomataInstructionPayload()
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
@@ -61,16 +61,31 @@ class AutomataAgentConfig(BaseModel):
     model: str = "gpt-4"
     stream: bool = False
     verbose: bool = False
+    eval_mode: bool = False
+    is_new_agent: bool = True
     max_iters: int = 1_000_000
     temperature: float = 0.7
     session_id: Optional[str] = None
+    system_instruction: Optional[str] = None
     instruction_version: InstructionConfigVersion = (
         InstructionConfigVersion.AGENT_INTRODUCTION_PROD
     )
-    name: str = "Automata"
+    helper_agent_configs: Dict[AgentConfigName, "AutomataAgentConfig"] = {}
+
+    def setup(self):
+        """Setup the agent."""
+        if "tools" in self.instruction_input_variables:
+            self.instruction_payload.tools = self._build_tool_message()
+        if not self.system_instruction:
+            self.system_instruction = AutomataAgentConfig._format_prompt(
+                self.instruction_payload, self.system_instruction_template
+            )
+        self.instruction_payload.validate_fields(self.instruction_input_variables)
+        if not self.session_id:
+            self.session_id = str(uuid.uuid4())
 
     @classmethod
-    def load_automata_yaml_config(cls, config_name: AgentConfigVersion) -> Dict:
+    def load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
         """Loads the automata.yaml config file."""
         from automata.tool_management.tool_management_utils import build_llm_toolkits
 
@@ -99,9 +114,9 @@ class AutomataAgentConfig(BaseModel):
             config.instruction_payload.overview = PythonIndexer.build_overview(root_py_path())
 
     @classmethod
-    def load(cls, config_name: AgentConfigVersion) -> "AutomataAgentConfig":
+    def load(cls, config_name: AgentConfigName) -> "AutomataAgentConfig":
         """Loads the config for the agent."""
-        if config_name == AgentConfigVersion.DEFAULT:
+        if config_name == AgentConfigName.DEFAULT:
             return AutomataAgentConfig()
 
         loaded_yaml = cls.load_automata_yaml_config(config_name)
@@ -109,3 +124,26 @@ class AutomataAgentConfig(BaseModel):
         cls.add_overview_to_instruction_payload(config)
 
         return config
+
+    @staticmethod
+    def _format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:
+        """Format expected strings into the config."""
+        for arg in format_variables.__dict__.keys():
+            if format_variables.__dict__[arg]:
+                input_text = input_text.replace(f"{{{arg}}}", format_variables.__dict__[arg])
+        return input_text
+
+    def _build_tool_message(self):
+        """
+        Builds a message containing information about all available tools.
+
+        Returns:
+            str: A formatted string containing the names and descriptions of all available tools.
+        """
+        return "Tools:\n" + "".join(
+            [
+                f"\n{tool.name}: {tool.description}\n"
+                for toolkit in self.llm_toolkits.values()
+                for tool in toolkit.tools
+            ]
+        )
