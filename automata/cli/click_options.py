@@ -19,7 +19,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         click.option(
             "--main_config_name",
             type=str,
-            default=AgentConfigVersion.AUTOMATA_MASTER_DEV.value,
+            default=AgentConfigVersion.AUTOMATA_MAIN_DEV.value,
             help="The config version of the agent.",
         ),
         click.option(

@@ -160,11 +160,19 @@ class AutomataTask(Task):
             "error": self.error,
         }
         result["model"] = self.kwargs.get("model", "gpt-4")
-        result["llm_toolkits"] = self.kwargs.get("llm_toolkits", "")
+        result["llm_toolkits"] = self.kwargs.get("llm_toolkits", "").split(",")
         result["instructions"] = self.kwargs.get("instructions", None)
         result["instruction_payload"] = self.kwargs.get("instruction_payload", None)
         agent_config = self.kwargs.get("agent_config", None)
         if agent_config:
             result["agent_config"] = agent_config.config_name.value
             result["instruction_config"] = agent_config.instruction_version.value
+
+        helper_agent_configs = self.kwargs.get("helper_agent_configs", None)
+        if helper_agent_configs:
+            result["helper_agent_names"] = [
+                agent_config.config_name.value for agent_config in helper_agent_configs.values()
+            ]
+
+        print("self.kwargs = ", self.kwargs.keys())
         return result
