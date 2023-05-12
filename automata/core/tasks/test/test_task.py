@@ -91,10 +91,15 @@ def test_callback(mock_notify_observer, task, registry):
     mock_notify_observer.assert_called_once()
 
 
+class TestURL:
+    html_url = "test_url"
+
+
 def test_commit_task(task, registry, mocker):
     task.status = TaskStatus.SUCCESS
     task.task_dir = registry._get_task_dir(task)
 
+    registry.github_manager.create_pull_request = MagicMock(return_value=TestURL())
     mocker.spy(registry.github_manager, "create_branch")
     mocker.spy(registry.github_manager, "checkout_branch")
     mocker.spy(registry.github_manager, "stage_all_changes")

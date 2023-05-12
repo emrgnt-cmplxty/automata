@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from git import Git, Repo
-from github import Github
+from github import Github, PullRequest
 
 
 class RepositoryManager(ABC):
@@ -64,12 +64,12 @@ class GitHubManager:
         # Create a new branch pointing to the HEAD commit of the primary_branch
         self.repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=base_sha)
 
-    def checkout_branch(self, repo_local_path: str, branch_name: str):
+    def checkout_branch(self, repo_local_path: str, branch_name: str, b=True):
         """
         Checks out the specified branch
         """
         repo = Repo(repo_local_path)
-        repo.git.checkout(branch_name, b=True)
+        repo.git.checkout(branch_name, b=b)
 
     def stage_all_changes(self, repo_local_path: str):
         """
@@ -86,13 +86,13 @@ class GitHubManager:
         repo.git.commit(m=commit_message)
         repo.git.push("origin", branch_name)
 
-    def create_pull_request(self, branch_name: str, title: str, body: str):
+    def create_pull_request(self, branch_name: str, title: str, body: str) -> PullRequest:
         """
         Creates a new pull request on GitHub
         """
         # Create a new pull request on GitHub
         repo = self.client.get_repo(self.remote_name)
-        repo.create_pull(title=title, body=body, head=branch_name, base=self.primary_branch)
+        return repo.create_pull(title=title, body=body, head=branch_name, base=self.primary_branch)
 
     def create_issue(self, title: str, body: str, labels: List[str]):
         """

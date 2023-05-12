@@ -41,7 +41,7 @@ def automata_agent_builder():
 
 @pytest.fixture
 def automata_agent_with_dev_main_builder():
-    config_name = AgentConfigVersion.AUTOMATA_MASTER_DEV
+    config_name = AgentConfigVersion.AUTOMATA_MAIN_DEV
     agent_config = AutomataAgentConfig.load(config_name)
     agent_builder = AutomataAgentBuilder.from_config(agent_config)
     return agent_builder

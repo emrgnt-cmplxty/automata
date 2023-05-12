@@ -1,5 +1,6 @@
 import logging
 import logging.config
+from typing import Dict
 
 from automata.cli.cli_utils import process_kwargs
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_NAME
@@ -47,7 +48,7 @@ def check_input(kwargs):
     ), "You must provide a main agent config name, with field main_config_name."
 
 
-def run(kwargs):
+def run(kwargs) -> Dict[str, str]:
     """
     Create coordinator and agents based on the provided arguments.
 
@@ -71,10 +72,7 @@ def run(kwargs):
 
     executor.initialize_task(task)
     executor.execute(task)
-
-    tasks = task_registry.get_all_tasks()
-    for task in tasks:
-        print("Task = ", task)
+    return {"result": task.result, "task_id": task.task_id}
 
 
 def main(kwargs):

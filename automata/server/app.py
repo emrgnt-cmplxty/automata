@@ -8,7 +8,7 @@ from automata.configs.config_enums import AgentConfigVersion
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
 from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
-from automata.core.utils import Namespace, root_path
+from automata.core.utils import root_path
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -29,9 +29,8 @@ def before_request():
                 request.form.setlist(key, [request.form.get(key) == "true"])
 
 
-@app.route("/main", methods=["POST"])
-def main():
-    print("request.form = ", request.form)
+@app.route("/task", methods=["POST"])
+def task():
     kwargs = {
         "session_id": request.form.get("session_id"),
         "instructions": request.form.get("instructions"),
@@ -40,21 +39,23 @@ def main():
             "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
         ),
         "main_config_name": request.form.get(
-            "main_config_name", AgentConfigVersion.AUTOMATA_MASTER_DEV.value
+            "main_config_name", AgentConfigVersion.AUTOMATA_MAIN_DEV.value
         ),
         "helper_agent_names": request.form.get(
             "helper_agent_names",
             f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
         ),
+        "instruction_version": request.form.get("instruction_version", "agent_introduction_dev"),
         "stream": request.form.get("stream", True),
         "verbose": request.form.get("verbose", True),
-        "instruction_version": request.form.get("instruction_version", "agent_introduction_dev"),
-        "include_overview": request.form.get("include_overview", True),
+        "include_overview": request.form.get("include_overview", False),
     }
-    from automata.cli.scripts.run_coordinator import main
+    from automata.cli.scripts.run_task import main
 
-    namespace = Namespace(**kwargs)
-    result = main(namespace)
+    try:
+        result = main(kwargs)
+    except Exception as e:
+        result = {"error": str(e)}
     return jsonify(result)
 
 
@@ -68,7 +69,7 @@ def evaluator():
             "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
         ),
         "main_config_name": request.form.get(
-            "main_config_name", AgentConfigVersion.AUTOMATA_MASTER_DEV.value
+            "main_config_name", AgentConfigVersion.AUTOMATA_MAIN_DEV.value
         ),
         "helper_agent_names": request.form.get(
             "helper_agent_names",
@@ -80,8 +81,7 @@ def evaluator():
     }
     from automata.cli.scripts.run_evaluator import main
 
-    namespace = Namespace(**kwargs)
-    result = main(namespace)
+    result = main(kwargs)
     return jsonify(result)
 
 
@@ -122,7 +122,7 @@ def execute_task(task_id):
 
 @app.route("/task/<task_id>/commit", methods=["POST"])
 def commit_task(task_id):
-    task = g.task_registry.get_task(task_id)
+    task = g.task_registry.get_task_by_id(task_id)
     if task is None:
         return jsonify({"error": "Task not found"}), 404
 
@@ -131,15 +131,14 @@ def commit_task(task_id):
     pull_title = commit_data.get("pull_title", "")
     pull_body = commit_data.get("pull_body", "")
     pull_branch_name = commit_data.get("pull_branch_name", "feature/test")
-
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     try:
-        g.task_registry.commit_task(
-            task, g.github_manager, commit_message, pull_title, pull_body, pull_branch_name
+        pull_url = g.task_registry.commit_task(
+            task, github_manager, commit_message, pull_title, pull_body, pull_branch_name
         )
+        return jsonify({"message": f"Task committed to {pull_url}"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-    return jsonify({"message": "Task committed"})
 
 
 if __name__ == "__main__":

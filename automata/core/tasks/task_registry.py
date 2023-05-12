@@ -95,7 +95,7 @@ class TaskRegistry:
         pull_title: str,
         pull_body: str,
         pull_branch_name: str = "feature/test",
-    ):
+    ) -> str:
         """
         Commits the task to the remote repository.
         """
@@ -114,23 +114,32 @@ class TaskRegistry:
         if not github_manager.branch_exists(pull_branch_name):
             github_manager.create_branch(pull_branch_name)
         # Checkout the new branch
-        github_manager.checkout_branch(task_dir, pull_branch_name)
+        try:
+            github_manager.checkout_branch(task_dir, pull_branch_name)
+        except Exception as e:
+            logger.debug("Checkout failed with exception: %s, Trying with b=False" % e)
+            github_manager.checkout_branch(task_dir, pull_branch_name, b=False)
 
         # Stage all changes
         github_manager.stage_all_changes(task_dir)
 
-        # Commit and push changes
-        github_manager.commit_and_push_changes(task_dir, pull_branch_name, commit_message)
+        try:
+            # Commit and push changes
+            github_manager.commit_and_push_changes(task_dir, pull_branch_name, commit_message)
+        except Exception as e:
+            logger.debug("Commit failed with exception: %s" % e)
 
         # Create a pull request
-        github_manager.create_pull_request(pull_branch_name, pull_title, pull_body)
+        pull_request = github_manager.create_pull_request(pull_branch_name, pull_title, pull_body)
+        pull_url = pull_request.html_url
         logger.debug(
-            "Task committed successfully with Title:\n%s\n\nBody:\n%s\n\nBranch: %s"
-            % (pull_title, pull_body, pull_branch_name),
+            "Task committed successfully with Title:\n%s\n\nBody:\n%s\n\nBranch:\n%s\nAt URL:\n%s\n"
+            % (pull_title, pull_body, pull_branch_name, pull_url),
         )
 
         task.status = TaskStatus.COMMITTED
         logger.debug("Task committed successfully")
+        return pull_request.html_url
 
     def get_task_by_id(self, task_id: str) -> Optional[AutomataTask]:
         results = self.db.get_tasks_by(
