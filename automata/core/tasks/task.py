@@ -109,6 +109,8 @@ class AutomataTask(Task):
         """
         helper_agent_names = self.kwargs.get("helper_agent_names", None)
         has_sub_agents = helper_agent_names is not None
+        # Set the session id to the task id
+        self.kwargs["session_id"] = str(self.task_id)
         instructions, main_config = create_instructions_and_config_from_kwargs(**self.kwargs)
         if has_sub_agents:
             check_kwargs(self.kwargs)

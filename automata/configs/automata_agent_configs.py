@@ -105,15 +105,6 @@ class AutomataAgentConfig(BaseModel):
         return loaded_yaml
 
     @classmethod
-    def add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig") -> None:
-        """Handles the overview input for the agent."""
-        from automata.core.utils import root_py_path
-        from automata.tools.python_tools.python_indexer import PythonIndexer
-
-        if "overview" in config.instruction_input_variables:
-            config.instruction_payload.overview = PythonIndexer.build_overview(root_py_path())
-
-    @classmethod
     def load(cls, config_name: AgentConfigName) -> "AutomataAgentConfig":
         """Loads the config for the agent."""
         if config_name == AgentConfigName.DEFAULT:
@@ -121,9 +112,18 @@ class AutomataAgentConfig(BaseModel):
 
         loaded_yaml = cls.load_automata_yaml_config(config_name)
         config = AutomataAgentConfig(**loaded_yaml)
-        cls.add_overview_to_instruction_payload(config)
+        cls._add_overview_to_instruction_payload(config)
 
         return config
+
+    @classmethod
+    def _add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig") -> None:
+        """Handles the overview input for the agent."""
+        from automata.core.utils import root_py_path
+        from automata.tools.python_tools.python_indexer import PythonIndexer
+
+        if "overview" in config.instruction_input_variables:
+            config.instruction_payload.overview = PythonIndexer.build_overview(root_py_path())
 
     @staticmethod
     def _format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:

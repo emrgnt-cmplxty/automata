@@ -17,7 +17,7 @@ from automata.core.agent.automata_agent_utils import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-from automata.core.agent.automata_database_manager import AutomataDatabaseManager
+from automata.core.agent.automata_database_manager import AutomataConversationDatabase
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
 from automata.core.base.tool import ToolNotFoundError
 from automata.core.utils import format_text, load_config
@@ -128,12 +128,13 @@ class AutomataAgent(Agent):
 
     def setup(self):
         openai.api_key = OPENAI_API_KEY
-        self.database_manager: AutomataDatabaseManager = AutomataDatabaseManager(
+        print("RUNNING WITH CONFIG SESSION ID = ", self.config.session_id)
+        self.database_manager: AutomataConversationDatabase = AutomataConversationDatabase(
             self.config.session_id
         )
         self.database_manager._init_database()
         if not self.config.is_new_agent:
-            self.messages = self.database_manager._load_previous_interactions()
+            self.messages = self.database_manager.get_conversations()
         else:
             self._save_message("system", self.config.system_instruction)
             initial_messages = self._build_initial_messages(

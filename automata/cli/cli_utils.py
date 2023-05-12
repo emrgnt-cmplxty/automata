@@ -28,12 +28,6 @@ def configure_logging(verbose: bool):
 
 
 def check_kwargs(kwargs):
-    assert not (
-        kwargs.get("instructions") is None and kwargs.get("session_id") is None
-    ), "You must provide instructions for the agent if you are not providing a session_id."
-    assert not (
-        kwargs.get("instructions") and kwargs.get("session_id")
-    ), "You must provide either instructions for the agent or a session_id."
     assert (
         "helper_agent_names" in kwargs
     ), "You must provide a list of helper agents, with field helper_agent_names."
