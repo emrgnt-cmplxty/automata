@@ -63,8 +63,11 @@ class AutomataTaskDatabase:
         tasks = []
         for row in rows:
             task_json = row[0]
-            task = jsonpickle.decode(task_json)
-            tasks.append(task)
+            try:
+                task = jsonpickle.decode(task_json)
+                tasks.append(task)
+            except Exception as e:
+                logger.error(f"Failed to decode task with error: {e}")
 
         return tasks
 

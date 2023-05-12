@@ -5,6 +5,8 @@ from flask_cors import CORS
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
 from automata.configs.config_enums import AgentConfigName
+from automata.core.agent.automata_agent import AutomataAgent
+from automata.core.agent.automata_database_manager import AutomataConversationDatabase
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
 from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
@@ -38,6 +40,20 @@ def get_task(task_id):
     if task is None:
         return jsonify({"error": "Task not found"}), 404
     return jsonify(task.to_partial_json())
+
+
+@app.route("/conversation/<session_id>", methods=["GET"])
+def get_conversation_no_prompt(session_id):
+    conversation_db = AutomataConversationDatabase(session_id)
+    full_conversations = conversation_db.get_conversations()
+    cleaned_conversations = full_conversations[AutomataAgent.NUM_DEFAULT_MESSAGES :]
+    return jsonify(cleaned_conversations)
+
+
+@app.route("/full_conversation/<session_id>", methods=["GET"])
+def get_full_conversation(session_id):
+    conversation_db = AutomataConversationDatabase(session_id)
+    return jsonify(conversation_db.get_conversations())
 
 
 @app.route("/task", methods=["POST"])

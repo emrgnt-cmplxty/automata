@@ -38,7 +38,7 @@ def initialize_task(ctx, *args, **kwargs):
 @click.option(
     "--task_id",
     type=str,
-    default=f"{InstructionConfigVersion.AGENT_INTRODUCTION_DEV.value}",
+    default="",
     help="",
 )
 @click.option(
@@ -53,6 +53,22 @@ def run_pending_task(ctx, *args, **kwargs):
 
     print("Running task with id: ", kwargs["task_id"])
     run(kwargs)
+
+
+@cli.command()
+@click.option(
+    "--session_id",
+    type=str,
+    default="",
+    help="",
+)
+@click.pass_context
+def get_conversation(ctx, *args, **kwargs):
+    from automata.core.agent.automata_database_manager import AutomataConversationDatabase
+
+    print("Initializing db with id: ", kwargs["session_id"])
+    db = AutomataConversationDatabase(kwargs["session_id"])
+    print("Found previous interactions = %s" % (db.get_conversations()))
 
 
 @common_options
