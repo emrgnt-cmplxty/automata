@@ -1,9 +1,8 @@
 import logging
 import logging.config
-from typing import Dict
 
 from automata.cli.cli_utils import process_kwargs
-from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_NAME
+from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task import AutomataTask
 from automata.core.tasks.task_executor import (
@@ -48,21 +47,20 @@ def check_input(kwargs):
     ), "You must provide a main agent config name, with field main_config_name."
 
 
-def run(kwargs) -> Dict[str, str]:
+def initialize_task(kwargs) -> AutomataTask:
     """
     Create coordinator and agents based on the provided arguments.
 
     :param args: Parsed command line arguments.
-    :return: Tuple containing the AutomataCoordinator and instruction_payload.
+    :return: AutomataTask instance.
     """
-
     check_input(kwargs)
     kwargs = process_kwargs(**kwargs)
 
     logging.config.dictConfig(get_logging_config())
 
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_NAME), github_manager)
+    task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
     executor = TaskExecutor(
         TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),
         task_registry,
@@ -71,8 +69,26 @@ def run(kwargs) -> Dict[str, str]:
     task = AutomataTask(**kwargs)
 
     executor.initialize_task(task)
+    return task
+
+
+def run(task_id: str, kwargs) -> None:
+    """
+    Run the provided task.
+
+    :param task_id: ID of the initialized AutomataTask.
+    """
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
+    task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
+    executor = TaskExecutor(
+        TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),
+        task_registry,
+    )
+
+    task = task_registry.get_task_by_id(task_id)
+    if task is None:
+        raise ValueError(f"Task with id {task_id} does not exist.")
     executor.execute(task)
-    return {"result": task.result, "task_id": task.task_id}
 
 
 def main(kwargs):

@@ -78,9 +78,9 @@ class TaskRegistry:
         self.github_manager = github_manager
 
     def initialize_task(self, task):
+        task.observer = self.update_task
         self._add_task(task)
         self._setup_task_env(task)
-        task.observer = self.update_task
 
     def update_task(self, task: AutomataTask) -> None:
         task.observer = None

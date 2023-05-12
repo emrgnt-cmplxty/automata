@@ -174,5 +174,4 @@ class AutomataTask(Task):
                 agent_config.config_name.value for agent_config in helper_agent_configs.values()
             ]
 
-        print("self.kwargs = ", self.kwargs.keys())
         return result
