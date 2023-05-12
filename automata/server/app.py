@@ -1,14 +1,13 @@
-import os
+from multiprocessing import Process
 
 from flask import Flask, g, jsonify, request
 from flask_cors import CORS
 
-from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_NAME
+from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
 from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
-from automata.core.utils import root_path
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -17,9 +16,7 @@ cors = CORS(app)
 @app.before_request
 def before_request():
     g.github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    g.task_registry = TaskRegistry(
-        AutomataTaskDatabase(os.path.join(root_path(), TASK_DB_NAME)), g.github_manager
-    )
+    g.task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), g.github_manager)
     g.task_executor = TaskExecutor(TestExecuteBehavior(), g.task_registry)
 
     if request.method == "POST":
@@ -29,8 +26,22 @@ def before_request():
                 request.form.setlist(key, [request.form.get(key) == "true"])
 
 
+@app.route("/tasks", methods=["GET"])
+def get_all_tasks():
+    tasks = g.task_registry.get_all_tasks()
+    return jsonify([task.to_partial_json() for task in tasks])
+
+
+@app.route("/task/<task_id>", methods=["GET"])
+def get_task(task_id):
+    task = g.task_registry.get_task_by_id(task_id)
+    if task is None:
+        return jsonify({"error": "Task not found"}), 404
+    return jsonify(task.to_partial_json())
+
+
 @app.route("/task", methods=["POST"])
-def task():
+def initialize_task():
     kwargs = {
         "session_id": request.form.get("session_id"),
         "instructions": request.form.get("instructions"),
@@ -49,68 +60,27 @@ def task():
         "stream": request.form.get("stream", True),
         "verbose": request.form.get("verbose", True),
         "include_overview": request.form.get("include_overview", False),
+        "generate_deterministic_id": request.form.get("generate_deterministic_id", False),
     }
-    from automata.cli.scripts.run_task import main
+    from automata.cli.scripts.run_task import initialize_task, run
 
     try:
-        result = main(kwargs)
+        task = initialize_task(kwargs)
+        print("task.status = ", task.status)
+        print("task.task_dir = ", task.task_dir)
+        process = Process(target=run, args=(str(task.task_id), kwargs))
+        print("running with process = ", process)
+        process.start()
+        return jsonify({"status": task.status.value, "task_id": str(task.task_id)})
+
     except Exception as e:
-        result = {"error": str(e)}
-    return jsonify(result)
-
-
-@app.route("/evaluator", methods=["POST"])
-def evaluator():
-    kwargs = {
-        "instructions": request.form.get("instructions"),
-        "model": request.form.get("model", "gpt-4"),
-        "session_id": request.form.get("session_id"),
-        "llm_toolkits": request.form.get(
-            "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
-        ),
-        "main_config_name": request.form.get(
-            "main_config_name", AgentConfigVersion.AUTOMATA_MAIN_DEV.value
-        ),
-        "helper_agent_names": request.form.get(
-            "helper_agent_names",
-            f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
-        ),
-        "stream": request.form.get("stream", True),
-        "verbose": request.form.get("verbose", False),
-        "eval_config": request.form.get("eval_config", "python_indexer_payload"),
-    }
-    from automata.cli.scripts.run_evaluator import main
-
-    result = main(kwargs)
-    return jsonify(result)
-
-
-@app.route("/tasks", methods=["GET"])
-def get_all_tasks():
-    tasks = g.task_registry.get_all_tasks()
-    return jsonify([task.to_partial_json() for task in tasks])
-
-
-@app.route("/task/<task_id>", methods=["GET"])
-def get_task(task_id):
-    task = g.task_registry.get_task_by_id(task_id)
-    if task is None:
-        return jsonify({"error": "Task not found"}), 404
-    return jsonify(task.to_partial_json())
-
-
-@app.route("/task/<task_id>/initialize", methods=["POST"])
-def initialize_task(task_id):
-    task = g.task_registry.get_task(task_id)
-    if task is None:
-        return jsonify({"error": "Task not found"}), 404
-    g.task_registry.initialize_task(task)
-    return jsonify({"message": "Task initialized"})
+        print("error = ", e)
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/task/<task_id>/execute", methods=["POST"])
 def execute_task(task_id):
-    task = g.task_registry.get_task(task_id)
+    task = g.task_registry.get_task_by_id(task_id)
     if task is None:
         return jsonify({"error": "Task not found"}), 404
     try:

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AutomataTaskDatabase:
     def __init__(self, db_path: str):
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sqlite3.connect(os.path.join(root_path(), "..", db_path))
         self.create_table()
 
     def create_table(self) -> None:
@@ -78,9 +78,9 @@ class TaskRegistry:
         self.github_manager = github_manager
 
     def initialize_task(self, task):
+        task.observer = self.update_task
         self._add_task(task)
         self._setup_task_env(task)
-        task.observer = self.update_task
 
     def update_task(self, task: AutomataTask) -> None:
         task.observer = None
