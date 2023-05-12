@@ -59,7 +59,7 @@ The AutomataInstance represents an individual agent instance with a specific con
 ### AutomataCoordinator
 
 ```python
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 from automata.core.agent.automata_actions import AgentAction
 from automata.core.agent.automata_agent import MasterAutomataAgent
 from automata.core.coordinator.automata_instance import AutomataInstance
@@ -69,13 +69,13 @@ from automata.core.coordinator.automata_coordinator import AutomataCoordinator
 coordinator = AutomataCoordinator()
 
 # Create an agent instance with a specific configuration
-instance = AutomataInstance(config_name=AgentConfigVersion.V1)
+instance = AutomataInstance(config_name=AgentConfigName.V1)
 
 # Add the agent instance to the coordinator
 coordinator.add_agent_instance(instance)
 
 # Remove the agent instance from the coordinator
-coordinator.remove_agent_instance(AgentConfigVersion.V1)
+coordinator.remove_agent_instance(AgentConfigName.V1)
 
 # Execute an action on the agent instance
 action = AgentAction("some_action")
@@ -91,10 +91,10 @@ print(message)
 
 ```python
 from automata.core.coordinator.automata_instance import AutomataInstance
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 
 # Create an agent instance with a specific configuration
-instance = AutomataInstance(config_name = AgentConfigVersion.V1)
+instance = AutomataInstance(config_name = AgentConfigName.V1)
 
 # Execute instructions on the agent instance
 instructions = "some_instruction"

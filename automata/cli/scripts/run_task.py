@@ -1,7 +1,7 @@
 import logging
 import logging.config
 
-from automata.cli.cli_utils import process_kwargs
+from automata.cli.cli_utils import create_instructions_and_config_from_kwargs
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task import AutomataTask
@@ -55,7 +55,7 @@ def initialize_task(kwargs) -> AutomataTask:
     :return: AutomataTask instance.
     """
     check_input(kwargs)
-    kwargs = process_kwargs(**kwargs)
+    instructions, kwargs = create_instructions_and_config_from_kwargs(**kwargs)
 
     logging.config.dictConfig(get_logging_config())
 

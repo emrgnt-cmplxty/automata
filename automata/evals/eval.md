@@ -6,7 +6,7 @@ The Eval class is a base class for evaluating the performance of an AutomataAgen
 
 ## Usage
 
-To use the Eval class, first create an instance of the class with the required agent_config parameter and any optional keyword arguments. Then, call the generate_eval_result method with an instruction and a list of expected actions to evaluate the agent's performance.
+To use the Eval class, first create an instance of the class with the required main_config parameter and any optional keyword arguments. Then, call the generate_eval_result method with an instruction and a list of expected actions to evaluate the agent's performance.
 
 ## Examples
 
@@ -14,10 +14,10 @@ To use the Eval class, first create an instance of the class with the required a
 
 ```python
 from automata.evals.eval import Eval
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 
 evaluator = Eval(
-    agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
+    main_config=AutomataAgentConfig.load(AgentConfigName.AUTOMATA_INDEXER_DEV),
     llm_toolkits=args.llm_toolkits,
     model=args.model,
     instruction_payload=instruction_payload,
@@ -37,7 +37,7 @@ eval_result = evaluator.generate_eval_result(instruction, expected_actions)
 
 `**init**(self, *args, **kwargs)`: Initializes an Eval object with the following optional keyword arguments:
 
-`agent_config`: Configuration for the AutomataAgentBuilder (required).
+`main_config`: Configuration for the AutomataAgentBuilder (required).
 
 `instruction_payload`: Instruction payload for the AutomataAgentBuilder.
 

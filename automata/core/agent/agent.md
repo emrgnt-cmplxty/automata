@@ -50,7 +50,7 @@ from core.coordinator.automata_coordinator import AutomataCoordinator
 from core.agent.automata_actions import AgentAction
 from core.coordinator.automata_instance import AutomataInstance
 from core.agent.automata_agent_builder import AutomataAgentBuilder
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 
 # Create an AutomataCoordinator
 coordinator = AutomataCoordinator()
@@ -70,26 +70,26 @@ coordinator.set_main_agent(main_agent)
 
 # Add two AutomataInstances to the coordinator
 agent_instance1 = AutomataInstance(
-    config_name=AgentConfigVersion.TEST,
+    config_name=AgentConfigName.TEST,
     description="Agent 1",
 )
 coordinator.add_agent_instance(agent_instance1)
 
 agent_instance2 = AutomataInstance(
-    config_name=AgentConfigVersion.TEST2,
+    config_name=AgentConfigName.TEST2,
     description="Agent 2",
 )
 coordinator.add_agent_instance(agent_instance2)
 
 # Create AgentActions for the agents
 action1 = AgentAction(
-    agent_version=AgentConfigVersion.TEST,
+    agent_version=AgentConfigName.TEST,
     agent_query="agent1_query",
     agent_instruction=["Instruction for Agent 1."]
 )
 
 action2 = AgentAction(
-    agent_version=AgentConfigVersion.TEST2,
+    agent_version=AgentConfigName.TEST2,
     agent_query="agent2_query",
     agent_instruction=["Instruction for Agent 2."]
 )

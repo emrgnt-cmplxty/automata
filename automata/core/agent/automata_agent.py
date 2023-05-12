@@ -1,6 +1,5 @@
 import logging
 import re
-import uuid
 from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional, Tuple, cast
 
 import openai
@@ -15,7 +14,6 @@ from automata.core.agent.automata_action_extractor import (
 )
 from automata.core.agent.automata_actions import AgentAction, ResultAction, ToolAction
 from automata.core.agent.automata_agent_utils import (
-    format_prompt,
     generate_user_observation_message,
     retrieve_completion_message,
 )
@@ -42,59 +40,23 @@ class AutomataAgent(Agent):
     INITIALIZER_DUMMY: Final = "automata_initializer"
     ERROR_DUMMY_TOOL: Final = "error_reporter"
 
-    def __init__(self, config: Optional[AutomataAgentConfig] = None):
-        """
-        Initialize the AutomataAgent with a given configuration.
-
-        Args:
-            config (Optional[AutomataAgentConfig]): The agent configuration to use.
-        """
+    def __init__(self, instructions, config: Optional[AutomataAgentConfig] = None):
         if config is None:
             config = AutomataAgentConfig()
-        self.instruction_payload = config.instruction_payload
-        self.llm_toolkits = config.llm_toolkits
-        self.instructions = config.instructions
-        self.config_name = config.config_name
-        self.system_instruction_template = config.system_instruction_template
-        self.instruction_input_variables = config.instruction_input_variables
-        self.model = config.model
-        self.stream = config.stream
-        self.verbose = config.verbose
-        self.max_iters = config.max_iters
-        self.temperature = config.temperature
-        self.instruction_version = config.instruction_version
+        self.config = config
         self.completed = False
-        self.eval_mode = False
+        self.instructions = instructions
         self.messages: List[OpenAIChatMessage] = []
-        self.session_id = config.session_id
-        self.name: str = config.name
         self.coordinator: Optional["AutomataCoordinator"] = None
 
     def set_coordinator(self, coordinator: "AutomataCoordinator"):
         """
-        Set the coordinator for the AutomataAgent.
+        Set the coordinator for the AutomataAgent, necessary for the main agent.
 
         Args:
             coordinator (AutomataCoordinator): An instance of an AutomataCoordinator.
         """
         self.coordinator = coordinator
-
-    def run(self) -> str:
-        """
-        Runs the agent and iterates through the tasks until a result is produced or the max iterations are exceeded.
-
-        Returns:
-            str: The final result or an error message if the result wasn't found in time.
-        """
-        latest_responses = self.iter_task()
-        while latest_responses is not None:
-            # Each iteration adds two messages, one from the assistant and one from the user
-            # If we have equal to or more than 2 * max_iters messages (less the default messages),
-            # then we have exceeded the max_iters
-            if len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES >= self.max_iters * 2:
-                return "Result was not found before iterations exceeded max limit."
-            latest_responses = self.iter_task()
-        return self.messages[-1].content
 
     def iter_task(self) -> Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]:
         """
@@ -110,14 +72,14 @@ class AutomataAgent(Agent):
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
         response_summary = openai.ChatCompletion.create(
-            model=self.model,
+            model=self.config.model,
             messages=[ele.to_dict() for ele in self.messages],
-            temperature=self.temperature,
-            stream=self.stream,
+            temperature=self.config.temperature,
+            stream=self.config.stream,
         )
         response_text = (
             self._stream_message(response_summary)
-            if self.stream
+            if self.config.stream
             else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
         )
 
@@ -129,7 +91,7 @@ class AutomataAgent(Agent):
             self._save_message(
                 "assistant",
                 self._parse_completion_message(completion_message)
-                if not self.eval_mode
+                if not self.config.eval_mode
                 else response_text,
             )
             return None
@@ -144,83 +106,48 @@ class AutomataAgent(Agent):
 
         return (assistant_message, user_message)
 
-    def replay_messages(self) -> str:
+    def run(self) -> str:
         """
-        Replays the messages in the conversation and returns the completion message if found.
+        Runs the agent and iterates through the tasks until a result is produced or the max iterations are exceeded.
 
         Returns:
-            str: The completion message if found, otherwise a message indicating that no completion message was found.
+            str: The final result or an error message if the result wasn't found in time.
         """
-        if len(self.messages) == 0:
-            logger.debug("No messages to replay.")
-            return "No messages to replay."
-        for message in self.messages[self.NUM_DEFAULT_MESSAGES :]:
-            observations = self._generate_observations(message.content)
-            completion_message = retrieve_completion_message(observations)
-            if completion_message:
-                return completion_message
-            logger.debug("Role:\n%s\n\nMessage:\n%s\n" % (message.role, message.content))
-            logger.debug("Processing message content =  %s" % message.content)
-            logger.debug("\nProcessed Outputs:\n%s\n" % observations)
-            logger.debug("-" * 60)
-        return "No completion message found."
+        latest_responses = self.iter_task()
+        while latest_responses is not None:
+            # Each iteration adds two messages, one from the assistant and one from the user
+            # If we have equal to or more than 2 * max_iters messages (less the default messages),
+            # then we have exceeded the max_iters
+            if (
+                len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES
+                >= self.config.max_iters * 2
+            ):
+                return "Result was not found before iterations exceeded max limit."
+            latest_responses = self.iter_task()
+        return self.messages[-1].content
 
-    def modify_last_instruction(self, updated_instruction: str) -> None:
-        """
-        Modifies the last instruction in the conversation with a new message.
-
-        Args:
-            new_instruction (str): The new instruction to replace the last message.
-
-        Raises:
-            ValueError: If the last message is not a user message.
-        """
-        previous_message = self.messages[-1]
-        if previous_message.role != "user":
-            raise ValueError("Cannot modify the last instruction if it was not a user message.")
-        self.messages[-1] = OpenAIChatMessage(
-            role=previous_message.role, content=updated_instruction
-        )
-
-    def get_non_instruction_messages(self) -> List[OpenAIChatMessage]:
-        """
-        Retrieves all messages in the conversation that are not system instructions.
-
-        Returns:
-            List[OpenAIChatMessage]: A list of non-instruction messages.
-        """
-        return self.messages[self.NUM_DEFAULT_MESSAGES :]
-
-    def _setup(self):
-        """
-        Sets up the agent, initializing the session and loading previous interactions if applicable.
-        """
+    def setup(self):
         openai.api_key = OPENAI_API_KEY
-        if "tools" in self.instruction_input_variables:
-            self.instruction_payload.tools = self._build_tool_message()
-        system_instruction = format_prompt(
-            self.instruction_payload, self.system_instruction_template
+        self.database_manager: AutomataDatabaseManager = AutomataDatabaseManager(
+            self.config.session_id
         )
-        session_id = self.session_id if self.session_id else str(uuid.uuid4())
-        self.database_manager: AutomataDatabaseManager = AutomataDatabaseManager(session_id)
-
         self.database_manager._init_database()
-        if self.session_id:
+
+        if not self.config.is_new_agent:
             self.messages = self.database_manager._load_previous_interactions()
         else:
-            self.session_id = session_id
-            self._save_message("system", system_instruction)
+            self._save_message("system", self.config.system_instruction)
             initial_messages = self._build_initial_messages(
                 {"user_input_instructions": self.instructions}
             )
             for message in initial_messages:
                 self._save_message(message.role, message.content)
 
-        self.instruction_payload.validate_fields(self.instruction_input_variables)
-
-        logger.debug("Initializing with System Instruction:%s\n\n" % system_instruction)
+        logger.debug(
+            "Initializing with System Instruction:%s\n\n" % self.config.system_instruction
+        )
         logger.debug("-" * 60)
-        logger.debug("Session ID: %s" % self.session_id)
+        logger.debug("Session ID: %s" % self.config.session_id)
         logger.debug("-" * 60)
 
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
@@ -278,7 +205,7 @@ class AutomataAgent(Agent):
         tool_found = False
         tool_output = None
 
-        for toolkit in self.llm_toolkits.values():
+        for toolkit in self.config.llm_toolkits.values():
             for tool in toolkit.tools:
                 if tool.name == tool_name:
                     processed_tool_input = [ele if ele != "None" else None for ele in tool_input]
@@ -293,22 +220,13 @@ class AutomataAgent(Agent):
 
         return cast(str, tool_output)
 
-    def _build_tool_message(self):
+    def _has_helper_agents(self) -> bool:
         """
-        Builds a message containing information about all available tools.
+        The existence of a coordinator agent indicates that there are helper agents.
 
         Returns:
-            str: A formatted string containing the names and descriptions of all available tools.
+            bool: True if there are helper agents, False otherwise.
         """
-        return "Tools:\n" + "".join(
-            [
-                f"\n{tool.name}: {tool.description}\n"
-                for toolkit in self.llm_toolkits.values()
-                for tool in toolkit.tools
-            ]
-        )
-
-    def _has_sub_agents(self) -> bool:
         return self.coordinator is not None
 
     def _parse_completion_message(self, completion_message: str) -> str:
@@ -328,7 +246,7 @@ class AutomataAgent(Agent):
             for match in matches:
                 tool_name, tool_output = match.group(1), match.group(2).strip()
                 outputs[tool_name] = tool_output
-        if self._has_sub_agents():
+        if self._has_helper_agents():
             for message in self.messages:
                 pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
                 matches = re.finditer(pattern, message.content, re.DOTALL)
@@ -361,7 +279,7 @@ class AutomataAgent(Agent):
         formatters["initializer_dummy_tool"] = AutomataAgent.INITIALIZER_DUMMY
 
         messages_config = load_config(
-            ConfigCategory.INSTRUCTION.value, self.instruction_version.value
+            ConfigCategory.INSTRUCTION.value, self.config.instruction_version.value
         )
         initial_messages = messages_config["initial_messages"]
 
@@ -382,7 +300,7 @@ class AutomataAgent(Agent):
         Returns:
             str: The streamed response text.
         """
-        print(colored(f"\n>>> {self.name} Agent:", "green"))
+        print(colored(f"\n>>> {self.config.config_name.value} Agent:", "green"))
         latest_accumulation = ""
         stream_separator = " "
         response_text = ""

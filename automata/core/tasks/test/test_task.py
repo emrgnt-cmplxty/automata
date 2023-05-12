@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
+from automata.configs.config_enums import AgentConfigName
 from automata.core.base.github_manager import RepositoryManager
 from automata.core.tasks.task import AutomataTask, TaskStatus
 from automata.core.tasks.task_executor import (
@@ -44,8 +44,9 @@ def task():
     repo_manager = MockRepositoryManager()
     return AutomataTask(
         repo_manager,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config_name=AgentConfigName.TEST,
         generate_deterministic_id=False,
+        instructions="This is a test.",
     )
 
 
@@ -130,39 +131,51 @@ def test_commit_task(task, registry, mocker):
 
 def test_deterministic_task_id():
     task_1 = AutomataTask(
-        MockRepositoryManager(),
         test1="arg1",
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config=AutomataAgentConfigFactory.create_config(
+            main_config_name=AgentConfigName.TEST
+        ),
+        helper_agent_names="test",
+        instructions="test1",
     )
 
     task_2 = AutomataTask(
-        MockRepositoryManager(),
         test1="arg1",
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config=AutomataAgentConfigFactory.create_config(
+            main_config_name=AgentConfigName.TEST
+        ),
+        helper_agent_names="test",
+        instructions="test1",
     )
 
     task_3 = AutomataTask(
-        MockRepositoryManager(),
         test1="arg1",
         test2="arg3",
         priority=5,
         generate_deterministic_id=True,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config=AutomataAgentConfigFactory.create_config(
+            main_config_name=AgentConfigName.TEST
+        ),
+        helper_agent_names="test",
+        instructions="test1",
     )
 
     task_4 = AutomataTask(
-        MockRepositoryManager(),
         test1="arg1",
         test2="arg2",
         priority=5,
         generate_deterministic_id=False,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config=AutomataAgentConfigFactory.create_config(
+            main_config_name=AgentConfigName.TEST
+        ),
+        helper_agent_names="test",
+        instructions="test1",
     )
 
     assert task_1.task_id == task_2.task_id
@@ -178,7 +191,8 @@ def test_deterministic_vs_non_deterministic_task_id():
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config_name=AgentConfigName.TEST.value,
+        instructions="test1",
     )
 
     task_2 = AutomataTask(
@@ -187,7 +201,8 @@ def test_deterministic_vs_non_deterministic_task_id():
         test2="arg2",
         priority=5,
         generate_deterministic_id=False,
-        agent_config=AutomataAgentConfig.load(AgentConfigVersion.TEST),
+        main_config_name=AgentConfigName.TEST.value,
+        instructions="test1",
     )
     assert task_1.task_id != task_2.task_id
 

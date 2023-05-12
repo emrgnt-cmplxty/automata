@@ -1,13 +1,13 @@
-# conftest.py
 import os
 import shutil
 from functools import wraps
 
 import pytest
 
+from automata.configs.automata_agent_config_utils import AutomataAgentConfigBuilder
 from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
-from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.configs.config_enums import AgentConfigName
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.utils import calculate_similarity, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 from automata.tools.python_tools.python_indexer import PythonIndexer
@@ -24,12 +24,8 @@ def automata_params(request):
     inputs = {
         "model": model,
         "temperature": temperature,
-        "automata_indexer_config": AutomataAgentConfig.load(
-            AgentConfigVersion.AUTOMATA_INDEXER_PROD
-        ),
-        "automata_writer_config": AutomataAgentConfig.load(
-            AgentConfigVersion.AUTOMATA_WRITER_PROD
-        ),
+        "automata_indexer_config": AutomataAgentConfig.load(AgentConfigName.AUTOMATA_INDEXER_PROD),
+        "automata_writer_config": AutomataAgentConfig.load(AgentConfigName.AUTOMATA_WRITER_PROD),
     }
     mock_llm_toolkits = build_llm_toolkits(tool_list, **inputs)
 
@@ -42,25 +38,23 @@ def automata_params(request):
 def build_agent_with_params(
     automata_params,
     instructions: str,
-    config_name: AgentConfigVersion = AgentConfigVersion.AUTOMATA_INDEXER_PROD,
+    config_name: AgentConfigName = AgentConfigName.AUTOMATA_INDEXER_PROD,
     max_iters=2,
     temperature=0.0,
     model="gpt-3.5-turbo",
 ):
     instruction_payload, mock_llm_toolkits = automata_params
 
-    agent_config = AutomataAgentConfig.load(config_name)
-
-    agent = (
-        AutomataAgentBuilder.from_config(agent_config)
+    agent = AutomataAgentFactory.create_agent(
+        instructions,
+        config=AutomataAgentConfigBuilder.from_name(config_name)
         .with_instruction_payload(instruction_payload)
-        .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)
         .with_verbose(True)
         .with_max_iters(max_iters)
         .with_temperature(temperature)
         .with_model(model)
-        .build()
+        .build(),
     )
     return agent
 

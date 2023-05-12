@@ -3,11 +3,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from automata.configs.automata_agent_config_utils import build_agent_message
 from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 from automata.core.agent.automata_actions import AgentAction
-from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
-from automata.core.agent.automata_agent_utils import build_agent_message
 from automata.core.agent.tests.conftest import automata_agent as automata_agent_fixture  # noqa
 from automata.core.coordinator.automata_coordinator import AutomataCoordinator, AutomataInstance
 
@@ -29,7 +28,7 @@ def main_agent(automata_agent_fixture, coordinator):  # noqa
 class MockAutomataInstance(AutomataInstance):
     def __init__(
         self,
-        config_name: AgentConfigVersion,
+        config_name: AgentConfigName,
         description: str,
     ):
         super().__init__(config_name=config_name, description=description)
@@ -42,7 +41,7 @@ class MockAutomataInstance(AutomataInstance):
 def coordinator_with_mock_agent():
     coordinator = AutomataCoordinator()
     mock_agent_instance = MockAutomataInstance(
-        config_name=AgentConfigVersion.TEST,
+        config_name=AgentConfigName.TEST,
         description="Mock agent for testing.",
     )
     coordinator.add_agent_instance(mock_agent_instance)
@@ -54,8 +53,7 @@ def test_initialize_coordinator(coordinator):
 
 
 def test_add_agent(coordinator):
-    agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_name=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(config_name=AgentConfigName.TEST)
 
     coordinator.add_agent_instance(agent_instance)
     assert len(coordinator.agent_instances) == 1
@@ -67,8 +65,7 @@ def test_set_coordinator_main(coordinator, main_agent):
 
 
 def test_cannot_add_agent_twice(coordinator):
-    agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_name=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(config_name=AgentConfigName.TEST)
 
     coordinator.add_agent_instance(agent_instance)
 
@@ -77,26 +74,23 @@ def test_cannot_add_agent_twice(coordinator):
 
 
 def test_remove_agent(coordinator):
-    agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_name=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(config_name=AgentConfigName.TEST)
 
     coordinator.add_agent_instance(agent_instance)
-    coordinator.remove_agent_instance(config_name=AgentConfigVersion.TEST)
+    coordinator.remove_agent_instance(config_name=AgentConfigName.TEST)
     assert len(coordinator.agent_instances) == 0
 
 
 def test_cannot_remove_missing_agent(coordinator):
-    agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_name=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(config_name=AgentConfigName.TEST)
 
     coordinator.add_agent_instance(agent_instance)
     with pytest.raises(ValueError):
-        coordinator.remove_agent_instance(config_name=AgentConfigVersion.DEFAULT)
+        coordinator.remove_agent_instance(config_name=AgentConfigName.DEFAULT)
 
 
 def test_add_agent_set_coordinator(coordinator, main_agent):
-    agent_builder = AutomataAgentBuilder
-    agent_instance = AutomataInstance(config_name=AgentConfigVersion.TEST, builder=agent_builder)
+    agent_instance = AutomataInstance(config_name=AgentConfigName.TEST)
     coordinator.add_agent_instance(agent_instance)
 
     coordinator.set_main_agent(main_agent)
@@ -107,7 +101,7 @@ def test_add_agent_set_coordinator(coordinator, main_agent):
 
 def test_build_agent_message():
     agent_message = build_agent_message(
-        {AgentConfigVersion.TEST: AutomataAgentConfig.load(AgentConfigVersion.TEST)}
+        {AgentConfigName.TEST: AutomataAgentConfig.load(AgentConfigName.TEST)}
     )
     assert agent_message == "\ntest: A test agent\n"
 
@@ -290,7 +284,7 @@ def test_run_agent(coordinator_with_mock_agent, main_agent):
     coordinator.set_main_agent(main_agent)
     main_agent.set_coordinator(coordinator)
     action = AgentAction(
-        agent_version=AgentConfigVersion.TEST,
+        agent_version=AgentConfigName.TEST,
         agent_query="mock_agent_query",
         agent_instruction=["Test instruction."],
     )
@@ -306,7 +300,7 @@ def test_execute_agent(automata_agent_fixture, coordinator_with_mock_agent):  # 
 
     # Create a mock AgentAction
     mock_agent_action = AgentAction(
-        agent_version=AgentConfigVersion.TEST,
+        agent_version=AgentConfigName.TEST,
         agent_instruction="Test instruction.",
         agent_query="AutomataAgentBuilder",
     )

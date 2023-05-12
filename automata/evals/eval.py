@@ -2,9 +2,11 @@ import abc
 import logging
 from typing import List
 
+from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
 from automata.core.agent.automata_action_extractor import AutomataActionExtractor
 from automata.core.agent.automata_actions import Action
-from automata.core.agent.automata_agent_utils import create_builder_from_args
+from automata.core.agent.automata_agent import AutomataAgent
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.base.openai import OpenAIChatMessage
 from automata.evals.eval_helpers import EvalAction, calc_eval_result
 
@@ -19,20 +21,30 @@ class Eval(abc.ABC):
     """
 
     def __init__(self, *args, **kwargs):
-        if "agent_config" not in kwargs:
-            raise ValueError("agent_config must be provided to Eval")
-        self.builder = create_builder_from_args(args, kwargs)
+        if "main_config" not in kwargs:
+            raise ValueError("main_config must be provided to Eval")
+        self.config = AutomataAgentConfigFactory.create_config(args, kwargs)
 
-    def generate_eval_result(self, instruction: str, expected_actions: List[EvalAction]):
+    def generate_eval_result(self, instructions: str, expected_actions: List[EvalAction]):
         """
         Evaluates a single sample.
         """
-        logger.debug("Evaluating Instruction: %s", instruction)
-        agent = self.builder.with_instructions(instruction).build()
+        logger.debug("Evaluating Instructions: %s", instructions)
+        agent = AutomataAgentFactory.create_agent(instructions=instructions, config=self.config)
         agent.run()
-        messages = agent.get_non_instruction_messages()
+        messages = Eval._extract_non_instruction_messages(agent)
         extracted_actions = Eval._extract_actions(messages)
         return calc_eval_result(extracted_actions, expected_actions)
+
+    @staticmethod
+    def _extract_non_instruction_messages(agent: AutomataAgent) -> List[OpenAIChatMessage]:
+        """
+        Retrieves all messages in the conversation that are not system instructions.
+
+        Returns:
+            List[OpenAIChatMessage]: A list of non-instruction messages.
+        """
+        return agent.messages[agent.NUM_DEFAULT_MESSAGES :]
 
     @staticmethod
     def _extract_actions(messages: List[OpenAIChatMessage]) -> List[Action]:

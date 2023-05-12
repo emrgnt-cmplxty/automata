@@ -1,6 +1,6 @@
 import click
 
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 
 
 def common_options(command: click.Command, *args, **kwargs) -> click.Command:
@@ -19,13 +19,13 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         click.option(
             "--main_config_name",
             type=str,
-            default=AgentConfigVersion.AUTOMATA_MAIN_DEV.value,
+            default=AgentConfigName.AUTOMATA_MAIN_DEV.value,
             help="The config version of the agent.",
         ),
         click.option(
             "--helper_agent_names",
             type=str,
-            default=f"{AgentConfigVersion.AUTOMATA_INDEXER_DEV.value},{AgentConfigVersion.AUTOMATA_WRITER_DEV.value}",
+            default=f"{AgentConfigName.AUTOMATA_INDEXER_DEV.value},{AgentConfigName.AUTOMATA_WRITER_DEV.value}",
             help="The config version of the agent.",
         ),
         click.option("--stream", type=bool, default=True, help="Should we stream the responses?"),

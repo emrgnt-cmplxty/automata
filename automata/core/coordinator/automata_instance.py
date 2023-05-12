@@ -2,18 +2,18 @@ from typing import Any, Dict
 
 from pydantic import BaseModel
 
-from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
-from automata.core.agent.automata_agent_utils import create_builder_from_args
+from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
+from automata.configs.config_enums import AgentConfigName
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 
 
 class AutomataInstance(BaseModel):
-    config_name: AgentConfigVersion = AgentConfigVersion.DEFAULT
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}
 
     @classmethod
-    def create(cls, config_name: AgentConfigVersion, description: str = "", **kwargs):
+    def create(cls, config_name: AgentConfigName, description: str = "", **kwargs):
         return cls(config_name=config_name, description=description, kwargs=kwargs)
 
     def run(self, instructions: str) -> str:
@@ -30,11 +30,9 @@ class AutomataInstance(BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        self.kwargs["agent_config"] = AutomataAgentConfig.load(self.config_name)
+        main_config = AutomataAgentConfigFactory.create_config(**self.kwargs)
 
-        agent_builder = create_builder_from_args(**self.kwargs)
-
-        agent = agent_builder.with_instructions(instructions).build()
+        agent = AutomataAgentFactory.create_agent(instructions, config=main_config)
         result = agent.run()
         del agent
         return result

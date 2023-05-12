@@ -1,11 +1,8 @@
 import pytest
 
-from automata.configs.automata_agent_configs import (
-    AgentConfigVersion,
-    AutomataAgentConfig,
-    AutomataInstructionPayload,
-)
-from automata.core.agent.automata_agent_builder import AutomataAgentBuilder
+from automata.configs.automata_agent_config_utils import AutomataAgentConfigBuilder
+from automata.configs.automata_agent_configs import AgentConfigName, AutomataInstructionPayload
+from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
@@ -18,30 +15,27 @@ def automata_agent():
 
     instructions = "Test instruction."
 
-    config_name = AgentConfigVersion.DEFAULT
-    agent_config = AutomataAgentConfig.load(config_name)
+    config_name = AgentConfigName.DEFAULT
 
-    agent = (
-        AutomataAgentBuilder.from_config(agent_config)
+    agent = AutomataAgentFactory.create_agent(
+        instructions,
+        config=AutomataAgentConfigBuilder.from_name(config_name)
         .with_instruction_payload(instruction_payload)
-        .with_instructions(instructions)
         .with_llm_toolkits(mock_llm_toolkits)
-        .build()
+        .build(),
     )
     return agent
 
 
 @pytest.fixture
-def automata_agent_builder():
-    config_name = AgentConfigVersion.DEFAULT
-    agent_config = AutomataAgentConfig.load(config_name)
-    agent_builder = AutomataAgentBuilder.from_config(agent_config)
-    return agent_builder
+def automata_agent_config_builder():
+    config_name = AgentConfigName.DEFAULT
+    agent_config_builder = AutomataAgentConfigBuilder.from_name(config_name)
+    return agent_config_builder
 
 
 @pytest.fixture
 def automata_agent_with_dev_main_builder():
-    config_name = AgentConfigVersion.AUTOMATA_MAIN_DEV
-    agent_config = AutomataAgentConfig.load(config_name)
-    agent_builder = AutomataAgentBuilder.from_config(agent_config)
-    return agent_builder
+    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
+    agent_config_builder = AutomataAgentConfigBuilder.from_name(config_name)
+    return agent_config_builder

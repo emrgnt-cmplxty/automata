@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, List
 
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 from automata.core.agent.automata_actions import AgentAction
 from automata.core.coordinator.automata_instance import AutomataInstance
 
@@ -31,12 +31,12 @@ class AutomataCoordinator:
             raise ValueError("Agent already exists.")
         self.agent_instances.append(agent_instance)
 
-    def remove_agent_instance(self, config_name: AgentConfigVersion) -> None:
+    def remove_agent_instance(self, config_name: AgentConfigName) -> None:
         """
         Removes an AutomataInstance from the list of managed agent instances by its config_name.
 
         Args:
-            config_name (AgentConfigVersion): The configuration version of the agent instance to be removed.
+            config_name (AgentConfigName): The configuration version of the agent instance to be removed.
 
         Raises:
             ValueError: If the specified agent instance does not exist in the list.
@@ -78,12 +78,12 @@ class AutomataCoordinator:
         except Exception as e:
             return str("Execution fail with error: " + str(e))
 
-    def _select_agent_instance(self, config_name: AgentConfigVersion) -> AutomataInstance:
+    def _select_agent_instance(self, config_name: AgentConfigName) -> AutomataInstance:
         """
         Retrieves an AutomataInstance from the list of managed agent instances by its config_name.
 
         Args:
-            config_name (AgentConfigVersion): The configuration version of the desired agent instance.
+            config_name (AgentConfigName): The configuration version of the desired agent instance.
 
         Returns:
             AutomataInstance: The selected agent instance.

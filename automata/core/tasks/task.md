@@ -66,7 +66,7 @@ executor = TaskExecutor(TestExecuteBehavior())
 
 instruction_payload = AutomataInstructionPayload(overview="Overview", agents_message="Message")
 task = AutomataTask(
-    agent_config=AutomataAgentConfig.load(AgentConfigVersion.AUTOMATA_INDEXER_DEV),
+    main_config=AutomataAgentConfig.load(AgentConfigName.AUTOMATA_INDEXER_DEV),
     llm_toolkits="",
     model="gpt-4",
     instruction_payload=instruction_payload,

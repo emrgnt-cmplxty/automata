@@ -1,8 +1,10 @@
 import logging
-from typing import Any, Dict
+import logging.config
+from typing import Tuple
 
+from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
 from automata.configs.automata_agent_configs import AutomataAgentConfig
-from automata.configs.config_enums import AgentConfigVersion
+from automata.configs.config_enums import AgentConfigName
 from automata.core.utils import get_logging_config, root_py_path
 from automata.tools.python_tools.python_indexer import PythonIndexer
 
@@ -36,27 +38,45 @@ def check_kwargs(kwargs):
         "helper_agent_names" in kwargs
     ), "You must provide a list of helper agents, with field helper_agent_names."
     assert (
-        "main_config_name" in kwargs
+        "main_config_name" in kwargs or "main_config" in kwargs
     ), "You must provide a main agent config name, with field main_config_name."
 
 
-def process_kwargs(**kwargs) -> Dict[str, Any]:
+def create_instructions_and_config_from_kwargs(**kwargs) -> Tuple[str, AutomataAgentConfig]:
+    instructions = kwargs.get("instructions")
+    if not isinstance(instructions, str):
+        raise ValueError("instructions must be provided")
+    del kwargs["instructions"]
+
+    if "main_config" in kwargs:
+        return instructions, kwargs["main_config"]
+
+    return instructions, create_config_from_kwargs(**kwargs)
+
+
+def create_config_from_kwargs(**kwargs) -> AutomataAgentConfig:
     logger.debug(f"Loading helper configs...")
     helper_agent_names = kwargs.get("helper_agent_names")
-    if not isinstance(helper_agent_names, str):
-        raise ValueError("helper_agent_names must be a comma-separated string.")
+    if helper_agent_names:
+        if not isinstance(helper_agent_names, str):
+            raise ValueError("helper_agent_names must be a comma-separated string.")
 
-    helper_agent_configs = {
-        AgentConfigVersion(config_name): AutomataAgentConfig.load(AgentConfigVersion(config_name))
-        for config_name in helper_agent_names.split(",")
-    }
-    kwargs["helper_agent_configs"] = helper_agent_configs
-    del kwargs["helper_agent_names"]
+        helper_agent_configs = {
+            AgentConfigName(helper_config_name): AutomataAgentConfigFactory.create_config(
+                main_config_name=AgentConfigName(helper_config_name)
+            )
+            for helper_config_name in helper_agent_names.split(",")
+        }
+        print("helper_agent_configs = ", helper_agent_configs)
+        kwargs["helper_agent_configs"] = helper_agent_configs
+        del kwargs["helper_agent_names"]
 
     logger.debug(f"Loading main agent config..   .")
-    kwargs["agent_config"] = AutomataAgentConfig.load(
-        AgentConfigVersion(kwargs.get("main_config_name"))
+    print("calling AutomataAgentConfigFactory.create_config")
+    kwargs["main_config"] = AutomataAgentConfigFactory.create_config(
+        main_config_name=AgentConfigName(kwargs.get("main_config_name"))
     )
+    print("success....")
     del kwargs["main_config_name"]
 
     if kwargs.get("include_overview"):
@@ -64,4 +84,4 @@ def process_kwargs(**kwargs) -> Dict[str, Any]:
         instruction_payload["overview"] = PythonIndexer.build_overview(root_py_path())
         kwargs["instruction_payload"] = instruction_payload
 
-    return kwargs
+    return AutomataAgentConfigFactory.create_config(None, **kwargs)

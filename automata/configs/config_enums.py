@@ -12,7 +12,7 @@ class InstructionConfigVersion(Enum):
     AGENT_INTRODUCTION_PROD = "agent_introduction_prod"
 
 
-class AgentConfigVersion(Enum):
+class AgentConfigName(Enum):
     DEFAULT = "default"
     TEST = "test"
     # The initializer is a dummy agent used to spoof the initial message context.
