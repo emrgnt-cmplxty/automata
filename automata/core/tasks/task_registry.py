@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AutomataTaskDatabase:
     def __init__(self, db_path: str):
-        self.conn = sqlite3.connect(os.path.join(root_path(), "..", db_path))
+        self.conn = sqlite3.connect(db_path)
         self.create_table()
 
     def create_table(self) -> None:

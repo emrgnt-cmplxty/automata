@@ -66,15 +66,11 @@ def initialize_task():
 
     try:
         task = initialize_task(kwargs)
-        print("task.status = ", task.status)
-        print("task.task_dir = ", task.task_dir)
         process = Process(target=run, args=(str(task.task_id), kwargs))
-        print("running with process = ", process)
         process.start()
         return jsonify({"status": task.status.value, "task_id": str(task.task_id)})
 
     except Exception as e:
-        print("error = ", e)
         return jsonify({"error": str(e)}), 500
 
 
