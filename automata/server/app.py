@@ -3,7 +3,7 @@ import os
 from flask import Flask, g, jsonify, request
 from flask_cors import CORS
 
-from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY, TASK_DB_NAME
+from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_NAME
 from automata.configs.config_enums import AgentConfigVersion
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
@@ -16,7 +16,7 @@ cors = CORS(app)
 
 @app.before_request
 def before_request():
-    g.github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+    g.github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     g.task_registry = TaskRegistry(
         AutomataTaskDatabase(os.path.join(root_path(), TASK_DB_NAME)), g.github_manager
     )
@@ -131,7 +131,7 @@ def commit_task(task_id):
     pull_title = commit_data.get("pull_title", "")
     pull_body = commit_data.get("pull_body", "")
     pull_branch_name = commit_data.get("pull_branch_name", "feature/test")
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     try:
         pull_url = g.task_registry.commit_task(
             task, github_manager, commit_message, pull_title, pull_body, pull_branch_name

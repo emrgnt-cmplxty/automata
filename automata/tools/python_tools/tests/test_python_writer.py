@@ -358,6 +358,5 @@ def test_write_and_retrieve_mock_code(python_writer):
 
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     indexer = PythonIndexer(sample_dir)
-
     module_docstring = indexer.retrieve_docstring("test_module_2", None)
     assert module_docstring == mock_generator.module_docstring

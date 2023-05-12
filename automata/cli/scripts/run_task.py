@@ -3,7 +3,7 @@ import logging.config
 from typing import Dict
 
 from automata.cli.cli_utils import process_kwargs
-from automata.config import DEFAULT_REMOTE_URL, GITHUB_API_KEY, TASK_DB_NAME
+from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_NAME
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task import AutomataTask
 from automata.core.tasks.task_executor import (
@@ -61,7 +61,7 @@ def run(kwargs) -> Dict[str, str]:
 
     logging.config.dictConfig(get_logging_config())
 
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_url=DEFAULT_REMOTE_URL)
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_NAME), github_manager)
     executor = TaskExecutor(
         TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),

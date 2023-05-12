@@ -31,7 +31,6 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        args: ['-n', '4']
       - id: config_validation
         name: Config Validation
         entry: python -m automata.cli.scripts.run_config_validation
