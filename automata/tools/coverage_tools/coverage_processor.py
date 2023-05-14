@@ -56,6 +56,7 @@ class CoverageProcessor:
             f"```"
         )
         issue_title = f"Test coverage gap: {module_path} - {function_name}"
+        breakpoint()
         if self.do_create_issue:
             GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME).create_issue(
                 issue_title, issue_body, ["test-coverage-gap"]
@@ -67,5 +68,9 @@ class CoverageProcessor:
 if __name__ == "__main__":
     coverage_analyzer = CoverageAnalyzer()
     coverage_manager = CoverageProcessor(coverage_analyzer)
-    coverage_manager.list_coverage_gaps("automata.core.base.tool")
-    breakpoint()
+    print(coverage_manager.list_coverage_gaps("automata.tools.python_tools.python_indexer"))
+    coverage_manager.process_coverage_gap(
+        "tools.python_tools.python_indexer",
+        "retrieve_parent_function_name_by_line",
+        "[193, 194, 196, 197, 198, 199, 200, 201, 203, 205]",
+    )

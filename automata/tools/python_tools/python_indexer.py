@@ -27,7 +27,7 @@ import os
 import re
 from _ast import AsyncFunctionDef, ClassDef, FunctionDef
 from functools import cached_property
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 
 from redbaron import (
     ClassNode,
@@ -215,8 +215,11 @@ class PythonIndexer:
             node = node.parent_find("def")
         if not node:
             return PythonIndexer.NO_RESULT_FOUND_STR
-        filtered_code_lines = self._filter_code_lines(node)
-        return len(filtered_code_lines)
+        return (
+            node.absolute_bounding_box.bottom_right.line
+            - node.absolute_bounding_box.top_left.line
+            + 1
+        )
 
     def retrieve_parent_code_by_line(
         self, module_path: str, line_number: int, return_numbered=False
@@ -238,6 +241,13 @@ class PythonIndexer:
             return PythonIndexer.NO_RESULT_FOUND_STR
         module = self.module_dict[module_path]
         node = module.at(line_number)
+
+        # retarget def or class node
+        if node.type not in ("def", "class") and node.parent_find(
+            lambda identifier: identifier in ("def", "class")
+        ):
+            node = node.parent_find(lambda identifier: identifier in ("def", "class"))
+
         path = node.path().to_baron_path()
         pointer = module
         result = []
@@ -531,20 +541,20 @@ class PythonIndexer:
                 if child_node is not node:
                     PythonIndexer._remove_docstrings(child_node)
 
-    def _filter_code_lines(self, node: Union[Node, RedBaron]) -> List[str]:
-        """
-        Returns lines of code that are not empty or comments or docstrings.
-
-        Args:
-            node: The FST node to filter.
-        """
-        body = node.value.copy()
-        body = body.filter(lambda x: x.type != "string" or not x.value.startswith('"""'))
-        source_code_lines = body.dumps().splitlines()
-        predicate = (
-            lambda line: not line.strip().startswith("#")
-            and not line.strip().startswith("@")
-            and not line.strip() == ""
-        )
-        source_code_lines = [line for line in source_code_lines if predicate(line)]
-        return source_code_lines
+    # def _filter_code_lines(self, node: Union[Node, RedBaron]) -> List[str]:
+    #     """
+    #     Returns lines of code that are not empty or comments or docstrings.
+    #
+    #     Args:
+    #         node: The FST node to filter.
+    #     """
+    #     body = node.value.copy()
+    #     body = body.filter(lambda x: x.type != "string" or not x.value.startswith('"""'))
+    #     source_code_lines = body.dumps().splitlines()
+    #     predicate = (
+    #         lambda line: not line.strip().startswith("#")
+    #         and not line.strip().startswith("@")
+    #         and not line.strip() == ""
+    #     )
+    #     source_code_lines = [line for line in source_code_lines if predicate(line)]
+    #     return source_code_lines
