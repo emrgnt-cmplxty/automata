@@ -15,10 +15,9 @@ class CoverageProcessor:
     TODO: coverage report is being "cached" right now but it would be nice to clean it up when the user is done, or make the agent more stateful
     """
 
-    def __init__(self, coverage_analyzer, do_create_issue=False, num_items_to_show=10):
+    def __init__(self, coverage_analyzer, do_create_issue=False):
         self.coverage_analyzer = coverage_analyzer
         self.do_create_issue = do_create_issue
-        self.num_items_to_show = num_items_to_show
 
     @lru_cache(maxsize=5)
     def list_coverage_gaps(self, module_path: str) -> str:
@@ -68,3 +67,5 @@ class CoverageProcessor:
 if __name__ == "__main__":
     coverage_analyzer = CoverageAnalyzer()
     coverage_manager = CoverageProcessor(coverage_analyzer)
+    coverage_manager.list_coverage_gaps("automata.core.base.tool")
+    breakpoint()

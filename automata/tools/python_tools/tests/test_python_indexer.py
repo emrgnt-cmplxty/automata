@@ -83,14 +83,14 @@ def test_retrieve_code_by_line(indexer):
     module_name = "test_module"
     line_number = 4
     result = indexer.retrieve_parent_code_by_line(module_name, line_number)
-    expected_match = (
-        'def test_function() -> bool:\n    """This is my new function"""\n    return True\n\n\n'
-    )
+    expected_match = '"""This is a sample module for testing"""\n...\ndef test_function() -> bool:\n    """This is my new function"""\n    return True\n'
+
     assert result == expected_match
 
     line_number = 18
     result = indexer.retrieve_parent_code_by_line(module_name, line_number)
-    expected_match = 'class TestClass:\n    """This is my test class"""\n\n    def __init__(self):\n        """This initializes TestClass"""\n        pass\n\n    def test_method(self) -> bool:\n        """This is my test method"""\n        return False\n'
+
+    expected_match = '"""This is a sample module for testing"""\n...\ndef test_function() -> bool:\n    """This is my new function"""\n...\nclass TestClass:\n    """This is my test class"""\n...\n    def __init__(self):\n    """This initializes TestClass"""\n...\n    def test_method(self) -> bool:\n        """This is my test method"""\n        return False\n'
     assert result == expected_match
 
 

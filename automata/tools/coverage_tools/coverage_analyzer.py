@@ -44,7 +44,7 @@ class CoverageAnalyzer:
                 "pytest",
             ],
             cwd=self.ROOT_DIR,
-            stdout=subprocess.DEVNULL,
+            # stdout=subprocess.DEVNULL,
         )
 
         # check if path is a filesytem path or a module path
@@ -65,7 +65,7 @@ class CoverageAnalyzer:
                 module_path,
             ],
             cwd=self.ROOT_DIR,
-            stdout=subprocess.DEVNULL,
+            # stdout=subprocess.DEVNULL,
         )
 
         logger.debug("Done writing coverage data.")
