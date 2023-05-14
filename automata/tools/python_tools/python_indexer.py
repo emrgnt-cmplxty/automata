@@ -27,7 +27,7 @@ import os
 import re
 from _ast import AsyncFunctionDef, ClassDef, FunctionDef
 from functools import cached_property
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from redbaron import (
     ClassNode,
@@ -204,22 +204,19 @@ class PythonIndexer:
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def retrieve_parent_function_node_lines(
+    def retrieve_parent_function_num_code_lines(
         self, module_path: str, line_number: int
-    ) -> Union[str, tuple]:
+    ) -> Union[int, str]:
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
         node = self.module_dict[module_path].at(line_number)
         if node.type != "def":
             node = node.parent_find("def")
-        if node:
-            return (
-                node.absolute_bounding_box.top_left.line,
-                node.absolute_bounding_box.bottom_right.line,
-            )
-        else:
+        if not node:
             return PythonIndexer.NO_RESULT_FOUND_STR
+        filtered_code_lines = self._filter_code_lines(node)
+        return len(filtered_code_lines)
 
     def retrieve_parent_code_by_line(
         self, module_path: str, line_number: int, return_numbered=False
@@ -486,3 +483,21 @@ class PythonIndexer:
             for child_node in child_nodes:
                 if child_node is not node:
                     PythonIndexer._remove_docstrings(child_node)
+
+    def _filter_code_lines(self, node: Union[Node, RedBaron]) -> List[str]:
+        """
+        Returns lines of code that are not empty or comments or docstrings.
+
+        Args:
+            node: The FST node to filter.
+        """
+        body = node.value.copy()
+        body = body.filter(lambda x: x.type != "string" or not x.value.startswith('"""'))
+        source_code_lines = body.dumps().splitlines()
+        predicate = (
+            lambda line: not line.strip().startswith("#")
+            and not line.strip().startswith("@")
+            and not line.strip() == ""
+        )
+        source_code_lines = [line for line in source_code_lines if predicate(line)]
+        return source_code_lines

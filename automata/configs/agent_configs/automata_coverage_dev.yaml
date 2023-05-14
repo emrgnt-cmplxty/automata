@@ -81,11 +81,11 @@ system_instruction_template: >
 
       *Assistant*
         - thoughts
-          - I can use list-next-coverage-gaps tool to get this information
+          - I can use list-coverage-gaps tool to get this information
         - actions
           - tool_query_1
             - tool_name
-              - list-next-coverage-gaps
+              - list-coverage-gaps
             - tool_args
               - None
 
@@ -121,7 +121,9 @@ system_instruction_template: >
             - tool_name
               - process-coverage-gap
             - tool_args
-              - 0
+              - core.utils
+              - my_object
+              - [1, 2, 3, 4, 5]
 
       *User*
         - observations
@@ -149,7 +151,7 @@ system_instruction_template: >
     Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
 
 description: >
-  This agent is automata_coverage_dev, an agent which parses natural language queries to list coverage gaps in local python repository, as well as process a coverage gap by given index.
+  This agent is automata_coverage_dev, an agent which parses natural language queries to list coverage gaps in a given module, as well as process a coverage gap by its module, object, and lines.
 
 number_of_expected_actions: 7
 

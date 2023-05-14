@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from functools import lru_cache
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.core.base.github_manager import GitHubManager
@@ -19,42 +19,17 @@ class CoverageProcessor:
         self.coverage_analyzer = coverage_analyzer
         self.do_create_issue = do_create_issue
         self.num_items_to_show = num_items_to_show
-        # lazy fields
-        self.coverage_df = None
-        self.item_iterable = []
-        self._item_iterator = None
 
-    def _refresh(self):
-        if self.coverage_df is None:
-            self.coverage_analyzer.write_coverage_xml()
-            self.coverage_df = self.coverage_analyzer.parse_coverage_xml()
-            self.item_iterable = [(i, row.to_dict()) for i, row in self.coverage_df.iterrows()]
+    @lru_cache(maxsize=5)
+    def list_coverage_gaps(self, module_path: str) -> str:
+        self.coverage_analyzer.write_coverage_xml(module_path)
+        coverage_df = self.coverage_analyzer.parse_coverage_xml()
+        return coverage_df.to_string()
 
-    @property
-    def item_iterator(self):
-        if not self._item_iterator:
-            self._item_iterator = iter(self.item_iterable)
-        return self._item_iterator
-
-    def list_next_items(self) -> str:
-        self._refresh()
-        items = []
-        for i in range(self.num_items_to_show):
-            index, item = next(self.item_iterator)
-            items.append(f"{index}. {item}")
-        return "\n".join(items)
-
-    def select_and_process_item(self, index) -> Any:
-        self._refresh()
-        logger.debug(f"Processing coverage data {index}...")
-        if index not in range(len(self.item_iterable)):
-            raise ValueError(f"Index {index} not in coverage dataframe")
-        return self._process_item(self.item_iterable[index][1])
-
-    def _process_item(self, item):
-        module_path = item["module"]
-        function_name = item["object"]
-        uncovered_line_numbers = sorted(item["line_number"])
+    def process_coverage_gap(self, module, object, line_numbers):
+        module_path = module
+        function_name = object
+        uncovered_line_numbers = sorted(map(int, line_numbers.strip("[]").split(", ")))
         uncovered_line_numbers_queue = uncovered_line_numbers[:]
 
         lines = self.coverage_analyzer.indexer.retrieve_parent_code_by_line(
@@ -89,10 +64,7 @@ class CoverageProcessor:
         return f"Processed - {issue_title}"
 
 
+# TODO: remove and write tests in separate file
 if __name__ == "__main__":
     coverage_analyzer = CoverageAnalyzer()
     coverage_manager = CoverageProcessor(coverage_analyzer)
-
-    print(coverage_manager.list_next_items())
-    print(coverage_manager.select_and_process_item(0))
-    coverage_analyzer.clean_up()

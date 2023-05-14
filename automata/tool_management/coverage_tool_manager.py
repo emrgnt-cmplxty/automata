@@ -15,30 +15,30 @@ class CoverageToolManager(BaseToolManager):
         self.verbose = kwargs.get("verbose") or False
         self.stream = kwargs.get("stream") or True
 
-    def _run_show_coverage_gaps(self, input_tuple):
+    def _run_list_coverage_gaps(self, input_module):
         try:
-            return self.coverage_processor.list_next_items()
+            return self.coverage_processor.list_coverage_gaps(input_module)
         except Exception as e:
             return str(e)
 
-    def _run_select_and_process_coverage_gap(self, index):
+    def _run_select_and_process_coverage_gap(self, module, object, line_numbers):
         try:
-            return self.coverage_processor.select_and_process_item(int(index))
+            return self.coverage_processor.process_coverage_gap(module, object, line_numbers)
         except Exception as e:
             return str(e)
 
     def build_tools(self) -> List[Tool]:
         tools = [
             Tool(
-                name="list-next-coverage-gaps",
-                description="Useful for listing coverage gaps, a few at a time. Calling this repeatedly will yield the next gaps, until there are no more left, at which point the iteration resets. "
-                "Returns a list of coverage gaps including the module, function, uncovered lines, and the overall covered percentage.",
-                func=self._run_show_coverage_gaps,  # no input necessary
+                name="list-coverage-gaps",
+                description="Useful for listing coverage gaps."
+                "Returns a list of coverage gaps including the module, function, list of uncovered line numbers, and the overall covered percentage. Input must be a python module path",
+                func=lambda module_object_tupe: self._run_list_coverage_gaps(*module_object_tupe),
                 return_direct=True,
             ),
             Tool(
                 name="process-coverage-gap",
-                description="Useful for creating the context needed to write a test to satisfy a coverage gap. Input should be the index of the coverage gap item. "
+                description="Useful for creating the context needed to write a test to satisfy a coverage gap. Input should be the coverage gap module, object, and a complete list of uncovered line numbers"
                 "Returns relevant info, like the module, function, uncovered lines, and raw code with uncovered lines marked.",
                 func=lambda module_object_tuple: self._run_select_and_process_coverage_gap(
                     *module_object_tuple
