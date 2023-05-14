@@ -128,7 +128,6 @@ class AutomataAgent(Agent):
 
     def setup(self):
         openai.api_key = OPENAI_API_KEY
-        print("RUNNING WITH CONFIG SESSION ID = ", self.config.session_id)
         self.database_manager: AutomataConversationDatabase = AutomataConversationDatabase(
             self.config.session_id
         )

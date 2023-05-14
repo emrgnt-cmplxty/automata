@@ -1,12 +1,15 @@
 import logging
+import os
 import uuid
 from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Dict, Optional
 
 from automata.cli.cli_utils import check_kwargs, create_instructions_and_config_from_kwargs
+from automata.config import TASKS_DIR_PATH
 from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.manager.automata_manager_factory import AutomataManagerFactory
+from automata.core.utils import get_logging_config, root_path
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,9 @@ class Task:
     A generic task object.
     """
 
+    TASK_LOG_NAME = "task_TASK_ID.log"
+    TASK_LOG_REL_DIR = "logs"
+
     def __init__(self, *args, **kwargs):
         self.task_id = (
             self._deterministic_task_id(**kwargs)
@@ -34,24 +40,16 @@ class Task:
         )
         self.priority = kwargs.get("priority", 0)
         self.max_retries = kwargs.get("max_retries", 3)
-        self.observer: Optional[Callable] = None
-        self.retry_count = 0
-
-        self._task_dir: Optional[str] = None
         self._status = TaskStatus(kwargs.get("status", "setup"))
+        self.retry_count = 0
+        self.observer: Optional[Callable] = None
+
+        self.task_dir = self._get_task_dir()
+        self.initialize_logging(**kwargs)
 
     def notify_observer(self):
         if self.observer:
             self.observer(self)
-
-    @property
-    def task_dir(self) -> Optional[str]:
-        return self._task_dir
-
-    @task_dir.setter
-    def task_dir(self, new_task_dir: str) -> None:
-        self._task_dir = new_task_dir
-        self.notify_observer()
 
     @property
     def status(self) -> TaskStatus:
@@ -67,8 +65,16 @@ class Task:
                 self._status = new_status
         else:
             self._status = new_status
-
         self.notify_observer()
+
+    def initialize_logging(self, **kwargs) -> None:
+        log_dir = self._get_log_dir()
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+        log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
+        log_level = logging.DEBUG if kwargs.get("verbose") else logging.INFO
+        logging.config.dictConfig(get_logging_config(log_level=log_level, log_file=log_file))
 
     def _deterministic_task_id(self, **kwargs):
         """
@@ -83,6 +89,23 @@ class Task:
         deterministic_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, seed)
 
         return deterministic_uuid
+
+    def _get_task_dir(self) -> str:
+        # Generate a unique directory name for the task
+        return os.path.join(Task._get_tasks_dir(), f"task_{self.task_id}")
+
+    @staticmethod
+    def _get_tasks_dir() -> str:
+        return (
+            TASKS_DIR_PATH
+            if TASKS_DIR_PATH != "tasks"
+            else os.path.join(root_path(), TASKS_DIR_PATH)
+        )
+
+    @staticmethod
+    def _get_log_dir() -> str:
+        # Generate a unique directory name for the task
+        return os.path.join(Task._get_tasks_dir(), Task.TASK_LOG_REL_DIR)
 
     def __str__(self):
         return f"Task {self.task_id} ({self.status})"
@@ -153,6 +176,7 @@ class AutomataTask(Task):
         """
         Returns a JSON representation of key attributes of the task.
         """
+
         result = {
             "task_id": str(self.task_id),
             "status": self.status.value,
@@ -172,10 +196,20 @@ class AutomataTask(Task):
             result["main_config"] = main_config.config_name.value
             result["instruction_config"] = main_config.instruction_version.value
 
+        main_config_name = self.kwargs.get("main_config_name", None)
+        if main_config_name:
+            result["main_config"] = main_config_name
+            result["instruction_config"] = create_instructions_and_config_from_kwargs(
+                **self.kwargs
+            )[1].instruction_version.value
+
         helper_agent_configs = self.kwargs.get("helper_agent_configs", None)
         if helper_agent_configs:
             result["helper_agent_names"] = [
                 main_config.config_name.value for main_config in helper_agent_configs.values()
             ]
 
+        helper_agent_names = self.kwargs.get("helper_agent_names", None)
+        if helper_agent_names:
+            result["helper_agent_names"] = helper_agent_names
         return result
