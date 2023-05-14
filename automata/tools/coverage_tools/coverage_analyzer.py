@@ -65,7 +65,7 @@ class CoverageAnalyzer:
                 module_path,
             ],
             cwd=self.ROOT_DIR,
-            # stdout=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
         )
 
         logger.debug("Done writing coverage data.")
