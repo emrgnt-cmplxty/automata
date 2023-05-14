@@ -204,22 +204,22 @@ class PythonIndexer:
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def retrieve_parent_function_node_lines(
+    def retrieve_parent_function_num_code_lines(
         self, module_path: str, line_number: int
-    ) -> Union[str, tuple]:
+    ) -> Union[int, str]:
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
         node = self.module_dict[module_path].at(line_number)
         if node.type != "def":
             node = node.parent_find("def")
-        if node:
-            return (
-                node.absolute_bounding_box.top_left.line,
-                node.absolute_bounding_box.bottom_right.line,
-            )
-        else:
+        if not node:
             return PythonIndexer.NO_RESULT_FOUND_STR
+        return (
+            node.absolute_bounding_box.bottom_right.line
+            - node.absolute_bounding_box.top_left.line
+            + 1
+        )
 
     def retrieve_parent_code_by_line(
         self, module_path: str, line_number: int, return_numbered=False
@@ -239,19 +239,73 @@ class PythonIndexer:
 
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
+        module = self.module_dict[module_path]
+        node = module.at(line_number)
 
-        node = self.module_dict[module_path].at(line_number)
-        while node.parent_find(lambda identifier: identifier in ("def", "class")):
+        # retarget def or class node
+        if node.type not in ("def", "class") and node.parent_find(
+            lambda identifier: identifier in ("def", "class")
+        ):
             node = node.parent_find(lambda identifier: identifier in ("def", "class"))
-        source_code = node.dumps()
-        if return_numbered:
-            start = node.absolute_bounding_box.top_left.line
-            numbered_source_code = "\n".join(
-                [f"{i+start}: {line}" for i, line in enumerate(source_code.split("\n"))]
-            )
-            return numbered_source_code
-        else:
-            return source_code
+
+        path = node.path().to_baron_path()
+        pointer = module
+        result = []
+
+        for entry in path:
+            if isinstance(entry, int):
+                pointer = pointer.node_list
+                for x in range(entry):
+                    start_line, start_col = (
+                        pointer[x].absolute_bounding_box.top_left.line,
+                        pointer[x].absolute_bounding_box.top_left.column,
+                    )
+
+                    if pointer[x].type == "string" and pointer[x].value.startswith('"""'):
+                        result += self._create_line_number_tuples(
+                            pointer[x], start_line, start_col
+                        )
+                    if pointer[x].type in ("def", "class"):
+                        docstring = PythonIndexer._get_docstring(pointer[x])
+                        node_copy = pointer[x].copy()
+                        node_copy.value = '"""' + docstring + '"""'
+                        result += self._create_line_number_tuples(node_copy, start_line, start_col)
+                pointer = pointer[entry]
+            else:
+                start_line, start_col = (
+                    pointer.absolute_bounding_box.top_left.line,
+                    pointer.absolute_bounding_box.top_left.column,
+                )
+                node_copy = pointer.copy()
+                node_copy.value = ""
+                result += self._create_line_number_tuples(node_copy, start_line, start_col)
+                pointer = getattr(pointer, entry)
+
+        start_line, start_col = (
+            pointer.absolute_bounding_box.top_left.line,
+            pointer.absolute_bounding_box.top_left.column,
+        )
+        result += self._create_line_number_tuples(pointer, start_line, start_col)
+
+        prev_line = 1
+        result_str = ""
+        for t in result:
+            if t[0] > prev_line + 1:
+                result_str += "...\n"
+            if return_numbered:
+                result_str += f"{t[0]}: {t[1]}\n"
+            else:
+                result_str += f"{t[1]}\n"
+            prev_line = t[0]
+        return result_str
+
+    def _create_line_number_tuples(self, node, start_line, start_col):
+        result = []
+        for i, line in enumerate(node.dumps().strip().splitlines()):
+            if i == 0 and not line.startswith(" " * (start_col - 1)):
+                line = " " * (start_col - 1) + line
+            result.append((start_line + i, line))
+        return result
 
     def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """
@@ -486,3 +540,21 @@ class PythonIndexer:
             for child_node in child_nodes:
                 if child_node is not node:
                     PythonIndexer._remove_docstrings(child_node)
+
+    # def _filter_code_lines(self, node: Union[Node, RedBaron]) -> List[str]:
+    #     """
+    #     Returns lines of code that are not empty or comments or docstrings.
+    #
+    #     Args:
+    #         node: The FST node to filter.
+    #     """
+    #     body = node.value.copy()
+    #     body = body.filter(lambda x: x.type != "string" or not x.value.startswith('"""'))
+    #     source_code_lines = body.dumps().splitlines()
+    #     predicate = (
+    #         lambda line: not line.strip().startswith("#")
+    #         and not line.strip().startswith("@")
+    #         and not line.strip() == ""
+    #     )
+    #     source_code_lines = [line for line in source_code_lines if predicate(line)]
+    #     return source_code_lines
