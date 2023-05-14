@@ -1,3 +1,4 @@
+import logging
 from multiprocessing import Process
 
 from flask import Flask, g, jsonify, request
@@ -8,8 +9,10 @@ from automata.configs.config_enums import AgentConfigName
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_database_manager import AutomataConversationDatabase
 from automata.core.base.github_manager import GitHubManager
-from automata.core.tasks.task_executor import TaskExecutor, TestExecuteBehavior
-from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
+from automata.core.tasks.automata_task_executor import TaskExecutor, TestExecuteBehavior
+from automata.core.tasks.automata_task_registry import AutomataTaskDatabase, AutomataTaskRegistry
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -18,7 +21,7 @@ cors = CORS(app)
 @app.before_request
 def before_request():
     g.github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    g.task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), g.github_manager)
+    g.task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), g.github_manager)
     g.task_executor = TaskExecutor(TestExecuteBehavior(), g.task_registry)
 
     if request.method == "POST":
@@ -34,11 +37,17 @@ def get_all_tasks():
     return jsonify([task.to_partial_json() for task in tasks])
 
 
+@app.route("/task_summaries", methods=["GET"])
+def get_all_task_summaries():
+    task_summaries = g.task_registry.get_all_task_summaries()
+    return jsonify(task_summaries)
+
+
 @app.route("/task/<task_id>", methods=["GET"])
 def get_task(task_id):
     task = g.task_registry.get_task_by_id(task_id)
     if task is None:
-        return jsonify({"error": "Task not found"}), 404
+        return jsonify({"error": "Task not found"})
     return jsonify(task.to_partial_json())
 
 
@@ -56,7 +65,7 @@ def get_full_conversation(session_id):
     return jsonify(conversation_db.get_conversations())
 
 
-@app.route("/task", methods=["POST"])
+@app.route("/task/initialize", methods=["POST"])
 def initialize_task():
     kwargs = {
         "session_id": request.form.get("session_id"),
@@ -82,23 +91,24 @@ def initialize_task():
 
     try:
         task = initialize_task(kwargs)
-        process = Process(target=run, args=(str(task.task_id), kwargs))
+        kwargs["task_id"] = str(task.task_id)
+        process = Process(target=run, args=(kwargs,))
         process.start()
         return jsonify({"status": task.status.value, "task_id": str(task.task_id)})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)})
 
 
 @app.route("/task/<task_id>/execute", methods=["POST"])
 def execute_task(task_id):
     task = g.task_registry.get_task_by_id(task_id)
     if task is None:
-        return jsonify({"error": "Task not found"}), 404
+        return jsonify({"error": "Task not found"})
     try:
         g.task_executor.execute_task(task)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)})
     return jsonify({"message": "Task execution started"})
 
 
@@ -106,7 +116,7 @@ def execute_task(task_id):
 def commit_task(task_id):
     task = g.task_registry.get_task_by_id(task_id)
     if task is None:
-        return jsonify({"error": "Task not found"}), 404
+        return jsonify({"error": "Task not found"})
 
     commit_data = request.get_json()
     commit_message = commit_data.get("commit_message", "")
@@ -120,7 +130,7 @@ def commit_task(task_id):
         )
         return jsonify({"message": f"Task committed to {pull_url}"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)})
 
 
 if __name__ == "__main__":

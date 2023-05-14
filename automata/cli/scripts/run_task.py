@@ -3,13 +3,13 @@ import logging.config
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
 from automata.core.base.github_manager import GitHubManager
-from automata.core.tasks.task import AutomataTask
-from automata.core.tasks.task_executor import (
+from automata.core.tasks.automata_task_executor import (
     AutomataExecuteBehavior,
     TaskExecutor,
     TestExecuteBehavior,
 )
-from automata.core.tasks.task_registry import AutomataTaskDatabase, TaskRegistry
+from automata.core.tasks.automata_task_registry import AutomataTaskDatabase, AutomataTaskRegistry
+from automata.core.tasks.task import AutomataTask
 from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ def initialize_task(kwargs) -> AutomataTask:
     logging.config.dictConfig(get_logging_config(log_level=log_level))
 
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
+    task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
     executor = TaskExecutor(
         TestExecuteBehavior(),  # Execution does not occur here so a test instance is sufficient
         task_registry,
@@ -77,7 +77,7 @@ def run(kwargs) -> None:
     :param task_id: ID of the initialized AutomataTask.
     """
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
+    task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
     executor = TaskExecutor(
         TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),
         task_registry,
@@ -88,6 +88,7 @@ def run(kwargs) -> None:
     task = task_registry.get_task_by_id(task_id)
     if task is None:
         raise ValueError(f"Task with id {task_id} does not exist.")
+    print("task = ", task)
     executor.execute(task)
 
 
