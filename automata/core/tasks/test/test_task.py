@@ -8,13 +8,13 @@ import pytest
 from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
 from automata.configs.config_enums import AgentConfigName
 from automata.core.base.github_manager import RepositoryManager
-from automata.core.tasks.task import AutomataTask, TaskStatus
-from automata.core.tasks.task_executor import (
+from automata.core.tasks.automata_task_executor import (
     AutomataExecuteBehavior,
     TaskExecutor,
     TestExecuteBehavior,
 )
-from automata.core.tasks.task_registry import TaskRegistry
+from automata.core.tasks.automata_task_registry import AutomataTaskRegistry
+from automata.core.tasks.task import AutomataTask, TaskStatus
 
 
 class MockRepositoryManager(RepositoryManager):
@@ -62,7 +62,7 @@ def registry(task):
     db = MagicMock()
     repo_manager = MockRepositoryManager()
     db.get_tasks_by.side_effect = mock_get_tasks_by  # Assigning the side_effect attribute
-    registry = TaskRegistry(db, repo_manager)
+    registry = AutomataTaskRegistry(db, repo_manager)
     return registry
 
 

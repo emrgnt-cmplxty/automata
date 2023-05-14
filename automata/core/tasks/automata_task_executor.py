@@ -4,8 +4,8 @@ import os
 import time
 from abc import ABC, abstractmethod
 
+from automata.core.tasks.automata_task_registry import AutomataTaskRegistry
 from automata.core.tasks.task import AutomataTask, TaskStatus
-from automata.core.tasks.task_registry import TaskRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class TaskExecutor:
     Class for executing tasks using different behaviors.
     """
 
-    def __init__(self, execute_behavior: IExecuteBehavior, task_registry: TaskRegistry):
+    def __init__(self, execute_behavior: IExecuteBehavior, task_registry: AutomataTaskRegistry):
         self.execute_behavior = execute_behavior
         self.task_registry = task_registry
 

@@ -2,7 +2,7 @@ import logging
 import logging.config
 import os
 import sqlite3
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import jsonpickle
 
@@ -22,8 +22,10 @@ class AutomataTaskDatabase:
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS tasks (
-                task_id TEXT PRIMARY KEY,
-                task_json TEXT
+                id TEXT PRIMARY KEY,
+                json TEXT,
+                instructions TEXT,
+                status TEXT
             )
         """
         )
@@ -33,24 +35,28 @@ class AutomataTaskDatabase:
         cursor = self.conn.cursor()
         task_id = task.task_id
         task_json = jsonpickle.encode(task)
+        instructions = task.kwargs.get("instructions", "")
+        status = task.status.value
         cursor.execute(
             """
-            INSERT INTO tasks (task_id, task_json)
-            VALUES (?, ?)
+            INSERT INTO tasks (id, json, instructions, status)
+            VALUES (?, ?, ?, ?)
         """,
-            (str(task_id), task_json),
+            (str(task_id), task_json, instructions, status),
         )
         self.conn.commit()
 
     def update_task(self, task: AutomataTask) -> None:
         cursor = self.conn.cursor()
         task_json = jsonpickle.encode(task)
+        instructions = task.kwargs.get("instructions", "")
+        status = task.status.value
         cursor.execute(
             """
-            UPDATE tasks SET task_json = ?
-            WHERE task_id = ?
+            UPDATE tasks SET json = ?, instructions = ?, status = ?
+            WHERE id = ?
         """,
-            (task_json, str(task.task_id)),
+            (task_json, instructions, status, str(task.task_id)),
         )
         self.conn.commit()
 
@@ -70,8 +76,22 @@ class AutomataTaskDatabase:
 
         return tasks
 
+    def get_task_summaries_by(self, query: str, params: Tuple = ()) -> List[Tuple[str, str, str]]:
+        cursor = self.conn.cursor()
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
 
-class TaskRegistry:
+        tasks_summary = []
+        for row in rows:
+            task_id = row[0]
+            task_instructions = row[1]
+            task_status = row[2]
+            tasks_summary.append((task_id, task_instructions, task_status))
+
+        return tasks_summary
+
+
+class AutomataTaskRegistry:
     def __init__(self, db: AutomataTaskDatabase, github_manager: GitHubManager):
         self.db = db
         self.github_manager = github_manager
@@ -141,7 +161,7 @@ class TaskRegistry:
 
     def get_task_by_id(self, task_id: str) -> Optional[AutomataTask]:
         results = self.db.get_tasks_by(
-            query="SELECT task_json FROM tasks WHERE task_id = ?", params=(task_id,)
+            query="SELECT json FROM tasks WHERE id = ?", params=(task_id,)
         )
         if not results:
             return None
@@ -154,10 +174,17 @@ class TaskRegistry:
             return task
 
     def get_all_tasks(self) -> list[AutomataTask]:
-        results = self.db.get_tasks_by(query="SELECT task_json FROM tasks")
+        results = self.db.get_tasks_by(query="SELECT json FROM tasks")
         for result in results:
             result.observer = self.update_task
         return results
+
+    def get_all_task_summaries(self) -> List[Dict[str, str]]:
+        results = self.db.get_task_summaries_by(query="SELECT id, instructions, status FROM tasks")
+        return [
+            {"task_id": result[0], "instructions": result[1], "status": result[2]}
+            for result in results
+        ]
 
     def _add_task(self, task: AutomataTask) -> None:
         if self.get_task_by_id(str(task.task_id)):
