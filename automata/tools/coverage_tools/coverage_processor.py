@@ -1,6 +1,8 @@
 import logging
 from functools import lru_cache
 
+import pandas as pd
+
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.core.base.github_manager import GitHubManager
 from automata.tools.coverage_tools.coverage_analyzer import CoverageAnalyzer
@@ -20,15 +22,27 @@ class CoverageProcessor:
         self.do_create_issue = do_create_issue
 
     @lru_cache(maxsize=5)
-    def list_coverage_gaps(self, module_path: str) -> str:
+    def get_coverage_df(self, module_path: str) -> pd.DataFrame:
         self.coverage_analyzer.write_coverage_xml(module_path)
         coverage_df = self.coverage_analyzer.parse_coverage_xml()
+        return coverage_df
+
+    def list_coverage_gaps(self, module_path: str) -> str:
+        coverage_df = self.get_coverage_df(module_path)
+        coverage_df = coverage_df[["module", "object", "percent_covered"]]
         return coverage_df.to_string()
 
-    def process_coverage_gap(self, module, object, line_numbers):
+    def process_coverage_gap(self, module: str, object: str):
         module_path = module
         function_name = object
-        uncovered_line_numbers = sorted(map(int, line_numbers.strip("[]").split(", ")))
+        coverage_df = self.get_coverage_df(module_path)
+        # get lines from df by module and object
+        uncovered_line_numbers = sorted(
+            coverage_df[
+                (coverage_df["module"] == module_path) & (coverage_df["object"] == function_name)
+            ]["line_number"].iloc[0]
+        )
+
         uncovered_line_numbers_queue = uncovered_line_numbers[:]
 
         lines = self.coverage_analyzer.indexer.retrieve_parent_code_by_line(
@@ -56,7 +70,6 @@ class CoverageProcessor:
             f"```"
         )
         issue_title = f"Test coverage gap: {module_path} - {function_name}"
-        breakpoint()
         if self.do_create_issue:
             GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME).create_issue(
                 issue_title, issue_body, ["test-coverage-gap"]
@@ -68,9 +81,8 @@ class CoverageProcessor:
 if __name__ == "__main__":
     coverage_analyzer = CoverageAnalyzer()
     coverage_manager = CoverageProcessor(coverage_analyzer)
-    print(coverage_manager.list_coverage_gaps("automata.tools.python_tools.python_indexer"))
+    print(coverage_manager.list_coverage_gaps("tools.python_tools.python_indexer"))
     coverage_manager.process_coverage_gap(
         "tools.python_tools.python_indexer",
         "retrieve_parent_function_name_by_line",
-        "[193, 194, 196, 197, 198, 199, 200, 201, 203, 205]",
     )
