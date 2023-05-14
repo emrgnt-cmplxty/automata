@@ -21,9 +21,9 @@ class CoverageToolManager(BaseToolManager):
         except Exception as e:
             return str(e)
 
-    def _run_select_and_process_coverage_gap(self, module, object, line_numbers):
+    def _run_select_and_process_coverage_gap(self, module, object):
         try:
-            return self.coverage_processor.process_coverage_gap(module, object, line_numbers)
+            return self.coverage_processor.process_coverage_gap(module, object)
         except Exception as e:
             return str(e)
 
