@@ -54,8 +54,8 @@ def initialize_task(kwargs) -> AutomataTask:
     :return: AutomataTask instance.
     """
     check_input(kwargs)
-    print("kwargs = ", kwargs.keys())
-    logging.config.dictConfig(get_logging_config())
+    log_level = logging.DEBUG if kwargs.get("verbose") else logging.INFO
+    logging.config.dictConfig(get_logging_config(log_level=log_level))
 
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
     task_registry = TaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)

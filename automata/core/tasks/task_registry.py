@@ -8,7 +8,6 @@ import jsonpickle
 
 from automata.core.base.github_manager import GitHubManager
 from automata.core.tasks.task import AutomataTask, TaskStatus
-from automata.core.utils import get_logging_config, root_path
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +72,6 @@ class AutomataTaskDatabase:
 
 
 class TaskRegistry:
-    JOB_DIR_NAME = "jobs"
-    TASK_LOG_NAME = "task.log"
-
     def __init__(self, db: AutomataTaskDatabase, github_manager: GitHubManager):
         self.db = db
         self.github_manager = github_manager
@@ -104,12 +100,11 @@ class TaskRegistry:
         """
         logger.debug("Comitting task...")
 
-        task_dir = self._get_task_dir(task)
         if task.status != TaskStatus.SUCCESS:
             raise Exception(
                 "Cannot commit task to repository because the task has not been successfully executed."
             )
-        if task_dir is None:
+        if not os.path.exists(task.task_dir):
             raise Exception(
                 "Cannot commit task to repository because the task directory has not been created."
             )
@@ -118,17 +113,17 @@ class TaskRegistry:
             github_manager.create_branch(pull_branch_name)
         # Checkout the new branch
         try:
-            github_manager.checkout_branch(task_dir, pull_branch_name)
+            github_manager.checkout_branch(task.task_dir, pull_branch_name)
         except Exception as e:
             logger.debug("Checkout failed with exception: %s, Trying with b=False" % e)
-            github_manager.checkout_branch(task_dir, pull_branch_name, b=False)
+            github_manager.checkout_branch(task.task_dir, pull_branch_name, b=False)
 
         # Stage all changes
-        github_manager.stage_all_changes(task_dir)
+        github_manager.stage_all_changes(task.task_dir)
 
         try:
             # Commit and push changes
-            github_manager.commit_and_push_changes(task_dir, pull_branch_name, commit_message)
+            github_manager.commit_and_push_changes(task.task_dir, pull_branch_name, commit_message)
         except Exception as e:
             logger.debug("Commit failed with exception: %s" % e)
 
@@ -153,9 +148,10 @@ class TaskRegistry:
         else:
             if len(results) != 1:
                 raise Exception(f"Found multiple tasks with id {task_id}")
-            result = results[0]
-            result.observer = self.update_task
-            return result
+            task = results[0]
+            task.initialize_logging()
+            task.observer = self.update_task
+            return task
 
     def get_all_tasks(self) -> list[AutomataTask]:
         results = self.db.get_tasks_by(query="SELECT task_json FROM tasks")
@@ -173,30 +169,7 @@ class TaskRegistry:
         Creates the environment for the task.
         """
         logger.debug("Creating task environment...")
+        self.github_manager.clone_repository(task.task_dir)
 
-        # Create the jobs directory if it does not exist
-        TaskRegistry._setup_jobs_dir()
-        task_dir = self._get_task_dir(task)
-        task.task_dir = task_dir
-        self.github_manager.clone_repository(task_dir)
         task.status = TaskStatus.PENDING
-        log_file = os.path.join(task_dir, TaskRegistry.TASK_LOG_NAME)
-        logging.config.dictConfig(get_logging_config(log_file=log_file))
         logger.debug("Task environment created successfully")
-
-    @staticmethod
-    def _get_jobs_dir() -> str:
-        return os.path.join(root_path(), TaskRegistry.JOB_DIR_NAME)
-
-    @staticmethod
-    def _setup_jobs_dir() -> None:
-        job_dir = TaskRegistry._get_jobs_dir()
-        if not os.path.exists(job_dir):
-            os.makedirs(job_dir)
-
-    @staticmethod
-    def _get_task_dir(
-        task: AutomataTask,
-    ) -> str:
-        # Generate a unique directory name for the task
-        return os.path.join(TaskRegistry._get_jobs_dir(), f"task_{task.task_id}")

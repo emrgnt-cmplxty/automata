@@ -1,3 +1,4 @@
+import os
 import shutil
 import uuid
 from unittest.mock import MagicMock, PropertyMock, patch
@@ -85,10 +86,8 @@ def test_status_setter(mock_status, task):
 
 
 @patch.object(AutomataTask, "notify_observer")
-@patch("logging.config.dictConfig")
 def test_callback(mock_notify_observer, task, registry):
     registry.initialize_task(task)
-    task.status = TaskStatus.PENDING
     mock_notify_observer.assert_called_once()
 
 
@@ -97,8 +96,9 @@ class TestURL:
 
 
 def test_commit_task(task, registry, mocker):
+    registry.initialize_task(task)
+    os.makedirs(task.task_dir, exist_ok=True)
     task.status = TaskStatus.SUCCESS
-    task.task_dir = registry._get_task_dir(task)
 
     registry.github_manager.create_pull_request = MagicMock(return_value=TestURL())
     mocker.spy(registry.github_manager, "create_branch")
