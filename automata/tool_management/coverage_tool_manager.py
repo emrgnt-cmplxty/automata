@@ -32,13 +32,15 @@ class CoverageToolManager(BaseToolManager):
             Tool(
                 name="list-coverage-gaps",
                 description="Useful for listing coverage gaps."
-                "Returns a list of coverage gaps including the module, function, list of uncovered line numbers, and the overall covered percentage. Input must be a python module path",
-                func=lambda module_object_tupe: self._run_list_coverage_gaps(*module_object_tupe),
+                "Returns a table of coverage gaps including the module, object, and the overall covered percentage. Input must be a python module path",
+                func=lambda module_object_tuple: self._run_list_coverage_gaps(
+                    *module_object_tuple
+                ),
                 return_direct=True,
             ),
             Tool(
                 name="process-coverage-gap",
-                description="Useful for creating the context needed to write a test to satisfy a coverage gap. Input should be the coverage gap module, object, and a complete list of uncovered line numbers"
+                description="Useful for creating the context needed to write a test to satisfy a coverage gap. Input should be the coverage gap module and object."
                 "Returns relevant info, like the module, function, uncovered lines, and raw code with uncovered lines marked.",
                 func=lambda module_object_tuple: self._run_select_and_process_coverage_gap(
                     *module_object_tuple
