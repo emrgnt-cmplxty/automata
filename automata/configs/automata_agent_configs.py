@@ -63,7 +63,7 @@ class AutomataAgentConfig(BaseModel):
     verbose: bool = False
     eval_mode: bool = False
     is_new_agent: bool = True
-    max_iters: int = 1_000_000
+    max_iters: int = 50
     temperature: float = 0.7
     session_id: Optional[str] = None
     system_instruction: Optional[str] = None
