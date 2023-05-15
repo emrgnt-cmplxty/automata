@@ -1,7 +1,7 @@
 name: Code Writer
 verbose: True
 stream: True
-max_iters: 20
+max_iters: 5
 instruction_input_variables:
   - tools
   - overview
