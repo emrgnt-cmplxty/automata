@@ -1,6 +1,7 @@
 name: Code Indexer
 verbose: True
 stream: True
+max_iters: 20
 instruction_input_variables:
   - tools
   - overview
