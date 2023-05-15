@@ -73,6 +73,25 @@ def test_iter_task_without_api_call(mock_openai_chatcompletion_create, automata_
     assert len(automata_agent.messages) == 5
 
 
+@patch("openai.ChatCompletion.create")
+def test_max_iters_without_api_call(mock_openai_chatcompletion_create, automata_agent):
+    max_iters = 5
+    automata_agent.config.max_iters = max_iters
+    # Mock the API response
+    mock_openai_chatcompletion_create.return_value = {
+        "choices": [{"message": {"content": "invalid tool name"}}]
+    }
+
+    # Call the iter_task method and store the result
+    result = automata_agent.run()
+    # Check if the result is as expected
+    assert (
+        result
+        == f"Result was not found before iterations exceeded configured max limit: {max_iters}. Debug summary: invalid tool name"
+    )
+    assert len(automata_agent.messages) == max_iters * 2 + AutomataAgent.NUM_DEFAULT_MESSAGES + 1
+
+
 def mock_openai_response_with_completion_message():
     return {
         "choices": [
