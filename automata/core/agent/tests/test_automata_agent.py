@@ -82,9 +82,7 @@ def test_max_iters_without_api_call(mock_openai_chatcompletion_create, automata_
         "choices": [{"message": {"content": "invalid tool name"}}]
     }
 
-    # Call the iter_task method and store the result
     result = automata_agent.run()
-    # Check if the result is as expected
     assert (
         result
         == f"Result was not found before iterations exceeded configured max limit: {max_iters}. Debug summary: invalid tool name"
