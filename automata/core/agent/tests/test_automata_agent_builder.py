@@ -24,7 +24,7 @@ def test_builder_default_config(automata_agent_config_builder):
     assert config.model == "gpt-4"
     assert config.stream is False
     assert config.verbose is False
-    assert config.max_iters == 1_000_000
+    assert config.max_iters == 50
     assert config.temperature == 0.7
     assert config.session_id is not None  # session id defaults if not set
 
