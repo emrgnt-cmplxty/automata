@@ -62,7 +62,7 @@ class SymbolHelper:
                 matches[module_path] = line_numbers
         return matches
 
-    def find_fst_object(self, symbol: Symbol) -> Optional[Union[ClassNode, DefNode]]:
+    def find_fst_object(self, symbol: Symbol) -> Optional[RedBaron]:
         """
         Returns the RedBaron object for the given symbol.
 

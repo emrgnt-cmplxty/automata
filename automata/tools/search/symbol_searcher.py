@@ -1,8 +1,7 @@
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
+from automata.tools.search.local_types import SymbolReference
 from automata.tools.search.symbol_graph import SymbolGraph
-
-# from automata.tools.symbol_search.symbol_parser import parse_uri_to_symbol
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
 
 
@@ -11,17 +10,17 @@ class SymbolSearcher:
         self.symbol_graph = symbol_graph
         self._helper = symbol_graph.helper
 
-    def retrieve_source_code_by_symbol(self, symbol: str) -> Optional[str]:
+    def retrieve_source_code_by_symbol(self, symbol_uri: str) -> Optional[str]:
         """
         Fetch the raw text of a module, class, method, or standalone function
 
         :param symbol: The symbol to retrieve
         :return: The raw text of the symbol or None if not found
         """
-        node = self._helper.find_fst_object(parse_uri_to_symbol(symbol))
+        node = self._helper.find_fst_object(parse_uri_to_symbol(symbol_uri))
         return str(node) if node is not None else None
 
-    def symbol_search(self, symbol: str) -> List[str]:
+    def symbol_search(self, symbol_uri: str) -> Dict[str, List[SymbolReference]]:
         """
         Perform a symbol-based search
 
@@ -29,9 +28,9 @@ class SymbolSearcher:
         :return: A list of symbols that match the query
         """
         # TODO - Add parsing upstream or here to parse references
-        return self.symbol_graph.get_symbol_references(parse_uri_to_symbol(symbol))
+        return self.symbol_graph.get_symbol_references(parse_uri_to_symbol(symbol_uri))
 
-    def exact_search(self, pattern: str) -> List[str]:
+    def exact_search(self, pattern: str) -> Dict[str, List[int]]:
         """
         Perform a exact search across the indexed codebase
 
@@ -51,7 +50,9 @@ class SymbolSearcher:
         """
         return self._helper.find_and_replace_in_modules(find, replace, do_write)
 
-    def process_query(self, query: str) -> Union[List[str], int, Optional[str]]:
+    def process_query(
+        self, query: str
+    ) -> Union[Dict[str, List[SymbolReference]], Dict[str, List[int]], int, Optional[str]]:
         """
         Process an NLP-formatted query and return the results of the appropriate search
 

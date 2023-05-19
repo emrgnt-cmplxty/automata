@@ -6,7 +6,7 @@ from automata.tools.search.symbol_searcher import SymbolSearcher
 
 if __name__ == "__main__":
     symbol_prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065"
-    test_path = "automata.configs.automata_agent_configs"
+    test_path = "automata"  # "automata.configs.automata_agent_configs"
     test_symbol = parse_uri_to_symbol("%s `%s`/AutomataAgentConfig#" % (symbol_prefix, test_path))
 
     argparse = ArgumentParser()

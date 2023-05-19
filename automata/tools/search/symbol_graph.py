@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import Dict, List, Optional, Set
 
 import networkx as nx
@@ -63,7 +62,7 @@ class SymbolGraph:
             for _, file_name, details in self._graph.out_edges(symbol, data=True)
             if details.get("label") == "occurs_in"
         ]
-        result_dict = {}
+        result_dict: Dict[str, List[SymbolReference]] = {}
 
         for item in search_results:
             file_name, details = item
@@ -80,7 +79,7 @@ class SymbolGraph:
 
         return result_dict
 
-    def get_callers(self, symbol: Symbol) -> List[SymbolReference]:
+    def get_callers(self, symbol: Symbol) -> List[tuple[str, List[SymbolReference]]]:
         """
         Get all callers of a given symbol in the symbol graph.
         :param symbol: Symbol to search for
