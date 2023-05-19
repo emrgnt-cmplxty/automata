@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from automata.configs.automata_agent_configs import AutomataInstructionPayload
 from automata.core.agent.automata_agent import AutomataAgent
 from automata.core.agent.automata_agent_utils import AutomataAgentFactory
 from automata.core.agent.automata_database_manager import AutomataConversationDatabase
@@ -201,13 +202,19 @@ def mock_openai_response_with_completion_agent_message_to_parse():
 def test_iter_task_with_parsed_completion_message_2(
     mock_openai_chatcompletion_create,
     api_response,
-    automata_agent_config_builder,
+    automata_agent_with_dev_main_builder,
 ):
     instructions = "This is a test instruction."
-    automata_agent_config = automata_agent_config_builder.with_instruction_version(
-        "agent_introduction_dev"
-    ).build()
+    automata_agent_config = (
+        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction_dev")
+        .with_stream(False)
+        .with_instruction_payload(
+            AutomataInstructionPayload(agents_message="", overview="", tools="")
+        )
+        .build()
+    )
 
+    print("automata_agent_config = ", automata_agent_config)
     automata_agent = AutomataAgentFactory.create_agent(
         instructions=instructions, config=automata_agent_config
     )
@@ -224,15 +231,20 @@ def test_iter_task_with_parsed_completion_message_2(
     "api_response", [mock_openai_response_with_completion_agent_message_to_parse()]
 )
 @patch("openai.ChatCompletion.create")
-def test_iter_task_with_parsed_completion_message_2_main(
+def test_iter_task_with_parsed_completion_message_main_2(
     mock_openai_chatcompletion_create,
     api_response,
-    automata_agent_config_builder,
+    automata_agent_with_dev_main_builder,
 ):
     instructions = "This is a test instruction."
-    automata_agent_config = automata_agent_config_builder.with_instruction_version(
-        "agent_introduction_dev"
-    ).build()
+    automata_agent_config = (
+        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction_dev")
+        .with_stream(False)
+        .with_instruction_payload(
+            AutomataInstructionPayload(agents_message="", overview="", tools="")
+        )
+        .build()
+    )
 
     automata_agent = AutomataAgentFactory.create_agent(
         instructions=instructions, config=automata_agent_config

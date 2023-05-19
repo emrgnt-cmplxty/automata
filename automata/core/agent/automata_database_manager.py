@@ -6,7 +6,7 @@ from automata.core.base.openai import OpenAIChatMessage
 
 
 class AutomataConversationDatabase:
-    def __init__(self, session_id: int):
+    def __init__(self, session_id: str):
         self.session_id = session_id
         self.conn = sqlite3.connect(CONVERSATION_DB_PATH)
         self.cursor = self.conn.cursor()

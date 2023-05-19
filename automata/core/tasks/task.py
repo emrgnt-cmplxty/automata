@@ -45,7 +45,6 @@ class Task:
         self.observer: Optional[Callable] = None
 
         self.task_dir = self._get_task_dir()
-        self.initialize_logging(**kwargs)
 
     def notify_observer(self):
         if self.observer:
@@ -66,15 +65,6 @@ class Task:
         else:
             self._status = new_status
         self.notify_observer()
-
-    def initialize_logging(self, **kwargs) -> None:
-        log_dir = self._get_log_dir()
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-
-        log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
-        log_level = logging.DEBUG if kwargs.get("verbose") else logging.INFO
-        logging.config.dictConfig(get_logging_config(log_level=log_level, log_file=log_file))
 
     def _deterministic_task_id(self, **kwargs):
         """
@@ -213,3 +203,24 @@ class AutomataTask(Task):
         if helper_agent_names:
             result["helper_agent_names"] = helper_agent_names
         return result
+
+    def initialize_logging(self) -> None:
+        log_dir = self._get_log_dir()
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+        log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
+        log_level = logging.DEBUG if self.kwargs.get("verbose") else logging.INFO
+        logging.config.dictConfig(get_logging_config(log_level=log_level, log_file=log_file))
+        logging.debug("Logging initialized.")
+
+    def get_logs(self) -> str:
+        log_dir = self._get_log_dir()
+        log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
+
+        if os.path.exists(log_file):
+            with open(log_file, "r") as f:
+                log_content = f.read()
+            return log_content
+        else:
+            raise FileNotFoundError(f"Log file {log_file} not found.")

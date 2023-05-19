@@ -40,7 +40,11 @@ class AutomataAgent(Agent):
     INITIALIZER_DUMMY: Final = "automata_initializer"
     ERROR_DUMMY_TOOL: Final = "error_reporter"
 
-    def __init__(self, instructions, config: Optional[AutomataAgentConfig] = None):
+    def __init__(self, instructions: str, config: Optional[AutomataAgentConfig] = None):
+        """
+        Initializes an AutomataAgent.
+        """
+
         if config is None:
             config = AutomataAgentConfig()
         self.config = config
@@ -56,6 +60,7 @@ class AutomataAgent(Agent):
         Args:
             coordinator (AutomataCoordinator): An instance of an AutomataCoordinator.
         """
+
         self.coordinator = coordinator
 
     def iter_task(self) -> Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]:
@@ -140,6 +145,8 @@ class AutomataAgent(Agent):
 
     def setup(self):
         openai.api_key = OPENAI_API_KEY
+        if not self.config.session_id:
+            raise ValueError("Config was not properly initialized.")
         self.database_manager: AutomataConversationDatabase = AutomataConversationDatabase(
             self.config.session_id
         )
@@ -147,6 +154,9 @@ class AutomataAgent(Agent):
         if not self.config.is_new_agent:
             self.messages = self.database_manager.get_conversations()
         else:
+            if not self.config.system_instruction:
+                raise ValueError("System instruction must be provided if new agent.")
+
             self._save_message("system", self.config.system_instruction)
             initial_messages = self._build_initial_messages(
                 {"user_input_instructions": self.instructions}

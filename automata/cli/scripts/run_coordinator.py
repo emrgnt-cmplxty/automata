@@ -5,8 +5,8 @@ from termcolor import colored
 
 from automata.cli.cli_utils import (
     check_kwargs,
-    configure_logging,
     create_instructions_and_config_from_kwargs,
+    reconfigure_logging,
 )
 from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
 from automata.core.agent.automata_agent_utils import AutomataAgentFactory
@@ -47,7 +47,7 @@ def run(kwargs):
 
 def main(kwargs):
     verbose = kwargs.pop("verbose")
-    configure_logging(verbose)
+    reconfigure_logging(verbose)
 
     result = run(kwargs)
     logger.info(f"Final Result = {result}")

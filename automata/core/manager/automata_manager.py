@@ -23,7 +23,3 @@ class AutomataManager:
     def run(self) -> str:
         # system execution logic
         return self.main_agent.run()
-
-    def replay_messages(self):
-        # system execution logic
-        self.main_agent.replay_messages()
