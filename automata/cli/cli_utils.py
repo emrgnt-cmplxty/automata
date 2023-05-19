@@ -11,20 +11,20 @@ from automata.tools.python_tools.python_indexer import PythonIndexer
 logger = logging.getLogger(__name__)
 
 
-def configure_logging(verbose: bool):
+def reconfigure_logging(log_level: int):
     """
     Configure the logging settings.
 
     :param verbose: Boolean, if True, set log level to DEBUG, else set to INFO.
     """
-    logging_config = get_logging_config(log_level=logging.DEBUG if verbose else logging.INFO)
+    logging_config = get_logging_config(log_level=log_level)
     logging.config.dictConfig(logging_config)
 
     # Set the logging level for the requests logger to WARNING
     requests_logger = logging.getLogger("urllib3")
-    requests_logger.setLevel(logging.INFO)
+    requests_logger.setLevel(log_level)
     openai_logger = logging.getLogger("openai")
-    openai_logger.setLevel(logging.INFO)
+    openai_logger.setLevel(log_level)
 
 
 def check_kwargs(kwargs):

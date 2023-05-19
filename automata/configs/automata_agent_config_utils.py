@@ -261,10 +261,14 @@ class AutomataAgentConfigFactory:
 
         if not main_config_name and not main_config:
             raise ValueError("Main config name or config must be specified.")
+
+        if main_config_name and main_config:
+            raise ValueError("Main config name abd config cannot both be specified.")
+
         if main_config_name:
             builder = AutomataAgentConfigBuilder.from_name(AgentConfigName(main_config_name))
         else:
-            builder = AutomataAgentConfigBuilder.from_config(main_config)
+            builder = AutomataAgentConfigBuilder.from_config(main_config)  # type: ignore
 
         instruction_payload = kwargs.get("instruction_payload", {})
 

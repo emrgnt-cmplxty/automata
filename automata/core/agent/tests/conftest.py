@@ -11,17 +11,18 @@ def automata_agent():
     tool_list = ["python_indexer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
-    instruction_payload = AutomataInstructionPayload()
+    instruction_payload = AutomataInstructionPayload(agents_message="", overview="", tools="")
 
     instructions = "Test instruction."
 
-    config_name = AgentConfigName.DEFAULT
+    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
 
     agent = AutomataAgentFactory.create_agent(
         instructions,
         config=AutomataAgentConfigBuilder.from_name(config_name)
         .with_instruction_payload(instruction_payload)
         .with_llm_toolkits(mock_llm_toolkits)
+        .with_stream(False)
         .build(),
     )
     return agent

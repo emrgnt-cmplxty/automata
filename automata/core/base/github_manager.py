@@ -86,7 +86,9 @@ class GitHubManager:
         repo.git.commit(m=commit_message)
         repo.git.push("origin", branch_name)
 
-    def create_pull_request(self, branch_name: str, title: str, body: str) -> PullRequest:
+    def create_pull_request(
+        self, branch_name: str, title: str, body: str
+    ) -> PullRequest.PullRequest:
         """
         Creates a new pull request on GitHub
         """

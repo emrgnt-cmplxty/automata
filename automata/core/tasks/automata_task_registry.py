@@ -169,7 +169,6 @@ class AutomataTaskRegistry:
             if len(results) != 1:
                 raise Exception(f"Found multiple tasks with id {task_id}")
             task = results[0]
-            task.initialize_logging()
             task.observer = self.update_task
             return task
 

@@ -15,7 +15,7 @@ from automata.core.utils import get_logging_config
 logger = logging.getLogger(__name__)
 
 
-def configure_logging(verbose: bool):
+def reconfigure_logging(verbose: bool):
     """
     Configure the logging settings.
 
@@ -88,14 +88,13 @@ def run(kwargs) -> None:
     task = task_registry.get_task_by_id(task_id)
     if task is None:
         raise ValueError(f"Task with id {task_id} does not exist.")
-    print("task = ", task)
     executor.execute(task)
 
 
 def main(kwargs):
     print("kwargs = ", kwargs)
     verbose = kwargs.pop("verbose")
-    configure_logging(verbose)
+    reconfigure_logging(verbose)
     task = initialize_task(kwargs)
     result = run(task_id=task.task_id)
     logger.info(f"Final Result = {result}")
