@@ -1,15 +1,16 @@
 from typing import Dict, List, Optional, Union
 
 from automata.tools.search.local_types import SymbolReference
+from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
 from automata.tools.search.symbol_utils import find_and_replace_in_modules, find_pattern_in_modules
 
 
 class SymbolSearcher:
-    def __init__(self, symbol_graph: SymbolGraph):
+    def __init__(self, symbol_converter: SymbolConverter, symbol_graph: SymbolGraph):
         self.symbol_graph = symbol_graph
-        self._helper = symbol_graph.helper
+        self.converter = symbol_graph.converter
 
     def retrieve_source_code_by_symbol(self, symbol_uri: str) -> Optional[str]:
         """
@@ -18,7 +19,7 @@ class SymbolSearcher:
         :param symbol: The symbol to retrieve
         :return: The raw text of the symbol or None if not found
         """
-        node = self._helper.convert_to_fst_object(parse_uri_to_symbol(symbol_uri))
+        node = self.converter.convert_to_fst_object(parse_uri_to_symbol(symbol_uri))
         return str(node) if node is not None else None
 
     def symbol_search(self, symbol_uri: str) -> Dict[str, List[SymbolReference]]:
@@ -39,7 +40,7 @@ class SymbolSearcher:
         :return: A dict of paths to files that contain the pattern and corresponding line numbers
 
         """
-        return find_pattern_in_modules(self._helper, pattern)
+        return find_pattern_in_modules(self.converter, pattern)
 
     def find_and_replace(self, find: str, replace: str, do_write: bool) -> int:
         """
@@ -49,7 +50,7 @@ class SymbolSearcher:
         :param replace: The string to replace
         :return: The number of replacements made
         """
-        return find_and_replace_in_modules(self._helper, find, replace, do_write)
+        return find_and_replace_in_modules(self.converter, find, replace, do_write)
 
     def process_query(
         self, query: str

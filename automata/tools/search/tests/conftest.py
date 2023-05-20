@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from automata.tools.search.symbol_graph import SymbolGraph
+from automata.tools.search.symbol_graph import SymbolConverter, SymbolGraph
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
 from automata.tools.search.symbol_searcher import SymbolSearcher
 
@@ -54,21 +54,26 @@ def symbols():
 
 
 @pytest.fixture
-def symbol_graph(symbols):
+def symbol_converter():
+    return SymbolConverter()
+
+
+@pytest.fixture
+def symbol_graph(symbol_converter):
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
     index_path = os.path.join(file_dir, "../index.scip")
-    graph = SymbolGraph(index_path)
+    graph = SymbolGraph(index_path, symbol_converter)
     return graph
 
 
 @pytest.fixture
 def symbol_graph_mock(mocker):
     mock = mocker.MagicMock(spec=SymbolGraph)
-    mock.helper = mocker.MagicMock()
+    mock.converter = mocker.MagicMock()
     return mock
 
 
 @pytest.fixture
-def symbol_searcher(symbol_graph_mock):
-    return SymbolSearcher(symbol_graph_mock)
+def symbol_searcher(symbol_converter, symbol_graph_mock):
+    return SymbolSearcher(symbol_converter, symbol_graph_mock)
