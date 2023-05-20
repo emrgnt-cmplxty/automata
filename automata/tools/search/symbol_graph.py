@@ -120,7 +120,6 @@ class SymbolGraph:
 
         result = ""
         docs = ["\n"]
-        print("self._graph.nodes = ", self._graph.nodes)
         for doc in self._graph.nodes[symbol]["documentation"]:
             docs.extend(doc.split("\n"))
 
@@ -177,8 +176,8 @@ class SymbolGraph:
             # Get the FST object
             try:
                 fst_object = self.helper.convert_to_fst_object(symbol)
-            except Exception as e:
-                print("Exception occurred while fetching FST object for symbol = ", symbol)
+            except Exception:
+                logger.info("Exception occurred while fetching FST object for symbol = ", symbol)
                 continue
 
             # Get the return type

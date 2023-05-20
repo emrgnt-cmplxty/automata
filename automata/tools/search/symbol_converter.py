@@ -17,8 +17,6 @@ class SymbolConverter:
         self.repo_abs_path = os.path.join(file_dir, "..", "..")
         self._module_dict = self._build_module_dict()
 
-
-
     def convert_to_fst_object(self, symbol: Symbol) -> RedBaron:
         """
         Returns the RedBaron object for the given symbol.
@@ -39,7 +37,8 @@ class SymbolConverter:
                 obj = self._find_module(top_descriptor.name.replace(".", os.path.sep) + ".py")
                 # TODO - Understand why some modules might be None, like "setup.py"
                 if not obj or "test" in top_descriptor.name:
-                    raise ValueError(f"Module descriptor {top_descriptor.name} not found")
+                    # raise ValueError(f"Module descriptor {top_descriptor.name} not found")
+                    return None
             elif (
                 Descriptor.convert_scip_to_python_suffix(top_descriptor)
                 == Descriptor.PythonTypes.Class
@@ -78,7 +77,6 @@ class SymbolConverter:
         :param node: The RedBaron node to check.
         :return: True if the node represents a call, False otherwise.
         """
-        print("symbol = ", symbol)
         node = self.convert_to_fst_object(symbol)
         if node:
             return node.type
@@ -92,7 +90,6 @@ class SymbolConverter:
             Dict[str, RedBaron]: A dictionary with module paths as keys and RedBaron objects as values.
         """
         module_dict = {}
-        print("looping over self.repo_abs_path = ", self.repo_abs_path)
         for root, _, files in os.walk(self.repo_abs_path):
             for file in files:
                 if file.endswith(".py"):
