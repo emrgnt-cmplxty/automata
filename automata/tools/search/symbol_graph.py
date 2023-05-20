@@ -6,7 +6,7 @@ from google.protobuf.json_format import MessageToDict
 
 from automata.tools.search.local_types import Descriptor, File, Symbol, SymbolReference
 from automata.tools.search.scip_pb2 import Index, SymbolRole
-from automata.tools.search.symbol_helper import SymbolHelper
+from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class SymbolGraph:
 
         :param index_path: Path to index protobuf file
         """
-        self.helper = SymbolHelper()
+        self.helper = SymbolConverter()
 
         self._index = self._load_index_protobuf(index_path)
         self._do_shortened_symbols = do_shortened_symbols
@@ -120,6 +120,7 @@ class SymbolGraph:
 
         result = ""
         docs = ["\n"]
+        print("self._graph.nodes = ", self._graph.nodes)
         for doc in self._graph.nodes[symbol]["documentation"]:
             docs.extend(doc.split("\n"))
 
@@ -174,9 +175,10 @@ class SymbolGraph:
             ):
                 continue
             # Get the FST object
-            fst_object = self.helper.find_fst_object(symbol)
-
-            if not fst_object:
+            try:
+                fst_object = self.helper.convert_to_fst_object(symbol)
+            except Exception as e:
+                print("Exception occurred while fetching FST object for symbol = ", symbol)
                 continue
 
             # Get the return type

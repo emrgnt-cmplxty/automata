@@ -25,10 +25,10 @@ import ast
 import logging
 import os
 import re
-from _ast import AsyncFunctionDef, ClassDef, FunctionDef
 from functools import cached_property
 from typing import Dict, Optional, Union
 
+from _ast import AsyncFunctionDef, ClassDef, FunctionDef
 from redbaron import (
     ClassNode,
     DefNode,
