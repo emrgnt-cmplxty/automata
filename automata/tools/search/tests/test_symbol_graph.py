@@ -18,7 +18,6 @@ def test_get_all_symbols(symbol_graph, symbols):
 
 def test_get_symbol_references(symbol_graph, symbols):
     for symbol in symbols:
-        print("symbol = ", symbol)
         references = symbol_graph.get_symbol_references(symbol)
         assert isinstance(references, dict)
         assert all(isinstance(k, str) and isinstance(v, list) for k, v in references.items())

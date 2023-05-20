@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser
 
 from automata.tools.search.symbol_graph import SymbolGraph
@@ -6,13 +7,16 @@ from automata.tools.search.symbol_searcher import SymbolSearcher
 
 if __name__ == "__main__":
     symbol_prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065"
-    test_path = "automata"  # "automata.configs.automata_agent_configs"
+    test_path = "automata.configs.automata_agent_configs"
     test_symbol = parse_uri_to_symbol("%s `%s`/AutomataAgentConfig#" % (symbol_prefix, test_path))
 
     argparse = ArgumentParser()
     argparse.add_argument("-i", type=str, dest="index", help="path to index file", required=True)
     args = argparse.parse_args()
-    symbol_graph = SymbolGraph(args.index)
+
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+
+    symbol_graph = SymbolGraph(os.path.join(file_dir, args.index))
     symbol_searcher = SymbolSearcher(symbol_graph)
 
     # Dump all available files in the symbol graph
@@ -29,7 +33,7 @@ if __name__ == "__main__":
     available_symbols = symbol_graph.get_symbols_along_path(test_path)
     for symbol in available_symbols:
         print("Available Symbol >> %s" % (symbol))
-        # symbol_type = symbol_graph.helper.find_symbol_type(symbol)
+        # symbol_type = symbol_graph.helper.convert_symbol_to_type(symbol)
         # print("Symbol Type >> %s" % (symbol_type))
         # print("Symbol Type == class >> %s" % (symbol_type == "class"))
 

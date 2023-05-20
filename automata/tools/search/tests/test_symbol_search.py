@@ -2,10 +2,10 @@ import pytest
 
 
 def test_retrieve_source_code_by_symbol(symbols, symbol_searcher, symbol_graph_mock):
-    symbol_graph_mock.helper.find_fst_object.return_value = "module1"
+    symbol_graph_mock.helper.convert_to_fst_object.return_value = "module1"
     result = symbol_searcher.retrieve_source_code_by_symbol(symbols[0].uri)
     assert result == "module1"
-    symbol_graph_mock.helper.find_fst_object.assert_called_once_with(symbols[0])
+    symbol_graph_mock.helper.convert_to_fst_object.assert_called_once_with(symbols[0])
 
 
 def test_symbol_search(symbols, symbol_searcher, symbol_graph_mock):

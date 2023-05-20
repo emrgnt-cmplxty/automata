@@ -57,8 +57,6 @@ def symbols():
 def symbol_graph(symbols):
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
-    print(file_dir)
-
     index_path = os.path.join(file_dir, "../index.scip")
     graph = SymbolGraph(index_path)
     return graph

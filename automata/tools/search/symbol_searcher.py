@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Union
 from automata.tools.search.local_types import SymbolReference
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_utils import find_and_replace_in_modules, find_pattern_in_modules
 
 
 class SymbolSearcher:
@@ -17,7 +18,7 @@ class SymbolSearcher:
         :param symbol: The symbol to retrieve
         :return: The raw text of the symbol or None if not found
         """
-        node = self._helper.find_fst_object(parse_uri_to_symbol(symbol_uri))
+        node = self._helper.convert_to_fst_object(parse_uri_to_symbol(symbol_uri))
         return str(node) if node is not None else None
 
     def symbol_search(self, symbol_uri: str) -> Dict[str, List[SymbolReference]]:
@@ -38,7 +39,7 @@ class SymbolSearcher:
         :return: A dict of paths to files that contain the pattern and corresponding line numbers
 
         """
-        return self._helper.find_pattern_in_modules(pattern)
+        return find_pattern_in_modules(self._helper, pattern)
 
     def find_and_replace(self, find: str, replace: str, do_write: bool) -> int:
         """
@@ -48,7 +49,7 @@ class SymbolSearcher:
         :param replace: The string to replace
         :return: The number of replacements made
         """
-        return self._helper.find_and_replace_in_modules(find, replace, do_write)
+        return find_and_replace_in_modules(self._helper, find, replace, do_write)
 
     def process_query(
         self, query: str
