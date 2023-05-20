@@ -13,13 +13,15 @@ logger = logging.getLogger(__name__)
 
 
 class SymbolGraph:
-    def __init__(self, index_path: str, do_shortened_symbols: bool = True):
+    def __init__(
+        self, index_path: str, symbol_converter: SymbolConverter, do_shortened_symbols: bool = True
+    ):
         """
         Initialize SymbolGraph with the path of an index protobuf file.
 
         :param index_path: Path to index protobuf file
         """
-        self.helper = SymbolConverter()
+        self.converter = symbol_converter
 
         self._index = self._load_index_protobuf(index_path)
         self._do_shortened_symbols = do_shortened_symbols
@@ -78,22 +80,6 @@ class SymbolGraph:
                 result_dict[file_name] = [entry]
 
         return result_dict
-
-    def get_callers(self, symbol: Symbol) -> List[tuple[str, List[SymbolReference]]]:
-        """
-        Get all callers of a given symbol in the symbol graph.
-        :param symbol: Symbol to search for
-        :return: List of SymbolReferences
-        """
-        results = []
-        for check_symbol, return_type in self._symbol_to_return_type.items():
-            if not return_type:
-                continue
-            if return_type != symbol:
-                continue
-            for reference in self.get_symbol_references(check_symbol).items():
-                results.append(reference)
-        return results
 
     def get_symbols_along_path(self, partial_path: str) -> Set[Symbol]:
         """
@@ -175,13 +161,13 @@ class SymbolGraph:
                 continue
             # Get the FST object
             try:
-                fst_object = self.helper.convert_to_fst_object(symbol)
+                fst_object = self.converter.convert_to_fst_object(symbol)
             except Exception:
                 logger.info("Exception occurred while fetching FST object for symbol = ", symbol)
                 continue
 
             # Get the return type
-            return_type = self.helper.find_return_type(fst_object)
+            return_type = self.converter.find_return_type(fst_object)
             if return_type:
                 # If return type exists, perform a reverse lookup to get its corresponding symbol
                 return_type_symbol = self._class_to_symbol_lookup.get(return_type)
@@ -225,14 +211,14 @@ class SymbolGraph:
             G.add_node(document.relative_path, label="file")
             for symbol_information in document.symbols:
                 G.add_node(
-                    self._process_symbol(symbol_information.symbol),
+                    parse_uri_to_symbol(symbol_information.symbol),
                     label="symbol",
                     symbol_kind=Descriptor.symbol_kind_by_suffix(symbol_information.symbol),
                     documentation=list(symbol_information.documentation),
                 )
                 G.add_edge(
                     document.relative_path,
-                    self._process_symbol(symbol_information.symbol),
+                    parse_uri_to_symbol(symbol_information.symbol),
                     label="contains",
                 )
         # process occurrences and relationships
@@ -242,7 +228,7 @@ class SymbolGraph:
                     relationship_labels = MessageToDict(relationship)
                     relationship_labels.pop("symbol")
                     G.add_edge(
-                        self._process_symbol(symbol_information.symbol),
+                        parse_uri_to_symbol(symbol_information.symbol),
                         relationship.symbol,
                         label="relates_to",
                         **relationship_labels,
@@ -252,7 +238,7 @@ class SymbolGraph:
                 occurrence_range = tuple(occurrence.range)
                 roles = self._get_symbol_roles_dict(occurrence.symbol_roles)
                 G.add_edge(
-                    self._process_symbol(occurrence.symbol),
+                    parse_uri_to_symbol(occurrence.symbol),
                     document.relative_path,
                     label="occurs_in",
                     range=occurrence_range,
@@ -260,15 +246,6 @@ class SymbolGraph:
                 )
 
         return G
-
-    def _process_symbol(self, symbol: str) -> Symbol:
-        """
-        Processes a symbol, shortening it if in do_shortened_symbols mode.
-
-        :param symbol: The full symbol
-        :return: The processed symbol
-        """
-        return parse_uri_to_symbol(symbol)
 
     @staticmethod
     def _get_symbol_roles_dict(role) -> Dict[str, bool]:
@@ -296,12 +273,3 @@ class SymbolGraph:
         with open(path, "rb") as f:
             index.ParseFromString(f.read())
         return index
-
-    @staticmethod
-    def is_call_occurrence(occurrence) -> bool:
-        """
-        Determines if a symbol occurrence is a function/method call.
-        :param occurrence: The occurrence to inspect
-        :return: True if it's a call, False otherwise
-        """
-        return occurrence.get("symbol_roles", {}).get("CALLSITE", False)

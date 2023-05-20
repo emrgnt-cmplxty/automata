@@ -1,6 +1,8 @@
 import os
 from argparse import ArgumentParser
 
+# from automata.tools.search.call_graph import CallGraph
+from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
 from automata.tools.search.symbol_searcher import SymbolSearcher
@@ -16,8 +18,9 @@ if __name__ == "__main__":
 
     file_dir = os.path.dirname(os.path.abspath(__file__))
 
-    symbol_graph = SymbolGraph(os.path.join(file_dir, args.index))
-    symbol_searcher = SymbolSearcher(symbol_graph)
+    symbol_converter = SymbolConverter()
+    symbol_graph = SymbolGraph(os.path.join(file_dir, args.index), symbol_converter)
+    symbol_searcher = SymbolSearcher(symbol_converter, symbol_graph)
 
     # Dump all available files in the symbol graph
     print("-" * 200)
@@ -87,12 +90,4 @@ if __name__ == "__main__":
     )
     print("Finding return type for %s" % (method_symbol))
     print("Return Symbol >> ", symbol_graph.find_return_symbol(method_symbol))
-    print("-" * 200)
-
-    # Get the callers of the test symbol
-    print("-" * 200)
-    print("Finding Callers for %s" % (test_symbol))
-    callers = symbol_graph.get_callers(test_symbol)
-    for caller in callers:
-        print("Caller >> ", caller)
     print("-" * 200)
