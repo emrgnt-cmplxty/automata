@@ -1,7 +1,8 @@
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from os import PathLike
+from typing import Any, Dict, List, Optional, Union
 
 from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
 
@@ -161,6 +162,7 @@ class Symbol:
 
 @dataclass
 class SymbolReference:
+    symbol: Symbol
     line_number: int
     roles: Dict[str, Any]
 
@@ -179,3 +181,6 @@ class File:
         elif isinstance(other, str):
             return self.path == other
         return False
+
+
+StrPath = Union[str, PathLike]
