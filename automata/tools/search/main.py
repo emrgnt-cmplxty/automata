@@ -2,6 +2,8 @@ import os
 from argparse import ArgumentParser
 
 # from automata.tools.search.call_graph import CallGraph
+from typing import Dict, cast
+
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_symbol
@@ -25,20 +27,17 @@ if __name__ == "__main__":
     # Dump all available files in the symbol graph
     print("-" * 200)
     print("Fetching all available files in SymbolGraph")
-    file_nodes = symbol_graph.get_all_files()
-    for file_node in file_nodes:
-        print("File >> %s" % (file_node))
+    files = symbol_graph.get_all_files()
+    for file in files:
+        print("File Path >> %s" % (file.path))
     print("-" * 200)
 
-    # Dump all available symbols at the test path
+    # Dump all available symbols defined along test path
     print("-" * 200)
-    print("Fetching all available symbols along %s" % (test_path))
-    available_symbols = symbol_graph.get_symbols_along_path(test_path)
+    print("Fetching all defined symbols along %s" % (test_path))
+    available_symbols = symbol_graph.get_defined_symbols_along_path(test_path)
     for symbol in available_symbols:
-        print("Available Symbol >> %s" % (symbol))
-        # symbol_type = symbol_graph.helper.convert_symbol_to_type(symbol)
-        # print("Symbol Type >> %s" % (symbol_type))
-        # print("Symbol Type == class >> %s" % (symbol_type == "class"))
+        print("Defined Symbol >> %s" % (symbol))
 
     print("-" * 200)
 
@@ -51,23 +50,30 @@ if __name__ == "__main__":
     # Find references of the test symbol
     print("-" * 200)
     print("Searching for references of the symbol %s" % (test_symbol))
-    search_result = symbol_searcher.process_query("type:symbol %s" % (test_symbol.uri))
-    print("References: ", search_result)
+    search_result_0: Dict = cast(
+        Dict, symbol_searcher.process_query("type:symbol %s" % (test_symbol.uri))
+    )
+    for file_path in search_result_0.keys():
+        print("File Path >> %s" % (file_path))
+        for reference in search_result_0[file_path]:
+            print("Reference >> %s" % (reference))
     print("-" * 200)
 
     # Find source code for the test symbol
     print("-" * 200)
     print("Searching for source code for symbol %s" % (test_symbol))
-    search_result = symbol_searcher.process_query("type:source %s" % (test_symbol.uri))
-    print("Source Code: ", search_result)
+    search_result_1: str = cast(
+        str, symbol_searcher.process_query("type:source %s" % (test_symbol.uri))
+    )
+    print("Source Code: ", search_result_1)
     print("-" * 200)
 
     # Find exact matches for abbrievated test symbol
     print("-" * 200)
     abbv_test_symbol = "AutomataAgentConfig"
     print("Searching for exact matches of the filter %s" % (abbv_test_symbol))
-    search_result = symbol_searcher.process_query("type:exact %s" % (abbv_test_symbol))
-    print("Search result: ", search_result)
+    search_result_2 = symbol_searcher.process_query("type:exact %s" % (abbv_test_symbol))
+    print("Search result: ", search_result_2)
     print("-" * 200)
 
     # Perform a find and replace on the test find symbol below
@@ -80,14 +86,4 @@ if __name__ == "__main__":
         "type:replace %s %s %s" % (test_find, test_replace, do_write)
     )
     print("In Mem Replacements: ", counts)
-    print("-" * 200)
-
-    # Perform a find and replace on the test find symbol below
-    print("-" * 200)
-    method_symbol = parse_symbol(
-        "%s `automata.configs.automata_agent_config_utils`/AutomataAgentConfigBuilder#build()."
-        % (symbol_prefix)
-    )
-    print("Finding return type for %s" % (method_symbol))
-    print("Return Symbol >> ", symbol_graph.find_return_symbol(method_symbol))
     print("-" * 200)

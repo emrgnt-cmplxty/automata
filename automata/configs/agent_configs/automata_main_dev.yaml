@@ -1,6 +1,7 @@
 name: Master
 verbose: True
 stream: True
+max_iters: 20
 instruction_input_variables:
   - agents_message
 system_instruction_template: >

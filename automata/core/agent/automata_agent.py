@@ -76,17 +76,8 @@ class AutomataAgent(Agent):
 
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
-        response_summary = openai.ChatCompletion.create(
-            model=self.config.model,
-            messages=[ele.to_dict() for ele in self.messages],
-            temperature=self.config.temperature,
-            stream=self.config.stream,
-        )
-        response_text = (
-            self._stream_message(response_summary)
-            if self.config.stream
-            else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
-        )
+
+        response_text = self._get_openai_response()
 
         observations = self._generate_observations(response_text)
 
@@ -111,6 +102,26 @@ class AutomataAgent(Agent):
 
         return (assistant_message, user_message)
 
+    def _get_debug_summary(self):
+        user_message = "Provide a succinct one-sentence summary of the errors encountered. Write nothing else."
+        self._save_message("user", user_message)
+        response_text = self._get_openai_response()
+        return response_text
+
+    def _get_openai_response(self) -> str:
+        response_summary = openai.ChatCompletion.create(
+            model=self.config.model,
+            messages=[ele.to_dict() for ele in self.messages],
+            temperature=self.config.temperature,
+            stream=self.config.stream,
+        )
+        response_text = (
+            self._stream_message(response_summary)
+            if self.config.stream
+            else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
+        )
+        return response_text
+
     def run(self) -> str:
         """
         Runs the agent and iterates through the tasks until a result is produced or the max iterations are exceeded.
@@ -127,7 +138,8 @@ class AutomataAgent(Agent):
                 len(self.messages) - AutomataAgent.NUM_DEFAULT_MESSAGES
                 >= self.config.max_iters * 2
             ):
-                return "Result was not found before iterations exceeded max limit."
+                debug_summary = self._get_debug_summary()
+                return f"Result was not found before iterations exceeded configured max limit: {self.config.max_iters}. Debug summary: {debug_summary}"
             latest_responses = self.iter_task()
         return self.messages[-1].content
 

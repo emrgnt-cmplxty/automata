@@ -1,7 +1,8 @@
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, NewType, Optional, Tuple
+from os import PathLike
+from typing import Any, Dict, Optional, Tuple, Union
 
 from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
 
@@ -131,7 +132,7 @@ class Package:
 class Symbol:
     scheme: str
     package: Package
-    descriptors: Tuple[Descriptor]
+    descriptors: Tuple[Descriptor, ...]
 
     def unparse(self) -> str:
         """Converts back into URI string"""
@@ -165,7 +166,24 @@ class SymbolReference:
     symbol: Symbol
     line_number: int
     column_number: int
-    details: Dict[str, Any]
+    roles: Dict[str, Any]
 
 
-File = NewType("File", str)
+@dataclass(frozen=True)
+class File:
+    path: str
+    occurrences: str
+
+    def __hash__(self) -> int:
+        return hash(self.path)
+
+    def __eq__(self, other):
+        if isinstance(other, File):
+            return self.path == other.path
+        elif isinstance(other, str):
+            return self.path == other
+        return False
+
+
+StrPath = Union[str, PathLike]
+PyPath = str

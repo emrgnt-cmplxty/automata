@@ -1,17 +1,11 @@
 import logging
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Set, Tuple, cast
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from redbaron import RedBaron
 
-from automata.tools.search.scip_classes import (
-    Descriptor,
-    File,
-    Symbol,
-    SymbolReference,
-    PythonTypes,
-)
+from automata.tools.search.scip_classes import File, PyPath, StrPath, Symbol, SymbolReference
 from automata.tools.search.scip_pb2 import Index, SymbolRole
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_parser import parse_symbol
@@ -31,11 +25,6 @@ class SymbolGraph:
         self._index = self._load_index_protobuf(index_path)
         self._graph = self._build_symbol_graph(self._index)
 
-        self._class_to_symbol_lookup: Dict[str, Symbol] = self._build_class_to_symbol_lookup()
-        self._symbol_to_return_type: Dict[
-            Symbol, Optional[Symbol]
-        ] = self._build_symbol_to_return_type()
-
     def get_all_files(self) -> List[File]:
         """
         Get all file nodes in the graph.
@@ -43,9 +32,13 @@ class SymbolGraph:
 
         :return: List of all file nodes.
         """
-        return [node for node, data in self._graph.nodes(data=True) if data.get("label") == "file"]
+        return [
+            data.get("file")
+            for _, data in self._graph.nodes(data=True)
+            if data.get("label") == "file"
+        ]
 
-    def get_all_symbols(self) -> List[Symbol]:
+    def get_all_defined_symbols(self) -> List[Symbol]:
         """
         Get all file nodes in the graph.
         :param data_type: Optional filter for data type
@@ -56,7 +49,7 @@ class SymbolGraph:
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
 
-    def get_symbol_references(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
+    def get_symbol_references(self, symbol: Symbol) -> Dict[StrPath, List[SymbolReference]]:
         """
         Finds all references of a given symbol in the symbol graph.
 
@@ -64,27 +57,17 @@ class SymbolGraph:
         :return: List of tuples (file, symbol details)
         """
         search_results = [
-            (file_name, details)
-            for _, file_name, details in self._graph.out_edges(symbol, data=True)
-            if details.get("label") == "occurs_in"
+            (file_path, data.get("symbol_reference"))
+            for _, file_path, data in self._graph.out_edges(symbol, data=True)
+            if data.get("label") == "reference"
         ]
-        result_dict: Dict[str, List[SymbolReference]] = {}
+        result_dict: Dict[StrPath, List[SymbolReference]] = {}
 
-        for item in search_results:
-            file_name, details = item
-            line_number = details["range"][0]
-            column_number = details["range"][1]
-            entry = SymbolReference(
-                symbol=symbol,
-                line_number=line_number,
-                column_number=column_number,
-                details={k: v for k, v in details.items() if k != "range" and k != "label"},
-            )
-
-            if file_name in result_dict:
-                result_dict[file_name].append(entry)
+        for file_path, symbol_reference in search_results:
+            if file_path in result_dict:
+                result_dict[file_path].append(symbol_reference)
             else:
-                result_dict[file_name] = [entry]
+                result_dict[file_path] = [symbol_reference]
 
         return result_dict
 
@@ -92,33 +75,23 @@ class SymbolGraph:
         reference_edges_in_module = self._graph.in_edges(module, data=True)
         result = []
         for source, _, data in reference_edges_in_module:
-            if data["label"] != "occurs_in":
-                continue
-            line_number = data["range"][0]
-            column_number = data["range"][1]
-            result.append(
-                SymbolReference(
-                    symbol=source,
-                    line_number=line_number,
-                    column_number=column_number,
-                    details={k: v for k, v in data.items() if k != "range" and k != "label"},
-                )
-            )
+            if data["label"] == "reference":
+                result.append(data.get("symbol_reference"))
+
         return result
 
-    def get_symbols_along_path(self, partial_path: str) -> Set[Symbol]:
+    def get_defined_symbols_along_path(self, partial_py_path: PyPath) -> Set[Symbol]:
         """
-        Finds all symbols which contain a specified partial path
+        Gets all symbols which contain a specified partial path
 
         :param partial_path: The partial_path to explain
         :return: Set of symbols that follow the partial path
         """
-        obs_symbols = set([])
-        symbols = self.get_all_symbols()
+        obs_symbols = set()
+        symbols = self.get_all_defined_symbols()
         for symbol in symbols:
-            if partial_path not in symbol.uri:
-                continue
-            obs_symbols.add(symbol)
+            if partial_py_path in symbol.uri:
+                obs_symbols.add(symbol)
         return obs_symbols
 
     def get_symbol_context(self, symbol) -> str:
@@ -131,11 +104,8 @@ class SymbolGraph:
 
         result = ""
         docs = ["\n"]
-        for doc in self._graph.nodes[symbol]["documentation"]:
-            docs.extend(doc.split("\n"))
 
         result += "Symbol Context for %s --> \n" % (symbol)
-        result += "  >> Symbol Type       --> %s\n" % self._graph.nodes[symbol]["symbol_kind"]
         doc_decorator = "  >> Symbol Docs       --> "
         spacer = " " * (0 + len(doc_decorator))
         result += f"{doc_decorator}%s\n" % (("\n" + spacer).join(docs)) + "\n"
@@ -150,84 +120,18 @@ class SymbolGraph:
         for occurrence_file, outputs in references.items():
             for output in outputs:
                 line_number = output.line_number
-                details = str(list(output.details.keys()))
-                symbol_references += f"{spacer}{occurrence_file}: L{line_number}, {details} \n"
+                roles = str(list(output.roles.keys()))
+                symbol_references += f"{spacer}{occurrence_file}: L{line_number}, {roles} \n"
 
         result += " >>  Symbol Refs (All) --> %s" % (symbol_references)
 
         return result
-
-    def find_return_symbol(self, symbol: Symbol) -> Optional[Symbol]:
-        """
-        Finds the return symbol for a corresponding symbol
-        Note - A match will only be found for methods
-
-        :return: The return symbol, if it exists
-        """
-        return self._symbol_to_return_type.get(symbol)
-
-    def _build_symbol_to_return_type(self) -> Dict[Symbol, Optional[Symbol]]:
-        """
-        Builds a mapping of symbol to return symbol type (if it exists).
-
-        :return: A dictionary mapping symbols to their return types.
-        """
-        symbol_to_return_type = {}
-
-        for symbol in self._graph.nodes():
-            if not isinstance(symbol, Symbol):
-                continue
-
-            #  If the symbol is not a method, skip
-            if not (
-                Descriptor.convert_scip_to_python_suffix(symbol.descriptors[-1])
-                == PythonTypes.Method
-            ):
-                continue
-            # Get the FST object
-            try:
-                fst_object = self.get_symbol_fst_node(symbol)
-            except Exception:
-                logger.info("Exception occurred while fetching FST object for symbol = ", symbol)
-                continue
-
-            # Get the return type
-            return_type = self.converter.find_return_type(fst_object)
-            if return_type:
-                # If return type exists, perform a reverse lookup to get its corresponding symbol
-                return_type_symbol = self._class_to_symbol_lookup.get(return_type)
-                # Add to the mapping
-                symbol_to_return_type[symbol] = return_type_symbol
-
-        return symbol_to_return_type
 
     def get_symbol_fst_node(self, symbol: Symbol) -> RedBaron:
         symbol_module = self.get_parent_file(symbol)
         start_line, start_column = self.get_symbol_definition_start_location(symbol)
         fst_object = self.converter.get_fst_node(symbol_module, start_line, start_column)
         return fst_object
-
-    def _build_class_to_symbol_lookup(self) -> Dict[str, Symbol]:
-        """
-        Builds a mapping of return type to symbol.
-
-        :return: A dictionary mapping return types to their symbols.
-        """
-        return_type_to_symbol = {}
-
-        for symbol in self._graph.nodes():
-            if not isinstance(symbol, Symbol):
-                continue
-
-            if not (
-                Descriptor.convert_scip_to_python_suffix(symbol.descriptors[-1])
-                == PythonTypes.Class
-            ):
-                continue
-            class_name = symbol.descriptors[-1].name
-            return_type_to_symbol[class_name] = symbol
-
-        return return_type_to_symbol
 
     def _build_symbol_graph(self, index: Index) -> nx.MultiDiGraph:
         """
@@ -237,44 +141,59 @@ class SymbolGraph:
         :return: The built multidirectional graph.
         """
         G = nx.MultiDiGraph()
-        # first add all the files and symbols
         for document in index.documents:
-            G.add_node(document.relative_path, label="file")
-            for symbol_information in document.symbols:
-                G.add_node(
-                    parse_symbol(symbol_information.symbol),
-                    label="symbol",
-                    symbol_kind=Descriptor.symbol_kind_by_suffix(symbol_information.symbol),
-                    documentation=list(symbol_information.documentation),
-                )
+            # Add FilePath Vertices
+            document_path: StrPath = cast(StrPath, document.relative_path)
 
+            G.add_node(
+                document_path,
+                file=File(document_path, occurrences=document.occurrences),
+                label="file",
+            )
+
+            for symbol_information in document.symbols:
+                symbol = parse_symbol(symbol_information.symbol)
+                # Add Symbol Vertices
+                G.add_node(
+                    symbol,
+                    label="symbol",
+                )
         # process occurrences and relationships
         for document in index.documents:
             for symbol_information in document.symbols:
+                symbol = parse_symbol(symbol_information.symbol)
+
                 for relationship in symbol_information.relationships:
                     relationship_labels = MessageToDict(relationship)
                     relationship_labels.pop("symbol")
+                    related_symbol = parse_symbol(relationship.symbol)
                     G.add_edge(
-                        parse_symbol(symbol_information.symbol),
-                        relationship.symbol,
+                        symbol,
+                        related_symbol,
                         label="relates_to",
                         **relationship_labels,
                     )
 
             for occurrence in document.occurrences:
+                occurrence_symbol = parse_symbol(occurrence.symbol)
                 occurrence_range = tuple(occurrence.range)
-                roles = self._get_symbol_roles_dict(occurrence.symbol_roles)
-                G.add_edge(
-                    parse_symbol(occurrence.symbol),
-                    document.relative_path,
-                    label="occurs_in",
-                    range=occurrence_range,
-                    **roles,
+                occurrence_roles = self._get_symbol_roles_dict(occurrence.symbol_roles)
+                occurrence_reference = SymbolReference(
+                    symbol=occurrence_symbol,
+                    line_number=occurrence_range[0],
+                    column_number=occurrence_range[1],
+                    roles=occurrence_roles,
                 )
-                if roles.get(SymbolRole.Name(SymbolRole.Definition)):
+                G.add_edge(
+                    occurrence_symbol,
+                    document.relative_path,
+                    symbol_reference=occurrence_reference,
+                    label="reference",
+                )
+                if occurrence_roles.get(SymbolRole.Name(SymbolRole.Definition)):
                     G.add_edge(
                         document.relative_path,
-                        parse_symbol(occurrence.symbol),
+                        occurrence_symbol,
                         label="contains",
                     )
 
@@ -298,7 +217,7 @@ class SymbolGraph:
         definition_references = [
             ref
             for ref in references[parent_file]
-            if ref.details.get(SymbolRole.Name(SymbolRole.Definition))
+            if ref.roles.get(SymbolRole.Name(SymbolRole.Definition))
         ]
         assert (
             len(definition_references) == 1
@@ -331,13 +250,14 @@ class SymbolGraph:
             fst_object.absolute_bounding_box.top_left.column - 1,
             fst_object.absolute_bounding_box.bottom_right.line - 1,
         )
-        references_in_module = self.get_all_references_in_module(module)
+        references_in_parent_module = self.get_all_references_in_module(module)
         references_in_range = [
             ref.symbol
-            for ref in references_in_module
+            for ref in references_in_parent_module
             if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
             and ref.column_number >= parent_symbol_start_col
             and ref.symbol != symbol  # TODO: don't include self (or maybe do?)
+            and not ref.roles.get(SymbolRole.Name(SymbolRole.Definition))  # skip definitions
             and "stdlib" not in ref.symbol.package.name
         ]
 
@@ -358,7 +278,7 @@ class SymbolGraph:
         return result
 
     @staticmethod
-    def _load_index_protobuf(path: str) -> Index:
+    def _load_index_protobuf(path: StrPath) -> Index:
         """
         Load an index from a protobuf file.
 
