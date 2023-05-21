@@ -29,6 +29,7 @@ def find_and_replace_in_modules(
         converter._write_modules()
     return counts
 
+
 def find_pattern_in_modules(converter: SymbolConverter, pattern: str) -> Dict[str, List[int]]:
     """
     Finds exact line matches for a given pattern string in all modules.

@@ -33,12 +33,9 @@ if __name__ == "__main__":
     # Dump all available symbols at the test path
     print("-" * 200)
     print("Fetching all available symbols along %s" % (test_path))
-    available_symbols = symbol_graph.get_symbols_along_path(test_path)
+    available_symbols = symbol_graph.get_defined_symbols_along_path(test_path)
     for symbol in available_symbols:
         print("Available Symbol >> %s" % (symbol))
-        # symbol_type = symbol_graph.helper.convert_symbol_to_type(symbol)
-        # print("Symbol Type >> %s" % (symbol_type))
-        # print("Symbol Type == class >> %s" % (symbol_type == "class"))
 
     print("-" * 200)
 
@@ -80,14 +77,4 @@ if __name__ == "__main__":
         "type:replace %s %s %s" % (test_find, test_replace, do_write)
     )
     print("In Mem Replacements: ", counts)
-    print("-" * 200)
-
-    # Perform a find and replace on the test find symbol below
-    print("-" * 200)
-    method_symbol = parse_uri_to_symbol(
-        "%s `automata.configs.automata_agent_config_utils`/AutomataAgentConfigBuilder#build()."
-        % (symbol_prefix)
-    )
-    print("Finding return type for %s" % (method_symbol))
-    print("Return Symbol >> ", symbol_graph.find_return_symbol(method_symbol))
     print("-" * 200)

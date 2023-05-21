@@ -1,5 +1,6 @@
 import logging
 import os
+from copy import deepcopy
 from typing import Dict, Optional, Union
 
 from redbaron import ClassNode, DefNode, RedBaron
@@ -27,27 +28,28 @@ class SymbolConverter:
         """
 
         # Extract the module path, class/method name from the symbol
-        descriptors = symbol.descriptors
+        descriptors = deepcopy(symbol.descriptors)
+        obj = None
+
         while descriptors:
             top_descriptor = descriptors.pop(0)
             if (
-                Descriptor.convert_scip_to_python_suffix(top_descriptor)
+                Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
                 == Descriptor.PythonTypes.Module
             ):
                 obj = self._find_module(top_descriptor.name.replace(".", os.path.sep) + ".py")
                 # TODO - Understand why some modules might be None, like "setup.py"
                 if not obj or "test" in top_descriptor.name:
-                    # raise ValueError(f"Module descriptor {top_descriptor.name} not found")
-                    return None
+                    raise ValueError(f"Module descriptor {top_descriptor.name} not found")
             elif (
-                Descriptor.convert_scip_to_python_suffix(top_descriptor)
+                Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
                 == Descriptor.PythonTypes.Class
             ):
                 if not obj:
                     raise ValueError("Class descriptor found without module descriptor")
                 obj = obj.find("class", name=top_descriptor.name)
             elif (
-                Descriptor.convert_scip_to_python_suffix(top_descriptor)
+                Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
                 == Descriptor.PythonTypes.Method
             ):
                 if not obj:
