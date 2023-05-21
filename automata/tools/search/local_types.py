@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, NewType, Optional
+from typing import Any, Dict, List, Optional
 
 from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
 
@@ -26,7 +26,7 @@ class Descriptor:
         Parameter = "parameter"
         TypeParameter = "type_parameter"
 
-    def __init__(self, name: str, suffix: str, disambiguator: Optional[str] = None):
+    def __init__(self, name: str, suffix: DescriptorProto, disambiguator: Optional[str] = None):
         self.name = name
         self.suffix = suffix
         self.disambiguator = disambiguator
@@ -57,27 +57,6 @@ class Descriptor:
             raise ValueError(f"Invalid descriptor suffix: {self.suffix}")
 
     @staticmethod
-    def symbol_kind_by_suffix(uri: str):
-        if uri.startswith("local"):
-            return Descriptor.ScipSuffix.Local
-        if uri.endswith("/"):
-            return Descriptor.ScipSuffix.Namespace
-        elif uri.endswith("#"):
-            return Descriptor.ScipSuffix.Type
-        elif uri.endswith(")."):
-            return Descriptor.ScipSuffix.Method
-        elif uri.endswith("."):
-            return Descriptor.ScipSuffix.Term
-        elif uri.endswith(":"):
-            return Descriptor.ScipSuffix.Meta
-        elif uri.endswith(")"):
-            return Descriptor.ScipSuffix.Parameter
-        elif uri.endswith("]"):
-            return Descriptor.ScipSuffix.TypeParameter
-        else:
-            raise ValueError(f"Invalid descriptor suffix: {uri}")
-
-    @staticmethod
     def get_escaped_name(name):
         def is_simple_identifier(name):
             return re.match(r"^[\w$+-]+$", name) is not None
@@ -89,29 +68,29 @@ class Descriptor:
         return "`" + re.sub("`", "``", name) + "`"
 
     @staticmethod
-    def convert_scip_to_python_suffix(descriptor: "Descriptor") -> PythonTypes:
-        if descriptor.suffix == Descriptor.ScipSuffix.Local:
+    def convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PythonTypes:
+        if descriptor_suffix == Descriptor.ScipSuffix.Local:
             return Descriptor.PythonTypes.Local
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Namespace:
+        elif descriptor_suffix == Descriptor.ScipSuffix.Namespace:
             return Descriptor.PythonTypes.Module
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Type:
+        elif descriptor_suffix == Descriptor.ScipSuffix.Type:
             return Descriptor.PythonTypes.Class
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Method:
+        elif descriptor_suffix == Descriptor.ScipSuffix.Method:
             return Descriptor.PythonTypes.Method
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Term:
+        elif descriptor_suffix == Descriptor.ScipSuffix.Term:
             return Descriptor.PythonTypes.Value
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Macro:
+        elif descriptor_suffix == Descriptor.ScipSuffix.Macro:
             return Descriptor.PythonTypes.Macro
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Parameter:
+        elif descriptor_suffix == Descriptor.ScipSuffix.Parameter:
             return Descriptor.PythonTypes.Parameter
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.TypeParameter:
+        elif descriptor_suffix == Descriptor.ScipSuffix.TypeParameter:
             return Descriptor.PythonTypes.TypeParameter
 
         else:
@@ -139,12 +118,35 @@ class Symbol:
         self.package = package
         self.descriptors = descriptors
 
-    def __repr__(self):
-        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
-
     def unparse(self):
         """Converts back into URI string"""
         return self.uri
+
+    def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
+        if self.uri.startswith("local"):
+            return Descriptor.ScipSuffix.Local
+        if self.uri.endswith("/"):
+            return Descriptor.ScipSuffix.Namespace
+        elif self.uri.endswith("#"):
+            return Descriptor.ScipSuffix.Type
+        elif self.uri.endswith(")."):
+            return Descriptor.ScipSuffix.Method
+        elif self.uri.endswith("."):
+            return Descriptor.ScipSuffix.Term
+        elif self.uri.endswith(":"):
+            return Descriptor.ScipSuffix.Meta
+        elif self.uri.endswith(")"):
+            return Descriptor.ScipSuffix.Parameter
+        elif self.uri.endswith("]"):
+            return Descriptor.ScipSuffix.TypeParameter
+        else:
+            raise ValueError(f"Invalid descriptor suffix: {self.uri}")
+
+    def symbol_kind_by_suffix(self) -> Descriptor.PythonTypes:
+        return Descriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
+
+    def __repr__(self):
+        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
 
     def __hash__(self) -> int:
         return hash(self.unparse())
@@ -160,7 +162,20 @@ class Symbol:
 @dataclass
 class SymbolReference:
     line_number: int
-    details: Dict[str, Any]
+    roles: Dict[str, Any]
 
 
-File = NewType("File", str)
+@dataclass
+class File:
+    path: str
+    occurrences: str
+
+    def __hash__(self) -> int:
+        return hash(self.path)
+
+    def __eq__(self, other):
+        if isinstance(other, File):
+            return self.path == other.path
+        elif isinstance(other, str):
+            return self.path == other
+        return False

@@ -10,7 +10,7 @@ from automata.tools.search.symbol_utils import find_and_replace_in_modules, find
 class SymbolSearcher:
     def __init__(self, symbol_converter: SymbolConverter, symbol_graph: SymbolGraph):
         self.symbol_graph = symbol_graph
-        self.converter = symbol_graph.converter
+        self.converter = symbol_converter
 
     def retrieve_source_code_by_symbol(self, symbol_uri: str) -> Optional[str]:
         """
