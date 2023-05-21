@@ -3,7 +3,7 @@ from typing import Dict, List, Set
 
 import networkx as nx
 
-from automata.tools.search.local_types import File, StrPath, Symbol, SymbolReference
+from automata.tools.search.local_types import File, PyPath, StrPath, Symbol, SymbolReference
 from automata.tools.search.scip_pb2 import Index, SymbolRole
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
@@ -53,7 +53,7 @@ class SymbolGraph:
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
 
-    def get_symbol_references(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
+    def get_symbol_references(self, symbol: Symbol) -> Dict[StrPath, List[SymbolReference]]:
         """
         Finds all references of a given symbol in the symbol graph.
 
@@ -65,7 +65,7 @@ class SymbolGraph:
             for file_path, _, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "reference"
         ]
-        result_dict: Dict[str, List[SymbolReference]] = {}
+        result_dict: Dict[StrPath, List[SymbolReference]] = {}
 
         for file_path, symbol_reference in search_results:
             if file_path in result_dict:
@@ -75,22 +75,7 @@ class SymbolGraph:
 
         return result_dict
 
-    def get_symbols_occurrences_at_symbol(self, file_path: str) -> Set[Symbol]:
-        """
-        Gets all symbols defined at a specific file path
-
-        :param file_path: The file_path to to get occurrences at
-        :return: Set of symbols that follow the file path
-        """
-        obs_symbols = set([])
-        symbols = self.get_all_defined_symbols()
-        for symbol in symbols:
-            if file_path not in symbol.uri:
-                continue
-            obs_symbols.add(symbol)
-        return obs_symbols
-
-    def get_defined_symbols_along_path(self, partial_path: str) -> Set[Symbol]:
+    def get_defined_symbols_along_path(self, partial_py_path: PyPath) -> Set[Symbol]:
         """
         Gets all symbols which contain a specified partial path
 
@@ -100,7 +85,7 @@ class SymbolGraph:
         obs_symbols = set([])
         symbols = self.get_all_defined_symbols()
         for symbol in symbols:
-            if partial_path not in symbol.uri:
+            if partial_py_path not in symbol.uri:
                 continue
             obs_symbols.add(symbol)
         return obs_symbols
@@ -147,7 +132,7 @@ class SymbolGraph:
         """
         G = nx.MultiDiGraph()
         for document in index.documents:
-            # Add File Vertices
+            # Add FilePath Vertices
             document_path: StrPath = document.relative_path
 
             G.add_node(
@@ -163,7 +148,7 @@ class SymbolGraph:
                     symbol,
                     label="symbol",
                 )
-                # Add Contains Edge (File <-> Symbol)
+                # Add Contains Edge (FilePath <-> Symbol)
                 G.add_edge(
                     document_path,
                     parse_uri_to_symbol(symbol_information.symbol),
@@ -179,7 +164,7 @@ class SymbolGraph:
                     line_number=occurrence_range[0],
                     roles=occurrence_roles,
                 )
-                # Add Occurrence Edges (Symbol <-> File)
+                # Add Occurrence Edges (Symbol <-> FilePath)
                 G.add_edge(
                     occurrence_symbol,
                     document.relative_path,

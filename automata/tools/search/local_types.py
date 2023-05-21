@@ -184,3 +184,4 @@ class File:
 
 
 StrPath = Union[str, PathLike]
+PyPath = str

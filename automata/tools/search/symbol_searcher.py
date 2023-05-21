@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from automata.tools.search.local_types import SymbolReference
+from automata.tools.search.local_types import StrPath, SymbolReference
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
@@ -22,7 +22,7 @@ class SymbolSearcher:
         node = self.converter.convert_to_fst_object(parse_uri_to_symbol(symbol_uri))
         return str(node) if node is not None else None
 
-    def symbol_search(self, symbol_uri: str) -> Dict[str, List[SymbolReference]]:
+    def symbol_search(self, symbol_uri: str) -> Dict[StrPath, List[SymbolReference]]:
         """
         Perform a symbol-based search
 
@@ -54,7 +54,7 @@ class SymbolSearcher:
 
     def process_query(
         self, query: str
-    ) -> Union[Dict[str, List[SymbolReference]], Dict[str, List[int]], int, Optional[str]]:
+    ) -> Union[Dict[StrPath, List[SymbolReference]], Dict[str, List[int]], int, Optional[str]]:
         """
         Process an NLP-formatted query and return the results of the appropriate search
 
