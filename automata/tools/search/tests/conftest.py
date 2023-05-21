@@ -3,7 +3,7 @@ import os
 import pytest
 
 from automata.tools.search.symbol_graph import SymbolConverter, SymbolGraph
-from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_parser import parse_symbol
 from automata.tools.search.symbol_searcher import SymbolSearcher
 
 
@@ -11,41 +11,41 @@ from automata.tools.search.symbol_searcher import SymbolSearcher
 def symbols():
     symbols = [
         # Symbol with a simple attribute
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.configs.automata_agent_configs`/AutomataAgentConfig#description."
         ),
         # Symbol with a method with foreign argument
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.configs.automata_agent_configs`/AutomataAgentConfig#load().(config_name)"
         ),
         # Symbol with a class method, self as argument
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.tools.python_tools.python_indexer`/PythonIndexer#get_module_path().(self)"
         ),
         # Symbol with a locally defined object
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tasks.automata_task_executor`/logger."
         ),
         # Symbol with a class object and class variable
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.configs.automata_agent_configs`/AutomataAgentConfig#verbose."
         ),
         # Symbol with a function in a module
-        # parse_uri_to_symbol("scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.coordinator.tests.test_automata_coordinator`/test().(coordinator)"),
+        # parse_symbol("scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.coordinator.tests.test_automata_coordinator`/test().(coordinator)"),
         # Symbol with a class method
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.evals.eval_helpers`/EvalAction#__init__().(action)"
         ),
         # Symbol with an object
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#CODE."
         ),
         # Class Name
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#"
         ),
         # Init
-        parse_uri_to_symbol(
+        parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__()."
         ),
     ]
@@ -75,5 +75,5 @@ def symbol_graph_mock(mocker):
 
 
 @pytest.fixture
-def symbol_searcher(symbol_converter, symbol_graph_mock):
-    return SymbolSearcher(symbol_converter, symbol_graph_mock)
+def symbol_searcher(symbol_graph_mock):
+    return SymbolSearcher(symbol_graph_mock)

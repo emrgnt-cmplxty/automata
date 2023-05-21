@@ -4,13 +4,13 @@ from argparse import ArgumentParser
 # from automata.tools.search.call_graph import CallGraph
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
-from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_parser import parse_symbol
 from automata.tools.search.symbol_searcher import SymbolSearcher
 
 if __name__ == "__main__":
     symbol_prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065"
     test_path = "automata.configs.automata_agent_configs"
-    test_symbol = parse_uri_to_symbol("%s `%s`/AutomataAgentConfig#" % (symbol_prefix, test_path))
+    test_symbol = parse_symbol("%s `%s`/AutomataAgentConfig#" % (symbol_prefix, test_path))
 
     argparse = ArgumentParser()
     argparse.add_argument("-i", type=str, dest="index", help="path to index file", required=True)
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     symbol_converter = SymbolConverter()
     symbol_graph = SymbolGraph(os.path.join(file_dir, args.index), symbol_converter)
-    symbol_searcher = SymbolSearcher(symbol_converter, symbol_graph)
+    symbol_searcher = SymbolSearcher(symbol_graph)
 
     # Dump all available files in the symbol graph
     print("-" * 200)
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     # Perform a find and replace on the test find symbol below
     print("-" * 200)
-    method_symbol = parse_uri_to_symbol(
+    method_symbol = parse_symbol(
         "%s `automata.configs.automata_agent_config_utils`/AutomataAgentConfigBuilder#build()."
         % (symbol_prefix)
     )

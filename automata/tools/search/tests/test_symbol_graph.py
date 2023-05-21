@@ -1,6 +1,6 @@
 # test_symbol_graph.py
 
-from automata.tools.search.local_types import Symbol
+from automata.tools.search.scip_classes import Symbol
 
 
 def test_get_all_files(symbol_graph):

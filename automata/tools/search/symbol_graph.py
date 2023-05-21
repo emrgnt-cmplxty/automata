@@ -1,21 +1,20 @@
 import logging
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict
+from redbaron import RedBaron
 
-from automata.tools.search.local_types import Descriptor, File, Symbol, SymbolReference
+from automata.tools.search.scip_classes import Descriptor, File, Symbol, SymbolReference
 from automata.tools.search.scip_pb2 import Index, SymbolRole
 from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_parser import parse_symbol
 
 logger = logging.getLogger(__name__)
 
 
 class SymbolGraph:
-    def __init__(
-        self, index_path: str, symbol_converter: SymbolConverter, do_shortened_symbols: bool = True
-    ):
+    def __init__(self, index_path: str, symbol_converter: SymbolConverter):
         """
         Initialize SymbolGraph with the path of an index protobuf file.
 
@@ -24,7 +23,6 @@ class SymbolGraph:
         self.converter = symbol_converter
 
         self._index = self._load_index_protobuf(index_path)
-        self._do_shortened_symbols = do_shortened_symbols
         self._graph = self._build_symbol_graph(self._index)
 
         self._class_to_symbol_lookup: Dict[str, Symbol] = self._build_class_to_symbol_lookup()
@@ -69,8 +67,11 @@ class SymbolGraph:
         for item in search_results:
             file_name, details = item
             line_number = details["range"][0]
+            column_number = details["range"][1]
             entry = SymbolReference(
+                symbol=symbol,
                 line_number=line_number,
+                column_number=column_number,
                 details={k: v for k, v in details.items() if k != "range" and k != "label"},
             )
 
@@ -80,6 +81,24 @@ class SymbolGraph:
                 result_dict[file_name] = [entry]
 
         return result_dict
+
+    def get_all_references_in_module(self, module) -> List[SymbolReference]:
+        reference_edges_in_module = self._graph.in_edges(module, data=True)
+        result = []
+        for source, _, data in reference_edges_in_module:
+            if data["label"] != "occurs_in":
+                continue
+            line_number = data["range"][0]
+            column_number = data["range"][1]
+            result.append(
+                SymbolReference(
+                    symbol=source,
+                    line_number=line_number,
+                    column_number=column_number,
+                    details={k: v for k, v in data.items() if k != "range" and k != "label"},
+                )
+            )
+        return result
 
     def get_symbols_along_path(self, partial_path: str) -> Set[Symbol]:
         """
@@ -161,7 +180,7 @@ class SymbolGraph:
                 continue
             # Get the FST object
             try:
-                fst_object = self.converter.convert_to_fst_object(symbol)
+                fst_object = self.get_symbol_fst_node(symbol)
             except Exception:
                 logger.info("Exception occurred while fetching FST object for symbol = ", symbol)
                 continue
@@ -175,6 +194,12 @@ class SymbolGraph:
                 symbol_to_return_type[symbol] = return_type_symbol
 
         return symbol_to_return_type
+
+    def get_symbol_fst_node(self, symbol: Symbol) -> RedBaron:
+        symbol_module = self.get_parent_file(symbol)
+        start_line, start_column = self.get_symbol_definition_start_location(symbol)
+        fst_object = self.converter.get_fst_node(symbol_module, start_line, start_column)
+        return fst_object
 
     def _build_class_to_symbol_lookup(self) -> Dict[str, Symbol]:
         """
@@ -211,16 +236,12 @@ class SymbolGraph:
             G.add_node(document.relative_path, label="file")
             for symbol_information in document.symbols:
                 G.add_node(
-                    parse_uri_to_symbol(symbol_information.symbol),
+                    parse_symbol(symbol_information.symbol),
                     label="symbol",
                     symbol_kind=Descriptor.symbol_kind_by_suffix(symbol_information.symbol),
                     documentation=list(symbol_information.documentation),
                 )
-                G.add_edge(
-                    document.relative_path,
-                    parse_uri_to_symbol(symbol_information.symbol),
-                    label="contains",
-                )
+
         # process occurrences and relationships
         for document in index.documents:
             for symbol_information in document.symbols:
@@ -228,7 +249,7 @@ class SymbolGraph:
                     relationship_labels = MessageToDict(relationship)
                     relationship_labels.pop("symbol")
                     G.add_edge(
-                        parse_uri_to_symbol(symbol_information.symbol),
+                        parse_symbol(symbol_information.symbol),
                         relationship.symbol,
                         label="relates_to",
                         **relationship_labels,
@@ -238,14 +259,83 @@ class SymbolGraph:
                 occurrence_range = tuple(occurrence.range)
                 roles = self._get_symbol_roles_dict(occurrence.symbol_roles)
                 G.add_edge(
-                    parse_uri_to_symbol(occurrence.symbol),
+                    parse_symbol(occurrence.symbol),
                     document.relative_path,
                     label="occurs_in",
                     range=occurrence_range,
                     **roles,
                 )
+                if roles.get(SymbolRole.Name(SymbolRole.Definition)):
+                    G.add_edge(
+                        document.relative_path,
+                        parse_symbol(occurrence.symbol),
+                        label="contains",
+                    )
 
         return G
+
+    def get_parent_file(self, symbol) -> str:
+        parent_file_list = [
+            source
+            for source, _, data in self._graph.in_edges(symbol, data=True)
+            if data.get("label") == "contains"
+        ]
+        assert (
+            len(parent_file_list) == 1
+        ), f"{symbol} should have exactly one parent file, but has {len(parent_file_list)}"
+        return parent_file_list.pop()
+
+    def get_symbol_definition_start_location(self, symbol: Symbol) -> Tuple[int, int]:
+        parent_file = self.get_parent_file(symbol)
+        references = self.get_symbol_references(symbol)
+
+        definition_references = [
+            ref
+            for ref in references[parent_file]
+            if ref.details.get(SymbolRole.Name(SymbolRole.Definition))
+        ]
+        assert (
+            len(definition_references) == 1
+        ), f"{symbol} should have exactly one definition, but has {len(definition_references)}"
+        line_number, column_number = (
+            definition_references[0].line_number,
+            definition_references[0].column_number,
+        )
+        return (
+            line_number + 1,
+            column_number + 1,
+        )  # RedBaron IS 1 INDEXED AND SCIP IS 0 INDEXED!!!!
+
+    def find_dependency_symbols(self, symbol: Symbol) -> Set[Symbol]:
+        """
+        Returns the list of dependencies for the given symbol.
+
+        Args:
+            symbol (str): The symbol in the form 'module`/ClassOrMethod#'
+
+        Returns:
+            List[str]: The list of dependencies for the symbol.
+        """
+        fst_object = self.get_symbol_fst_node(symbol)
+        module = self.get_parent_file(symbol)
+
+        # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
+        parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
+            fst_object.absolute_bounding_box.top_left.line - 1,
+            fst_object.absolute_bounding_box.top_left.column - 1,
+            fst_object.absolute_bounding_box.bottom_right.line - 1,
+        )
+        references_in_module = self.get_all_references_in_module(module)
+        references_in_range = [
+            ref.symbol
+            for ref in references_in_module
+            if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
+            and ref.column_number >= parent_symbol_start_col
+            and ref.symbol != symbol  # TODO: don't include self (or maybe do?)
+            and "stdlib" not in ref.symbol.package.name
+        ]
+
+        return set(references_in_range)
 
     @staticmethod
     def _get_symbol_roles_dict(role) -> Dict[str, bool]:

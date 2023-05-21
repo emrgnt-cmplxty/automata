@@ -13,7 +13,7 @@ The classes and functions in this file are used to convert the symbol URI into a
 
 
 class Descriptor:
-    ScipSuffix = DescriptorProto
+    ScipSuffix = DescriptorProto.Suffix
 
     class PythonTypes(Enum):
         Local = "local"
@@ -26,13 +26,13 @@ class Descriptor:
         Parameter = "parameter"
         TypeParameter = "type_parameter"
 
-    def __init__(self, name: str, suffix: str, disambiguator: Optional[str] = None):
+    def __init__(self, name: str, suffix: ScipSuffix, disambiguator: Optional[str] = None):
         self.name = name
         self.suffix = suffix
         self.disambiguator = disambiguator
 
     def __repr__(self):
-        return f"Descriptor({self.name}, {self.suffix}" + (
+        return f"Descriptor({self.name}, {self.ScipSuffix.Name(self.suffix)}" + (
             f", {self.disambiguator})" if self.disambiguator else ")"
         )
 
@@ -53,6 +53,8 @@ class Descriptor:
             return f"({escaped_name})"
         elif self.suffix == Descriptor.ScipSuffix.TypeParameter:
             return f"[{escaped_name}]"
+        elif self.suffix == Descriptor.ScipSuffix.Local:
+            return f"local {escaped_name}"
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.suffix}")
 
@@ -133,21 +135,32 @@ class Package:
 
 
 class Symbol:
-    def __init__(self, uri: str, scheme: str, package: Package, descriptors: List[Descriptor]):
-        self.uri = uri
+    def __init__(self, scheme: str, package: Package, descriptors: List[Descriptor]):
         self.scheme = scheme
         self.package = package
-        self.descriptors = descriptors
+        self.descriptors = tuple(descriptors)
 
     def __repr__(self):
         return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
 
-    def unparse(self):
+    def unparse(self) -> str:
         """Converts back into URI string"""
-        return self.uri
+        return f"{self.scheme} {self.package.unparse()} {''.join([descriptor.unparse() for descriptor in self.descriptors])}"
+
+    @property
+    def uri(self) -> str:
+        return self.unparse()
+
+    @property
+    def module_name(self) -> str:
+        return self.descriptors[0].name
+
+    def parent(self) -> "Symbol":
+        parent_descriptors = list(self.descriptors)[:-1]
+        return Symbol(self.scheme, self.package, parent_descriptors)
 
     def __hash__(self) -> int:
-        return hash(self.unparse())
+        return hash(self.uri)
 
     def __eq__(self, other):
         if isinstance(other, Symbol):
@@ -159,7 +172,9 @@ class Symbol:
 
 @dataclass
 class SymbolReference:
+    symbol: Symbol
     line_number: int
+    column_number: int
     details: Dict[str, Any]
 
 

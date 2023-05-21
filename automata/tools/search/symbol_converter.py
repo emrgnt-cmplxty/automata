@@ -4,8 +4,6 @@ from typing import Dict, Optional, Union
 
 from redbaron import ClassNode, DefNode, RedBaron
 
-from automata.tools.search.local_types import Descriptor, Symbol
-
 logger = logging.getLogger(__name__)
 
 
@@ -17,7 +15,7 @@ class SymbolConverter:
         self.repo_abs_path = os.path.join(file_dir, "..", "..")
         self._module_dict = self._build_module_dict()
 
-    def convert_to_fst_object(self, symbol: Symbol) -> RedBaron:
+    def get_fst_node(self, module: str, line_number: int, column_number: int) -> RedBaron:
         """
         Returns the RedBaron object for the given symbol.
         Args:
@@ -25,37 +23,7 @@ class SymbolConverter:
         Returns:
             Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found.
         """
-
-        # Extract the module path, class/method name from the symbol
-        descriptors = symbol.descriptors
-        while descriptors:
-            top_descriptor = descriptors.pop(0)
-            if (
-                Descriptor.convert_scip_to_python_suffix(top_descriptor)
-                == Descriptor.PythonTypes.Module
-            ):
-                obj = self._find_module(top_descriptor.name.replace(".", os.path.sep) + ".py")
-                # TODO - Understand why some modules might be None, like "setup.py"
-                if not obj or "test" in top_descriptor.name:
-                    # raise ValueError(f"Module descriptor {top_descriptor.name} not found")
-                    return None
-            elif (
-                Descriptor.convert_scip_to_python_suffix(top_descriptor)
-                == Descriptor.PythonTypes.Class
-            ):
-                if not obj:
-                    raise ValueError("Class descriptor found without module descriptor")
-                obj = obj.find("class", name=top_descriptor.name)
-            elif (
-                Descriptor.convert_scip_to_python_suffix(top_descriptor)
-                == Descriptor.PythonTypes.Method
-            ):
-                if not obj:
-                    raise ValueError("Method descriptor found without module or class descriptor")
-                obj = obj.find("def", name=top_descriptor.name)
-        if not obj:
-            raise ValueError(f"Symbol {symbol} not found")
-        return obj
+        return self._module_dict[module].find_by_position((line_number, column_number))
 
     def find_return_type(self, fst_object: Union[RedBaron, ClassNode, DefNode]) -> Optional[str]:
         """
@@ -70,17 +38,6 @@ class SymbolConverter:
             if return_annotation is not None:
                 return return_annotation.dumps().strip()
         return None
-
-    def convert_symbol_to_type(self, symbol: Symbol) -> str:
-        """
-        Check if the given RedBaron node represents a function call.
-        :param node: The RedBaron node to check.
-        :return: True if the node represents a call, False otherwise.
-        """
-        node = self.convert_to_fst_object(symbol)
-        if node:
-            return node.type
-        raise ValueError(f"Symbol {symbol} not found")
 
     def _build_module_dict(self) -> Dict[str, RedBaron]:
         """

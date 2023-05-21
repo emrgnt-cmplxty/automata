@@ -1,14 +1,13 @@
 from typing import Dict, List, Optional, Union
 
-from automata.tools.search.local_types import SymbolReference
-from automata.tools.search.symbol_converter import SymbolConverter
+from automata.tools.search.scip_classes import SymbolReference
 from automata.tools.search.symbol_graph import SymbolGraph
-from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_parser import parse_symbol
 from automata.tools.search.symbol_utils import find_and_replace_in_modules, find_pattern_in_modules
 
 
 class SymbolSearcher:
-    def __init__(self, symbol_converter: SymbolConverter, symbol_graph: SymbolGraph):
+    def __init__(self, symbol_graph: SymbolGraph):
         self.symbol_graph = symbol_graph
         self.converter = symbol_graph.converter
 
@@ -19,7 +18,7 @@ class SymbolSearcher:
         :param symbol: The symbol to retrieve
         :return: The raw text of the symbol or None if not found
         """
-        node = self.converter.convert_to_fst_object(parse_uri_to_symbol(symbol_uri))
+        node = self.symbol_graph.get_symbol_fst_node(parse_symbol(symbol_uri))
         return str(node) if node is not None else None
 
     def symbol_search(self, symbol_uri: str) -> Dict[str, List[SymbolReference]]:
@@ -30,7 +29,7 @@ class SymbolSearcher:
         :return: A list of symbols that match the query
         """
         # TODO - Add parsing upstream or here to parse references
-        return self.symbol_graph.get_symbol_references(parse_uri_to_symbol(symbol_uri))
+        return self.symbol_graph.get_symbol_references(parse_symbol(symbol_uri))
 
     def exact_search(self, pattern: str) -> Dict[str, List[int]]:
         """

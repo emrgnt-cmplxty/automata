@@ -5,9 +5,11 @@ Flask_Cors==3.0.10
 GitPython==3.1.31
 jsonpickle==3.0.1
 jsonschema==4.17.3
-langchain==0.0.170
+networkx==3.1
+openai==0.27.7
 numpy==1.23.5
 pandas==1.5.2
+protobuf==4.23.1
 pydantic==1.10.7
 PyGithub==1.58.2
 pytest==7.2.0
