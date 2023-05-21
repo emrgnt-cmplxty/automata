@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, NewType, Optional
+from typing import Any, Dict, NewType, Optional, Tuple
 
 from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
 
@@ -11,49 +11,45 @@ Full spec: https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b570
 The classes and functions in this file are used to convert the symbol URI into a human-readable form that can be used to query the index.
 """
 
+ScipSuffix = DescriptorProto.Suffix
 
+
+class PythonTypes(Enum):
+    Local = "local"
+    Module = "module"
+    Class = "class"
+    Method = "method"
+    Value = "value"
+    Meta = "meta"
+    Macro = "macro"
+    Parameter = "parameter"
+    TypeParameter = "type_parameter"
+
+
+@dataclass(frozen=True)
 class Descriptor:
-    ScipSuffix = DescriptorProto.Suffix
-
-    class PythonTypes(Enum):
-        Local = "local"
-        Module = "module"
-        Class = "class"
-        Method = "method"
-        Value = "value"
-        Meta = "meta"
-        Macro = "macro"
-        Parameter = "parameter"
-        TypeParameter = "type_parameter"
-
-    def __init__(self, name: str, suffix: ScipSuffix, disambiguator: Optional[str] = None):
-        self.name = name
-        self.suffix = suffix
-        self.disambiguator = disambiguator
-
-    def __repr__(self):
-        return f"Descriptor({self.name}, {self.ScipSuffix.Name(self.suffix)}" + (
-            f", {self.disambiguator})" if self.disambiguator else ")"
-        )
+    name: str
+    suffix: ScipSuffix
+    disambiguator: Optional[str] = None
 
     def unparse(self):
         """Converts back into URI string"""
         escaped_name = Descriptor.get_escaped_name(self.name)
-        if self.suffix == Descriptor.ScipSuffix.Namespace:
+        if self.suffix == ScipSuffix.Namespace:
             return f"{escaped_name}/"
-        elif self.suffix == Descriptor.ScipSuffix.Type:
+        elif self.suffix == ScipSuffix.Type:
             return f"{escaped_name}#"
-        elif self.suffix == Descriptor.ScipSuffix.Term:
+        elif self.suffix == ScipSuffix.Term:
             return f"{escaped_name}."
-        elif self.suffix == Descriptor.ScipSuffix.Meta:
+        elif self.suffix == ScipSuffix.Meta:
             return f"{escaped_name}:"
-        elif self.suffix == Descriptor.ScipSuffix.Method:
+        elif self.suffix == ScipSuffix.Method:
             return f"{escaped_name}({self.disambiguator})."
-        elif self.suffix == Descriptor.ScipSuffix.Parameter:
+        elif self.suffix == ScipSuffix.Parameter:
             return f"({escaped_name})"
-        elif self.suffix == Descriptor.ScipSuffix.TypeParameter:
+        elif self.suffix == ScipSuffix.TypeParameter:
             return f"[{escaped_name}]"
-        elif self.suffix == Descriptor.ScipSuffix.Local:
+        elif self.suffix == ScipSuffix.Local:
             return f"local {escaped_name}"
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.suffix}")
@@ -61,21 +57,21 @@ class Descriptor:
     @staticmethod
     def symbol_kind_by_suffix(uri: str):
         if uri.startswith("local"):
-            return Descriptor.ScipSuffix.Local
+            return ScipSuffix.Local
         if uri.endswith("/"):
-            return Descriptor.ScipSuffix.Namespace
+            return ScipSuffix.Namespace
         elif uri.endswith("#"):
-            return Descriptor.ScipSuffix.Type
+            return ScipSuffix.Type
         elif uri.endswith(")."):
-            return Descriptor.ScipSuffix.Method
+            return ScipSuffix.Method
         elif uri.endswith("."):
-            return Descriptor.ScipSuffix.Term
+            return ScipSuffix.Term
         elif uri.endswith(":"):
-            return Descriptor.ScipSuffix.Meta
+            return ScipSuffix.Meta
         elif uri.endswith(")"):
-            return Descriptor.ScipSuffix.Parameter
+            return ScipSuffix.Parameter
         elif uri.endswith("]"):
-            return Descriptor.ScipSuffix.TypeParameter
+            return ScipSuffix.TypeParameter
         else:
             raise ValueError(f"Invalid descriptor suffix: {uri}")
 
@@ -92,56 +88,50 @@ class Descriptor:
 
     @staticmethod
     def convert_scip_to_python_suffix(descriptor: "Descriptor") -> PythonTypes:
-        if descriptor.suffix == Descriptor.ScipSuffix.Local:
-            return Descriptor.PythonTypes.Local
+        if descriptor.suffix == ScipSuffix.Local:
+            return PythonTypes.Local
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Namespace:
-            return Descriptor.PythonTypes.Module
+        elif descriptor.suffix == ScipSuffix.Namespace:
+            return PythonTypes.Module
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Type:
-            return Descriptor.PythonTypes.Class
+        elif descriptor.suffix == ScipSuffix.Type:
+            return PythonTypes.Class
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Method:
-            return Descriptor.PythonTypes.Method
+        elif descriptor.suffix == ScipSuffix.Method:
+            return PythonTypes.Method
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Term:
-            return Descriptor.PythonTypes.Value
+        elif descriptor.suffix == ScipSuffix.Term:
+            return PythonTypes.Value
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Macro:
-            return Descriptor.PythonTypes.Macro
+        elif descriptor.suffix == ScipSuffix.Macro:
+            return PythonTypes.Macro
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.Parameter:
-            return Descriptor.PythonTypes.Parameter
+        elif descriptor.suffix == ScipSuffix.Parameter:
+            return PythonTypes.Parameter
 
-        elif descriptor.suffix == Descriptor.ScipSuffix.TypeParameter:
-            return Descriptor.PythonTypes.TypeParameter
+        elif descriptor.suffix == ScipSuffix.TypeParameter:
+            return PythonTypes.TypeParameter
 
         else:
-            return Descriptor.PythonTypes.Meta
+            return PythonTypes.Meta
 
 
+@dataclass(frozen=True)
 class Package:
-    def __init__(self, manager: str, name: str, version: str):
-        self.manager = manager
-        self.name = name
-        self.version = version
+    manager: str
+    name: str
+    version: str
 
     def unparse(self):
         """Converts back into URI string"""
         return f"{self.manager} {self.name} {self.version}"
 
-    def __repr__(self):
-        return f"Package({self.unparse()})"
 
-
+@dataclass(frozen=True, eq=False)
 class Symbol:
-    def __init__(self, scheme: str, package: Package, descriptors: List[Descriptor]):
-        self.scheme = scheme
-        self.package = package
-        self.descriptors = tuple(descriptors)
-
-    def __repr__(self):
-        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
+    scheme: str
+    package: Package
+    descriptors: Tuple[Descriptor]
 
     def unparse(self) -> str:
         """Converts back into URI string"""
@@ -157,7 +147,7 @@ class Symbol:
 
     def parent(self) -> "Symbol":
         parent_descriptors = list(self.descriptors)[:-1]
-        return Symbol(self.scheme, self.package, parent_descriptors)
+        return Symbol(self.scheme, self.package, tuple(parent_descriptors))
 
     def __hash__(self) -> int:
         return hash(self.uri)
@@ -170,7 +160,7 @@ class Symbol:
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class SymbolReference:
     symbol: Symbol
     line_number: int

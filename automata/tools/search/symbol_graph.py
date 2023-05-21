@@ -5,7 +5,13 @@ import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from redbaron import RedBaron
 
-from automata.tools.search.scip_classes import Descriptor, File, Symbol, SymbolReference
+from automata.tools.search.scip_classes import (
+    Descriptor,
+    File,
+    Symbol,
+    SymbolReference,
+    PythonTypes,
+)
 from automata.tools.search.scip_pb2 import Index, SymbolRole
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_parser import parse_symbol
@@ -175,7 +181,7 @@ class SymbolGraph:
             #  If the symbol is not a method, skip
             if not (
                 Descriptor.convert_scip_to_python_suffix(symbol.descriptors[-1])
-                == Descriptor.PythonTypes.Method
+                == PythonTypes.Method
             ):
                 continue
             # Get the FST object
@@ -215,7 +221,7 @@ class SymbolGraph:
 
             if not (
                 Descriptor.convert_scip_to_python_suffix(symbol.descriptors[-1])
-                == Descriptor.PythonTypes.Class
+                == PythonTypes.Class
             ):
                 continue
             class_name = symbol.descriptors[-1].name
