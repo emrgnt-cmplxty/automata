@@ -3,7 +3,7 @@ from typing import Dict, List, Set
 
 import networkx as nx
 
-from automata.tools.search.local_types import File, Symbol, SymbolReference
+from automata.tools.search.local_types import File, StrPath, Symbol, SymbolReference
 from automata.tools.search.scip_pb2 import Index, SymbolRole
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 class SymbolGraph:
     def __init__(
-        self, index_path: str, symbol_converter: SymbolConverter, do_shortened_symbols: bool = True
+        self,
+        index_path: StrPath,
+        symbol_converter: SymbolConverter,
+        do_shortened_symbols: bool = True,
     ):
         """
         Initialize SymbolGraph with the path of an index protobuf file.
@@ -33,7 +36,11 @@ class SymbolGraph:
 
         :return: List of all file nodes.
         """
-        return [data for _, data in self._graph.nodes(data=True) if data.get("label") == "file"]
+        return [
+            data.get("file")
+            for _, data in self._graph.nodes(data=True)
+            if data.get("label") == "file"
+        ]
 
     def get_all_defined_symbols(self) -> List[Symbol]:
         """
@@ -54,9 +61,9 @@ class SymbolGraph:
         :return: List of tuples (file, symbol details)
         """
         search_results = [
-            (file_path, symbol_reference)
-            for file_path, symbol_reference, label in self._graph.out_edges(symbol, data=True)
-            if label == "reference"
+            (file_path, data.get("symbol_reference"))
+            for file_path, _, data in self._graph.out_edges(symbol, data=True)
+            if data.get("label") == "reference"
         ]
         result_dict: Dict[str, List[SymbolReference]] = {}
 
@@ -141,11 +148,12 @@ class SymbolGraph:
         G = nx.MultiDiGraph()
         for document in index.documents:
             # Add File Vertices
-            document_path = document.relative_path
+            document_path: StrPath = document.relative_path
+
             G.add_node(
                 document_path,
                 file=File(path=document.relative_path, occurrences=document.occurrences),
-                label="file_path",
+                label="file",
             )
 
             for symbol_information in document.symbols:
@@ -167,6 +175,7 @@ class SymbolGraph:
                 occurrence_range = tuple(occurrence_information.range)
                 occurrence_roles = self._get_symbol_roles_dict(occurrence_information.symbol_roles)
                 occurrence_reference = SymbolReference(
+                    symbol=occurrence_symbol,
                     line_number=occurrence_range[0],
                     roles=occurrence_roles,
                 )
@@ -195,7 +204,7 @@ class SymbolGraph:
         return result
 
     @staticmethod
-    def _load_index_protobuf(path: str) -> Index:
+    def _load_index_protobuf(path: StrPath) -> Index:
         """
         Load an index from a protobuf file.
 
