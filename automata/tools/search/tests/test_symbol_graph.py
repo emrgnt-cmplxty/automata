@@ -1,13 +1,13 @@
 # test_symbol_graph.py
 
-from automata.tools.search.local_types import Symbol, SymbolReference
+from automata.tools.search.local_types import File, Symbol
 
 
 def test_get_all_files(symbol_graph):
     files = symbol_graph.get_all_files()
     assert isinstance(files, list)
     for f in files:
-        assert isinstance(f, str)
+        assert isinstance(f, File)
 
 
 def test_get_all_symbols(symbol_graph, symbols):
@@ -19,11 +19,8 @@ def test_get_all_symbols(symbol_graph, symbols):
 def test_get_symbol_references(symbol_graph, symbols):
     for symbol in symbols:
         references = symbol_graph.get_symbol_references(symbol)
-        print("references = ", references)
         assert isinstance(references, dict)
-        assert all(
-            isinstance(k, SymbolReference) and isinstance(v, list) for k, v in references.items()
-        )
+        assert all(isinstance(k, Symbol) and isinstance(v, list) for k, v in references.items())
 
 
 def test_get_symbols_along_path(symbol_graph):

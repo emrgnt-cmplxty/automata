@@ -1,9 +1,9 @@
 import logging
 import os
 from copy import deepcopy
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 
-from redbaron import ClassNode, DefNode, RedBaron
+from redbaron import RedBaron
 
 from automata.tools.search.local_types import Descriptor, Symbol
 
@@ -35,7 +35,7 @@ class SymbolConverter:
             top_descriptor = descriptors.pop(0)
             if (
                 Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-                == Descriptor.PythonTypes.Module
+                == Descriptor.PythonKinds.Module
             ):
                 obj = self._find_module(top_descriptor.name.replace(".", os.path.sep) + ".py")
                 # TODO - Understand why some modules might be None, like "setup.py"
@@ -43,14 +43,14 @@ class SymbolConverter:
                     raise ValueError(f"Module descriptor {top_descriptor.name} not found")
             elif (
                 Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-                == Descriptor.PythonTypes.Class
+                == Descriptor.PythonKinds.Class
             ):
                 if not obj:
                     raise ValueError("Class descriptor found without module descriptor")
                 obj = obj.find("class", name=top_descriptor.name)
             elif (
                 Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-                == Descriptor.PythonTypes.Method
+                == Descriptor.PythonKinds.Method
             ):
                 if not obj:
                     raise ValueError("Method descriptor found without module or class descriptor")
@@ -58,31 +58,6 @@ class SymbolConverter:
         if not obj:
             raise ValueError(f"Symbol {symbol} not found")
         return obj
-
-    def find_return_type(self, fst_object: Union[RedBaron, ClassNode, DefNode]) -> Optional[str]:
-        """
-        Find the return type for a given function/method symbol's FST object.
-        Args:
-            fst_object (Union[ClassNode, DefNode]): The FST object for the symbol
-        Returns:
-            str: The return type of the symbol, or None if not found.
-        """
-        if isinstance(fst_object, DefNode):
-            return_annotation = fst_object.return_annotation
-            if return_annotation is not None:
-                return return_annotation.dumps().strip()
-        return None
-
-    def convert_symbol_to_type(self, symbol: Symbol) -> str:
-        """
-        Check if the given RedBaron node represents a function call.
-        :param node: The RedBaron node to check.
-        :return: True if the node represents a call, False otherwise.
-        """
-        node = self.convert_to_fst_object(symbol)
-        if node:
-            return node.type
-        raise ValueError(f"Symbol {symbol} not found")
 
     def _build_module_dict(self) -> Dict[str, RedBaron]:
         """

@@ -148,11 +148,11 @@ def run_retrieval_chain_with_sources_format(
     return f"Answer: {result['answer']}.\n\n Sources: {result.get('source_documents', [])}"
 
 
-def calculate_similarity(content_a: str, content_b: str) -> float:
+def calculate_similarity(
+    content_a: str, content_b: str, engine: str = "text-embedding-ada-002"
+) -> float:
     """Calculate the similarity between two strings."""
-    resp = openai.Embedding.create(
-        input=[content_a, content_b], engine="text-similarity-davinci-001"
-    )
+    resp = openai.Embedding.create(input=[content_a, content_b], engine=engine)
     embedding_a = resp["data"][0]["embedding"]
     embedding_b = resp["data"][1]["embedding"]
     dot_product = np.dot(embedding_a, embedding_b)

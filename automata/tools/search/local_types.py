@@ -13,10 +13,11 @@ The classes and functions in this file are used to convert the symbol URI into a
 """
 
 
+# Symbol Related Types
 class Descriptor:
     ScipSuffix = DescriptorProto
 
-    class PythonTypes(Enum):
+    class PythonKinds(Enum):
         Local = "local"
         Module = "module"
         Class = "class"
@@ -69,59 +70,71 @@ class Descriptor:
         return "`" + re.sub("`", "``", name) + "`"
 
     @staticmethod
-    def convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PythonTypes:
+    def convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PythonKinds:
         if descriptor_suffix == Descriptor.ScipSuffix.Local:
-            return Descriptor.PythonTypes.Local
+            return Descriptor.PythonKinds.Local
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Namespace:
-            return Descriptor.PythonTypes.Module
+            return Descriptor.PythonKinds.Module
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Type:
-            return Descriptor.PythonTypes.Class
+            return Descriptor.PythonKinds.Class
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Method:
-            return Descriptor.PythonTypes.Method
+            return Descriptor.PythonKinds.Method
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Term:
-            return Descriptor.PythonTypes.Value
+            return Descriptor.PythonKinds.Value
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Macro:
-            return Descriptor.PythonTypes.Macro
+            return Descriptor.PythonKinds.Macro
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Parameter:
-            return Descriptor.PythonTypes.Parameter
+            return Descriptor.PythonKinds.Parameter
 
         elif descriptor_suffix == Descriptor.ScipSuffix.TypeParameter:
-            return Descriptor.PythonTypes.TypeParameter
+            return Descriptor.PythonKinds.TypeParameter
 
         else:
-            return Descriptor.PythonTypes.Meta
+            return Descriptor.PythonKinds.Meta
 
 
+@dataclass
 class Package:
-    def __init__(self, manager: str, name: str, version: str):
-        self.manager = manager
-        self.name = name
-        self.version = version
+    manager: str
+    name: str
+    version: str
+
+    def __repr__(self):
+        return f"Package({self.unparse()})"
 
     def unparse(self):
         """Converts back into URI string"""
         return f"{self.manager} {self.name} {self.version}"
 
-    def __repr__(self):
-        return f"Package({self.unparse()})"
 
-
+@dataclass
 class Symbol:
-    def __init__(self, uri: str, scheme: str, package: Package, descriptors: List[Descriptor]):
-        self.uri = uri
-        self.scheme = scheme
-        self.package = package
-        self.descriptors = descriptors
+    uri: str
+    scheme: str
+    package: Package
+    descriptors: List[Descriptor]
 
-    def unparse(self):
-        """Converts back into URI string"""
-        return self.uri
+    def __repr__(self):
+        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
+
+    def __hash__(self) -> int:
+        return hash(self.uri)
+
+    def __eq__(self, other):
+        if isinstance(other, Symbol):
+            return self.uri == other.uri
+        elif isinstance(other, str):
+            return self.uri == other
+        return False
+
+    def symbol_kind_by_suffix(self) -> Descriptor.PythonKinds:
+        return Descriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
         if self.uri.startswith("local"):
@@ -143,21 +156,23 @@ class Symbol:
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
-    def symbol_kind_by_suffix(self) -> Descriptor.PythonTypes:
-        return Descriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
+    @classmethod
+    def from_string(cls, symbol_str: str) -> "Symbol":
+        """
+        Creates a Symbol instance from a string representation
 
-    def __repr__(self):
-        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
+        :param symbol_str: The string representation of the Symbol
+        :return: A Symbol instance
+        """
+        # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
+        # Parse the symbol_str to extract the uri, scheme, and package_str
+        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \[(.*?)\]\)", symbol_str)
+        if not match:
+            raise ValueError(f"Invalid symbol_str: {symbol_str}")
+        uri, _, __, ___ = match.groups()
+        from automata.tools.search.symbol_parser import parse_uri_to_symbol
 
-    def __hash__(self) -> int:
-        return hash(self.unparse())
-
-    def __eq__(self, other):
-        if isinstance(other, Symbol):
-            return self.uri == other.uri
-        elif isinstance(other, str):
-            return self.uri == other
-        return False
+        return parse_uri_to_symbol(uri)
 
 
 @dataclass
@@ -165,6 +180,18 @@ class SymbolReference:
     symbol: Symbol
     line_number: int
     roles: Dict[str, Any]
+
+
+@dataclass
+class SymbolEmbedding:
+    symbol: Symbol
+    vector: List[float]
+    source_code: str
+
+
+# Path and os related variables
+StrPath = Union[str, PathLike]
+PyPath = str
 
 
 @dataclass
@@ -181,7 +208,3 @@ class File:
         elif isinstance(other, str):
             return self.path == other
         return False
-
-
-StrPath = Union[str, PathLike]
-PyPath = str

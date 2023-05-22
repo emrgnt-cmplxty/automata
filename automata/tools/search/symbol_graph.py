@@ -22,6 +22,10 @@ class SymbolGraph:
         Initialize SymbolGraph with the path of an index protobuf file.
 
         :param index_path: Path to index protobuf file
+        :param symbol_converter: SymbolConverter instance
+        :param do_shortened_symbols: Whether to use shortened symbols
+
+        :return: SymbolGraph instance
         """
         self.converter = symbol_converter
 
@@ -47,7 +51,7 @@ class SymbolGraph:
         Get all file nodes in the graph.
         :param data_type: Optional filter for data type
 
-        :return: List of all file nodes.
+        :return: List of all defined symbols.
         """
         return [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
