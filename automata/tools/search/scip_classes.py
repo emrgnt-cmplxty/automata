@@ -150,6 +150,22 @@ class Symbol:
         parent_descriptors = list(self.descriptors)[:-1]
         return Symbol(self.scheme, self.package, tuple(parent_descriptors))
 
+    @staticmethod
+    def is_local(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == ScipSuffix.Local
+
+    @staticmethod
+    def is_meta(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == ScipSuffix.Meta
+
+    @staticmethod
+    def is_parameter(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == ScipSuffix.Parameter
+
+    @staticmethod
+    def is_protobuf(symbol: "Symbol") -> bool:
+        return symbol.module_name.endswith("pb2")
+
     def __hash__(self) -> int:
         return hash(self.uri)
 

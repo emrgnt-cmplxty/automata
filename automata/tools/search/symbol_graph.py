@@ -1,9 +1,11 @@
 import logging
+from functools import cached_property
 from typing import Dict, List, Set, Tuple, cast
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from redbaron import RedBaron
+from tqdm import tqdm
 
 from automata.tools.search.scip_classes import File, PyPath, StrPath, Symbol, SymbolReference
 from automata.tools.search.scip_pb2 import Index, SymbolRole
@@ -110,7 +112,7 @@ class SymbolGraph:
         spacer = " " * (0 + len(doc_decorator))
         result += f"{doc_decorator}%s\n" % (("\n" + spacer).join(docs)) + "\n"
 
-        containing_file = [edge[0] for edge in self._graph.in_edges(symbol)][0]
+        containing_file = self.get_parent_file(symbol)
         result += " >>  Symbol File       --> %s \n" % containing_file
 
         references = self.get_symbol_references(symbol)
@@ -158,8 +160,10 @@ class SymbolGraph:
                     symbol,
                     label="symbol",
                 )
+                G.add_edge(document_path, symbol, label="contains")
         # process occurrences and relationships
         for document in index.documents:
+            document_path: StrPath = cast(StrPath, document.relative_path)
             for symbol_information in document.symbols:
                 symbol = parse_symbol(symbol_information.symbol)
 
@@ -170,7 +174,7 @@ class SymbolGraph:
                     G.add_edge(
                         symbol,
                         related_symbol,
-                        label="relates_to",
+                        label="relationship",
                         **relationship_labels,
                     )
 
@@ -186,20 +190,29 @@ class SymbolGraph:
                 )
                 G.add_edge(
                     occurrence_symbol,
-                    document.relative_path,
+                    document_path,
                     symbol_reference=occurrence_reference,
                     label="reference",
                 )
                 if occurrence_roles.get(SymbolRole.Name(SymbolRole.Definition)):
+                    # TODO this is gross
+                    incorrect_contains_edges = [
+                        (source, target)
+                        for source, target, data in G.in_edges(occurrence_symbol, data=True)
+                        if data.get("label") == "contains"
+                    ]
+                    for source, target in incorrect_contains_edges:
+                        G.remove_edge(source, target)
+
                     G.add_edge(
-                        document.relative_path,
+                        document_path,
                         occurrence_symbol,
                         label="contains",
                     )
 
         return G
 
-    def get_parent_file(self, symbol) -> str:
+    def get_parent_file(self, symbol: Symbol) -> str:
         parent_file_list = [
             source
             for source, _, data in self._graph.in_edges(symbol, data=True)
@@ -207,21 +220,25 @@ class SymbolGraph:
         ]
         assert (
             len(parent_file_list) == 1
-        ), f"{symbol} should have exactly one parent file, but has {len(parent_file_list)}"
+        ), f"{symbol.uri} should have exactly one parent file, but has {len(parent_file_list)}"
         return parent_file_list.pop()
 
     def get_symbol_definition_start_location(self, symbol: Symbol) -> Tuple[int, int]:
         parent_file = self.get_parent_file(symbol)
         references = self.get_symbol_references(symbol)
+        if not references:
+            return (1, 1)
 
         definition_references = [
             ref
             for ref in references[parent_file]
             if ref.roles.get(SymbolRole.Name(SymbolRole.Definition))
         ]
+
         assert (
-            len(definition_references) == 1
-        ), f"{symbol} should have exactly one definition, but has {len(definition_references)}"
+            len(definition_references) > 0  # TODO figure out how to handle setters
+        ), f"{symbol.uri} should have exactly one definition, but has {len(definition_references)}"
+
         line_number, column_number = (
             definition_references[0].line_number,
             definition_references[0].column_number,
@@ -231,18 +248,14 @@ class SymbolGraph:
             column_number + 1,
         )  # RedBaron IS 1 INDEXED AND SCIP IS 0 INDEXED!!!!
 
-    def find_dependency_symbols(self, symbol: Symbol) -> Set[Symbol]:
+    def _get_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
         """
-        Returns the list of dependencies for the given symbol.
-
-        Args:
-            symbol (str): The symbol in the form 'module`/ClassOrMethod#'
-
-        Returns:
-            List[str]: The list of dependencies for the symbol.
+        Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
         """
-        fst_object = self.get_symbol_fst_node(symbol)
         module = self.get_parent_file(symbol)
+        if module not in self.converter._module_dict:  # TODO
+            return []
+        fst_object = self.get_symbol_fst_node(symbol)
 
         # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
@@ -250,18 +263,102 @@ class SymbolGraph:
             fst_object.absolute_bounding_box.top_left.column - 1,
             fst_object.absolute_bounding_box.bottom_right.line - 1,
         )
+
         references_in_parent_module = self.get_all_references_in_module(module)
         references_in_range = [
-            ref.symbol
+            ref
             for ref in references_in_parent_module
             if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
             and ref.column_number >= parent_symbol_start_col
             and ref.symbol != symbol  # TODO: don't include self (or maybe do?)
-            and not ref.roles.get(SymbolRole.Name(SymbolRole.Definition))  # skip definitions
-            and "stdlib" not in ref.symbol.package.name
+            and "stdlib"
+            not in ref.symbol.package.name  # TODO: don't include stdlib (or maybe do?)
+            and not Symbol.is_local(ref.symbol)  # TODO: figure out how local symbols really work
+            and not Symbol.is_meta(ref.symbol)  # TODO: figure out how meta symbols really work
         ]
 
-        return set(references_in_range)
+        return references_in_range
+
+    def get_symbols_in_scope(self, symbol: Symbol) -> Set[Symbol]:
+        """
+        Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
+
+        Args:
+            symbol
+
+        Returns:
+            Set[Symbol]: The list of dependencies for the symbol.
+        """
+        references_in_range = self._get_references_in_scope(symbol)
+        symbols_in_range = set([ref.symbol for ref in references_in_range])
+        return symbols_in_range
+
+    def get_relationship_symbols(self, symbol: Symbol) -> Set[Symbol]:
+        """
+        Returns the list of symbols with relationships to the given symbol.
+        """
+        related_symbol_nodes = set(
+            [
+                target
+                for _, target, data in self._graph.out_edges(symbol, data=True)
+                if data.get("label") == "relationship"
+            ]
+        )
+        return related_symbol_nodes
+
+    @cached_property
+    def symbol_to_symbol_subgraph(self) -> nx.DiGraph:
+        """
+        Returns a subgraph with symbols mapped to outher symbols.
+
+        Args:
+            symbol (str): The symbol in the form 'module`/ClassOrMethod#'
+
+        Returns:
+            List[str]: The list of dependencies for the symbol.
+        TODO: this is extremely slow
+        TODO: this has a number of edge cases that are not handled in obvious ways
+        TODO: see is_woth_backlinking_to for a list of things I chose to exclude
+        """
+        G = nx.DiGraph()
+
+        def is_woth_backlinking_to(symbol: Symbol):  # TODO this should not be necessary
+            """
+            Returns true if the symbol is valid for the purposes of the symbol to symbol subgraph.
+            Valid symbols are "primary" nodes in the sense that we will find their dependencies and point from them to the node.
+            Only valid symbols will have backlinks (and thus receive additional PageRank influence from their complexity)
+
+            A list of things I chose to exclude:
+            - protobuf generated objects: this is self-explanatory but their complexity shouldn't uprank them
+                because they're autogenerated
+            - local symbols: these are internally scoped and are not very meaningful
+                for understanding the codebase as a whole
+            - meta symbols: these, as far as I can tell, are only used for __init__.py files, which are not very meaningful
+            - parameters: they should not have backlinks anyway
+            - external libraries and dependencies: this will just make the graph too big without adding much value
+
+            :param symbol:
+            :return: bool
+            """
+            return (
+                symbol.package.name == "automata"
+                and symbol.module_name.startswith("automata")  # TODO: constant
+                and not Symbol.is_protobuf(symbol)
+                and not Symbol.is_local(symbol)
+                and not Symbol.is_meta(symbol)
+                and not Symbol.is_parameter(symbol)
+            )
+
+        all_symbols = [
+            symbol for symbol in self.get_all_defined_symbols() if is_woth_backlinking_to(symbol)
+        ]
+
+        for symbol in tqdm(all_symbols):
+            dependencies = self.get_symbols_in_scope(symbol)
+            relationships = self.get_relationship_symbols(symbol)
+            for node in dependencies.union(relationships):
+                G.add_edge(node, symbol)
+        return G
 
     @staticmethod
     def _get_symbol_roles_dict(role) -> Dict[str, bool]:

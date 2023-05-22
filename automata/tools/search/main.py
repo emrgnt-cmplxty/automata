@@ -4,13 +4,15 @@ from argparse import ArgumentParser
 # from automata.tools.search.call_graph import CallGraph
 from typing import Dict, cast
 
+import networkx as nx
+
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_symbol
 from automata.tools.search.symbol_searcher import SymbolSearcher
 
 if __name__ == "__main__":
-    symbol_prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065"
+    symbol_prefix = "scip-python python automata 31e1fefc9e501f358565932c1a8608d067a6d192"
     test_path = "automata.configs.automata_agent_configs"
     test_symbol = parse_symbol("%s `%s`/AutomataAgentConfig#" % (symbol_prefix, test_path))
 
@@ -76,14 +78,7 @@ if __name__ == "__main__":
     print("Search result: ", search_result_2)
     print("-" * 200)
 
-    # Perform a find and replace on the test find symbol below
-    print("-" * 200)
-    test_find = "AutomataAgentConfigFactory"
-    test_replace = "__Automata__Agent__Config__Factory__"
-    print("Performing find on %s and replacing with %s" % (test_find, test_replace))
-    do_write = False
-    counts = symbol_searcher.process_query(
-        "type:replace %s %s %s" % (test_find, test_replace, do_write)
-    )
-    print("In Mem Replacements: ", counts)
-    print("-" * 200)
+    G = symbol_graph.symbol_to_symbol_subgraph
+    pr = nx.pagerank(G, max_iter=1000, alpha=0.6)
+    ordered_items = sorted(pr.items(), key=lambda x: x[1], reverse=True)
+    breakpoint()
