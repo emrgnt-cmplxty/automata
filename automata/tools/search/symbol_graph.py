@@ -220,37 +220,6 @@ class SymbolGraph:
         ), f"{symbol.uri} should have exactly one parent file, but has {len(parent_file_list)}"
         return parent_file_list.pop()
 
-    def _get_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
-        """
-        Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
-        """
-        module = self.get_parent_file(symbol)
-        if module not in self.converter._module_dict:  # TODO
-            return []
-        fst_object = self.converter.convert_to_fst_object(symbol)
-
-        # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
-        parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
-            fst_object.absolute_bounding_box.top_left.line - 1,
-            fst_object.absolute_bounding_box.top_left.column - 1,
-            fst_object.absolute_bounding_box.bottom_right.line - 1,
-        )
-
-        references_in_parent_module = self.get_all_references_in_module(module)
-        references_in_range = [
-            ref
-            for ref in references_in_parent_module
-            if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
-            and ref.column_number >= parent_symbol_start_col
-            and ref.symbol != symbol  # TODO: don't include self (or maybe do?)
-            and "stdlib"
-            not in ref.symbol.package.name  # TODO: don't include stdlib (or maybe do?)
-            and not Symbol.is_local(ref.symbol)  # TODO: figure out how local symbols really work
-            and not Symbol.is_meta(ref.symbol)  # TODO: figure out how meta symbols really work
-        ]
-
-        return references_in_range
-
     def get_symbols_in_scope(self, symbol: Symbol) -> Set[Symbol]:
         """
         Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
@@ -290,11 +259,11 @@ class SymbolGraph:
             List[str]: The list of dependencies for the symbol.
         TODO: this is extremely slow
         TODO: this has a number of edge cases that are not handled in obvious ways
-        TODO: see is_woth_backlinking_to for a list of things I chose to exclude
+        TODO: see is_worth_backlinking_to for a list of things I chose to exclude
         """
         G = nx.DiGraph()
 
-        def is_woth_backlinking_to(symbol: Symbol):  # TODO this should not be necessary
+        def is_worth_backlinking_to(symbol: Symbol):  # TODO this should not be necessary
             """
             Returns true if the symbol is valid for the purposes of the symbol to symbol subgraph.
             Valid symbols are "primary" nodes in the sense that we will find their dependencies and point from them to the node.
@@ -322,7 +291,7 @@ class SymbolGraph:
             )
 
         all_symbols = [
-            symbol for symbol in self.get_all_defined_symbols() if is_woth_backlinking_to(symbol)
+            symbol for symbol in self.get_all_defined_symbols() if is_worth_backlinking_to(symbol)
         ]
 
         for symbol in tqdm(all_symbols):
@@ -331,6 +300,37 @@ class SymbolGraph:
             for node in dependencies.union(relationships):
                 G.add_edge(node, symbol)
         return G
+
+    def _get_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
+        """
+        Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
+        """
+        module = self.get_parent_file(symbol)
+        if module not in self.converter._module_dict:  # TODO
+            return []
+        fst_object = self.converter.convert_to_fst_object(symbol)
+
+        # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
+        parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
+            fst_object.absolute_bounding_box.top_left.line - 1,
+            fst_object.absolute_bounding_box.top_left.column - 1,
+            fst_object.absolute_bounding_box.bottom_right.line - 1,
+        )
+
+        references_in_parent_module = self.get_all_references_in_module(module)
+        references_in_range = [
+            ref
+            for ref in references_in_parent_module
+            if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
+            and ref.column_number >= parent_symbol_start_col
+            and ref.symbol != symbol  # TODO: don't include self (or maybe do?)
+            and "stdlib"
+            not in ref.symbol.package.name  # TODO: don't include stdlib (or maybe do?)
+            and not Symbol.is_local(ref.symbol)  # TODO: figure out how local symbols really work
+            and not Symbol.is_meta(ref.symbol)  # TODO: figure out how meta symbols really work
+        ]
+
+        return references_in_range
 
     @staticmethod
     def _get_symbol_roles_dict(role) -> Dict[str, bool]:
