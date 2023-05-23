@@ -1,7 +1,8 @@
-import logging
-from typing import Dict
-
 import numpy as np
+import logging
+from enum import Enum
+from scipy.linalg import qr
+from typing import Dict, Optional
 
 from automata.tools.search.local_types import Symbol, SymbolEmbedding
 from automata.tools.search.symbol_rank.symbol_embedding_map import (
@@ -12,10 +13,17 @@ from automata.tools.search.symbol_rank.symbol_embedding_map import (
 logger = logging.getLogger(__name__)
 
 
+class NormType(Enum):
+    L1 = "l1"
+    L2 = "l2"
+    SOFTMAX = "softmax"
+
+
 class SymbolSimilarity:
     def __init__(
         self,
         symbol_embedding_map: SymbolEmbeddingMap,
+        norm_type: NormType = NormType.L2,
     ):
         """
         Initialize SymbolSimilarity
@@ -26,11 +34,14 @@ class SymbolSimilarity:
         """
         self.embedding_map: Dict[Symbol, SymbolEmbedding] = symbol_embedding_map.embedding_map
         self.embedding_provider: EmbeddingsProvider = symbol_embedding_map.embedding_provider
+        self.default_norm_type = norm_type
         symbols = sorted(list(self.embedding_map.keys()), key=lambda x: x.uri)
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(symbols)}
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(symbols)}
 
-    def transform_similarity_matrix(self, S: np.ndarray, query_text: str) -> np.ndarray:
+    def transform_similarity_matrix(
+        self, S: np.ndarray, query_text: str, norm_type: Optional[str] = None
+    ) -> np.ndarray:
         """
         Perform a unitary transformation on the similarity matrix.
 
@@ -42,20 +53,55 @@ class SymbolSimilarity:
             The transformed similarity matrix as a numpy array.
         """
         # Step 1: Construct a unit-normed vector (e)
-        e = self._generate_unit_normed_query_vector(query_text)
+        e = self._generate_unit_normed_query_vector(query_text, self._process_norm_type(norm_type))
 
-        # Step 2: Reshape e to have shape (n, 1) so it can be used in broadcasting operation
-        e = np.reshape(e, (-1, 1))
+        # Step 2: Reshape e to have shape (n, 1) and (1, n) so it can be used in broadcasting operation
+        e_row = np.reshape(e, (1, -1))
+        e_col = np.reshape(e, (-1, 1))
 
-        # Step 3: Perform a transformation on the similarity matrix, e.g. compute e * S
-        transformed_similarity_matrix = e * S
+        # Step 3: Construct the transformation matrix P
+        P = e_col * e_row
 
-        # Step 4: Re-normalize the transformed similarity matrix
-        transformed_similarity_matrix = self._normalize_matrix(transformed_similarity_matrix)
+        # Step 4: Perform a transformation on the similarity matrix, e.g. compute P * S
+        transformed_similarity_matrix = P * S
+
+        # Step 5: Normalize the transformed similarity matrix by its Frobenius norm
+        transformed_similarity_matrix = transformed_similarity_matrix / np.linalg.norm(transformed_similarity_matrix)
 
         return transformed_similarity_matrix
 
-    def generate_similarity_matrix(self) -> np.ndarray:
+        # # Step 1: Construct a unit-normed vector (e)
+        # # This vector is created from the provided query_text and normalized.
+        # e = self._generate_unit_normed_query_vector(query_text, self._process_norm_type(norm_type))
+
+        # # Step 2: Normalize e and extend it to form a unitary matrix
+        # # The unit vector e is first normalized to make sure it has a norm of 1.
+        # # Then, we use QR decomposition to create a unitary matrix.
+        # # The resulting matrix (q) from QR decomposition is an orthonormal basis.
+        # # We replace the first column of this matrix with our unit vector e.
+        # # We then reorthonormalize to ensure the columns of q form a unitary matrix T.
+        # e = e / np.linalg.norm(e)
+        # q, _ = qr(np.random.randn(len(e), len(e)))
+        # q[:, 0] = e
+        # q, _ = qr(q)
+        # T = q
+
+        # # Verify if T is unitary: check if T multiplied by its conjugate transpose is an identity matrix
+        # if not np.allclose(np.eye(T.shape[0]), T @ T.conj().T):
+        #     raise ValueError("T is not a unitary matrix.")
+
+        # # Step 3: Perform a transformation on the similarity matrix
+        # # The similarity matrix S is transformed using the unitary matrix T.
+        # # The transformation is computed as T * S * T^H, where T^H is the conjugate transpose of T.
+        # transformed_similarity_matrix = T @ S @ T.conj().T
+
+        # # Step 4: Min-Max normalization
+        # # The transformed similarity matrix is normalized using min-max normalization.
+        # transformed_similarity_matrix = self._normalize_matrix(transformed_similarity_matrix)
+
+        # return transformed_similarity_matrix
+
+    def generate_similarity_matrix(self, norm_type: Optional[str] = None) -> np.ndarray:
         """
         Generate a similarity matrix for all symbols in the embedding map.
 
@@ -64,10 +110,12 @@ class SymbolSimilarity:
         """
         embeddings = self._get_ordered_embeddings()
 
-        return SymbolSimilarity.calculate_similarity_matrix(embeddings)
+        return SymbolSimilarity._calculate_similarity_matrix(
+            embeddings, self._process_norm_type(norm_type)
+        )
 
     def get_nearest_symbols_for_query(
-        self, query_text: str, k: int = 10, norm_type: str = "l2"
+        self, query_text: str, k: int = 10, norm_type: Optional[str] = None
     ) -> Dict[Symbol, float]:
         """
         Get the k most similar symbols to the query_text.
@@ -79,7 +127,9 @@ class SymbolSimilarity:
         """
         query_embedding = self.embedding_provider.get_embedding(query_text)
         # Compute the similarity of the query to all symbols
-        similarity_scores = self._calculate_query_similarity_vec(query_embedding, norm_type)
+        similarity_scores = self._calculate_query_similarity_vec(
+            query_embedding, self._process_norm_type(norm_type)
+        )
 
         # Get the indices of the symbols with the highest similarity scores
         nearest_indices = np.argsort(similarity_scores)[-k:]
@@ -101,7 +151,9 @@ class SymbolSimilarity:
             [self.embedding_map[symbol].vector for symbol in self.index_to_symbol.values()]
         )
 
-    def _generate_unit_normed_query_vector(self, query_text: str) -> np.ndarray:
+    def _generate_unit_normed_query_vector(
+        self, query_text: str, norm_type: NormType
+    ) -> np.ndarray:
         """
         Generate a unit-normed vector where the ith component is
         the similarity between symbol i and the query.
@@ -113,7 +165,7 @@ class SymbolSimilarity:
             A unit-normed vector as a numpy array.
         """
         query_embedding = self.embedding_provider.get_embedding(query_text)
-        similarity_scores = self._calculate_query_similarity_vec(query_embedding)
+        similarity_scores = self._calculate_query_similarity_vec(query_embedding, norm_type)
 
         # Normalizing the vector
         norm = np.linalg.norm(similarity_scores)
@@ -124,7 +176,7 @@ class SymbolSimilarity:
         return unit_normed_vector
 
     def _calculate_query_similarity_vec(
-        self, query_embedding: np.ndarray, norm_type: str = "l2"
+        self, query_embedding: np.ndarray, norm_type: NormType
     ) -> np.ndarray:
         """
         Calculate the similarity scores of the query embedding with all symbol embeddings.
@@ -147,8 +199,11 @@ class SymbolSimilarity:
 
         return similarity_scores
 
+    def _process_norm_type(self, norm_type) -> NormType:
+        return NormType(norm_type) if norm_type else self.default_norm_type
+
     @staticmethod
-    def calculate_similarity_matrix(embeddings: np.ndarray, norm_type: str = "l2") -> np.ndarray:
+    def _calculate_similarity_matrix(embeddings: np.ndarray, norm_type: NormType) -> np.ndarray:
         """
         Calculate the similarity matrix for a list of embeddings.
         Args:
@@ -166,20 +221,23 @@ class SymbolSimilarity:
         return similarity_matrix
 
     @staticmethod
-    def _normalize_embeddings(embeddings: np.ndarray, norm_type: str = "l2") -> np.ndarray:
+    def _normalize_embeddings(embeddings: np.ndarray, norm_type: NormType) -> np.ndarray:
         """
         Normalize the embeddings.
         Args:
             embeddings (np.ndarray): The embeddings
-            norm_type (str): The type of normalization ('l2' for L2 norm, 'softmax' for softmax)
+            norm_type (NormType): The type of normalization (L1, L2, or softmax)
         Returns:
             The normalized embeddings
         """
-        if norm_type == "l2":
+        if norm_type == NormType.L1:
+            norm = np.sum(np.abs(embeddings), axis=1, keepdims=True)
+            return embeddings / norm
+        elif norm_type == NormType.L2:
             return embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
-        elif norm_type == "softmax":
-            e_x = np.exp(embeddings - np.max(embeddings))
-            return e_x / e_x.sum(axis=1, keepdims=True)
+        elif norm_type == NormType.SOFTMAX:
+            e_x = np.exp(embeddings - np.max(embeddings, axis=1, keepdims=True))
+            return e_x / np.sum(e_x, axis=1, keepdims=True)
         else:
             raise ValueError(f"Invalid normalization type {norm_type}")
 

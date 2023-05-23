@@ -6,7 +6,7 @@ from automata.tools.search.symbol_rank.symbol_embedding_map import (
     EmbeddingsProvider,
     SymbolEmbeddingMap,
 )
-from automata.tools.search.symbol_rank.symbol_similarity import SymbolSimilarity
+from automata.tools.search.symbol_rank.symbol_similarity import NormType, SymbolSimilarity
 
 
 def test_generate_similarity_matrix(
@@ -34,7 +34,7 @@ def test_generate_similarity_matrix(
 def test_calculate_similarity():
     np.random.seed(0)
     matrix = np.random.rand(10, 10)
-    distances = SymbolSimilarity.calculate_similarity_matrix(matrix)
+    distances = SymbolSimilarity._calculate_similarity_matrix(matrix, NormType.L2)
     assert distances[0][0] == 1.0
     assert distances[0][1] == distances[1][0]
     assert distances[0][1] == 0.8642101667343082
@@ -163,7 +163,9 @@ def test_generate_unit_normed_query_vector(monkeypatch, mock_simple_method_symbo
     symbol_similarity = SymbolSimilarity(symbol_embedding_map)
 
     # Test the _generate_unit_normed_query_vector method
-    unit_normed_vector = symbol_similarity._generate_unit_normed_query_vector("symbol1")
+    unit_normed_vector = symbol_similarity._generate_unit_normed_query_vector(
+        "symbol1", NormType.L2
+    )
 
     # The vector should be unit normed, so its norm should be close to 1
     assert np.isclose(np.linalg.norm(unit_normed_vector), 1.0)

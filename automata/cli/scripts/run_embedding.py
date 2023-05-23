@@ -65,7 +65,9 @@ def main(*args, **kwargs):
         )
         symbol_similarity = SymbolSimilarity(symbol_embedding)
 
-        result_symbols = symbol_similarity.get_nearest_symbols_for_query(kwargs["query_text"], 10)
+        result_symbols = symbol_similarity.get_nearest_symbols_for_query(
+            kwargs["query_text"], 10, norm_type=kwargs.get("norm_type", "l2")
+        )
         print("-" * 100)
         print(">> Result symbols << ")
         print("-" * 100)
@@ -137,6 +139,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--query_text", default=sample_query_text, help="Text to query the embedding map for."
     )
+    parser.add_argument("--norm_type", default="l2", help="Query the embedding map.")
 
     # Parse the arguments
     args = parser.parse_args()
