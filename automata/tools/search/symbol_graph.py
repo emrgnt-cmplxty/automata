@@ -295,10 +295,14 @@ class SymbolGraph:
         ]
 
         for symbol in tqdm(all_symbols):
-            dependencies = self.get_symbols_in_scope(symbol)
-            relationships = self.get_relationship_symbols(symbol)
-            for node in dependencies.union(relationships):
-                G.add_edge(node, symbol)
+            try:
+                dependencies = self.get_symbols_in_scope(symbol)
+                relationships = self.get_relationship_symbols(symbol)
+                for node in dependencies.union(relationships):
+                    G.add_edge(node, symbol)
+            except Exception as e:
+                print(f"Error processing {symbol.uri}: {e}")
+
         return G
 
     def _get_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
