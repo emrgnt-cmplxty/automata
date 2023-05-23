@@ -12,25 +12,22 @@ def find_and_replace_in_modules(
         old_name (str): The old name of the function or class.
         new_name (str): The new name of the function or class.
     """
-    # counts = 0
-    # for module in converter._module_dict.values():
-    #     # Find all function or class nodes with the old name
-    #     func_or_class_nodes = module.find_all(("def", "class"), name=old_name)
-    #     counts += str(func_or_class_nodes).count(old_name)
-    #     for node in func_or_class_nodes:
-    #         # Rename the node
-    #         node.name = new_name
-    #     # Find all NameNode's (these could be function calls or variable names)
-    #     name_nodes = module.find_all("name", value=old_name)
-    #     for node in name_nodes:
-    #         # Rename the node
-    #         node.value = new_name
-    # if do_write:
-    #     converter._write_modules()
-    # return counts
-    raise NotImplementedError(
-        "There are libraries that can do this well, need to evaluate the best approach."
-    )
+    counts = 0
+    for module in converter._module_dict.values():
+        # Find all function or class nodes with the old name
+        func_or_class_nodes = module.find_all(("def", "class"), name=old_name)
+        counts += str(func_or_class_nodes).count(old_name)
+        for node in func_or_class_nodes:
+            # Rename the node
+            node.name = new_name
+        # Find all NameNode's (these could be function calls or variable names)
+        name_nodes = module.find_all("name", value=old_name)
+        for node in name_nodes:
+            # Rename the node
+            node.value = new_name
+    if do_write:
+        converter._write_modules()
+    return counts
 
 
 def find_pattern_in_modules(converter: SymbolConverter, pattern: str) -> Dict[str, List[int]]:
