@@ -196,10 +196,11 @@ class Symbol:
         """
         # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
         # Parse the symbol_str to extract the uri, scheme, and package_str
-        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
+        # match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
+        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\)", symbol_str)
         if not match:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
-        uri, _, __, ___ = match.groups()
+        uri, _, __ = match.groups()
         from automata.tools.search.symbol_parser import parse_symbol
 
         return parse_symbol(uri)
