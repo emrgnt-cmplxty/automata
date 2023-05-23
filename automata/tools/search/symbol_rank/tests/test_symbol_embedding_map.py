@@ -80,3 +80,66 @@ def test_get_embedding_sets_correct_result(
 
     for key, val in embedding_map.items():
         val.source_code == "symbol_source"
+
+
+def test_update_embeddings(
+    monkeypatch,
+    mock_embedding,
+    mock_simple_method_symbols,
+    mock_simple_class_symbols,
+    mock_symbol_converter,
+):
+    # Define the behavior of the mock get_embedding function
+    patch_get_embedding(monkeypatch, mock_embedding)
+    # Create the Mock objects for the method parameters
+    mock_symbols = mock_simple_method_symbols + mock_simple_class_symbols
+    # Create an instance of the class
+    sem = get_sem(mock_symbol_converter, mock_symbols, build_new_embedding_map=True)
+
+    # Update embeddings for half of the symbols
+    symbols_to_update = mock_symbols[: len(mock_symbols) // 2]
+    sem.update_embeddings(mock_symbol_converter, symbols_to_update)
+
+    # Verify the results
+    for symbol in symbols_to_update:
+        assert symbol in sem.embedding_map
+        assert sem.embedding_map[symbol].vector == mock_embedding
+
+
+def test_empty_input(monkeypatch, mock_symbol_converter):
+    # Test empty input scenario
+    sem = get_sem(mock_symbol_converter, [], build_new_embedding_map=True)
+    assert len(sem.embedding_map) == 0  # Expect empty embedding map
+
+
+def test_get_embedding_exception(monkeypatch, mock_symbol_converter, mock_simple_method_symbols):
+    # Test exception in get_embedding function
+    mock_get_embedding = Mock(side_effect=Exception("Test exception"))
+    monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
+    sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=True)
+    assert len(sem.embedding_map) == 0  # Expect empty embedding map because of exception
+
+def test_generate_similarity_matrix(
+    monkeypatch,
+    mock_embedding,
+    mock_simple_method_symbols,
+    mock_symbol_converter,
+):
+    # Define the behavior of the mock get_embedding function
+    patch_get_embedding(monkeypatch, mock_embedding)
+
+    # Create an instance of the class
+    sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=True)
+    similarity_matrix = sem.generate_similarity_matrix()
+    # # Mock the EmbeddingsProvider's calculate_similarity_matrix method to return a constant matrix
+    # mock_matrix = [[1.0, 0.5], [0.5, 1.0]]
+    # sem.embedding_provider.calculate_similarity_matrix = Mock(return_value=mock_matrix)
+
+    # # Call the method
+    # sem.generate_similarity_matrix()
+
+    # print("sem.similarity_matrix = ", sem.similarity_matrix)
+    # # Verify the results
+    # assert sem.index_to_symbol == {0: mock_simple_method_symbols[0], 1: mock_simple_method_symbols[1]}
+    # assert sem.symbol_to_index == {mock_simple_method_symbols[0]: 0, mock_simple_method_symbols[1]: 1}
+    # assert sem.similarity_matrix == mock_matrix

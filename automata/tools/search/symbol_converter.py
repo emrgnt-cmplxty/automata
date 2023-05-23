@@ -38,7 +38,7 @@ class SymbolConverter:
                 == Descriptor.PythonKinds.Module
             ):
                 obj = self._find_module(top_descriptor.name.replace(".", os.path.sep) + ".py")
-                # TODO - Understand why some modules might be None, like "setup.py"
+                # TODO - Understand why some modules might be None
                 if not obj or "test" in top_descriptor.name:
                     raise ValueError(f"Module descriptor {top_descriptor.name} not found")
             elif (
