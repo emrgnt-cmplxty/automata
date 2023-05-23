@@ -26,7 +26,7 @@ class SymbolSimilarity:
         """
         self.embedding_map: Dict[Symbol, SymbolEmbedding] = symbol_embedding_map.embedding_map
         self.embedding_provider: EmbeddingsProvider = symbol_embedding_map.embedding_provider
-        symbols = list(self.embedding_map.keys())
+        symbols = sorted(list(self.embedding_map.keys()), key=lambda x: x.uri)
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(symbols)}
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(symbols)}
 
@@ -42,10 +42,11 @@ class SymbolSimilarity:
             A unit-normed vector as a numpy array.
         """
         similarity_scores = np.zeros(len(self.embedding_map))
+        query_embedding = self.embedding_provider.get_embedding(query_text)
 
         for idx, symbol_embedding in enumerate(self.embedding_map.values()):
             similarity = SymbolSimilarity._calculate_similarity(
-                self.embedding_provider.get_embedding(query_text), symbol_embedding.vector
+                query_embedding, symbol_embedding.vector
             )
             similarity_scores[idx] = similarity
 
@@ -57,24 +58,47 @@ class SymbolSimilarity:
 
         return unit_normed_vector
 
-    def transform_similarity_matrix(self, query_text: str) -> np.ndarray:
+    def normalize_matrix(self, M: np.ndarray) -> np.ndarray:
+        """
+        Normalize the values in a matrix to fall within [0, 1].
+
+        Args:
+            M (np.ndarray): The matrix to be normalized.
+
+        Returns:
+            The normalized matrix as a numpy array.
+        """
+        M_min = np.min(M)
+        M_max = np.max(M)
+
+        # Prevent division by zero in case of a matrix with all elements being the same
+        if M_max == M_min:
+            return M - M_min
+
+        return (M - M_min) / (M_max - M_min)
+
+    def transform_similarity_matrix(self, S: np.ndarray, query_text: str) -> np.ndarray:
         """
         Perform a unitary transformation on the similarity matrix.
 
         Args:
+            S (np.ndarray): The similarity matrix
             query_text (str): The query text
 
         Returns:
             The transformed similarity matrix as a numpy array.
         """
-        # Step 1: Construct the similarity matrix (S)
-        S = np.array(self.generate_similarity_matrix())
-
-        # Step 2: Construct a unit-normed vector (e)
+        # Step 1: Construct a unit-normed vector (e)
         e = self.generate_unit_normed_query_vector(query_text)
 
-        # Step 3: Perform a unitary transformation on the similarity matrix, e.g. compute e S e^T
-        transformed_similarity_matrix = e @ S @ e.T
+        # Step 2: Reshape e to have shape (n, 1) so it can be used in broadcasting operation
+        e = np.reshape(e, (-1, 1))
+
+        # Step 3: Perform a transformation on the similarity matrix, e.g. compute e * S
+        transformed_similarity_matrix = e * S
+
+        # Step 4: Re-normalize the transformed similarity matrix
+        transformed_similarity_matrix = self.normalize_matrix(transformed_similarity_matrix)
 
         return transformed_similarity_matrix
 
@@ -86,7 +110,7 @@ class SymbolSimilarity:
             A 2D numpy array representing the similarity matrix
         """
         embeddings = np.array(
-            [symbol_embedding.vector for symbol_embedding in self.embedding_map.values()]
+            [self.embedding_map[symbol].vector for symbol in self.index_to_symbol.values()]
         )
 
         return SymbolSimilarity.calculate_similarity_matrix(embeddings)

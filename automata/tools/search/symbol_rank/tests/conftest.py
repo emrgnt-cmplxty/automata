@@ -1,3 +1,4 @@
+import networkx as nx
 import os
 import random
 from unittest.mock import Mock
@@ -60,3 +61,13 @@ def patch_get_embedding(monkeypatch, mock_embedding):
     # Define the behavior of the mock get_embedding function
     mock_get_embedding = Mock(return_value=mock_embedding)
     monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
+
+def generate_random_graph(nodes, edges):
+    """Generate a directed random graph with specified nodes and edges."""
+    graph = nx.DiGraph()
+    for i in range(nodes):
+        graph.add_node(i)
+    for _ in range(edges):
+        graph.add_edge(random.randint(0, nodes - 1), random.randint(0, nodes - 1))
+    return graph
+

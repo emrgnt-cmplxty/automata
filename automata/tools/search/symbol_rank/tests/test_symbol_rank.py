@@ -4,7 +4,6 @@ from networkx import DiGraph
 from automata.tools.search.symbol_rank.symbol_rank import (
     SymbolRank,
     SymbolRankConfig,
-    generate_random_graph,
 )
 
 
