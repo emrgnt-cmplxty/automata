@@ -1,1 +1,2 @@
+*.json filter=lfs diff=lfs merge=lfs -text
 automata/configs/symbols/symbol_embedding.json filter=lfs diff=lfs merge=lfs -text
