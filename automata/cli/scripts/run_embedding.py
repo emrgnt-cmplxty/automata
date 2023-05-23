@@ -1,5 +1,6 @@
 import logging
 import os
+import textwrap
 
 from tqdm import tqdm
 
@@ -63,12 +64,13 @@ def main(*args, **kwargs):
             embedding_path=embedding_path,
         )
         symbol_similarity = SymbolSimilarity(symbol_embedding)
+
         result_symbols = symbol_similarity.get_nearest_symbols_for_query(kwargs["query_text"], 10)
         print("-" * 100)
         print(">> Result symbols << ")
         print("-" * 100)
         for symbol in result_symbols:
-            print("  >> %s << " % (symbol))
+            print("  >> %s (similarity = %s) << " % (symbol, result_symbols[symbol]))
         print("-" * 100)
         return "Success"
 
@@ -93,8 +95,47 @@ if __name__ == "__main__":
 
     parser.add_argument("--query_embedding", action="store_true", help="Query the embedding map.")
 
+    sample_query_text = textwrap.dedent(
+        '''
+        def _parse_completion_message(self, completion_message: str) -> str:
+            """
+            Parses the completion message and replaces placeholders with actual tool outputs.
+
+            Args:
+                completion_message (str): The completion message with placeholders.
+
+            Returns:
+                str: The parsed completion message with placeholders replaced by tool outputs.
+            """
+            outputs = {}
+            for message in self.messages:
+                pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
+                matches = re.finditer(pattern, message.content, re.DOTALL)
+                for match in matches:
+                    tool_name, tool_output = match.group(1), match.group(2).strip()
+                    outputs[tool_name] = tool_output
+            if self._has_helper_agents():
+                for message in self.messages:
+                    pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
+                    matches = re.finditer(pattern, message.content, re.DOTALL)
+                    for match in matches:
+                        agent_version, agent_output = match.group(1), match.group(2).strip()
+                        outputs[agent_version] = agent_output
+
+                for output_name in outputs:
+                    completion_message = completion_message.replace(
+                        f"{{{output_name}}}", outputs[output_name]
+                    )
+
+            for output_name in outputs:
+                completion_message = completion_message.replace(
+                    f"{{{output_name}}}", outputs[output_name]
+                )
+            return completion_message
+        '''
+    )  # noqa
     parser.add_argument(
-        "--query_text", default="AutomataAgent", help="Text to query the embedding map for."
+        "--query_text", default=sample_query_text, help="Text to query the embedding map for."
     )
 
     # Parse the arguments

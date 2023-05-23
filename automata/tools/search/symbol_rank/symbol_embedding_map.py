@@ -104,8 +104,11 @@ class SymbolEmbeddingMap:
     def save(self, output_embedding_path: StrPath, overwrite: bool = False) -> None:
         """
         Save the built embedding map to a file.
-
-        :param output_embedding_path: Path to output file
+        Args:
+            output_embedding_path (StrPath): Path to output file
+            overwrite (bool): Whether to overwrite the file if it already exists
+        Result:
+            None
         """
         # Raise error if the file already exists
         if os.path.exists(output_embedding_path) and not overwrite:
@@ -118,8 +121,8 @@ class SymbolEmbeddingMap:
     def load(cls, input_embedding_path: StrPath) -> Dict[Symbol, SymbolEmbedding]:
         """
         Load a saved embedding map from a local file.
-
-        :param input_embedding_path: Path to input file
+        Args:
+            input_embedding_path (StrPath): Path to input file
         """
         # Raise error if the file does not exist
         if not os.path.exists(input_embedding_path):
@@ -141,11 +144,10 @@ class SymbolEmbeddingMap:
         Build a map from symbol to embedding vector.
         Args:
             symbol_converter: SymbolConverter to convert symbols to FST objects
-            all_defined_symbols: List of symbols to build embedding map for
+            defined_symbols: List of symbols to build embedding map for
         Returns:
             Map from symbol to embedding vector
         """
-        print("Building embedding map")
         embedding_map: Dict[Symbol, SymbolEmbedding] = {}
         filtered_symbols = self._filter_symbols(defined_symbols)
 

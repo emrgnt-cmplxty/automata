@@ -41,32 +41,42 @@ class SymbolSimilarity:
 
         return SymbolSimilarity.calculate_similarity_matrix(embeddings)
 
-    def get_nearest_symbols_for_query(self, query_text: str, k: int = 10) -> List[Symbol]:
+    def get_nearest_symbols_for_query(self, query_text: str, k: int = 10) -> Dict[Symbol, float]:
         """
         Get the k most similar symbols to the query_text.
         Args:
             query_text (str): The query text
             k (int): The number of similar symbols to return
         Returns:
-            A list of the k most similar symbols
+            A dictionary mapping the k most similar symbols to their similarity score
         """
         query_embedding = self.embedding_provider.get_embedding(query_text)
         # Compute the similarity of the query to all symbols
         similarity_scores = []
-        for symbol, symbol_embedding in self.embedding_map.items():
+        for symbol_embedding in self.embedding_map.values():
             similarity = SymbolSimilarity._calculate_similarity(
                 query_embedding, symbol_embedding.vector
             )
             similarity_scores.append(similarity)
 
         # Get the indices of the symbols with the highest similarity scores
-        nearest_indices = np.argpartition(similarity_scores, -k)[-k:]
+        nearest_indices = np.argsort(similarity_scores)[-k:]
 
         # Return the corresponding symbols
-        return [self.index_to_symbol[index] for index in nearest_indices]
+        return {
+            self.index_to_symbol[index]: similarity_scores[index]
+            for index in reversed(nearest_indices)
+        }
 
     @staticmethod
     def calculate_similarity_matrix(embeddings: List[List[float]]) -> List[List[float]]:
+        """
+        Calculate the similarity matrix for a list of embeddings
+        Args:
+            embeddings (List[List[float]]): A list of embeddings
+        Returns:
+            A 2D numpy array representing the similarity matrix
+        """
         results: List[List[float]] = [
             [0.0 for _ in range(len(embeddings))] for _ in range(len(embeddings))
         ]
