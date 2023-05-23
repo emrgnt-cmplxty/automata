@@ -5,6 +5,7 @@ from unittest.mock import Mock
 import pytest
 
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 
 
 @pytest.fixture
@@ -44,3 +45,18 @@ def mock_symbol_converter():
     mock_symbol_converter = Mock()
     mock_symbol_converter.convert_to_fst_object.return_value = "symbol_source"
     return mock_symbol_converter
+
+
+def get_sem(mock_symbol_converter, mock_symbols, build_new_embedding_map=False):
+    return SymbolEmbeddingMap(
+        symbol_converter=mock_symbol_converter,
+        # Symbols with kind 'Method' are processed, 'Local' are skipped
+        all_defined_symbols=mock_symbols,
+        build_new_embedding_map=build_new_embedding_map,
+    )
+
+
+def patch_get_embedding(monkeypatch, mock_embedding):
+    # Define the behavior of the mock get_embedding function
+    mock_get_embedding = Mock(return_value=mock_embedding)
+    monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)

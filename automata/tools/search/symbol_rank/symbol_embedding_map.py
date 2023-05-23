@@ -23,19 +23,6 @@ class EmbeddingsProvider:
         from openai.embeddings_utils import get_embedding
 
         return get_embedding(symbol_source)
-    
-    def calculate_similarity_matrix(self, embeddings: List[List[float]]) -> List[List[float]]:
-        from openai.embeddings_utils import cosine_similarity
-        results: List[List[float]] = [[0.0 for _ in range(len(embeddings))] for _ in range(len(embeddings))]
-        for i in range(len(embeddings)):
-            for j in range(len(embeddings)):
-                if i >= j:
-                    continue
-                similarity = cosine_similarity(embeddings[i], embeddings[j])
-                results[i][j] = similarity
-                results[j][i] = results[i][j]
-
-        return results
 
 
 class SymbolEmbeddingMap:
@@ -78,22 +65,6 @@ class SymbolEmbeddingMap:
                 self.embedding_map = kwargs["embedding_map"]
             except KeyError as e:
                 raise ValueError(f"Missing required argument: {e}")
-
-    def generate_similarity_matrix(self) -> List[List[float]]:
-        """
-        Generate a similarity matrix for all symbols in the embedding map.
-
-        Returns:
-            A 2D numpy array representing the similarity matrix
-        """
-        symbols = list(self.embedding_map.keys())
-        embeddings = [symbol_embedding.vector for symbol_embedding in self.embedding_map.values()]
-
-        self.index_to_symbol = {i: symbol for i, symbol in enumerate(symbols)}
-        self.symbol_to_index = {symbol: i for i, symbol in enumerate(symbols)}
-
-        return self.embedding_provider.calculate_similarity_matrix(embeddings)
-
 
     def update_embeddings(
         self, symbol_converter: SymbolConverter, symbols_to_update: List[Symbol]

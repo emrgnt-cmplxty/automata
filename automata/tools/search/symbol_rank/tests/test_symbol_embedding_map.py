@@ -1,21 +1,8 @@
 from unittest.mock import Mock
 
+from conftest import get_sem, patch_get_embedding
+
 from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
-
-
-def get_sem(mock_symbol_converter, mock_symbols, build_new_embedding_map=False):
-    return SymbolEmbeddingMap(
-        symbol_converter=mock_symbol_converter,
-        # Symbols with kind 'Method' are processed, 'Local' are skipped
-        all_defined_symbols=mock_symbols,
-        build_new_embedding_map=build_new_embedding_map,
-    )
-
-
-def patch_get_embedding(monkeypatch, mock_embedding):
-    # Define the behavior of the mock get_embedding function
-    mock_get_embedding = Mock(return_value=mock_embedding)
-    monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
 
 
 def test_build_embedding_map(
@@ -118,28 +105,3 @@ def test_get_embedding_exception(monkeypatch, mock_symbol_converter, mock_simple
     monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
     sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=True)
     assert len(sem.embedding_map) == 0  # Expect empty embedding map because of exception
-
-def test_generate_similarity_matrix(
-    monkeypatch,
-    mock_embedding,
-    mock_simple_method_symbols,
-    mock_symbol_converter,
-):
-    # Define the behavior of the mock get_embedding function
-    patch_get_embedding(monkeypatch, mock_embedding)
-
-    # Create an instance of the class
-    sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=True)
-    similarity_matrix = sem.generate_similarity_matrix()
-    # # Mock the EmbeddingsProvider's calculate_similarity_matrix method to return a constant matrix
-    # mock_matrix = [[1.0, 0.5], [0.5, 1.0]]
-    # sem.embedding_provider.calculate_similarity_matrix = Mock(return_value=mock_matrix)
-
-    # # Call the method
-    # sem.generate_similarity_matrix()
-
-    # print("sem.similarity_matrix = ", sem.similarity_matrix)
-    # # Verify the results
-    # assert sem.index_to_symbol == {0: mock_simple_method_symbols[0], 1: mock_simple_method_symbols[1]}
-    # assert sem.symbol_to_index == {mock_simple_method_symbols[0]: 0, mock_simple_method_symbols[1]: 1}
-    # assert sem.similarity_matrix == mock_matrix
