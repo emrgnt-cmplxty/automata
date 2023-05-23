@@ -107,7 +107,28 @@ class SymbolEmbeddingMap:
                     logger.info("Symbol: %s already in embedding map" % symbol)
             except Exception as e:
                 logger.error("Updating embedding for symbol: %s failed with %s" % (symbol, e))
-        # TODO - Add trimming here
+        # TODO - Add trimming here, e.g. contract the mapping when appropriate
+
+    def filter_embedding_map(self, selected_symbols: List[Symbol]):
+        """
+        Filters the embedding map to only contain entries for the selected symbols.
+
+        Args:
+            selected_symbols (List[Symbol]): List of symbols to keep in the embedding map.
+        Result:
+            None
+        """
+        # Print the length of the embedding map before filtering
+        print("Length of the embedding map before filtering: ", len(self.embedding_map))
+
+        self.embedding_map = {
+            symbol: embedding
+            for symbol, embedding in self.embedding_map.items()
+            if symbol in selected_symbols
+        }
+
+        # Print the length of the embedding map after filtering
+        print("Length of the embedding map after filtering: ", len(self.embedding_map))
 
     def save(self, output_embedding_path: StrPath, overwrite: bool = False) -> None:
         """

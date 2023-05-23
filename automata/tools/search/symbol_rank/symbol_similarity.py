@@ -1,8 +1,8 @@
-import numpy as np
 import logging
 from enum import Enum
-from scipy.linalg import qr
 from typing import Dict, Optional
+
+import numpy as np
 
 from automata.tools.search.local_types import Symbol, SymbolEmbedding
 from automata.tools.search.symbol_rank.symbol_embedding_map import (
@@ -66,40 +66,11 @@ class SymbolSimilarity:
         transformed_similarity_matrix = P * S
 
         # Step 5: Normalize the transformed similarity matrix by its Frobenius norm
-        transformed_similarity_matrix = transformed_similarity_matrix / np.linalg.norm(transformed_similarity_matrix)
+        transformed_similarity_matrix = transformed_similarity_matrix / np.linalg.norm(
+            transformed_similarity_matrix
+        )
 
         return transformed_similarity_matrix
-
-        # # Step 1: Construct a unit-normed vector (e)
-        # # This vector is created from the provided query_text and normalized.
-        # e = self._generate_unit_normed_query_vector(query_text, self._process_norm_type(norm_type))
-
-        # # Step 2: Normalize e and extend it to form a unitary matrix
-        # # The unit vector e is first normalized to make sure it has a norm of 1.
-        # # Then, we use QR decomposition to create a unitary matrix.
-        # # The resulting matrix (q) from QR decomposition is an orthonormal basis.
-        # # We replace the first column of this matrix with our unit vector e.
-        # # We then reorthonormalize to ensure the columns of q form a unitary matrix T.
-        # e = e / np.linalg.norm(e)
-        # q, _ = qr(np.random.randn(len(e), len(e)))
-        # q[:, 0] = e
-        # q, _ = qr(q)
-        # T = q
-
-        # # Verify if T is unitary: check if T multiplied by its conjugate transpose is an identity matrix
-        # if not np.allclose(np.eye(T.shape[0]), T @ T.conj().T):
-        #     raise ValueError("T is not a unitary matrix.")
-
-        # # Step 3: Perform a transformation on the similarity matrix
-        # # The similarity matrix S is transformed using the unitary matrix T.
-        # # The transformation is computed as T * S * T^H, where T^H is the conjugate transpose of T.
-        # transformed_similarity_matrix = T @ S @ T.conj().T
-
-        # # Step 4: Min-Max normalization
-        # # The transformed similarity matrix is normalized using min-max normalization.
-        # transformed_similarity_matrix = self._normalize_matrix(transformed_similarity_matrix)
-
-        # return transformed_similarity_matrix
 
     def generate_similarity_matrix(self, norm_type: Optional[str] = None) -> np.ndarray:
         """
