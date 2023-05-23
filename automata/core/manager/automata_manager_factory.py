@@ -25,13 +25,13 @@ class AutomataManagerFactory:
         :param helper_agent_configs: Dictionary of AutomataAgentConfig instances, keyed on AgentConfigName.
         :return: AutomataManager instance.
         """
-        logging.info(
+        logging.debug(
             f"Creating AutomataCoordinator from helper_agent_configs={helper_agent_configs}"
         )
         coordinator = AutomataCoordinatorFactory.create_coordinator(
             main_agent, helper_agent_configs
         )
-        logging.info(
+        logging.debug(
             f"Creating AutomataManager with main_agent={main_agent} and coordinator={coordinator}"
         )
         return AutomataManager(main_agent, coordinator)

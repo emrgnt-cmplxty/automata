@@ -12,7 +12,7 @@ from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
 def test_build_tool_message(automata_agent_config_builder):
-    tool_list = ["python_indexer", "python_writer", "codebase_oracle"]
+    tool_list = ["python_indexer", "python_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()
@@ -22,7 +22,6 @@ def test_build_tool_message(automata_agent_config_builder):
     assert "python-indexer-retrieve-docstring" in tools_messages
     assert "python-indexer-retrieve-raw-code" in tools_messages
     assert "python-writer-update-module" in tools_messages
-    assert "codebase-oracle-agent" in tools_messages
 
 
 def test_build_initial_messages(automata_agent):
@@ -72,6 +71,23 @@ def test_iter_task_without_api_call(mock_openai_chatcompletion_create, automata_
     assert assistant_message.content == "The dummy_tool has been tested successfully."
     assert user_message.content, AutomataAgent.CONTINUE_MESSAGE
     assert len(automata_agent.messages) == 5
+
+
+@patch("openai.ChatCompletion.create")
+def test_max_iters_without_api_call(mock_openai_chatcompletion_create, automata_agent):
+    max_iters = 5
+    automata_agent.config.max_iters = max_iters
+    # Mock the API response
+    mock_openai_chatcompletion_create.return_value = {
+        "choices": [{"message": {"content": "invalid tool name"}}]
+    }
+
+    result = automata_agent.run()
+    assert (
+        result
+        == f"Result was not found before iterations exceeded configured max limit: {max_iters}. Debug summary: invalid tool name"
+    )
+    assert len(automata_agent.messages) == max_iters * 2 + AutomataAgent.NUM_DEFAULT_MESSAGES + 1
 
 
 def mock_openai_response_with_completion_message():

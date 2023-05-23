@@ -51,7 +51,7 @@ class AutomataAgentConfig(BaseModel):
         SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo"]
         arbitrary_types_allowed = True
 
-    config_name: AgentConfigName = AgentConfigName.AUTOMATA_INDEXER_DEV
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
     instruction_payload: AutomataInstructionPayload = AutomataInstructionPayload()
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
@@ -63,7 +63,7 @@ class AutomataAgentConfig(BaseModel):
     verbose: bool = False
     eval_mode: bool = False
     is_new_agent: bool = True
-    max_iters: int = 1_000_000
+    max_iters: int = 50
     temperature: float = 0.7
     session_id: Optional[str] = None
     system_instruction: Optional[str] = None

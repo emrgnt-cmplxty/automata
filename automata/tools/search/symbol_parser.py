@@ -1,7 +1,7 @@
 import re
 from typing import List, Optional
 
-from automata.tools.search.local_types import Descriptor, Package, Symbol
+from automata.tools.search.scip_classes import Descriptor, Package, Symbol
 
 """
 SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.
@@ -127,12 +127,12 @@ class SymbolParser:
         return c.isalpha() or c.isdigit() or c in ["-", "+", "$", "_"]
 
 
-def parse_uri_to_symbol(symbol: str, include_descriptors: bool = True) -> Symbol:
-    s = SymbolParser(symbol)
+def parse_symbol(symbol_uri: str, include_descriptors: bool = True) -> Symbol:
+    s = SymbolParser(symbol_uri)
     scheme = s.accept_space_escaped_identifier("scheme")
 
     if scheme == "local":
-        return new_local_symbol(symbol, s.symbol[s.index :])
+        return new_local_symbol(symbol_uri, s.symbol[s.index :])
     manager = s.accept_space_escaped_identifier("package manager")
 
     manager = "" if manager == "." else manager
@@ -145,7 +145,9 @@ def parse_uri_to_symbol(symbol: str, include_descriptors: bool = True) -> Symbol
     descriptors = []
     if include_descriptors:
         descriptors = s.parse_descriptors()
-    return Symbol(symbol, scheme, Package(manager, package_name, package_version), descriptors)
+    return Symbol(
+        symbol_uri, scheme, Package(manager, package_name, package_version), tuple(descriptors)
+    )
 
 
 def new_local_symbol(symbol: str, id: str) -> Symbol:
@@ -154,7 +156,7 @@ def new_local_symbol(symbol: str, id: str) -> Symbol:
         symbol,
         "local",
         Package("", "", ""),
-        [Descriptor(id, Descriptor.ScipSuffix.Local)],
+        tuple([Descriptor(id, Descriptor.ScipSuffix.Local)]),
     )
 
 
@@ -164,10 +166,6 @@ def is_global_symbol(symbol: str) -> bool:
 
 def is_local_symbol(symbol: str) -> bool:
     return symbol.startswith("local ")
-
-
-def parse_symbol(symbol: str, include_descriptors: bool = True) -> Symbol:
-    return parse_uri_to_symbol(symbol, include_descriptors)
 
 
 def get_escaped_name(name):

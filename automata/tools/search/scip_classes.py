@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from os import PathLike
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
 
@@ -13,6 +13,10 @@ SCIP produces symbol URI, it identifies a class, method, or a local variable, al
 Full spec: https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/docs/scip.md#symbol
 The classes and functions in this file are used to convert the symbol URI into a human-readable form that can be used to query the index.
 """
+
+# Path and os related variables
+StrPath = Union[str, PathLike]
+PyPath = str
 
 
 # Symbol Related Types
@@ -120,7 +124,7 @@ class Symbol:
     uri: str
     scheme: str
     package: Package
-    descriptors: List[Descriptor]
+    descriptors: Tuple[Descriptor, ...]
 
     def __repr__(self):
         return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
@@ -158,6 +162,30 @@ class Symbol:
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
+    @property
+    def module_name(self) -> str:
+        return self.descriptors[0].name
+
+    def parent(self) -> "Symbol":
+        parent_descriptors = list(self.descriptors)[:-1]
+        return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
+
+    @staticmethod
+    def is_local(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Local
+
+    @staticmethod
+    def is_meta(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Meta
+
+    @staticmethod
+    def is_parameter(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Parameter
+
+    @staticmethod
+    def is_protobuf(symbol: "Symbol") -> bool:
+        return symbol.module_name.endswith("pb2")
+
     @classmethod
     def from_string(cls, symbol_str: str) -> "Symbol":
         """
@@ -168,19 +196,20 @@ class Symbol:
         """
         # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
         # Parse the symbol_str to extract the uri, scheme, and package_str
-        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \[(.*?)\]\)", symbol_str)
+        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
         if not match:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __, ___ = match.groups()
-        from automata.tools.search.symbol_parser import parse_uri_to_symbol
+        from automata.tools.search.symbol_parser import parse_symbol
 
-        return parse_uri_to_symbol(uri)
+        return parse_symbol(uri)
 
 
 @dataclass
 class SymbolReference:
     symbol: Symbol
     line_number: int
+    column_number: int
     roles: Dict[str, Any]
 
 
@@ -191,14 +220,9 @@ class SymbolEmbedding:
     source_code: str
 
 
-# Path and os related variables
-StrPath = Union[str, PathLike]
-PyPath = str
-
-
 @dataclass
 class File:
-    path: str
+    path: StrPath
     occurrences: str
 
     def __hash__(self) -> int:

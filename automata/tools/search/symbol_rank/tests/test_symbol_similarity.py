@@ -1,7 +1,7 @@
 import numpy as np
 from conftest import get_sem, patch_get_embedding
 
-from automata.tools.search.local_types import SymbolEmbedding
+from automata.tools.search.scip_classes import SymbolEmbedding
 from automata.tools.search.symbol_rank.symbol_embedding_map import (
     EmbeddingsProvider,
     SymbolEmbeddingMap,

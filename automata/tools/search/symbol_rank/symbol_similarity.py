@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from automata.tools.search.local_types import Symbol, SymbolEmbedding
+from automata.tools.search.scip_classes import Symbol, SymbolEmbedding
 from automata.tools.search.symbol_rank.symbol_embedding_map import (
     EmbeddingsProvider,
     SymbolEmbeddingMap,

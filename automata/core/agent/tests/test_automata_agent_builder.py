@@ -24,7 +24,7 @@ def test_builder_default_config(automata_agent_config_builder):
     assert config.model == "gpt-4"
     assert config.stream is False
     assert config.verbose is False
-    assert config.max_iters == 1_000_000
+    assert config.max_iters == 50
     assert config.temperature == 0.7
     assert config.session_id is not None  # session id defaults if not set
 
@@ -49,7 +49,7 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
 
 
 def test_builder_accepts_all_fields(automata_agent_config_builder):
-    tool_list = ["python_indexer", "python_writer", "codebase_oracle"]
+    tool_list = ["python_indexer", "python_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = (

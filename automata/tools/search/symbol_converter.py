@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 from redbaron import RedBaron
 
-from automata.tools.search.local_types import Descriptor, Symbol
+from automata.tools.search.scip_classes import Descriptor, Symbol
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class SymbolConverter:
         """
 
         # Extract the module path, class/method name from the symbol
-        descriptors = deepcopy(symbol.descriptors)
+        descriptors = deepcopy(list(symbol.descriptors))
         obj = None
 
         while descriptors:

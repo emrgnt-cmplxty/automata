@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from automata.tools.search.symbol_parser import parse_uri_to_symbol
+from automata.tools.search.symbol_parser import parse_symbol
 from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 
 
@@ -28,17 +28,12 @@ prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `
 
 @pytest.fixture
 def mock_simple_method_symbols(monkeypatch):
-    return [
-        parse_uri_to_symbol(prefix + str(random.random()) + "_uri_ex_method().")
-        for _ in range(100)
-    ]
+    return [parse_symbol(prefix + str(random.random()) + "_uri_ex_method().") for _ in range(100)]
 
 
 @pytest.fixture
 def mock_simple_class_symbols():
-    return [
-        parse_uri_to_symbol(prefix + str(random.random()) + "_uri_ex_method#") for _ in range(100)
-    ]
+    return [parse_symbol(prefix + str(random.random()) + "_uri_ex_method#") for _ in range(100)]
 
 
 @pytest.fixture

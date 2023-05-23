@@ -5,7 +5,6 @@ from typing import Dict, List
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.utils import root_py_path
 from automata.tool_management.base_tool_manager import BaseToolManager
-from automata.tools.oracle.codebase_oracle import CodebaseOracle
 from automata.tools.python_tools.python_indexer import PythonIndexer
 from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -43,13 +42,6 @@ class ToolManagerFactory:
                 "automata.tool_management.python_writer_tool_manager"
             ).PythonWriterToolManager
             return PythonWriterToolManager(python_writer=PythonWriter(python_indexer))
-        elif toolkit_type == ToolkitType.CODEBASE_ORACLE:
-            CodebaseOracleToolManager = importlib.import_module(
-                "automata.tool_management.codebase_oracle_tool_manager"
-            ).CodebaseOracleToolManager
-            return CodebaseOracleToolManager(
-                codebase_oracle=CodebaseOracle.get_default_codebase_oracle()
-            )
         elif toolkit_type == ToolkitType.COVERAGE_PROCESSOR:
             CoverageToolManager = importlib.import_module(
                 "automata.tool_management.coverage_tool_manager"
@@ -104,8 +96,6 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
             toolkit_type = ToolkitType.PYTHON_INDEXER
         elif tool_name == "python_writer":
             toolkit_type = ToolkitType.PYTHON_WRITER
-        elif tool_name == "codebase_oracle":
-            toolkit_type = ToolkitType.CODEBASE_ORACLE
         elif tool_name == "coverage_processor":
             toolkit_type = ToolkitType.COVERAGE_PROCESSOR
         else:
