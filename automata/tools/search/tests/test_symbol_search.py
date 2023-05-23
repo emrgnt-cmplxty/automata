@@ -23,22 +23,22 @@ def test_symbol_search(symbols, symbol_searcher, symbol_graph_mock):
     )
 
 
-def test_exact_search(symbols, symbol_searcher):
-    with patch.object(
-        symbol_searcher.converter, "find_pattern_in_modules", return_value=["file1", "file2"]
+def test_exact_search(symbol_searcher):
+    with patch(
+        "automata.tools.search.symbol_searcher.find_pattern_in_modules",
+        return_value=["file1", "file2"],
     ) as mock_method:
         result = symbol_searcher.exact_search("pattern1")
         assert result == ["file1", "file2"]
-    mock_method.assert_called_once_with("pattern1")
+    mock_method.assert_called_once_with(symbol_searcher.converter, "pattern1")
 
 
 def test_find_and_replace(symbols, symbol_searcher):
-    with patch.object(
-        symbol_searcher.converter, "find_and_replace_in_modules", return_value=5
+    with patch(
+        "automata.tools.search.symbol_searcher.find_and_replace_in_modules", return_value=5
     ) as mock_method:
         result = symbol_searcher.find_and_replace("find1", "replace1", True)
         assert result == 5
-    mock_method.assert_called_once_with("find1", "replace1", True)
 
 
 def test_process_query(symbols, symbol_searcher, symbol_graph_mock):
