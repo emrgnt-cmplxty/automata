@@ -30,6 +30,54 @@ class SymbolSimilarity:
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(symbols)}
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(symbols)}
 
+    def generate_unit_normed_query_vector(self, query_text: str) -> np.ndarray:
+        """
+        Generate a unit-normed vector where the ith component is
+        the similarity between symbol i and the query.
+
+        Args:
+            query_text (str): The query text
+
+        Returns:
+            A unit-normed vector as a numpy array.
+        """
+        similarity_scores = []
+
+        for symbol_embedding in self.embedding_map.values():
+            similarity = SymbolSimilarity._calculate_similarity(
+                self.embedding_provider.get_embedding(query_text), symbol_embedding.vector
+            )
+            similarity_scores.append(similarity)
+
+        # Normalizing the vector
+        norm = np.linalg.norm(similarity_scores)
+        unit_normed_vector = (
+            np.array(similarity_scores) / norm if norm != 0 else np.array(similarity_scores)
+        )
+
+        return unit_normed_vector
+
+    def transform_similarity_matrix(self, query_text: str) -> np.ndarray:
+        """
+        Perform a unitary transformation on the similarity matrix.
+
+        Args:
+            query_text (str): The query text
+
+        Returns:
+            The transformed similarity matrix as a numpy array.
+        """
+        # Step 1: Construct the similarity matrix (S)
+        S = np.array(self.generate_similarity_matrix())
+
+        # Step 2: Construct a unit-normed vector (e)
+        e = self.generate_unit_normed_query_vector(query_text)
+
+        # Step 3: Perform a unitary transformation on the similarity matrix, e.g. compute e S e^T
+        transformed_similarity_matrix = e @ S @ e.T
+
+        return transformed_similarity_matrix
+
     def generate_similarity_matrix(self) -> List[List[float]]:
         """
         Generate a similarity matrix for all symbols in the embedding map.
