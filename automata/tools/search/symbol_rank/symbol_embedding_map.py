@@ -3,6 +3,7 @@ import os
 from typing import Dict, List
 
 import jsonpickle
+import numpy as np
 import openai
 
 from automata.tools.search.local_types import Descriptor, StrPath, Symbol, SymbolEmbedding
@@ -18,11 +19,18 @@ class EmbeddingsProvider:
 
             openai.api_key = OPENAI_API_KEY
 
-    def get_embedding(self, symbol_source: str) -> List[float]:
+    def get_embedding(self, symbol_source: str) -> np.ndarray:
+        """
+        Get the embedding for a symbol.
+        Args:
+            symbol_source (str): The source code of the symbol
+        Returns:
+            A numpy array representing the embedding
+        """
         # wait to import get_embedding to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
-        return get_embedding(symbol_source)
+        return np.array(get_embedding(symbol_source))
 
 
 class SymbolEmbeddingMap:
@@ -165,7 +173,11 @@ class SymbolEmbeddingMap:
         return embedding_map
 
     @staticmethod
-    def _filter_symbols(symbols: List[Symbol]) -> List[Symbol]:
+    def _filter_symbols(
+        symbols: List[Symbol],
+        filter_strings=["__init__", "setup", "local", "test"],
+        accepted_kinds=[Descriptor.PythonKinds.Method, Descriptor.PythonKinds.Class],
+    ) -> List[Symbol]:
         """
         Filter out symbols that are not relevant for the embedding map.
 
@@ -175,7 +187,7 @@ class SymbolEmbeddingMap:
             List of filtered symbols
         """
         filtered_symbols = []
-        filter_strings = ["__init__", "setup", "local", "test"]
+
         for symbol in symbols:
             do_continue = False
             for filter_string in filter_strings:
@@ -186,14 +198,7 @@ class SymbolEmbeddingMap:
                 continue
 
             symbol_kind = symbol.symbol_kind_by_suffix()
-            if (
-                symbol_kind == Descriptor.PythonKinds.Local
-                or symbol_kind == Descriptor.PythonKinds.Value
-                or symbol_kind == Descriptor.PythonKinds.Meta
-                or symbol_kind == Descriptor.PythonKinds.Macro
-                or symbol_kind == Descriptor.PythonKinds.Parameter
-                or symbol_kind == Descriptor.PythonKinds.TypeParameter
-            ):
+            if symbol_kind not in accepted_kinds:
                 continue
             filtered_symbols.append(symbol)
         return filtered_symbols

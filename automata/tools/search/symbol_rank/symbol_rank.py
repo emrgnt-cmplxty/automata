@@ -1,20 +1,8 @@
-import random
 from typing import Dict, Hashable, List, Optional
 
 import networkx as nx
 from networkx.exception import NetworkXError
 from pydantic import BaseModel
-
-
-# Define a function to generate a random graph
-def generate_random_graph(nodes, edges):
-    """Generate a directed random graph with specified nodes and edges."""
-    graph = nx.DiGraph()
-    for i in range(nodes):
-        graph.add_node(i)
-    for _ in range(edges):
-        graph.add_edge(random.randint(0, nodes - 1), random.randint(0, nodes - 1))
-    return graph
 
 
 class SymbolRankConfig(BaseModel):
@@ -48,6 +36,57 @@ class SymbolRank:
         self.graph = graph
         self.config = config
         self.config.validate(self.config)
+
+    def get_ranks(
+        self,
+        init_symbol_similarity: Optional[Dict[str, float]] = None,
+        initial_weights: Optional[Dict[str, float]] = None,
+        dangling=None,
+    ) -> Dict[str, float]:
+        """
+        Calculate and return the SymbolRank of each node in the graph.
+
+        Args:
+            symbol_similarity (Optional[Dict[str, float]]): symbol_similarity dictionary.
+            initial_weights (Optional[Dict[str, float]]): Initial weights dictionary.
+            dangling (Optional[list]): List of dangling nodes.
+
+        Returns:
+            (Dict[str, float]): A dictionary mapping each node to its SymbolRank.
+        """
+        stochastic_graph = self._prepare_graph()
+        node_count = stochastic_graph.number_of_nodes()
+
+        rank_vec = self._prepare_initial_ranks(stochastic_graph, initial_weights)
+        symbol_similarity = self._prepare_symbol_similarity(
+            node_count, stochastic_graph, init_symbol_similarity
+        )
+        dangling_weights = self._prepare_dangling_weights(dangling, symbol_similarity)
+        dangling_nodes = self._get_dangling_nodes(stochastic_graph)
+
+        for _ in range(self.config.max_iterations):
+            last_rank_vec = rank_vec
+            rank_vec = {k: 0.0 for k in last_rank_vec.keys()}
+            danglesum = self.config.alpha * sum(last_rank_vec[node] for node in dangling_nodes)  # type: ignore
+            for node in rank_vec:
+                for nbr in stochastic_graph[node]:
+                    rank_vec[nbr] += (
+                        self.config.alpha
+                        * last_rank_vec[node]
+                        * stochastic_graph[node][nbr][self.config.weight_key]
+                    )
+                rank_vec[node] += (
+                    danglesum * dangling_weights[node]
+                    + (1.0 - self.config.alpha) * symbol_similarity[node]
+                )
+
+            err = sum(abs(rank_vec[node] - last_rank_vec[node]) for node in rank_vec)
+            if err < node_count * self.config.tolerance:
+                return rank_vec
+        raise NetworkXError(
+            "SymbolRank: power iteration failed to converge in %d iterations."
+            % self.config.max_iterations
+        )
 
     def _prepare_graph(self) -> nx.DiGraph:
         """
@@ -154,71 +193,3 @@ class SymbolRank:
             for node in stochastic_graph
             if stochastic_graph.out_degree(node, weight=self.config.weight_key) == 0.0
         ]
-
-    def get_ranks(
-        self,
-        init_symbol_similarity: Optional[Dict[str, float]] = None,
-        initial_weights: Optional[Dict[str, float]] = None,
-        dangling=None,
-    ) -> Dict[str, float]:
-        """
-        Calculate and return the SymbolRank of each node in the graph.
-
-        Args:
-            symbol_similarity (Optional[Dict[str, float]]): symbol_similarity dictionary.
-            initial_weights (Optional[Dict[str, float]]): Initial weights dictionary.
-            dangling (Optional[list]): List of dangling nodes.
-
-        Returns:
-            (Dict[str, float]): A dictionary mapping each node to its SymbolRank.
-        """
-        stochastic_graph = self._prepare_graph()
-        node_count = stochastic_graph.number_of_nodes()
-
-        rank_vec = self._prepare_initial_ranks(stochastic_graph, initial_weights)
-        symbol_similarity = self._prepare_symbol_similarity(
-            node_count, stochastic_graph, init_symbol_similarity
-        )
-        dangling_weights = self._prepare_dangling_weights(dangling, symbol_similarity)
-        dangling_nodes = self._get_dangling_nodes(stochastic_graph)
-
-        for _ in range(self.config.max_iterations):
-            last_rank_vec = rank_vec
-            rank_vec = {k: 0.0 for k in last_rank_vec.keys()}
-            danglesum = self.config.alpha * sum(last_rank_vec[node] for node in dangling_nodes)  # type: ignore
-            for node in rank_vec:
-                for nbr in stochastic_graph[node]:
-                    rank_vec[nbr] += (
-                        self.config.alpha
-                        * last_rank_vec[node]
-                        * stochastic_graph[node][nbr][self.config.weight_key]
-                    )
-                rank_vec[node] += (
-                    danglesum * dangling_weights[node]
-                    + (1.0 - self.config.alpha) * symbol_similarity[node]
-                )
-
-            err = sum(abs(rank_vec[node] - last_rank_vec[node]) for node in rank_vec)
-            if err < node_count * self.config.tolerance:
-                return rank_vec
-        raise NetworkXError(
-            "SymbolRank: power iteration failed to converge in %d iterations."
-            % self.config.max_iterations
-        )
-
-
-if __name__ == "__main__":
-    nodes = 10
-    edges = 20
-    random.seed(0)
-    graph = generate_random_graph(nodes, edges)
-    page_rank = SymbolRank(graph)
-    ranks = page_rank.get_ranks()
-    for node, rank in sorted(ranks.items(), key=lambda item: item[1], reverse=True):
-        print(
-            f"Node {node}: SymbolRank {rank:.4f}, Incoming Links: {graph.in_degree(node)}, Outgoing Links: {graph.out_degree(node)}"
-        )
-
-    assert (
-        0.9999 <= sum(ranks.values()) <= 1.0001
-    ), f"SymbolRank values do not sum to 1: {sum(ranks.values())}"

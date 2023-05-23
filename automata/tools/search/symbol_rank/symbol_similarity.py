@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Dict
 
 import numpy as np
 
@@ -41,13 +41,13 @@ class SymbolSimilarity:
         Returns:
             A unit-normed vector as a numpy array.
         """
-        similarity_scores = []
+        similarity_scores = np.zeros(len(self.embedding_map))
 
-        for symbol_embedding in self.embedding_map.values():
+        for idx, symbol_embedding in enumerate(self.embedding_map.values()):
             similarity = SymbolSimilarity._calculate_similarity(
                 self.embedding_provider.get_embedding(query_text), symbol_embedding.vector
             )
-            similarity_scores.append(similarity)
+            similarity_scores[idx] = similarity
 
         # Normalizing the vector
         norm = np.linalg.norm(similarity_scores)
@@ -78,14 +78,16 @@ class SymbolSimilarity:
 
         return transformed_similarity_matrix
 
-    def generate_similarity_matrix(self) -> List[List[float]]:
+    def generate_similarity_matrix(self) -> np.ndarray:
         """
         Generate a similarity matrix for all symbols in the embedding map.
 
         Returns:
             A 2D numpy array representing the similarity matrix
         """
-        embeddings = [symbol_embedding.vector for symbol_embedding in self.embedding_map.values()]
+        embeddings = np.array(
+            [symbol_embedding.vector for symbol_embedding in self.embedding_map.values()]
+        )
 
         return SymbolSimilarity.calculate_similarity_matrix(embeddings)
 
@@ -100,12 +102,13 @@ class SymbolSimilarity:
         """
         query_embedding = self.embedding_provider.get_embedding(query_text)
         # Compute the similarity of the query to all symbols
-        similarity_scores = []
-        for symbol_embedding in self.embedding_map.values():
+        similarity_scores = np.zeros(len(self.embedding_map))
+
+        for idx, symbol_embedding in enumerate(self.embedding_map.values()):
             similarity = SymbolSimilarity._calculate_similarity(
                 query_embedding, symbol_embedding.vector
             )
-            similarity_scores.append(similarity)
+            similarity_scores[idx] = similarity
 
         # Get the indices of the symbols with the highest similarity scores
         nearest_indices = np.argsort(similarity_scores)[-k:]
@@ -117,36 +120,28 @@ class SymbolSimilarity:
         }
 
     @staticmethod
-    def calculate_similarity_matrix(embeddings: List[List[float]]) -> List[List[float]]:
+    def calculate_similarity_matrix(embeddings: np.ndarray) -> np.ndarray:
         """
         Calculate the similarity matrix for a list of embeddings
         Args:
-            embeddings (List[List[float]]): A list of embeddings
+            embeddings (np.ndarray): A list of embeddings
         Returns:
             A 2D numpy array representing the similarity matrix
         """
-        results: List[List[float]] = [
-            [0.0 for _ in range(len(embeddings))] for _ in range(len(embeddings))
-        ]
+        calculate_similarity_vectorized = np.vectorize(
+            SymbolSimilarity._calculate_similarity, signature="(n),(n)->()"
+        )
+        similarity_matrix = calculate_similarity_vectorized(embeddings[:, np.newaxis], embeddings)
 
-        for i in range(len(embeddings)):
-            for j in range(len(embeddings)):
-                if j > i:
-                    continue
-                results[i][j] = SymbolSimilarity._calculate_similarity(
-                    embeddings[i], embeddings[j]
-                )
-                results[j][i] = results[i][j]
-
-        return results
+        return similarity_matrix
 
     @staticmethod
-    def _calculate_similarity(embedding_a: List[float], embedding_b: List[float]) -> float:
+    def _calculate_similarity(embedding_a: np.ndarray, embedding_b: np.ndarray) -> float:
         """
         Calculate the similarity between two symbols
         Args:
-            embedding_a (List[float]): The first embedding
-            embedding_b (List[float]): The second embedding
+            embedding_a (np.ndarray): The first embedding
+            embedding_b (np.ndarray): The second embedding
         Returns:
             The similarity between the two symbolss
         """

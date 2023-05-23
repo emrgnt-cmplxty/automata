@@ -4,6 +4,8 @@ from enum import Enum
 from os import PathLike
 from typing import Any, Dict, List, Optional, Union
 
+import numpy as np
+
 from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
 
 """
@@ -185,7 +187,7 @@ class SymbolReference:
 @dataclass
 class SymbolEmbedding:
     symbol: Symbol
-    vector: List[float]
+    vector: np.ndarray
     source_code: str
 
 
