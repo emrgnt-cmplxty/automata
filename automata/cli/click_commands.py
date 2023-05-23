@@ -2,7 +2,6 @@
 import click
 
 from automata.configs.config_enums import InstructionConfigVersion
-from automata.core.utils import Namespace
 
 from .click_options import common_options
 
@@ -53,35 +52,3 @@ def run_pending_task(ctx, *args, **kwargs):
 
     print("Running task with id: ", kwargs["task_id"])
     run(kwargs)
-
-
-@cli.command()
-@click.option(
-    "--session_id",
-    type=str,
-    default="",
-    help="",
-)
-@click.pass_context
-def get_conversation(ctx, *args, **kwargs):
-    from automata.core.agent.automata_database_manager import AutomataConversationDatabase
-
-    print("Initializing db with id: ", kwargs["session_id"])
-    db = AutomataConversationDatabase(kwargs["session_id"])
-    print("Found previous interactions = %s" % (db.get_conversations()))
-
-
-@common_options
-@cli.command()
-@click.option(
-    "--eval_config",
-    type=str,
-    help="What config are we evaluating on?",
-    default="python_indexer_payload",
-)
-@click.pass_context
-def evaluator(ctx, *args, **kwargs):
-    from .scripts.run_evaluator import main
-
-    namespace = Namespace(**kwargs)
-    main(namespace)
