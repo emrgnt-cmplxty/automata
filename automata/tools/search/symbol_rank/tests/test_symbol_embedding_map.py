@@ -24,7 +24,7 @@ def test_build_embedding_map(
     # Verify the results
     assert len(embedding_map) == 200
     for _, symbol_embedding in embedding_map.items():
-        assert symbol_embedding.vector == mock_embedding
+        assert symbol_embedding.vector.all() == mock_embedding.all()
 
 
 def test_save_load_embedding_map(
@@ -90,7 +90,7 @@ def test_update_embeddings(
     # Verify the results
     for symbol in symbols_to_update:
         assert symbol in sem.embedding_map
-        assert sem.embedding_map[symbol].vector == mock_embedding
+        assert sem.embedding_map[symbol].vector.all() == mock_embedding.all()
 
 
 def test_empty_input(monkeypatch, mock_symbol_converter):

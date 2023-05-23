@@ -30,7 +30,78 @@ class SymbolSimilarity:
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(symbols)}
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(symbols)}
 
-    def generate_unit_normed_query_vector(self, query_text: str) -> np.ndarray:
+    def transform_similarity_matrix(self, S: np.ndarray, query_text: str) -> np.ndarray:
+        """
+        Perform a unitary transformation on the similarity matrix.
+
+        Args:
+            S (np.ndarray): The similarity matrix
+            query_text (str): The query text
+
+        Returns:
+            The transformed similarity matrix as a numpy array.
+        """
+        # Step 1: Construct a unit-normed vector (e)
+        e = self._generate_unit_normed_query_vector(query_text)
+
+        # Step 2: Reshape e to have shape (n, 1) so it can be used in broadcasting operation
+        e = np.reshape(e, (-1, 1))
+
+        # Step 3: Perform a transformation on the similarity matrix, e.g. compute e * S
+        transformed_similarity_matrix = e * S
+
+        # Step 4: Re-normalize the transformed similarity matrix
+        transformed_similarity_matrix = self._normalize_matrix(transformed_similarity_matrix)
+
+        return transformed_similarity_matrix
+
+    def generate_similarity_matrix(self) -> np.ndarray:
+        """
+        Generate a similarity matrix for all symbols in the embedding map.
+
+        Returns:
+            A 2D numpy array representing the similarity matrix
+        """
+        embeddings = self._get_ordered_embeddings()
+
+        return SymbolSimilarity.calculate_similarity_matrix(embeddings)
+
+    def get_nearest_symbols_for_query(
+        self, query_text: str, k: int = 10, norm_type: str = "l2"
+    ) -> Dict[Symbol, float]:
+        """
+        Get the k most similar symbols to the query_text.
+        Args:
+            query_text (str): The query text
+            k (int): The number of similar symbols to return
+        Returns:
+            A dictionary mapping the k most similar symbols to their similarity score
+        """
+        query_embedding = self.embedding_provider.get_embedding(query_text)
+        # Compute the similarity of the query to all symbols
+        similarity_scores = self._calculate_query_similarity_vec(query_embedding, norm_type)
+
+        # Get the indices of the symbols with the highest similarity scores
+        nearest_indices = np.argsort(similarity_scores)[-k:]
+
+        # Return the corresponding symbols
+        return {
+            self.index_to_symbol[index]: similarity_scores[index]
+            for index in reversed(nearest_indices)
+        }
+
+    def _get_ordered_embeddings(self) -> np.ndarray:
+        """
+        Get the embeddings in the correct order.
+
+        Returns:
+            A numpy array containing the ordered embeddings.
+        """
+        return np.array(
+            [self.embedding_map[symbol].vector for symbol in self.index_to_symbol.values()]
+        )
+
+    def _generate_unit_normed_query_vector(self, query_text: str) -> np.ndarray:
         """
         Generate a unit-normed vector where the ith component is
         the similarity between symbol i and the query.
@@ -41,14 +112,8 @@ class SymbolSimilarity:
         Returns:
             A unit-normed vector as a numpy array.
         """
-        similarity_scores = np.zeros(len(self.embedding_map))
         query_embedding = self.embedding_provider.get_embedding(query_text)
-
-        for idx, symbol_embedding in enumerate(self.embedding_map.values()):
-            similarity = SymbolSimilarity._calculate_similarity(
-                query_embedding, symbol_embedding.vector
-            )
-            similarity_scores[idx] = similarity
+        similarity_scores = self._calculate_query_similarity_vec(query_embedding)
 
         # Normalizing the vector
         norm = np.linalg.norm(similarity_scores)
@@ -58,7 +123,68 @@ class SymbolSimilarity:
 
         return unit_normed_vector
 
-    def normalize_matrix(self, M: np.ndarray) -> np.ndarray:
+    def _calculate_query_similarity_vec(
+        self, query_embedding: np.ndarray, norm_type: str = "l2"
+    ) -> np.ndarray:
+        """
+        Calculate the similarity scores of the query embedding with all symbol embeddings.
+        Args:
+            query_embedding (np.ndarray): The query embedding
+            norm_type (str): The type of normalization ('l2' for L2 norm, 'softmax' for softmax)
+        Returns:
+            A numpy array containing the similarity scores
+        """
+        embeddings = self._get_ordered_embeddings()
+
+        # Normalize the embeddings and the query embedding
+        embeddings_norm = self._normalize_embeddings(embeddings, norm_type)
+        query_embedding_norm = self._normalize_embeddings(
+            query_embedding[np.newaxis, :], norm_type
+        )[0]
+
+        # Compute the dot product between normalized embeddings and query
+        similarity_scores = np.dot(embeddings_norm, query_embedding_norm)
+
+        return similarity_scores
+
+    @staticmethod
+    def calculate_similarity_matrix(embeddings: np.ndarray, norm_type: str = "l2") -> np.ndarray:
+        """
+        Calculate the similarity matrix for a list of embeddings.
+        Args:
+            embeddings (np.ndarray): A list of embeddings
+            norm_type (str): The type of normalization ('l2' for L2 norm, 'softmax' for softmax)
+        Returns:
+            A 2D numpy array representing the similarity matrix
+        """
+        # Normalize the embeddings
+        embeddings_norm = SymbolSimilarity._normalize_embeddings(embeddings, norm_type)
+
+        # Compute the dot product between every pair of normalized embeddings
+        similarity_matrix = np.dot(embeddings_norm, embeddings_norm.T)
+
+        return similarity_matrix
+
+    @staticmethod
+    def _normalize_embeddings(embeddings: np.ndarray, norm_type: str = "l2") -> np.ndarray:
+        """
+        Normalize the embeddings.
+        Args:
+            embeddings (np.ndarray): The embeddings
+            norm_type (str): The type of normalization ('l2' for L2 norm, 'softmax' for softmax)
+        Returns:
+            The normalized embeddings
+        """
+        if norm_type == "l2":
+            return embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
+        elif norm_type == "softmax":
+            e_x = np.exp(embeddings - np.max(embeddings))
+            return e_x / e_x.sum(axis=1, keepdims=True)
+        else:
+            raise ValueError(f"Invalid normalization type {norm_type}")
+
+    @staticmethod
+    def _normalize_matrix(M: np.ndarray) -> np.ndarray:
         """
         Normalize the values in a matrix to fall within [0, 1].
 
@@ -76,103 +202,3 @@ class SymbolSimilarity:
             return M - M_min
 
         return (M - M_min) / (M_max - M_min)
-
-    def transform_similarity_matrix(self, S: np.ndarray, query_text: str) -> np.ndarray:
-        """
-        Perform a unitary transformation on the similarity matrix.
-
-        Args:
-            S (np.ndarray): The similarity matrix
-            query_text (str): The query text
-
-        Returns:
-            The transformed similarity matrix as a numpy array.
-        """
-        # Step 1: Construct a unit-normed vector (e)
-        e = self.generate_unit_normed_query_vector(query_text)
-
-        # Step 2: Reshape e to have shape (n, 1) so it can be used in broadcasting operation
-        e = np.reshape(e, (-1, 1))
-
-        # Step 3: Perform a transformation on the similarity matrix, e.g. compute e * S
-        transformed_similarity_matrix = e * S
-
-        # Step 4: Re-normalize the transformed similarity matrix
-        transformed_similarity_matrix = self.normalize_matrix(transformed_similarity_matrix)
-
-        return transformed_similarity_matrix
-
-    def generate_similarity_matrix(self) -> np.ndarray:
-        """
-        Generate a similarity matrix for all symbols in the embedding map.
-
-        Returns:
-            A 2D numpy array representing the similarity matrix
-        """
-        embeddings = np.array(
-            [self.embedding_map[symbol].vector for symbol in self.index_to_symbol.values()]
-        )
-
-        return SymbolSimilarity.calculate_similarity_matrix(embeddings)
-
-    def get_nearest_symbols_for_query(self, query_text: str, k: int = 10) -> Dict[Symbol, float]:
-        """
-        Get the k most similar symbols to the query_text.
-        Args:
-            query_text (str): The query text
-            k (int): The number of similar symbols to return
-        Returns:
-            A dictionary mapping the k most similar symbols to their similarity score
-        """
-        query_embedding = self.embedding_provider.get_embedding(query_text)
-        # Compute the similarity of the query to all symbols
-        similarity_scores = np.zeros(len(self.embedding_map))
-
-        for idx, symbol_embedding in enumerate(self.embedding_map.values()):
-            similarity = SymbolSimilarity._calculate_similarity(
-                query_embedding, symbol_embedding.vector
-            )
-            similarity_scores[idx] = similarity
-
-        # Get the indices of the symbols with the highest similarity scores
-        nearest_indices = np.argsort(similarity_scores)[-k:]
-
-        # Return the corresponding symbols
-        return {
-            self.index_to_symbol[index]: similarity_scores[index]
-            for index in reversed(nearest_indices)
-        }
-
-    @staticmethod
-    def calculate_similarity_matrix(embeddings: np.ndarray) -> np.ndarray:
-        """
-        Calculate the similarity matrix for a list of embeddings
-        Args:
-            embeddings (np.ndarray): A list of embeddings
-        Returns:
-            A 2D numpy array representing the similarity matrix
-        """
-        calculate_similarity_vectorized = np.vectorize(
-            SymbolSimilarity._calculate_similarity, signature="(n),(n)->()"
-        )
-        similarity_matrix = calculate_similarity_vectorized(embeddings[:, np.newaxis], embeddings)
-
-        return similarity_matrix
-
-    @staticmethod
-    def _calculate_similarity(embedding_a: np.ndarray, embedding_b: np.ndarray) -> float:
-        """
-        Calculate the similarity between two symbols
-        Args:
-            embedding_a (np.ndarray): The first embedding
-            embedding_b (np.ndarray): The second embedding
-        Returns:
-            The similarity between the two symbolss
-        """
-
-        dot_product = np.dot(embedding_a, embedding_b)
-        magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
-        magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
-        similarity = dot_product / (magnitude_a * magnitude_b)
-
-        return similarity

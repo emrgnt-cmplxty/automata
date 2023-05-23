@@ -1,10 +1,20 @@
+import random
+
+import networkx as nx
 import pytest
 from networkx import DiGraph
 
-from automata.tools.search.symbol_rank.symbol_rank import (
-    SymbolRank,
-    SymbolRankConfig,
-)
+from automata.tools.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
+
+
+def generate_random_graph(nodes, edges):
+    """Generate a directed random graph with specified nodes and edges."""
+    graph = nx.DiGraph()
+    for i in range(nodes):
+        graph.add_node(i)
+    for _ in range(edges):
+        graph.add_edge(random.randint(0, nodes - 1), random.randint(0, nodes - 1))
+    return graph
 
 
 def test_generate_random_graph():

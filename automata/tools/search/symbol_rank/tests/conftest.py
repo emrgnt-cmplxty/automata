@@ -1,8 +1,8 @@
-import networkx as nx
 import os
 import random
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
 from automata.tools.search.symbol_parser import parse_uri_to_symbol
@@ -20,7 +20,7 @@ def temp_output_filename():
 
 @pytest.fixture
 def mock_embedding(monkeypatch):
-    return [random.random() for _ in range(1024)]
+    return np.array([random.random() for _ in range(1024)])
 
 
 prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.configs.automata_agent_configs`/"
@@ -61,13 +61,3 @@ def patch_get_embedding(monkeypatch, mock_embedding):
     # Define the behavior of the mock get_embedding function
     mock_get_embedding = Mock(return_value=mock_embedding)
     monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
-
-def generate_random_graph(nodes, edges):
-    """Generate a directed random graph with specified nodes and edges."""
-    graph = nx.DiGraph()
-    for i in range(nodes):
-        graph.add_node(i)
-    for _ in range(edges):
-        graph.add_edge(random.randint(0, nodes - 1), random.randint(0, nodes - 1))
-    return graph
-
