@@ -136,15 +136,16 @@ class SymbolEmbeddingMap:
             List of filtered symbols
         """
         filtered_symbols = []
+        filter_strings = ["__init__", "setup", "local", "test"]
         for symbol in symbols:
-            if "__init__" in symbol.uri:
+            do_continue = False
+            for filter_string in filter_strings:
+                if filter_string in symbol.uri:
+                    do_continue = True
+                    break
+            if do_continue:
                 continue
-            if "setup" in symbol.uri:
-                continue
-            if "local" in symbol.uri:
-                continue
-            if "test" in symbol.uri:
-                continue
+
             symbol_kind = symbol.symbol_kind_by_suffix()
             if (
                 symbol_kind == Descriptor.PythonKinds.Local
