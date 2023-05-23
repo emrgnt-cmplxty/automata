@@ -51,7 +51,6 @@ class SymbolSimilarity:
             A list of the k most similar symbols
         """
         query_embedding = self.embedding_provider.get_embedding(query_text)
-        print("query_embedding = ", query_embedding)
         # Compute the similarity of the query to all symbols
         similarity_scores = []
         for symbol, symbol_embedding in self.embedding_map.items():
@@ -60,7 +59,6 @@ class SymbolSimilarity:
             )
             similarity_scores.append(similarity)
 
-        print("similarity_scores = ", similarity_scores)
         # Get the indices of the symbols with the highest similarity scores
         nearest_indices = np.argpartition(similarity_scores, -k)[-k:]
 

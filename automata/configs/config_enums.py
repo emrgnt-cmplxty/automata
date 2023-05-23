@@ -10,6 +10,7 @@ class ConfigCategory(Enum):
     AGENT = "agent_configs"
     INSTRUCTION = "instruction_configs"
     EVAL = "eval_configs"
+    SYMBOLS = "symbols"
 
 
 class InstructionConfigVersion(Enum):

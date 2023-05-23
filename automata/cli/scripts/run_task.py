@@ -92,7 +92,6 @@ def run(kwargs) -> None:
 
 
 def main(kwargs):
-    print("kwargs = ", kwargs)
     verbose = kwargs.pop("verbose")
     reconfigure_logging(verbose)
     task = initialize_task(kwargs)

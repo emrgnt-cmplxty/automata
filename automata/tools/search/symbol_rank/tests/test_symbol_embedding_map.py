@@ -44,7 +44,7 @@ def test_save_load_embedding_map(
     sem.save(temp_output_filename)
 
     sem_load = SymbolEmbeddingMap.load(temp_output_filename)
-    for key, val in sem_load.embedding_map.items():
+    for key, val in sem_load.items():
         assert key.uri in [symbol.uri for symbol in sem.embedding_map.keys()]
 
 
