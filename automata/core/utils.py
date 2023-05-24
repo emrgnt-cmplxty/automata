@@ -7,7 +7,6 @@ import colorlog
 import numpy as np
 import openai
 import yaml
-from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 
 
 def format_text(format_variables: Dict[str, str], input_text: str) -> str:
@@ -130,22 +129,6 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
-
-
-def run_retrieval_chain_with_sources_format(
-    chain: BaseConversationalRetrievalChain, q: str
-) -> str:
-    """Runs a retrieval chain and formats the result with sources.
-
-    Args:
-        chain (BaseConversationalRetrievalChain): The retrieval chain to run.
-        q (str): The query to pass to the retrieval chain.
-
-    Returns:
-        str: The formatted result containing the answer and sources.
-    """
-    result = chain(q)
-    return f"Answer: {result['answer']}.\n\n Sources: {result.get('source_documents', [])}"
 
 
 def calculate_similarity(
