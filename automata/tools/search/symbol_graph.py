@@ -152,7 +152,12 @@ class SymbolGraph:
             )
 
             for symbol_information in document.symbols:
-                symbol = parse_symbol(symbol_information.symbol)
+                try:
+                    symbol = parse_symbol(symbol_information.symbol)
+                except Exception as e:
+                    print(f"Parsing symbol {symbol.uri} failed with error {e}")
+                    continue
+
                 # Add Symbol Vertices
                 G.add_node(
                     symbol,
@@ -163,7 +168,11 @@ class SymbolGraph:
         for document in index.documents:
             information_document_path: StrPath = cast(StrPath, document.relative_path)
             for symbol_information in document.symbols:
-                symbol = parse_symbol(symbol_information.symbol)
+                try:
+                    symbol = parse_symbol(symbol_information.symbol)
+                except Exception as e:
+                    print(f"Parsing symbol {symbol.uri} failed with error {e}")
+                    continue
 
                 for relationship in symbol_information.relationships:
                     relationship_labels = MessageToDict(relationship)
@@ -177,7 +186,12 @@ class SymbolGraph:
                     )
 
             for occurrence in document.occurrences:
-                occurrence_symbol = parse_symbol(occurrence.symbol)
+                try:
+                    occurrence_symbol = parse_symbol(occurrence.symbol)
+                except Exception as e:
+                    print(f"Parsing symbol {symbol.uri} failed with error {e}")
+                    continue
+
                 occurrence_range = tuple(occurrence.range)
                 occurrence_roles = self._get_symbol_roles_dict(occurrence.symbol_roles)
                 occurrence_reference = SymbolReference(
