@@ -9,9 +9,10 @@ from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.tools.search.symbol_rank.symbol_similarity import SymbolSimilarity
+from automata.tools.search.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
-CHUNK_SIZE = 10
+CHUNK_SIZE = 100
 
 
 def main(*args, **kwargs):
@@ -31,15 +32,14 @@ def main(*args, **kwargs):
 
     if kwargs.get("update_embedding_map"):
         all_defined_symbols = symbol_graph.get_all_defined_symbols()
-        filtered_symbols = SymbolEmbeddingMap._filter_symbols(all_defined_symbols)
-
+        filtered_symbols = get_rankable_symbols(all_defined_symbols)
         chunks = [
             filtered_symbols[i : i + CHUNK_SIZE]
             for i in range(0, len(filtered_symbols), CHUNK_SIZE)
         ]
 
         for chunk in tqdm(chunks):
-            if kwargs.get("build_new_embedding_map"):
+            if kwargs.get("build_new_embedding_map") and chunk == chunks[0]:
                 symbol_embedding = SymbolEmbeddingMap(
                     symbol_converter=symbol_converter,
                     all_defined_symbols=chunk,
@@ -54,7 +54,7 @@ def main(*args, **kwargs):
                 symbol_embedding.update_embeddings(symbol_converter, chunk)
 
             symbol_embedding.save(embedding_path, overwrite=True)
-            return "Success"
+        return "Success"
 
     elif kwargs.get("query_embedding"):
         symbol_converter = SymbolConverter()
