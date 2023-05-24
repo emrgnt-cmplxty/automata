@@ -31,7 +31,7 @@ class EmbeddingsProvider:
         # wait to import get_embedding to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
-        return np.array(get_embedding(symbol_source))
+        return np.array(get_embedding(symbol_source, engine="text-embedding-ada-002"))
 
 
 class SymbolEmbeddingMap:
