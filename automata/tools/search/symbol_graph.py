@@ -278,8 +278,9 @@ class SymbolGraph:
                         G.add_edge(symbol, dependency)
                         G.add_edge(dependency, symbol)
                     else:
-                        raise ValueError("flow_rank must be one of 'to_dependents', 'from_dependents', or 'bidirectional'")
-
+                        raise ValueError(
+                            "flow_rank must be one of 'to_dependents', 'from_dependents', or 'bidirectional'"
+                        )
 
             except Exception as e:
                 print(f"Error processing {symbol.uri}: {e}")
