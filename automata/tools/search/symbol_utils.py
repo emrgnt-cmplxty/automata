@@ -1,6 +1,38 @@
 from typing import Dict, List
 
 from automata.tools.search.symbol_converter import SymbolConverter
+from automata.tools.search.symbol_types import Descriptor, Symbol
+
+
+def get_rankable_symbols(
+    symbols: List[Symbol],
+    filter_strings=["setup", "local", "stdlib", "redbaron"],  # "test", "__init__",
+    accepted_kinds=[Descriptor.PythonKinds.Method, Descriptor.PythonKinds.Class],
+) -> List[Symbol]:
+    """
+    Filter out symbols that are not relevant for the embedding map.
+
+    Args:
+        symbols: List of symbols to filter
+    Returns:
+        List of filtered symbols
+    """
+    filtered_symbols = []
+
+    for symbol in symbols:
+        do_continue = False
+        for filter_string in filter_strings:
+            if filter_string in symbol.uri:
+                do_continue = True
+                break
+        if do_continue:
+            continue
+
+        symbol_kind = symbol.symbol_kind_by_suffix()
+        if symbol_kind not in accepted_kinds:
+            continue
+        filtered_symbols.append(symbol)
+    return filtered_symbols
 
 
 def find_and_replace_in_modules(
