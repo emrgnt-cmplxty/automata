@@ -6,7 +6,7 @@ from automata.tools.search.symbol_types import Descriptor, Symbol
 
 def get_rankable_symbols(
     symbols: List[Symbol],
-    filter_strings=["setup", "local", "stdlib", "redbaron"],  # "test", "__init__",
+    filter_strings=["setup", "stdlib"],
     accepted_kinds=[Descriptor.PythonKinds.Method, Descriptor.PythonKinds.Class],
 ) -> List[Symbol]:
     """
@@ -31,7 +31,16 @@ def get_rankable_symbols(
         symbol_kind = symbol.symbol_kind_by_suffix()
         if symbol_kind not in accepted_kinds:
             continue
+        if (
+            Symbol.is_protobuf(symbol)
+            or Symbol.is_local(symbol)
+            or Symbol.is_meta(symbol)
+            or Symbol.is_parameter(symbol)
+        ):
+            continue
+
         filtered_symbols.append(symbol)
+
     return filtered_symbols
 
 
