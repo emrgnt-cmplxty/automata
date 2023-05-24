@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional, Union
 
-from automata.tools.search.scip_classes import StrPath, SymbolReference
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_symbol
+from automata.tools.search.symbol_types import StrPath, SymbolReference
 from automata.tools.search.symbol_utils import find_and_replace_in_modules, find_pattern_in_modules
 
 

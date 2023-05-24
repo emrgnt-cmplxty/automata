@@ -1,7 +1,6 @@
 import pytest
-from typing import List
 
-from automata.tools.search.scip_classes import File, Symbol, SymbolReference
+from automata.tools.search.symbol_types import File, Symbol, SymbolReference
 
 
 def test_get_all_files(symbol_graph):

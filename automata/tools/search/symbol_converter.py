@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 from redbaron import RedBaron
 
-from automata.tools.search.scip_classes import Descriptor, Symbol
+from automata.tools.search.symbol_types import Descriptor, Symbol
 
 logger = logging.getLogger(__name__)
 

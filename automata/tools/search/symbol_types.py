@@ -8,12 +8,6 @@ import numpy as np
 
 from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
 
-"""
-SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.
-Full spec: https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/docs/scip.md#symbol
-The classes and functions in this file are used to convert the symbol URI into a human-readable form that can be used to query the index.
-"""
-
 # Path and os related variables
 StrPath = Union[str, PathLike]
 PyPath = str
@@ -21,6 +15,12 @@ PyPath = str
 
 # Symbol Related Types
 class Descriptor:
+    """
+    SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.
+    Full spec: https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/docs/scip.md#symbol
+    The classes and functions in this file are used to convert the symbol URI into a human-readable form that can be used to query the index.
+    """
+
     ScipSuffix = DescriptorProto
 
     class PythonKinds(Enum):
@@ -196,6 +196,7 @@ class Symbol:
         """
         # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
         # Parse the symbol_str to extract the uri, scheme, and package_str
+        # Commenting out until we have stable tuple component
         # match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
         match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\)", symbol_str)
         if not match:

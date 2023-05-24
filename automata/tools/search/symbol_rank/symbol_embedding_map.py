@@ -6,8 +6,8 @@ import jsonpickle
 import numpy as np
 import openai
 
-from automata.tools.search.scip_classes import Descriptor, StrPath, Symbol, SymbolEmbedding
 from automata.tools.search.symbol_converter import SymbolConverter
+from automata.tools.search.symbol_types import Descriptor, StrPath, Symbol, SymbolEmbedding
 
 logger = logging.getLogger(__name__)
 
