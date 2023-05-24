@@ -7,7 +7,8 @@ import numpy as np
 import openai
 
 from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_types import Descriptor, StrPath, Symbol, SymbolEmbedding
+from automata.tools.search.symbol_types import StrPath, Symbol, SymbolEmbedding
+from automata.tools.search.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +179,7 @@ class SymbolEmbeddingMap:
             Map from symbol to embedding vector
         """
         embedding_map: Dict[Symbol, SymbolEmbedding] = {}
-        filtered_symbols = self._filter_symbols(defined_symbols)
+        filtered_symbols = get_rankable_symbols(defined_symbols)
 
         for symbol in filtered_symbols:
             try:
@@ -192,34 +193,3 @@ class SymbolEmbeddingMap:
                 logger.error("Building embedding for symbol: %s failed with %s" % (symbol, e))
 
         return embedding_map
-
-    @staticmethod
-    def _filter_symbols(
-        symbols: List[Symbol],
-        filter_strings=["__init__", "setup", "local", "test"],
-        accepted_kinds=[Descriptor.PythonKinds.Method, Descriptor.PythonKinds.Class],
-    ) -> List[Symbol]:
-        """
-        Filter out symbols that are not relevant for the embedding map.
-
-        Args:
-            symbols: List of symbols to filter
-        Returns:
-            List of filtered symbols
-        """
-        filtered_symbols = []
-
-        for symbol in symbols:
-            do_continue = False
-            for filter_string in filter_strings:
-                if filter_string in symbol.uri:
-                    do_continue = True
-                    break
-            if do_continue:
-                continue
-
-            symbol_kind = symbol.symbol_kind_by_suffix()
-            if symbol_kind not in accepted_kinds:
-                continue
-            filtered_symbols.append(symbol)
-        return filtered_symbols
