@@ -85,6 +85,28 @@ class SymbolSimilarity:
             embeddings, self._process_norm_type(norm_type)
         )
 
+    def get_query_similarity_dict(
+        self, query_text: str, norm_type: Optional[str] = None
+    ) -> Dict[Symbol, float]:
+        """
+        Get the similarity scores of all symbols for the query_text.
+        Args:
+            query_text (str): The query text
+        Returns:
+            A dictionary mapping each symbol's uri to its similarity score with the query
+        """
+        query_embedding = self.embedding_provider.get_embedding(query_text)
+
+        # Compute the similarity of the query to all symbols
+        similarity_scores = self._calculate_query_similarity_vec(
+            query_embedding, self._process_norm_type(norm_type)
+        )
+
+        similarity_dict = {
+            self.index_to_symbol[i]: similarity_scores[i] for i in range(len(self.index_to_symbol))
+        }
+        return similarity_dict
+
     def get_nearest_symbols_for_query(
         self, query_text: str, k: int = 10, norm_type: Optional[str] = None
     ) -> Dict[Symbol, float]:
