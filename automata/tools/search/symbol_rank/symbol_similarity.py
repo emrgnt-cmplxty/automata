@@ -140,10 +140,8 @@ class SymbolSimilarity:
         Returns:
             A numpy array containing the ordered embeddings.
         """
-        # TODO - This is incorrect, but necessary due to issues parsing symbols from out of sync embedding map
-        # This will be removed later
         return np.array(
-            [self.embedding_map[symbol]["vector"] for symbol in self.index_to_symbol.values()]
+            [self.embedding_map[symbol].vector for symbol in self.index_to_symbol.values()]
         )
 
     def _generate_unit_normed_query_vector(
