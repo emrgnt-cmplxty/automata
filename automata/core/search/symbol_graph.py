@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Set, cast
+from typing import Any, Dict, List, Set
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict
@@ -149,134 +149,127 @@ class SymbolGraph:
 
         return result_dict
 
-    def get_symbol_context(self, symbol) -> str:
-        """
-        Gets the context for a given symbol.
-        This includes its documentation, its file, references, and relationships.
-
-        Args:
-            symbol (Symbol): The symbol to explain
-        Returns:
-            A string containing the explanation
-        """
-
-        result = ""
-        docs = ["\n"]
-
-        result += "Symbol Context for %s --> \n" % (symbol)
-        doc_decorator = "  >> Symbol Docs       --> "
-        spacer = " " * (0 + len(doc_decorator))
-        result += f"{doc_decorator}%s\n" % (("\n" + spacer).join(docs)) + "\n"
-
-        containing_file = self._get_symbol_containing_file(symbol)
-        result += " >>  Symbol File       --> %s \n" % containing_file
-
-        references = self.get_references_to_symbol(symbol)
-        result += " >>  Symbol Ref Count  --> %s \n" % len(references.keys())
-
-        symbol_references = "\n"
-        for occurrence_file, outputs in references.items():
-            for output in outputs:
-                line_number = output.line_number
-                roles = str(list(output.roles.keys()))
-                symbol_references += f"{spacer}{occurrence_file}: L{line_number}, {roles} \n"
-
-        result += " >>  Symbol Refs (All) --> %s" % (symbol_references)
-
-        return result
-
     def _build_symbol_info_graph(self, index: Index) -> nx.MultiDiGraph:
         """
-        Builds a multidirectional graph from a given index.
+        Initializes the graph construction process.
 
         Args:
-            index: The index from which the graph is to be built.
+            index (Index): The index from which the graph is to be built.
         Returns:
-            nx.MultiDiGraph: The built multidirectional graph.
+            MultiDiGraph: The built multidirectional graph.
         """
         G = nx.MultiDiGraph()
+
+        # Process documents
         for document in index.documents:
-            # Add FilePath Vertices
-            document_path: StrPath = cast(StrPath, document.relative_path)
+            # Add vertices to the graph
+            self._add_file_vertices(G, document)
+            self._add_symbol_vertices(G, document)
 
-            G.add_node(
-                document_path,
-                file=File(document_path, occurrences=document.occurrences),
-                label="file",
-            )
-
-            for symbol_information in document.symbols:
-                try:
-                    symbol = parse_symbol(symbol_information.symbol)
-                except Exception as e:
-                    logger.error(f"Parsing symbol {symbol.uri} failed with error {e}")
-                    continue
-
-                # Add Symbol Vertices
-                G.add_node(
-                    symbol,
-                    label="symbol",
-                )
-                G.add_edge(document_path, symbol, label="contains")
-        # process occurrences and relationships
-        for document in index.documents:
-            information_document_path: StrPath = cast(StrPath, document.relative_path)
-            for symbol_information in document.symbols:
-                try:
-                    symbol = parse_symbol(symbol_information.symbol)
-                except Exception as e:
-                    logger.error(f"Parsing symbol {symbol.uri} failed with error {e}")
-                    continue
-
-                for relationship in symbol_information.relationships:
-                    relationship_labels = MessageToDict(relationship)
-                    relationship_labels.pop("symbol")
-                    related_symbol = parse_symbol(relationship.symbol)
-                    G.add_edge(
-                        symbol,
-                        related_symbol,
-                        label="relationship",
-                        **relationship_labels,
-                    )
-
-            for occurrence in document.occurrences:
-                try:
-                    occurrence_symbol = parse_symbol(occurrence.symbol)
-                except Exception as e:
-                    logger.error(f"Parsing symbol {symbol.uri} failed with error {e}")
-                    continue
-
-                occurrence_range = tuple(occurrence.range)
-                occurrence_roles = self._process_symbol_roles(occurrence.symbol_roles)
-                occurrence_reference = SymbolReference(
-                    symbol=occurrence_symbol,
-                    line_number=occurrence_range[0],
-                    column_number=occurrence_range[1],
-                    roles=occurrence_roles,
-                )
-                G.add_edge(
-                    occurrence_symbol,
-                    information_document_path,
-                    symbol_reference=occurrence_reference,
-                    label="reference",
-                )
-                if occurrence_roles.get(SymbolRole.Name(SymbolRole.Definition)):
-                    # TODO this is gross
-                    incorrect_contains_edges = [
-                        (source, target)
-                        for source, target, data in G.in_edges(occurrence_symbol, data=True)
-                        if data.get("label") == "contains"
-                    ]
-                    for source, target in incorrect_contains_edges:
-                        G.remove_edge(source, target)
-
-                    G.add_edge(
-                        information_document_path,
-                        occurrence_symbol,
-                        label="contains",
-                    )
+            # Process relationships and occurrences
+            self._process_relationships(G, document)
+            self._process_occurrences(G, document)
 
         return G
+
+    def _add_file_vertices(self, G: nx.MultiDiGraph, document: Any) -> None:
+        """
+        Adds file vertices to the graph.
+
+        Args:
+            G (MultiDiGraph): The graph to add vertices to.
+            document (Any): The document containing symbol and file information.
+        """
+        G.add_node(
+            document.relative_path,
+            file=File(document.relative_path, occurrences=document.occurrences),
+            label="file",
+        )
+
+    def _add_symbol_vertices(self, G: nx.MultiDiGraph, document: Any) -> None:
+        """
+        Adds symbol vertices to the graph.
+
+        Args:
+            G (MultiDiGraph): The graph to add vertices to.
+            document (Any): The document containing symbol and file information.
+        """
+        for symbol_information in document.symbols:
+            try:
+                symbol = parse_symbol(symbol_information.symbol)
+            except Exception as e:
+                logger.error(f"Parsing symbol {symbol_information.symbol} failed with error {e}")
+                continue
+
+            # Add Symbol Vertices
+            G.add_node(symbol, label="symbol")
+            G.add_edge(document.relative_path, symbol, label="contains")
+
+    def _process_relationships(self, G: nx.MultiDiGraph, document: Any) -> None:
+        """
+        Processes the relationships between symbols.
+
+        Args:
+            G (MultiDiGraph): The graph to process relationships for.
+            document (Any): The document containing symbol and file information.
+        """
+        for symbol_information in document.symbols:
+            try:
+                symbol = parse_symbol(symbol_information.symbol)
+            except Exception as e:
+                logger.error(f"Parsing symbol {symbol_information.symbol} failed with error {e}")
+                continue
+
+            for relationship in symbol_information.relationships:
+                relationship_labels = MessageToDict(relationship)
+                relationship_labels.pop("symbol")
+                related_symbol = parse_symbol(relationship.symbol)
+                G.add_edge(symbol, related_symbol, label="relationship", **relationship_labels)
+
+    def _process_occurrences(self, G: nx.MultiDiGraph, document: Any) -> None:
+        """
+        Processes the occurrences of symbols in the document.
+
+        Args:
+            G (MultiDiGraph): The graph to process occurrences for.
+            document (Any): The document containing symbol and file information.
+        """
+        for occurrence in document.occurrences:
+            try:
+                occurrence_symbol = parse_symbol(occurrence.symbol)
+            except Exception as e:
+                logger.error(f"Parsing symbol {occurrence.symbol} failed with error {e}")
+                continue
+
+            occurrence_range = tuple(occurrence.range)
+            occurrence_roles = self._process_symbol_roles(occurrence.symbol_roles)
+            occurrence_reference = SymbolReference(
+                symbol=occurrence_symbol,
+                line_number=occurrence_range[0],
+                column_number=occurrence_range[1],
+                roles=occurrence_roles,
+            )
+            G.add_edge(
+                occurrence_symbol,
+                document.relative_path,
+                symbol_reference=occurrence_reference,
+                label="reference",
+            )
+            if occurrence_roles.get(SymbolRole.Name(SymbolRole.Definition)):
+                # TODO this is gross
+                incorrect_contains_edges = [
+                    (source, target)
+                    for source, target, data in G.in_edges(occurrence_symbol, data=True)
+                    if data.get("label") == "contains"
+                ]
+                for source, target in incorrect_contains_edges:
+                    G.remove_edge(source, target)
+
+                G.add_edge(
+                    document.relative_path,
+                    occurrence_symbol,
+                    label="contains",
+                )
 
     def _get_symbol_containing_file(self, symbol: Symbol) -> str:
         """

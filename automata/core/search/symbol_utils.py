@@ -101,6 +101,7 @@ def get_rankable_symbols(
 def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
     """
     Finds exact line matches for a given pattern string in all modules.
+
     Args:
         pattern (str): The pattern string to search for.
     Returns:
@@ -142,7 +143,7 @@ def sync_graph_and_dict(
     return graph, dictionary
 
 
-def shifted_z_score_sq(values: Union[List[float], np.ndarray]):
+def shifted_z_score_sq(values: Union[List[float], np.ndarray]) -> np.ndarray:
     """
     Compute z-score of a list of values.
     Args:
@@ -159,9 +160,7 @@ def shifted_z_score_sq(values: Union[List[float], np.ndarray]):
     return (zscores - np.min(zscores)) ** 2
 
 
-def transform_dict_values(
-    dictionary: Dict[Any, float], func: Callable[[List[float]], List[float]]
-):
+def transform_dict_values(dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]):
     """
     Apply a function to each value in a dictionary and return a new dictionary.
     Args:

@@ -33,12 +33,6 @@ def test_get_symbols_along_path(symbol_graph):
     assert all("automata" in s.uri for s in symbols)
 
 
-def test_get_symbol_context(symbol_graph, symbols):
-    for symbol in symbols:
-        context = symbol_graph.get_symbol_context(symbol)
-        assert isinstance(context, str)
-
-
 @pytest.mark.skip(reason="Not implemented yet")
 def test_find_return_symbol(symbol_graph, symbols):
     for symbol in symbols:
