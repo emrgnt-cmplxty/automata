@@ -7,7 +7,6 @@ import jsonpickle
 import numpy as np
 import openai
 
-from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_types import StrPath, Symbol, SymbolEmbedding
 from automata.core.search.symbol_utils import get_rankable_symbols
 
@@ -62,11 +61,8 @@ class SymbolEmbeddingMap:
 
         if build_new_embedding_map:
             try:
-                symbol_converter = kwargs["symbol_converter"]
                 all_defined_symbols = kwargs["all_defined_symbols"]
-                self.embedding_dict = self._build_embedding_map(
-                    symbol_converter, all_defined_symbols
-                )
+                self.embedding_dict = self._build_embedding_map(all_defined_symbols)
             except KeyError as e:
                 raise ValueError(f"Missing required argument: {e}")
 
@@ -92,18 +88,17 @@ class SymbolEmbeddingMap:
         """
         return self.embedding_dict
 
-    def update_embeddings(
-        self, symbol_converter: SymbolConverter, symbols_to_update: List[Symbol]
-    ):
+    def update_embeddings(self, symbols_to_update: List[Symbol]):
         """
         Update the embedding map with new symbols.
 
         Args:
-            symbol_converter (SymbolConverter): SymbolConverter object
             symbols_to_update (List[Symbol]): List of symbols to update
         Result:
             None
         """
+        from automata.core.search.symbol_utils import convert_to_fst_object  # for mocking
+
         desc_to_full_symbol = {
             ".".join([desc.name for desc in symbol.descriptors]): symbol
             for symbol in self.embedding_dict.keys()
@@ -111,7 +106,7 @@ class SymbolEmbeddingMap:
 
         for symbol in symbols_to_update:
             try:
-                symbol_source = str(symbol_converter.convert_to_fst_object(symbol))
+                symbol_source = str(convert_to_fst_object(symbol))
                 symbol_desc_identifier = ".".join([desc.name for desc in symbol.descriptors])
                 map_symbol = desc_to_full_symbol.get(symbol_desc_identifier, None)
 
@@ -194,23 +189,22 @@ class SymbolEmbeddingMap:
 
         return embedding_dict
 
-    def _build_embedding_map(
-        self, symbol_converter: SymbolConverter, defined_symbols: List[Symbol]
-    ) -> Dict[Symbol, SymbolEmbedding]:
+    def _build_embedding_map(self, defined_symbols: List[Symbol]) -> Dict[Symbol, SymbolEmbedding]:
         """
         Build a map from symbol to embedding vector.
         Args:
-            symbol_converter: SymbolConverter to convert symbols to FST objects
             defined_symbols: List of symbols to build embedding map for
         Returns:
             Map from symbol to embedding vector
         """
+        from automata.core.search.symbol_utils import convert_to_fst_object  # for mocking
+
         embedding_dict: Dict[Symbol, SymbolEmbedding] = {}
         filtered_symbols = get_rankable_symbols(defined_symbols)
 
         for symbol in filtered_symbols:
             try:
-                symbol_source = str(symbol_converter.convert_to_fst_object(symbol))
+                symbol_source = str(convert_to_fst_object(symbol))
                 symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
                 embedding_dict[symbol] = SymbolEmbedding(
                     symbol=symbol, vector=symbol_embedding, source_code=symbol_source

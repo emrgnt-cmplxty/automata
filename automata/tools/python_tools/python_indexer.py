@@ -25,10 +25,10 @@ import ast
 import logging
 import os
 import re
-from functools import cached_property
+from _ast import AsyncFunctionDef, ClassDef, FunctionDef
+from functools import cached_property, lru_cache
 from typing import Dict, Optional, Union
 
-from _ast import AsyncFunctionDef, ClassDef, FunctionDef
 from redbaron import (
     ClassNode,
     DefNode,
@@ -40,7 +40,7 @@ from redbaron import (
     StringNode,
 )
 
-from automata.core.utils import root_path
+from automata.core.utils import root_path, root_py_path
 
 logger = logging.getLogger(__name__)
 
@@ -541,20 +541,7 @@ class PythonIndexer:
                 if child_node is not node:
                     PythonIndexer._remove_docstrings(child_node)
 
-    # def _filter_code_lines(self, node: Union[Node, RedBaron]) -> List[str]:
-    #     """
-    #     Returns lines of code that are not empty or comments or docstrings.
-    #
-    #     Args:
-    #         node: The FST node to filter.
-    #     """
-    #     body = node.value.copy()
-    #     body = body.filter(lambda x: x.type != "string" or not x.value.startswith('"""'))
-    #     source_code_lines = body.dumps().splitlines()
-    #     predicate = (
-    #         lambda line: not line.strip().startswith("#")
-    #         and not line.strip().startswith("@")
-    #         and not line.strip() == ""
-    #     )
-    #     source_code_lines = [line for line in source_code_lines if predicate(line)]
-    #     return source_code_lines
+    @classmethod
+    @lru_cache(maxsize=1)
+    def default(cls):
+        return cls(root_py_path())

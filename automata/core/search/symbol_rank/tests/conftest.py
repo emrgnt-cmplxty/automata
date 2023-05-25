@@ -36,16 +36,11 @@ def mock_simple_class_symbols():
     return [parse_symbol(prefix + str(random.random()) + "_uri_ex_method#") for _ in range(100)]
 
 
-@pytest.fixture
-def mock_symbol_converter():
-    mock_symbol_converter = Mock()
-    mock_symbol_converter.convert_to_fst_object.return_value = "symbol_source"
-    return mock_symbol_converter
-
-
-def get_sem(mock_symbol_converter, mock_symbols, build_new_embedding_map=False):
+def get_sem(monkeypatch, mock_symbols, build_new_embedding_map=False):
+    monkeypatch.setattr(
+        "automata.core.search.symbol_utils.convert_to_fst_object", lambda args: "symbol_source"
+    )
     return SymbolEmbeddingMap(
-        symbol_converter=mock_symbol_converter,
         # Symbols with kind 'Method' are processed, 'Local' are skipped
         all_defined_symbols=mock_symbols,
         build_new_embedding_map=build_new_embedding_map,

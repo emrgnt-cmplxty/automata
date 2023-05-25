@@ -3,7 +3,6 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 
-from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_parser import parse_symbol
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
@@ -11,7 +10,7 @@ from automata.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankC
 from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
 from automata.core.search.symbol_types import StrPath, Symbol, SymbolEmbedding, SymbolReference
 from automata.core.search.symbol_utils import (
-    find_and_replace_in_modules,
+    convert_to_fst_object,
     find_pattern_in_modules,
     shifted_z_score_sq,
     sync_graph_and_dict,
@@ -28,7 +27,6 @@ FindAndReplaceResult = int
 class SymbolSearcher:
     def __init__(
         self,
-        symbol_converter: SymbolConverter,
         symbol_graph: SymbolGraph,
         symbol_embedding_map: SymbolEmbeddingMap,
         symbol_similarity: SymbolSimilarity,
@@ -38,7 +36,6 @@ class SymbolSearcher:
         *args,
         **kwargs,
     ):
-        self.converter = symbol_converter
         self.symbol_graph = symbol_graph
         self.symbol_similarity = symbol_similarity
 
@@ -93,8 +90,8 @@ class SymbolSearcher:
         Returns:
             The raw text of the symbol or None if not found
         """
-        node = self.converter.convert_to_fst_object(parse_symbol(symbol_uri))
-        return str(node) if node is not None else None
+        node = convert_to_fst_object(parse_symbol(symbol_uri))
+        return str(node) if node else None
 
     def exact_search(self, pattern: str) -> ExactSearchResult:
         """
@@ -106,7 +103,7 @@ class SymbolSearcher:
         Returns:
             A dict of paths to files that contain the pattern and corresponding line numbers
         """
-        return find_pattern_in_modules(self.converter, pattern)
+        return find_pattern_in_modules(pattern)
 
     def find_and_replace(self, find: str, replace: str, do_write: bool) -> FindAndReplaceResult:
         """
@@ -120,7 +117,7 @@ class SymbolSearcher:
         Returns:
             The number of replacements made
         """
-        return find_and_replace_in_modules(self.converter, find, replace, do_write)
+        return find_and_replace_in_modules(find, replace, do_write)
 
     def process_query(
         self, query: str

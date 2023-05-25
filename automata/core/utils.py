@@ -28,6 +28,7 @@ def root_py_path() -> str:
     data_folder = os.path.join(script_dir, "..")
     return data_folder
 
+
 def config_path() -> str:
     """
     Returns the path to the project config directory

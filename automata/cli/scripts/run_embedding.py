@@ -5,12 +5,11 @@ import textwrap
 from tqdm import tqdm
 
 from automata.configs.config_enums import ConfigCategory
-from automata.core.utils import config_path
-from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
 from automata.core.search.symbol_utils import get_rankable_symbols
+from automata.core.utils import config_path
 
 logger = logging.getLogger(__name__)
 CHUNK_SIZE = 10
@@ -20,14 +19,12 @@ def main(*args, **kwargs):
     """
     Update the distance embedding based on the symbols present in the system.
     """
-    file_dir = os.path.dirname(os.path.abspath(__file__))
-    scip_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "index.scip"
-    )
-    embedding_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
+    scip_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "index.scip")
+    embedding_path = os.path.join(
+        config_path(), ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
     )
 
-    symbol_converter = SymbolConverter()
-    symbol_graph = SymbolGraph(scip_path, symbol_converter)
+    symbol_graph = SymbolGraph(scip_path)
 
     if kwargs.get("update_embedding_map"):
         all_defined_symbols = symbol_graph.get_all_defined_symbols()
@@ -40,7 +37,6 @@ def main(*args, **kwargs):
         for chunk in tqdm(chunks):
             if kwargs.get("build_new_embedding_map") and chunk == chunks[0]:
                 symbol_embedding = SymbolEmbeddingMap(
-                    symbol_converter=symbol_converter,
                     all_defined_symbols=chunk,
                     build_new_embedding_map=True,
                     embedding_path=embedding_path,
@@ -50,14 +46,13 @@ def main(*args, **kwargs):
                     load_embedding_map=True,
                     embedding_path=embedding_path,
                 )
-                symbol_embedding.update_embeddings(symbol_converter, chunk)
+                symbol_embedding.update_embeddings(chunk)
 
             symbol_embedding.save(embedding_path, overwrite=True)
         return "Success"
 
     elif kwargs.get("query_embedding"):
-        symbol_converter = SymbolConverter()
-        symbol_graph = SymbolGraph(scip_path, symbol_converter)
+        symbol_graph = SymbolGraph(scip_path)
         symbol_embedding = SymbolEmbeddingMap(
             load_embedding_map=True,
             embedding_path=embedding_path,
