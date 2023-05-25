@@ -13,13 +13,12 @@ def test_generate_similarity_matrix(
     monkeypatch,
     mock_embedding,
     mock_simple_method_symbols,
-    mock_symbol_converter,
 ):
     # Define the behavior of the mock get_embedding function
     patch_get_embedding(monkeypatch, mock_embedding)
 
     # Create an instance of the class
-    sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=True)
+    sem = get_sem(monkeypatch, mock_simple_method_symbols, build_new_embedding_map=True)
     sim = SymbolSimilarity(sem)
 
     similarity_matrix = sim.generate_similarity_matrix()
