@@ -1,76 +1,62 @@
-# import json
-# import os
-# from copy import deepcopy
+import os
+import pytest
 
-# import pytest
+from automata.configs.config_enums import ConfigCategory
+from automata.core.utils import config_path
+from automata.core.search.symbol_converter import SymbolConverter
+from automata.core.search.symbol_graph import SymbolGraph
+from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
+from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
+from automata.core.search.symbol_rank.symbol_rank import SymbolRankConfig
+from automata.core.search.symbol_searcher import SymbolSearcher
 
-# from automata.configs.config_enums import ConfigCategory
-# from automata.core.search.symbol_converter import SymbolConverter
-# from automata.core.search.symbol_graph import SymbolGraph
-# from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
-# from automata.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
-# from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
-# from automata.core.search.symbol_searcher import SymbolSearcher
-# from automata.core.search.symbol_types import Symbol, SymbolEmbedding
+SEARCHES_TO_HITS = {
+    "Symbol": ["Symbol", "SymbolParser", "parse_symbol"],
+    "AutomataAgent": ["AutomataAgent", "AutomataAgentConfig", "AutomataAgentConfigBuilder", "AutomataCoordinator"],
+    "Task": ["AutomataTask", "AutomataTaskRegistry", "Task"],
+    "SymbolGraph": ["Symbol", "SymbolSearcher", "SymbolParser"],
+    "Github": ["GitHubManager", "AutomataTaskRegistry", "RepositoryManager"],
+    "Embedding": ["SymbolEmbedding", "SymbolEmbeddingMap", "EmbeddingsProvider"],
+    "cli": ["cli", "initialize_task", "run_pending_task"],
+    "coordinator": ["AutomataCoordinator", "AutomataAgent", "AutomataCoordinatorFactory", "AutomataTask"],
+    "executor": ["TaskExecutor", "AutomataExecuteBehavior", "execute"],
+}
 
-# TEST_QUERIES = {
-#     "symbol_references": "test_symbol_uri",
-#     "symbol_rank": "test_query",
-#     "exact": "test_pattern",
-#     "source": "test_symbol_uri",
-#     "replace": "test_find test_replace True",
-# }
+def get_top_n_results_desc_name(result, n=0):
+    return [ele[0].descriptors[-1].name for ele in result[0:n]]
 
-# # def get_searcher() -> SymbolSearcher:
-# # def setup_module(module):
-# #     file_dir = os.getcwd()
+def check_hits(expected_in_top_hits, found_top_hits):
+    for hit in expected_in_top_hits:
+        assert hit in found_top_hits, f"Expected {hit} in top hits, but found {found_top_hits}"
 
-# #     scip_path = os.path.join(
-# #         file_dir, "..", "configs", ConfigCategory.SYMBOLS.value, "index.scip"
-# #     )
-# #     embedding_path = os.path.join(
-# #         file_dir, "..", "configs", ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
-# #     )
-# #     # Initialize symbol converter
-# #     module.symbol_converter = SymbolConverter()
+@pytest.fixture
+def symbol_searcher() -> SymbolSearcher:
+    scip_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "index.scip")
+    embedding_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "symbol_embedding.json")
+    # Initialize symbol converter
+    symbol_converter = SymbolConverter()
 
-# #     # Initialize symbol graph and get subgraph
-# #     module.symbol_graph = SymbolGraph(scip_path, symbol_converter)
+    # Initialize symbol graph and get subgraph
+    symbol_graph = SymbolGraph(scip_path, symbol_converter)
 
-# #     # Load symbol embedding map
-# #     module.symbol_embedding_map = SymbolEmbeddingMap(load_embedding_map=True, embedding_path=embedding_path)
+    # Load symbol embedding map
+    symbol_embedding_map = SymbolEmbeddingMap(
+        load_embedding_map=True, embedding_path=embedding_path
+    )
 
-# #     # Initialize symbol similarity
-# #     module.symbol_similarity = SymbolSimilarity(symbol_embedding_map)
+    # Initialize symbol similarity
+    symbol_similarity = SymbolSimilarity(symbol_embedding_map)
 
-# #     module.symbol_searcher = SymbolSearcher(symbol_converter, symbol_graph, symbol_embedding_map, symbol_similarity, SymbolRankConfig(alpha=0.25))
+    symbol_searcher = SymbolSearcher(
+        symbol_converter, symbol_graph, symbol_embedding_map, symbol_similarity, SymbolRankConfig()
+    )
 
-# # @pytest.mark.parametrize("query_type, query_content", TEST_QUERIES.items())
-# # def test_process_queries(query_type, query_content):
-# #     result = symbol_searcher.process_query(f"type:{query_type} {query_content}")
+    return symbol_searcher
 
-# #     with open(f"./expected_results/{query_type}_expected_result.json") as f:
-# #         expected_result = json.load(f)
-# #     assert result == expected_result
-
-# # def test_invalid_query():
-# #     with pytest.raises(ValueError):
-# #         symbol_searcher.process_query("invalid_query")
-
-# # def test_unknown_query_type():
-# #     with pytest.raises(ValueError):
-# #         symbol_searcher.process_query("type:unknown query")
-
-# # def generate_expected_results():
-# #     for query_type, query_content in TEST_QUERIES.items():
-# #         result = symbol_searcher.process_query(f"type:{query_type} {query_content}")
-
-# #         with open(f"./expected_results/{query_type}_expected_result.json", "w") as f:
-# #             json.dump(result, f)
-
-# # if __name__ == "__main__":
-# #     # Call this function whenever you want to regenerate the expected results
-# #     generate_expected_results()
-
-# #     # Call this to run the tests
-# #     pytest.main([os.path.realpath(__file__)])
+@pytest.mark.regression
+def test_symbol_rank_search_on_symbol(symbol_searcher):
+    for search in SEARCHES_TO_HITS:
+        result = symbol_searcher.symbol_rank_search(search)
+        expected_in_top_hits = SEARCHES_TO_HITS[search]
+        found_top_hits = get_top_n_results_desc_name(result, 10)
+        check_hits(expected_in_top_hits, found_top_hits)

@@ -28,6 +28,18 @@ def root_py_path() -> str:
     data_folder = os.path.join(script_dir, "..")
     return data_folder
 
+def config_path() -> str:
+    """
+    Returns the path to the project config directory
+
+    Returns:
+    - A path object in string form
+
+    """
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    data_folder = os.path.join(script_dir, "..", "configs")
+    return data_folder
+
 
 def load_config(
     config_name: str, file_name: str, config_type: str = "yaml", custom_decoder: Any = None
@@ -42,7 +54,7 @@ def load_config(
         Any: The content of the YAML file as a Python object.
     """
     with open(
-        os.path.join(root_py_path(), "configs", config_name, f"{file_name}.{config_type}"),
+        os.path.join(config_path(), config_name, f"{file_name}.{config_type}"),
         "r",
     ) as file:
         if config_type == "yaml":

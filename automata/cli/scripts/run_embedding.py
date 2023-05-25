@@ -5,6 +5,7 @@ import textwrap
 from tqdm import tqdm
 
 from automata.configs.config_enums import ConfigCategory
+from automata.core.utils import config_path
 from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
@@ -20,11 +21,9 @@ def main(*args, **kwargs):
     Update the distance embedding based on the symbols present in the system.
     """
     file_dir = os.path.dirname(os.path.abspath(__file__))
-    scip_path = os.path.join(
-        file_dir, "..", "..", "configs", ConfigCategory.SYMBOLS.value, "index.scip"
+    scip_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "index.scip"
     )
-    embedding_path = os.path.join(
-        file_dir, "..", "..", "configs", ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
+    embedding_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
     )
 
     symbol_converter = SymbolConverter()
