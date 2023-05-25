@@ -195,13 +195,12 @@ class Symbol:
         :return: A Symbol instance
         """
         # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
-        # Parse the symbol_str to extract the uri, scheme, and package_str
-        # Commenting out until we have stable tuple component
-        # match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
-        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\)", symbol_str)
+        # Parse the symbol_str to extract the uri, scheme, package_str, and descriptors_str
+        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
         if not match:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
-        uri, _, __ = match.groups()
+        uri, _, __, ___ = match.groups()
+        # In current implementation, only the uri is used in re-construcing the symbol
         from automata.core.search.symbol_parser import parse_symbol
 
         return parse_symbol(uri)

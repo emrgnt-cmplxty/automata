@@ -145,8 +145,6 @@ def transform_dict_values(
     Returns:
         Dictionary with transformed values.
     """
-    # Accumulate all values from the dictionary
-
     # Apply the function to the accumulated values
     transformed_values = func([dictionary[key] for key in dictionary])
 

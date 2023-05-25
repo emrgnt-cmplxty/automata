@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class SymbolRankConfig(BaseModel):
-    alpha: float = 0.85
+    alpha: float = 0.25
     max_iterations: int = 100
     tolerance: float = 1.0e-6
     weight_key: str = "weight"
