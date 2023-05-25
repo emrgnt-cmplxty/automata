@@ -33,12 +33,12 @@ class SymbolSimilarity:
         Result:
             An instance of SymbolSimilarity
         """
-        self.embedding_map: Dict[Symbol, SymbolEmbedding] = deepcopy(
-            symbol_embedding_map.get_embedding_map()
+        self.embedding_dict: Dict[Symbol, SymbolEmbedding] = deepcopy(
+            symbol_embedding_map.get_embedding_dict()
         )
         self.embedding_provider: EmbeddingsProvider = symbol_embedding_map.embedding_provider
         self.default_norm_type = norm_type
-        symbols = sorted(list(self.embedding_map.keys()), key=lambda x: x.uri)
+        symbols = sorted(list(self.embedding_dict.keys()), key=lambda x: x.uri)
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(symbols)}
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(symbols)}
 
@@ -144,7 +144,7 @@ class SymbolSimilarity:
             A numpy array containing the ordered embeddings.
         """
         return np.array(
-            [self.embedding_map[symbol].vector for symbol in self.index_to_symbol.values()]
+            [self.embedding_dict[symbol].vector for symbol in self.index_to_symbol.values()]
         )
 
     def _generate_unit_normed_query_vector(

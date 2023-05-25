@@ -19,11 +19,11 @@ def test_build_embedding_map(
     # Create an instance of the class
     sem = get_sem(mock_symbol_converter, mock_symbols)
     # Call the method
-    embedding_map = sem._build_embedding_map(mock_symbol_converter, mock_symbols)
+    embedding_dict = sem._build_embedding_map(mock_symbol_converter, mock_symbols)
 
     # Verify the results
-    assert len(embedding_map) == 200
-    for _, symbol_embedding in embedding_map.items():
+    assert len(embedding_dict) == 200
+    for _, symbol_embedding in embedding_dict.items():
         assert symbol_embedding.vector.all() == mock_embedding.all()
 
 
@@ -44,7 +44,7 @@ def test_save_load_embedding_map(
     sem.save(temp_output_filename)
     sem_load = SymbolEmbeddingMap.load(temp_output_filename)
     for key, val in sem_load.items():
-        assert key.uri in [symbol.uri for symbol in sem.embedding_map.keys()]
+        assert key.uri in [symbol.uri for symbol in sem.embedding_dict.keys()]
 
 
 def test_get_embedding_sets_correct_result(
@@ -62,9 +62,9 @@ def test_get_embedding_sets_correct_result(
     sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=False)
 
     # Call the method
-    embedding_map = sem._build_embedding_map(mock_symbol_converter, mock_symbols)
+    embedding_dict = sem._build_embedding_map(mock_symbol_converter, mock_symbols)
 
-    for key, val in embedding_map.items():
+    for key, val in embedding_dict.items():
         val.source_code == "symbol_source"
 
 
@@ -88,14 +88,14 @@ def test_update_embeddings(
 
     # Verify the results
     for symbol in symbols_to_update:
-        assert symbol in sem.embedding_map
-        assert sem.embedding_map[symbol].vector.all() == mock_embedding.all()
+        assert symbol in sem.embedding_dict
+        assert sem.embedding_dict[symbol].vector.all() == mock_embedding.all()
 
 
 def test_empty_input(monkeypatch, mock_symbol_converter):
     # Test empty input scenario
     sem = get_sem(mock_symbol_converter, [], build_new_embedding_map=True)
-    assert len(sem.embedding_map) == 0  # Expect empty embedding map
+    assert len(sem.embedding_dict) == 0  # Expect empty embedding map
 
 
 def test_get_embedding_exception(monkeypatch, mock_symbol_converter, mock_simple_method_symbols):
@@ -103,4 +103,4 @@ def test_get_embedding_exception(monkeypatch, mock_symbol_converter, mock_simple
     mock_get_embedding = Mock(side_effect=Exception("Test exception"))
     monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
     sem = get_sem(mock_symbol_converter, mock_simple_method_symbols, build_new_embedding_map=True)
-    assert len(sem.embedding_map) == 0  # Expect empty embedding map because of exception
+    assert len(sem.embedding_dict) == 0  # Expect empty embedding map because of exception

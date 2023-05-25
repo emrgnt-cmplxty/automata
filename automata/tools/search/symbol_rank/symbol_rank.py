@@ -32,7 +32,9 @@ class SymbolRankConfig(BaseModel):
 class SymbolRank:
     """SymbolRank class to compute SymbolRank values of nodes in a graph."""
 
-    def __init__(self, graph: nx.DiGraph, config: SymbolRankConfig = SymbolRankConfig()):
+    def __init__(self, graph: nx.DiGraph, config: Optional[SymbolRankConfig] = None):
+        if not config:
+            config = SymbolRankConfig()
         self.graph = graph
         self.config = config
         self.config.validate(self.config)

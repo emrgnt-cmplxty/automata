@@ -63,7 +63,7 @@ class SymbolEmbeddingMap:
             try:
                 symbol_converter = kwargs["symbol_converter"]
                 all_defined_symbols = kwargs["all_defined_symbols"]
-                self.embedding_map = self._build_embedding_map(
+                self.embedding_dict = self._build_embedding_map(
                     symbol_converter, all_defined_symbols
                 )
             except KeyError as e:
@@ -74,14 +74,14 @@ class SymbolEmbeddingMap:
                 # If given an embedding path, load the embedding map from that path
                 # This results in calling cls constructor again with the loaded embedding map
                 if "embedding_path" in kwargs:
-                    self.embedding_map = SymbolEmbeddingMap.load(kwargs["embedding_path"])
+                    self.embedding_dict = SymbolEmbeddingMap.load(kwargs["embedding_path"])
                 # Otherwise, load the embedding map from the kwargs
-                elif "embedding_map" in kwargs:
-                    self.embedding_map = kwargs["embedding_map"]
+                elif "embedding_dict" in kwargs:
+                    self.embedding_dict = kwargs["embedding_dict"]
             except KeyError as e:
                 raise ValueError(f"Missing required argument: {e}")
 
-    def get_embedding_map(self) -> Dict[Symbol, SymbolEmbedding]:
+    def get_embedding_dict(self) -> Dict[Symbol, SymbolEmbedding]:
         """
         Get the embedding map.
         Args:
@@ -89,7 +89,7 @@ class SymbolEmbeddingMap:
         Returns:
             The embedding map
         """
-        return self.embedding_map
+        return self.embedding_dict
 
     def update_embeddings(
         self, symbol_converter: SymbolConverter, symbols_to_update: List[Symbol]
@@ -107,11 +107,11 @@ class SymbolEmbeddingMap:
             try:
                 symbol_source = str(symbol_converter.convert_to_fst_object(symbol))
                 if (
-                    symbol not in self.embedding_map
-                    or self.embedding_map[symbol].source_code != symbol_source
+                    symbol not in self.embedding_dict
+                    or self.embedding_dict[symbol].source_code != symbol_source
                 ):
                     symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
-                    self.embedding_map[symbol] = SymbolEmbedding(
+                    self.embedding_dict[symbol] = SymbolEmbedding(
                         symbol=symbol, vector=symbol_embedding, source_code=symbol_source
                     )
                 else:
@@ -130,16 +130,16 @@ class SymbolEmbeddingMap:
             None
         """
         # Print the length of the embedding map before filtering
-        print("Length of the embedding map before filtering: ", len(self.embedding_map))
+        print("Length of the embedding map before filtering: ", len(self.embedding_dict))
 
-        self.embedding_map = {
+        self.embedding_dict = {
             symbol: embedding
-            for symbol, embedding in self.embedding_map.items()
+            for symbol, embedding in self.embedding_dict.items()
             if symbol in selected_symbols
         }
 
         # Print the length of the embedding map after filtering
-        print("Length of the embedding map after filtering: ", len(self.embedding_map))
+        print("Length of the embedding map after filtering: ", len(self.embedding_dict))
 
     def save(self, output_embedding_path: StrPath, overwrite: bool = False) -> None:
         """
@@ -154,7 +154,7 @@ class SymbolEmbeddingMap:
         if os.path.exists(output_embedding_path) and not overwrite:
             raise ValueError("output_embedding_path must be a path to a non-existing file.")
         with open(output_embedding_path, "w") as f:
-            encoded_embedding = jsonpickle.encode(self.embedding_map)
+            encoded_embedding = jsonpickle.encode(self.embedding_dict)
             f.write(encoded_embedding)
 
     @classmethod
@@ -168,14 +168,14 @@ class SymbolEmbeddingMap:
         if not os.path.exists(input_embedding_path):
             raise ValueError("input_embedding_path must be a path to an existing file.")
 
-        embedding_map = {}
+        embedding_dict = {}
         with open(input_embedding_path, "r") as f:
             embedding_map_str_keys = jsonpickle.decode(f.read())
-            embedding_map = {
+            embedding_dict = {
                 Symbol.from_string(key): value for key, value in embedding_map_str_keys.items()
             }
 
-        return embedding_map
+        return embedding_dict
 
     def _build_embedding_map(
         self, symbol_converter: SymbolConverter, defined_symbols: List[Symbol]
@@ -188,18 +188,18 @@ class SymbolEmbeddingMap:
         Returns:
             Map from symbol to embedding vector
         """
-        embedding_map: Dict[Symbol, SymbolEmbedding] = {}
+        embedding_dict: Dict[Symbol, SymbolEmbedding] = {}
         filtered_symbols = get_rankable_symbols(defined_symbols)
 
         for symbol in filtered_symbols:
             try:
                 symbol_source = str(symbol_converter.convert_to_fst_object(symbol))
                 symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
-                embedding_map[symbol] = SymbolEmbedding(
+                embedding_dict[symbol] = SymbolEmbedding(
                     symbol=symbol, vector=symbol_embedding, source_code=symbol_source
                 )
 
             except Exception as e:
                 logger.error("Building embedding for symbol: %s failed with %s" % (symbol, e))
 
-        return embedding_map
+        return embedding_dict

@@ -79,10 +79,14 @@ def symbol_graph_mock(mocker):
 
 @pytest.fixture
 def symbol_searcher(mocker, symbol_converter, symbol_graph_mock):
-    embedding_mock = mocker.MagicMock(spec=SymbolEmbeddingMap)
-    similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
-    rank_mock = mocker.MagicMock(spec=SymbolRank)
+    symbol_embedding_mock = mocker.MagicMock(spec=SymbolEmbeddingMap)
+    symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
+    symbol_rank_mock = mocker.MagicMock(spec=SymbolRank)
 
     return SymbolSearcher(
-        symbol_converter, symbol_graph_mock, embedding_mock, similarity_mock, rank_mock
+        symbol_converter,
+        symbol_graph_mock,
+        symbol_embedding_mock,
+        symbol_similarity_mock,
+        symbol_rank_mock,
     )

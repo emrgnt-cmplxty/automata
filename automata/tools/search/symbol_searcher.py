@@ -1,13 +1,15 @@
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
+import networkx as nx
+
 from automata.tools.search.symbol_converter import SymbolConverter
 from automata.tools.search.symbol_graph import SymbolGraph
 from automata.tools.search.symbol_parser import parse_symbol
 from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
-from automata.tools.search.symbol_rank.symbol_rank import SymbolRank
+from automata.tools.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
 from automata.tools.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.tools.search.symbol_types import StrPath, SymbolReference
+from automata.tools.search.symbol_types import StrPath, Symbol, SymbolEmbedding, SymbolReference
 from automata.tools.search.symbol_utils import (
     find_and_replace_in_modules,
     find_pattern_in_modules,
@@ -30,27 +32,32 @@ class SymbolSearcher:
         symbol_graph: SymbolGraph,
         symbol_embedding_map: SymbolEmbeddingMap,
         symbol_similarity: SymbolSimilarity,
-        symbol_rank: SymbolRank,
+        symbol_rank_config: Optional[SymbolRankConfig],
+        code_subgraph: Optional[nx.DiGraph] = None,
+        embedding_dict: Optional[Dict[Symbol, SymbolEmbedding]] = None,
         *args,
         **kwargs,
     ):
         self.converter = symbol_converter
         self.symbol_graph = symbol_graph
         self.symbol_similarity = symbol_similarity
-        self.symbol_rank = symbol_rank
 
-        code_subgraph = symbol_graph.get_rankable_symbol_subgraph(
-            kwargs.get("flow_rank", "bidirectional")
-        )
-        embedding_map = deepcopy(symbol_embedding_map.get_embedding_map())
-        code_subgraph, embedding_map = sync_graph_and_dict(code_subgraph, embedding_map)
+        if not code_subgraph:
+            code_subgraph = symbol_graph.get_rankable_symbol_subgraph(
+                kwargs.get("flow_rank", "bidirectional")
+            )
+        if not embedding_dict:
+            embedding_dict = deepcopy(symbol_embedding_map.get_embedding_dict())
 
+        code_subgraph, embedding_dict = sync_graph_and_dict(code_subgraph, embedding_dict)
+
+        self.symbol_rank = SymbolRank(code_subgraph, config=symbol_rank_config)
         self.code_subgraph = code_subgraph
-        self.embedding_map = embedding_map
+        self.embedding_dict = embedding_dict
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """
-        Gets the list of the SymbolRank similar symbols ordered by rank
+        Fetches the list of the SymbolRank similar symbols ordered by rank
 
         Args:
             query (str): The query to search for

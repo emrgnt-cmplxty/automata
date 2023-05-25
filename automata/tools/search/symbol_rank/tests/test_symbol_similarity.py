@@ -56,7 +56,7 @@ def test_get_nearest_symbols_for_query(monkeypatch, mock_simple_method_symbols):
         symbol=symbol3, vector=np.array([0, 0, 1, 0]), source_code="symbol3"
     )
 
-    embedding_map = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
+    embedding_dict = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
 
     # Mocking get_embedding function of EmbeddingsProvider class
     def mock_get_embedding(_, symbol_source):
@@ -69,7 +69,9 @@ def test_get_nearest_symbols_for_query(monkeypatch, mock_simple_method_symbols):
 
     monkeypatch.setattr(EmbeddingsProvider, "get_embedding", mock_get_embedding)
 
-    symbol_embedding_map = SymbolEmbeddingMap(load_embedding_map=True, embedding_map=embedding_map)
+    symbol_embedding_map = SymbolEmbeddingMap(
+        load_embedding_map=True, embedding_dict=embedding_dict
+    )
 
     symbol_similarity = SymbolSimilarity(symbol_embedding_map)
 
@@ -102,7 +104,7 @@ def test_transform_similarity_matrix(monkeypatch, mock_simple_method_symbols):
         symbol=symbol3, vector=np.array([0, 0, 1, 0]), source_code="symbol3"
     )
 
-    embedding_map = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
+    embedding_dict = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
 
     def mock_get_embedding(_, symbol_source):
         if symbol_source == "symbol1":
@@ -114,7 +116,9 @@ def test_transform_similarity_matrix(monkeypatch, mock_simple_method_symbols):
 
     monkeypatch.setattr(EmbeddingsProvider, "get_embedding", mock_get_embedding)
 
-    symbol_embedding_map = SymbolEmbeddingMap(load_embedding_map=True, embedding_map=embedding_map)
+    symbol_embedding_map = SymbolEmbeddingMap(
+        load_embedding_map=True, embedding_dict=embedding_dict
+    )
 
     symbol_similarity = SymbolSimilarity(symbol_embedding_map)
 
@@ -146,7 +150,7 @@ def test_generate_unit_normed_query_vector(monkeypatch, mock_simple_method_symbo
         symbol=symbol3, vector=np.array([0, 0, 1, 0]), source_code="symbol3"
     )
 
-    embedding_map = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
+    embedding_dict = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
 
     def mock_get_embedding(_, symbol_source):
         if symbol_source == "symbol1":
@@ -158,7 +162,9 @@ def test_generate_unit_normed_query_vector(monkeypatch, mock_simple_method_symbo
 
     monkeypatch.setattr(EmbeddingsProvider, "get_embedding", mock_get_embedding)
 
-    symbol_embedding_map = SymbolEmbeddingMap(load_embedding_map=True, embedding_map=embedding_map)
+    symbol_embedding_map = SymbolEmbeddingMap(
+        load_embedding_map=True, embedding_dict=embedding_dict
+    )
 
     symbol_similarity = SymbolSimilarity(symbol_embedding_map)
 
