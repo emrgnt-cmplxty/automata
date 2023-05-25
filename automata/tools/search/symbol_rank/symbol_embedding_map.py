@@ -81,6 +81,16 @@ class SymbolEmbeddingMap:
             except KeyError as e:
                 raise ValueError(f"Missing required argument: {e}")
 
+    def get_embedding_map(self) -> Dict[Symbol, SymbolEmbedding]:
+        """
+        Get the embedding map.
+        Args:
+            None
+        Returns:
+            The embedding map
+        """
+        return self.embedding_map
+
     def update_embeddings(
         self, symbol_converter: SymbolConverter, symbols_to_update: List[Symbol]
     ):

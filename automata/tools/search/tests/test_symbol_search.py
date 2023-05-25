@@ -15,10 +15,12 @@ def test_retrieve_source_code_by_symbol(symbols, symbol_searcher):
 
 
 def test_symbol_search(symbols, symbol_searcher, symbol_graph_mock):
-    symbol_graph_mock.get_symbol_references.return_value = ["ref1", "ref2"]
+    symbol_graph_mock.get_references_to_symbol.return_value = ["ref1", "ref2"]
     result = symbol_searcher.symbol_search(symbols[0].uri)
     assert result == ["ref1", "ref2"]
-    symbol_graph_mock.get_symbol_references.assert_called_once_with(parse_symbol(symbols[0].uri))
+    symbol_graph_mock.get_references_to_symbol.assert_called_once_with(
+        parse_symbol(symbols[0].uri)
+    )
 
 
 def test_exact_search(symbol_searcher):

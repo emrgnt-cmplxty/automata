@@ -1,4 +1,4 @@
-from typing import Dict, Hashable, List, Optional
+from typing import Dict, Hashable, List, Optional, Tuple
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -39,10 +39,10 @@ class SymbolRank:
 
     def get_ranks(
         self,
-        init_symbol_similarity: Optional[Dict[str, float]] = None,
+        symbol_similarity: Optional[Dict[str, float]] = None,
         initial_weights: Optional[Dict[str, float]] = None,
-        dangling=None,
-    ) -> Dict[str, float]:
+        dangling: Optional[Dict[str, float]] = None,
+    ) -> List[Tuple[str, float]]:
         """
         Calculate and return the SymbolRank of each node in the graph.
 
@@ -58,10 +58,10 @@ class SymbolRank:
         node_count = stochastic_graph.number_of_nodes()
 
         rank_vec = self._prepare_initial_ranks(stochastic_graph, initial_weights)
-        symbol_similarity = self._prepare_symbol_similarity(
-            node_count, stochastic_graph, init_symbol_similarity
+        prepared_similarity = self._prepare_symbol_similarity(
+            node_count, stochastic_graph, symbol_similarity
         )
-        dangling_weights = self._prepare_dangling_weights(dangling, symbol_similarity)
+        dangling_weights = self._prepare_dangling_weights(dangling, prepared_similarity)
         dangling_nodes = self._get_dangling_nodes(stochastic_graph)
 
         for _ in range(self.config.max_iterations):
@@ -77,12 +77,14 @@ class SymbolRank:
                     )
                 rank_vec[node] += (
                     danglesum * dangling_weights[node]
-                    + (1.0 - self.config.alpha) * symbol_similarity[node]
+                    + (1.0 - self.config.alpha) * prepared_similarity[node]
                 )
 
             err = sum(abs(rank_vec[node] - last_rank_vec[node]) for node in rank_vec)
             if err < node_count * self.config.tolerance:
-                return rank_vec
+                sorted_dict = sorted(rank_vec.items(), key=lambda x: x[1], reverse=True)
+                return sorted_dict
+
         raise NetworkXError(
             "SymbolRank: power iteration failed to converge in %d iterations."
             % self.config.max_iterations
@@ -129,7 +131,7 @@ class SymbolRank:
         self,
         node_count: int,
         stochastic_graph: nx.DiGraph,
-        init_symbol_similarity: Optional[Dict[str, float]],
+        symbol_similarity: Optional[Dict[str, float]],
     ) -> Dict[str, float]:
         """
         Prepare the symbol similarity matrix.
@@ -137,25 +139,26 @@ class SymbolRank:
         the modification of the rank computation based on some user-defined preferences. In this instance, symbol similarity is
         an implementation of personalization that allows the modification of the rank computation based on symbol source-code similarity.
 
-
-        :param node_count: Number of nodes in the graph
-        :param stochastic_graph: Stochastic graph
-        :param symbol_similarity: symbol_similarity dictionary
-        :return: symbol_similarity dictionary
+        Args:
+            node_count (int): Number of nodes in the graph.
+            stochastic_graph (nx.DiGraph): A NetworkX DiGraph.
+            symbol_similarity (Optional[Dict[str, float]]): Initial symbol similarity for each node.
         """
-        if init_symbol_similarity is None:
+        if symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
         else:
-            missing = set(self.graph) - set(init_symbol_similarity)
+            missing = set(self.graph) - set(symbol_similarity)
             if missing:
                 raise NetworkXError(
                     "symbol_similarity dictionary must have a value for every node. Missing nodes %s"
                     % missing
                 )
-            s = sum(init_symbol_similarity.values())
-            return {k: v / s for k, v in init_symbol_similarity.items()}
+            s = sum(symbol_similarity.values())
+            return {k: v / s for k, v in symbol_similarity.items()}
 
-    def _prepare_dangling_weights(self, dangling, symbol_similarity) -> Dict[str, float]:
+    def _prepare_dangling_weights(
+        self, dangling: Optional[Dict[str, float]], symbol_similarity: Dict[str, float]
+    ) -> Dict[str, float]:
         """
         Prepare the weights for dangling nodes.
 

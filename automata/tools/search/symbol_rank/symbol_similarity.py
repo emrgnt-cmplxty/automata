@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from enum import Enum
 from typing import Dict, Optional
 
@@ -32,7 +33,9 @@ class SymbolSimilarity:
         Result:
             An instance of SymbolSimilarity
         """
-        self.embedding_map: Dict[Symbol, SymbolEmbedding] = symbol_embedding_map.embedding_map
+        self.embedding_map: Dict[Symbol, SymbolEmbedding] = deepcopy(
+            symbol_embedding_map.get_embedding_map()
+        )
         self.embedding_provider: EmbeddingsProvider = symbol_embedding_map.embedding_provider
         self.default_norm_type = norm_type
         symbols = sorted(list(self.embedding_map.keys()), key=lambda x: x.uri)

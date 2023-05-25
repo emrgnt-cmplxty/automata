@@ -162,13 +162,13 @@ class Symbol:
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
-    @property
-    def module_name(self) -> str:
-        return self.descriptors[0].name
-
     def parent(self) -> "Symbol":
         parent_descriptors = list(self.descriptors)[:-1]
         return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
+
+    @property
+    def module_name(self) -> str:
+        return self.descriptors[0].name
 
     @staticmethod
     def is_local(symbol: "Symbol") -> bool:

@@ -58,7 +58,7 @@ def test_get_ranks():
 
     ranks = pagerank.get_ranks()
     assert len(ranks) == nodes
-    assert sum(ranks.values()) == pytest.approx(1.0)
+    assert sum([ele[1] for ele in ranks]) == pytest.approx(1.0)
 
 
 def test_get_ranks_small_graph():
@@ -71,4 +71,4 @@ def test_get_ranks_small_graph():
 
     ranks = pagerank.get_ranks()
     assert len(ranks) == 3
-    assert sum(ranks.values()) == pytest.approx(1.0)
+    assert sum([ele[1] for ele in ranks]) == pytest.approx(1.0)

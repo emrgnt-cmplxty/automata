@@ -1,5 +1,4 @@
 import logging
-from functools import cached_property
 from typing import Dict, List, Set, cast
 
 import networkx as nx
@@ -18,25 +17,27 @@ logger = logging.getLogger(__name__)
 class SymbolGraph:
     def __init__(self, index_path: str, symbol_converter: SymbolConverter):
         """
-        Initialize SymbolGraph with the path of an index protobuf file.
+        Initializes SymbolGraph with the path of an index protobuf file.
 
-        :param index_path: Path to index protobuf file
-        :param symbol_converter: SymbolConverter instance
-        :param do_shortened_symbols: Whether to use shortened symbols
-
-        :return: SymbolGraph instance
+        Args:
+            index_path (str): Path to index protobuf file
+            symbol_converter (SymbolConverter): SymbolConverter instance
+        Returns:
+            SymbolGraph instance
         """
         self.converter = symbol_converter
 
         self._index = self._load_index_protobuf(index_path)
-        self._graph = self._build_symbol_graph(self._index)
+        self._graph = self._build_symbol_info_graph(self._index)
 
     def get_all_files(self) -> List[File]:
         """
-        Get all file nodes in the graph.
-        :param data_type: Optional filter for data type
+        Gets all file nodes in the graph.
 
-        :return: List of all file nodes.
+        Args:
+            None
+        Returns:
+            List of all defined symbols.
         """
         return [
             data.get("file")
@@ -46,21 +47,96 @@ class SymbolGraph:
 
     def get_all_defined_symbols(self) -> List[Symbol]:
         """
-        Get all file nodes in the graph.
-        :param data_type: Optional filter for data type
+        Gets all symbols defined in the graph.
 
-        :return: List of all defined symbols.
+        Args:
+            None
+        Returns:
+            List[Symbol]: List of all defined symbols.
         """
         return [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
 
-    def get_symbol_references(self, symbol: Symbol) -> Dict[StrPath, List[SymbolReference]]:
+    def get_defined_symbols_along_path(self, partial_py_path: PyPath) -> Set[Symbol]:
         """
-        Finds all references of a given symbol in the symbol graph.
+        Gets all symbols which contain a specified partial path
 
-        :param symbol: Symbol to search for
-        :return: List of tuples (file, symbol details)
+        Args:
+            partial_py_path (PyPath): The partial path to explain
+        Returns:
+            Set[Symbol]: Set of symbols that follow the partial path
+        """
+        obs_symbols = set()
+        symbols = self.get_all_defined_symbols()
+        for symbol in symbols:
+            if partial_py_path in symbol.uri:
+                obs_symbols.add(symbol)
+        return obs_symbols
+
+    def get_rankable_symbol_subgraph(self, flow_rank="to_dependents") -> nx.DiGraph:
+        """
+        Gets a detailed subgraph of rankable symbols.
+
+        Args:
+            symbol (str): The symbol in the form 'module`/ClassOrMethod#'
+
+        Returns:
+            List[str]: The list of dependencies for the symbol.
+        TODO: Can thi sbe made more efficient?
+        TODO: Can we better handle edge cases that are not handled in obvious ways
+        """
+        G = nx.DiGraph()
+
+        filtered_symbols = get_rankable_symbols(self.get_all_defined_symbols())
+
+        for symbol in tqdm(filtered_symbols):
+            try:
+                dependencies = self._get_symbol_dependencies(symbol)
+                relationships = self._get_symbol_relationships(symbol)
+                for dependency in dependencies.union(relationships):
+                    if flow_rank == "to_dependents":
+                        G.add_edge(symbol, dependency)
+                    elif flow_rank == "from_dependents":
+                        G.add_edge(dependency, symbol)
+                    elif flow_rank == "bidirectional":
+                        G.add_edge(symbol, dependency)
+                        G.add_edge(dependency, symbol)
+                    else:
+                        raise ValueError(
+                            "flow_rank must be one of 'to_dependents', 'from_dependents', or 'bidirectional'"
+                        )
+
+            except Exception as e:
+                print(f"Error processing {symbol.uri}: {e}")
+
+        return G
+
+    def get_references_to_module(self, module_name: str) -> List[SymbolReference]:
+        """
+        Gets all references to a given module in the symbol graph.
+
+        Args:
+            module (Symbol): The module to locate references for
+        Returns:
+            List[SymbolReference]: List of symbol references
+        """
+        reference_edges_in_module = self._graph.in_edges(module_name, data=True)
+        result = []
+        for _, __, data in reference_edges_in_module:
+            if data["label"] == "reference":
+                result.append(data.get("symbol_reference"))
+
+        return result
+
+    def get_references_to_symbol(self, symbol: Symbol) -> Dict[StrPath, List[SymbolReference]]:
+        """
+        Gets all references to a given symbol in the symbol graph.
+
+        Args:
+            symbol (Symbol): The symbol to locate references for
+        Returns:
+            Dict of file paths to lists of symbol references
         """
         search_results = [
             (file_path, data.get("symbol_reference"))
@@ -77,35 +153,15 @@ class SymbolGraph:
 
         return result_dict
 
-    def get_all_references_in_module(self, module) -> List[SymbolReference]:
-        reference_edges_in_module = self._graph.in_edges(module, data=True)
-        result = []
-        for source, _, data in reference_edges_in_module:
-            if data["label"] == "reference":
-                result.append(data.get("symbol_reference"))
-
-        return result
-
-    def get_defined_symbols_along_path(self, partial_py_path: PyPath) -> Set[Symbol]:
-        """
-        Gets all symbols which contain a specified partial path
-
-        :param partial_path: The partial_path to explain
-        :return: Set of symbols that follow the partial path
-        """
-        obs_symbols = set()
-        symbols = self.get_all_defined_symbols()
-        for symbol in symbols:
-            if partial_py_path in symbol.uri:
-                obs_symbols.add(symbol)
-        return obs_symbols
-
     def get_symbol_context(self, symbol) -> str:
         """
-        Get the context for a given symbol. This includes its documentation, its file, references, and relationships.
+        Gets the context for a given symbol.
+        This includes its documentation, its file, references, and relationships.
 
-        :param symbol: The symbol to explain
-        :return: A string containing the explanation
+        Args:
+            symbol (Symbol): The symbol to explain
+        Returns:
+            A string containing the explanation
         """
 
         result = ""
@@ -116,10 +172,10 @@ class SymbolGraph:
         spacer = " " * (0 + len(doc_decorator))
         result += f"{doc_decorator}%s\n" % (("\n" + spacer).join(docs)) + "\n"
 
-        containing_file = self.get_parent_file(symbol)
+        containing_file = self._get_symbol_containing_file(symbol)
         result += " >>  Symbol File       --> %s \n" % containing_file
 
-        references = self.get_symbol_references(symbol)
+        references = self.get_references_to_symbol(symbol)
         result += " >>  Symbol Ref Count  --> %s \n" % len(references.keys())
 
         symbol_references = "\n"
@@ -133,12 +189,14 @@ class SymbolGraph:
 
         return result
 
-    def _build_symbol_graph(self, index: Index) -> nx.MultiDiGraph:
+    def _build_symbol_info_graph(self, index: Index) -> nx.MultiDiGraph:
         """
-        Build a multidirectional graph from a given index.
+        Builds a multidirectional graph from a given index.
 
-        :param index: The index from which the graph is to be built.
-        :return: The built multidirectional graph.
+        Args:
+            index: The index from which the graph is to be built.
+        Returns:
+            nx.MultiDiGraph: The built multidirectional graph.
         """
         G = nx.MultiDiGraph()
         for document in index.documents:
@@ -193,7 +251,7 @@ class SymbolGraph:
                     continue
 
                 occurrence_range = tuple(occurrence.range)
-                occurrence_roles = self._get_symbol_roles_dict(occurrence.symbol_roles)
+                occurrence_roles = self._process_symbol_roles(occurrence.symbol_roles)
                 occurrence_reference = SymbolReference(
                     symbol=occurrence_symbol,
                     line_number=occurrence_range[0],
@@ -224,7 +282,15 @@ class SymbolGraph:
 
         return G
 
-    def get_parent_file(self, symbol: Symbol) -> str:
+    def _get_symbol_containing_file(self, symbol: Symbol) -> str:
+        """
+        Gets the file that contains the given symbol.
+
+        Args:
+            symbol (Symbol): The symbol to get the containing file for.
+        Returns:
+            str: The file that contains the symbol.
+        """
         parent_file_list = [
             source
             for source, _, data in self._graph.in_edges(symbol, data=True)
@@ -235,78 +301,32 @@ class SymbolGraph:
         ), f"{symbol.uri} should have exactly one parent file, but has {len(parent_file_list)}"
         return parent_file_list.pop()
 
-    def get_symbols_in_scope(self, symbol: Symbol) -> Set[Symbol]:
+    def _get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         """
-        Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
+        Gets the set of symbols referenced inside the scope of the given symbol (including children scopes).
 
         Args:
-            symbol
-
+            symbol (Symbol): The symbol to get dependencies for.
         Returns:
             Set[Symbol]: The list of dependencies for the symbol.
+
+        # TODO: Consider implications of using list instead of set
         """
-        references_in_range = self._get_references_in_scope(symbol)
+        references_in_range = self._get_symbol_references_in_scope(symbol)
         symbols_in_range = set([ref.symbol for ref in references_in_range])
         return symbols_in_range
 
-    def get_relationship_symbols(self, symbol: Symbol) -> Set[Symbol]:
+    def _get_symbol_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
         """
-        Returns the list of symbols with relationships to the given symbol.
-        """
-        related_symbol_nodes = set(
-            [
-                target
-                for _, target, data in self._graph.out_edges(symbol, data=True)
-                if data.get("label") == "relationship"
-            ]
-        )
-        return related_symbol_nodes
-
-    def rankable_symbol_subgraph(self, flow_rank="to_dependents") -> nx.DiGraph:
-        """
-        Returns a subgraph with symbols mapped to outher symbols.
+        Gets the list of symbols referenced inside the scope of the given symbol (including children scopes)
 
         Args:
-            symbol (str): The symbol in the form 'module`/ClassOrMethod#'
-
+            symbol (Symbol): The symbol to get references for.
         Returns:
-            List[str]: The list of dependencies for the symbol.
-        TODO: this is extremely slow
-        TODO: this has a number of edge cases that are not handled in obvious ways
-        TODO: see is_worth_backlinking_to for a list of things I chose to exclude
+            List[SymbolReference]: The list of references for the symbol.
         """
-        G = nx.DiGraph()
-
-        filtered_symbols = get_rankable_symbols(self.get_all_defined_symbols())
-
-        for symbol in tqdm(filtered_symbols):
-            try:
-                dependencies = self.get_symbols_in_scope(symbol)
-                relationships = self.get_relationship_symbols(symbol)
-                for dependency in dependencies.union(relationships):
-                    if flow_rank == "to_dependents":
-                        G.add_edge(symbol, dependency)
-                    elif flow_rank == "from_dependents":
-                        G.add_edge(dependency, symbol)
-                    elif flow_rank == "bidirectional":
-                        G.add_edge(symbol, dependency)
-                        G.add_edge(dependency, symbol)
-                    else:
-                        raise ValueError(
-                            "flow_rank must be one of 'to_dependents', 'from_dependents', or 'bidirectional'"
-                        )
-
-            except Exception as e:
-                print(f"Error processing {symbol.uri}: {e}")
-
-        return G
-
-    def _get_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
-        """
-        Returns the list of symbols referenced inside the scope of the given symbol (including children scopes).
-        """
-        module = self.get_parent_file(symbol)
-        if module not in self.converter._module_dict:  # TODO
+        module_name = self._get_symbol_containing_file(symbol)
+        if module_name not in self.converter._module_dict:  # TODO
             return []
         fst_object = self.converter.convert_to_fst_object(symbol)
 
@@ -317,28 +337,45 @@ class SymbolGraph:
             fst_object.absolute_bounding_box.bottom_right.line - 1,
         )
 
-        references_in_parent_module = self.get_all_references_in_module(module)
+        references_in_parent_module = self.get_references_to_module(module_name)
         references_in_range = [
             ref
             for ref in references_in_parent_module
             if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
             and ref.column_number >= parent_symbol_start_col
-            and ref.symbol != symbol  # TODO: don't include self (or maybe do?)
-            and "stdlib"
-            not in ref.symbol.package.name  # TODO: don't include stdlib (or maybe do?)
-            and not Symbol.is_local(ref.symbol)  # TODO: figure out how local symbols really work
-            and not Symbol.is_meta(ref.symbol)  # TODO: figure out how meta symbols really work
         ]
 
         return references_in_range
 
-    @staticmethod
-    def _get_symbol_roles_dict(role) -> Dict[str, bool]:
+    def _get_symbol_relationships(self, symbol: Symbol) -> Set[Symbol]:
         """
-        Get a dictionary of symbol roles from a role Bitset.
+        Gets the set of symbols with relationships to the given symbol.
 
-        :param role: Role Bitset
-        :return: A dictionary of symbol roles
+        Args:
+            symbol (Symbol): The symbol to get relationships for.
+        Returns:
+            Set[Symbol]: The list of relationships for the symbol.
+
+        # TODO: Consider implications of using list instead of set
+        """
+        related_symbol_nodes = set(
+            [
+                target
+                for _, target, data in self._graph.out_edges(symbol, data=True)
+                if data.get("label") == "relationship"
+            ]
+        )
+        return related_symbol_nodes
+
+    @staticmethod
+    def _process_symbol_roles(role: int) -> Dict[str, bool]:
+        """
+        Gets a dictionary of symbol roles from a role Bitset.
+
+        Args:
+            role (int): Role Bitset
+        Returns:
+            Dict[str, bool]: A dictionary of symbol roles
         """
         result = {}
         for role_name, role_value in SymbolRole.items():
@@ -349,10 +386,12 @@ class SymbolGraph:
     @staticmethod
     def _load_index_protobuf(path: StrPath) -> Index:
         """
-        Load an index from a protobuf file.
+        Loads an index from a protobuf file.
 
-        :param path: The path of the protobuf file
-        :return: The loaded index
+        Args:
+            path (StrPath): The path of the protobuf file
+        Returns:
+            Index: The loaded index
         """
         index = Index()
         with open(path, "rb") as f:

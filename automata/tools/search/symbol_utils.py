@@ -1,12 +1,15 @@
-from typing import Dict, List
+from typing import Any, Callable, Dict, List, Tuple, Union
+
+import networkx as nx
+import numpy as np
 
 from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_types import Descriptor, Symbol
+from automata.tools.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
 
 
 def get_rankable_symbols(
     symbols: List[Symbol],
-    filter_strings=["setup", "stdlib"],
+    filter_strings=["setup", "stdlib"],  # TODO - Revisit what strings we should filter on.
     accepted_kinds=[Descriptor.PythonKinds.Method, Descriptor.PythonKinds.Class],
 ) -> List[Symbol]:
     """
@@ -86,3 +89,69 @@ def find_pattern_in_modules(converter: SymbolConverter, pattern: str) -> Dict[st
         if line_numbers:
             matches[module_path] = line_numbers
     return matches
+
+
+def sync_graph_and_dict(
+    graph: nx.DiGraph, dictionary: Dict[Symbol, SymbolEmbedding]
+) -> Tuple[nx.DiGraph, Dict[Symbol, SymbolEmbedding]]:
+    """
+    Function to synchronize a graph and a dictionary.
+    It removes nodes in the graph that are not in the dictionary, and
+    keys in the dictionary that are not in the graph.
+
+    :param graph: A networkx DiGraph object.
+    :param dictionary: A dictionary to synchronize with the graph.
+    :return: A tuple containing two elements: the synchronized graph and dictionary.
+    """
+
+    # Use list() to create a copy of the node list, as you can't modify a list while iterating over it
+    for node in list(graph.nodes()):
+        if node not in dictionary:
+            graph.remove_node(node)
+
+    # Again, use list() to create a copy of the key list
+    for key in list(dictionary.keys()):
+        if key not in graph:
+            del dictionary[key]
+
+    return graph, dictionary
+
+
+def shifted_z_score_sq(values: Union[List[float], np.ndarray]):
+    """
+    Compute z-score of a list of values.
+    Args:
+        values: List of values to compute z-score for.
+    Returns:
+        List of z-scores.
+    """
+    if not isinstance(values, np.ndarray):
+        values = np.array(values)
+
+    mean = np.mean(values)
+    std_dev = np.std(values)
+    zscores = [(value - mean) / std_dev for value in values]
+    return (zscores - np.min(zscores)) ** 2
+
+
+def transform_dict_values(
+    dictionary: Dict[Any, float], func: Callable[[List[float]], List[float]]
+):
+    """
+    Apply a function to each value in a dictionary and return a new dictionary.
+    Args:
+        dictionary: Dictionary to transform.
+        func: Function to apply to each value.
+    Returns:
+        Dictionary with transformed values.
+    """
+    # Accumulate all values from the dictionary
+
+    # Apply the function to the accumulated values
+    transformed_values = func([dictionary[key] for key in dictionary])
+
+    # Re-distribute the transformed values back into the dictionary
+    transformed_dict = {}
+    for i, key in enumerate(dictionary):
+        transformed_dict[key] = transformed_values[i]
+    return transformed_dict
