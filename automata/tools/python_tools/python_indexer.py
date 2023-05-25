@@ -542,5 +542,6 @@ class PythonIndexer:
                     PythonIndexer._remove_docstrings(child_node)
 
     @classmethod
+    @lru_cache(maxsize=1)
     def default(cls):
         return cls(root_py_path())
