@@ -12,7 +12,7 @@ from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
 from automata.core.search.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
-CHUNK_SIZE = 100
+CHUNK_SIZE = 10
 
 
 def main(*args, **kwargs):

@@ -108,7 +108,7 @@ class SymbolGraph:
                         )
 
             except Exception as e:
-                print(f"Error processing {symbol.uri}: {e}")
+                logger.error(f"Error processing {symbol.uri}: {e}")
 
         return G
 
@@ -213,7 +213,7 @@ class SymbolGraph:
                 try:
                     symbol = parse_symbol(symbol_information.symbol)
                 except Exception as e:
-                    print(f"Parsing symbol {symbol.uri} failed with error {e}")
+                    logger.error(f"Parsing symbol {symbol.uri} failed with error {e}")
                     continue
 
                 # Add Symbol Vertices
@@ -229,7 +229,7 @@ class SymbolGraph:
                 try:
                     symbol = parse_symbol(symbol_information.symbol)
                 except Exception as e:
-                    print(f"Parsing symbol {symbol.uri} failed with error {e}")
+                    logger.error(f"Parsing symbol {symbol.uri} failed with error {e}")
                     continue
 
                 for relationship in symbol_information.relationships:
@@ -247,7 +247,7 @@ class SymbolGraph:
                 try:
                     occurrence_symbol = parse_symbol(occurrence.symbol)
                 except Exception as e:
-                    print(f"Parsing symbol {symbol.uri} failed with error {e}")
+                    logger.error(f"Parsing symbol {symbol.uri} failed with error {e}")
                     continue
 
                 occurrence_range = tuple(occurrence.range)

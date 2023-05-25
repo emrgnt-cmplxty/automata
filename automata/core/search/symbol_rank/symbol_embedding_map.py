@@ -1,5 +1,6 @@
 import logging
 import os
+from copy import deepcopy
 from typing import Dict, List
 
 import jsonpickle
@@ -103,22 +104,44 @@ class SymbolEmbeddingMap:
         Result:
             None
         """
+        desc_to_full_symbol = {
+            ".".join([desc.name for desc in symbol.descriptors]): symbol
+            for symbol in self.embedding_dict.keys()
+        }
+
         for symbol in symbols_to_update:
             try:
                 symbol_source = str(symbol_converter.convert_to_fst_object(symbol))
-                if (
-                    symbol not in self.embedding_dict
-                    or self.embedding_dict[symbol].source_code != symbol_source
-                ):
+                symbol_desc_identifier = ".".join([desc.name for desc in symbol.descriptors])
+                map_symbol = desc_to_full_symbol.get(symbol_desc_identifier, None)
+
+                if not map_symbol:
+                    logger.info("Adding a new symbol: %s" % symbol)
                     symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
                     self.embedding_dict[symbol] = SymbolEmbedding(
                         symbol=symbol, vector=symbol_embedding, source_code=symbol_source
                     )
-                else:
-                    logger.info("Symbol: %s already in embedding map" % symbol)
+                elif map_symbol:
+                    # If the symbol is already in the embedding map, check if the source code is the same
+                    # If not, we can update the embedding
+                    if self.embedding_dict[map_symbol].source_code != symbol_source:
+                        logger.info("Modifying existing embedding for symbol: %s" % symbol)
+                        symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
+                        self.embedding_dict[symbol] = SymbolEmbedding(
+                            symbol=symbol, vector=symbol_embedding, source_code=symbol_source
+                        )
+                    # If source code is the same, we can just update the symbol
+                    elif map_symbol != symbol:
+                        symbol_embedding = deepcopy(self.embedding_dict[map_symbol])
+                        symbol_embedding.symbol = symbol
+                        self.embedding_dict[symbol] = symbol_embedding
+                        del self.embedding_dict[map_symbol]
+                    # Otherwise, we don't need to do anything
+                    else:
+                        pass
             except Exception as e:
-                logger.error("Updating embedding for symbol: %s failed with %s" % (symbol, e))
-        # TODO - Add trimming here, e.g. contract the mapping when appropriate
+                if "test" not in symbol.uri and "local" not in symbol.uri:
+                    logger.error("Updating embedding for symbol: %s failed with %s" % (symbol, e))
 
     def filter_embedding_map(self, selected_symbols: List[Symbol]):
         """
@@ -129,17 +152,11 @@ class SymbolEmbeddingMap:
         Result:
             None
         """
-        # Print the length of the embedding map before filtering
-        print("Length of the embedding map before filtering: ", len(self.embedding_dict))
-
         self.embedding_dict = {
             symbol: embedding
             for symbol, embedding in self.embedding_dict.items()
             if symbol in selected_symbols
         }
-
-        # Print the length of the embedding map after filtering
-        print("Length of the embedding map after filtering: ", len(self.embedding_dict))
 
     def save(self, output_embedding_path: StrPath, overwrite: bool = False) -> None:
         """

@@ -213,7 +213,6 @@ def test_iter_task_with_parsed_completion_message_2(
         .build()
     )
 
-    print("automata_agent_config = ", automata_agent_config)
     automata_agent = AutomataAgentFactory.create_agent(
         instructions=instructions, config=automata_agent_config
     )

@@ -65,8 +65,6 @@ class SymbolSearcher:
         Returns:
             A list of tuples of the form (symbol_uri, rank)
         """
-        print("embedding_dict = ", self.embedding_dict)
-
         query_vec = self.symbol_similarity.get_query_similarity_dict(query)
         transformed_query_vec = transform_dict_values(query_vec, shifted_z_score_sq)
         ranks = self.symbol_rank.get_ranks(symbol_similarity=transformed_query_vec)
