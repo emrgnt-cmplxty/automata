@@ -99,3 +99,8 @@ def test_find_expression_context(indexer):
     result = indexer.find_expression_context(expression)
     expected_match = 'test_module.test_function\nL2-6\n```\n\ndef test_function() -> bool:\n    """This is my new function"""\n    return True```\n\n'
     assert result == expected_match
+
+def test_default_cached():
+    indexer_1 = PythonIndexer.default()
+    indexer_2 = PythonIndexer.default()
+    assert indexer_1 is indexer_2

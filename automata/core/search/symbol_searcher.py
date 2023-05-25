@@ -11,7 +11,6 @@ from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
 from automata.core.search.symbol_types import StrPath, Symbol, SymbolEmbedding, SymbolReference
 from automata.core.search.symbol_utils import (
     convert_to_fst_object,
-    find_and_replace_in_modules,
     find_pattern_in_modules,
     shifted_z_score_sq,
     sync_graph_and_dict,

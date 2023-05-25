@@ -32,12 +32,6 @@ def test_exact_search(symbol_searcher):
         assert result == ["file1", "file2"]
 
 
-def test_find_and_replace(symbols, symbol_searcher):
-    with patch("automata.core.search.symbol_searcher.find_and_replace_in_modules", return_value=5):
-        result = symbol_searcher.find_and_replace("find1", "replace1", True)
-        assert result == 5
-
-
 def test_process_queries(symbols, symbol_searcher, symbol_graph_mock):
     with patch.object(
         symbol_searcher, "symbol_references", return_value=["ref1", "ref2"]
