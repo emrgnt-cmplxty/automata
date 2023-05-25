@@ -5,8 +5,8 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from automata.tools.search.symbol_parser import parse_symbol
-from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
+from automata.core.search.symbol_parser import parse_symbol
+from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 
 
 @pytest.fixture

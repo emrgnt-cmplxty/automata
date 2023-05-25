@@ -2,12 +2,12 @@ import os
 
 import pytest
 
-from automata.tools.search.symbol_graph import SymbolConverter, SymbolGraph
-from automata.tools.search.symbol_parser import parse_symbol
-from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
-from automata.tools.search.symbol_rank.symbol_rank import SymbolRank
-from automata.tools.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.tools.search.symbol_searcher import SymbolSearcher
+from automata.core.search.symbol_graph import SymbolConverter, SymbolGraph
+from automata.core.search.symbol_parser import parse_symbol
+from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
+from automata.core.search.symbol_rank.symbol_rank import SymbolRank
+from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
+from automata.core.search.symbol_searcher import SymbolSearcher
 
 
 @pytest.fixture

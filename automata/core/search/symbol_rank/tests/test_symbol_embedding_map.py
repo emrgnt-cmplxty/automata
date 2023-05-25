@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 from conftest import get_sem, patch_get_embedding
 
-from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
+from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 
 
 def test_build_embedding_map(

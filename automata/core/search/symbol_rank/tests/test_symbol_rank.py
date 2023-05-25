@@ -4,7 +4,7 @@ import networkx as nx
 import pytest
 from networkx import DiGraph
 
-from automata.tools.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
+from automata.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
 
 
 def generate_random_graph(nodes, edges):

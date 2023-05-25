@@ -5,11 +5,11 @@ import textwrap
 from tqdm import tqdm
 
 from automata.configs.config_enums import ConfigCategory
-from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_graph import SymbolGraph
-from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
-from automata.tools.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.tools.search.symbol_utils import get_rankable_symbols
+from automata.core.search.symbol_converter import SymbolConverter
+from automata.core.search.symbol_graph import SymbolGraph
+from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
+from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
+from automata.core.search.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 CHUNK_SIZE = 100

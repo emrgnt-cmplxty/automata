@@ -6,9 +6,9 @@ import jsonpickle
 import numpy as np
 import openai
 
-from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_types import StrPath, Symbol, SymbolEmbedding
-from automata.tools.search.symbol_utils import get_rankable_symbols
+from automata.core.search.symbol_converter import SymbolConverter
+from automata.core.search.symbol_types import StrPath, Symbol, SymbolEmbedding
+from automata.core.search.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 

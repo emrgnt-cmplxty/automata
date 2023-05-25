@@ -3,14 +3,14 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 
-from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_graph import SymbolGraph
-from automata.tools.search.symbol_parser import parse_symbol
-from automata.tools.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
-from automata.tools.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
-from automata.tools.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.tools.search.symbol_types import StrPath, Symbol, SymbolEmbedding, SymbolReference
-from automata.tools.search.symbol_utils import (
+from automata.core.search.symbol_converter import SymbolConverter
+from automata.core.search.symbol_graph import SymbolGraph
+from automata.core.search.symbol_parser import parse_symbol
+from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
+from automata.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
+from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
+from automata.core.search.symbol_types import StrPath, Symbol, SymbolEmbedding, SymbolReference
+from automata.core.search.symbol_utils import (
     find_and_replace_in_modules,
     find_pattern_in_modules,
     shifted_z_score_sq,

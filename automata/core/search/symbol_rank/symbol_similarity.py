@@ -5,11 +5,11 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from automata.tools.search.symbol_rank.symbol_embedding_map import (
+from automata.core.search.symbol_rank.symbol_embedding_map import (
     EmbeddingsProvider,
     SymbolEmbeddingMap,
 )
-from automata.tools.search.symbol_types import Symbol, SymbolEmbedding
+from automata.core.search.symbol_types import Symbol, SymbolEmbedding
 
 logger = logging.getLogger(__name__)
 

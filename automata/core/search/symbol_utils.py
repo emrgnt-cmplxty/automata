@@ -3,8 +3,8 @@ from typing import Any, Callable, Dict, List, Tuple, Union
 import networkx as nx
 import numpy as np
 
-from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
+from automata.core.search.symbol_converter import SymbolConverter
+from automata.core.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
 
 
 def get_rankable_symbols(

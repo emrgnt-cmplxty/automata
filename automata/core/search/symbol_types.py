@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
 
-from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
+from automata.core.search.scip_pb2 import Descriptor as DescriptorProto
 
 # Path and os related variables
 StrPath = Union[str, PathLike]
@@ -202,7 +202,7 @@ class Symbol:
         if not match:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __ = match.groups()
-        from automata.tools.search.symbol_parser import parse_symbol
+        from automata.core.search.symbol_parser import parse_symbol
 
         return parse_symbol(uri)
 

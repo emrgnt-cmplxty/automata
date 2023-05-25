@@ -1,12 +1,12 @@
 import numpy as np
 from conftest import get_sem, patch_get_embedding
 
-from automata.tools.search.symbol_rank.symbol_embedding_map import (
+from automata.core.search.symbol_rank.symbol_embedding_map import (
     EmbeddingsProvider,
     SymbolEmbeddingMap,
 )
-from automata.tools.search.symbol_rank.symbol_similarity import NormType, SymbolSimilarity
-from automata.tools.search.symbol_types import SymbolEmbedding
+from automata.core.search.symbol_rank.symbol_similarity import NormType, SymbolSimilarity
+from automata.core.search.symbol_types import SymbolEmbedding
 
 
 def test_generate_similarity_matrix(

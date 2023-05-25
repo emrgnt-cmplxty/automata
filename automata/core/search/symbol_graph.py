@@ -5,11 +5,11 @@ import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
-from automata.tools.search.scip_pb2 import Index, SymbolRole
-from automata.tools.search.symbol_converter import SymbolConverter
-from automata.tools.search.symbol_parser import parse_symbol
-from automata.tools.search.symbol_types import File, PyPath, StrPath, Symbol, SymbolReference
-from automata.tools.search.symbol_utils import get_rankable_symbols
+from automata.core.search.scip_pb2 import Index, SymbolRole
+from automata.core.search.symbol_converter import SymbolConverter
+from automata.core.search.symbol_parser import parse_symbol
+from automata.core.search.symbol_types import File, PyPath, StrPath, Symbol, SymbolReference
+from automata.core.search.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
