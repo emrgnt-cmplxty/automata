@@ -52,6 +52,7 @@ def find_and_replace_in_modules(
 ) -> int:
     """
     Renames a function or class in all modules.
+    
     Args:
         old_name (str): The old name of the function or class.
         new_name (str): The new name of the function or class.
@@ -77,6 +78,7 @@ def find_and_replace_in_modules(
 def find_pattern_in_modules(converter: SymbolConverter, pattern: str) -> Dict[str, List[int]]:
     """
     Finds exact line matches for a given pattern string in all modules.
+
     Args:
         pattern (str): The pattern string to search for.
     Returns:
@@ -117,7 +119,7 @@ def sync_graph_and_dict(
     return graph, dictionary
 
 
-def shifted_z_score_sq(values: Union[List[float], np.ndarray]):
+def shifted_z_score_sq(values: Union[List[float], np.ndarray]) -> np.ndarray:
     """
     Compute z-score of a list of values.
     Args:
@@ -135,7 +137,7 @@ def shifted_z_score_sq(values: Union[List[float], np.ndarray]):
 
 
 def transform_dict_values(
-    dictionary: Dict[Any, float], func: Callable[[List[float]], List[float]]
+    dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]
 ):
     """
     Apply a function to each value in a dictionary and return a new dictionary.
