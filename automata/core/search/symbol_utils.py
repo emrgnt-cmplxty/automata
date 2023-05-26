@@ -110,7 +110,7 @@ def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
     matches = {}
     indexer = PythonIndexer.cached_default()
     for module_path, module in indexer.module_dict.items():
-        lines = str(module).splitlines()
+        lines = module.dumps().splitlines()
         line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
         if line_numbers:
             matches[module_path] = line_numbers

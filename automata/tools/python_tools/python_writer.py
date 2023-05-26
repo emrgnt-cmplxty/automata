@@ -278,6 +278,9 @@ class PythonWriter:
         """
 
         def replace_newline_chars(input_str: str) -> str:
+            dummy_replacement_a = "ZZ_^^_ZZ"
+            dummy_replacement_b = "QQ_^^_QQ"
+
             def replace(match):
                 text = match.group(0)
                 if text[0] == '"' and text[-1] == '"':
@@ -291,12 +294,14 @@ class PythonWriter:
                         replace(match)
                         for match in re.finditer(
                             pattern,
-                            input_str.replace('"""', "ZZ_^^_ZZ").replace("'''", "QQ_^^_QQ"),
+                            input_str.replace('"""', dummy_replacement_a).replace(
+                                "'''", dummy_replacement_b
+                            ),
                         )
                     )
                 )
-                .replace("ZZ_^^_ZZ", '"""')
-                .replace("QQ_^^_QQ", "'''")
+                .replace(dummy_replacement_a, '"""')
+                .replace(dummy_replacement_b, "'''")
             )
             return output_str
 
