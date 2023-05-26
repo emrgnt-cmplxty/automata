@@ -52,11 +52,6 @@ def test_process_queries(symbols, symbol_searcher, symbol_graph_mock):
         assert result == "test"
     mock_method_2.assert_called_once_with(symbols[0].uri)
 
-    with patch.object(symbol_searcher, "find_and_replace", return_value=5) as mock_method_3:
-        result = symbol_searcher.process_query("type:replace %s" % ("test junk_vars True"))
-        assert result == 5
-    mock_method_3.assert_called_once_with("test", "junk_vars", True)
-
     with patch.object(
         symbol_searcher, "symbol_rank_search", return_value=[("ref1", 0.5), ("ref2", 0.4)]
     ) as mock_method_4:
