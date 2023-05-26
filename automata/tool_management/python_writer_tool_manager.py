@@ -84,13 +84,15 @@ class PythonWriterToolManager(BaseToolManager):
         ]
         return tools
 
-    def _writer_update_module(self, module_path: str, class_name: Optional[str], code: str) -> str:
+    def _writer_update_module(
+        self, module_dotpath: str, class_name: Optional[str], code: str
+    ) -> str:
         """Writes the given code to the given module path and class name."""
         try:
             self.writer.update_module(
                 source_code=code,
                 do_extend=True,
-                module_path=module_path,
+                module_dotpath=module_dotpath,
                 write_to_disk=True,
                 class_name=class_name,
             )

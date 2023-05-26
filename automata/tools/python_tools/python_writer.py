@@ -117,7 +117,9 @@ class PythonWriter:
 
         # christ on a bike
         is_new_module = (
-            not module_obj and module_dotpath and module_dotpath not in self.indexer.module_tree_map
+            not module_obj
+            and module_dotpath
+            and module_dotpath not in self.indexer.module_tree_map
         )
 
         is_existing_module = (
@@ -130,7 +132,9 @@ class PythonWriter:
             self._create_module_from_source_code(module_dotpath, source_code)
         elif is_existing_module:
             if module_obj:
-                module_dotpath = self.indexer.module_tree_map.get_existing_module_dotpath(module_obj)
+                module_dotpath = self.indexer.module_tree_map.get_existing_module_dotpath(
+                    module_obj
+                )
             module_obj = self.indexer.module_tree_map.get_module(module_dotpath)
 
             PythonWriter._update_module(
@@ -160,12 +164,13 @@ class PythonWriter:
                 f"Module not found in module dictionary: {module_dotpath}"
             )
         source_code = self.indexer.retrieve_source_code(module_dotpath)
-        module_fpath = self.indexer.module_tree_map.get_existing_module_fpath_by_dotpath(module_dotpath)
-        file_path = f"{module_fpath}.py"
-        with open(file_path, "w") as output_file:
+        module_fpath = self.indexer.module_tree_map.get_existing_module_fpath_by_dotpath(
+            module_dotpath
+        )
+        with open(module_fpath, "w") as output_file:
             output_file.write(source_code)
-        subprocess.run(["black", file_path])
-        subprocess.run(["isort", file_path])
+        subprocess.run(["black", module_fpath])
+        subprocess.run(["isort", module_fpath])
 
     def _create_module_from_source_code(self, module_dotpath: str, source_code: str) -> RedBaron:
         """
@@ -180,14 +185,14 @@ class PythonWriter:
 
     @staticmethod
     def _validate_args(
-        module_obj: Optional[RedBaron], module_path: Optional[str], write_to_disk: bool
+        module_obj: Optional[RedBaron], module_dotpath: Optional[str], write_to_disk: bool
     ) -> None:
         """Validate the arguments passed to the update_module method."""
-        if not (module_obj or module_path) or (module_obj and module_path):
+        if not (module_obj or module_dotpath) or (module_obj and module_dotpath):
             raise PythonWriter.InvalidArguments(
                 "Provide either 'module_obj' or 'module_path', not both or none."
             )
-        if not module_path and write_to_disk:
+        if not module_dotpath and write_to_disk:
             raise PythonWriter.InvalidArguments(
                 "Provide 'module_path' to write the module to disk."
             )

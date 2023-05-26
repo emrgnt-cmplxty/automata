@@ -2,9 +2,10 @@ import logging
 import os.path
 from typing import Dict, Optional
 
+from redbaron import RedBaron
+
 from automata.core.utils import root_path
 from automata.tools.python_tools.utils import convert_fpath_to_module_dotpath
-from redbaron import RedBaron
 
 logger = logging.getLogger(__name__)
 

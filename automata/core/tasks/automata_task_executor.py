@@ -55,7 +55,7 @@ class TestExecuteBehavior(IExecuteBehavior):
         indexer = PythonIndexer(os.path.join(task.task_dir, task.path_to_root_py))  # type: ignore
         writer = PythonWriter(indexer)
         writer.update_module(
-            module_path="core.agent.automata_agent",
+            module_dotpath="core.agent.automata_agent",
             source_code="def test123(x): return True",
             write_to_disk=True,
         )

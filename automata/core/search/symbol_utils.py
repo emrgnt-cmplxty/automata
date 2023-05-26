@@ -32,10 +32,10 @@ def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonIndexer] = Non
             Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
             == Descriptor.PythonKinds.Module
         ):
-            module_name = top_descriptor.name
-            if module_name.startswith("automata."):
-                module_name = module_name[len("automata.") :]  # indexer omits this
-            obj = indexer.module_dict.get(module_name)
+            module_dotpath = top_descriptor.name
+            if module_dotpath.startswith("automata."):
+                module_dotpath = module_dotpath[len("automata.") :]  # indexer omits this
+            obj = indexer.module_tree_map.get_module(module_dotpath)
             # TODO - Understand why some modules might be None
             if not obj or "test" in top_descriptor.name:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")
@@ -109,7 +109,7 @@ def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
     """
     matches = {}
     indexer = PythonIndexer.cached_default()
-    for module_path, module in indexer.module_dict.items():
+    for module_path, module in indexer.module_tree_map.items():
         lines = module.dumps().splitlines()
         line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
         if line_numbers:

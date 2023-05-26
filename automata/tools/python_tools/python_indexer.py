@@ -268,7 +268,9 @@ class PythonIndexer:
                             docstring = PythonIndexer._get_docstring(pointer[x])
                             node_copy = pointer[x].copy()
                             node_copy.value = '"""' + docstring + '"""'
-                            result += self._create_line_number_tuples(node_copy, start_line, start_col)
+                            result += self._create_line_number_tuples(
+                                node_copy, start_line, start_col
+                            )
                     pointer = pointer[entry]
                 else:
                     start_line, start_col = (
@@ -320,7 +322,6 @@ class PythonIndexer:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found.
         """
-
 
         module = self.module_tree_map.get_module(module_dotpath)
         if module:

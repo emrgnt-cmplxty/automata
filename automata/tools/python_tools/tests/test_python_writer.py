@@ -221,7 +221,7 @@ def test_create_update_write_module(python_writer):
     )
     source_code = mock_generator.generate_code()
     python_writer.update_module(
-        source_code=source_code, module_path="test_module_2", do_extend=False
+        source_code=source_code, module_dotpath="test_module_2", do_extend=False
     )
     python_writer.write_module("test_module_2")
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
