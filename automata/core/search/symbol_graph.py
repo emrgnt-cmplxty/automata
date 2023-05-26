@@ -134,11 +134,17 @@ class SymbolGraph:
         Returns:
             Dict of file paths to lists of symbol references
         """
+        print("-" * 100)
+        print("getting search results now...")
+        print("symbol = ", symbol)
+        print("len(self._graph) = ", self._graph)
+        print("len(out edges) = ", len(self._graph.out_edges(symbol, data=True)))
         search_results = [
             (file_path, data.get("symbol_reference"))
             for _, file_path, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "reference"
         ]
+        print("search_results = ", search_results)
         result_dict: Dict[StrPath, List[SymbolReference]] = {}
 
         for file_path, symbol_reference in search_results:

@@ -105,20 +105,6 @@ class SymbolSearcher:
         """
         return find_pattern_in_modules(pattern)
 
-    def find_and_replace(self, find: str, replace: str, do_write: bool) -> FindAndReplaceResult:
-        """
-        Performs a exact replace on the in-memory codebase and write the result
-
-        Args:
-            find (str): The string to find
-            replace (str): The string to replace
-            do_write (bool): Whether to write the result to disk
-
-        Returns:
-            The number of replacements made
-        """
-        return find_and_replace_in_modules(find, replace, do_write)
-
     def process_query(
         self, query: str
     ) -> Union[
@@ -154,9 +140,5 @@ class SymbolSearcher:
             return self.exact_search(query_remainder)
         elif search_type == "source":
             return self.retrieve_source_code_by_symbol(query_remainder)
-        elif search_type == "replace":
-            find, replace, do_write = query_remainder.split(" ")
-            assert do_write in ["True", "False"]
-            return self.find_and_replace(find, replace, do_write == "True")
         else:
             raise ValueError(f"Unknown search type: {search_type}")

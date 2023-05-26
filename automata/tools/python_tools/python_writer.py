@@ -159,7 +159,7 @@ class PythonWriter:
             raise PythonWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_path}"
             )
-        source_code = self.indexer.retrieve_code(module_path)
+        source_code = self.indexer.retrieve_source_code(module_path)
         module_os_rel_path = module_path.replace(self.indexer.PATH_SEP, os.path.sep)
         module_os_abs_path = os.path.join(self.indexer.abs_path, module_os_rel_path)
         os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)

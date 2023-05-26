@@ -7,7 +7,7 @@ from automata.core.search.symbol_parser import parse_symbol
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_rank import SymbolRankConfig
 from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.core.search.symbol_searcher import SymbolSearcher
+from automata.tools.search.symbol_searcher import SymbolSearcher
 
 
 @pytest.fixture
@@ -60,7 +60,7 @@ def symbols():
 def symbol_graph():
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
-    index_path = os.path.join(file_dir, "../index.scip")
+    index_path = os.path.join(file_dir, "index.scip")
     graph = SymbolGraph(index_path)
     return graph
 

@@ -7,8 +7,8 @@ from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_rank import SymbolRankConfig
 from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.core.search.symbol_searcher import SymbolSearcher
 from automata.core.utils import config_path
+from automata.tools.search.symbol_searcher import SymbolSearcher
 
 SEARCHES_TO_HITS = {
     "Symbol": ["Symbol", "SymbolParser", "parse_symbol"],
