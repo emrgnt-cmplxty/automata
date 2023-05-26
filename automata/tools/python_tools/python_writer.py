@@ -159,7 +159,7 @@ class PythonWriter:
             raise PythonWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_path}"
             )
-        source_code = self.indexer.retrieve_source_code(module_path)
+        source_code = self.indexer.get_source_code(module_path)
         module_os_rel_path = module_path.replace(self.indexer.PATH_SEP, os.path.sep)
         module_os_abs_path = os.path.join(self.indexer.abs_path, module_os_rel_path)
         os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)
@@ -219,9 +219,7 @@ class PythonWriter:
         new_class_or_function_nodes = PythonIndexer.find_all_functions_and_classes(new_fst)
         # handle imports here later
         if class_name:  # splice the class
-            existing_class = PythonIndexer.find_module_class_function_or_method(
-                existing_module_obj, class_name
-            )
+            existing_class = PythonIndexer.find_node(existing_module_obj, class_name)
             if not existing_class:
                 raise PythonWriter.ClassNotFound(
                     f"Class {class_name} not found in module {module_path}"
@@ -247,9 +245,7 @@ class PythonWriter:
         """Update a class object according to the received code."""
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
-            existing_node = PythonIndexer.find_module_class_function_or_method(
-                node_to_update, child_node_name
-            )
+            existing_node = PythonIndexer.find_node(node_to_update, child_node_name)
             if do_extend:
                 if existing_node:
                     existing_node.replace(new_node)

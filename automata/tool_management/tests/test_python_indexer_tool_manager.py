@@ -31,9 +31,7 @@ def test_tool_execution(python_indexer_tool_builder):
     python_indexer_tool_builder.indexer.retrieve_code_without_docstrings = MagicMock(
         return_value="Sample code"
     )
-    python_indexer_tool_builder.indexer.retrieve_docstring = MagicMock(
-        return_value="Sample docstring"
-    )
+    python_indexer_tool_builder.indexer.get_docstring = MagicMock(return_value="Sample docstring")
 
     tools = python_indexer_tool_builder.build_tools()
     assert tools[0].func(("module.path", "func")) == "Sample code"

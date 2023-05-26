@@ -239,9 +239,7 @@ def test_create_function_with_arguments():
         """
     )
     module_obj = RedBaron(source_code)
-    function_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, f"{mock_generator.function_name}_with_args"
-    )
+    function_obj = PythonIndexer.find_node(module_obj, f"{mock_generator.function_name}_with_args")
     assert function_obj.name == f"{mock_generator.function_name}_with_args"
     def_arg_nodes = module_obj.find_all("def_argument")
     assert len(def_arg_nodes) == 2
@@ -277,9 +275,7 @@ def test_create_class_with_multiple_methods_properties_attributes():
         """
     )
     module_obj = RedBaron(source_code)
-    class_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, f"{mock_generator.class_name}_extended"
-    )
+    class_obj = PythonIndexer.find_node(module_obj, f"{mock_generator.class_name}_extended")
     assert len(class_obj.filtered()) == 4  # class_attribute, method_1, method_2, some_property
 
 
@@ -294,9 +290,7 @@ def test_create_class_inheritance():
         """
     )
     module_obj = RedBaron(source_code)
-    class_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, f"{mock_generator.class_name}_child"
-    )
+    class_obj = PythonIndexer.find_node(module_obj, f"{mock_generator.class_name}_child")
     assert class_obj.inherit_from.name.value == mock_generator.class_name
 
 
@@ -333,9 +327,7 @@ def test_update_existing_function(python_writer):
     python_writer.update_module(
         source_code=source_code_updated, module_obj=module_obj, do_extend=True
     )
-    updated_function_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, mock_generator.function_name
-    )
+    updated_function_obj = PythonIndexer.find_node(module_obj, mock_generator.function_name)
     assert len(updated_function_obj) == 1
     assert isinstance(updated_function_obj[0], ReturnNode)
 
@@ -358,5 +350,5 @@ def test_write_and_retrieve_mock_code(python_writer):
 
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     indexer = PythonIndexer(sample_dir)
-    module_docstring = indexer.retrieve_docstring("test_module_2", None)
+    module_docstring = indexer.get_docstring("test_module_2", None)
     assert module_docstring == mock_generator.module_docstring

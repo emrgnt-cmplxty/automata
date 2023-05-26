@@ -123,7 +123,7 @@ class CoverageAnalyzer:
         :param row: A row of a dataframe that has package, module and line number entries
         see TODO in class docstring
         """
-        name = self.indexer.retrieve_parent_function_name_by_line(row.module, row.line_number)
+        name = self.indexer.get_parent_function_name_by_line(row.module, row.line_number)
         return name
 
     def _percent_covered_function_from_row(self, row):
@@ -133,9 +133,7 @@ class CoverageAnalyzer:
         see TODO in class docstring
         TODO: the lines include the function signature, so the percent covered is not completely accurate
         """
-        num_total = self.indexer.retrieve_parent_function_num_code_lines(
-            row.module, row.line_number[0]
-        )
+        num_total = self.indexer.get_parent_function_num_code_lines(row.module, row.line_number[0])
         num_uncovered = len(row.line_number)
         percent_covered = 1 - (num_uncovered / num_total)
         return percent_covered

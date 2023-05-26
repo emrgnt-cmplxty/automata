@@ -82,13 +82,13 @@ def test_docstring_module(indexer):
 def test_retrieve_code_by_line(indexer):
     module_name = "test_module"
     line_number = 4
-    result = indexer.retrieve_parent_code_by_line(module_name, line_number)
+    result = indexer.get_parent_code_by_line(module_name, line_number)
     expected_match = '"""This is a sample module for testing"""\n...\ndef test_function() -> bool:\n    """This is my new function"""\n    return True\n'
 
     assert result == expected_match
 
     line_number = 18
-    result = indexer.retrieve_parent_code_by_line(module_name, line_number)
+    result = indexer.get_parent_code_by_line(module_name, line_number)
 
     expected_match = '"""This is a sample module for testing"""\n...\ndef test_function() -> bool:\n    """This is my new function"""\n...\nclass TestClass:\n    """This is my test class"""\n...\n    def __init__(self):\n    """This initializes TestClass"""\n...\n    def test_method(self) -> bool:\n        """This is my test method"""\n        return False\n'
     assert result == expected_match
@@ -102,6 +102,6 @@ def test_find_expression_context(indexer):
 
 
 def test_default_cached():
-    indexer_1 = PythonIndexer.cached_default()
-    indexer_2 = PythonIndexer.cached_default()
+    indexer_1 = PythonIndexer.default()
+    indexer_2 = PythonIndexer.default()
     assert indexer_1 is indexer_2

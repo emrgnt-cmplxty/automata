@@ -4,7 +4,7 @@ Python source code files in a specified directory. The PythonIndexer class suppo
 and docstrings for top-level functions, methods, and classes.
 
 Dependencies:
-    - ast
+    - RedBaron
     - copy
     - logging
     - os
@@ -17,7 +17,7 @@ Classes:
 Example:
     indexer = PythonIndexer(root_py_path())
     code = indexer.retrieve_code("module.path", "ClassName.method_name")
-    docstring = indexer.retrieve_docstring("module.path", "ClassName.method_name")
+    docstring = indexer.get_docstring("module.path", "ClassName.method_name")
 """
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ class PythonIndexer:
     Methods:
         __init__(self, rel_path: str) -> None
         retrieve_code(self, module_path: str, object_path: Optional[str]) -> Optional[str]
-        retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> Optional[str]
+        get_docstring(self, module_path: str, object_path: Optional[str]) -> Optional[str]
     """
 
     NO_RESULT_FOUND_STR = "No Result Found."
@@ -81,7 +81,7 @@ class PythonIndexer:
     def cached_default(cls) -> "PythonIndexer":
         return cls(root_py_path())
 
-    def retrieve_source_code(self, module_path: str, object_path: Optional[str] = None) -> str:
+    def get_source_code(self, module_path: str, object_path: Optional[str] = None) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
@@ -99,7 +99,7 @@ class PythonIndexer:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
         module = self.module_dict[module_path]
-        result = self.find_module_class_function_or_method(module, object_path)
+        result = self.find_node(module, object_path)
 
         if result:
             return result.dumps()
@@ -128,7 +128,7 @@ class PythonIndexer:
         module = RedBaron(
             self.module_dict[module_path].dumps()
         )  # create a copy because we'll remove docstrings
-        result = self.find_module_class_function_or_method(module, object_path)
+        result = self.find_node(module, object_path)
 
         if result:
             PythonIndexer._remove_docstrings(result)
@@ -182,7 +182,7 @@ class PythonIndexer:
 
         return result
 
-    def retrieve_parent_function_name_by_line(self, module_path: str, line_number: int) -> str:
+    def get_parent_function_name_by_line(self, module_path: str, line_number: int) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
@@ -209,7 +209,7 @@ class PythonIndexer:
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
-    def retrieve_parent_function_num_code_lines(
+    def get_parent_function_num_code_lines(
         self, module_path: str, line_number: int
     ) -> Union[int, str]:
         """
@@ -237,7 +237,7 @@ class PythonIndexer:
             + 1
         )
 
-    def retrieve_parent_code_by_line(
+    def get_parent_code_by_line(
         self, module_path: str, line_number: int, return_numbered=False
     ) -> str:
         """
@@ -323,7 +323,7 @@ class PythonIndexer:
             result.append((start_line + i, line))
         return result
 
-    def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
+    def get_docstring(self, module_path: str, object_path: Optional[str]) -> str:
         """
         Retrieve the docstring for a specified module, class, or function/method.
 
@@ -341,7 +341,7 @@ class PythonIndexer:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
         module = self.module_dict[module_path]
-        result = self.find_module_class_function_or_method(module, object_path)
+        result = self.find_node(module, object_path)
 
         if result:
             return PythonIndexer._get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
@@ -452,7 +452,7 @@ class PythonIndexer:
             return None
 
     @staticmethod
-    def find_module_class_function_or_method(
+    def find_node(
         code_obj: Union[RedBaron, ClassNode], object_path: Optional[str]
     ) -> Optional[Union[Node, RedBaron]]:
         """
@@ -492,19 +492,6 @@ class PythonIndexer:
             Optional[Union[DefNode, ClassNode]]: The found node, or None.
         """
         return code_obj.find(lambda identifier: identifier in ("def", "class"), name=obj_name)
-
-    @staticmethod
-    def find_imports(module: RedBaron) -> Optional[NodeList]:
-        """
-        Find all imports in a module.
-
-        Args:
-            module (RedBaron): The module to search.
-
-        Returns:
-            Optional[NodeList]: A list of ImportNode and FromImportNode objects.
-        """
-        return module.find_all(lambda identifier: identifier in ("import", "from_import"))
 
     @staticmethod
     def find_import_by_name(
