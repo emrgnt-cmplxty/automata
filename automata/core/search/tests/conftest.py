@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from automata.core.search.symbol_graph import SymbolConverter, SymbolGraph
+from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_parser import parse_symbol
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_rank import SymbolRankConfig
@@ -57,34 +57,27 @@ def symbols():
 
 
 @pytest.fixture
-def symbol_converter():
-    return SymbolConverter()
-
-
-@pytest.fixture
-def symbol_graph(symbol_converter):
+def symbol_graph():
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
     index_path = os.path.join(file_dir, "../index.scip")
-    graph = SymbolGraph(index_path, symbol_converter)
+    graph = SymbolGraph(index_path)
     return graph
 
 
 @pytest.fixture
 def symbol_graph_mock(mocker):
     mock = mocker.MagicMock(spec=SymbolGraph)
-    mock.converter = mocker.MagicMock()
     return mock
 
 
 @pytest.fixture
-def symbol_searcher(mocker, symbol_converter, symbol_graph_mock):
+def symbol_searcher(mocker, symbol_graph_mock):
     symbol_embedding_mock = mocker.MagicMock(spec=SymbolEmbeddingMap)
     symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
     symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
 
     return SymbolSearcher(
-        symbol_converter,
         symbol_graph_mock,
         symbol_embedding_mock,
         symbol_similarity_mock,

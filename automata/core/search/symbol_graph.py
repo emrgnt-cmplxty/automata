@@ -6,27 +6,23 @@ from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
 from automata.core.search.scip_pb2 import Index, SymbolRole
-from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_parser import parse_symbol
 from automata.core.search.symbol_types import File, PyPath, StrPath, Symbol, SymbolReference
-from automata.core.search.symbol_utils import get_rankable_symbols
+from automata.core.search.symbol_utils import convert_to_fst_object, get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
 
 class SymbolGraph:
-    def __init__(self, index_path: str, symbol_converter: SymbolConverter):
+    def __init__(self, index_path: str):
         """
         Initializes SymbolGraph with the path of an index protobuf file.
 
         Args:
             index_path (str): Path to index protobuf file
-            symbol_converter (SymbolConverter): SymbolConverter instance
         Returns:
             SymbolGraph instance
         """
-        self.converter = symbol_converter
-
         self._index = self._load_index_protobuf(index_path)
         self._graph = self._build_symbol_info_graph(self._index)
 
@@ -318,10 +314,8 @@ class SymbolGraph:
         Returns:
             List[SymbolReference]: The list of references for the symbol.
         """
-        module_name = self._get_symbol_containing_file(symbol)
-        if module_name not in self.converter._module_dict:  # TODO
-            return []
-        fst_object = self.converter.convert_to_fst_object(symbol)
+        file_name = self._get_symbol_containing_file(symbol)
+        fst_object = convert_to_fst_object(symbol)
 
         # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
@@ -330,7 +324,7 @@ class SymbolGraph:
             fst_object.absolute_bounding_box.bottom_right.line - 1,
         )
 
-        references_in_parent_module = self.get_references_to_module(module_name)
+        references_in_parent_module = self.get_references_to_module(file_name)
         references_in_range = [
             ref
             for ref in references_in_parent_module
