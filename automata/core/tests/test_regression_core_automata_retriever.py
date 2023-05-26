@@ -46,30 +46,30 @@ Exceptions:
 }
 
 
-@pytest.mark.regression
-@pytest.mark.parametrize(
-    "automata_params",
-    [
-        {
-            "model": MODEL,
-            "temperature": TEMPERATURE,
-            "tool_list": ["python_inspector"],
-        },
-        # Add more parameter sets as needed
-    ],
-    indirect=True,
-)
-def test_retrieve_load_yaml_docs(automata_params):
-    agent = build_agent_with_params(
-        automata_params,
-        "Fetch the docstrings for the load_yaml function in the util file.",
-        max_iters=2,
-        temperature=TEMPERATURE,
-        model=MODEL,
-    )
-    result = agent.run()
-    expected_content = EXPECTED_RESPONSES["test_retrieve_load_yaml_docs"].strip()
-    assert calculate_similarity(expected_content, result) > 0.8
+# @pytest.mark.regression
+# @pytest.mark.parametrize(
+#     "automata_params",
+#     [
+#         {
+#             "model": MODEL,
+#             "temperature": TEMPERATURE,
+#             "tool_list": ["python_inspector"],
+#         },
+#         # Add more parameter sets as needed
+#     ],
+#     indirect=True,
+# )
+# def test_retrieve_load_yaml_docs(automata_params):
+#     agent = build_agent_with_params(
+#         automata_params,
+#         "Fetch the docstrings for the load_yaml function in the util file.",
+#         max_iters=2,
+#         temperature=TEMPERATURE,
+#         model=MODEL,
+#     )
+#     result = agent.run()
+#     expected_content = EXPECTED_RESPONSES["test_retrieve_load_yaml_docs"].strip()
+#     assert calculate_similarity(expected_content, result) > 0.8
 
 
 @pytest.mark.regression

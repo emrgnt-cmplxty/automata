@@ -32,7 +32,7 @@ class PythonASTIndexer:
         return cls(root_py_path())
 
     @staticmethod
-    def build_repository_overview(path) -> str:
+    def build_repository_overview(path: str, skip_test: bool = True) -> str:
         """
         Loops over the directory python files and returns a string that provides an overview of the PythonParser's state.
         Returns:
@@ -43,6 +43,8 @@ class PythonASTIndexer:
 
         for root, _, files in os.walk(path):
             for file in files:
+                if "test" in file and skip_test:
+                    continue
                 if file.endswith(".py"):
                     module_path = os.path.join(root, file)
                     module = ast.parse(open(module_path).read())
