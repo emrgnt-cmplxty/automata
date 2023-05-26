@@ -4,7 +4,7 @@ import textwrap
 import pytest
 
 from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
-from automata.core.code_indexing.python_code_getter import PythonCodeGetter
+from automata.core.code_indexing.python_code_getter import PythonCodeInspector
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def indexer():
 @pytest.fixture
 def getter(indexer):
     # get latest path
-    python_getter = PythonCodeGetter(indexer)
+    python_getter = PythonCodeInspector(indexer)
     # Set the root directory to the folder containing test modules
     return python_getter
 

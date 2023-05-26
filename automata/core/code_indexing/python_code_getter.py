@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]
 
 
-class PythonCodeGetter:
+class PythonCodeInspector:
     def __init__(self, python_indexer: PythonASTIndexer) -> None:
         self.indexer = python_indexer
 
@@ -64,7 +64,7 @@ class PythonCodeGetter:
         """
 
         module = self.indexer.find_module_object(module_path)
-        return PythonCodeGetter._get_docstring(PythonASTNavigator.find_node(module, object_path))
+        return PythonCodeInspector._get_docstring(PythonASTNavigator.find_node(module, object_path))
 
     def get_source_code_without_docstrings(
         self, module_path: str, object_path: Optional[str]
@@ -216,7 +216,7 @@ class PythonCodeGetter:
                             pointer[x], start_line, start_col
                         )
                     if pointer[x].type in ("def", "class"):
-                        docstring = PythonCodeGetter._get_docstring(pointer[x])
+                        docstring = PythonCodeInspector._get_docstring(pointer[x])
                         node_copy = pointer[x].copy()
                         node_copy.value = '"""' + docstring + '"""'
                         result += self._create_line_number_tuples(node_copy, start_line, start_col)
@@ -317,11 +317,3 @@ class PythonCodeGetter:
             if isinstance(filtered_nodes[0], StringNode):
                 return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
         return ""
-
-    # def __init__(self, indexer: PythonSyntaxIndexer)
-    # def get_source_code(self, module_path: str, object_path: Optional[str] = None) -> str
-    # def retrieve_code_without_docstrings(self, module_path: str, object_path: Optional[str]) -> str
-    # def get_docstring(self, module_path: str, object_path: Optional[str]) -> str
-    # def get_parent_function_name_by_line(self, module_path: str, line_number: int) -> str
-    # def get_parent_function_num_code_lines(self, module_path: str, line_number: int) -> Union[int, str]
-    # def get_parent_code_by_line(self, module_path: str, line_number: int, return_numbered=False) -> str
