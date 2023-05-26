@@ -2,21 +2,28 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from os import PathLike
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
-from automata.tools.search.scip_pb2 import Descriptor as DescriptorProto
+import numpy as np
 
-"""
-SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.
-Full spec: https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/docs/scip.md#symbol
-The classes and functions in this file are used to convert the symbol URI into a human-readable form that can be used to query the index.
-"""
+from automata.core.search.scip_pb2 import Descriptor as DescriptorProto
+
+# Path and os related variables
+StrPath = Union[str, PathLike]
+PyPath = str
 
 
+# Symbol Related Types
 class Descriptor:
+    """
+    SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.
+    Full spec: https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/docs/scip.md#symbol
+    The classes and functions in this file are used to convert the symbol URI into a human-readable form that can be used to query the index.
+    """
+
     ScipSuffix = DescriptorProto
 
-    class PythonTypes(Enum):
+    class PythonKinds(Enum):
         Local = "local"
         Module = "module"
         Class = "class"
@@ -69,59 +76,71 @@ class Descriptor:
         return "`" + re.sub("`", "``", name) + "`"
 
     @staticmethod
-    def convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PythonTypes:
+    def convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PythonKinds:
         if descriptor_suffix == Descriptor.ScipSuffix.Local:
-            return Descriptor.PythonTypes.Local
+            return Descriptor.PythonKinds.Local
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Namespace:
-            return Descriptor.PythonTypes.Module
+            return Descriptor.PythonKinds.Module
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Type:
-            return Descriptor.PythonTypes.Class
+            return Descriptor.PythonKinds.Class
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Method:
-            return Descriptor.PythonTypes.Method
+            return Descriptor.PythonKinds.Method
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Term:
-            return Descriptor.PythonTypes.Value
+            return Descriptor.PythonKinds.Value
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Macro:
-            return Descriptor.PythonTypes.Macro
+            return Descriptor.PythonKinds.Macro
 
         elif descriptor_suffix == Descriptor.ScipSuffix.Parameter:
-            return Descriptor.PythonTypes.Parameter
+            return Descriptor.PythonKinds.Parameter
 
         elif descriptor_suffix == Descriptor.ScipSuffix.TypeParameter:
-            return Descriptor.PythonTypes.TypeParameter
+            return Descriptor.PythonKinds.TypeParameter
 
         else:
-            return Descriptor.PythonTypes.Meta
+            return Descriptor.PythonKinds.Meta
 
 
+@dataclass
 class Package:
-    def __init__(self, manager: str, name: str, version: str):
-        self.manager = manager
-        self.name = name
-        self.version = version
+    manager: str
+    name: str
+    version: str
+
+    def __repr__(self):
+        return f"Package({self.unparse()})"
 
     def unparse(self):
         """Converts back into URI string"""
         return f"{self.manager} {self.name} {self.version}"
 
-    def __repr__(self):
-        return f"Package({self.unparse()})"
 
-
+@dataclass
 class Symbol:
-    def __init__(self, uri: str, scheme: str, package: Package, descriptors: List[Descriptor]):
-        self.uri = uri
-        self.scheme = scheme
-        self.package = package
-        self.descriptors = descriptors
+    uri: str
+    scheme: str
+    package: Package
+    descriptors: Tuple[Descriptor, ...]
 
-    def unparse(self):
-        """Converts back into URI string"""
-        return self.uri
+    def __repr__(self):
+        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
+
+    def __hash__(self) -> int:
+        return hash(self.uri)
+
+    def __eq__(self, other):
+        if isinstance(other, Symbol):
+            return self.uri == other.uri
+        elif isinstance(other, str):
+            return self.uri == other
+        return False
+
+    def symbol_kind_by_suffix(self) -> Descriptor.PythonKinds:
+        return Descriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
         if self.uri.startswith("local"):
@@ -143,33 +162,68 @@ class Symbol:
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
-    def symbol_kind_by_suffix(self) -> Descriptor.PythonTypes:
-        return Descriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
+    def parent(self) -> "Symbol":
+        parent_descriptors = list(self.descriptors)[:-1]
+        return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
 
-    def __repr__(self):
-        return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
+    @property
+    def module_name(self) -> str:
+        return self.descriptors[0].name
 
-    def __hash__(self) -> int:
-        return hash(self.unparse())
+    @staticmethod
+    def is_local(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Local
 
-    def __eq__(self, other):
-        if isinstance(other, Symbol):
-            return self.uri == other.uri
-        elif isinstance(other, str):
-            return self.uri == other
-        return False
+    @staticmethod
+    def is_meta(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Meta
+
+    @staticmethod
+    def is_parameter(symbol: "Symbol") -> bool:
+        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Parameter
+
+    @staticmethod
+    def is_protobuf(symbol: "Symbol") -> bool:
+        return symbol.module_name.endswith("pb2")
+
+    @classmethod
+    def from_string(cls, symbol_str: str) -> "Symbol":
+        """
+        Creates a Symbol instance from a string representation
+
+        :param symbol_str: The string representation of the Symbol
+        :return: A Symbol instance
+        """
+        # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
+        # Parse the symbol_str to extract the uri, scheme, package_str, and descriptors_str
+        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
+        if not match:
+            raise ValueError(f"Invalid symbol_str: {symbol_str}")
+        uri, _, __, ___ = match.groups()
+        # In current implementation, only the uri is used in re-construcing the symbol
+        from automata.core.search.symbol_parser import parse_symbol
+
+        return parse_symbol(uri)
 
 
 @dataclass
 class SymbolReference:
     symbol: Symbol
     line_number: int
+    column_number: int
     roles: Dict[str, Any]
 
 
 @dataclass
+class SymbolEmbedding:
+    symbol: Symbol
+    vector: np.ndarray
+    source_code: str
+
+
+@dataclass
 class File:
-    path: str
+    path: StrPath
     occurrences: str
 
     def __hash__(self) -> int:
@@ -181,7 +235,3 @@ class File:
         elif isinstance(other, str):
             return self.path == other
         return False
-
-
-StrPath = Union[str, PathLike]
-PyPath = str

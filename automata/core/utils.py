@@ -7,7 +7,6 @@ import colorlog
 import numpy as np
 import openai
 import yaml
-from langchain.chains.conversational_retrieval.base import BaseConversationalRetrievalChain
 
 
 def format_text(format_variables: Dict[str, str], input_text: str) -> str:
@@ -30,6 +29,19 @@ def root_py_path() -> str:
     return data_folder
 
 
+def config_path() -> str:
+    """
+    Returns the path to the project config directory
+
+    Returns:
+    - A path object in string form
+
+    """
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    data_folder = os.path.join(script_dir, "..", "configs")
+    return data_folder
+
+
 def load_config(
     config_name: str, file_name: str, config_type: str = "yaml", custom_decoder: Any = None
 ) -> Any:
@@ -43,7 +55,7 @@ def load_config(
         Any: The content of the YAML file as a Python object.
     """
     with open(
-        os.path.join(root_py_path(), "configs", config_name, f"{file_name}.{config_type}"),
+        os.path.join(config_path(), config_name, f"{file_name}.{config_type}"),
         "r",
     ) as file:
         if config_type == "yaml":
@@ -132,35 +144,14 @@ def get_logging_config(
     return cast(dict[str, Any], logging_config)
 
 
-def run_retrieval_chain_with_sources_format(
-    chain: BaseConversationalRetrievalChain, q: str
-) -> str:
-    """Runs a retrieval chain and formats the result with sources.
-
-    Args:
-        chain (BaseConversationalRetrievalChain): The retrieval chain to run.
-        q (str): The query to pass to the retrieval chain.
-
-    Returns:
-        str: The formatted result containing the answer and sources.
-    """
-    result = chain(q)
-    return f"Answer: {result['answer']}.\n\n Sources: {result.get('source_documents', [])}"
-
-
-def calculate_similarity(content_a: str, content_b: str) -> float:
+def calculate_similarity(
+    content_a: str, content_b: str, engine: str = "text-embedding-ada-002"
+) -> float:
     """Calculate the similarity between two strings."""
-    resp = openai.Embedding.create(
-        input=[content_a, content_b], engine="text-similarity-davinci-001"
-    )
+    resp = openai.Embedding.create(input=[content_a, content_b], engine=engine)
     embedding_a = resp["data"][0]["embedding"]
     embedding_b = resp["data"][1]["embedding"]
     dot_product = np.dot(embedding_a, embedding_b)
     magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
-
-
-class Namespace:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)

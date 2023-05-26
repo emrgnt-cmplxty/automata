@@ -49,7 +49,7 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
 
 
 def test_builder_accepts_all_fields(automata_agent_config_builder):
-    tool_list = ["python_indexer", "python_writer", "codebase_oracle"]
+    tool_list = ["python_indexer", "python_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = (

@@ -12,7 +12,7 @@ from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
 def test_build_tool_message(automata_agent_config_builder):
-    tool_list = ["python_indexer", "python_writer", "codebase_oracle"]
+    tool_list = ["python_indexer", "python_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()
@@ -22,7 +22,6 @@ def test_build_tool_message(automata_agent_config_builder):
     assert "python-indexer-retrieve-docstring" in tools_messages
     assert "python-indexer-retrieve-raw-code" in tools_messages
     assert "python-writer-update-module" in tools_messages
-    assert "codebase-oracle-agent" in tools_messages
 
 
 def test_build_initial_messages(automata_agent):
@@ -214,7 +213,6 @@ def test_iter_task_with_parsed_completion_message_2(
         .build()
     )
 
-    print("automata_agent_config = ", automata_agent_config)
     automata_agent = AutomataAgentFactory.create_agent(
         instructions=instructions, config=automata_agent_config
     )

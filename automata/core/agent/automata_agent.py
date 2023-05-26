@@ -144,6 +144,9 @@ class AutomataAgent(Agent):
         return self.messages[-1].content
 
     def setup(self):
+        """
+        Sets up the agent by initializing the database and loading the config.
+        """
         openai.api_key = OPENAI_API_KEY
         if not self.config.session_id:
             raise ValueError("Config was not properly initialized.")
@@ -230,7 +233,7 @@ class AutomataAgent(Agent):
             for tool in toolkit.tools:
                 if tool.name == tool_name:
                     processed_tool_input = [ele if ele != "None" else None for ele in tool_input]
-                    tool_output = tool.run(tuple(processed_tool_input), verbose=False)
+                    tool_output = tool.run(tuple(processed_tool_input))
                     tool_found = True
                     break
             if tool_found:

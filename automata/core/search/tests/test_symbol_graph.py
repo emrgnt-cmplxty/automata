@@ -1,13 +1,13 @@
-# test_symbol_graph.py
+import pytest
 
-from automata.tools.search.local_types import Symbol, SymbolReference
+from automata.core.search.symbol_types import File, Symbol, SymbolReference
 
 
 def test_get_all_files(symbol_graph):
     files = symbol_graph.get_all_files()
     assert isinstance(files, list)
     for f in files:
-        assert isinstance(f, str)
+        assert isinstance(f, File)
 
 
 def test_get_all_symbols(symbol_graph, symbols):
@@ -18,11 +18,11 @@ def test_get_all_symbols(symbol_graph, symbols):
 
 def test_get_symbol_references(symbol_graph, symbols):
     for symbol in symbols:
-        references = symbol_graph.get_symbol_references(symbol)
-        print("references = ", references)
+        references = symbol_graph.get_references_to_symbol(symbol)
         assert isinstance(references, dict)
         assert all(
-            isinstance(k, SymbolReference) and isinstance(v, list) for k, v in references.items()
+            [isinstance(ele, SymbolReference) for ele in v] and isinstance(v, list)
+            for k, v in references.items()
         )
 
 
@@ -33,7 +33,8 @@ def test_get_symbols_along_path(symbol_graph):
     assert all("automata" in s.uri for s in symbols)
 
 
-def test_get_symbol_context(symbol_graph, symbols):
+@pytest.mark.skip(reason="Not implemented yet")
+def test_find_return_symbol(symbol_graph, symbols):
     for symbol in symbols:
-        context = symbol_graph.get_symbol_context(symbol)
-        assert isinstance(context, str)
+        return_symbol = symbol_graph.find_return_symbol(symbol)
+        assert return_symbol is None or isinstance(return_symbol, Symbol)

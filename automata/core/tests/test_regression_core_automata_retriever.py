@@ -53,7 +53,7 @@ Exceptions:
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["python_indexer", "codebase_oracle"],
+            "tool_list": ["python_indexer"],
         },
         # Add more parameter sets as needed
     ],
@@ -79,7 +79,7 @@ def test_retrieve_load_yaml_docs(automata_params):
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["python_indexer", "codebase_oracle"],
+            "tool_list": ["python_indexer"],
         },
         # Add more parameter sets as needed
     ],
