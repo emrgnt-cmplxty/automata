@@ -5,12 +5,12 @@ import textwrap
 from tqdm import tqdm
 
 from automata.configs.config_enums import ConfigCategory
-from automata.core.utils import config_path
 from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
 from automata.core.search.symbol_utils import get_rankable_symbols
+from automata.core.utils import config_path
 
 logger = logging.getLogger(__name__)
 CHUNK_SIZE = 10
@@ -20,10 +20,9 @@ def main(*args, **kwargs):
     """
     Update the distance embedding based on the symbols present in the system.
     """
-    file_dir = os.path.dirname(os.path.abspath(__file__))
-    scip_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "index.scip"
-    )
-    embedding_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
+    scip_path = os.path.join(config_path(), ConfigCategory.SYMBOLS.value, "index.scip")
+    embedding_path = os.path.join(
+        config_path(), ConfigCategory.SYMBOLS.value, "symbol_embedding.json"
     )
 
     symbol_converter = SymbolConverter()
@@ -110,14 +109,12 @@ if __name__ == "__main__":
             """
             outputs = {}
             for message in self.messages:
-                pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
                 matches = re.finditer(pattern, message.content, re.DOTALL)
                 for match in matches:
                     tool_name, tool_output = match.group(1), match.group(2).strip()
                     outputs[tool_name] = tool_output
             if self._has_helper_agents():
                 for message in self.messages:
-                    pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
                     matches = re.finditer(pattern, message.content, re.DOTALL)
                     for match in matches:
                         agent_version, agent_output = match.group(1), match.group(2).strip()

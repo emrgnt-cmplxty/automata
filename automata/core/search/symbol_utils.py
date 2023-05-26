@@ -52,7 +52,7 @@ def find_and_replace_in_modules(
 ) -> int:
     """
     Renames a function or class in all modules.
-    
+
     Args:
         old_name (str): The old name of the function or class.
         new_name (str): The new name of the function or class.
@@ -136,9 +136,7 @@ def shifted_z_score_sq(values: Union[List[float], np.ndarray]) -> np.ndarray:
     return (zscores - np.min(zscores)) ** 2
 
 
-def transform_dict_values(
-    dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]
-):
+def transform_dict_values(dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]):
     """
     Apply a function to each value in a dictionary and return a new dictionary.
     Args:
