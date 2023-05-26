@@ -91,7 +91,6 @@ def test_toolkit():
 
 
 def test_toolkit_type():
-    print("len(ToolkitType) = ", ToolkitType)
     assert len(ToolkitType) == 4
     assert ToolkitType.PYTHON_INSPECTOR.name == "PYTHON_INSPECTOR"
     assert ToolkitType.PYTHON_WRITER.name == "PYTHON_WRITER"
