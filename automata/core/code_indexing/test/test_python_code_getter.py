@@ -99,11 +99,6 @@ def test_get_docstring_multiline(getter):
     module_name = "local_module_3"
     object_path = "multi_line_doc_function"
     result = getter.get_docstring(module_name, object_path)
-    expected_match = """This is a function with a multi-line docstring.
-    
-    It should be handled correctly by the get_docstring method."""
-    print("result.split('\n')", result.split("\n"))
-    print("expected_match", expected_match.split("\n"))
     assert "This is a function with a multi-line docstring." in result
     assert "It should be handled correctly by the get_docstring method." in result
 
