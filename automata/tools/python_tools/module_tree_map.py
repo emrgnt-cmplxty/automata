@@ -32,12 +32,6 @@ class DotPathMap:
                     module_dotpath_to_fpath_map[module_dotpath] = module_fpath
         return module_dotpath_to_fpath_map
 
-    def module_exists_by_dotpath(self, module_dotpath: str) -> bool:
-        return module_dotpath in self._module_dotpath_to_fpath_map
-
-    def module_exists_by_fpath(self, module_fpath: str) -> bool:
-        return module_fpath in self._module_fpath_to_dotpath_map
-
     def get_module_fpath_by_dotpath(self, module_dotpath: str) -> str:
         return self._module_dotpath_to_fpath_map[module_dotpath]
 
@@ -64,22 +58,27 @@ class DotPathMap:
 
 
 class LazyModuleTreeMap:
+    """
+        This map works as a lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
+        It will load and cache modules in memory as they get accessed
+    """
+
     def __init__(self, path: str):
-        self.dotpath_map = DotPathMap(path)
-        self.loaded_modules: Dict[str, Optional[RedBaron]] = {}
+        self._dotpath_map = DotPathMap(path)
+        self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
 
     def get_module(self, module_dotpath: str) -> Optional[RedBaron]:
-        if not self.dotpath_map.contains_dotpath(module_dotpath):
+        if not self._dotpath_map.contains_dotpath(module_dotpath):
             return None
 
-        if module_dotpath not in self.loaded_modules:
-            module_path = self.dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
-            self.loaded_modules[module_dotpath] = self._load_module_from_fpath(module_path)
-        return self.loaded_modules[module_dotpath]
+        if module_dotpath not in self._loaded_modules:
+            module_path = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
+            self._loaded_modules[module_dotpath] = self._load_module_from_fpath(module_path)
+        return self._loaded_modules[module_dotpath]
 
     def put_module(self, module_dotpath: str, module: RedBaron):
-        self.loaded_modules[module_dotpath] = module
-        self.dotpath_map.put_module(module_dotpath)
+        self._loaded_modules[module_dotpath] = module
+        self._dotpath_map.put_module(module_dotpath)
 
     @staticmethod
     def _load_module_from_fpath(path) -> Optional[RedBaron]:
@@ -111,7 +110,7 @@ class LazyModuleTreeMap:
             str: The module dotpath for the specified module object.
         """
 
-        for module_path, module in self.loaded_modules.items():
+        for module_path, module in self._loaded_modules.items():
             if module == module_obj:
                 return module_path
         return None
@@ -127,21 +126,21 @@ class LazyModuleTreeMap:
             str: The module fpath for the specified module dotpath.
         """
 
-        if module_dotpath in self.loaded_modules:
-            return self.dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
+        if module_dotpath in self._loaded_modules:
+            return self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
         return None
 
     def get_module_dotpath_by_fpath(self, module_fpath: str) -> str:
-        return self.dotpath_map.get_module_dotpath_by_fpath(module_fpath)
+        return self._dotpath_map.get_module_dotpath_by_fpath(module_fpath)
 
     def items(self):
         self._load_all_modules()
-        return self.loaded_modules.items()
+        return self._loaded_modules.items()
 
     def _load_all_modules(self):
-        for module_dotpath, fpath in self.dotpath_map.items():
-            if module_dotpath not in self.loaded_modules:
-                self.loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
+        for module_dotpath, fpath in self._dotpath_map.items():
+            if module_dotpath not in self._loaded_modules:
+                self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
 
     def __contains__(self, item):
-        return self.dotpath_map.contains_dotpath(item)
+        return self._dotpath_map.contains_dotpath(item)
