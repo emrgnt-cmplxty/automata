@@ -119,8 +119,7 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
-    """An enum representing the different types of toolkits that can be built."""
-
     PYTHON_INSPECTOR = auto()
     PYTHON_WRITER = auto()
     COVERAGE_PROCESSOR = auto()
+    SYMBOL_SEARCHER = auto()

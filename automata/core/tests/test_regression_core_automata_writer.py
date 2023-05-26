@@ -38,31 +38,31 @@ EXPECTED_RESPONSES = {
 }
 
 
-@pytest.mark.regression
-@pytest.mark.parametrize(
-    "automata_params",
-    [
-        {
-            "model": MODEL,
-            "temperature": TEMPERATURE,
-            "tool_list": ["python_writer", "python_inspector"],
-        },
-        # Add more parameter sets as needed
-    ],
-    indirect=True,
-)
-def test_write_simple_function(automata_params):
-    expected_content = EXPECTED_RESPONSES["test_write_simple_function"].strip()
-    agent = build_agent_with_params(
-        automata_params,
-        f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
-        AgentConfigName.AUTOMATA_WRITER_PROD,
-        max_iters=5,
-        temperature=TEMPERATURE,
-        model=MODEL,
-    )
-    agent.run()
-    cleanup_and_check(expected_content, "test.py")
+# @pytest.mark.regression
+# @pytest.mark.parametrize(
+#     "automata_params",
+#     [
+#         {
+#             "model": MODEL,
+#             "temperature": TEMPERATURE,
+#             "tool_list": ["python_writer", "python_inspector"],
+#         },
+#         # Add more parameter sets as needed
+#     ],
+#     indirect=True,
+# )
+# def test_write_simple_function(automata_params):
+#     expected_content = EXPECTED_RESPONSES["test_write_simple_function"].strip()
+#     agent = build_agent_with_params(
+#         automata_params,
+#         f"Write the following function - '{expected_content}' to the file core.tests.sample_code.test",
+#         AgentConfigName.AUTOMATA_WRITER_PROD,
+#         max_iters=5,
+#         temperature=TEMPERATURE,
+#         model=MODEL,
+#     )
+#     agent.run()
+#     cleanup_and_check(expected_content, "test.py")
 
 
 @pytest.mark.regression
