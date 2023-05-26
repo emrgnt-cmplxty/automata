@@ -105,14 +105,12 @@ if __name__ == "__main__":
             """
             outputs = {}
             for message in self.messages:
-                pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
                 matches = re.finditer(pattern, message.content, re.DOTALL)
                 for match in matches:
                     tool_name, tool_output = match.group(1), match.group(2).strip()
                     outputs[tool_name] = tool_output
             if self._has_helper_agents():
                 for message in self.messages:
-                    pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
                     matches = re.finditer(pattern, message.content, re.DOTALL)
                     for match in matches:
                         agent_version, agent_output = match.group(1), match.group(2).strip()
