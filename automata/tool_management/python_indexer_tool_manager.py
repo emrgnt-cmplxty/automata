@@ -114,7 +114,7 @@ class PythonIndexerToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the raw code of the python package, module, standalone function, class, or method at the given python path, with docstrings."""
         try:
-            result = self.indexer.retrieve_code(module_path, object_path)
+            result = self.indexer.retrieve_source_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)

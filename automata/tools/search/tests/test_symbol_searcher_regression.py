@@ -7,30 +7,8 @@ from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_rank import SymbolRankConfig
 from automata.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
-from automata.core.search.symbol_searcher import SymbolSearcher
 from automata.core.utils import config_path
-
-SEARCHES_TO_HITS = {
-    "Symbol": ["Symbol", "SymbolParser", "parse_symbol"],
-    "AutomataAgent": [
-        "AutomataAgent",
-        "AutomataAgentConfig",
-        "AutomataAgentConfigBuilder",
-        "AutomataCoordinator",
-    ],
-    "Task": ["AutomataTask", "AutomataTaskRegistry", "Task"],
-    "SymbolGraph": ["Symbol", "SymbolSearcher", "SymbolParser"],
-    "Github": ["GitHubManager", "AutomataTaskRegistry", "RepositoryManager"],
-    "Embedding": ["SymbolEmbedding", "SymbolEmbeddingMap", "EmbeddingsProvider"],
-    "cli": ["cli", "initialize_task", "run_pending_task"],
-    "coordinator": [
-        "AutomataCoordinator",
-        "AutomataAgent",
-        "AutomataCoordinatorFactory",
-        "AutomataTask",
-    ],
-    "executor": ["TaskExecutor", "AutomataExecuteBehavior", "execute"],
-}
+from automata.tools.search.symbol_searcher import SymbolSearcher
 
 
 def get_top_n_results_desc_name(result, n=0):
@@ -143,21 +121,49 @@ def test_symbol_references(symbol_searcher):
         ), f"Expected class name corresponding to {search} to be found in symbol graph, but it was not found"
 
 
-# EXACT_CALLS_TO_HITS = {
-#     "AutomataAgent": ["eval.py", "task.py", "automata_coordinator", "automata_agent", "automata_manager", "automata_agent_configs"],
-#     "SymbolRank": ["symbol_searcher.py", "symbol_rank.py"],
-#     # "AutomataAgent#": ["automata_agent.py", "automata_coordinator.py", "automata_agent_utils.py", "automata_manager.py", "automata_manager_factory.py"],
-#     # "SymbolGraph#": ["symbol_graph.py", "symbol_searcher.py"],
-#     # "AutomataTask#": ["automata_task_executor.py", "automata_task_registry.py", "task.py"],
-#     # "AutomataCoordinator#": ["automata_manager.py"],
-# }
-# @pytest.mark.regression
-# def test_exact_search(symbol_searcher):
-#     for search in EXACT_CALLS_TO_HITS:
-#         expected_in_exact_hits = EXACT_CALLS_TO_HITS[search]
-#         print("searching on search", search)
-#         found_in_exact_hits = list(symbol_searcher.exact_search(search).keys())
-#         print("found_in_exact_hits = ", found_in_exact_hits)
-#         check_hits(expected_in_exact_hits, found_in_exact_hits)
+EXACT_CALLS_TO_HITS = {
+    "AutomataAgent": [
+        "evals.eval",
+        "core.tasks.task",
+        "core.coordinator.automata_coordinator",
+        "core.agent.automata_agent",
+        "core.manager.automata_manager",
+        "automata_agent_configs",
+    ],
+    "SymbolRank": ["tools.search.symbol_searcher", "core.search.symbol_rank.symbol_rank"],
+    "AutomataTask": ["core.tasks.automata_task_registry", "core.tasks.automata_task_executor"],
+    "AutomataCoordinator": ["core.coordinator.automata_coordinator"],
+    "AutomataAgentConfig": ["configs.automata_agent_config_utils"],
+}
 
-# # assert found_symbol, f"Expected class name corresponding to {search} to be found in symbol graph, but it was not found"
+
+@pytest.mark.regression
+def test_exact_search(symbol_searcher):
+    for search in EXACT_CALLS_TO_HITS:
+        expected_in_exact_hits = EXACT_CALLS_TO_HITS[search]
+        found_in_exact_hits = list(symbol_searcher.exact_search(search).keys())
+        check_hits(expected_in_exact_hits, found_in_exact_hits)
+
+
+SOURCE_CODE_HITS = {
+    "AutomataAgent#": ["class AutomataAgent", "def run"],
+}
+
+
+@pytest.mark.regression
+def test_source_code_retrieval(symbol_searcher):
+    for search in SOURCE_CODE_HITS:
+        found_symbol = False
+        for symbol in symbol_searcher.embedding_dict.keys():
+            if symbol.uri.endswith(search):
+                found_symbol = True
+                expected_in_source = SOURCE_CODE_HITS[search]
+                found_source_code = symbol_searcher.retrieve_source_code_by_symbol(symbol.uri)
+                for source_hit in expected_in_source:
+                    assert (
+                        source_hit in found_source_code
+                    ), f"Expected to find {source_hit} in source code, but it was not found"
+                break
+        assert (
+            found_symbol
+        ), f"Expected class name corresponding to {search} to be found in symbol graph, but it was not found"

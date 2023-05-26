@@ -4,13 +4,12 @@ from typing import Optional
 import networkx as nx
 
 from automata.configs.config_enums import ConfigCategory
-from automata.core.search.symbol_converter import SymbolConverter
 from automata.core.search.symbol_graph import SymbolGraph
 from automata.core.search.symbol_rank.symbol_embedding_map import SymbolEmbeddingMap
 from automata.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
 from automata.core.search.symbol_rank.symbol_similarity import NormType, SymbolSimilarity
-from automata.core.search.symbol_searcher import SymbolSearcher
 from automata.core.utils import config_path
+from automata.tools.search.symbol_searcher import SymbolSearcher
 
 
 class SymbolFactory:
@@ -18,28 +17,15 @@ class SymbolFactory:
         raise NotImplementedError
 
 
-class SymbolConverterFactory(SymbolFactory):
-    def create(self, *args, **kwargs) -> SymbolConverter:
-        """
-        Creates a SymbolConverter object.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-        """
-        return SymbolConverter(*args, **kwargs)
-
-
 class SymbolGraphFactory(SymbolFactory):
-    def create(self, index_path: str, symbol_converter: SymbolConverter) -> SymbolGraph:
+    def create(self, index_path: str) -> SymbolGraph:
         """
         Creates a SymbolGraph object.
 
         Args:
             index_path (str): Path to the index file.
-            symbol_converter (SymbolConverter): Symbol converter.
         """
-        return SymbolGraph(index_path, symbol_converter)
+        return SymbolGraph(index_path)
 
 
 class SymbolEmbeddingMapFactory(SymbolFactory):
@@ -83,7 +69,6 @@ class SymbolRankFactory(SymbolFactory):
 class SymbolSearcherFactory(SymbolFactory):
     def create(
         self,
-        symbol_converter_factory: SymbolConverterFactory = SymbolConverterFactory(),
         symbol_graph_factory: SymbolGraphFactory = SymbolGraphFactory(),
         symbol_embedding_map_factory: SymbolEmbeddingMapFactory = SymbolEmbeddingMapFactory(),
         symbol_similarity_factory: SymbolSimilarityFactory = SymbolSimilarityFactory(),
@@ -106,7 +91,6 @@ class SymbolSearcherFactory(SymbolFactory):
             **kwargs: Arbitrary keyword arguments.
         """
         # Instantiate the SymbolConverter
-        symbol_converter = symbol_converter_factory.create()
 
         # Paths for SCIP file and Embedding map file
         scip_path = os.path.join(
@@ -119,7 +103,7 @@ class SymbolSearcherFactory(SymbolFactory):
         )
 
         # Instantiate the SymbolGraph
-        symbol_graph = symbol_graph_factory.create(scip_path, symbol_converter)
+        symbol_graph = symbol_graph_factory.create(scip_path)
 
         # Instantiate the SymbolEmbeddingMap
         symbol_embedding_map = symbol_embedding_map_factory.create(
@@ -131,7 +115,6 @@ class SymbolSearcherFactory(SymbolFactory):
 
         # Create a SymbolSearcher using the instantiated classes
         return SymbolSearcher(
-            symbol_converter,
             symbol_graph,
             symbol_embedding_map,
             symbol_similarity,

@@ -31,7 +31,7 @@ class ToolManagerFactory:
         - ValueError: If the toolkit type is unknown.
         """
         if toolkit_type == ToolkitType.PYTHON_INDEXER:
-            python_indexer = PythonIndexer.default()
+            python_indexer = PythonIndexer.cached_default()
             PythonIndexerToolManager = importlib.import_module(
                 "automata.tool_management.python_indexer_tool_manager"
             ).PythonIndexerToolManager

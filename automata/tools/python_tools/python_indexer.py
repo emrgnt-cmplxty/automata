@@ -76,6 +76,36 @@ class PythonIndexer:
         # TODO: cache by module
         return self._build_module_dict()
 
+    @classmethod
+    @lru_cache(maxsize=1)
+    def cached_default(cls) -> "PythonIndexer":
+        return cls(root_py_path())
+
+    def retrieve_source_code(self, module_path: str, object_path: Optional[str] = None) -> str:
+        """
+        Retrieve code for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
+
+        Returns:
+            str: The code for the specified module, class, or function/method, or "No Result Found."
+                if not found.
+        """
+
+        if module_path not in self.module_dict:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
+        module = self.module_dict[module_path]
+        result = self.find_module_class_function_or_method(module, object_path)
+
+        if result:
+            return result.dumps()
+        else:
+            return PythonIndexer.NO_RESULT_FOUND_STR
+
     def retrieve_code_without_docstrings(
         self, module_path: str, object_path: Optional[str]
     ) -> str:
@@ -102,31 +132,6 @@ class PythonIndexer:
 
         if result:
             PythonIndexer._remove_docstrings(result)
-            return result.dumps()
-        else:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-
-    def retrieve_code(self, module_path: str, object_path: Optional[str] = None) -> str:
-        """
-        Retrieve code for a specified module, class, or function/method.
-
-        Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
-            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
-
-        Returns:
-            str: The code for the specified module, class, or function/method, or "No Result Found."
-                if not found.
-        """
-
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-
-        module = self.module_dict[module_path]
-        result = self.find_module_class_function_or_method(module, object_path)
-
-        if result:
             return result.dumps()
         else:
             return PythonIndexer.NO_RESULT_FOUND_STR
@@ -207,6 +212,17 @@ class PythonIndexer:
     def retrieve_parent_function_num_code_lines(
         self, module_path: str, line_number: int
     ) -> Union[int, str]:
+        """
+        Retrieve number of code lines for a specified module, class, or function/method.
+
+        Args:
+            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            line_number (int): The line number of the code to retrieve around.
+
+        Returns:
+            int: The number of code lines for the specified module, class, or function/method, or "No Result Found."
+
+        """
         if module_path not in self.module_dict:
             return PythonIndexer.NO_RESULT_FOUND_STR
 
@@ -540,8 +556,3 @@ class PythonIndexer:
             for child_node in child_nodes:
                 if child_node is not node:
                     PythonIndexer._remove_docstrings(child_node)
-
-    @classmethod
-    @lru_cache(maxsize=1)
-    def default(cls):
-        return cls(root_py_path())

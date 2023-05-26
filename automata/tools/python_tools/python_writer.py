@@ -159,7 +159,7 @@ class PythonWriter:
             raise PythonWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_path}"
             )
-        source_code = self.indexer.retrieve_code(module_path)
+        source_code = self.indexer.retrieve_source_code(module_path)
         module_os_rel_path = module_path.replace(self.indexer.PATH_SEP, os.path.sep)
         module_os_abs_path = os.path.join(self.indexer.abs_path, module_os_rel_path)
         os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)
@@ -278,6 +278,9 @@ class PythonWriter:
         """
 
         def replace_newline_chars(input_str: str) -> str:
+            dummy_replacement_a = "ZZ_^^_ZZ"
+            dummy_replacement_b = "QQ_^^_QQ"
+
             def replace(match):
                 text = match.group(0)
                 if text[0] == '"' and text[-1] == '"':
@@ -291,12 +294,14 @@ class PythonWriter:
                         replace(match)
                         for match in re.finditer(
                             pattern,
-                            input_str.replace('"""', "ZZ_^^_ZZ").replace("'''", "QQ_^^_QQ"),
+                            input_str.replace('"""', dummy_replacement_a).replace(
+                                "'''", dummy_replacement_b
+                            ),
                         )
                     )
                 )
-                .replace("ZZ_^^_ZZ", '"""')
-                .replace("QQ_^^_QQ", "'''")
+                .replace(dummy_replacement_a, '"""')
+                .replace(dummy_replacement_b, "'''")
             )
             return output_str
 

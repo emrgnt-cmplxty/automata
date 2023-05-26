@@ -102,6 +102,6 @@ def test_find_expression_context(indexer):
 
 
 def test_default_cached():
-    indexer_1 = PythonIndexer.default()
-    indexer_2 = PythonIndexer.default()
+    indexer_1 = PythonIndexer.cached_default()
+    indexer_2 = PythonIndexer.cached_default()
     assert indexer_1 is indexer_2
