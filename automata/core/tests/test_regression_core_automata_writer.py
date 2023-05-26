@@ -45,7 +45,7 @@ EXPECTED_RESPONSES = {
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["python_writer", "python_indexer"],
+            "tool_list": ["python_writer", "python_inspector"],
         },
         # Add more parameter sets as needed
     ],
@@ -72,7 +72,7 @@ def test_write_simple_function(automata_params):
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["python_indexer", "python_writer"],
+            "tool_list": ["python_inspector", "python_writer"],
         },
         # Add more parameter sets as needed
     ],

@@ -6,9 +6,10 @@ import textwrap
 import pytest
 
 from automata.core.base.tool import Tool
+from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
+from automata.core.code_indexing.python_code_inspector import PythonCodeInspector
 from automata.core.utils import root_py_path
 from automata.tool_management.python_writer_tool_manager import PythonWriterToolManager
-from automata.tools.python_tools.python_indexer import PythonIndexer
 from automata.tools.python_tools.python_writer import PythonWriter
 
 
@@ -17,9 +18,9 @@ def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
     path_to_here = os.path.join(root_py_path(), "tool_management", "tests")
-    python_indexer = PythonIndexer(path_to_here)
-
-    python_writer = PythonWriter(python_indexer)
+    python_indexer = PythonASTIndexer(path_to_here)
+    python_inspector = PythonCodeInspector(python_indexer)
+    python_writer = PythonWriter(python_inspector)
     return PythonWriterToolManager(python_writer=python_writer)
 
 

@@ -3,21 +3,11 @@ from __future__ import annotations
 import ast
 import logging
 import os
-import re
 from _ast import AsyncFunctionDef, ClassDef, FunctionDef
 from functools import cached_property, lru_cache
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
-from redbaron import (
-    ClassNode,
-    DefNode,
-    FromImportNode,
-    ImportNode,
-    Node,
-    NodeList,
-    RedBaron,
-    StringNode,
-)
+from redbaron import RedBaron
 
 from automata.core.utils import root_path, root_py_path
 
@@ -36,8 +26,10 @@ class PythonASTIndexer:
         # TODO: cache by module
         return self._build_module_dict()
 
-    def get_all_module_paths(self) -> List[str]:
-        return list(self.module_dict.keys())
+    @classmethod
+    @lru_cache(maxsize=1)
+    def cached_default(cls) -> "PythonASTIndexer":
+        return cls(root_py_path())
 
     @staticmethod
     def build_repository_overview(path) -> str:
@@ -74,6 +66,25 @@ class PythonASTIndexer:
 
         module = self.module_dict.get(module_path)
         return module
+
+    def get_module_path(self, module_obj: RedBaron) -> str:
+        """
+        Returns the module path for the specified module object.
+
+        Args:
+            module_obj (Module): The module object.
+
+        Returns:
+            str: The module path for the specified module object.
+        """
+
+        for module_path, module in self.module_dict.items():
+            if module is module_obj:
+                return module_path
+        return PythonASTIndexer.NO_RESULT_FOUND_STR
+
+    def get_all_module_paths(self) -> List[str]:
+        return list(self.module_dict.keys())
 
     def _build_module_dict(self) -> Dict[str, RedBaron]:
         """

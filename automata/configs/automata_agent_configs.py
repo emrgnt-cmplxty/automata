@@ -119,11 +119,13 @@ class AutomataAgentConfig(BaseModel):
     @classmethod
     def _add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig") -> None:
         """Handles the overview input for the agent."""
+        from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
         from automata.core.utils import root_py_path
-        from automata.tools.python_tools.python_indexer import PythonIndexer
 
         if "overview" in config.instruction_input_variables:
-            config.instruction_payload.overview = PythonIndexer.build_overview(root_py_path())
+            config.instruction_payload.overview = PythonASTIndexer.build_repository_overview(
+                root_py_path()
+            )
 
     @staticmethod
     def _format_prompt(format_variables: AutomataInstructionPayload, input_text: str) -> str:

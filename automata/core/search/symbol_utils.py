@@ -4,16 +4,16 @@ import networkx as nx
 import numpy as np
 from redbaron import RedBaron
 
+from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
 from automata.core.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
-from automata.tools.python_tools.python_indexer import PythonIndexer
 
 
-def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonIndexer] = None) -> RedBaron:
+def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonASTIndexer] = None) -> RedBaron:
     """
     Returns the RedBaron object for the given symbol.
     Args:
         symbol (str): The symbol which corresponds to a module, class, or method.
-        indexer: The PythonIndexer to use to find the symbol.
+        indexer: The PythonASTIndexer to use to find the symbol.
     Returns:
         Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found.
     """
@@ -21,7 +21,7 @@ def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonIndexer] = Non
     # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)
     obj = None
-    indexer = indexer or PythonIndexer.cached_default()  # this is to make default lazy.
+    indexer = indexer or PythonASTIndexer.cached_default()  # this is to make default lazy.
     # The optional argument is to allow us to run this function in mulitprocessing in the future,
     # because indexer is not picklable (because redbaron objects are not picklable)
     # So the indexer would have to be created and destroyed in each process.
@@ -108,7 +108,7 @@ def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
         Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values.
     """
     matches = {}
-    indexer = PythonIndexer.cached_default()
+    indexer = PythonASTIndexer.cached_default()
     for module_path, module in indexer.module_dict.items():
         lines = module.dumps().splitlines()
         line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]

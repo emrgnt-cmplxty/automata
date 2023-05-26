@@ -45,15 +45,17 @@ class TestExecuteBehavior(IExecuteBehavior):
     """
 
     def execute(self, task: AutomataTask):
-        from automata.tools.python_tools.python_indexer import PythonIndexer
+        from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
+        from automata.core.code_indexing.python_code_inspector import PythonCodeInspector
         from automata.tools.python_tools.python_writer import PythonWriter
 
         logger.debug("Running a test execution...")
         if not isinstance(task.path_to_root_py, str):
             raise TypeError("A relative python path must be set for the test executor.")
 
-        indexer = PythonIndexer(os.path.join(task.task_dir, task.path_to_root_py))  # type: ignore
-        writer = PythonWriter(indexer)
+        indexer = PythonASTIndexer(os.path.join(task.task_dir, task.path_to_root_py))
+        inspector = PythonCodeInspector(python_indexer=indexer)
+        writer = PythonWriter(inspector)
         writer.update_module(
             module_path="core.agent.automata_agent",
             source_code="def test123(x): return True",

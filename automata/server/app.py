@@ -94,7 +94,7 @@ def initialize_task():
         "instructions": request.form.get("instructions"),
         "model": request.form.get("model", "gpt-4"),
         "llm_toolkits": request.form.get(
-            "llm_toolkits", "python_indexer,python_writer,codebase_oracle"
+            "llm_toolkits", "python_inspector,python_writer,codebase_oracle"
         ),
         "main_config_name": request.form.get(
             "main_config_name", AgentConfigName.AUTOMATA_MAIN_DEV.value
