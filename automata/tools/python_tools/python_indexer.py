@@ -26,7 +26,7 @@ import logging
 import os
 import re
 from _ast import AsyncFunctionDef, ClassDef, FunctionDef
-from functools import cached_property, lru_cache
+from functools import lru_cache
 from typing import Dict, Optional, Union
 
 from redbaron import (
@@ -40,7 +40,9 @@ from redbaron import (
     StringNode,
 )
 
-from automata.core.utils import root_path, root_py_path
+from automata.core.utils import root_py_path
+from automata.tools.python_tools.module_tree_map import LazyModuleTreeMap
+from automata.tools.python_tools.utils import convert_fpath_to_module_dotpath
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +51,7 @@ class PythonIndexer:
     """
     A class to index Python source code files in a specified directory and retrieve code and docstrings.
     Attributes:
-        abs_path (str): The absolute path to the root directory containing Python source code files to be indexed.
-        module_dict (Dict[str, Module]): A dictionary with module paths as keys and AST Module objects as values.
+        module_tree_map: (LazyModuleTreeMap): A lazy map of module dotpaths to their redbaron objects.
 
     Methods:
         __init__(self, rel_path: str) -> None
@@ -68,25 +69,19 @@ class PythonIndexer:
         Args:
             rel_path (str): The root directory containing Python source code files to be indexed.
         """
-
-        self.abs_path = os.path.join(root_path(), rel_path)
-
-    @cached_property
-    def module_dict(self) -> Dict[str, RedBaron]:
-        # TODO: cache by module
-        return self._build_module_dict()
+        self.module_tree_map = LazyModuleTreeMap(rel_path)
 
     @classmethod
     @lru_cache(maxsize=1)
     def cached_default(cls) -> "PythonIndexer":
         return cls(root_py_path())
 
-    def retrieve_source_code(self, module_path: str, object_path: Optional[str] = None) -> str:
+    def retrieve_source_code(self, module_dot_path: str, object_path: Optional[str] = None) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
         Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dot_path (str): The path of the module in dot-separated format (e.g. 'package.module').
             object_path (Optional[str]): The path of the class, function, or method in dot-separated format
                 (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
 
@@ -95,25 +90,22 @@ class PythonIndexer:
                 if not found.
         """
 
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
+        module = self.module_tree_map.get_module(module_dot_path)
+        if module:
+            result = self.find_module_class_function_or_method(module, object_path)
+            if result:
+                return result.dumps()
 
-        module = self.module_dict[module_path]
-        result = self.find_module_class_function_or_method(module, object_path)
-
-        if result:
-            return result.dumps()
-        else:
-            return PythonIndexer.NO_RESULT_FOUND_STR
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     def retrieve_code_without_docstrings(
-        self, module_path: str, object_path: Optional[str]
+        self, module_dot_path: str, object_path: Optional[str]
     ) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
         Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dot_path (str): The path of the module in dot-separated format (e.g. 'package.module').
             object_path (Optional[str]): The path of the class, function, or method in dot-separated format
                 (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
 
@@ -122,19 +114,14 @@ class PythonIndexer:
                 if not found.
         """
 
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-
-        module = RedBaron(
-            self.module_dict[module_path].dumps()
-        )  # create a copy because we'll remove docstrings
-        result = self.find_module_class_function_or_method(module, object_path)
-
-        if result:
-            PythonIndexer._remove_docstrings(result)
-            return result.dumps()
-        else:
-            return PythonIndexer.NO_RESULT_FOUND_STR
+        module = self.module_tree_map.get_module(module_dot_path)
+        if module:
+            module_copy = RedBaron(module.dumps())  # create a copy because we'll remove docstrings
+            result = self.find_module_class_function_or_method(module_copy, object_path)
+            if result:
+                PythonIndexer._remove_docstrings(result)
+                return result.dumps()
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     def find_expression_context(
         self,
@@ -155,7 +142,7 @@ class PythonIndexer:
 
         result = ""
         pattern = re.compile(expression)
-        for module_path, module in self.module_dict.items():
+        for module_path, module in self.module_tree_map.items():
             lines = module.dumps().splitlines()
             for i, line in enumerate(lines):
                 lineno = i + 1  # rebardon lines are 1 indexed, same as in an editor
@@ -182,12 +169,12 @@ class PythonIndexer:
 
         return result
 
-    def retrieve_parent_function_name_by_line(self, module_path: str, line_number: int) -> str:
+    def retrieve_parent_function_name_by_line(self, module_dotpath: str, line_number: int) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
         Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
             line_number (int): The line number of the code to retrieve.
 
         Returns:
@@ -195,56 +182,54 @@ class PythonIndexer:
                 if not found.
         """
 
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-
-        node = self.module_dict[module_path].at(line_number)
-        if node.type != "def":
-            node = node.parent_find("def")
-        if node:
-            if node.parent[0].type == "class":
-                return f"{node.parent.name}.{node.name}"
-            else:
-                return node.name
-        else:
-            return PythonIndexer.NO_RESULT_FOUND_STR
+        module = self.module_tree_map.get_module(module_dotpath)
+        if module:
+            node = module.at(line_number)
+            if node.type != "def":
+                node = node.parent_find("def")
+            if node:
+                if node.parent[0].type == "class":
+                    return f"{node.parent.name}.{node.name}"
+                else:
+                    return node.name
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     def retrieve_parent_function_num_code_lines(
-        self, module_path: str, line_number: int
+        self, module_dotpath: str, line_number: int
     ) -> Union[int, str]:
         """
         Retrieve number of code lines for a specified module, class, or function/method.
 
         Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
             line_number (int): The line number of the code to retrieve around.
 
         Returns:
             int: The number of code lines for the specified module, class, or function/method, or "No Result Found."
 
         """
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
 
-        node = self.module_dict[module_path].at(line_number)
-        if node.type != "def":
-            node = node.parent_find("def")
-        if not node:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-        return (
-            node.absolute_bounding_box.bottom_right.line
-            - node.absolute_bounding_box.top_left.line
-            + 1
-        )
+        module = self.module_tree_map.get_module(module_dotpath)
+        if module:
+            node = module.at(line_number)
+            if node.type != "def":
+                node = node.parent_find("def")
+            if node:
+                return (
+                    node.absolute_bounding_box.bottom_right.line
+                    - node.absolute_bounding_box.top_left.line
+                    + 1
+                )
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     def retrieve_parent_code_by_line(
-        self, module_path: str, line_number: int, return_numbered=False
+        self, module_dotpath: str, line_number: int, return_numbered=False
     ) -> str:
         """
         Retrieve code for a specified module, class, or function/method.
 
         Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
             line_number (int): The line number of the code to retrieve.
             return_numbered (bool): Whether to return the code with line numbers prepended.
 
@@ -253,67 +238,66 @@ class PythonIndexer:
                 if not found.
         """
 
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
-        module = self.module_dict[module_path]
-        node = module.at(line_number)
+        module = self.module_tree_map.get_module(module_dotpath)
+        if module:
+            node = module.at(line_number)
+            # retarget def or class node
+            if node.type not in ("def", "class") and node.parent_find(
+                lambda identifier: identifier in ("def", "class")
+            ):
+                node = node.parent_find(lambda identifier: identifier in ("def", "class"))
 
-        # retarget def or class node
-        if node.type not in ("def", "class") and node.parent_find(
-            lambda identifier: identifier in ("def", "class")
-        ):
-            node = node.parent_find(lambda identifier: identifier in ("def", "class"))
+            path = node.path().to_baron_path()
+            pointer = module
+            result = []
 
-        path = node.path().to_baron_path()
-        pointer = module
-        result = []
-
-        for entry in path:
-            if isinstance(entry, int):
-                pointer = pointer.node_list
-                for x in range(entry):
-                    start_line, start_col = (
-                        pointer[x].absolute_bounding_box.top_left.line,
-                        pointer[x].absolute_bounding_box.top_left.column,
-                    )
-
-                    if pointer[x].type == "string" and pointer[x].value.startswith('"""'):
-                        result += self._create_line_number_tuples(
-                            pointer[x], start_line, start_col
+            for entry in path:
+                if isinstance(entry, int):
+                    pointer = pointer.node_list
+                    for x in range(entry):
+                        start_line, start_col = (
+                            pointer[x].absolute_bounding_box.top_left.line,
+                            pointer[x].absolute_bounding_box.top_left.column,
                         )
-                    if pointer[x].type in ("def", "class"):
-                        docstring = PythonIndexer._get_docstring(pointer[x])
-                        node_copy = pointer[x].copy()
-                        node_copy.value = '"""' + docstring + '"""'
-                        result += self._create_line_number_tuples(node_copy, start_line, start_col)
-                pointer = pointer[entry]
-            else:
-                start_line, start_col = (
-                    pointer.absolute_bounding_box.top_left.line,
-                    pointer.absolute_bounding_box.top_left.column,
-                )
-                node_copy = pointer.copy()
-                node_copy.value = ""
-                result += self._create_line_number_tuples(node_copy, start_line, start_col)
-                pointer = getattr(pointer, entry)
 
-        start_line, start_col = (
-            pointer.absolute_bounding_box.top_left.line,
-            pointer.absolute_bounding_box.top_left.column,
-        )
-        result += self._create_line_number_tuples(pointer, start_line, start_col)
+                        if pointer[x].type == "string" and pointer[x].value.startswith('"""'):
+                            result += self._create_line_number_tuples(
+                                pointer[x], start_line, start_col
+                            )
+                        if pointer[x].type in ("def", "class"):
+                            docstring = PythonIndexer._get_docstring(pointer[x])
+                            node_copy = pointer[x].copy()
+                            node_copy.value = '"""' + docstring + '"""'
+                            result += self._create_line_number_tuples(node_copy, start_line, start_col)
+                    pointer = pointer[entry]
+                else:
+                    start_line, start_col = (
+                        pointer.absolute_bounding_box.top_left.line,
+                        pointer.absolute_bounding_box.top_left.column,
+                    )
+                    node_copy = pointer.copy()
+                    node_copy.value = ""
+                    result += self._create_line_number_tuples(node_copy, start_line, start_col)
+                    pointer = getattr(pointer, entry)
 
-        prev_line = 1
-        result_str = ""
-        for t in result:
-            if t[0] > prev_line + 1:
-                result_str += "...\n"
-            if return_numbered:
-                result_str += f"{t[0]}: {t[1]}\n"
-            else:
-                result_str += f"{t[1]}\n"
-            prev_line = t[0]
-        return result_str
+            start_line, start_col = (
+                pointer.absolute_bounding_box.top_left.line,
+                pointer.absolute_bounding_box.top_left.column,
+            )
+            result += self._create_line_number_tuples(pointer, start_line, start_col)
+
+            prev_line = 1
+            result_str = ""
+            for t in result:
+                if t[0] > prev_line + 1:
+                    result_str += "...\n"
+                if return_numbered:
+                    result_str += f"{t[0]}: {t[1]}\n"
+                else:
+                    result_str += f"{t[1]}\n"
+                prev_line = t[0]
+            return result_str
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     def _create_line_number_tuples(self, node, start_line, start_col):
         result = []
@@ -323,12 +307,12 @@ class PythonIndexer:
             result.append((start_line + i, line))
         return result
 
-    def retrieve_docstring(self, module_path: str, object_path: Optional[str]) -> str:
+    def retrieve_docstring(self, module_dotpath: str, object_path: Optional[str]) -> str:
         """
         Retrieve the docstring for a specified module, class, or function/method.
 
         Args:
-            module_path (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
             object_path (Optional[str]): The path of the class, function, or method in dot-separated format
                 (e.g. 'ClassName.method_name'). If None, the module-level docstring will be returned.
 
@@ -337,16 +321,13 @@ class PythonIndexer:
                 if not found.
         """
 
-        if module_path not in self.module_dict:
-            return PythonIndexer.NO_RESULT_FOUND_STR
 
-        module = self.module_dict[module_path]
-        result = self.find_module_class_function_or_method(module, object_path)
-
-        if result:
-            return PythonIndexer._get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
-        else:
-            return PythonIndexer.NO_RESULT_FOUND_STR
+        module = self.module_tree_map.get_module(module_dotpath)
+        if module:
+            result = self.find_module_class_function_or_method(module, object_path)
+            if result:
+                return PythonIndexer._get_docstring(result) or PythonIndexer.NO_RESULT_FOUND_STR
+        return PythonIndexer.NO_RESULT_FOUND_STR
 
     @staticmethod
     def _get_docstring(node) -> str:
@@ -356,54 +337,8 @@ class PythonIndexer:
                 return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
         return ""
 
-    def _build_module_dict(self) -> Dict[str, RedBaron]:
-        """
-        Builds the module dictionary by walking through the root directory and creating FST Module objects
-        for each Python source file. The module paths are used as keys in the dictionary.
-
-        Returns:
-            Dict[str, RedBaron]: A dictionary with module paths as keys and RedBaron objects as values.
-        """
-
-        module_dict = {}
-
-        for root, _, files in os.walk(self.abs_path):
-            for file in files:
-                if file.endswith(".py"):
-                    module_path = os.path.join(root, file)
-                    module = self._load_module_from_path(module_path)
-                    if module:
-                        module_rel_path = PythonIndexer._relative_module_path(
-                            self.abs_path, module_path
-                        )
-                        module_dict[module_rel_path] = module
-        return module_dict
-
     @staticmethod
-    def _relative_module_path(root_abs_path, module_path):
-        module_rel_path = (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[
-            :-3
-        ]
-        return module_rel_path
-
-    def get_module_path(self, module_obj: RedBaron) -> str:
-        """
-        Returns the module path for the specified module object.
-
-        Args:
-            module_obj (Module): The module object.
-
-        Returns:
-            str: The module path for the specified module object.
-        """
-
-        for module_path, module in self.module_dict.items():
-            if module is module_obj:
-                return module_path
-        return PythonIndexer.NO_RESULT_FOUND_STR
-
-    @staticmethod
-    def build_overview(path) -> str:
+    def build_overview(dirpath) -> str:
         """
         Loops over the directory python files and returns a string that provides an overview of the PythonParser's state.
         Returns:
@@ -412,12 +347,12 @@ class PythonIndexer:
         """
         result_lines = []
 
-        for root, _, files in os.walk(path):
+        for root, _, files in os.walk(dirpath):
             for file in files:
                 if file.endswith(".py"):
                     module_path = os.path.join(root, file)
                     module = ast.parse(open(module_path).read())
-                    relative_module_path = PythonIndexer._relative_module_path(path, module_path)
+                    relative_module_path = convert_fpath_to_module_dotpath(dirpath, module_path)
                     result_lines.append(relative_module_path)
                     PythonIndexer._overview_traverse_helper(module, result_lines)
         return "\n".join(result_lines)
@@ -431,25 +366,6 @@ class PythonIndexer:
 
         for child in ast.iter_child_nodes(node):
             PythonIndexer._overview_traverse_helper(child, line_items, num_spaces + 1)
-
-    @staticmethod
-    def _load_module_from_path(path) -> Optional[RedBaron]:
-        """
-        Loads and returns an FST object for the given file path.
-
-        Args:
-            path (str): The file path of the Python source code.
-
-        Returns:
-            Module: RedBaron FST object.
-        """
-
-        try:
-            module = RedBaron(open(path).read())
-            return module
-        except Exception as e:
-            logger.error(f"Failed to load module '{path}' due to: {e}")
-            return None
 
     @staticmethod
     def find_module_class_function_or_method(
