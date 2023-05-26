@@ -28,8 +28,8 @@ FSTNode = Union[Node, RedBaron]
 
 
 class PythonCodeInspector:
-    def __init__(self, python_indexer: PythonASTIndexer) -> None:
-        self.indexer = python_indexer
+    def __init__(self, python_indexer: Optional[PythonASTIndexer] = None) -> None:
+        self.indexer = python_indexer or PythonASTIndexer(root_py_path())
 
     def get_source_code(self, module_path: str, object_path: Optional[str] = None) -> str:
         """
@@ -64,7 +64,9 @@ class PythonCodeInspector:
         """
 
         module = self.indexer.find_module_object(module_path)
-        return PythonCodeInspector._get_docstring(PythonASTNavigator.find_node(module, object_path))
+        return PythonCodeInspector._get_docstring(
+            PythonASTNavigator.find_node(module, object_path)
+        )
 
     def get_source_code_without_docstrings(
         self, module_path: str, object_path: Optional[str]

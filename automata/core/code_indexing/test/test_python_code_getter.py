@@ -4,7 +4,7 @@ import textwrap
 import pytest
 
 from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
-from automata.core.code_indexing.python_code_getter import PythonCodeInspector
+from automata.core.code_indexing.python_code_inspector import PythonCodeInspector
 
 
 @pytest.fixture
