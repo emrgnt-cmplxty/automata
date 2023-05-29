@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.code_indexing.python_code_inspector import PythonCodeInspector
+from automata.core.search.symbol_factory import SymbolSearcherFactory
 from automata.tool_management.base_tool_manager import BaseToolManager
 from automata.tools.python_tools.python_writer import PythonWriter
 
@@ -44,6 +45,15 @@ class ToolManagerFactory:
                 "automata.tool_management.coverage_tool_manager"
             ).CoverageToolManager
             return CoverageToolManager()
+        elif toolkit_type == ToolkitType.SYMBOL_SEARCHER:
+            SymbolSearcherToolManager = importlib.import_module(
+                "automata.tool_management.symbol_searcher_tool_manager"
+            ).SymbolSearcherToolManager
+            return SymbolSearcherToolManager(
+                symbol_searcher=SymbolSearcherFactory().create(
+                    index_name="index.scip", symbol_embedding_name="symbol_embedding.json"
+                )
+            )
         else:
             raise ValueError("Unknown toolkit type: %s" % toolkit_type)
 
@@ -81,6 +91,8 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
             toolkit_type = ToolkitType.PYTHON_WRITER
         elif tool_name == "coverage_processor":
             toolkit_type = ToolkitType.COVERAGE_PROCESSOR
+        elif tool_name == "symbol_searcher":
+            toolkit_type = ToolkitType.SYMBOL_SEARCHER
         else:
             logger.warning("Unknown tool: %s", tool_name)
             continue
