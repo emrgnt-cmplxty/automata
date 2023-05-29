@@ -8,7 +8,7 @@ from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 @pytest.fixture
 def automata_agent():
-    tool_list = ["python_inspector"]
+    tool_list = ["python_retriever"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     instruction_payload = AutomataInstructionPayload(agents_message="", overview="", tools="")

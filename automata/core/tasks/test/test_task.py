@@ -237,7 +237,6 @@ def test_execute_test_task_success(task):
 
     assert task.status == TaskStatus.SUCCESS
     assert result is None
-    shutil.rmtree("MagicMock/")
 
 
 @patch("logging.config.dictConfig", return_value=None)

@@ -53,7 +53,7 @@ Exceptions:
 #         {
 #             "model": MODEL,
 #             "temperature": TEMPERATURE,
-#             "tool_list": ["python_inspector"],
+#             "tool_list": ["python_retriever"],
 #         },
 #         # Add more parameter sets as needed
 #     ],
@@ -79,7 +79,7 @@ Exceptions:
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["python_inspector"],
+            "tool_list": ["python_retriever"],
         },
         # Add more parameter sets as needed
     ],

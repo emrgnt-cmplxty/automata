@@ -2,16 +2,16 @@ import logging
 from typing import List, Optional
 
 from automata.core.base.tool import Tool
-from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
-from automata.core.code_indexing.python_code_inspector import PythonCodeInspector
+from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
+from automata.core.code_indexing.utils import NO_RESULT_FOUND_STR
 from automata.tool_management.base_tool_manager import BaseToolManager
 
 logger = logging.getLogger(__name__)
 
 
-class PythonInspectorToolManager(BaseToolManager):
+class PythonCodeRetrieverToolManager(BaseToolManager):
     """
-    PythonInspectorToolManager
+    PythonCodeRetrieverToolManager
     A class for interacting with the PythonIndexer API, which provides functionality to read
     the code state of a of local Python files.
     """
@@ -21,12 +21,14 @@ class PythonInspectorToolManager(BaseToolManager):
         Initializes a PythonInspectorToolManager object with the given inputs.
 
         Args:
-        - python_inspector (PythonCodeInspector): A PythonCodeInspector object which allows inspecting of local code.
+        - python_retriever (PythonCodeRetriever): A PythonCodeRetriever object which allows inspecting of local code.
 
         Returns:
         - None
         """
-        self.inspector: PythonCodeInspector = kwargs.get("python_inspector", PythonCodeInspector())
+        self.code_retriever: PythonCodeRetriever = kwargs.get(
+            "python_retriever", PythonCodeRetriever()
+        )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False
@@ -40,7 +42,7 @@ class PythonInspectorToolManager(BaseToolManager):
                 func=self._func_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given python path, without docstrings."
-                f' If no match is found, then "{PythonASTIndexer.NO_RESULT_FOUND_STR}" is returned.\n\n'
+                f' If no match is found, then "{NO_RESULT_FOUND_STR}" is returned.\n\n'
                 f'For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory,'
                 f"Then the correct tool input for the parser follows:\n"
                 f"  - tool_args\n"
@@ -77,7 +79,9 @@ class PythonInspectorToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            result = self.inspector.get_source_code_without_docstrings(module_path, object_path)
+            result = self.code_retriever.get_source_code_without_docstrings(
+                module_path, object_path
+            )
             return result
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
@@ -87,7 +91,7 @@ class PythonInspectorToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the docstring of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            result = self.inspector.get_docstring(module_path, object_path)
+            result = self.code_retriever.get_docstring(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
@@ -97,7 +101,7 @@ class PythonInspectorToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the raw code of the python package, module, standalone function, class, or method at the given python path, with docstrings."""
         try:
-            result = self.inspector.get_source_code(module_path, object_path)
+            result = self.code_retriever.get_source_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)

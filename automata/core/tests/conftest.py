@@ -8,7 +8,7 @@ from automata.configs.automata_agent_config_utils import AutomataAgentConfigBuil
 from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import AgentConfigName
 from automata.core.agent.automata_agent_utils import AutomataAgentFactory
-from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
+from automata.core.code_indexing.utils import build_repository_overview
 from automata.core.utils import calculate_similarity, root_py_path
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
@@ -77,9 +77,7 @@ def cleanup_and_check(expected_content: str, file_name: str) -> None:
 
 
 def generate_instruction_payload():
-    return AutomataInstructionPayload(
-        overview=PythonASTIndexer.build_repository_overview(root_py_path())
-    )
+    return AutomataInstructionPayload(overview=build_repository_overview(root_py_path()))
 
 
 def retry(num_attempts: int):

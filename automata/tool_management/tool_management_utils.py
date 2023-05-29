@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
-from automata.core.code_indexing.python_code_inspector import PythonCodeInspector
+from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
 from automata.core.search.symbol_factory import SymbolSearcherFactory
 from automata.tool_management.base_tool_manager import BaseToolManager
 from automata.tools.python_tools.python_writer import PythonWriter
@@ -16,29 +16,29 @@ class ToolManagerFactory:
     A class for creating tool managers.
     """
 
-    _inspector_instance = None  # store instance of PythonCodeInspector
+    _retriever_instance = None  # store instance of PythonCodeRetriever
 
     @staticmethod
     def create_tool_manager(toolkit_type: ToolkitType) -> BaseToolManager:
-        if toolkit_type == ToolkitType.PYTHON_INSPECTOR:
-            if ToolManagerFactory._inspector_instance is None:
-                ToolManagerFactory._inspector_instance = PythonCodeInspector()
+        if toolkit_type == ToolkitType.PYTHON_RETRIEVER:
+            if ToolManagerFactory._retriever_instance is None:
+                ToolManagerFactory._retriever_instance = PythonCodeRetriever()
 
-            PythonInspectorToolManager = importlib.import_module(
-                "automata.tool_management.python_inspector_tool_manager"
-            ).PythonInspectorToolManager
-            return PythonInspectorToolManager(
-                python_code_inspector=ToolManagerFactory._inspector_instance
+            PythonCodeRetrieverToolManager = importlib.import_module(
+                "automata.tool_management.python_code_retriever_tool_manager"
+            ).PythonCodeRetrieverToolManager
+            return PythonCodeRetrieverToolManager(
+                python_retriever=ToolManagerFactory._retriever_instance
             )
         elif toolkit_type == ToolkitType.PYTHON_WRITER:
-            if ToolManagerFactory._inspector_instance is None:
-                ToolManagerFactory._inspector_instance = PythonCodeInspector()
+            if ToolManagerFactory._retriever_instance is None:
+                ToolManagerFactory._retriever_instance = PythonCodeRetriever()
 
             PythonWriterToolManager = importlib.import_module(
                 "automata.tool_management.python_writer_tool_manager"
             ).PythonWriterToolManager
             return PythonWriterToolManager(
-                python_writer=PythonWriter(ToolManagerFactory._inspector_instance)
+                python_writer=PythonWriter(ToolManagerFactory._retriever_instance)
             )
         elif toolkit_type == ToolkitType.COVERAGE_PROCESSOR:
             CoverageToolManager = importlib.import_module(
@@ -85,8 +85,8 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
     for tool_name in tool_list:
         tool_name = tool_name.strip()
         toolkit_type = None
-        if tool_name == "python_inspector":
-            toolkit_type = ToolkitType.PYTHON_INSPECTOR
+        if tool_name == "python_retriever":
+            toolkit_type = ToolkitType.PYTHON_RETRIEVER
         elif tool_name == "python_writer":
             toolkit_type = ToolkitType.PYTHON_WRITER
         elif tool_name == "coverage_processor":

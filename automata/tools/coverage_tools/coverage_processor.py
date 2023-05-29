@@ -45,7 +45,7 @@ class CoverageProcessor:
 
         uncovered_line_numbers_queue = uncovered_line_numbers[:]
 
-        lines = self.coverage_analyzer.indexer.get_parent_code_by_line(
+        lines = self.coverage_analyzer.module_map.get_parent_code_by_line(
             module_path, uncovered_line_numbers[0], True
         ).splitlines()
         marked_lines = []

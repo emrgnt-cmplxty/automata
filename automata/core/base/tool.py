@@ -119,7 +119,7 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
-    PYTHON_INSPECTOR = auto()
+    PYTHON_RETRIEVER = auto()
     PYTHON_WRITER = auto()
     COVERAGE_PROCESSOR = auto()
     SYMBOL_SEARCHER = auto()

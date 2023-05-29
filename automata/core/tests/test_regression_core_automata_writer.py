@@ -44,7 +44,7 @@ EXPECTED_RESPONSES = {
         {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "tool_list": ["python_inspector", "python_writer"],
+            "tool_list": ["python_retriever", "python_writer"],
         },
         # Add more parameter sets as needed
     ],

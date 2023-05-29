@@ -1,4 +1,3 @@
-import logging
 import logging.config
 from typing import Dict, List, Union
 
@@ -6,7 +5,7 @@ from automata.configs.automata_agent_config_utils import build_agent_message
 from automata.configs.automata_agent_configs import AutomataAgentConfig, AutomataInstructionPayload
 from automata.configs.config_enums import AgentConfigName, ConfigCategory
 from automata.core.agent.automata_actions import ResultAction, ToolAction
-from automata.core.code_indexing.python_ast_indexer import PythonASTIndexer
+from automata.core.code_indexing.utils import build_repository_overview
 from automata.core.utils import load_config, root_py_path
 from automata.evals.eval import Eval
 from automata.evals.eval_helpers import EvalAction, EvalResult
@@ -35,7 +34,7 @@ def main(args):
         instruction = sample["instruction"]
         expected_actions = sample["expected_actions"]
 
-        overview = PythonASTIndexer.build_repository_overview(root_py_path())
+        overview = build_repository_overview(root_py_path())
         # TODO - Fix this..
         agent_messages = build_agent_message()
         instruction_payload = AutomataInstructionPayload(
