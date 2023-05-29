@@ -74,7 +74,7 @@ class PythonWriterToolManager(BaseToolManager):
     ) -> str:
         """Writes the given code to the given module path and class name."""
         try:
-            print("Attempting to write update to module_path = ", module_path)
+            print("Attempting to write update to module_path = ", module_dotpath)
             self.writer.update_module(
                 source_code=code,
                 do_extend=True,

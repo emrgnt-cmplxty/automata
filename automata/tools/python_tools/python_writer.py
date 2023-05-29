@@ -141,7 +141,6 @@ class PythonWriter:
                     module_obj
                 )
             module_obj = self.code_retriever.module_tree_map.get_module(module_dotpath)
-
             PythonWriter._update_module(
                 source_code,
                 module_dotpath,
@@ -225,24 +224,20 @@ class PythonWriter:
         PythonWriter._manage_imports(existing_module_obj, new_import_nodes, do_extend)
 
         new_class_or_function_nodes = find_all_function_and_class_syntax_tree_nodes(new_fst)
-        # handle imports here later
         if class_name:  # splice the class
             existing_class = find_syntax_tree_node(existing_module_obj, class_name)
-            if not existing_class:
+            if isinstance(existing_class, ClassNode):
+                PythonWriter._update_node_with_children(
+                    new_class_or_function_nodes, existing_class, do_extend
+                )
+
+            elif not do_extend:
                 raise PythonWriter.ClassNotFound(
                     f"Class {class_name} not found in module {module_dotpath}"
                 )
-            if not isinstance(existing_class, ClassNode):
-                raise PythonWriter.ClassNotFound(
-                    f"Object {class_name} in module {module_dotpath} is not a class."
-                )
-            PythonWriter._update_node_with_children(
-                new_class_or_function_nodes, existing_class, do_extend
-            )
-        else:
-            PythonWriter._update_node_with_children(
-                new_class_or_function_nodes, existing_module_obj, do_extend
-            )
+        PythonWriter._update_node_with_children(
+            new_class_or_function_nodes, existing_module_obj, do_extend
+        )
 
     @staticmethod
     def _update_node_with_children(

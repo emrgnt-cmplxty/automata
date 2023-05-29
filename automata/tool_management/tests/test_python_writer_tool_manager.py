@@ -34,7 +34,7 @@ def test_build_tools(python_writer_tool_builder):
     for tool in tools:
         assert isinstance(tool, Tool)
 
-@pytest.mark.skip(reason="Broken @OC")
+
 # Check that we can bootstrap a new module "sample3.py" with a new function "f(x) -> x + 1"
 def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     current_file = inspect.getframeinfo(inspect.currentframe()).filename
@@ -58,7 +58,6 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
 
 # Check that we can extend existing module "sample.py" with a new function "f(x) -> x + 1"
-@pytest.mark.skip(reason="Broken @OC")
 def test_extend_module_with_new_function(python_writer_tool_builder):
     current_file = inspect.getframeinfo(inspect.currentframe()).filename
     absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
@@ -119,7 +118,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
 
 # Check that we can extend existing module "sample.py" with a new function
 # that has documentation and type hints, e.g. "f(x) -> int;    return x + 1"
-@pytest.mark.skip(reason="Broken @OC")
+@pytest.mark.skip(reason="TODO: I don't really understand what this test is trying to do")
 def test_extend_module_with_documented_new_class(python_writer_tool_builder):
     class_str = textwrap.dedent(
         '''from typing import List
@@ -179,19 +178,17 @@ class PythonAgentToolBuilder:
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
     code_writer.func((file_py_path, "PythonAgentToolBuilder", class_str))
-    new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
 
     file2_rel_path = os.path.join(package, f"sample2.py")
     file2_abs_path = os.path.join(absolute_path, file2_rel_path)
-
     with open(file2_abs_path, "r", encoding="utf-8") as f:
         old_sample_text = f.read().replace("# type: ignore\n", "")
     assert old_sample_text.strip() == new_sample_text.strip()
     os.remove(file_abs_path)
 
-@pytest.mark.skip(reason="Broken @OC")
+@pytest.mark.skip(reason="TODO: something here is clearly off wrt to the files and directories")
 def test_extend_module_with_documented_new_module(python_writer_tool_builder):
     module_str = textwrap.dedent(
         """from typing import List, Optional
@@ -211,5 +208,8 @@ class PythonAgentToolBuilder:
     tools = python_writer_tool_builder.build_tools()
     code_writer = tools[0]
     code_writer.func(("sample_code.python_agent_tool_builder", None, module_str))
+    with open("./sample_code/python_agent_tool_builder.py", "r", encoding="utf-8") as f:
+        new_sample_text = f.read()
+        assert module_str == new_sample_text
     # # Why?
-    shutil.rmtree(os.path.join(root_py_path(), "tool_management", "tests", "temp_code"))
+    shutil.rmtree(os.path.join(root_py_path(), "tool_management", "tests", "sample_code"))
