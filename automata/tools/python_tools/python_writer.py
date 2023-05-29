@@ -33,14 +33,19 @@ Example usage:
     TODO - Add explicit check of module contents after extension and reduction of module.
 """
 import logging
-import os
 import re
 import subprocess
 from typing import Optional, Union, cast
 
 from redbaron import ClassNode, Node, NodeList, RedBaron
 
-from automata.tools.python_tools.python_indexer import PythonIndexer
+from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
+from automata.core.code_indexing.syntax_tree_navigation import (
+    find_all_function_and_class_syntax_tree_nodes,
+    find_import_syntax_tree_node_by_name,
+    find_import_syntax_tree_nodes,
+    find_syntax_tree_node,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +80,11 @@ class PythonWriter:
     class InvalidArguments(Exception):
         pass
 
-    def __init__(self, python_indexer: PythonIndexer):
+    def __init__(self, python_retriever: PythonCodeRetriever):
         """
-        Initialize the PythonWriter with a PythonIndexer instance.
+        Initialize the PythonWriter with a PythonCodeRetriever instance.
         """
-        self.indexer = python_indexer
+        self.code_retriever = python_retriever
 
     def update_module(self, source_code: str, do_extend: bool = True, **kwargs) -> None:
         """
@@ -119,23 +124,23 @@ class PythonWriter:
         is_new_module = (
             not module_obj
             and module_dotpath
-            and module_dotpath not in self.indexer.module_tree_map
+            and module_dotpath not in self.code_retriever.module_tree_map
         )
 
         is_existing_module = (
             module_obj
-            and self.indexer.module_tree_map.get_existing_module_dotpath(module_obj)
-            or module_dotpath in self.indexer.module_tree_map
+            and self.code_retriever.module_tree_map.get_existing_module_dotpath(module_obj)
+            or module_dotpath in self.code_retriever.module_tree_map
         )
 
         if is_new_module:
             self._create_module_from_source_code(module_dotpath, source_code)
         elif is_existing_module:
             if module_obj:
-                module_dotpath = self.indexer.module_tree_map.get_existing_module_dotpath(
+                module_dotpath = self.code_retriever.module_tree_map.get_existing_module_dotpath(
                     module_obj
                 )
-            module_obj = self.indexer.module_tree_map.get_module(module_dotpath)
+            module_obj = self.code_retriever.module_tree_map.get_module(module_dotpath)
 
             PythonWriter._update_module(
                 source_code,
@@ -159,12 +164,12 @@ class PythonWriter:
         Args:
             module_dotpath (str): The file path where the modified module should be written.
         """
-        if module_dotpath not in self.indexer.module_tree_map:
+        if module_dotpath not in self.code_retriever.module_tree_map:
             raise PythonWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
-        source_code = self.indexer.retrieve_source_code(module_dotpath)
-        module_fpath = self.indexer.module_tree_map.get_existing_module_fpath_by_dotpath(
+        source_code = self.code_retriever.get_source_code(module_dotpath)
+        module_fpath = self.code_retriever.module_tree_map.get_existing_module_fpath_by_dotpath(
             module_dotpath
         )
         with open(module_fpath, "w") as output_file:
@@ -180,7 +185,7 @@ class PythonWriter:
             module_dotpath (str): The path where the new module will be created.
         """
         parsed = RedBaron(source_code)
-        self.indexer.module_tree_map.put_module(module_dotpath, parsed)
+        self.code_retriever.module_tree_map.put_module(module_dotpath, parsed)
         return parsed
 
     @staticmethod
@@ -216,15 +221,13 @@ class PythonWriter:
         """
 
         new_fst = RedBaron(source_code)
-        new_import_nodes = PythonIndexer.find_imports(new_fst)
+        new_import_nodes = find_import_syntax_tree_nodes(new_fst)
         PythonWriter._manage_imports(existing_module_obj, new_import_nodes, do_extend)
 
-        new_class_or_function_nodes = PythonIndexer.find_all_functions_and_classes(new_fst)
+        new_class_or_function_nodes = find_all_function_and_class_syntax_tree_nodes(new_fst)
         # handle imports here later
         if class_name:  # splice the class
-            existing_class = PythonIndexer.find_module_class_function_or_method(
-                existing_module_obj, class_name
-            )
+            existing_class = find_syntax_tree_node(existing_module_obj, class_name)
             if not existing_class:
                 raise PythonWriter.ClassNotFound(
                     f"Class {class_name} not found in module {module_dotpath}"
@@ -250,9 +253,7 @@ class PythonWriter:
         """Update a class object according to the received code."""
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
-            existing_node = PythonIndexer.find_module_class_function_or_method(
-                node_to_update, child_node_name
-            )
+            existing_node = find_syntax_tree_node(node_to_update, child_node_name)
             if do_extend:
                 if existing_node:
                     existing_node.replace(new_node)
@@ -319,7 +320,7 @@ class PythonWriter:
     ) -> None:
         """Manage the imports in the module."""
         for new_import_statement in new_import_statements:
-            existing_import_statement = PythonIndexer.find_import_by_name(
+            existing_import_statement = find_import_syntax_tree_node_by_name(
                 module_obj, new_import_statement.name
             )
             if do_extend:

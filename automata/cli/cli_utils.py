@@ -5,8 +5,8 @@ from typing import Tuple
 from automata.configs.automata_agent_config_utils import AutomataAgentConfigFactory
 from automata.configs.automata_agent_configs import AutomataAgentConfig
 from automata.configs.config_enums import AgentConfigName
+from automata.core.code_indexing.utils import build_repository_overview
 from automata.core.utils import get_logging_config, root_py_path
-from automata.tools.python_tools.python_indexer import PythonIndexer
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ def create_config_from_kwargs(**kwargs) -> AutomataAgentConfig:
 
     if kwargs.get("include_overview"):
         instruction_payload = kwargs.get("instruction_payload", {})
-        instruction_payload["overview"] = PythonIndexer.build_overview(root_py_path())
+        instruction_payload["overview"] = build_repository_overview(root_py_path())
         kwargs["instruction_payload"] = instruction_payload
 
     return AutomataAgentConfigFactory.create_config(None, **kwargs)

@@ -1,18 +1,17 @@
 import logging
 import os.path
+from functools import lru_cache
 from typing import Dict, Optional
 
 from redbaron import RedBaron
 
-from automata.core.utils import root_path
-from automata.tools.python_tools.utils import convert_fpath_to_module_dotpath
+from automata.core.code_indexing.utils import DOT_SEP, convert_fpath_to_module_dotpath
+from automata.core.utils import root_path, root_py_path
 
 logger = logging.getLogger(__name__)
 
 
 class DotPathMap:
-    DOT_SEP = "."
-
     def __init__(self, path: str):
         if not os.path.isabs(path):
             path = os.path.join(root_path(), path)
@@ -46,7 +45,7 @@ class DotPathMap:
 
     def put_module(self, module_dotpath: str):
         if not self.contains_dotpath(module_dotpath):
-            module_os_rel_path = module_dotpath.replace(self.DOT_SEP, os.path.sep)
+            module_os_rel_path = module_dotpath.replace(DOT_SEP, os.path.sep)
             module_os_abs_path = os.path.join(self._abs_path, module_os_rel_path)
             os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)
             file_path = f"{module_os_abs_path}.py"
@@ -59,8 +58,8 @@ class DotPathMap:
 
 class LazyModuleTreeMap:
     """
-        This map works as a lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
-        It will load and cache modules in memory as they get accessed
+    This map works as a lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
+    It will load and cache modules in memory as they get accessed
     """
 
     def __init__(self, path: str):
@@ -72,8 +71,8 @@ class LazyModuleTreeMap:
             return None
 
         if module_dotpath not in self._loaded_modules:
-            module_path = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
-            self._loaded_modules[module_dotpath] = self._load_module_from_fpath(module_path)
+            module_fpath = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
+            self._loaded_modules[module_dotpath] = self._load_module_from_fpath(module_fpath)
         return self._loaded_modules[module_dotpath]
 
     def put_module(self, module_dotpath: str, module: RedBaron):
@@ -109,10 +108,10 @@ class LazyModuleTreeMap:
         Returns:
             str: The module dotpath for the specified module object.
         """
-
-        for module_path, module in self._loaded_modules.items():
+        # there is no way a module that has a redbaron object is not loaded
+        for module_dotpath, module in self._loaded_modules.items():
             if module == module_obj:
-                return module_path
+                return module_dotpath
         return None
 
     def get_existing_module_fpath_by_dotpath(self, module_dotpath: str) -> Optional[str]:
@@ -144,3 +143,8 @@ class LazyModuleTreeMap:
 
     def __contains__(self, item):
         return self._dotpath_map.contains_dotpath(item)
+
+    @classmethod
+    @lru_cache(maxsize=1)
+    def cached_default(cls) -> "LazyModuleTreeMap":
+        return cls(root_py_path())

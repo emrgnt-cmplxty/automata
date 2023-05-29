@@ -88,19 +88,19 @@ system_instruction_template: >
             - tool_name
               - python-indexer-retrieve-docstring
             - tool_args
-              - tools.python_tools.python_indexer
+              - tools.python_tools.python_inspector
               - PythonIndexer
           - tool_query_2
             - tool_name
               - python-indexer-retrieve-docstring
             - tool_args
-              - tools.python_tools.python_indexer
+              - tools.python_tools.python_inspector
               - PythonIndexer.retrieve_code
           - tool_query_3
             - tool_name
               - python-indexer-retrieve-code
             - tool_args
-              - tools.python_tools.python_indexer
+              - tools.python_tools.python_inspector
               - PythonIndexer.retrieve_code
 
       *User*
@@ -224,6 +224,6 @@ description: >
 number_of_expected_actions: 11
 
 tools: >
-  python_indexer
+  python_inspector
 
 template_format: "f-string"

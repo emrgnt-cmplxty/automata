@@ -21,7 +21,6 @@ SymbolReferencesResult = Dict[StrPath, List[SymbolReference]]
 SymbolRankResult = List[Tuple[str, float]]
 SourceCodeResult = Optional[str]
 ExactSearchResult = Dict[str, List[int]]
-FindAndReplaceResult = int
 
 
 class SymbolSearcher:
@@ -107,13 +106,7 @@ class SymbolSearcher:
 
     def process_query(
         self, query: str
-    ) -> Union[
-        SymbolReferencesResult,
-        SymbolRankResult,
-        SourceCodeResult,
-        ExactSearchResult,
-        FindAndReplaceResult,
-    ]:
+    ) -> Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult,]:
         """
         Processes an NLP-formatted query and return the results of the appropriate search
 

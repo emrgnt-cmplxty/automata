@@ -13,7 +13,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         click.option(
             "--llm_toolkits",
             type=str,
-            default="python_indexer,python_writer",
+            default="python_retriever,python_writer",
             help="Comma-separated list of toolkits to be used main agent.",
         ),
         click.option(

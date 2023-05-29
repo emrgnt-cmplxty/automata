@@ -1,49 +1,34 @@
-"""
-PythonIndexerToolManager
-
-A class for interacting with the PythonIndexer API, which provides functionality to extract
-information about classes, functions, and their docstrings from a given directory of Python files.
-
-The PythonIndexerToolManager class builds a list of Tool objects, each representing a specific
-command to interact with the PythonIndexer API.
-
-Attributes:
-- indexer (PythonIndexer): A PythonIndexer object representing the code parser to work with.
-
-Example usage:
-    python_indexer = PythonIndexer()
-    python_parser_tool_builder = PythonIndexerToolManager(python_parser)
-    tools = python_parser_tool_builder.build_tools()
-
-"""
 import logging
 from typing import List, Optional
 
 from automata.core.base.tool import Tool
+from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
+from automata.core.code_indexing.utils import NO_RESULT_FOUND_STR
 from automata.tool_management.base_tool_manager import BaseToolManager
-from automata.tools.python_tools.python_indexer import PythonIndexer
 
 logger = logging.getLogger(__name__)
 
 
-class PythonIndexerToolManager(BaseToolManager):
+class PythonCodeRetrieverToolManager(BaseToolManager):
     """
-    PythonIndexerToolManager
+    PythonCodeRetrieverToolManager
     A class for interacting with the PythonIndexer API, which provides functionality to read
     the code state of a of local Python files.
     """
 
     def __init__(self, **kwargs):
         """
-        Initializes a PythonIndexerToolManager object with the given inputs.
+        Initializes a PythonInspectorToolManager object with the given inputs.
 
         Args:
-        - python_indexer (PythonIndexer): A PythonIndexer object which indexes the code to work with.
+        - python_retriever (PythonCodeRetriever): A PythonCodeRetriever object which allows inspecting of local code.
 
         Returns:
         - None
         """
-        self.indexer: PythonIndexer = kwargs.get("python_indexer")
+        self.code_retriever: PythonCodeRetriever = kwargs.get(
+            "python_retriever", PythonCodeRetriever()
+        )
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False
@@ -57,7 +42,7 @@ class PythonIndexerToolManager(BaseToolManager):
                 func=self._func_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given python path, without docstrings."
-                f' If no match is found, then "{PythonIndexer.NO_RESULT_FOUND_STR}" is returned.\n\n'
+                f' If no match is found, then "{NO_RESULT_FOUND_STR}" is returned.\n\n'
                 f'For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory,'
                 f"Then the correct tool input for the parser follows:\n"
                 f"  - tool_args\n"
@@ -94,7 +79,9 @@ class PythonIndexerToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            result = self.indexer.retrieve_code_without_docstrings(module_path, object_path)
+            result = self.code_retriever.get_source_code_without_docstrings(
+                module_path, object_path
+            )
             return result
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
@@ -104,7 +91,7 @@ class PythonIndexerToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the docstring of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
         try:
-            result = self.indexer.retrieve_docstring(module_path, object_path)
+            result = self.code_retriever.get_docstring(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
@@ -114,7 +101,7 @@ class PythonIndexerToolManager(BaseToolManager):
     ) -> str:
         """PythonIndexer retrieves the raw code of the python package, module, standalone function, class, or method at the given python path, with docstrings."""
         try:
-            result = self.indexer.retrieve_source_code(module_path, object_path)
+            result = self.code_retriever.get_source_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)

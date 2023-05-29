@@ -91,7 +91,8 @@ def test_toolkit():
 
 
 def test_toolkit_type():
-    assert len(ToolkitType) == 3
-    assert ToolkitType.PYTHON_INDEXER.name == "PYTHON_INDEXER"
+    assert len(ToolkitType) == 4
+    assert ToolkitType.PYTHON_RETRIEVER.name == "PYTHON_RETRIEVER"
     assert ToolkitType.PYTHON_WRITER.name == "PYTHON_WRITER"
     assert ToolkitType.COVERAGE_PROCESSOR.name == "COVERAGE_PROCESSOR"
+    assert ToolkitType.SYMBOL_SEARCHER.name == "SYMBOL_SEARCHER"

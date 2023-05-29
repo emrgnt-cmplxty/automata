@@ -1,18 +1,3 @@
-"""
-PythonWriterToolManager
-
-A class for interacting with the PythonWriter API, which provides functionality to modify
-the code state of a given directory of Python files.
-
-Attributes:
-- writer (PythonWriter): A PythonWriter object for manipulating local pythonf iles.
-
-Example -
-    python_indexer = PythonIndexer(root_py_path())
-    python_writer = PythonWriter(python_indexer)
-    python_writer_tool_manager = PythonWriterToolManager(python_writer)
-    tools = build_tools(tool_manager)
-"""
 import logging
 from typing import List, Optional
 
@@ -89,6 +74,7 @@ class PythonWriterToolManager(BaseToolManager):
     ) -> str:
         """Writes the given code to the given module path and class name."""
         try:
+            print("Attempting to write update to module_path = ", module_path)
             self.writer.update_module(
                 source_code=code,
                 do_extend=True,
