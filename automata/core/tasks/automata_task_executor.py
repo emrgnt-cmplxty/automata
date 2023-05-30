@@ -55,10 +55,10 @@ class TestExecuteBehavior(IExecuteBehavior):
         module_map = LazyModuleTreeMap(task.path_to_root_py)
         retriever = PythonCodeRetriever(module_map)
         writer = PythonWriter(retriever)
-        writer.update_module(
+        writer.update_existing_module(
             module_dotpath="core.agent.automata_agent",
             source_code="def test123(x): return True",
-            write_to_disk=True,
+            do_write=True,
         )
         task.result = "Test result"
 

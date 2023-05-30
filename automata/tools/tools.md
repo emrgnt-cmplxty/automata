@@ -39,7 +39,7 @@ updated_module = writer.update_module(
 )
 
 # Write the updated module to disk
-writer.write_module("output/package/module.py")
+writer._write_module_to_disk("output/package/module.py")
 ```
 
 ## References
