@@ -33,14 +33,19 @@ Example usage:
     TODO - Add explicit check of module contents after extension and reduction of module.
 """
 import logging
-import os
 import re
 import subprocess
 from typing import Optional, Union, cast
 
 from redbaron import ClassNode, Node, NodeList, RedBaron
 
-from automata.tools.python_tools.python_indexer import PythonIndexer
+from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
+from automata.core.code_indexing.syntax_tree_navigation import (
+    find_all_function_and_class_syntax_tree_nodes,
+    find_import_syntax_tree_node_by_name,
+    find_import_syntax_tree_nodes,
+    find_syntax_tree_node,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +80,11 @@ class PythonWriter:
     class InvalidArguments(Exception):
         pass
 
-    def __init__(self, python_indexer: PythonIndexer):
+    def __init__(self, python_retriever: PythonCodeRetriever):
         """
-        Initialize the PythonWriter with a PythonIndexer instance.
+        Initialize the PythonWriter with a PythonCodeRetriever instance.
         """
-        self.indexer = python_indexer
+        self.code_retriever = python_retriever
 
     def update_module(self, source_code: str, do_extend: bool = True, **kwargs) -> None:
         """
@@ -94,102 +99,104 @@ class PythonWriter:
             write_to_disk (Optional[bool], keyword): Writes the changed module to disk.
 
         Raises:
-            InvalidArguments: If both module_obj and module_path are provided or none of them.
+            InvalidArguments: If both module_obj and module_dotpath are provided or none of them.
 
         Returns:
             Module: The updated module object.
         """
         module_obj = kwargs.get("module_obj")
-        module_path = kwargs.get("module_path")
+        module_dotpath = kwargs.get("module_dotpath")
         class_name = kwargs.get("class_name") or ""
         write_to_disk = kwargs.get("write_to_disk") or False
 
         logger.info(
             "\n---Updating module---\nPath:\n%s\nClass Name:\n%s\nSource Code:\n%s\nWriting to disk:\n%s\n"
-            % (module_path, class_name, source_code, write_to_disk)
+            % (module_dotpath, class_name, source_code, write_to_disk)
         )
 
-        self._validate_args(module_obj, module_path, write_to_disk)
+        self._validate_args(module_obj, module_dotpath, write_to_disk)
         source_code = PythonWriter._clean_input_code(source_code)
 
-        if module_path:
-            module_path = cast(str, module_path)
+        if module_dotpath:
+            module_dotpath = cast(str, module_dotpath)
 
         # christ on a bike
         is_new_module = (
-            not module_obj and module_path and module_path not in self.indexer.module_dict
+            not module_obj
+            and module_dotpath
+            and module_dotpath not in self.code_retriever.module_tree_map
         )
 
         is_existing_module = (
             module_obj
-            and self.indexer.get_module_path(module_obj) != PythonIndexer.NO_RESULT_FOUND_STR
-            or module_path in self.indexer.module_dict
+            and self.code_retriever.module_tree_map.get_existing_module_dotpath(module_obj)
+            or module_dotpath in self.code_retriever.module_tree_map
         )
 
         if is_new_module:
-            self._create_module_from_source_code(module_path, source_code)
+            self._create_module_from_source_code(module_dotpath, source_code)
         elif is_existing_module:
             if module_obj:
-                module_path = self.indexer.get_module_path(module_obj)
-            module_obj = self.indexer.module_dict[module_path]
-
+                module_dotpath = self.code_retriever.module_tree_map.get_existing_module_dotpath(
+                    module_obj
+                )
+            module_obj = self.code_retriever.module_tree_map.get_module(module_dotpath)
             PythonWriter._update_module(
                 source_code,
-                module_path,
+                module_dotpath,
                 module_obj,
                 do_extend,
                 class_name,
             )
         else:
             raise PythonWriter.InvalidArguments(
-                f"Module is neither new nor existing, somehow: {module_path}"
+                f"Module is neither new nor existing, somehow: {module_dotpath}"
             )
 
         if write_to_disk:
-            self.write_module(module_path)
+            self.write_module(module_dotpath)
 
-    def write_module(self, module_path: str) -> None:
+    def write_module(self, module_dotpath: str) -> None:
         """
         Write the modified module to a file at the specified output path.
 
         Args:
-            module_path (str): The file path where the modified module should be written.
+            module_dotpath (str): The file path where the modified module should be written.
         """
-        if module_path not in self.indexer.module_dict:
+        if module_dotpath not in self.code_retriever.module_tree_map:
             raise PythonWriter.ModuleNotFound(
-                f"Module not found in module dictionary: {module_path}"
+                f"Module not found in module dictionary: {module_dotpath}"
             )
-        source_code = self.indexer.retrieve_source_code(module_path)
-        module_os_rel_path = module_path.replace(self.indexer.PATH_SEP, os.path.sep)
-        module_os_abs_path = os.path.join(self.indexer.abs_path, module_os_rel_path)
-        os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)
-        file_path = f"{module_os_abs_path}.py"
-        with open(file_path, "w") as output_file:
+        source_code = self.code_retriever.get_source_code(module_dotpath)
+        module_fpath = self.code_retriever.module_tree_map.get_existing_module_fpath_by_dotpath(
+            module_dotpath
+        )
+        with open(module_fpath, "w") as output_file:
             output_file.write(source_code)
-        subprocess.run(["black", file_path])
-        subprocess.run(["isort", file_path])
+        subprocess.run(["black", module_fpath])
+        subprocess.run(["isort", module_fpath])
 
-    def _create_module_from_source_code(self, module_path: str, source_code: str) -> RedBaron:
+    def _create_module_from_source_code(self, module_dotpath: str, source_code: str) -> RedBaron:
         """
         Create a Python module from the given source code string.
 
         Args:
-            module_path (str): The path where the new module will be created.
+            module_dotpath (str): The path where the new module will be created.
         """
         parsed = RedBaron(source_code)
-        self.indexer.module_dict[module_path] = parsed  # TODO refactor to pure function
+        self.code_retriever.module_tree_map.put_module(module_dotpath, parsed)
         return parsed
 
     @staticmethod
     def _validate_args(
-        module_obj: Optional[RedBaron], module_path: Optional[str], write_to_disk: bool
+        module_obj: Optional[RedBaron], module_dotpath: Optional[str], write_to_disk: bool
     ) -> None:
         """Validate the arguments passed to the update_module method."""
-        if not (module_obj or module_path) or (module_obj and module_path):
+        if not (module_obj or module_dotpath) or (module_obj and module_dotpath):
             raise PythonWriter.InvalidArguments(
                 "Provide either 'module_obj' or 'module_path', not both or none."
             )
-        if not module_path and write_to_disk:
+        if not module_dotpath and write_to_disk:
             raise PythonWriter.InvalidArguments(
                 "Provide 'module_path' to write the module to disk."
             )
@@ -197,7 +204,7 @@ class PythonWriter:
     @staticmethod
     def _update_module(
         source_code: str,
-        module_path: str,
+        module_dotpath: str,
         existing_module_obj: RedBaron,
         do_extend: bool,
         class_name: str = "",
@@ -207,36 +214,30 @@ class PythonWriter:
 
         Args:
             source_code (str): The code containing the updates.
-            module_path (str): The relative path to the module.
+            module_dotpath (str): The relative path to the module.
             existing_module_obj Module: The module object to be updated.
             do_extend (bool): If True, add or update the code; if False, remove the code.
         """
 
         new_fst = RedBaron(source_code)
-        new_import_nodes = PythonIndexer.find_imports(new_fst)
+        new_import_nodes = find_import_syntax_tree_nodes(new_fst)
         PythonWriter._manage_imports(existing_module_obj, new_import_nodes, do_extend)
 
-        new_class_or_function_nodes = PythonIndexer.find_all_functions_and_classes(new_fst)
-        # handle imports here later
+        new_class_or_function_nodes = find_all_function_and_class_syntax_tree_nodes(new_fst)
         if class_name:  # splice the class
-            existing_class = PythonIndexer.find_module_class_function_or_method(
-                existing_module_obj, class_name
-            )
-            if not existing_class:
-                raise PythonWriter.ClassNotFound(
-                    f"Class {class_name} not found in module {module_path}"
+            existing_class = find_syntax_tree_node(existing_module_obj, class_name)
+            if isinstance(existing_class, ClassNode):
+                PythonWriter._update_node_with_children(
+                    new_class_or_function_nodes, existing_class, do_extend
                 )
-            if not isinstance(existing_class, ClassNode):
+
+            elif not do_extend:
                 raise PythonWriter.ClassNotFound(
-                    f"Object {class_name} in module {module_path} is not a class."
+                    f"Class {class_name} not found in module {module_dotpath}"
                 )
-            PythonWriter._update_node_with_children(
-                new_class_or_function_nodes, existing_class, do_extend
-            )
-        else:
-            PythonWriter._update_node_with_children(
-                new_class_or_function_nodes, existing_module_obj, do_extend
-            )
+        PythonWriter._update_node_with_children(
+            new_class_or_function_nodes, existing_module_obj, do_extend
+        )
 
     @staticmethod
     def _update_node_with_children(
@@ -247,9 +248,7 @@ class PythonWriter:
         """Update a class object according to the received code."""
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
-            existing_node = PythonIndexer.find_module_class_function_or_method(
-                node_to_update, child_node_name
-            )
+            existing_node = find_syntax_tree_node(node_to_update, child_node_name)
             if do_extend:
                 if existing_node:
                     existing_node.replace(new_node)
@@ -316,7 +315,7 @@ class PythonWriter:
     ) -> None:
         """Manage the imports in the module."""
         for new_import_statement in new_import_statements:
-            existing_import_statement = PythonIndexer.find_import_by_name(
+            existing_import_statement = find_import_syntax_tree_node_by_name(
                 module_obj, new_import_statement.name
             )
             if do_extend:

@@ -6,7 +6,9 @@ import textwrap
 import pytest
 from redbaron import ClassNode, DefNode, EndlNode, PassNode, RedBaron, ReturnNode, StringNode
 
-from automata.tools.python_tools.python_indexer import PythonIndexer
+from automata.core.code_indexing.module_tree_map import LazyModuleTreeMap
+from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
+from automata.core.code_indexing.syntax_tree_navigation import find_syntax_tree_node
 from automata.tools.python_tools.python_writer import PythonWriter
 
 
@@ -145,9 +147,9 @@ class MockCodeGenerator:
 @pytest.fixture
 def python_writer():
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    indexer = PythonIndexer(sample_dir)
-
-    return PythonWriter(indexer)
+    module_map = LazyModuleTreeMap(sample_dir)
+    retriever = PythonCodeRetriever(module_map)
+    return PythonWriter(retriever)
 
 
 def test_create_function_source_function():
@@ -182,7 +184,7 @@ def test_extend_module(python_writer):
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+    module_obj = python_writer._create_module_from_source_code("sample_module_2", source_code)
     mock_generator._check_module_obj(module_obj)
 
     mock_generator_2 = MockCodeGenerator(
@@ -205,7 +207,7 @@ def test_reduce_module(python_writer):
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+    module_obj = python_writer._create_module_from_source_code("sample_module_2", source_code)
     class_obj = module_obj.find("class")
 
     function_obj = module_obj.find_all("def")[-1]
@@ -221,11 +223,11 @@ def test_create_update_write_module(python_writer):
     )
     source_code = mock_generator.generate_code()
     python_writer.update_module(
-        source_code=source_code, module_path="test_module_2", do_extend=False
+        source_code=source_code, module_dotpath="sample_module_2", do_extend=False
     )
-    python_writer.write_module("test_module_2")
+    python_writer.write_module("sample_module_2")
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    os.remove(os.path.join(root_dir, "test_module_2.py"))
+    os.remove(os.path.join(root_dir, "sample_module_2.py"))
 
 
 def test_create_function_with_arguments():
@@ -239,9 +241,7 @@ def test_create_function_with_arguments():
         """
     )
     module_obj = RedBaron(source_code)
-    function_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, f"{mock_generator.function_name}_with_args"
-    )
+    function_obj = find_syntax_tree_node(module_obj, f"{mock_generator.function_name}_with_args")
     assert function_obj.name == f"{mock_generator.function_name}_with_args"
     def_arg_nodes = module_obj.find_all("def_argument")
     assert len(def_arg_nodes) == 2
@@ -277,9 +277,7 @@ def test_create_class_with_multiple_methods_properties_attributes():
         """
     )
     module_obj = RedBaron(source_code)
-    class_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, f"{mock_generator.class_name}_extended"
-    )
+    class_obj = find_syntax_tree_node(module_obj, f"{mock_generator.class_name}_extended")
     assert len(class_obj.filtered()) == 4  # class_attribute, method_1, method_2, some_property
 
 
@@ -294,9 +292,7 @@ def test_create_class_inheritance():
         """
     )
     module_obj = RedBaron(source_code)
-    class_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, f"{mock_generator.class_name}_child"
-    )
+    class_obj = find_syntax_tree_node(module_obj, f"{mock_generator.class_name}_child")
     assert class_obj.inherit_from.name.value == mock_generator.class_name
 
 
@@ -306,7 +302,7 @@ def test_reduce_module_remove_function(python_writer):
     )
     source_code = mock_generator.generate_code()
 
-    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+    module_obj = python_writer._create_module_from_source_code("sample_module_2", source_code)
 
     class_obj = module_obj[1]
     function_obj = module_obj[2]
@@ -329,13 +325,11 @@ def test_update_existing_function(python_writer):
             return "Updated"
         """
     )
-    module_obj = python_writer._create_module_from_source_code("test_module_2", source_code)
+    module_obj = python_writer._create_module_from_source_code("sample_module_2", source_code)
     python_writer.update_module(
         source_code=source_code_updated, module_obj=module_obj, do_extend=True
     )
-    updated_function_obj = PythonIndexer.find_module_class_function_or_method(
-        module_obj, mock_generator.function_name
-    )
+    updated_function_obj = find_syntax_tree_node(module_obj, mock_generator.function_name)
     assert len(updated_function_obj) == 1
     assert isinstance(updated_function_obj[0], ReturnNode)
 
@@ -352,11 +346,12 @@ def test_write_and_retrieve_mock_code(python_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
-    python_writer._create_module_from_source_code("test_module_2", source_code)
+    python_writer._create_module_from_source_code("sample_module_2", source_code)
 
-    python_writer.write_module("test_module_2")
+    python_writer.write_module("sample_module_2")
 
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    indexer = PythonIndexer(sample_dir)
-    module_docstring = indexer.retrieve_docstring("test_module_2", None)
+    module_map = LazyModuleTreeMap(sample_dir)
+    retriever = PythonCodeRetriever(module_map)
+    module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring

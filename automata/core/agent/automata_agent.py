@@ -73,7 +73,6 @@ class AutomataAgent(Agent):
         Returns:
             Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]: Latest assistant and user messages, or None if the task is completed.
         """
-
         if self.completed:
             raise ValueError("Cannot run an agent that has already completed.")
 
@@ -253,6 +252,26 @@ class AutomataAgent(Agent):
         """
         return self.coordinator is not None
 
+    def _extract_outputs(self, pattern: str, messages: list) -> dict:
+        """
+        Extract outputs from the given messages based on the provided regex pattern.
+
+        Args:
+            pattern (str): The regex pattern to use for extraction.
+            messages (list): The list of messages to process.
+
+        Returns:
+            dict: A dictionary where the keys are the names of the tools or agents and the values are their outputs.
+        """
+        outputs = {}
+        for message in messages:
+            matches = re.finditer(pattern, message.content, re.DOTALL)
+            for match in matches:
+                output_name, output_value = match.group(1), match.group(2).strip()
+                outputs[output_name] = output_value
+
+        return outputs
+
     def _parse_completion_message(self, completion_message: str) -> str:
         """
         Parses the completion message and replaces placeholders with actual tool outputs.
@@ -263,30 +282,19 @@ class AutomataAgent(Agent):
         Returns:
             str: The parsed completion message with placeholders replaced by tool outputs.
         """
-        outputs = {}
-        for message in self.messages:
-            pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
-            matches = re.finditer(pattern, message.content, re.DOTALL)
-            for match in matches:
-                tool_name, tool_output = match.group(1), match.group(2).strip()
-                outputs[tool_name] = tool_output
-        if self._has_helper_agents():
-            for message in self.messages:
-                pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
-                matches = re.finditer(pattern, message.content, re.DOTALL)
-                for match in matches:
-                    agent_version, agent_output = match.group(1), match.group(2).strip()
-                    outputs[agent_version] = agent_output
+        tool_pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
+        agent_pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
+        outputs = self._extract_outputs(tool_pattern, self.messages)
 
-            for output_name in outputs:
-                completion_message = completion_message.replace(
-                    f"{{{output_name}}}", outputs[output_name]
-                )
+        if self._has_helper_agents():
+            agent_outputs = self._extract_outputs(agent_pattern, self.messages)
+            outputs.update(agent_outputs)
 
         for output_name in outputs:
             completion_message = completion_message.replace(
                 f"{{{output_name}}}", outputs[output_name]
             )
+
         return completion_message
 
     def _build_initial_messages(self, formatters: Dict[str, str]) -> List[OpenAIChatMessage]:

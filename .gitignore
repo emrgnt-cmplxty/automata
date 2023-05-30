@@ -18,3 +18,4 @@ __pycache__/
 /.coverage*
 /coverage_analyzer_report.xml
 jobs/*
+/test_path/core/agent/automata_agent.py

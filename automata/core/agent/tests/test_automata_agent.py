@@ -12,7 +12,7 @@ from automata.tool_management.tool_management_utils import build_llm_toolkits
 
 
 def test_build_tool_message(automata_agent_config_builder):
-    tool_list = ["python_indexer", "python_writer"]
+    tool_list = ["python_retriever", "python_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()

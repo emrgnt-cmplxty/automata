@@ -1,19 +1,19 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 import networkx as nx
 import numpy as np
 from redbaron import RedBaron
 
+from automata.core.code_indexing.module_tree_map import LazyModuleTreeMap
 from automata.core.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
-from automata.tools.python_tools.python_indexer import PythonIndexer
 
 
-def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonIndexer] = None) -> RedBaron:
+def convert_to_fst_object(symbol: Symbol, module_map: LazyModuleTreeMap) -> RedBaron:
     """
     Returns the RedBaron object for the given symbol.
     Args:
         symbol (str): The symbol which corresponds to a module, class, or method.
-        indexer: The PythonIndexer to use to find the symbol.
+        module_map: The PythonASTIndexer to use to find the symbol.
     Returns:
         Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found.
     """
@@ -21,9 +21,9 @@ def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonIndexer] = Non
     # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)
     obj = None
-    indexer = indexer or PythonIndexer.cached_default()  # this is to make default lazy.
+    module_map = module_map or LazyModuleTreeMap.cached_default()
     # The optional argument is to allow us to run this function in mulitprocessing in the future,
-    # because indexer is not picklable (because redbaron objects are not picklable)
+    # because module map is not picklable (because redbaron objects are not picklable)
     # So the indexer would have to be created and destroyed in each process.
 
     while descriptors:
@@ -32,10 +32,10 @@ def convert_to_fst_object(symbol: Symbol, indexer: Optional[PythonIndexer] = Non
             Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
             == Descriptor.PythonKinds.Module
         ):
-            module_name = top_descriptor.name
-            if module_name.startswith("automata."):
-                module_name = module_name[len("automata.") :]  # indexer omits this
-            obj = indexer.module_dict.get(module_name)
+            module_dotpath = top_descriptor.name
+            if module_dotpath.startswith("automata."):
+                module_dotpath = module_dotpath[len("automata.") :]  # indexer omits this
+            obj = module_map.get_module(module_dotpath)
             # TODO - Understand why some modules might be None
             if not obj or "test" in top_descriptor.name:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")
@@ -108,8 +108,8 @@ def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
         Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values.
     """
     matches = {}
-    indexer = PythonIndexer.cached_default()
-    for module_path, module in indexer.module_dict.items():
+    module_map = LazyModuleTreeMap.cached_default()
+    for module_path, module in module_map.items():
         lines = module.dumps().splitlines()
         line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
         if line_numbers:

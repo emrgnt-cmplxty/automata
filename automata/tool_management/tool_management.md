@@ -41,7 +41,7 @@ tools = builder.build_tools(tool_manager)
 ```python
 from automata.tool_management.tool_management_utils import build_llm_toolkits
 
-tool_list = ["python_writer", "python_indexer", "codebase_oracle"]
+tool_list = ["python_writer", "python_inspector", "codebase_oracle"]
 toolkits = build_llm_toolkits(tool_list)
 ```
 

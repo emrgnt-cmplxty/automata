@@ -15,7 +15,7 @@ The AutomataTools provide capabilities to index, write, and search Python codeba
 ### PythonIndexer
 
 ```python
-from automata.tools.python_tools.python_indexer import PythonIndexer
+from automata.tools.python_tools.python_inspector import PythonIndexer
 
 indexer = PythonIndexer("/path/to/your/codebase")
 code = indexer.retrieve_code("package.module", "ClassName.method_name")
@@ -26,7 +26,7 @@ docstring = indexer.retrieve_docstring("package.module", "ClassName.method_name"
 
 ```python
 from automata.tools.python_tools.python_writer import PythonWriter
-from automata.tools.python_tools.python_indexer import PythonIndexer
+from automata.tools.python_tools.python_inspector import PythonIndexer
 
 indexer = PythonIndexer("/path/to/your/codebase")
 writer = PythonWriter(indexer)

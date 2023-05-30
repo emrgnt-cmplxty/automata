@@ -45,7 +45,7 @@ class CoverageProcessor:
 
         uncovered_line_numbers_queue = uncovered_line_numbers[:]
 
-        lines = self.coverage_analyzer.indexer.retrieve_parent_code_by_line(
+        lines = self.coverage_analyzer.module_map.get_parent_code_by_line(
             module_path, uncovered_line_numbers[0], True
         ).splitlines()
         marked_lines = []
@@ -84,5 +84,5 @@ if __name__ == "__main__":
     print(coverage_manager.list_coverage_gaps("tools.python_tools.python_indexer"))
     coverage_manager.process_coverage_gap(
         "tools.python_tools.python_indexer",
-        "retrieve_parent_function_name_by_line",
+        "get_parent_function_name_by_line",
     )

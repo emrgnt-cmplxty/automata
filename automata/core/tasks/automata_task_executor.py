@@ -1,9 +1,9 @@
 import logging
 import logging.config
-import os
 import time
 from abc import ABC, abstractmethod
 
+from automata.core.code_indexing.module_tree_map import LazyModuleTreeMap
 from automata.core.tasks.automata_task_registry import AutomataTaskRegistry
 from automata.core.tasks.task import AutomataTask, TaskStatus
 
@@ -45,17 +45,18 @@ class TestExecuteBehavior(IExecuteBehavior):
     """
 
     def execute(self, task: AutomataTask):
-        from automata.tools.python_tools.python_indexer import PythonIndexer
+        from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
         from automata.tools.python_tools.python_writer import PythonWriter
 
         logger.debug("Running a test execution...")
         if not isinstance(task.path_to_root_py, str):
             raise TypeError("A relative python path must be set for the test executor.")
 
-        indexer = PythonIndexer(os.path.join(task.task_dir, task.path_to_root_py))  # type: ignore
-        writer = PythonWriter(indexer)
+        module_map = LazyModuleTreeMap(task.path_to_root_py)
+        retriever = PythonCodeRetriever(module_map)
+        writer = PythonWriter(retriever)
         writer.update_module(
-            module_path="core.agent.automata_agent",
+            module_dotpath="core.agent.automata_agent",
             source_code="def test123(x): return True",
             write_to_disk=True,
         )

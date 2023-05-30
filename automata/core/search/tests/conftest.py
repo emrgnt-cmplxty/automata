@@ -18,9 +18,9 @@ def symbols():
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.configs.automata_agent_configs`/AutomataAgentConfig#load().(config_name)"
         ),
         # Symbol with a class method, self as argument
-        parse_symbol(
-            "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.tools.python_tools.python_indexer`/PythonIndexer#get_module_path().(self)"
-        ),
+        # parse_symbol(
+        #     "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.tools.python_tools.python_ast_indexer`/PythonASTIndexer#get_module_path().(self)"
+        # ),
         # Symbol with a locally defined object
         parse_symbol(
             "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tasks.automata_task_executor`/logger."
