@@ -109,7 +109,7 @@ class PythonWriter:
         class_name = kwargs.get("class_name") or ""
         write_to_disk = kwargs.get("write_to_disk") or False
 
-        logger.info(
+        logger.debug(
             "\n---Updating module---\nPath:\n%s\nClass Name:\n%s\nSource Code:\n%s\nWriting to disk:\n%s\n"
             % (module_dotpath, class_name, source_code, write_to_disk)
         )
