@@ -35,7 +35,7 @@ Example usage:
 import logging
 import re
 import subprocess
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
 
@@ -107,7 +107,7 @@ class PythonWriter:
         self,
         module_dotpath: str,
         source_code: str,
-        disambiguator: str = "",
+        disambiguator: Optional[str] = "",
         do_write: bool = False,
     ) -> None:
         """
@@ -176,6 +176,12 @@ class PythonWriter:
         module_fpath = self.code_retriever.module_tree_map.get_existing_module_fpath_by_dotpath(
             module_dotpath
         )
+
+        if not module_fpath:
+            raise PythonWriter.ModuleNotFound(
+                f"Module fpath found in module map for dotpath: {module_dotpath}"
+            )
+        module_fpath = cast(str, module_fpath)
         with open(module_fpath, "w") as output_file:
             output_file.write(source_code)
         subprocess.run(["black", module_fpath])
@@ -197,7 +203,7 @@ class PythonWriter:
         source_code: str,
         module_dotpath: str,
         existing_module_obj: RedBaron,
-        disambiguator: str,
+        disambiguator: Optional[str],
     ) -> None:
         """
         Update a module object according to the received code.

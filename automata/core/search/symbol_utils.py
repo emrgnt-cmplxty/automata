@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -8,7 +8,9 @@ from automata.core.code_indexing.module_tree_map import LazyModuleTreeMap
 from automata.core.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
 
 
-def convert_to_fst_object(symbol: Symbol, module_map: LazyModuleTreeMap) -> RedBaron:
+def convert_to_fst_object(
+    symbol: Symbol, module_map: Optional[LazyModuleTreeMap] = None
+) -> RedBaron:
     """
     Returns the RedBaron object for the given symbol.
     Args:
