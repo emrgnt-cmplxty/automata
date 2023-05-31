@@ -30,7 +30,7 @@ def test_init(python_writer_tool_builder):
 
 def test_build_tools(python_writer_tool_builder):
     tools = python_writer_tool_builder.build_tools()
-    assert len(tools) == 1
+    assert len(tools) == 3
     for tool in tools:
         assert isinstance(tool, Tool)
 
@@ -41,16 +41,15 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
 
     tools = python_writer_tool_builder.build_tools()
-    code_writer = tools[0]
+    create_module_tool = tools[1]
     function_def = "def f(x):\n    return x + 1"
     package = "sample_code"
     module = "sample3"
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    code_writer.func((file_py_path, None, function_def))
+    create_module_tool.func((file_py_path, function_def))
 
-    new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
     assert new_sample_text.strip() == function_def
@@ -61,14 +60,13 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 def test_extend_module_with_new_function(python_writer_tool_builder):
     current_file = inspect.getframeinfo(inspect.currentframe()).filename
     absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
-    prev_text = None
     with open(os.path.join(absolute_path, "sample_code", "sample.py"), "r", encoding="utf-8") as f:
         prev_text = f.read()
     assert prev_text is not None, "Could not read sample.py"
 
     tools = python_writer_tool_builder.build_tools()
     code_writer = tools[0]
-    function_def = "def f(x):\n    return x + 1"
+    function_def = "def g(x):\n    return x + 1"
     package = "sample_code"
     module = "sample"
 
@@ -77,7 +75,6 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_abs_path = os.path.join(absolute_path, file_rel_path)
     code_writer.func((file_py_path, None, function_def))
 
-    new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
     assert function_def in new_sample_text

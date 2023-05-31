@@ -16,7 +16,7 @@ FSTNode = Union[Node, RedBaron]
 
 class PythonCodeRetriever:
     def __init__(
-        self, module_tree_map: Optional[LazyModuleTreeMap] = LazyModuleTreeMap.cached_default()
+        self, module_tree_map: LazyModuleTreeMap = LazyModuleTreeMap.cached_default()
     ) -> None:
         self.module_tree_map = module_tree_map
 
@@ -57,7 +57,9 @@ class PythonCodeRetriever:
         """
 
         module = self.module_tree_map.get_module(module_dotpath)
-        return PythonCodeRetriever._get_docstring(find_syntax_tree_node(module, object_path))
+        if module:
+            return PythonCodeRetriever._get_docstring(find_syntax_tree_node(module, object_path))
+        return NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(
         self, module_dotpath: str, object_path: Optional[str]
@@ -96,16 +98,14 @@ class PythonCodeRetriever:
 
         module = self.module_tree_map.get_module(module_dotpath)
 
-        module = (
-            RedBaron(module.dumps()) if module else None
-        )  # create a copy because we'll remove docstrings
-        result = find_syntax_tree_node(module, object_path)
+        if module:
+            module_copy = RedBaron(module.dumps())
+            result = find_syntax_tree_node(module_copy, object_path)
 
-        if result:
-            _remove_docstrings(result)
-            return result.dumps()
-        else:
-            return NO_RESULT_FOUND_STR
+            if result:
+                _remove_docstrings(result)
+                return result.dumps()
+        return NO_RESULT_FOUND_STR
 
     def get_parent_function_name_by_line(self, module_dotpath: str, line_number: int) -> str:
         """
@@ -121,19 +121,16 @@ class PythonCodeRetriever:
         """
 
         module = self.module_tree_map.get_module(module_dotpath)
-        if not module:
-            return NO_RESULT_FOUND_STR
-
-        node = module.at(line_number)
-        if node.type != "def":
-            node = node.parent_find("def")
-        if node:
-            if node.parent[0].type == "class":
-                return f"{node.parent.name}.{node.name}"
-            else:
-                return node.name
-        else:
-            return NO_RESULT_FOUND_STR
+        if module:
+            node = module.at(line_number)
+            if node.type != "def":
+                node = node.parent_find("def")
+            if node:
+                if node.parent[0].type == "class":
+                    return f"{node.parent.name}.{node.name}"
+                else:
+                    return node.name
+        return NO_RESULT_FOUND_STR
 
     def get_parent_function_num_code_lines(
         self, module_dotpath: str, line_number: int
@@ -150,19 +147,17 @@ class PythonCodeRetriever:
 
         """
         module = self.module_tree_map.get_module(module_dotpath)
-        if not module:
-            return NO_RESULT_FOUND_STR
-
-        node = module.at(line_number)
-        if node.type != "def":
-            node = node.parent_find("def")
-        if not node:
-            return NO_RESULT_FOUND_STR
-        return (
-            node.absolute_bounding_box.bottom_right.line
-            - node.absolute_bounding_box.top_left.line
-            + 1
-        )
+        if module:
+            node = module.at(line_number)
+            if node.type != "def":
+                node = node.parent_find("def")
+            if node:
+                return (
+                    node.absolute_bounding_box.bottom_right.line
+                    - node.absolute_bounding_box.top_left.line
+                    + 1
+                )
+        return NO_RESULT_FOUND_STR
 
     def get_parent_code_by_line(
         self, module_dotpath: str, line_number: int, return_numbered=False
@@ -181,66 +176,68 @@ class PythonCodeRetriever:
         """
 
         module = self.module_tree_map.get_module(module_dotpath)
-        if not module:
-            return NO_RESULT_FOUND_STR
-        node = module.at(line_number)
+        if module:
+            node = module.at(line_number)
 
-        # retarget def or class node
-        if node.type not in ("def", "class") and node.parent_find(
-            lambda identifier: identifier in ("def", "class")
-        ):
-            node = node.parent_find(lambda identifier: identifier in ("def", "class"))
+            # retarget def or class node
+            if node.type not in ("def", "class") and node.parent_find(
+                lambda identifier: identifier in ("def", "class")
+            ):
+                node = node.parent_find(lambda identifier: identifier in ("def", "class"))
 
-        path = node.path().to_baron_path()
-        pointer = module
-        result = []
+            path = node.path().to_baron_path()
+            pointer = module
+            result = []
 
-        for entry in path:
-            if isinstance(entry, int):
-                pointer = pointer.node_list
-                for x in range(entry):
-                    start_line, start_col = (
-                        pointer[x].absolute_bounding_box.top_left.line,
-                        pointer[x].absolute_bounding_box.top_left.column,
-                    )
-
-                    if pointer[x].type == "string" and pointer[x].value.startswith('"""'):
-                        result += self._create_line_number_tuples(
-                            pointer[x], start_line, start_col
+            for entry in path:
+                if isinstance(entry, int):
+                    pointer = pointer.node_list
+                    for x in range(entry):
+                        start_line, start_col = (
+                            pointer[x].absolute_bounding_box.top_left.line,
+                            pointer[x].absolute_bounding_box.top_left.column,
                         )
-                    if pointer[x].type in ("def", "class"):
-                        docstring = PythonCodeRetriever._get_docstring(pointer[x])
-                        node_copy = pointer[x].copy()
-                        node_copy.value = '"""' + docstring + '"""'
-                        result += self._create_line_number_tuples(node_copy, start_line, start_col)
-                pointer = pointer[entry]
-            else:
-                start_line, start_col = (
-                    pointer.absolute_bounding_box.top_left.line,
-                    pointer.absolute_bounding_box.top_left.column,
-                )
-                node_copy = pointer.copy()
-                node_copy.value = ""
-                result += self._create_line_number_tuples(node_copy, start_line, start_col)
-                pointer = getattr(pointer, entry)
 
-        start_line, start_col = (
-            pointer.absolute_bounding_box.top_left.line,
-            pointer.absolute_bounding_box.top_left.column,
-        )
-        result += self._create_line_number_tuples(pointer, start_line, start_col)
+                        if pointer[x].type == "string" and pointer[x].value.startswith('"""'):
+                            result += self._create_line_number_tuples(
+                                pointer[x], start_line, start_col
+                            )
+                        if pointer[x].type in ("def", "class"):
+                            docstring = PythonCodeRetriever._get_docstring(pointer[x])
+                            node_copy = pointer[x].copy()
+                            node_copy.value = '"""' + docstring + '"""'
+                            result += self._create_line_number_tuples(
+                                node_copy, start_line, start_col
+                            )
+                    pointer = pointer[entry]
+                else:
+                    start_line, start_col = (
+                        pointer.absolute_bounding_box.top_left.line,
+                        pointer.absolute_bounding_box.top_left.column,
+                    )
+                    node_copy = pointer.copy()
+                    node_copy.value = ""
+                    result += self._create_line_number_tuples(node_copy, start_line, start_col)
+                    pointer = getattr(pointer, entry)
 
-        prev_line = 1
-        result_str = ""
-        for t in result:
-            if t[0] > prev_line + 1:
-                result_str += "...\n"
-            if return_numbered:
-                result_str += f"{t[0]}: {t[1]}\n"
-            else:
-                result_str += f"{t[1]}\n"
-            prev_line = t[0]
-        return result_str
+            start_line, start_col = (
+                pointer.absolute_bounding_box.top_left.line,
+                pointer.absolute_bounding_box.top_left.column,
+            )
+            result += self._create_line_number_tuples(pointer, start_line, start_col)
+
+            prev_line = 1
+            result_str = ""
+            for t in result:
+                if t[0] > prev_line + 1:
+                    result_str += "...\n"
+                if return_numbered:
+                    result_str += f"{t[0]}: {t[1]}\n"
+                else:
+                    result_str += f"{t[1]}\n"
+                prev_line = t[0]
+            return result_str
+        return NO_RESULT_FOUND_STR
 
     def get_expression_context(
         self,

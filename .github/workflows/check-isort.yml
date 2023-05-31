@@ -1,6 +1,6 @@
 name: Check Import Sorting
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   import-sorting:

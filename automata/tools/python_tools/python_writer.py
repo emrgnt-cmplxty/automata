@@ -37,7 +37,7 @@ import re
 import subprocess
 from typing import Optional, Union, cast
 
-from redbaron import ClassNode, Node, NodeList, RedBaron
+from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
 
 from automata.core.code_indexing.python_code_retriever import PythonCodeRetriever
 from automata.core.code_indexing.syntax_tree_navigation import (
@@ -74,7 +74,7 @@ class PythonWriter:
     class ModuleNotFound(Exception):
         pass
 
-    class ClassNotFound(Exception):
+    class ClassOrFunctionNotFound(Exception):
         pass
 
     class InvalidArguments(Exception):
@@ -86,82 +86,87 @@ class PythonWriter:
         """
         self.code_retriever = python_retriever
 
-    def update_module(self, source_code: str, do_extend: bool = True, **kwargs) -> None:
+    def create_new_module(
+        self, module_dotpath: str, source_code: str, do_write: bool = False
+    ) -> None:
         """
-        Perform an in-place extention or reduction of a module object according to the received code.
+        Create a new module object from source code.
 
         Args:
-            source_code (str): The source_code containing the updates or deletions.
-            do_extend (bool): True for adding/updating, False for reducing/deleting.
-            module_obj (Optional[Module], keyword): The module object to be updated.
-            module_path (Optional[str], keyword): The path of the module to be updated.
-            class_name (Optional[str], keyword): The name of the class where the update should be applied, will default to module.
-            write_to_disk (Optional[bool], keyword): Writes the changed module to disk.
-
-        Raises:
-            InvalidArguments: If both module_obj and module_dotpath are provided or none of them.
+            source_code (str): The source code of the module.
+            module_dotpath (str): The path of the module.
 
         Returns:
-            Module: The updated module object.
+            RedBaron: The module object.
         """
-        module_obj = kwargs.get("module_obj")
-        module_dotpath = kwargs.get("module_dotpath")
-        class_name = kwargs.get("class_name") or ""
-        write_to_disk = kwargs.get("write_to_disk") or False
+        self._create_module_from_source_code(module_dotpath, source_code)
+        if do_write:
+            self._write_module_to_disk(module_dotpath)
 
-        logger.info(
-            "\n---Updating module---\nPath:\n%s\nClass Name:\n%s\nSource Code:\n%s\nWriting to disk:\n%s\n"
-            % (module_dotpath, class_name, source_code, write_to_disk)
-        )
+    def update_existing_module(
+        self,
+        module_dotpath: str,
+        source_code: str,
+        disambiguator: Optional[str] = "",
+        do_write: bool = False,
+    ) -> None:
+        """
+        Update code or insert new code into an existing module.
 
-        self._validate_args(module_obj, module_dotpath, write_to_disk)
-        source_code = PythonWriter._clean_input_code(source_code)
+        Args:
+            source_code (str): The source code of the part of the module that needs to be updated or insert.
+            module_dotpath (str): The path of the module.
+            disambiguator (Optional[str]): The name of the class or function scope where the update should be applied, will default to module.
+            do_write (bool): Write the module to disk after updating.
 
-        if module_dotpath:
-            module_dotpath = cast(str, module_dotpath)
-
-        # christ on a bike
-        is_new_module = (
-            not module_obj
-            and module_dotpath
-            and module_dotpath not in self.code_retriever.module_tree_map
-        )
-
-        is_existing_module = (
-            module_obj
-            and self.code_retriever.module_tree_map.get_existing_module_dotpath(module_obj)
-            or module_dotpath in self.code_retriever.module_tree_map
-        )
-
-        if is_new_module:
-            self._create_module_from_source_code(module_dotpath, source_code)
-        elif is_existing_module:
-            if module_obj:
-                module_dotpath = self.code_retriever.module_tree_map.get_existing_module_dotpath(
-                    module_obj
-                )
-            module_obj = self.code_retriever.module_tree_map.get_module(module_dotpath)
-            PythonWriter._update_module(
-                source_code,
-                module_dotpath,
-                module_obj,
-                do_extend,
-                class_name,
+        Returns:
+            RedBaron: The module object.
+        """
+        module_obj = self.code_retriever.module_tree_map.get_module(module_dotpath)
+        if not module_obj:
+            raise PythonWriter.ModuleNotFound(
+                f"Module not found in module dictionary: {module_dotpath}"
             )
-        else:
-            raise PythonWriter.InvalidArguments(
-                f"Module is neither new nor existing, somehow: {module_dotpath}"
+        PythonWriter._update_existing_module(
+            source_code,
+            module_dotpath,
+            module_obj,
+            disambiguator=disambiguator,
+        )
+        if do_write:
+            self._write_module_to_disk(module_dotpath)
+
+    def delete_from_existing__module(
+        self, module_dotpath: str, object_dotpath: str, do_write: bool = False
+    ):
+        """
+        Reduce an existing module by removing a class or function.
+
+        Args:
+            module_dotpath (str): The path of the module.
+            object_dotpath (str): The name of the class or function to remove, including the name of the scope it is in, like ClassName.function_name
+            do_write (bool): Write the module to disk after updating.
+
+        Returns:
+            RedBaron: The module object.
+        """
+        module_obj = self.code_retriever.module_tree_map.get_module(module_dotpath)
+        if not module_obj:
+            raise PythonWriter.ModuleNotFound(
+                f"Module not found in module dictionary: {module_dotpath}"
             )
+        node = find_syntax_tree_node(module_obj, object_dotpath)
+        if node:
+            PythonWriter._delete_node(node)
+            if do_write:
+                self._write_module_to_disk(module_dotpath)
 
-        if write_to_disk:
-            self.write_module(module_dotpath)
-
-    def write_module(self, module_dotpath: str) -> None:
+    def _write_module_to_disk(self, module_dotpath: str) -> None:
         """
         Write the modified module to a file at the specified output path.
 
         Args:
-            module_dotpath (str): The file path where the modified module should be written.
+            module_dotpath (str)
         """
         if module_dotpath not in self.code_retriever.module_tree_map:
             raise PythonWriter.ModuleNotFound(
@@ -171,6 +176,12 @@ class PythonWriter:
         module_fpath = self.code_retriever.module_tree_map.get_existing_module_fpath_by_dotpath(
             module_dotpath
         )
+
+        if not module_fpath:
+            raise PythonWriter.ModuleNotFound(
+                f"Module fpath found in module map for dotpath: {module_dotpath}"
+            )
+        module_fpath = cast(str, module_fpath)
         with open(module_fpath, "w") as output_file:
             output_file.write(source_code)
         subprocess.run(["black", module_fpath])
@@ -188,26 +199,11 @@ class PythonWriter:
         return parsed
 
     @staticmethod
-    def _validate_args(
-        module_obj: Optional[RedBaron], module_dotpath: Optional[str], write_to_disk: bool
-    ) -> None:
-        """Validate the arguments passed to the update_module method."""
-        if not (module_obj or module_dotpath) or (module_obj and module_dotpath):
-            raise PythonWriter.InvalidArguments(
-                "Provide either 'module_obj' or 'module_path', not both or none."
-            )
-        if not module_dotpath and write_to_disk:
-            raise PythonWriter.InvalidArguments(
-                "Provide 'module_path' to write the module to disk."
-            )
-
-    @staticmethod
-    def _update_module(
+    def _update_existing_module(
         source_code: str,
         module_dotpath: str,
         existing_module_obj: RedBaron,
-        do_extend: bool,
-        class_name: str = "",
+        disambiguator: Optional[str],
     ) -> None:
         """
         Update a module object according to the received code.
@@ -216,49 +212,43 @@ class PythonWriter:
             source_code (str): The code containing the updates.
             module_dotpath (str): The relative path to the module.
             existing_module_obj Module: The module object to be updated.
-            do_extend (bool): If True, add or update the code; if False, remove the code.
+            disambiguator (str): The name of the class or function scope to be updated, useful for nested definitions.
         """
 
         new_fst = RedBaron(source_code)
         new_import_nodes = find_import_syntax_tree_nodes(new_fst)
-        PythonWriter._manage_imports(existing_module_obj, new_import_nodes, do_extend)
+        PythonWriter._update_imports(existing_module_obj, new_import_nodes)
 
         new_class_or_function_nodes = find_all_function_and_class_syntax_tree_nodes(new_fst)
-        if class_name:  # splice the class
-            existing_class = find_syntax_tree_node(existing_module_obj, class_name)
-            if isinstance(existing_class, ClassNode):
+        if disambiguator:  # splice the class
+            disambiguator_node = find_syntax_tree_node(existing_module_obj, disambiguator)
+            if isinstance(disambiguator_node, (ClassNode, DefNode)):
                 PythonWriter._update_node_with_children(
-                    new_class_or_function_nodes, existing_class, do_extend
+                    new_class_or_function_nodes,
+                    disambiguator_node,
                 )
-
-            elif not do_extend:
-                raise PythonWriter.ClassNotFound(
-                    f"Class {class_name} not found in module {module_dotpath}"
+            else:
+                raise PythonWriter.ClassOrFunctionNotFound(
+                    f"Node {disambiguator} not found in module {module_dotpath}"
                 )
-        PythonWriter._update_node_with_children(
-            new_class_or_function_nodes, existing_module_obj, do_extend
-        )
+        PythonWriter._update_node_with_children(new_class_or_function_nodes, existing_module_obj)
 
     @staticmethod
     def _update_node_with_children(
         class_or_function_nodes: NodeList,
         node_to_update: Union[ClassNode, RedBaron],
-        do_extend: bool,
     ) -> None:
         """Update a class object according to the received code."""
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
             existing_node = find_syntax_tree_node(node_to_update, child_node_name)
-            if do_extend:
-                if existing_node:
-                    existing_node.replace(new_node)
-                else:
-                    node_to_update.append(new_node)
-            elif existing_node:
-                PythonWriter.delete_node(existing_node)
+            if existing_node:
+                existing_node.replace(new_node)
+            else:
+                node_to_update.append(new_node)
 
     @staticmethod
-    def delete_node(node: Node) -> None:
+    def _delete_node(node: Node) -> None:
         """Delete a node from the FST."""
         parent = node.parent
         parent_index = node.index_on_parent
@@ -310,19 +300,16 @@ class PythonWriter:
         return source_code
 
     @staticmethod
-    def _manage_imports(
-        module_obj: RedBaron, new_import_statements: NodeList, do_extend: bool
-    ) -> None:
+    def _update_imports(module_obj: RedBaron, new_import_statements: NodeList) -> None:
         """Manage the imports in the module."""
+        first_import = module_obj.find(lambda identifier: identifier in ("import", "from_import"))
+
         for new_import_statement in new_import_statements:
             existing_import_statement = find_import_syntax_tree_node_by_name(
                 module_obj, new_import_statement.name
             )
-            if do_extend:
-                if existing_import_statement:
-                    existing_import_statement.replace(new_import_statement)
+            if not existing_import_statement:
+                if first_import:
+                    first_import.insert_before(new_import_statement)  # we will run isort later
                 else:
-                    module_obj.append(new_import_statement)
-            else:
-                if existing_import_statement:
-                    PythonWriter.delete_node(existing_import_statement)
+                    module_obj.insert(0, new_import_statement)
