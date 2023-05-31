@@ -1,5 +1,5 @@
 name: Codecov Check
-on: [push]
+on: [pull-request]
 jobs:
   run:
     runs-on: ${{ matrix.os }}
