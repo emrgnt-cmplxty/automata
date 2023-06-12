@@ -3,12 +3,12 @@ from typing import Optional
 
 import networkx as nx
 from configs.config_enums import ConfigCategory
-from tools.search.symbol_searcher import SymbolSearcher
 
 from automata_docs.core.embedding.symbol_embedding_map import SymbolEmbeddingMap
 from automata_docs.core.embedding.symbol_similarity import NormType, SymbolSimilarity
 from automata_docs.core.search.symbol_graph import SymbolGraph
 from automata_docs.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
+from automata_docs.core.search.symbol_searcher import SymbolSearcher
 from automata_docs.core.utils import config_path
 
 

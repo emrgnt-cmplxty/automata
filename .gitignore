@@ -1,17 +1,9 @@
 **/sample_modules/**
-dump/
-/.idea/
 .env
 local
 # Local Cruft
-automata.egg-info/*
+automata_docs.egg-info/
 **/**/.DS_Store
 local_env/*
 __pycache__/
 *.pyc
-/build/
-/dist/
-/coverage.xml
-/.coverage
-/.coverage*
-/coverage_analyzer_report.xml
