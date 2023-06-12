@@ -5,8 +5,6 @@ from typing import Any, Dict, Tuple
 
 import jsonpickle
 
-from configs.automata_agent_config_utils import AutomataAgentConfigFactory
-from configs.automata_agent_configs import AutomataAgentConfig
 from configs.config_enums import AgentConfigName, ConfigCategory
 from automata_docs.core.code_indexing.utils import build_repository_overview
 from automata_docs.core.search.symbol_types import Symbol
@@ -38,47 +36,6 @@ def check_kwargs(kwargs):
     assert (
         "main_config_name" in kwargs or "main_config" in kwargs
     ), "You must provide a main agent config name, with field main_config_name."
-
-
-def create_instructions_and_config_from_kwargs(
-    **kwargs,
-) -> Tuple[str, AutomataAgentConfig]:
-    instructions = kwargs.get("instructions")
-    if not isinstance(instructions, str):
-        raise ValueError("instructions must be provided")
-    del kwargs["instructions"]
-
-    if "main_config" in kwargs:
-        return instructions, kwargs["main_config"]
-
-    return instructions, create_config_from_kwargs(**kwargs)
-
-
-def create_config_from_kwargs(**kwargs) -> AutomataAgentConfig:
-    logger.debug(f"Loading helper configs...")
-    helper_agent_names = kwargs.get("helper_agent_names")
-    if helper_agent_names:
-        if not isinstance(helper_agent_names, str):
-            raise ValueError("helper_agent_names must be a comma-separated string.")
-        helper_agent_configs = {
-            AgentConfigName(helper_config_name): AutomataAgentConfigFactory.create_config(
-                main_config_name=helper_config_name
-            )
-            for helper_config_name in helper_agent_names.split(",")
-        }
-        kwargs["helper_agent_configs"] = helper_agent_configs
-        del kwargs["helper_agent_names"]
-
-    logger.debug(f"Loading main agent config..   .")
-    kwargs["main_config"] = AutomataAgentConfigFactory.create_config(**kwargs)
-    del kwargs["main_config_name"]
-
-    if kwargs.get("include_overview"):
-        instruction_payload = kwargs.get("instruction_payload", {})
-        instruction_payload["overview"] = build_repository_overview(root_py_path())
-        kwargs["instruction_payload"] = instruction_payload
-
-    return AutomataAgentConfigFactory.create_config(None, **kwargs)
 
 
 def load_docs(kwargs: Dict[str, Any]) -> Dict[Symbol, Tuple[str, str, str, str]]:

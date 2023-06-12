@@ -211,14 +211,14 @@ class SymbolEmbeddingMap:
         filtered_symbols = get_rankable_symbols(defined_symbols)
 
         for symbol in filtered_symbols:
-            try:
-                symbol_source = str(convert_to_fst_object(symbol))
-                symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
-                embedding_dict[symbol] = SymbolEmbedding(
-                    symbol=symbol, vector=symbol_embedding, source_code=symbol_source
-                )
+            # try:
+            symbol_source = str(convert_to_fst_object(symbol))
+            symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
+            embedding_dict[symbol] = SymbolEmbedding(
+                symbol=symbol, vector=symbol_embedding, source_code=symbol_source
+            )
 
-            except Exception as e:
-                logger.error("Building embedding for symbol: %s failed with %s" % (symbol, e))
+        # except Exception as e:
+        #     logger.error("Building embedding for symbol: %s failed with %s" % (symbol, e))
 
         return embedding_dict

@@ -1,4 +1,5 @@
 README.md
+pyproject.toml
 setup.py
 automata_docs/__init__.py
 automata_docs.egg-info/PKG-INFO
@@ -14,6 +15,8 @@ automata_docs/cli/click_options.py
 automata_docs/cli/scripts/__init__.py
 automata_docs/cli/scripts/run_docs_l2.py
 automata_docs/cli/scripts/run_embedding.py
+automata_docs/configs/__init__.py
+automata_docs/configs/config_enums.py
 automata_docs/core/__init__.py
 automata_docs/core/utils.py
 automata_docs/core/code_indexing/__init__.py

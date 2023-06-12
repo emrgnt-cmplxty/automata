@@ -27,7 +27,4 @@ def cli(ctx):
 )
 @click.pass_context
 def run_doc_generation(ctx, *args, **kwargs):
-    from .scripts.run_task import initialize_task
-
-    task = initialize_task(kwargs)
-    print("Created a task with id: ", task.task_id)
+    raise NotImplementedError

@@ -1,6 +1,3 @@
-*.sqlite*
-automata/local_work/*
-automata/local_notebooks/*
 **/sample_modules/**
 dump/
 /.idea/
@@ -18,5 +15,3 @@ __pycache__/
 /.coverage
 /.coverage*
 /coverage_analyzer_report.xml
-jobs/*
-/test_path/core/agent/automata_agent.py
