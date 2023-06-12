@@ -1,0 +1,22 @@
+*.sqlite*
+automata/local_work/*
+automata/local_notebooks/*
+**/sample_modules/**
+dump/
+/.idea/
+.env
+local
+# Local Cruft
+automata.egg-info/*
+**/**/.DS_Store
+local_env/*
+__pycache__/
+*.pyc
+/build/
+/dist/
+/coverage.xml
+/.coverage
+/.coverage*
+/coverage_analyzer_report.xml
+jobs/*
+/test_path/core/agent/automata_agent.py

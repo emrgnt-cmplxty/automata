@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.1.1 # Replace with the desired version of mypy
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-attrs]
+  - repo: https://github.com/google/yapf
+    rev: v0.31.0
+    hooks:
+      - id: yapf
+        args: [--style, google]
+  - repo: https://github.com/psf/black
+    rev: 23.1.0 # Replace with the desired version of black
+    hooks:
+      - id: black
+        language_version: python3.9 # Replace with your Python version
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0 # Replace with the desired version of flake8
+    hooks:
+      - id: flake8
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0 # Replace with the desired version of isort
+    hooks:
+      - id: isort
+        language_version: python3.9 # Replace with your Python version

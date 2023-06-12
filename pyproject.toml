@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[tool.poetry.scripts]
+automata = 'automata.cli.__main__:cli'
+
+[tool.poetry]
+name = "automata_docs"
+version = "0.1.0"
+description = "An automata for building docs."
+authors = ["owen@emergentagi.org"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+# Add your project dependencies here
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0"
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
+addopts = "-m 'not regression' --ignore=**/sample_modules/*"
+markers = ["regression: marks tests as regression tests"]
+
+[tool.black]
+line-length = 99
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | random
+    | local_env
+    | build
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                      # the root of the project
+)
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 99
+skip_glob = ["local_env/*", "**/sample_code/*"]
+
+[tool.mypy]
+# other mypy configurations go here
+# uncomment if this is being really annoying again
+ignore_missing_imports = true
+exclude = '(random|local_env|data|results|notebooks|sample_code)/'
+
+[[tool.mypy.overrides]]
+module = "pytz.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "yaml"
+ignore_missing_imports = true
+
+[tool.coverage.run]
+branch = true
+source = ["."]
+omit = ["*/tests/*", "*/site-packages/*", "*/distutils/*", "*/venv/*", "setup.py", "conftest.py"]
+
+[tool.coverage.report]
+precision = 2
+omit = ["*/tests/*", "*/site-packages/*", "*/distutils/*", "*/venv/*", "setup.py", "conftest.py"]
+
+[tool.coverage.html]
+directory = "htmlcov/"
+
+[tool.codecov]
+require_ci_to_pass = true
+
+[tool.flake8]
+ignore = ["E501", "W503"]
+
+[tool.pyright]
+reportGeneralTypeIssues = true
+reportMissingTypeStubs = false
+useLibraryCodeForTypes = true
