@@ -1,7 +1,7 @@
 import re
 from typing import List, Optional
 
-from automata_docs.core.symbol.symbol_types import Descriptor, Package, Symbol
+from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolPackage
 
 """
 SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.
@@ -34,25 +34,25 @@ class SymbolParser:
             return self.symbol[self.index + 1]
         return None
 
-    def parse_descriptors(self) -> List[Descriptor]:
+    def parse_descriptors(self) -> List[SymbolDescriptor]:
         result = []
         while self.index < len(self.symbol):
             descriptor = self.parse_descriptor()
             result.append(descriptor)
         return result
 
-    def parse_descriptor(self) -> Descriptor:
+    def parse_descriptor(self) -> SymbolDescriptor:
         next_char = self.current()
         if next_char == "(":
             self.index += 1
             name = self.accept_identifier("parameter name")
-            descriptor = Descriptor(name, Descriptor.ScipSuffix.Parameter)
+            descriptor = SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Parameter)
             self.accept_character(")", "closing parameter name")
             return descriptor
         elif next_char == "[":
             self.index += 1
             name = self.accept_identifier("type parameter name")
-            descriptor = Descriptor(name, Descriptor.ScipSuffix.TypeParameter)
+            descriptor = SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.TypeParameter)
             self.accept_character("]", "closing type parameter name")
             return descriptor
         else:
@@ -63,20 +63,22 @@ class SymbolParser:
                 disambiguator = ""
                 if self.current() != ")":
                     disambiguator = self.accept_identifier("method disambiguator")
-                descriptor = Descriptor(name, Descriptor.ScipSuffix.Method, disambiguator)
+                descriptor = SymbolDescriptor(
+                    name, SymbolDescriptor.ScipSuffix.Method, disambiguator
+                )
                 self.accept_character(")", "closing method")
                 self.accept_character(".", "closing method")
                 return descriptor
             elif suffix == "/":
-                return Descriptor(name, Descriptor.ScipSuffix.Namespace)
+                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Namespace)
             elif suffix == ".":
-                return Descriptor(name, Descriptor.ScipSuffix.Term)
+                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Term)
             elif suffix == "#":
-                return Descriptor(name, Descriptor.ScipSuffix.Type)
+                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Type)
             elif suffix == ":":
-                return Descriptor(name, Descriptor.ScipSuffix.Meta)
+                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Meta)
             elif suffix == "!":
-                return Descriptor(name, Descriptor.ScipSuffix.Macro)
+                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Macro)
             else:
                 raise self.error("Expected a descriptor suffix")
 
@@ -148,7 +150,7 @@ def parse_symbol(symbol_uri: str, include_descriptors: bool = True) -> Symbol:
     return Symbol(
         symbol_uri,
         scheme,
-        Package(manager, package_name, package_version),
+        SymbolPackage(manager, package_name, package_version),
         tuple(descriptors),
     )
 
@@ -158,8 +160,8 @@ def new_local_symbol(symbol: str, id: str) -> Symbol:
     return Symbol(
         symbol,
         "local",
-        Package("", "", ""),
-        tuple([Descriptor(id, Descriptor.ScipSuffix.Local)]),
+        SymbolPackage("", "", ""),
+        tuple([SymbolDescriptor(id, SymbolDescriptor.ScipSuffix.Local)]),
     )
 
 

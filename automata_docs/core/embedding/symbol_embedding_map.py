@@ -20,7 +20,7 @@ class EmbeddingsProvider:
 
             openai.api_key = OPENAI_API_KEY
 
-    def get_embedding(self, symbol_source: str) -> np.ndarray:
+    def build_embedding(self, symbol_source: str) -> np.ndarray:
         """
         Get the embedding for a symbol.
         Args:
@@ -28,7 +28,7 @@ class EmbeddingsProvider:
         Returns:
             A numpy array representing the embedding
         """
-        # wait to import get_embedding to allow easy mocking of the function in tests.
+        # wait to import build_embedding to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
         return np.array(get_embedding(symbol_source, engine="text-embedding-ada-002"))
@@ -112,7 +112,7 @@ class SymbolEmbeddingMap:
 
                 if not map_symbol:
                     logger.debug("Adding a new symbol: %s" % symbol)
-                    symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
+                    symbol_embedding = self.embedding_provider.build_embedding(symbol_source)
                     self.embedding_dict[symbol] = SymbolEmbedding(
                         symbol=symbol,
                         vector=symbol_embedding,
@@ -123,7 +123,7 @@ class SymbolEmbeddingMap:
                     # If not, we can update the embedding
                     if self.embedding_dict[map_symbol].source_code != symbol_source:
                         logger.debug("Modifying existing embedding for symbol: %s" % symbol)
-                        symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
+                        symbol_embedding = self.embedding_provider.build_embedding(symbol_source)
                         self.embedding_dict[symbol] = SymbolEmbedding(
                             symbol=symbol,
                             vector=symbol_embedding,
@@ -209,7 +209,7 @@ class SymbolEmbeddingMap:
         for symbol in filtered_symbols:
             try:
                 symbol_source = str(convert_to_fst_object(symbol))
-                symbol_embedding = self.embedding_provider.get_embedding(symbol_source)
+                symbol_embedding = self.embedding_provider.build_embedding(symbol_source)
                 embedding_dict[symbol] = SymbolEmbedding(
                     symbol=symbol, vector=symbol_embedding, source_code=symbol_source
                 )

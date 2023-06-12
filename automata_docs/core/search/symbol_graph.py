@@ -9,9 +9,9 @@ from automata_docs.core.search.symbol_utils import convert_to_fst_object, get_ra
 from automata_docs.core.symbol.scip_pb2 import Index, SymbolRole
 from automata_docs.core.symbol.symbol_parser import parse_symbol
 from automata_docs.core.symbol.symbol_types import (
-    Descriptor,
     StrPath,
     Symbol,
+    SymbolDescriptor,
     SymbolFile,
     SymbolReference,
 )
@@ -115,7 +115,7 @@ class _CallerCalleeManager:
                 logger.error(f"Parsing symbol {symbol.symbol} failed with error {e}")
                 continue
 
-            if symbol_object.symbol_kind_by_suffix() != Descriptor.PythonKinds.Method:
+            if symbol_object.symbol_kind_by_suffix() != SymbolDescriptor.PythonKinds.Method:
                 continue
 
             try:
@@ -127,8 +127,8 @@ class _CallerCalleeManager:
             for ref in references_in_scope:
                 try:
                     if (
-                        ref.symbol.symbol_kind_by_suffix() == Descriptor.PythonKinds.Method
-                        or ref.symbol.symbol_kind_by_suffix() == Descriptor.PythonKinds.Class
+                        ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PythonKinds.Method
+                        or ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PythonKinds.Class
                     ):
                         if ref.symbol == symbol_object:
                             continue

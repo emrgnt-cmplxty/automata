@@ -98,7 +98,7 @@ class SymbolSimilarity:
         Returns:
             A dictionary mapping each symbol's uri to its similarity score with the query
         """
-        query_embedding = self.embedding_provider.get_embedding(query_text)
+        query_embedding = self.embedding_provider.build_embedding(query_text)
 
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_query_similarity_vec(
@@ -121,7 +121,7 @@ class SymbolSimilarity:
         Returns:
             A dictionary mapping the k most similar symbols to their similarity score
         """
-        query_embedding = self.embedding_provider.get_embedding(query_text)
+        query_embedding = self.embedding_provider.build_embedding(query_text)
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_query_similarity_vec(
             query_embedding, self._process_norm_type(norm_type)
@@ -160,7 +160,7 @@ class SymbolSimilarity:
         Returns:
             A unit-normed vector as a numpy array.
         """
-        query_embedding = self.embedding_provider.get_embedding(query_text)
+        query_embedding = self.embedding_provider.build_embedding(query_text)
         similarity_scores = self._calculate_query_similarity_vec(query_embedding, norm_type)
 
         # Normalizing the vector
