@@ -1,4 +1,3 @@
-# from .conftest import temp_output_filename
 import pytest
 
 from automata_docs.core.database.vector import JSONVectorDB

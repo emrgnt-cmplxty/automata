@@ -1,4 +1,6 @@
 import abc
+import logging
+import logging.config
 from typing import Any, Dict, List
 
 import jsonpickle
@@ -6,6 +8,8 @@ import numpy as np
 
 from automata_docs.core.database.provider import DatabaseProvider
 from automata_docs.core.symbol.symbol_types import Embedding, Symbol
+
+logger = logging.getLogger(__name__)
 
 
 class VectorDatabaseProvider(DatabaseProvider):
@@ -38,9 +42,12 @@ class JSONVectorDB(VectorDatabaseProvider):
             file.write(encoded_data)
 
     def load(self) -> Any:
-        with open(self.file_path, "r") as file:
-            self.data = jsonpickle.decode(file.read())
-            self.index = {embedding.symbol: i for i, embedding in enumerate(self.data)}
+        try:
+            with open(self.file_path, "r") as file:
+                self.data = jsonpickle.decode(file.read())
+                self.index = {embedding.symbol: i for i, embedding in enumerate(self.data)}
+        except FileNotFoundError:
+            logger.info("Creating new vector embedding db at %s" % self.file_path)
 
     def add(self, embedding: Embedding):
         self.data.append(embedding)
