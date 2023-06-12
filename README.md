@@ -16,4 +16,3 @@ To run the code, follow these steps:
 6. Install pre-commit hooks by running `pre-commit install`
 7. Build appropriate .env file
 8. Execute the main script as in this example - `automata main --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`
-# AutomataDocs

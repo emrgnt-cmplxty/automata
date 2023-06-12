@@ -97,9 +97,7 @@ class SymbolEmbeddingMap:
         Result:
             None
         """
-        from automata_docs.core.search.symbol_utils import (
-            convert_to_fst_object,
-        )  # for mocking
+        from automata_docs.core.search.symbol_utils import convert_to_fst_object  # for mocking
 
         desc_to_full_symbol = {
             ".".join([desc.name for desc in symbol.descriptors]): symbol
@@ -203,9 +201,7 @@ class SymbolEmbeddingMap:
         Returns:
             Map from symbol to embedding vector
         """
-        from automata_docs.core.search.symbol_utils import (
-            convert_to_fst_object,
-        )  # for mocking
+        from automata_docs.core.search.symbol_utils import convert_to_fst_object  # for mocking
 
         embedding_dict: Dict[Symbol, SymbolEmbedding] = {}
         filtered_symbols = get_rankable_symbols(defined_symbols)

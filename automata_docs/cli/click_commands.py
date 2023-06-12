@@ -1,6 +1,5 @@
 # Add this import at the beginning of your file
 import click
-
 from configs.config_enums import InstructionConfigVersion
 
 from .click_options import common_options
@@ -27,7 +26,4 @@ def cli(ctx):
 )
 @click.pass_context
 def run_doc_generation(ctx, *args, **kwargs):
-    from .scripts.run_task import initialize_task
-
-    task = initialize_task(kwargs)
-    print("Created a task with id: ", task.task_id)
+    raise NotImplementedError

@@ -3,7 +3,6 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
-import colorlog
 import numpy as np
 import openai
 import yaml
@@ -116,11 +115,6 @@ def get_logging_config(
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "colored": {
-                "()": colorlog.ColoredFormatter,
-                "format": "%(log_color)s%(levelname)s:%(name)s:%(message)s",
-                "log_colors": color_scheme,
-            },
             "standard": {  # a standard formatter for file handler
                 "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
             },

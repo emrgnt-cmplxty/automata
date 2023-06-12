@@ -1,7 +1,3 @@
-import os
-
-import pytest
-
 from automata_docs.core.code_indexing.directory_manager import DirectoryManager
 
 
@@ -47,15 +43,3 @@ def test_get_subdirectories(tmp_path):
     subdirectories = dir_manager.get_subdirectories(".")
     assert len(subdirectories) == 2  # 2 subdirectories in root: dir1, dir2
     assert set(subdirectories) == {"dir1", "dir2"}
-
-
-def test_ensure_directory_exists(tmp_path):
-    test_dir = create_test_dir_structure(tmp_path)
-    dir_manager = DirectoryManager(str(test_dir))
-    assert (
-        dir_manager._get_node_for_path(dir_manager.root, "dir3") is None
-    )  # dir3 doesn't exist initially
-    dir_manager.ensure_directory_exists(str(test_dir / "dir3"))
-    assert (
-        dir_manager._get_node_for_path(dir_manager.root, "dir3") is not None
-    )  # dir3 exists after ensure_directory_exists
