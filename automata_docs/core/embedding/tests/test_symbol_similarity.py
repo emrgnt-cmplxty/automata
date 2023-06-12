@@ -1,15 +1,13 @@
 import numpy as np
-from conftest import get_sem, patch_get_embedding
 
-from automata_docs.core.search.symbol_rank.symbol_embedding_map import (
+from automata_docs.core.embedding.symbol_embedding_map import (
     EmbeddingsProvider,
     SymbolEmbeddingMap,
 )
-from automata_docs.core.search.symbol_rank.symbol_similarity import (
-    NormType,
-    SymbolSimilarity,
-)
-from automata_docs.core.search.symbol_types import SymbolEmbedding
+from automata_docs.core.embedding.symbol_similarity import NormType, SymbolSimilarity
+from automata_docs.core.symbol.symbol_types import SymbolEmbedding
+
+from .conftest import get_sem, patch_get_embedding
 
 
 def test_generate_similarity_matrix(

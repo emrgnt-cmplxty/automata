@@ -1,24 +1,21 @@
 import argparse
 import logging
-import openai
 import textwrap
 from typing import Any, Dict
 
-
+import openai
 from cli.cli_utils import load_docs, save_docs
-from config import OPENAI_API_KEY
+
 from automata_docs.core.code_indexing.python_code_printer import CodePrinter
 from automata_docs.core.search.symbol_factory import (
     SymbolGraphFactory,
     SymbolRankFactory,
     SymbolSearcherFactory,
 )
-from automata_docs.core.search.symbol_rank.symbol_rank import (
-    SymbolRank,
-    SymbolRankConfig,
-)
-from automata_docs.core.search.symbol_types import Descriptor, Symbol
+from automata_docs.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
 from automata_docs.core.search.symbol_utils import convert_to_fst_object
+from automata_docs.core.symbol.symbol_types import Descriptor, Symbol
+from config import OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)
 

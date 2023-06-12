@@ -5,18 +5,15 @@ import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
-from automata_docs.core.search.scip_pb2 import Index, SymbolRole
-from automata_docs.core.search.symbol_parser import parse_symbol
-from automata_docs.core.search.symbol_types import (
+from automata_docs.core.search.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata_docs.core.symbol.scip_pb2 import Index, SymbolRole
+from automata_docs.core.symbol.symbol_parser import parse_symbol
+from automata_docs.core.symbol.symbol_types import (
     Descriptor,
     StrPath,
     Symbol,
     SymbolFile,
     SymbolReference,
-)
-from automata_docs.core.search.symbol_utils import (
-    convert_to_fst_object,
-    get_rankable_symbols,
 )
 
 logger = logging.getLogger(__name__)

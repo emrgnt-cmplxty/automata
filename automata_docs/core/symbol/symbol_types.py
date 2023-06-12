@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
 
-from automata_docs.core.search.scip_pb2 import Descriptor as DescriptorProto
+from automata_docs.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
 # Path and os related variables
 StrPath = Union[str, PathLike]
@@ -246,7 +246,7 @@ class Symbol:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __, ___ = match.groups()
         # In current implementation, only the uri is used in re-construcing the symbol
-        from automata_docs.core.search.symbol_parser import parse_symbol
+        from automata_docs.core.symbol.symbol_parser import parse_symbol
 
         return parse_symbol(uri)
 

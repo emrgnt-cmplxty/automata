@@ -5,7 +5,7 @@ import numpy as np
 from redbaron import RedBaron
 
 from automata_docs.core.code_indexing.module_tree_map import LazyModuleTreeMap
-from automata_docs.core.search.symbol_types import Descriptor, Symbol, SymbolEmbedding
+from automata_docs.core.symbol.symbol_types import Descriptor, Symbol, SymbolEmbedding
 
 
 def convert_to_fst_object(
