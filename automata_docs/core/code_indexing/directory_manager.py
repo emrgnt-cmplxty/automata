@@ -30,11 +30,7 @@ class Directory(Node):
 
     def get_file_names(self) -> List[str]:
         """Get a list of file names in the directory."""
-        return [
-            name
-            for name, child in self.children.items()
-            if isinstance(child, File)
-        ]
+        return [name for name, child in self.children.items() if isinstance(child, File)]
 
     def get_subdirectories(self) -> List[str]:
         """Get a list of subdirectory names in the directory."""

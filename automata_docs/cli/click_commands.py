@@ -1,6 +1,5 @@
 # Add this import at the beginning of your file
 import click
-
 from configs.config_enums import InstructionConfigVersion
 
 from .click_options import common_options
