@@ -11,7 +11,7 @@ def test_build_embedding_map(
     mock_simple_method_symbols,
     mock_simple_class_symbols,
 ):
-    # Define the behavior of the mock get_embedding function
+    # Define the behavior of the mock build_embedding function
     patch_get_embedding(monkeypatch, mock_embedding)
     # Create the Mock objects for the method parameters
     mock_symbols = mock_simple_method_symbols + mock_simple_class_symbols
@@ -32,7 +32,7 @@ def test_save_load_embedding_map(
     temp_output_filename,
     mock_simple_method_symbols,
 ):
-    # Define the behavior of the mock get_embedding function
+    # Define the behavior of the mock build_embedding function
     patch_get_embedding(monkeypatch, mock_embedding)
     # Create an instance of the class
     sem = get_sem(monkeypatch, mock_simple_method_symbols[0:10], build_new_embedding_map=True)
@@ -49,7 +49,7 @@ def test_get_embedding_sets_correct_result(
     mock_simple_method_symbols,
     mock_simple_class_symbols,
 ):
-    # Define the behavior of the mock get_embedding function
+    # Define the behavior of the mock build_embedding function
     patch_get_embedding(monkeypatch, mock_embedding)
     # Create the Mock objects for the method parameters
     mock_symbols = mock_simple_method_symbols + mock_simple_class_symbols
@@ -69,7 +69,7 @@ def test_update_embeddings(
     mock_simple_method_symbols,
     mock_simple_class_symbols,
 ):
-    # Define the behavior of the mock get_embedding function
+    # Define the behavior of the mock build_embedding function
     patch_get_embedding(monkeypatch, mock_embedding)
     # Create the Mock objects for the method parameters
     mock_symbols = mock_simple_method_symbols + mock_simple_class_symbols
@@ -93,7 +93,7 @@ def test_empty_input(monkeypatch):
 
 
 def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
-    # Test exception in get_embedding function
+    # Test exception in build_embedding function
     mock_get_embedding = Mock(side_effect=Exception("Test exception"))
     monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)
     sem = get_sem(monkeypatch, mock_simple_method_symbols, build_new_embedding_map=True)

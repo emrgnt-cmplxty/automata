@@ -15,7 +15,7 @@ def test_generate_similarity_matrix(
     mock_embedding,
     mock_simple_method_symbols,
 ):
-    # Define the behavior of the mock get_embedding function
+    # Define the behavior of the mock build_embedding function
     patch_get_embedding(monkeypatch, mock_embedding)
 
     # Create an instance of the class
@@ -58,7 +58,7 @@ def test_get_nearest_symbols_for_query(monkeypatch, mock_simple_method_symbols):
 
     embedding_dict = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
 
-    # Mocking get_embedding function of EmbeddingsProvider class
+    # Mocking build_embedding function of EmbeddingsProvider class
     def mock_get_embedding(_, symbol_source):
         if symbol_source == "symbol1":
             return embedding1.vector
@@ -67,7 +67,7 @@ def test_get_nearest_symbols_for_query(monkeypatch, mock_simple_method_symbols):
         else:
             return embedding3.vector
 
-    monkeypatch.setattr(EmbeddingsProvider, "get_embedding", mock_get_embedding)
+    monkeypatch.setattr(EmbeddingsProvider, "build_embedding", mock_get_embedding)
 
     symbol_embedding_map = SymbolEmbeddingMap(
         load_embedding_map=True, embedding_dict=embedding_dict
@@ -114,7 +114,7 @@ def test_transform_similarity_matrix(monkeypatch, mock_simple_method_symbols):
         else:
             return embedding3.vector
 
-    monkeypatch.setattr(EmbeddingsProvider, "get_embedding", mock_get_embedding)
+    monkeypatch.setattr(EmbeddingsProvider, "build_embedding", mock_get_embedding)
 
     symbol_embedding_map = SymbolEmbeddingMap(
         load_embedding_map=True, embedding_dict=embedding_dict
@@ -160,7 +160,7 @@ def test_generate_unit_normed_query_vector(monkeypatch, mock_simple_method_symbo
         else:
             return embedding3.vector
 
-    monkeypatch.setattr(EmbeddingsProvider, "get_embedding", mock_get_embedding)
+    monkeypatch.setattr(EmbeddingsProvider, "build_embedding", mock_get_embedding)
 
     symbol_embedding_map = SymbolEmbeddingMap(
         load_embedding_map=True, embedding_dict=embedding_dict

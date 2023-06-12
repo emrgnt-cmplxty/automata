@@ -11,7 +11,7 @@ from automata_docs.core.indexing.python_indexing.syntax_tree_navigation import (
 from automata_docs.core.indexing.utils import build_repository_overview
 from automata_docs.core.search.symbol_graph import SymbolGraph
 from automata_docs.core.search.symbol_utils import convert_to_fst_object, get_rankable_symbols
-from automata_docs.core.symbol.symbol_types import Descriptor, Symbol, SymbolReference
+from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolReference
 from automata_docs.core.utils import root_py_path
 
 
@@ -328,7 +328,7 @@ class PythonContextRetriever:
                         else:
                             continue
 
-                    if ranked_symbol.symbol_kind_by_suffix() != Descriptor.PythonKinds.Class:
+                    if ranked_symbol.symbol_kind_by_suffix() != SymbolDescriptor.PythonKinds.Class:
                         continue
                     elif ranked_symbol in self.obs_symbols:
                         continue
@@ -348,7 +348,7 @@ class PythonContextRetriever:
 
     @staticmethod
     def _is_class(symbol):
-        return symbol.symbol_kind_by_suffix() == Descriptor.PythonKinds.Class
+        return symbol.symbol_kind_by_suffix() == SymbolDescriptor.PythonKinds.Class
 
     @staticmethod
     def _get_docstring(ast_object):

@@ -1,3 +1,4 @@
+import abc
 import re
 from dataclasses import dataclass
 from enum import Enum
@@ -13,8 +14,7 @@ StrPath = Union[str, PathLike]
 PyPath = str
 
 
-# Symbol Related Types
-class Descriptor:
+class SymbolDescriptor:
     """
     Wraps the descriptor component of the URI into a python object
     """
@@ -44,20 +44,20 @@ class Descriptor:
 
     def unparse(self):
         """Converts back into URI string"""
-        escaped_name = Descriptor.get_escaped_name(self.name)
-        if self.suffix == Descriptor.ScipSuffix.Namespace:
+        escaped_name = SymbolDescriptor.get_escaped_name(self.name)
+        if self.suffix == SymbolDescriptor.ScipSuffix.Namespace:
             return f"{escaped_name}/"
-        elif self.suffix == Descriptor.ScipSuffix.Type:
+        elif self.suffix == SymbolDescriptor.ScipSuffix.Type:
             return f"{escaped_name}#"
-        elif self.suffix == Descriptor.ScipSuffix.Term:
+        elif self.suffix == SymbolDescriptor.ScipSuffix.Term:
             return f"{escaped_name}."
-        elif self.suffix == Descriptor.ScipSuffix.Meta:
+        elif self.suffix == SymbolDescriptor.ScipSuffix.Meta:
             return f"{escaped_name}:"
-        elif self.suffix == Descriptor.ScipSuffix.Method:
+        elif self.suffix == SymbolDescriptor.ScipSuffix.Method:
             return f"{escaped_name}({self.disambiguator})."
-        elif self.suffix == Descriptor.ScipSuffix.Parameter:
+        elif self.suffix == SymbolDescriptor.ScipSuffix.Parameter:
             return f"({escaped_name})"
-        elif self.suffix == Descriptor.ScipSuffix.TypeParameter:
+        elif self.suffix == SymbolDescriptor.ScipSuffix.TypeParameter:
             return f"[{escaped_name}]"
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.suffix}")
@@ -77,36 +77,36 @@ class Descriptor:
     def convert_scip_to_python_suffix(
         descriptor_suffix: DescriptorProto,
     ) -> PythonKinds:
-        if descriptor_suffix == Descriptor.ScipSuffix.Local:
-            return Descriptor.PythonKinds.Local
+        if descriptor_suffix == SymbolDescriptor.ScipSuffix.Local:
+            return SymbolDescriptor.PythonKinds.Local
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.Namespace:
-            return Descriptor.PythonKinds.Module
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Namespace:
+            return SymbolDescriptor.PythonKinds.Module
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.Type:
-            return Descriptor.PythonKinds.Class
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Type:
+            return SymbolDescriptor.PythonKinds.Class
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.Method:
-            return Descriptor.PythonKinds.Method
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Method:
+            return SymbolDescriptor.PythonKinds.Method
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.Term:
-            return Descriptor.PythonKinds.Value
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Term:
+            return SymbolDescriptor.PythonKinds.Value
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.Macro:
-            return Descriptor.PythonKinds.Macro
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Macro:
+            return SymbolDescriptor.PythonKinds.Macro
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.Parameter:
-            return Descriptor.PythonKinds.Parameter
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Parameter:
+            return SymbolDescriptor.PythonKinds.Parameter
 
-        elif descriptor_suffix == Descriptor.ScipSuffix.TypeParameter:
-            return Descriptor.PythonKinds.TypeParameter
+        elif descriptor_suffix == SymbolDescriptor.ScipSuffix.TypeParameter:
+            return SymbolDescriptor.PythonKinds.TypeParameter
 
         else:
-            return Descriptor.PythonKinds.Meta
+            return SymbolDescriptor.PythonKinds.Meta
 
 
 @dataclass
-class Package:
+class SymbolPackage:
     manager: str
     name: str
     version: str
@@ -164,8 +164,8 @@ class Symbol:
 
     uri: str
     scheme: str
-    package: Package
-    descriptors: Tuple[Descriptor, ...]
+    package: SymbolPackage
+    descriptors: Tuple[SymbolDescriptor, ...]
 
     def __repr__(self):
         return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
@@ -180,26 +180,26 @@ class Symbol:
             return self.uri == other
         return False
 
-    def symbol_kind_by_suffix(self) -> Descriptor.PythonKinds:
-        return Descriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
+    def symbol_kind_by_suffix(self) -> SymbolDescriptor.PythonKinds:
+        return SymbolDescriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
         if self.uri.startswith("local"):
-            return Descriptor.ScipSuffix.Local
+            return SymbolDescriptor.ScipSuffix.Local
         if self.uri.endswith("/"):
-            return Descriptor.ScipSuffix.Namespace
+            return SymbolDescriptor.ScipSuffix.Namespace
         elif self.uri.endswith("#"):
-            return Descriptor.ScipSuffix.Type
+            return SymbolDescriptor.ScipSuffix.Type
         elif self.uri.endswith(")."):
-            return Descriptor.ScipSuffix.Method
+            return SymbolDescriptor.ScipSuffix.Method
         elif self.uri.endswith("."):
-            return Descriptor.ScipSuffix.Term
+            return SymbolDescriptor.ScipSuffix.Term
         elif self.uri.endswith(":"):
-            return Descriptor.ScipSuffix.Meta
+            return SymbolDescriptor.ScipSuffix.Meta
         elif self.uri.endswith(")"):
-            return Descriptor.ScipSuffix.Parameter
+            return SymbolDescriptor.ScipSuffix.Parameter
         elif self.uri.endswith("]"):
-            return Descriptor.ScipSuffix.TypeParameter
+            return SymbolDescriptor.ScipSuffix.TypeParameter
         else:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
@@ -217,15 +217,15 @@ class Symbol:
 
     @staticmethod
     def is_local(symbol: "Symbol") -> bool:
-        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Local
+        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
 
     @staticmethod
     def is_meta(symbol: "Symbol") -> bool:
-        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Meta
+        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Meta
 
     @staticmethod
     def is_parameter(symbol: "Symbol") -> bool:
-        return symbol.descriptors[0].suffix == Descriptor.ScipSuffix.Parameter
+        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
 
     @staticmethod
     def is_protobuf(symbol: "Symbol") -> bool:
@@ -279,6 +279,15 @@ class SymbolEmbedding:
 
 
 @dataclass
+class SymbolDocumentation:
+    symbol: Symbol
+    completion_context: str
+    doc_full: str
+    doc_summary: str
+    source_code: str
+
+
+@dataclass
 class SymbolFile:
     path: StrPath
     occurrences: str
@@ -292,3 +301,33 @@ class SymbolFile:
         elif isinstance(other, str):
             return self.path == other
         return False
+
+
+class Embedding(abc.ABC):
+    """
+    Abstract base class for different types of embeddings.
+    """
+
+    def __init__(self, symbol: Symbol, vector: np.array):
+        self.symbol = symbol
+        self.vector = vector
+
+
+class CodeEmbedding(Embedding):
+    """
+    Embedding for code.
+    """
+
+    def __init__(self, symbol: Symbol, vector: np.array, code: str):
+        super().__init__(symbol, vector)
+        self.code = code
+
+
+class DocumentEmbedding(Embedding):
+    """
+    Embedding for documents.
+    """
+
+    def __init__(self, symbol: Symbol, vector: np.array, document: str):
+        super().__init__(symbol, vector)
+        self.document = document

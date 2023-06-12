@@ -49,6 +49,6 @@ def get_sem(monkeypatch, mock_symbols, build_new_embedding_map=False):
 
 
 def patch_get_embedding(monkeypatch, mock_embedding):
-    # Define the behavior of the mock get_embedding function
+    # Define the behavior of the mock build_embedding function
     mock_get_embedding = Mock(return_value=mock_embedding)
     monkeypatch.setattr("openai.embeddings_utils.get_embedding", mock_get_embedding)

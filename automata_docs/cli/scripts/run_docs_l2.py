@@ -16,7 +16,7 @@ from automata_docs.core.search.symbol_factory import (
 )
 from automata_docs.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
 from automata_docs.core.search.symbol_utils import convert_to_fst_object
-from automata_docs.core.symbol.symbol_types import Descriptor, Symbol
+from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor
 from config import OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def get_filtered_ranked_symbols(kwargs: Dict[str, Any], ranker: SymbolRank):
     selected_symbols = []
     selection_filters = kwargs.get("selection_filters", "").split(",")
     for symbol, _rank in ranker.get_ranks():
-        if symbol.symbol_kind_by_suffix() != Descriptor.PythonKinds.Class:
+        if symbol.symbol_kind_by_suffix() != SymbolDescriptor.PythonKinds.Class:
             continue
         if any(filter_ in symbol.uri for filter_ in selection_filters):
             selected_symbols.append(symbol)

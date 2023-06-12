@@ -5,7 +5,7 @@ import numpy as np
 from redbaron import RedBaron
 
 from automata_docs.core.indexing.python_indexing.module_tree_map import LazyModuleTreeMap
-from automata_docs.core.symbol.symbol_types import Descriptor, Symbol, SymbolEmbedding
+from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolEmbedding
 
 
 def convert_to_fst_object(
@@ -32,8 +32,8 @@ def convert_to_fst_object(
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
-            Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-            == Descriptor.PythonKinds.Module
+            SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
+            == SymbolDescriptor.PythonKinds.Module
         ):
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
@@ -43,15 +43,15 @@ def convert_to_fst_object(
             if not obj:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")
         elif (
-            Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-            == Descriptor.PythonKinds.Class
+            SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
+            == SymbolDescriptor.PythonKinds.Class
         ):
             if not obj:
                 raise ValueError("Class descriptor found without module descriptor")
             obj = obj.find("class", name=top_descriptor.name)
         elif (
-            Descriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-            == Descriptor.PythonKinds.Method
+            SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
+            == SymbolDescriptor.PythonKinds.Method
         ):
             if not obj:
                 raise ValueError("Method descriptor found without module or class descriptor")
@@ -67,7 +67,7 @@ def get_rankable_symbols(
         "setup",
         "stdlib",
     ),  # TODO - Revisit what strings we should filter on.
-    accepted_kinds=(Descriptor.PythonKinds.Method, Descriptor.PythonKinds.Class),
+    accepted_kinds=(SymbolDescriptor.PythonKinds.Method, SymbolDescriptor.PythonKinds.Class),
 ) -> List[Symbol]:
     """
     Filter out symbols that are not relevant for the embedding map.
