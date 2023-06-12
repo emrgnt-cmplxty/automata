@@ -6,7 +6,9 @@ from typing import Any, Dict
 import openai
 from cli.cli_utils import load_docs, save_docs
 
-from automata_docs.core.code_indexing.python_code_printer import CodePrinter
+from automata_docs.core.context.python_context.python_context_retriever import (
+    PythonContextRetriever,
+)
 from automata_docs.core.search.symbol_factory import (
     SymbolGraphFactory,
     SymbolRankFactory,
@@ -182,7 +184,7 @@ def main(*args, **kwargs):
                 elif search_results_1[i] not in set_list:
                     search_list.append(search_results_1[i][0])
 
-            printer = CodePrinter(graph)
+            printer = PythonContextRetriever(graph)
             printer.process_symbol(selected_symbol, search_list)
             symbol_overview = printer.message
             completion = get_full_doc_completion(selected_symbol, symbol_overview)
