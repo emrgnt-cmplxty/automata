@@ -319,7 +319,7 @@ Diagnostic = _reflection.GeneratedProtocolMessageType(
 )
 _sym_db.RegisterMessage(Diagnostic)
 
-if _descriptor._USE_C_DESCRIPTORS == False:
+if _descriptor._USE_C_DESCRIPTORS is False:
     DESCRIPTOR._options = None
     DESCRIPTOR._serialized_options = b"Z-github.com/sourcegraph/scip/bindings/go/scip/"
     _SYNTAXKIND._options = None

@@ -5,16 +5,11 @@ from typing import List, Optional, Set
 from redbaron import RedBaron
 
 from automata_docs.core.code_indexing.python_code_retriever import PythonCodeRetriever
-from automata_docs.core.code_indexing.syntax_tree_navigation import (
-    find_method_call_by_location,
-)
+from automata_docs.core.code_indexing.syntax_tree_navigation import find_method_call_by_location
 from automata_docs.core.code_indexing.utils import build_repository_overview
 from automata_docs.core.search.symbol_graph import SymbolGraph
-from automata_docs.core.search.symbol_types import Descriptor, Symbol, SymbolReference
-from automata_docs.core.search.symbol_utils import (
-    convert_to_fst_object,
-    get_rankable_symbols,
-)
+from automata_docs.core.search.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata_docs.core.symbol.symbol_types import Descriptor, Symbol, SymbolReference
 from automata_docs.core.utils import root_py_path
 
 
@@ -326,7 +321,7 @@ class CodePrinter:
                     # Bespoke handling for test class
                     if "test" in str(ranked_symbol.path):
                         result = bespoke_test_handler(ranked_symbol)
-                        if result == True:
+                        if result:
                             printed_nearby_symbols += 1
                         else:
                             continue

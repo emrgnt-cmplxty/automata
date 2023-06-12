@@ -4,11 +4,10 @@ import os
 from typing import Any, Dict, Tuple
 
 import jsonpickle
+from configs.config_enums import ConfigCategory
 
-from configs.config_enums import AgentConfigName, ConfigCategory
-from automata_docs.core.code_indexing.utils import build_repository_overview
-from automata_docs.core.search.symbol_types import Symbol
-from automata_docs.core.utils import config_path, get_logging_config, root_py_path
+from automata_docs.core.symbol.symbol_types import Symbol
+from automata_docs.core.utils import config_path, get_logging_config
 
 logger = logging.getLogger(__name__)
 

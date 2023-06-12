@@ -1,10 +1,8 @@
 from unittest.mock import Mock
 
-from conftest import get_sem, patch_get_embedding
+from automata_docs.core.embedding.symbol_embedding_map import SymbolEmbeddingMap
 
-from automata_docs.core.search.symbol_rank.symbol_embedding_map import (
-    SymbolEmbeddingMap,
-)
+from .conftest import get_sem, patch_get_embedding
 
 
 def test_build_embedding_map(

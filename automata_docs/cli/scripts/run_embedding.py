@@ -1,15 +1,11 @@
 import logging
 import os
-import textwrap
 
 from tqdm import tqdm
 
 from automata_docs.configs.config_enums import ConfigCategory
+from automata_docs.core.embedding.symbol_embedding_map import SymbolEmbeddingMap
 from automata_docs.core.search.symbol_graph import SymbolGraph
-from automata_docs.core.search.symbol_rank.symbol_embedding_map import (
-    SymbolEmbeddingMap,
-)
-from automata_docs.core.search.symbol_rank.symbol_similarity import SymbolSimilarity
 from automata_docs.core.search.symbol_utils import get_rankable_symbols
 from automata_docs.core.utils import config_path
 

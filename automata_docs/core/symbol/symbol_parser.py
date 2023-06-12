@@ -1,7 +1,7 @@
 import re
 from typing import List, Optional
 
-from automata_docs.core.search.symbol_types import Descriptor, Package, Symbol
+from automata_docs.core.symbol.symbol_types import Descriptor, Package, Symbol
 
 """
 SCIP produces symbol URI, it identifies a class, method, or a local variable, along with the entire AST path to it.

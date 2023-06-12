@@ -18,11 +18,6 @@ def temp_output_filename():
         os.remove(filename)
 
 
-@pytest.fixture
-def mock_embedding(monkeypatch):
-    return np.array([random.random() for _ in range(1024)])
-
-
 prefix = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `configs.automata_agent_configs`/"
 
 
@@ -34,6 +29,11 @@ def mock_simple_method_symbols(monkeypatch):
 @pytest.fixture
 def mock_simple_class_symbols():
     return [parse_symbol(prefix + str(random.random()) + "_uri_ex_method#") for _ in range(100)]
+
+
+@pytest.fixture
+def mock_embedding(monkeypatch):
+    return np.array([random.random() for _ in range(1024)])
 
 
 def get_sem(monkeypatch, mock_symbols, build_new_embedding_map=False):
