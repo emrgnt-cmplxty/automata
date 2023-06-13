@@ -18,6 +18,8 @@ ExactSearchResult = Dict[str, List[int]]
 
 
 class SymbolSearch:
+    """Searches for symbols in a SymbolGraph"""
+
     def __init__(
         self,
         symbol_graph: SymbolGraph,
@@ -27,6 +29,13 @@ class SymbolSearch:
         *args,
         **kwargs,
     ):
+        """
+        Args:
+            symbol_graph (SymbolGraph): A SymbolGraph
+            symbol_similarity (SymbolSimilarity): A SymbolSimilarity object
+            symbol_rank_config (Optional[SymbolRankConfig]): A SymbolRankConfig object
+            code_subgraph (Optional[SymbolGraph.SubGraph]): A subgraph of the SymbolGraph
+        """
         self.symbol_graph = symbol_graph
         self.symbol_similarity = symbol_similarity
 
@@ -59,7 +68,7 @@ class SymbolSearch:
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_sq
         )
-        ranks = self.symbol_rank.get_ranks(symbol_similarity=transformed_query_vec)
+        ranks = self.symbol_rank.get_ranks(query_to_symbol_similarity=transformed_query_vec)
         return ranks
 
     def symbol_references(self, symbol_uri: str) -> SymbolReferencesResult:
@@ -70,7 +79,8 @@ class SymbolSearch:
             symbol_uri (str): The symbol to search for
 
         Returns:
-            A dict of paths to files that contain the symbol and corresponding line numbers
+            A dict of paths to files that contain the
+                symbol and corresponding line numbers
         """
         # TODO - Add parsing upstream or here to parse references
         return self.symbol_graph.get_references_to_symbol(parse_symbol(symbol_uri))
@@ -134,6 +144,13 @@ class SymbolSearch:
 
     @staticmethod
     def filter_graph(graph: nx.DiGraph, available_symbols: Set[Symbol]):
+        """
+        Filters a graph to only contain nodes that are in the available_symbols set
+
+        Args:
+            graph: The graph to filter
+            available_symbols: The set of symbols to keep
+        """
         for symbol in graph.nodes():
             if symbol not in available_symbols:
                 graph.remove_node(symbol)
@@ -141,11 +158,13 @@ class SymbolSearch:
     @staticmethod
     def shifted_z_score_sq(values: Union[List[float], np.ndarray]) -> np.ndarray:
         """
-        Compute z-score of a list of values.
+        Compute z-score of a list of values
+
         Args:
-            values: List of values to compute z-score for.
+            values: List of values to compute z-score for
+
         Returns:
-            List of z-scores.
+            List of z-scores
         """
         if not isinstance(values, np.ndarray):
             values = np.array(values)
@@ -160,12 +179,14 @@ class SymbolSearch:
         dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]
     ):
         """
-        Apply a function to each value in a dictionary and return a new dictionary.
+        Apply a function to each value in a dictionary and return a new dictionary
+
         Args:
-            dictionary: Dictionary to transform.
-            func: Function to apply to each value.
+            dictionary: Dictionary to transform
+            func: Function to apply to each value
+
         Returns:
-            Dictionary with transformed values.
+            Dictionary with transformed values
         """
         # Apply the function to the accumulated values
         transformed_values = func([dictionary[key] for key in dictionary])
@@ -179,18 +200,20 @@ class SymbolSearch:
     @staticmethod
     def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
         """
-        Finds exact line matches for a given pattern string in all modules.
+        Finds exact line matches for a given pattern string in all modules
 
         Args:
-            pattern (str): The pattern string to search for.
+            pattern (str): The pattern string to search for
+
         Returns:
-            Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values.
+            Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values
         """
         matches = {}
         module_map = LazyModuleTreeMap.cached_default()
         for module_path, module in module_map.items():
-            lines = module.dumps().splitlines()
-            line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
-            if line_numbers:
-                matches[module_path] = line_numbers
+            if module:
+                lines = module.dumps().splitlines()
+                line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
+                if line_numbers:
+                    matches[module_path] = line_numbers
         return matches

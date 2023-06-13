@@ -1,26 +1,17 @@
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional, TypedDict, Union, cast
+from typing import Any, List, Optional, TypedDict, Union, cast
 
-import numpy as np
-import openai
 import yaml
 
 
-def format_text(format_variables: Dict[str, str], input_text: str) -> str:
-    """Format expected strings into the config."""
-    for arg in format_variables:
-        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
-    return input_text
-
-
-def root_py_path() -> str:
+def root_py_fpath() -> str:
     """
-    Returns the path to the root of the project python code.
+    Get the path to the root of the project python code
 
     Returns:
-    - A path object in string form
+        str - A fpath object in string form
 
     """
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -28,16 +19,27 @@ def root_py_path() -> str:
     return data_folder
 
 
-def config_path() -> str:
+def root_fpath() -> str:
     """
-    Returns the path to the project config directory
+    Returns the path to the root of the project directory.
 
     Returns:
-    - A path object in string form
+        str - A fpath object in string form
 
     """
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    data_folder = os.path.join(script_dir, "..", "configs")
+    data_folder = os.path.join(root_py_fpath(), "..")
+    return data_folder
+
+
+def config_fpath() -> str:
+    """
+    Get the path to the project config directory
+
+    Returns:
+        str - A fpath object in string form
+
+    """
+    data_folder = os.path.join(root_py_fpath(), "configs")
     return data_folder
 
 
@@ -48,16 +50,16 @@ def load_config(
     custom_decoder: Any = None,
 ) -> Any:
     """
-    Loads a config file.
+    Loads a config file from the configs directory
 
     Args:
-        file_path (str): The path to the YAML file.
+        file_path (str): The path to the YAML file
 
     Returns:
-        Any: The content of the YAML file as a Python object.
+        Any: The content of the YAML file as a Python object
     """
     with open(
-        os.path.join(config_path(), config_name, f"{file_name}.{config_type}"),
+        os.path.join(config_fpath(), config_name, f"{file_name}.{config_type}"),
         "r",
     ) as file:
         if config_type == "yaml":
@@ -67,20 +69,9 @@ def load_config(
             return json.loads(samples_json_string, object_hook=custom_decoder)
 
 
-def root_path() -> str:
-    """
-    Returns the path to the root of the project directory.
-
-    Returns:
-    - A path object in string form
-
-    """
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    data_folder = os.path.join(script_dir, "..", "..")
-    return data_folder
-
-
 class HandlerDict(TypedDict):
+    """A dictionary representing a logging handler"""
+
     class_: str
     formatter: str
     level: int
@@ -88,11 +79,15 @@ class HandlerDict(TypedDict):
 
 
 class RootDict(TypedDict):
+    """A dictionary representing the root logger"""
+
     handlers: List[str]
     level: int
 
 
 class LoggingConfig(TypedDict, total=False):
+    """A dictionary representing the logging configuration"""
+
     version: int
     disable_existing_loggers: bool
     formatters: dict
@@ -103,7 +98,16 @@ class LoggingConfig(TypedDict, total=False):
 def get_logging_config(
     log_level: int = logging.INFO, log_file: Optional[str] = None
 ) -> dict[str, Any]:
-    """Returns logging configuration."""
+    """
+    Gets the logging configuration
+
+    Args:
+        log_level (int): The logging level
+        log_file (str): The path to the log file
+
+    Returns:
+        dict: The logging configuration
+    """
 
     logging_config: LoggingConfig = {
         "version": 1,
@@ -133,16 +137,3 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
-
-
-def calculate_similarity(
-    content_a: str, content_b: str, engine: str = "text-embedding-ada-002"
-) -> float:
-    """Calculate the similarity between two strings."""
-    resp = openai.Embedding.create(input=[content_a, content_b], engine=engine)
-    embedding_a = resp["data"][0]["embedding"]
-    embedding_b = resp["data"][1]["embedding"]
-    dot_product = np.dot(embedding_a, embedding_b)
-    magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
-    magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
-    return dot_product / (magnitude_a * magnitude_b)

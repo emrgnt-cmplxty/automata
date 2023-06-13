@@ -8,6 +8,8 @@ from automata_docs.core.symbol.symbol_types import Symbol
 
 
 class SymbolRankConfig(BaseModel):
+    """A configuration class for SymbolRank"""
+
     alpha: float = 0.25
     max_iterations: int = 100
     tolerance: float = 1.0e-6
@@ -32,9 +34,14 @@ class SymbolRankConfig(BaseModel):
 
 
 class SymbolRank:
-    """SymbolRank class to compute SymbolRank values of nodes in a graph."""
+    """Computes the PageRank algorithm on symbols in a graph"""
 
     def __init__(self, graph: nx.DiGraph, config: Optional[SymbolRankConfig] = None):
+        """
+        Args:
+            graph (nx.DiGraph): A directed graph
+            config (Optional[SymbolRankConfig]): SymbolRank configuration
+        """
         if not config:
             config = SymbolRankConfig()
         self.graph = graph
@@ -43,27 +50,28 @@ class SymbolRank:
 
     def get_ranks(
         self,
-        symbol_similarity: Optional[Dict[Symbol, float]] = None,
+        query_to_symbol_similarity: Optional[Dict[Symbol, float]] = None,
         initial_weights: Optional[Dict[Symbol, float]] = None,
         dangling: Optional[Dict[Symbol, float]] = None,
     ) -> List[Tuple[Symbol, float]]:
         """
-        Calculate and return the SymbolRank of each node in the graph.
+        Calculate the SymbolRanks of each node in the graph
 
         Args:
-            symbol_similarity (Optional[Dict[Symbol, float]]): symbol_similarity dictionary.
-            initial_weights (Optional[Dict[Symbol, float]]): Initial weights dictionary.
-            dangling (Optional[Dict[Symbol, float]]): List of dangling nodes.
+            query_to_symbol_similarity (Optional[Dict[Symbol, float]]):
+                query_to_symbol_similarity dictionary
+            initial_weights (Optional[Dict[Symbol, float]]): Initial weights dictionary
+            dangling (Optional[Dict[Symbol, float]]): List of dangling nodes
 
         Returns:
-            (Dict[str, float]): A dictionary mapping each node to its SymbolRank.
+            (Dict[str, float]): A dictionary mapping each node to its SymbolRank
         """
         stochastic_graph = self._prepare_graph()
         node_count = stochastic_graph.number_of_nodes()
 
         rank_vec = self._prepare_initial_ranks(stochastic_graph, initial_weights)
-        prepared_similarity = self._prepare_symbol_similarity(
-            node_count, stochastic_graph, symbol_similarity
+        prepared_similarity = self._prepare_query_to_symbol_similarity(
+            node_count, stochastic_graph, query_to_symbol_similarity
         )
         dangling_weights = self._prepare_dangling_weights(dangling, prepared_similarity)
         dangling_nodes = self._get_dangling_nodes(stochastic_graph)
@@ -97,10 +105,10 @@ class SymbolRank:
     def _prepare_graph(self) -> nx.DiGraph:
         """
         Prepare the graph for the SymbolRank algorithm. If the graph is not directed,
-        convert it to a directed graph. Create a stochastic graph from the given graph.
+        convert it to a directed graph. Create a stochastic graph from the given graph
 
         Returns:
-            stochastic_graph (nx.DiGraph): A NetworkX stochastic DiGraph.
+            stochastic_graph (nx.DiGraph): A NetworkX stochastic DiGraph
         """
         if not self.graph.is_directed():
             direct_graph = self.graph.to_directed()
@@ -116,14 +124,14 @@ class SymbolRank:
         initial_weights: Optional[Dict[Symbol, float]],
     ) -> Dict[Symbol, float]:
         """
-        Prepare initial rank values for each node in the graph.
+        Prepare initial rank values for each node in the graph
 
         Args:
             stochastic_graph (nx.DiGraph): A NetworkX DiGraph.
-            initial_weights (Optional[Dict[Symbol, float]]): Initial weight for each node.
+            initial_weights (Optional[Dict[Symbol, float]]): Initial weight for each node
 
         Returns:
-            (Dict[Symbol, float]): A dictionary mapping each node to its initial rank.
+            (Dict[Symbol, float]): A dictionary mapping each node to its initial rank
         """
 
         node_count = stochastic_graph.number_of_nodes()
@@ -133,52 +141,59 @@ class SymbolRank:
             s = sum(initial_weights.values())
             return {k: v / s for k, v in initial_weights.items()}
 
-    def _prepare_symbol_similarity(
+    def _prepare_query_to_symbol_similarity(
         self,
         node_count: int,
         stochastic_graph: nx.DiGraph,
-        symbol_similarity: Optional[Dict[Symbol, float]],
+        query_to_symbol_similarity: Optional[Dict[Symbol, float]],
     ) -> Dict[Symbol, float]:
         """
-        Prepare the symbol similarity matrix.
-        Note - The term "personalization" is used in the context of the PageRank algorithm to refer to a mechanism that allows
-        the modification of the rank computation based on some user-defined preferences. In this instance, symbol similarity is
-        an implementation of personalization that allows the modification of the rank computation based on symbol source-code similarity.
+        Prepare the symbol similarity matrix
+
+        Note - The term "personalization" is used in the context of the PageRank algorithm
+            to refer to a mechanism that allows the modification of the rank computation
+            based on some user-defined preferences. In this instance, symbol similarity is
+            an implementation of personalization that allows the modification of the rank
+            computation based on symbol source-code similarity
 
         Args:
-            node_count (int): Number of nodes in the graph.
-            stochastic_graph (nx.DiGraph): A NetworkX DiGraph.
-            symbol_similarity (Optional[Dict[Symbol, float]]): Initial symbol similarity for each node.
+            node_count (int): Number of nodes in the graph
+            stochastic_graph (nx.DiGraph): A NetworkX DiGraph
+            query_to_symbol_similarity (Optional[Dict[Symbol, float]]): Similarity between the query
+                and each node
+
+        Returns:
+            (Dict[Symbol, float]): A dictionary mapping each node to its symbol similarity
         """
-        if symbol_similarity is None:
+        if query_to_symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
         else:
-            missing = set(self.graph) - set(symbol_similarity)
+            missing = set(self.graph) - set(query_to_symbol_similarity)
             if missing:
                 raise NetworkXError(
-                    "symbol_similarity dictionary must have a value for every node. Missing nodes %s"
+                    "query_to_symbol_similarity dictionary must have a value for every node. Missing nodes %s"
                     % missing
                 )
-            s = sum(symbol_similarity.values())
-            return {k: v / s for k, v in symbol_similarity.items()}
+            s = sum(query_to_symbol_similarity.values())
+            return {k: v / s for k, v in query_to_symbol_similarity.items()}
 
     def _prepare_dangling_weights(
         self,
         dangling: Optional[Dict[Symbol, float]],
-        symbol_similarity: Dict[Symbol, float],
+        query_to_symbol_similarity: Dict[Symbol, float],
     ) -> Dict[Symbol, float]:
         """
-        Prepare the weights for dangling nodes.
+        Prepare the weights for dangling nodes
 
         Args:
             dangling (list): List of dangling nodes.
-            symbol_similarity (Dict[str, float]): symbol_similarity dictionary.
+            query_to_symbol_similarity (Dict[str, float]): query_to_symbol_similarity dictionary
 
         Returns:
-            (Dict[str, float]): A dictionary mapping each node to its weight.
+            (Dict[str, float]): A dictionary mapping each node to its weight
         """
         if dangling is None:
-            return symbol_similarity
+            return query_to_symbol_similarity
         else:
             missing = set(self.graph) - set(dangling)
             if missing:
@@ -191,13 +206,13 @@ class SymbolRank:
 
     def _get_dangling_nodes(self, stochastic_graph: nx.DiGraph) -> List[Hashable]:
         """
-        Identify dangling nodes in the graph.
+        Identify dangling nodes in the graph
 
         Args:
-            stochastic_graph (nx.DiGraph): A NetworkX DiGraph.
+            stochastic_graph (nx.DiGraph): A NetworkX DiGraph
 
         Returns:
-            (list): List of dangling nodes.
+            (list): List of dangling nodes
         """
         return [
             node

@@ -10,12 +10,18 @@ def convert_to_fst_object(
     symbol: Symbol, module_map: Optional[LazyModuleTreeMap] = None
 ) -> RedBaron:
     """
-    Returns the RedBaron object for the given symbol.
+    Converts a specified symbol into a red baron FST object
+
     Args:
         symbol (str): The symbol which corresponds to a module, class, or method.
-        module_map: The PythonASTIndexer to use to find the symbol.
+        module_map: The PythonASTIndexer to use to find the symbol
+
     Returns:
-        Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found.
+        Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found
+
+    Raises:
+        ValueError: If the symbol is not found
+
     Note:
         The optional argument is to allow us to run this function in mulitprocessing in the future,
         because module map is not picklable (because redbaron objects are not picklable)
@@ -26,10 +32,6 @@ def convert_to_fst_object(
     descriptors = list(symbol.descriptors)
     obj = None
     module_map = module_map or LazyModuleTreeMap.cached_default()
-    # print('descriptors = ', descriptors)
-    # print('module_map._dotpath_map = ', module_map._dotpath_map)
-    # print('module_map._dotpath_map._module_dotpath_to_fpath_map = ', module_map._dotpath_map._module_dotpath_to_fpath_map)
-    # print('module_map._loaded_modules = ', module_map._loaded_modules)
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
@@ -39,7 +41,7 @@ def convert_to_fst_object(
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
                 module_dotpath = module_dotpath[len("") :]  # indexer omits this
-            obj = module_map.get_module(module_dotpath)
+            obj = module_map.fetch_module(module_dotpath)
             # TODO - Understand why some modules might be None
             if not obj:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")
@@ -75,6 +77,7 @@ def get_rankable_symbols(
 
     Args:
         symbols: List of symbols to filter
+
     Returns:
         List of filtered symbols
     """

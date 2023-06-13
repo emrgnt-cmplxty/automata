@@ -3,8 +3,7 @@ from enum import Enum
 
 class ConfigCategory(Enum):
     """
-    ConfigCategory: Enum of agent config categories.
-    Corresponds to the folder name which contains yaml configuration files
+    An enum which corresponds to the name of a folder holding configs
     """
 
     SYMBOLS = "symbols"

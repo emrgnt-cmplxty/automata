@@ -21,14 +21,22 @@ logger = logging.getLogger(__name__)
 
 class _RelationshipManager:
     """
-    Manages the relationships between symbols in a graph.
+    Manages the relationships between symbols in a graph
     """
 
     def __init__(self, graph: nx.MultiDiGraph, symbol_information: Any):
+        """
+        Args:
+            graph (nx.MultiDiGraph): A networkx graph
+            symbol_information (Any): A SymbolInformation object
+        """
         self._graph = graph
         self.symbol_information = symbol_information
 
     def process(self):
+        """
+        Processes the relationships in the local graph
+        """
         for relationship in self.symbol_information.relationships:
             relationship_labels = MessageToDict(relationship)
             relationship_labels.pop("symbol")
@@ -43,14 +51,22 @@ class _RelationshipManager:
 
 class _OccurrenceManager:
     """
-    Manages the occurrences of a symbol in a graph.
+    Manages the occurrences of a symbol in a graph
     """
 
     def __init__(self, graph: nx.MultiDiGraph, document: Any):
+        """
+        Args:
+            graph (nx.MultiDiGraph): A networkx graph
+            document (Any): A Document object
+        """
         self._graph = graph
         self.document = document
 
     def process(self):
+        """
+        Processes the occurrences in the local graph
+        """
         for occurrence in self.document.occurrences:
             try:
                 occurrence_symbol = parse_symbol(occurrence.symbol)
@@ -90,6 +106,12 @@ class _OccurrenceManager:
 
     @staticmethod
     def _process_symbol_roles(role: int) -> Dict[str, bool]:
+        """
+        Processes the symbol roles into a dictionary of role names to booleans
+
+        Args:
+            role (int): The symbol role
+        """
         result = {}
         for role_name, role_value in SymbolRole.items():
             if (role & role_value) > 0:
@@ -103,11 +125,21 @@ class _CallerCalleeManager:
     """
 
     def __init__(self, graph: nx.MultiDiGraph, document: Any):
+        """
+        Args:
+            graph (nx.MultiDiGraph): A networkx graph
+            document (Any): A Document object
+        """
         self._graph = graph
         self.navigator = _SymbolGraphNavigator(graph)
         self.document = document
 
     def process(self):
+        """
+        Processes the caller-callee relationships in the local graph
+
+        Note that this is an expensive operation, and should be used sparingly
+        """
         for symbol in self.document.symbols:
             try:
                 symbol_object = parse_symbol(symbol.symbol)
@@ -164,11 +196,20 @@ class GraphBuilder:
     """
 
     def __init__(self, index: Index, build_caller_relationships: bool = False):
+        """
+        Args:
+            index (Index): An Index object
+            build_caller_relationships (bool, optional): Whether to build
+                caller-callee relationships. Defaults to False.
+        """
         self.index = index
         self.build_caller_relationships = build_caller_relationships
         self._graph = nx.MultiDiGraph()
 
     def build_graph(self):
+        """
+        Builds the graph from the index
+        """
         for document in self.index.documents:
             self._add_file_vertices(document)
             self._add_symbol_vertices(document)
@@ -180,6 +221,12 @@ class GraphBuilder:
         return self._graph
 
     def _add_file_vertices(self, document: Any):
+        """
+        Adds the file vertices to the graph
+
+        Args:
+            document (Any): A Document object
+        """
         self._graph.add_node(
             document.relative_path,
             file=SymbolFile(document.relative_path, occurrences=document.occurrences),
@@ -187,6 +234,12 @@ class GraphBuilder:
         )
 
     def _add_symbol_vertices(self, document: Any):
+        """
+        Adds the symbol vertices to the graph
+
+        Args:
+            document (Any): A Document object
+        """
         for symbol_information in document.symbols:
             try:
                 symbol = parse_symbol(symbol_information.symbol)
@@ -198,15 +251,33 @@ class GraphBuilder:
             self._graph.add_edge(document.relative_path, symbol, label="contains")
 
     def _process_relationships(self, document: Any):
+        """
+        Processes the relationships in the local graph
+
+        Args:
+            document (Any): A Document object
+        """
         for symbol_information in document.symbols:
             relationship_manager = _RelationshipManager(self._graph, symbol_information)
             relationship_manager.process()
 
     def _process_occurrences(self, document: Any):
+        """
+        Processes the occurrences in the local graph
+
+        Args:
+            document (Any): A Document object
+        """
         occurrence_manager = _OccurrenceManager(self._graph, document)
         occurrence_manager.process()
 
     def _process_caller_callee_relationships(self, document: Any):
+        """
+        Processes the caller-callee relationships in the local graph
+
+        Args:
+            document (Any): A Document object
+        """
         caller_callee_manager = _CallerCalleeManager(self._graph, document)
         caller_callee_manager.process()
 
@@ -217,9 +288,19 @@ class _SymbolGraphNavigator:
     """
 
     def __init__(self, graph: nx.MultiDiGraph):
+        """
+        Args:
+            graph (nx.MultiDiGraph): A networkx graph
+        """
         self._graph = graph
 
     def get_all_files(self) -> List[SymbolFile]:
+        """
+        Gets all files in the graph
+
+        Returns:
+            List[SymbolFile]: A list of SymbolFile objects
+        """
         return [
             data.get("file")
             for _, data in self._graph.nodes(data=True)
@@ -227,11 +308,26 @@ class _SymbolGraphNavigator:
         ]
 
     def get_all_available_symbols(self) -> List[Symbol]:
+        """
+        Gets all available symbols in the graph
+
+        Returns:
+            List[Symbol]: A list of Symbol objects
+        """
         return [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
+        """
+        Gets the dependencies of a symbol
+
+        Args:
+            symbol (Symbol): The symbol object to fetch dependencies for
+
+        Returns:
+            Set[Symbol]: A set of Symbol objects
+        """
         references_in_range = self._get_symbol_references_in_scope(symbol)
         symbols_in_range = set([ref.symbol for ref in references_in_range])
         return symbols_in_range
@@ -247,6 +343,16 @@ class _SymbolGraphNavigator:
         return related_symbol_nodes
 
     def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
+        """
+        Gets all references to a symbol
+
+        Args:
+            symbol (Symbol): The symbol object to fetch references for
+
+        Returns:
+            Dict[str, List[SymbolReference]]: A dictionary of file
+                paths to a list of SymbolReference objects
+        """
         search_results = [
             (file_path, data.get("symbol_reference"))
             for _, file_path, data in self._graph.out_edges(symbol, data=True)
@@ -264,6 +370,14 @@ class _SymbolGraphNavigator:
 
     def get_potential_symbol_callers(self, symbol: Symbol) -> Dict[SymbolReference, Symbol]:
         """
+        Gets all potential callers of a symbol
+
+        Args:
+            symbol (Symbol): The symbol object to fetch callers for
+
+        Returns:
+            Dict[Symbol, SymbolReference]: A dictionary of Symbol objects to
+                Symbol calleers (SymbolReference objects).
         TODO - Remove non-call statements from this return object
         """
         callers = {
@@ -279,6 +393,16 @@ class _SymbolGraphNavigator:
         return callers
 
     def get_potential_symbol_callees(self, symbol: Symbol) -> Dict[Symbol, SymbolReference]:
+        """
+        Gets all potential callees of a symbol
+
+        Args:
+            symbol (Symbol): The symbol object to fetch callees for
+
+        Returns:
+            Dict[Symbol, SymbolReference]: A dictionary of Symbol objects to
+                Symbol callees (SymbolReference objects).
+        """
         callees = {
             callee: SymbolReference(
                 symbol=caller,
@@ -292,6 +416,15 @@ class _SymbolGraphNavigator:
         return callees
 
     def _get_symbol_containing_file(self, symbol: Symbol) -> str:
+        """
+        Gets the file containing a symbol
+
+        Args:
+            symbol (Symbol): The symbol object to fetch the containing file for
+
+        Returns:
+            str: The file path of the containing file
+        """
         parent_file_list = [
             source
             for source, _, data in self._graph.in_edges(symbol, data=True)
@@ -303,6 +436,15 @@ class _SymbolGraphNavigator:
         return parent_file_list.pop()
 
     def _get_symbol_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
+        """
+        Gets all symbol references in the scope of a symbol
+
+        Args:
+            symbol (Symbol): The symbol object to fetch references for
+
+        Returns:
+            List[SymbolReference]: A list of SymbolReference objects in scope
+        """
         file_name = self._get_symbol_containing_file(symbol)
         fst_object = convert_to_fst_object(symbol)
 
@@ -324,6 +466,15 @@ class _SymbolGraphNavigator:
         return references_in_range
 
     def _get_references_to_module(self, module_name: str) -> List[SymbolReference]:
+        """
+        Gets all references to a module
+
+        Args:
+            module_name (str): The module name to fetch references for
+
+        Returns:
+            List[SymbolReference]: A list of SymbolReference objects in scope
+        """
         reference_edges_in_module = self._graph.in_edges(module_name, data=True)
         result = []
         for _, __, data in reference_edges_in_module:
@@ -446,8 +597,8 @@ class SymbolGraph:
 
         Returns:
             List[str]: The list of dependencies for the symbol.
-        TODO: Can thi sbe made more efficient?
-        TODO: Can we better handle edge cases that are not handled in obvious ways
+        TODO: Consider ways to make this more efficient.
+        TODO: Find ways to better handle edge cases
         """
         G = nx.DiGraph()
 
@@ -457,7 +608,7 @@ class SymbolGraph:
 
         if path_filter is not None:
             filtered_symbols = [
-                sym for sym in filtered_symbols if sym.path.startswith(path_filter)  # type: ignore
+                sym for sym in filtered_symbols if sym.dotpath.startswith(path_filter)  # type: ignore
             ]
 
         for symbol in tqdm(filtered_symbols):
@@ -487,6 +638,15 @@ class SymbolGraph:
 
     @staticmethod
     def _load_index_protobuf(path: str) -> Index:
+        """
+        Loads an index protobuf file from disk
+
+        Args:
+            path (str): The path to the index protobuf file
+
+        Returns:
+            Index: The loaded index protobuf
+        """
         index = Index()
         with open(path, "rb") as f:
             index.ParseFromString(f.read())
