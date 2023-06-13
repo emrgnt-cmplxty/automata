@@ -3,8 +3,8 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 import networkx as nx
 import numpy as np
 
+from automata_docs.core.coding.python_coding.module_tree_map import LazyModuleTreeMap
 from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-from automata_docs.core.indexing.python_indexing.module_tree_map import LazyModuleTreeMap
 from automata_docs.core.symbol.search.symbol_rank import SymbolRank, SymbolRankConfig
 from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.symbol.symbol_parser import parse_symbol

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from redbaron import RedBaron
 
-from automata_docs.core.indexing.python_indexing.module_tree_map import LazyModuleTreeMap
+from automata_docs.core.coding.python_coding.module_tree_map import LazyModuleTreeMap
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 

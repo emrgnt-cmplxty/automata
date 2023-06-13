@@ -307,6 +307,7 @@ class SymbolDocumentEmbedding(SymbolEmbedding):
     Embedding for documents.
     """
 
-    def __init__(self, symbol: Symbol, vector: np.array, document: str):
+    def __init__(self, symbol: Symbol, vector: np.array):
         super().__init__(symbol, vector)
-        self.document = document
+        self.l1_document = ""
+        self.l2_document = ""
