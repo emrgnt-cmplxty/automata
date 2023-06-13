@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock
 
 import numpy as np
 
@@ -7,10 +7,8 @@ from automata_docs.core.embedding.symbol_embedding import (
     EmbeddingsProvider,
     SymbolCodeEmbeddingHandler,
 )
-from automata_docs.core.embedding.symbol_similarity import NormType, SymbolSimilarity
+from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
 from automata_docs.core.symbol.symbol_types import SymbolCodeEmbedding
-
-from .conftest import get_sem, patch_get_embedding
 
 
 def test_get_nearest_symbols_for_query(

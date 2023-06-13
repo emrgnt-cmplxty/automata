@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from redbaron import RedBaron
 
@@ -26,7 +26,10 @@ def convert_to_fst_object(
     descriptors = list(symbol.descriptors)
     obj = None
     module_map = module_map or LazyModuleTreeMap.cached_default()
-
+    # print('descriptors = ', descriptors)
+    # print('module_map._dotpath_map = ', module_map._dotpath_map)
+    # print('module_map._dotpath_map._module_dotpath_to_fpath_map = ', module_map._dotpath_map._module_dotpath_to_fpath_map)
+    # print('module_map._loaded_modules = ', module_map._loaded_modules)
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (

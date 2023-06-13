@@ -1,9 +1,6 @@
 import abc
 import logging
-from typing import Dict, List, Optional
-
-import numpy as np
-import openai
+from typing import List, Optional
 
 from automata_docs.core.database.vector import VectorDatabaseProvider
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding, SymbolEmbedding
@@ -66,12 +63,17 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
             convert_to_fst_object,
         )
 
+        desc_path_to_symbol = {
+            ".".join([desc.name for desc in symbol.descriptors]): symbol
+            for symbol in self.embedding_db.get_all_symbols()
+        }
         try:
-            symbol_source = str(convert_to_fst_object(symbol))
             symbol_desc_identifier = ".".join([desc.name for desc in symbol.descriptors])
-
-            if self.embedding_db.contains(symbol):
-                existing_embedding = self.embedding_db.get(symbol)
+            symbol_source = str(convert_to_fst_object(symbol))
+            if symbol_desc_identifier in desc_path_to_symbol:
+                existing_embedding = self.embedding_db.get(
+                    desc_path_to_symbol[symbol_desc_identifier]
+                )
 
                 if isinstance(existing_embedding, SymbolCodeEmbedding):
                     # If the symbol is already in the embedding map, check if the source code is the same
@@ -81,7 +83,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
                         new_embedding = self.embedding_provider.build_embedding(symbol_source)
                         existing_embedding.vector = new_embedding
                         existing_embedding.source_code = symbol_source
-
+                        print("calling update...")
                         # Update the embedding in the database
                         self.embedding_db.update(existing_embedding)
             else:

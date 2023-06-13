@@ -149,11 +149,11 @@ class Symbol:
     from automata_docs.core.symbol.search.symbol_parser import parse_symbol
 
     symbol_class = parse_symbol(
-        "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
+        "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
     )
 
     symbol_method = parse_symbol(
-        "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+        "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
     )
     """
 

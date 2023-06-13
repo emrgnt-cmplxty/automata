@@ -1,6 +1,6 @@
 **/sample_modules/**
 .env
-local
+notebooks/
 # Local Cruft
 automata_docs.egg-info/
 **/**/.DS_Store

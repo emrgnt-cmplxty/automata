@@ -104,13 +104,7 @@ def get_logging_config(
     log_level: int = logging.INFO, log_file: Optional[str] = None
 ) -> dict[str, Any]:
     """Returns logging configuration."""
-    color_scheme = {
-        "DEBUG": "cyan",
-        "INFO": "green",
-        "WARNING": "yellow",
-        "ERROR": "red",
-        "CRITICAL": "bold_red",
-    }
+
     logging_config: LoggingConfig = {
         "version": 1,
         "disable_existing_loggers": False,
