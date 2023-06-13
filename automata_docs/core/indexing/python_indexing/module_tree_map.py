@@ -9,7 +9,7 @@ from automata_docs.core.indexing.python_indexing.utils import (
     DOT_SEP,
     convert_fpath_to_module_dotpath,
 )
-from automata_docs.core.utils import root_path, root_py_path
+from automata_docs.core.utils import root_path
 
 logger = logging.getLogger(__name__)
 
@@ -82,25 +82,6 @@ class LazyModuleTreeMap:
         self._loaded_modules[module_dotpath] = module
         self._dotpath_map.put_module(module_dotpath)
 
-    @staticmethod
-    def _load_module_from_fpath(path) -> Optional[RedBaron]:
-        """
-        Loads and returns an FST object for the given file path.
-
-        Args:
-            path (str): The file path of the Python source code.
-
-        Returns:
-            Module: RedBaron FST object.
-        """
-
-        try:
-            module = RedBaron(open(path).read())
-            return module
-        except Exception as e:
-            logger.error(f"Failed to load module '{path}' due to: {e}")
-            return None
-
     def get_existing_module_dotpath(self, module_obj: RedBaron) -> Optional[str]:
         """
         Returns the module dotpath for the specified module object.
@@ -150,4 +131,23 @@ class LazyModuleTreeMap:
     @classmethod
     @lru_cache(maxsize=1)
     def cached_default(cls) -> "LazyModuleTreeMap":
-        return cls(root_py_path())
+        return cls(root_path())
+
+    @staticmethod
+    def _load_module_from_fpath(path) -> Optional[RedBaron]:
+        """
+        Loads and returns an FST object for the given file path.
+
+        Args:
+            path (str): The file path of the Python source code.
+
+        Returns:
+            Module: RedBaron FST object.
+        """
+
+        try:
+            module = RedBaron(open(path).read())
+            return module
+        except Exception as e:
+            logger.error(f"Failed to load module '{path}' due to: {e}")
+            return None

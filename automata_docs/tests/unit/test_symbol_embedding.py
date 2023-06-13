@@ -124,10 +124,10 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     )
     cem.embedding_provider.build_embedding.return_value = [1, 2, 3, 4]
     cem.embedding_db.contains = lambda x: True
+    cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]
 
     cem.update_embedding(mock_simple_method_symbols[0])
     embedding = cem.embedding_db.data[0].vector
-    print("cem.embedding_db = ", cem.embedding_db.data)
     assert len(cem.embedding_db.data) == 1  # Expect empty embedding map because of exception
     assert embedding == [1, 2, 3, 4]
 
