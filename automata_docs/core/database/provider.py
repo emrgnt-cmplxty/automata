@@ -1,16 +1,16 @@
 import abc
 from typing import Any
 
-from automata_docs.core.symbol.symbol_types import Embedding, Symbol
+from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
 
-class DatabaseProvider(abc.ABC):
+class SymbolDatabaseProvider(abc.ABC):
     """
     Abstract base class for different types of database providers.
     """
 
     @abc.abstractmethod
-    def save(self, data: Any):
+    def save(self):
         """
         Abstract method to save data.
         """
@@ -24,9 +24,16 @@ class DatabaseProvider(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def add(self, embedding: Embedding):
+    def add(self, embedding: SymbolEmbedding):
         """
         Abstract method to add an embedding to the database.
+        """
+        pass
+
+    @abc.abstractmethod
+    def update(self, embedding: SymbolEmbedding):
+        """
+        Abstract method to update an existing embedding.
         """
         pass
 
@@ -48,5 +55,12 @@ class DatabaseProvider(abc.ABC):
     def clear(self):
         """
         Abstract method to clear all embeddings.
+        """
+        pass
+
+    @abc.abstractmethod
+    def contains(self, symbol: Symbol) -> bool:
+        """
+        Abstract method to check if a specific embedding is present.
         """
         pass

@@ -9,7 +9,7 @@ from automata_docs.core.indexing.python_indexing.module_tree_map import LazyModu
 from automata_docs.core.indexing.python_indexing.syntax_tree_navigation import (
     find_syntax_tree_node,
 )
-from automata_docs.core.indexing.utils import NO_RESULT_FOUND_STR
+from automata_docs.core.indexing.python_indexing.utils import NO_RESULT_FOUND_STR
 
 logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]

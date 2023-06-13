@@ -1,11 +1,9 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional
 
-import networkx as nx
-import numpy as np
 from redbaron import RedBaron
 
 from automata_docs.core.indexing.python_indexing.module_tree_map import LazyModuleTreeMap
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolEmbedding
+from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 
 def convert_to_fst_object(
@@ -101,84 +99,3 @@ def get_rankable_symbols(
 
         filtered_symbols.append(symbol)
     return filtered_symbols
-
-
-def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
-    """
-    Finds exact line matches for a given pattern string in all modules.
-
-    Args:
-        pattern (str): The pattern string to search for.
-    Returns:
-        Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values.
-    """
-    matches = {}
-    module_map = LazyModuleTreeMap.cached_default()
-    for module_path, module in module_map.items():
-        lines = module.dumps().splitlines()
-        line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
-        if line_numbers:
-            matches[module_path] = line_numbers
-    return matches
-
-
-def sync_graph_and_dict(
-    graph: nx.DiGraph, dictionary: Dict[Symbol, SymbolEmbedding]
-) -> Tuple[nx.DiGraph, Dict[Symbol, SymbolEmbedding]]:
-    """
-    Function to synchronize a graph and a dictionary.
-    It removes nodes in the graph that are not in the dictionary, and
-    keys in the dictionary that are not in the graph.
-
-    :param graph: A networkx DiGraph object.
-    :param dictionary: A dictionary to synchronize with the graph.
-    :return: A tuple containing two elements: the synchronized graph and dictionary.
-    """
-
-    # Use list() to create a copy of the node list, as you can't modify a list while iterating over it
-    for node in list(graph.nodes()):
-        if node not in dictionary:
-            graph.remove_node(node)
-
-    # Again, use list() to create a copy of the key list
-    for key in list(dictionary.keys()):
-        if key not in graph:
-            del dictionary[key]
-
-    return graph, dictionary
-
-
-def shifted_z_score_sq(values: Union[List[float], np.ndarray]) -> np.ndarray:
-    """
-    Compute z-score of a list of values.
-    Args:
-        values: List of values to compute z-score for.
-    Returns:
-        List of z-scores.
-    """
-    if not isinstance(values, np.ndarray):
-        values = np.array(values)
-
-    mean = np.mean(values)
-    std_dev = np.std(values)
-    zscores = [(value - mean) / std_dev for value in values]
-    return (zscores - np.min(zscores)) ** 2
-
-
-def transform_dict_values(dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]):
-    """
-    Apply a function to each value in a dictionary and return a new dictionary.
-    Args:
-        dictionary: Dictionary to transform.
-        func: Function to apply to each value.
-    Returns:
-        Dictionary with transformed values.
-    """
-    # Apply the function to the accumulated values
-    transformed_values = func([dictionary[key] for key in dictionary])
-
-    # Re-distribute the transformed values back into the dictionary
-    transformed_dict = {}
-    for i, key in enumerate(dictionary):
-        transformed_dict[key] = transformed_values[i]
-    return transformed_dict

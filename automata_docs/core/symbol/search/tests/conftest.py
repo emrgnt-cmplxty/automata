@@ -1,5 +1,8 @@
+import os
+
 import pytest
 
+from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.symbol.symbol_parser import parse_symbol
 
 
@@ -47,3 +50,18 @@ def symbols():
     ]
 
     return symbols
+
+
+@pytest.fixture
+def symbol_graph():
+    # assuming the path to a valid index protobuf file, you should replace it with your own file path
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    index_path = os.path.join(file_dir, "index.scip")
+    graph = SymbolGraph(index_path)
+    return graph
+
+
+@pytest.fixture
+def symbol_graph_mock(mocker):
+    mock = mocker.MagicMock(spec=SymbolGraph)
+    return mock

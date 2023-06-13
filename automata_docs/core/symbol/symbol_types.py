@@ -2,16 +2,11 @@ import abc
 import re
 from dataclasses import dataclass
 from enum import Enum
-from os import PathLike
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 
 from automata_docs.core.symbol.scip_pb2 import Descriptor as DescriptorProto
-
-# Path and os related variables
-StrPath = Union[str, PathLike]
-PyPath = str
 
 
 class SymbolDescriptor:
@@ -151,7 +146,7 @@ class Symbol:
     <escaped-characters>   ::= any UTF-8 character, escape backticks with double backtick.
 
     Examples -
-    from automata_docs.core.search.symbol_parser import parse_symbol
+    from automata_docs.core.symbol.search.symbol_parser import parse_symbol
 
     symbol_class = parse_symbol(
         "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
@@ -208,7 +203,7 @@ class Symbol:
         return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
 
     @property
-    def path(self) -> StrPath:
+    def path(self) -> str:
         return ".".join([ele.name for ele in self.descriptors])
 
     @property
@@ -272,24 +267,8 @@ class SymbolReference:
 
 
 @dataclass
-class SymbolEmbedding:
-    symbol: Symbol
-    vector: np.ndarray
-    source_code: str
-
-
-@dataclass
-class SymbolDocumentation:
-    symbol: Symbol
-    completion_context: str
-    doc_full: str
-    doc_summary: str
-    source_code: str
-
-
-@dataclass
 class SymbolFile:
-    path: StrPath
+    path: str
     occurrences: str
 
     def __hash__(self) -> int:
@@ -303,7 +282,7 @@ class SymbolFile:
         return False
 
 
-class Embedding(abc.ABC):
+class SymbolEmbedding(abc.ABC):
     """
     Abstract base class for different types of embeddings.
     """
@@ -313,17 +292,17 @@ class Embedding(abc.ABC):
         self.vector = vector
 
 
-class CodeEmbedding(Embedding):
+class SymbolCodeEmbedding(SymbolEmbedding):
     """
     Embedding for code.
     """
 
-    def __init__(self, symbol: Symbol, vector: np.array, code: str):
+    def __init__(self, symbol: Symbol, vector: np.array, source_code: str):
         super().__init__(symbol, vector)
-        self.code = code
+        self.source_code = source_code
 
 
-class DocumentEmbedding(Embedding):
+class SymbolDocumentEmbedding(SymbolEmbedding):
     """
     Embedding for documents.
     """

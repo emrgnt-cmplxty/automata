@@ -1,4 +1,4 @@
-from automata_docs.core.indexing.python_indexing.directory_manager import DirectoryManager
+from automata_docs.core.indexing.directory_manager import DirectoryManager
 
 
 def create_test_dir_structure(tmp_path):

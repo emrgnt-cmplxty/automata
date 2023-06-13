@@ -9,6 +9,6 @@ def test_get_all_files(symbol_graph):
 
 
 def test_get_all_symbols(symbol_graph):
-    graph_symbols = symbol_graph.get_all_defined_symbols()
+    graph_symbols = symbol_graph.get_all_available_symbols()
     assert isinstance(graph_symbols, list)
     assert all(isinstance(s, Symbol) for s in graph_symbols)

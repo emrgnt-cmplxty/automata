@@ -4,7 +4,7 @@ import pytest
 
 from automata_docs.core.indexing.python_indexing.module_tree_map import LazyModuleTreeMap
 from automata_docs.core.indexing.python_indexing.python_code_retriever import PythonCodeRetriever
-from automata_docs.core.indexing.utils import build_repository_overview
+from automata_docs.core.indexing.python_indexing.utils import build_repository_overview
 
 
 @pytest.fixture

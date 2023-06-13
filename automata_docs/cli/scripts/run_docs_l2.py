@@ -9,14 +9,14 @@ from cli.cli_utils import load_docs, save_docs
 from automata_docs.core.context.python_context.python_context_retriever import (
     PythonContextRetriever,
 )
-from automata_docs.core.search.symbol_factory import (
+from automata_docs.core.symbol.search.symbol_factory import (
     SymbolGraphFactory,
     SymbolRankFactory,
     SymbolSearcherFactory,
 )
-from automata_docs.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
-from automata_docs.core.search.symbol_utils import convert_to_fst_object
+from automata_docs.core.symbol.search.symbol_rank import SymbolRank, SymbolRankConfig
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor
+from automata_docs.core.symbol.symbol_utils import convert_to_fst_object
 from config import OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)

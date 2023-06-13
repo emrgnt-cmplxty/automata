@@ -4,9 +4,9 @@ import os
 from tqdm import tqdm
 
 from automata_docs.configs.config_enums import ConfigCategory
-from automata_docs.core.embedding.symbol_embedding_map import SymbolEmbeddingMap
-from automata_docs.core.search.symbol_graph import SymbolGraph
-from automata_docs.core.search.symbol_utils import get_rankable_symbols
+from automata_docs.core.embedding.symbol_embedding import SymbolEmbeddingMap
+from automata_docs.core.symbol.symbol_graph import SymbolGraph
+from automata_docs.core.symbol.symbol_utils import get_rankable_symbols
 from automata_docs.core.utils import config_path
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def main(*args, **kwargs):
     symbol_graph = SymbolGraph(scip_path)
 
     if kwargs.get("update_embedding_map") or kwargs.get("build_new_embedding_map"):
-        all_defined_symbols = symbol_graph.get_all_defined_symbols()
+        all_defined_symbols = symbol_graph.get_all_available_symbols()
         filtered_symbols = get_rankable_symbols(all_defined_symbols)
         chunks = [
             filtered_symbols[i : i + CHUNK_SIZE]
