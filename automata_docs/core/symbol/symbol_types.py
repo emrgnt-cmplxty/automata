@@ -102,6 +102,8 @@ class SymbolDescriptor:
 
 @dataclass
 class SymbolPackage:
+    """Wraps the package component of the URI"""
+
     manager: str
     name: str
     version: str
@@ -162,13 +164,16 @@ class Symbol:
     package: SymbolPackage
     descriptors: Tuple[SymbolDescriptor, ...]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Converts back into URI string"""
         return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
 
     def __hash__(self) -> int:
+        """Hashes the URI string"""
         return hash(self.uri)
 
     def __eq__(self, other):
+        """Compares the URI string"""
         if isinstance(other, Symbol):
             return self.uri == other.uri
         elif isinstance(other, str):
@@ -176,9 +181,11 @@ class Symbol:
         return False
 
     def symbol_kind_by_suffix(self) -> SymbolDescriptor.PythonKinds:
+        """Converts the suffix of the URI into a PythonKind"""
         return SymbolDescriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
+        """Converts the suffix of the URI into a DescriptorProto"""
         if self.uri.startswith("local"):
             return SymbolDescriptor.ScipSuffix.Local
         if self.uri.endswith("/"):
@@ -199,31 +206,38 @@ class Symbol:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
     def parent(self) -> "Symbol":
+        """Returns the parent symbol of the current symbol"""
         parent_descriptors = list(self.descriptors)[:-1]
         return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
 
     @property
-    def path(self) -> str:
+    def dotpath(self) -> str:
+        """Returns the dotpath of the symbol"""
         return ".".join([ele.name for ele in self.descriptors])
 
     @property
     def module_name(self) -> str:
+        """Returns the module name of the symbol"""
         return self.descriptors[0].name
 
     @staticmethod
     def is_local(symbol: "Symbol") -> bool:
+        """Returns True if the symbol is local"""
         return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
 
     @staticmethod
     def is_meta(symbol: "Symbol") -> bool:
+        """Returns True if the symbol is meta"""
         return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Meta
 
     @staticmethod
     def is_parameter(symbol: "Symbol") -> bool:
+        """Returns True if the symbol is parameter"""
         return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
 
     @staticmethod
     def is_protobuf(symbol: "Symbol") -> bool:
+        """Returns True if the symbol is a protobuf symbol"""
         return symbol.module_name.endswith("pb2")
 
     @classmethod
@@ -248,6 +262,8 @@ class Symbol:
 
 @dataclass
 class SymbolReference:
+    """Represents a reference to a symbol in a file"""
+
     symbol: Symbol
     line_number: int
     column_number: int
@@ -268,6 +284,8 @@ class SymbolReference:
 
 @dataclass
 class SymbolFile:
+    """Represents a file that contains a symbol"""
+
     path: str
     occurrences: str
 
@@ -283,9 +301,7 @@ class SymbolFile:
 
 
 class SymbolEmbedding(abc.ABC):
-    """
-    Abstract base class for different types of embeddings.
-    """
+    """Abstract base class for different types of embeddings"""
 
     def __init__(self, symbol: Symbol, vector: np.array):
         self.symbol = symbol
@@ -293,9 +309,7 @@ class SymbolEmbedding(abc.ABC):
 
 
 class SymbolCodeEmbedding(SymbolEmbedding):
-    """
-    Embedding for code.
-    """
+    """Embedding for symbol code"""
 
     def __init__(self, symbol: Symbol, vector: np.array, source_code: str):
         super().__init__(symbol, vector)
@@ -303,9 +317,7 @@ class SymbolCodeEmbedding(SymbolEmbedding):
 
 
 class SymbolDocumentEmbedding(SymbolEmbedding):
-    """
-    Embedding for documents.
-    """
+    """Embedding for symbol documents"""
 
     def __init__(self, symbol: Symbol, vector: np.array):
         super().__init__(symbol, vector)

@@ -195,7 +195,7 @@ def test_extend_module(python_writer):
     python_writer.update_existing_module("sample_module_2", source_code_2)
 
     # Check module 2 is merged into module 1
-    module_obj = python_writer.code_retriever.module_tree_map.get_module("sample_module_2")
+    module_obj = python_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
     mock_generator._check_module_obj(module_obj)
     mock_generator._check_class_obj(module_obj[0])
     mock_generator._check_function_obj(module_obj[1])
@@ -209,7 +209,7 @@ def test_reduce_module(python_writer):
     )
     source_code = mock_generator.generate_code()
     python_writer.create_new_module("sample_module_2", source_code)
-    module_obj = python_writer.code_retriever.module_tree_map.get_module("sample_module_2")
+    module_obj = python_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
     class_obj = module_obj.find("class")
 
     function_obj = module_obj.find_all("def")[-1]

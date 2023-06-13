@@ -19,10 +19,12 @@ class SymbolSimilarity(EmbeddingSimilarity):
     ):
         """
         Initialize SymbolSimilarity
+
         Args:
             symbol_embedding_manager: A CodeEmbeddingManager
             norm_type (NormType): The norm type to use for calculating similarity
-        Result:
+
+        Returns:
             An instance of SymbolSimilarity
         """
         self.embedding_handler: SymbolCodeEmbeddingHandler = symbol_embedding_manager
@@ -34,13 +36,22 @@ class SymbolSimilarity(EmbeddingSimilarity):
         self.available_symbols: Optional[Set[Symbol]] = None
 
     def set_available_symbols(self, available_symbols: Set[Symbol]):
+        """
+        Set the available symbols to use for similarity calculation
+
+        Args:
+            available_symbols (Set[Symbol]): The available symbols to
+                use for similarity calculation
+        """
         self.available_symbols = available_symbols
 
     def get_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
         """
-        Get the similarity scores of all symbols for the query_text.
+        Get the similarity scores of all symbols for the query_text
+
         Args:
             query_text (str): The query text
+
         Returns:
             A dictionary mapping each symbol's uri to its similarity score with the query
         """
@@ -58,7 +69,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
 
     def get_nearest_entries_for_query(self, query_text: str, k: int = 10) -> Dict[Symbol, float]:
         """
-        Get the k most similar symbols to the query_text.
+        Get the k most similar symbols to the query_text
         Args:
             query_text (str): The query text
             k (int): The number of similar symbols to return
@@ -94,10 +105,10 @@ class SymbolSimilarity(EmbeddingSimilarity):
 
     def _get_ordered_embeddings(self) -> np.ndarray:
         """
-        Get the embeddings in the correct order.
+        Get the embeddings in the correct order
 
         Returns:
-            A numpy array containing the ordered embeddings.
+            A numpy array containing the ordered embeddings
         """
         return np.array(
             [
@@ -108,7 +119,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
 
     def _calculate_query_similarity_vec(self, query_embedding: np.ndarray) -> np.ndarray:
         """
-        Calculate the similarity scores of the query embedding with all symbol embeddings.
+        Calculate the similarity scores of the query embedding with all symbol embeddings
         Args:
             query_embedding (np.ndarray): The query embedding
             norm_type (str): The type of normalization ('l2' for L2 norm, 'softmax' for softmax)

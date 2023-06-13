@@ -109,7 +109,7 @@ def get_full_doc_completion(selected_symbol: Symbol, symbol_overview: str) -> st
         messages=[
             {
                 "role": "user",
-                "content": f"Generate the documentation for {selected_symbol.path} using the context shown below -\n {symbol_overview}."
+                "content": f"Generate the documentation for {selected_symbol.dotpath} using the context shown below -\n {symbol_overview}."
                 f" The output documentation should include an overview section, related symbols, examples, and discussion around limitations."
                 f" Examples should be comprehensive and readily executable (e.g. correct imports and values)."
                 f" If there are references to 'Mock' objects in test files from your context, do your best to replace these with the actual underlying object."

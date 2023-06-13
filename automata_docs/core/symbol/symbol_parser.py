@@ -19,22 +19,51 @@ class SymbolParser:
     """
 
     def __init__(self, symbol: str):
+        """
+        Args:
+            symbol (str): The symbol URI to parse
+        """
         self.symbol = symbol
         self.index = 0
         self.symbol_str = symbol
 
     def error(self, message: str) -> ValueError:
+        """
+        Create a ValueError with the symbol and a pointer to the error location
+
+        Args:
+            message (str): The error message
+        """
         return ValueError(f"{message}\n{self.symbol_str}\n{'_' * self.index}^")
 
     def current(self) -> str:
+        """
+        Get the current character in the symbol
+
+        Returns:
+            str - The current character in the symbol
+        """
         return self.symbol[self.index]
 
     def peek_next(self) -> Optional[str]:
+        """
+        Peek at the next character in the symbol
+
+        Returns:
+            Optional[str] - The next character in the symbol,
+                or None if there is no next character
+        """
         if self.index + 1 < len(self.symbol):
             return self.symbol[self.index + 1]
         return None
 
     def parse_descriptors(self) -> List[SymbolDescriptor]:
+        """
+        Parse all descriptors in the symbol
+
+        Returns:
+            List[SymbolDescriptor] - The descriptors in the symbol
+        """
         result = []
         while self.index < len(self.symbol):
             descriptor = self.parse_descriptor()
@@ -42,6 +71,12 @@ class SymbolParser:
         return result
 
     def parse_descriptor(self) -> SymbolDescriptor:
+        """
+        Parse a single descriptor in the symbol
+
+        Returns:
+            SymbolDescriptor - The descriptor in the symbol
+        """
         next_char = self.current()
         if next_char == "(":
             self.index += 1
@@ -83,6 +118,15 @@ class SymbolParser:
                 raise self.error("Expected a descriptor suffix")
 
     def accept_identifier(self, what: str) -> str:
+        """
+        Accepts an identifier from the symbol
+
+        Args:
+            what (str): The name of the identifier
+
+        Returns:
+            str - The identifier
+        """
         if self.current() == "`":
             self.index += 1
             return self.accept_backtick_escaped_identifier(what)
@@ -94,12 +138,41 @@ class SymbolParser:
         return self.symbol[start : self.index]
 
     def accept_space_escaped_identifier(self, what: str) -> str:
+        """
+        Accepts an identifier from the symbol, where the identifier is escaped by spaces
+
+        Args:
+            what (str): The name of the identifier
+
+        Returns:
+            str - The identifier
+        """
         return self.accept_escaped_identifier(what, " ")
 
     def accept_backtick_escaped_identifier(self, what: str) -> str:
+        """
+        Accepts an identifier from the symbol,
+            where the identifier is escaped by backticks
+
+        Args:
+            what (str): The name of the identifier
+
+        Returns:
+            str - The identifier
+        """
         return self.accept_escaped_identifier(what, "`")
 
     def accept_escaped_identifier(self, what: str, escape_character: str) -> str:
+        """
+        Accepts an identifier from the symbol,
+            where the identifier is escaped by a given character
+
+        Args:
+            what (str): The name of the identifier
+
+        Returns:
+            str - The identifier
+        """
         builder = []
         while self.index < len(self.symbol):
             ch = self.current()
@@ -118,7 +191,14 @@ class SymbolParser:
             f"reached end of symbol while parsing <{what}>, expected a '{escape_character}' character"
         )
 
-    def accept_character(self, r: str, what: str) -> None:
+    def accept_character(self, r: str, what: str):
+        """
+        Accepts a character from the symbol
+
+        Args:
+            r (str): The character to accept
+            what (str): The name of the character
+        """
         if self.current() == r:
             self.index += 1
         else:
@@ -126,10 +206,27 @@ class SymbolParser:
 
     @staticmethod
     def is_identifier_character(c: str) -> bool:
+        """
+        Checks if a character is a valid identifier character
+
+        Args:
+            c (str): The character to check
+
+        """
         return c.isalpha() or c.isdigit() or c in ["-", "+", "$", "_"]
 
 
 def parse_symbol(symbol_uri: str, include_descriptors: bool = True) -> Symbol:
+    """
+    Parses a symbol from a URI
+
+    Args:
+        symbol_uri (str): The URI of the symbol
+        include_descriptors (bool): Whether to include descriptors in the symbol
+
+    Returns:
+        Symbol - The parsed symbol
+    """
     s = SymbolParser(symbol_uri)
     scheme = s.accept_space_escaped_identifier("scheme")
 
@@ -156,7 +253,14 @@ def parse_symbol(symbol_uri: str, include_descriptors: bool = True) -> Symbol:
 
 
 def new_local_symbol(symbol: str, id: str) -> Symbol:
-    # TODO: this doesn't work yet
+    """
+    Creates a new local symbol
+
+    Args:
+        symbol (str): The symbol URI
+        id (str): The id of the symbol
+    TODO: this doesn't work yet (?)
+    """
     return Symbol(
         symbol,
         "local",
@@ -166,14 +270,41 @@ def new_local_symbol(symbol: str, id: str) -> Symbol:
 
 
 def is_global_symbol(symbol: str) -> bool:
+    """
+    Checks if a symbol is a global symbol
+
+    Args:
+        symbol (str): The symbol URI
+
+    Returns:
+        bool - Whether the symbol is a global symbol
+    """
     return not is_local_symbol(symbol)
 
 
 def is_local_symbol(symbol: str) -> bool:
+    """
+    Checks if a symbol is a local symbol
+
+    Args:
+        symbol (str): The symbol URI
+
+    Returns:
+        bool - Whether the symbol is a local symbol
+    """
     return symbol.startswith("local ")
 
 
-def get_escaped_name(name):
+def get_escaped_name(name: str) -> str:
+    """
+    Gets the escaped name of a symbol
+
+    Args:
+        name (str): The name of the symbol
+
+    Returns:
+        str - The escaped name of the symbol
+    """
     if not name:
         return ""
     if is_simple_identifier(name):
@@ -181,5 +312,14 @@ def get_escaped_name(name):
     return "`" + re.sub("`", "``", name) + "`"
 
 
-def is_simple_identifier(name):
+def is_simple_identifier(name: str) -> bool:
+    """
+    Checks if a name is a simple identifier
+
+    Args:
+        name (str): The name to check
+
+    Returns:
+        bool - Whether the name is a simple identifier
+    """
     return re.match(r"^[\w$+-]+$", name) is not None

@@ -16,26 +16,24 @@ FSTNode = Union[Node, RedBaron]
 class PythonCodeRetriever:
     """Code retriever for fetching python code"""
 
-    def __init__(
-        self, module_tree_map: LazyModuleTreeMap = LazyModuleTreeMap.cached_default()
-    ) -> None:
+    def __init__(self, module_tree_map: LazyModuleTreeMap = LazyModuleTreeMap.cached_default()):
         self.module_tree_map = module_tree_map
 
     def get_source_code(self, module_dotpath: str, object_path: Optional[str] = None) -> str:
         """
-        Gets code for a specified module, class, or function/method.
+        Gets code for a specified module, class, or function/method
 
         Args:
-            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
             object_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
+                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned
 
         Returns:
             str: The code for the specified module, class, or function/method, or "No Result Found."
-                if not found.
+                if not found
         """
 
-        module = self.module_tree_map.get_module(module_dotpath)
+        module = self.module_tree_map.fetch_module(module_dotpath)
         if module:
             result = find_syntax_tree_node(module, object_path)
             if result:
@@ -45,19 +43,19 @@ class PythonCodeRetriever:
 
     def get_docstring(self, module_dotpath: str, object_path: Optional[str]) -> str:
         """
-        Gets the docstring for a specified module, class, or function/method.
+        Gets the docstring for a specified module, class, or function/method
 
         Args:
-            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
             object_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the module-level docstring will be returned.
+                (e.g. 'ClassName.method_name'). If None, the module-level docstring will be returned
 
         Returns:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
-                if not found.
+                if not found
         """
 
-        module = self.module_tree_map.get_module(module_dotpath)
+        module = self.module_tree_map.fetch_module(module_dotpath)
         if module:
             return PythonCodeRetriever.get_docstring_from_node(
                 find_syntax_tree_node(module, object_path)
@@ -68,25 +66,25 @@ class PythonCodeRetriever:
         self, module_dotpath: str, object_path: Optional[str]
     ) -> str:
         """
-        Gets code for a specified module, class, or function/method.
+        Gets code for a specified module, class, or function/method
 
         Args:
-            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module').
+            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
             object_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned.
+                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned
 
         Returns:
             str: The code for the specified module, class, or function/method, or "No Result Found."
-                if not found.
+                if not found
         """
 
-        def _remove_docstrings(node: FSTNode) -> None:
+        def _remove_docstrings(node: FSTNode):
             """
-            Remove docstrings from the specified node, recursively.
+            Remove docstrings from the specified node, recursively
 
             Args:
                 node: The FST node
-                    to remove docstrings from.
+                    to remove docstrings from
             """
 
             if isinstance(node, (DefNode, ClassNode, RedBaron)):
@@ -99,7 +97,7 @@ class PythonCodeRetriever:
                     if child_node is not node:
                         _remove_docstrings(child_node)
 
-        module = self.module_tree_map.get_module(module_dotpath)
+        module = self.module_tree_map.fetch_module(module_dotpath)
 
         if module:
             module_copy = RedBaron(module.dumps())
@@ -112,6 +110,12 @@ class PythonCodeRetriever:
 
     @staticmethod
     def get_docstring_from_node(node: Optional[FSTNode]) -> str:
+        """
+        Gets the docstring from the specified node
+
+        Args:
+            node: The FST node to get the docstring from
+        """
         if not node:
             return NO_RESULT_FOUND_STR
 
@@ -123,6 +127,14 @@ class PythonCodeRetriever:
 
     @staticmethod
     def _create_line_number_tuples(node: FSTNode, start_line: int, start_col: int):
+        """
+        Creates a list of tuples of line numbers and lines from the specified node
+
+        Args:
+            node: The FST node to create the line number tuples from
+            start_line: The starting line number
+            start_col: The starting column number
+        """
         result = []
         for i, line in enumerate(node.dumps().strip().splitlines()):
             if i == 0 and not line.startswith(" " * (start_col - 1)):
