@@ -4,11 +4,11 @@ from typing import Optional
 import networkx as nx
 from configs.config_enums import ConfigCategory
 
-from automata_docs.core.embedding.symbol_embedding_map import SymbolEmbeddingMap
+from automata_docs.core.embedding.symbol_embedding import SymbolEmbeddingHandler
 from automata_docs.core.embedding.symbol_similarity import NormType, SymbolSimilarity
-from automata_docs.core.search.symbol_graph import SymbolGraph
-from automata_docs.core.search.symbol_rank.symbol_rank import SymbolRank, SymbolRankConfig
-from automata_docs.core.search.symbol_searcher import SymbolSearcher
+from automata_docs.core.symbol.search.symbol_rank import SymbolRank, SymbolRankConfig
+from automata_docs.core.symbol.search.symbol_searcher import SymbolSearcher
+from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.utils import config_path
 
 
@@ -32,29 +32,29 @@ class SymbolGraphFactory(SymbolFactory):
         return SymbolGraph(index_path, build_caller_relationships)
 
 
-class SymbolEmbeddingMapFactory(SymbolFactory):
-    def create(self, *args, **kwargs) -> SymbolEmbeddingMap:
+class SymbolEmbeddingManagerFactory(SymbolFactory):
+    def create(self, *args, **kwargs) -> SymbolEmbeddingHandler:
         """
-        Creates a SymbolEmbeddingMap object.
+        Creates a SymbolEmbeddingManager object.
 
         Args:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        return SymbolEmbeddingMap(*args, **kwargs)
+        return SymbolEmbeddingHandler(*args, **kwargs)
 
 
 class SymbolSimilarityFactory(SymbolFactory):
     def create(
         self,
-        symbol_embedding_map: SymbolEmbeddingMap,
+        symbol_embedding_map: SymbolEmbeddingHandler,
         norm_type: NormType = NormType.L2,
     ) -> SymbolSimilarity:
         """
         Creates a SymbolSimilarity object.
 
         Args:
-            symbol_embedding_map (SymbolEmbeddingMap): Symbol embedding map.
+            symbol_embedding_map (SymbolEmbeddingManager): Symbol embedding map.
             norm_type (NormType): Type of norm to use for calculating similarity.
         """
         return SymbolSimilarity(symbol_embedding_map, norm_type)
@@ -76,7 +76,7 @@ class SymbolSearcherFactory(SymbolFactory):
     def create(
         self,
         symbol_graph_factory: SymbolGraphFactory = SymbolGraphFactory(),
-        symbol_embedding_map_factory: SymbolEmbeddingMapFactory = SymbolEmbeddingMapFactory(),
+        symbol_embedding_map_factory: SymbolEmbeddingManagerFactory = SymbolEmbeddingManagerFactory(),
         symbol_similarity_factory: SymbolSimilarityFactory = SymbolSimilarityFactory(),
         symbol_rank_config: Optional[SymbolRankConfig] = None,
         *args,
@@ -88,7 +88,7 @@ class SymbolSearcherFactory(SymbolFactory):
         Args:
             symbol_converter_factory (SymbolConverterFactory): Factory for creating a SymbolConverter object.
             symbol_graph_factory (SymbolGraphFactory): Factory for creating a SymbolGraph object.
-            symbol_embedding_map_factory (SymbolEmbeddingMapFactory): Factory for creating a SymbolEmbeddingMap object.
+            symbol_embedding_map_factory (SymbolEmbeddingManagerFactory): Factory for creating a SymbolEmbeddingManager object.
             symbol_similarity_factory (SymbolSimilarityFactory): Factory for creating a SymbolSimilarity object.
             symbol_rank_config (SymbolRankConfig): Configuration for the SymbolRank object.
             *args: Variable length argument list.
@@ -111,7 +111,7 @@ class SymbolSearcherFactory(SymbolFactory):
         # Instantiate the SymbolGraph
         symbol_graph = symbol_graph_factory.create(scip_path)
 
-        # Instantiate the SymbolEmbeddingMap
+        # Instantiate the SymbolEmbeddingManager
         symbol_embedding_map = symbol_embedding_map_factory.create(
             load_embedding_map=True, embedding_path=embedding_path
         )

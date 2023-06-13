@@ -8,10 +8,10 @@ from automata_docs.core.indexing.python_indexing.python_code_retriever import Py
 from automata_docs.core.indexing.python_indexing.syntax_tree_navigation import (
     find_method_call_by_location,
 )
-from automata_docs.core.indexing.utils import build_repository_overview
-from automata_docs.core.search.symbol_graph import SymbolGraph
-from automata_docs.core.search.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata_docs.core.indexing.python_indexing.utils import build_repository_overview
+from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolReference
+from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
 from automata_docs.core.utils import root_py_path
 
 

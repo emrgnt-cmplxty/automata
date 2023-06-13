@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 from redbaron import ClassNode, DefNode, FromImportNode, ImportNode, Node, NodeList, RedBaron
 
-from automata_docs.core.indexing.utils import DOT_SEP
+from automata_docs.core.indexing.python_indexing.utils import DOT_SEP
 
 logger = logging.getLogger(__name__)
 

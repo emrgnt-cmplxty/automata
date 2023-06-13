@@ -1,20 +1,20 @@
 import logging
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
-from automata_docs.core.search.symbol_utils import convert_to_fst_object, get_rankable_symbols
 from automata_docs.core.symbol.scip_pb2 import Index, SymbolRole
 from automata_docs.core.symbol.symbol_parser import parse_symbol
 from automata_docs.core.symbol.symbol_types import (
-    StrPath,
     Symbol,
     SymbolDescriptor,
     SymbolFile,
     SymbolReference,
 )
+from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -226,7 +226,7 @@ class _SymbolGraphNavigator:
             if data.get("label") == "file"
         ]
 
-    def get_all_defined_symbols(self) -> List[Symbol]:
+    def get_all_available_symbols(self) -> List[Symbol]:
         return [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
@@ -246,13 +246,13 @@ class _SymbolGraphNavigator:
         )
         return related_symbol_nodes
 
-    def get_references_to_symbol(self, symbol: Symbol) -> Dict[StrPath, List[SymbolReference]]:
+    def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
         search_results = [
             (file_path, data.get("symbol_reference"))
             for _, file_path, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "reference"
         ]
-        result_dict: Dict[StrPath, List[SymbolReference]] = {}
+        result_dict: Dict[str, List[SymbolReference]] = {}
 
         for file_path, symbol_reference in search_results:
             if file_path in result_dict:
@@ -334,6 +334,11 @@ class _SymbolGraphNavigator:
 
 
 class SymbolGraph:
+    @dataclass
+    class SubGraph:
+        parent: "SymbolGraph"
+        graph: nx.DiGraph
+
     def __init__(self, index_path: str, build_caller_relationships: bool = False):
         """
         Initializes SymbolGraph with the path of an index protobuf file.
@@ -359,7 +364,7 @@ class SymbolGraph:
         """
         return self.navigator.get_all_files()
 
-    def get_all_defined_symbols(self) -> List[Symbol]:
+    def get_all_available_symbols(self) -> List[Symbol]:
         """
         Gets all symbols defined in the graph.
 
@@ -368,7 +373,7 @@ class SymbolGraph:
         Returns:
             List[Symbol]: List of all defined symbols.
         """
-        return list(set(self.navigator.get_all_defined_symbols()))
+        return list(set(self.navigator.get_all_available_symbols()))
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         """
@@ -419,7 +424,7 @@ class SymbolGraph:
         """
         return self.navigator.get_potential_symbol_callees(symbol)
 
-    def get_references_to_symbol(self, symbol: Symbol) -> Dict[StrPath, List[SymbolReference]]:
+    def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
         """
         Gets all references to a given module in the symbol graph.
 
@@ -432,7 +437,7 @@ class SymbolGraph:
 
     def get_rankable_symbol_subgraph(
         self, flow_rank="to_dependents", path_filter: Optional[str] = None
-    ) -> nx.DiGraph:
+    ) -> SubGraph:
         """
         Gets a detailed subgraph of rankable symbols.
 
@@ -448,7 +453,7 @@ class SymbolGraph:
 
         # Filter the symbols based on the provided path filter
 
-        filtered_symbols = get_rankable_symbols(self.get_all_defined_symbols())
+        filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
 
         if path_filter is not None:
             filtered_symbols = [
@@ -478,10 +483,10 @@ class SymbolGraph:
             except Exception as e:
                 logger.error(f"Error processing {symbol.uri}: {e}")
 
-        return G
+        return SymbolGraph.SubGraph(graph=G, parent=self)
 
     @staticmethod
-    def _load_index_protobuf(path: StrPath) -> Index:
+    def _load_index_protobuf(path: str) -> Index:
         index = Index()
         with open(path, "rb") as f:
             index.ParseFromString(f.read())
