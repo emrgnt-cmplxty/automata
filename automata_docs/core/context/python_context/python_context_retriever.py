@@ -4,11 +4,11 @@ from typing import List, Optional, Set
 
 from redbaron import RedBaron
 
-from automata_docs.core.indexing.python_indexing.python_code_retriever import PythonCodeRetriever
-from automata_docs.core.indexing.python_indexing.syntax_tree_navigation import (
+from automata_docs.core.coding.python_coding.python_code_retriever import PythonCodeRetriever
+from automata_docs.core.coding.python_coding.syntax_tree_navigation import (
     find_method_call_by_location,
 )
-from automata_docs.core.indexing.python_indexing.utils import build_repository_overview
+from automata_docs.core.coding.python_coding.utils import build_repository_overview
 from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolReference
 from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
@@ -84,6 +84,14 @@ class PythonContextRetriever:
         symbol: Symbol,
         ranked_symbols: List[Symbol] = [],
     ) -> None:
+        """
+        Update the embedding map with new symbols.
+
+        Args:
+            symbols_to_update (List[Symbol]): List of symbols to update
+        Result:
+            None
+        """
         # Check if the symbol has already been processed
         if symbol in self.obs_symbols:
             return
