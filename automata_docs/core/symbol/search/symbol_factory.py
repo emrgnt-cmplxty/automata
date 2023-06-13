@@ -7,7 +7,7 @@ from configs.config_enums import ConfigCategory
 from automata_docs.core.embedding.symbol_embedding import SymbolEmbeddingHandler
 from automata_docs.core.embedding.symbol_similarity import NormType, SymbolSimilarity
 from automata_docs.core.symbol.search.symbol_rank import SymbolRank, SymbolRankConfig
-from automata_docs.core.symbol.search.symbol_searcher import SymbolSearcher
+from automata_docs.core.symbol.search.symbol_search import SymbolSearch
 from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.utils import config_path
 
@@ -81,7 +81,7 @@ class SymbolSearcherFactory(SymbolFactory):
         symbol_rank_config: Optional[SymbolRankConfig] = None,
         *args,
         **kwargs,
-    ) -> SymbolSearcher:
+    ) -> SymbolSearch:
         """
         Creates a SymbolSearcher object.
 
@@ -120,7 +120,7 @@ class SymbolSearcherFactory(SymbolFactory):
         symbol_similarity = symbol_similarity_factory.create(symbol_embedding_map)
 
         # Create a SymbolSearcher using the instantiated classes
-        return SymbolSearcher(
+        return SymbolSearch(
             symbol_graph,
             symbol_embedding_map,
             symbol_similarity,

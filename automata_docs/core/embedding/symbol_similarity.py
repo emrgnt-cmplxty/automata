@@ -25,10 +25,10 @@ class SymbolSimilarity(EmbeddingSimilarity):
         Result:
             An instance of SymbolSimilarity
         """
-        self.embedding_manager: SymbolCodeEmbeddingHandler = symbol_embedding_manager
+        self.embedding_handler: SymbolCodeEmbeddingHandler = symbol_embedding_manager
         self.embedding_provider: EmbeddingsProvider = symbol_embedding_manager.embedding_provider
         self.norm_type = norm_type
-        supported_symbols = self.embedding_manager.get_all_supported_symbols()
+        supported_symbols = self.embedding_handler.get_all_supported_symbols()
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(supported_symbols)}
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(supported_symbols)}
         self.available_symbols: Optional[Set[Symbol]] = None
@@ -101,7 +101,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
         """
         return np.array(
             [
-                self.embedding_manager.get_embedding(symbol).vector
+                self.embedding_handler.get_embedding(symbol).vector
                 for symbol in self.index_to_symbol.values()
             ]
         )

@@ -6,6 +6,9 @@ import numpy as np
 import pytest
 
 from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
+from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
+from automata_docs.core.symbol.search.symbol_rank import SymbolRankConfig
+from automata_docs.core.symbol.search.symbol_search import SymbolSearch
 from automata_docs.core.symbol.symbol_graph import SymbolGraph
 from automata_docs.core.symbol.symbol_parser import parse_symbol
 
@@ -110,3 +113,16 @@ def symbol_graph():
 def symbol_graph_mock(mocker):
     mock = mocker.MagicMock(spec=SymbolGraph)
     return mock
+
+
+@pytest.fixture
+def symbol_searcher(mocker, symbol_graph_mock):
+    symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
+    symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
+    symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
+
+    return SymbolSearch(
+        symbol_graph_mock,
+        symbol_similarity_mock,
+        symbol_rank_config_mock,
+    )

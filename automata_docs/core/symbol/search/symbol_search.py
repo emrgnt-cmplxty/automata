@@ -17,7 +17,7 @@ SourceCodeResult = Optional[str]
 ExactSearchResult = Dict[str, List[int]]
 
 
-class SymbolSearcher:
+class SymbolSearch:
     def __init__(
         self,
         symbol_graph: SymbolGraph,
@@ -39,7 +39,7 @@ class SymbolSearcher:
                 raise ValueError("code_subgraph must be a subgraph of symbol_graph")
 
         graph_symbols = symbol_graph.get_all_available_symbols()
-        embedding_symbols = symbol_similarity.embedding_manager.get_all_supported_symbols()
+        embedding_symbols = symbol_similarity.embedding_handler.get_all_supported_symbols()
         available_symbols = set(graph_symbols).intersection(set(embedding_symbols))
         self.filter_graph(code_subgraph.graph, available_symbols)
         # TODO - Do we need to filter the SymbolGraph as well?
@@ -56,8 +56,8 @@ class SymbolSearcher:
             A list of tuples of the form (symbol_uri, rank)
         """
         query_vec = self.symbol_similarity.get_query_similarity_dict(query)
-        transformed_query_vec = SymbolSearcher.transform_dict_values(
-            query_vec, SymbolSearcher.shifted_z_score_sq
+        transformed_query_vec = SymbolSearch.transform_dict_values(
+            query_vec, SymbolSearch.shifted_z_score_sq
         )
         ranks = self.symbol_rank.get_ranks(symbol_similarity=transformed_query_vec)
         return ranks
@@ -98,7 +98,7 @@ class SymbolSearcher:
         Returns:
             A dict of paths to files that contain the pattern and corresponding line numbers
         """
-        return SymbolSearcher.find_pattern_in_modules(pattern)
+        return SymbolSearch.find_pattern_in_modules(pattern)
 
     def process_query(
         self, query: str
