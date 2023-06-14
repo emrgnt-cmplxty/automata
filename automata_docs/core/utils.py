@@ -39,7 +39,7 @@ def config_fpath() -> str:
         str - A fpath object in string form
 
     """
-    data_folder = os.path.join(root_py_fpath(), "configs")
+    data_folder = os.path.join(root_py_fpath(), "config")
     return data_folder
 
 
@@ -50,7 +50,7 @@ def load_config(
     custom_decoder: Any = None,
 ) -> Any:
     """
-    Loads a config file from the configs directory
+    Loads a config file from the config directory
 
     Args:
         file_path (str): The path to the YAML file
@@ -99,16 +99,14 @@ def get_logging_config(
     log_level: int = logging.INFO, log_file: Optional[str] = None
 ) -> dict[str, Any]:
     """
-    Gets the logging configuration
+    Returns logging configuration.
 
     Args:
-        log_level (int): The logging level
-        log_file (str): The path to the log file
-
-    Returns:
-        dict: The logging configuration
+        log_level (int): The log level.
+        log_file (Optional[str]): The log file path.
+    Returns
+        dict[str, Any]: The logging configuration.
     """
-
     logging_config: LoggingConfig = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -120,13 +118,12 @@ def get_logging_config(
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "colored",
+                "formatter": "standard",
                 "level": log_level,
             }
         },
         "root": {"handlers": ["console"], "level": log_level},
     }
-
     if log_file:  # if log_file is provided, add file handler
         logging_config["handlers"]["file"] = {
             "class": "logging.FileHandler",

@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Set
+from typing import Dict, List, Optional, Set
 
 import numpy as np
 
@@ -44,6 +44,20 @@ class SymbolSimilarity(EmbeddingSimilarity):
                 use for similarity calculation
         """
         self.available_symbols = available_symbols
+
+    def get_available_symbols(self) -> List[Symbol]:
+        """
+        Set the available symbols to use for similarity calculation
+
+        Args:
+            available_symbols (Set[Symbol]): The available symbols to
+                use for similarity calculation
+        """
+        return [
+            symbol
+            for symbol in self.symbol_to_index
+            if not self.available_symbols or symbol in self.available_symbols
+        ]
 
     def get_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
         """
