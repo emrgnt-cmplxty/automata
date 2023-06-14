@@ -345,7 +345,7 @@ class PyDocWriter:
             f.write("\n\n" + summary)
 
     def generate_rst_files(
-        self, docs: Dict[Symbol, SymbolDocEmbedding], symbols: List[Symbol], relative_dir: str
+        self, docs: Dict[Symbol, SymbolDocEmbedding], symbols: List[Symbol], docs_dir: str
     ):
         """
         Generate individual .rst files for each key (a key represents a module)
@@ -354,7 +354,7 @@ class PyDocWriter:
         Args:
             docs (Dict[Any, Any]): The documentation dictionary
             symbols (List[Any]): The symbols of the documentation dictionary
-            relative_dir (str): The relative directory
+            docs_dir (str): The output directory for the docs
         """
         for symbol in np.array(symbols):
             symbol_name = symbol.descriptors[-1].name
@@ -365,7 +365,7 @@ class PyDocWriter:
             snaked_symbol_name = PyDocWriter.camel_to_snake(symbol_name)
             module_dir = "/".join(symbol.dotpath.split(".")[1:-2])
 
-            new_module_dir = os.path.join(relative_dir, module_dir)
+            new_module_dir = os.path.join(docs_dir, module_dir)
             self.directory_manager.ensure_directory_exists(new_module_dir)
 
             with open(os.path.join(new_module_dir, f"{snaked_symbol_name}.rst"), "w") as f:
@@ -373,22 +373,23 @@ class PyDocWriter:
                 rst_string = pypandoc.convert_text(doc_md_string, "rst", format="md")
                 f.write(rst_string)
 
-    def generate_index_files(self, relative_dir: str):
+    def generate_index_files(self, docs_dir: str):
         """
         Generate index files for each directory that
             contains .rst files or subdirectories.
 
         Args:
-            relative_dir (str): The relative directory
+            docs_dir (str): The output directory for the docs
         """
-        for root, dirs, _ in os.walk(relative_dir, topdown=False):
-            root_relative_to_base = os.path.relpath(root, start=self.base_path)
-            files = self.directory_manager.get_files_in_dir(root_relative_to_base)
-            dirs = self.directory_manager.get_subdirectories(root_relative_to_base)
+        doc_directory_manager = DirectoryManager(docs_dir)
+        for root, dirs, _ in os.walk(docs_dir, topdown=False):
+            root_relative_to_base = os.path.relpath(root, start=docs_dir)
+            files = doc_directory_manager.get_files_in_dir(root_relative_to_base)
+            dirs = doc_directory_manager.get_subdirectories(root_relative_to_base)
 
             rst_files = [f for f in files if f.endswith(".rst")]
-            root_dir_node = self.directory_manager._get_node_for_path(
-                self.directory_manager.root, root_relative_to_base
+            root_dir_node = doc_directory_manager._get_node_for_path(
+                doc_directory_manager.root, root_relative_to_base
             )
 
             if rst_files or dirs:
@@ -411,7 +412,7 @@ class PyDocWriter:
                 self.generate_module_summary(root)
 
     def write_documentation(
-        self, docs: Dict[Symbol, SymbolDocEmbedding], symbols: List[Symbol], relative_dir: str
+        self, docs: Dict[Symbol, SymbolDocEmbedding], symbols: List[Symbol], docs_dir: str
     ):
         """
         Generate the full documentation given the symbols and a directory.
@@ -419,10 +420,10 @@ class PyDocWriter:
         Args:
             docs (Dict[Any, Any]): The documentation dictionary
             symbols (List[Any]): The symbols of the documentation dictionary
-            relative_dir (str): The relative directory
+            docs_dir (str): The relative directory
         """
-        self.generate_rst_files(docs, symbols, relative_dir)
-        self.generate_index_files(relative_dir)
+        self.generate_rst_files(docs, symbols, docs_dir)
+        self.generate_index_files(docs_dir)
 
     @staticmethod
     def get_payload(directory: str) -> str:
