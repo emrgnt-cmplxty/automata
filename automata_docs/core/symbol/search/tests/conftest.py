@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from automata_docs.core.symbol.symbol_graph import SymbolGraph
-from automata_docs.core.symbol.symbol_parser import parse_symbol
+from automata_docs.core.symbol.graph import SymbolGraph
+from automata_docs.core.symbol.parser import parse_symbol
 
 
 @pytest.fixture

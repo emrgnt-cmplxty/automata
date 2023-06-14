@@ -7,10 +7,10 @@ import pytest
 
 from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-from automata_docs.core.symbol.search.symbol_rank import SymbolRankConfig
+from automata_docs.core.symbol.graph import SymbolGraph
+from automata_docs.core.symbol.parser import parse_symbol
+from automata_docs.core.symbol.search.rank import SymbolRankConfig
 from automata_docs.core.symbol.search.symbol_search import SymbolSearch
-from automata_docs.core.symbol.symbol_graph import SymbolGraph
-from automata_docs.core.symbol.symbol_parser import parse_symbol
 
 
 @pytest.fixture

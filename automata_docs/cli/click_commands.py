@@ -133,6 +133,10 @@ def run_code_embedding(ctx, *args, **kwargs):
     help="Which embedding file to save to.",
 )
 @click.pass_context
-def run_doc_embedding_l1(ctx, *args, **kwargs):
-    """Run the document embedding Level-1 pipeline."""
-    raise NotImplementedError
+def run_doc_embedding_l2(ctx, *args, **kwargs):
+    """Run the document embedding Level-2 pipeline."""
+    from automata_docs.cli.scripts.run_doc_embedding_l2 import main
+
+    print("Calling run_doc_embedding_l2")
+    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    main(kwargs)

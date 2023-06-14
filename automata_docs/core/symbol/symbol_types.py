@@ -255,7 +255,7 @@ class Symbol:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __, ___ = match.groups()
         # In current implementation, only the uri is used in re-construcing the symbol
-        from automata_docs.core.symbol.symbol_parser import parse_symbol
+        from automata_docs.core.symbol.parser import parse_symbol
 
         return parse_symbol(uri)
 
@@ -319,7 +319,7 @@ class SymbolCodeEmbedding(SymbolEmbedding):
 class SymbolDocumentEmbedding(SymbolEmbedding):
     """Embedding for symbol documents"""
 
-    def __init__(self, symbol: Symbol, vector: np.array):
+    def __init__(self, symbol: Symbol, vector: np.array, document: str, source_code: str):
         super().__init__(symbol, vector)
-        self.l1_document = ""
-        self.l2_document = ""
+        self.document = document
+        self.source_code = source_code

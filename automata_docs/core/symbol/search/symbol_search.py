@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import networkx as nx
@@ -5,9 +6,9 @@ import numpy as np
 
 from automata_docs.core.coding.python_coding.module_tree_map import LazyModuleTreeMap
 from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-from automata_docs.core.symbol.search.symbol_rank import SymbolRank, SymbolRankConfig
-from automata_docs.core.symbol.symbol_graph import SymbolGraph
-from automata_docs.core.symbol.symbol_parser import parse_symbol
+from automata_docs.core.symbol.graph import SymbolGraph
+from automata_docs.core.symbol.parser import parse_symbol
+from automata_docs.core.symbol.search.rank import SymbolRank, SymbolRankConfig
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolReference
 from automata_docs.core.symbol.symbol_utils import convert_to_fst_object
 
@@ -151,7 +152,8 @@ class SymbolSearch:
             graph: The graph to filter
             available_symbols: The set of symbols to keep
         """
-        for symbol in graph.nodes():
+        graph_nodes = deepcopy(graph.nodes())
+        for symbol in graph_nodes:
             if symbol not in available_symbols:
                 graph.remove_node(symbol)
 

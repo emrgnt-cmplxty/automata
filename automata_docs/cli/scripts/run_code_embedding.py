@@ -6,7 +6,7 @@ from tqdm import tqdm
 from automata_docs.configs.config_enums import ConfigCategory
 from automata_docs.core.database.vector import JSONVectorDatabase
 from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
-from automata_docs.core.symbol.symbol_graph import SymbolGraph
+from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.symbol_utils import get_rankable_symbols
 from automata_docs.core.utils import config_fpath
 
@@ -36,7 +36,6 @@ def main(*args, **kwargs):
     embedding_handler = SymbolCodeEmbeddingHandler(embedding_db)
 
     for symbol in tqdm(filtered_symbols):
-        print("Updating symbol = ", symbol)
         embedding_handler.update_embedding(symbol)
         embedding_db.save()
     return "Success"
