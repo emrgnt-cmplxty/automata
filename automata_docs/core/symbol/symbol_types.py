@@ -16,7 +16,7 @@ class SymbolDescriptor:
 
     ScipSuffix = DescriptorProto
 
-    class PythonKinds(Enum):
+    class PyKind(Enum):
         Local = "local"
         Module = "module"
         Class = "class"
@@ -71,33 +71,33 @@ class SymbolDescriptor:
     @staticmethod
     def convert_scip_to_python_suffix(
         descriptor_suffix: DescriptorProto,
-    ) -> PythonKinds:
+    ) -> PyKind:
         if descriptor_suffix == SymbolDescriptor.ScipSuffix.Local:
-            return SymbolDescriptor.PythonKinds.Local
+            return SymbolDescriptor.PyKind.Local
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Namespace:
-            return SymbolDescriptor.PythonKinds.Module
+            return SymbolDescriptor.PyKind.Module
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Type:
-            return SymbolDescriptor.PythonKinds.Class
+            return SymbolDescriptor.PyKind.Class
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Method:
-            return SymbolDescriptor.PythonKinds.Method
+            return SymbolDescriptor.PyKind.Method
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Term:
-            return SymbolDescriptor.PythonKinds.Value
+            return SymbolDescriptor.PyKind.Value
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Macro:
-            return SymbolDescriptor.PythonKinds.Macro
+            return SymbolDescriptor.PyKind.Macro
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.Parameter:
-            return SymbolDescriptor.PythonKinds.Parameter
+            return SymbolDescriptor.PyKind.Parameter
 
         elif descriptor_suffix == SymbolDescriptor.ScipSuffix.TypeParameter:
-            return SymbolDescriptor.PythonKinds.TypeParameter
+            return SymbolDescriptor.PyKind.TypeParameter
 
         else:
-            return SymbolDescriptor.PythonKinds.Meta
+            return SymbolDescriptor.PyKind.Meta
 
 
 @dataclass
@@ -180,8 +180,8 @@ class Symbol:
             return self.uri == other
         return False
 
-    def symbol_kind_by_suffix(self) -> SymbolDescriptor.PythonKinds:
-        """Converts the suffix of the URI into a PythonKind"""
+    def symbol_kind_by_suffix(self) -> SymbolDescriptor.PyKind:
+        """Converts the suffix of the URI into a PyKind"""
         return SymbolDescriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
@@ -316,10 +316,20 @@ class SymbolCodeEmbedding(SymbolEmbedding):
         self.source_code = source_code
 
 
-class SymbolDocumentEmbedding(SymbolEmbedding):
+class SymbolDocEmbedding(SymbolEmbedding):
     """Embedding for symbol documents"""
 
-    def __init__(self, symbol: Symbol, vector: np.array, document: str, source_code: str):
+    def __init__(
+        self,
+        symbol: Symbol,
+        vector: np.array,
+        source_code: str,
+        document: str,
+        summary: Optional[str] = None,
+        context: Optional[str] = None,
+    ):
         super().__init__(symbol, vector)
-        self.document = document
         self.source_code = source_code
+        self.document = document
+        self.summary = summary
+        self.context = context

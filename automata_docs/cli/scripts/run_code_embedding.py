@@ -3,7 +3,7 @@ import os
 
 from tqdm import tqdm
 
-from automata_docs.configs.config_enums import ConfigCategory
+from automata_docs.config.config_enums import ConfigCategory
 from automata_docs.core.database.vector import JSONVectorDatabase
 from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.symbol.graph import SymbolGraph
@@ -19,11 +19,11 @@ def main(*args, **kwargs):
     Update the symbol code embedding based on the specified SCIP index file.
     """
     scip_path = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOLS.value, kwargs.get("index_file", "index.scip")
+        config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
     )
     embedding_path = os.path.join(
         config_fpath(),
-        ConfigCategory.SYMBOLS.value,
+        ConfigCategory.SYMBOL.value,
         kwargs.get("embedding_file", "symbol_code_embedding.json"),
     )
 

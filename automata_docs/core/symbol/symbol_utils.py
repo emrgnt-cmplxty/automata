@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from redbaron import RedBaron
 
-from automata_docs.core.coding.python_coding.module_tree_map import LazyModuleTreeMap
+from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 
@@ -14,7 +14,7 @@ def convert_to_fst_object(
 
     Args:
         symbol (str): The symbol which corresponds to a module, class, or method.
-        module_map: The PythonASTIndexer to use to find the symbol
+        module_map (Optional[LazyModuleTreeMap]): The module tree mapping to use. If None, the default
 
     Returns:
         Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found
@@ -36,7 +36,7 @@ def convert_to_fst_object(
         top_descriptor = descriptors.pop(0)
         if (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-            == SymbolDescriptor.PythonKinds.Module
+            == SymbolDescriptor.PyKind.Module
         ):
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
@@ -47,14 +47,14 @@ def convert_to_fst_object(
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")
         elif (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-            == SymbolDescriptor.PythonKinds.Class
+            == SymbolDescriptor.PyKind.Class
         ):
             if not obj:
                 raise ValueError("Class descriptor found without module descriptor")
             obj = obj.find("class", name=top_descriptor.name)
         elif (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
-            == SymbolDescriptor.PythonKinds.Method
+            == SymbolDescriptor.PyKind.Method
         ):
             if not obj:
                 raise ValueError("Method descriptor found without module or class descriptor")
@@ -70,7 +70,7 @@ def get_rankable_symbols(
         "setup",
         "stdlib",
     ),  # TODO - Revisit what strings we should filter on.
-    accepted_kinds=(SymbolDescriptor.PythonKinds.Method, SymbolDescriptor.PythonKinds.Class),
+    accepted_kinds=(SymbolDescriptor.PyKind.Method, SymbolDescriptor.PyKind.Class),
 ) -> List[Symbol]:
     """
     Filter out symbols that are not relevant for the embedding map.

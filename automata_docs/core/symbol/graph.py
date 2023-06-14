@@ -7,7 +7,7 @@ import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
-from automata_docs.configs.config_enums import ConfigCategory
+from automata_docs.config.config_enums import ConfigCategory
 from automata_docs.core.symbol.parser import parse_symbol
 from automata_docs.core.symbol.scip_pb2 import Index, SymbolRole
 from automata_docs.core.symbol.symbol_types import (
@@ -150,7 +150,7 @@ class _CallerCalleeManager:
                 logger.error(f"Parsing symbol {symbol.symbol} failed with error {e}")
                 continue
 
-            if symbol_object.symbol_kind_by_suffix() != SymbolDescriptor.PythonKinds.Method:
+            if symbol_object.symbol_kind_by_suffix() != SymbolDescriptor.PyKind.Method:
                 continue
 
             try:
@@ -162,8 +162,8 @@ class _CallerCalleeManager:
             for ref in references_in_scope:
                 try:
                     if (
-                        ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PythonKinds.Method
-                        or ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PythonKinds.Class
+                        ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Method
+                        or ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class
                     ):
                         if ref.symbol == symbol_object:
                             continue
@@ -493,7 +493,7 @@ class SymbolGraph:
         parent: "SymbolGraph"
         graph: nx.DiGraph
 
-    DEFAULT_SCIP_PATH = os.path.join(config_fpath(), ConfigCategory.SYMBOLS.value, "index.scip")
+    DEFAULT_SCIP_PATH = os.path.join(config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
 
     def __init__(
         self, index_path: str = DEFAULT_SCIP_PATH, build_caller_relationships: bool = False
@@ -618,6 +618,7 @@ class SymbolGraph:
                 sym for sym in filtered_symbols if sym.dotpath.startswith(path_filter)  # type: ignore
             ]
 
+        logger.info("Building the rankable symbol subgraph...")
         for symbol in tqdm(filtered_symbols):
             try:
                 dependencies = self.get_symbol_dependencies(symbol)
@@ -640,6 +641,8 @@ class SymbolGraph:
 
             except Exception as e:
                 logger.error(f"Error processing {symbol.uri}: {e}")
+
+        logger.info("Built the rankable symbol subgraph")
 
         return SymbolGraph.SubGraph(graph=G, parent=self)
 

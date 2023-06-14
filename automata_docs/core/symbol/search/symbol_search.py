@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 import networkx as nx
 import numpy as np
 
-from automata_docs.core.coding.python_coding.module_tree_map import LazyModuleTreeMap
+from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.parser import parse_symbol

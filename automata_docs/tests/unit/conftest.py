@@ -22,7 +22,7 @@ def temp_output_filename():
         os.remove(filename)
 
 
-prefix = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `configs.automata_agent_configs`/"
+prefix = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `config.automata_agent_config`/"
 
 
 @pytest.fixture
@@ -59,11 +59,11 @@ def symbols():
     symbols = [
         # Symbol with a simple attribute
         parse_symbol(
-            "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `configs.automata_agent_configs`/AutomataAgentConfig#description."
+            "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `config.automata_agent_config`/AutomataAgentConfig#description."
         ),
         # Symbol with a method with foreign argument
         parse_symbol(
-            "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `configs.automata_agent_configs`/AutomataAgentConfig#load().(config_name)"
+            "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `config.automata_agent_config`/AutomataAgentConfig#load().(config_name)"
         ),
         # Symbol with a class method, self as argument
         # parse_symbol(
@@ -75,7 +75,7 @@ def symbols():
         ),
         # Symbol with a class object and class variable
         parse_symbol(
-            "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `configs.automata_agent_configs`/AutomataAgentConfig#verbose."
+            "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `config.automata_agent_config`/AutomataAgentConfig#verbose."
         ),
         # Symbol with a function in a module
         # parse_symbol("scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `core.coordinator.tests.test_automata_coordinator`/test().(coordinator)"),
