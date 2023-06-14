@@ -594,7 +594,7 @@ class SymbolGraph:
         return self.navigator.get_references_to_symbol(symbol)
 
     def get_rankable_symbol_subgraph(
-        self, flow_rank="to_dependents", path_filter: Optional[str] = None
+        self, flow_rank="bidirectional", path_filter: Optional[str] = None
     ) -> SubGraph:
         """
         Gets a detailed subgraph of rankable symbols.
