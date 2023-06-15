@@ -1,69 +1,75 @@
 SymbolDocEmbeddingHandler
 =========================
 
-``SymbolDocEmbeddingHandler`` is a class that manages the creation,
-retrieval, and updating of embeddings for symbol documentations. It
-inherits from the ``EmbeddingHandler`` and extends its functionality to
-work specifically with symbol documentations. The class uses a
-``SymbolGraph``, ``SymbolSearch``, and various external APIs to generate
-context, document, and summary for a given symbol, as well as an
-embedding representing the information.
+``SymbolDocEmbeddingHandler`` is a class responsible for handling the
+generation, retrieval, and updating of symbol documentation embeddings
+using GPT-4-based language models. It works with a
+``VectorDatabaseProvider`` to store embeddings, an
+``EmbeddingsProvider`` to obtain embeddings from GPT-4, and integrates
+with ``SymbolGraph`` and ``SymbolSearch`` for context building and
+symbol searching.
 
 Overview
 --------
 
-The ``SymbolDocEmbeddingHandler`` class initializes various components
-needed to manage symbol documentations’ embeddings. It has methods to
-build symbol document embeddings using natural language model
-(e.g. GPT-4) and helper methods to generate document and summary from
-the generated context. The class also provides methods to retrieve and
-update embeddings for a particular symbol.
+The primary functionality of ``SymbolDocEmbeddingHandler`` includes the
+generation of a symbol’s documentation using a GPT-4 language model, the
+retrieval and updating of symbol embeddings, and the creation of a
+summarized version of the documentation. It works with a
+``VectorDatabaseProvider`` to store the embeddings and an
+``EmbeddingsProvider`` to obtain the embeddings from GPT-4.
+Additionally, it leverages ``SymbolGraph`` and ``SymbolSearch``
+functionalities to create a context for generating more relevant and
+specific documentation.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata_docs.core.symbol.search.rank.SymbolRankConfig``
--  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
 -  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingHandler``
+-  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbeddingHandler``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
 
 Example
 -------
 
+The following is an example demonstrating how to create an instance of
+``SymbolDocEmbeddingHandler``, retrieve a symbol’s documentation
+embedding, and update a symbol.
+
 .. code:: python
 
+   from automata_docs.core.database.vector import JSONVectorDatabase
    from automata_docs.core.embedding.symbol_embedding import SymbolDocEmbeddingHandler
    from automata_docs.core.symbol.symbol_types import Symbol
 
-   # Initialize the SymbolDocEmbeddingHandler
-   embedding_handler = SymbolDocEmbeddingHandler(embedding_db, embedding_provider)
-   symbol = Symbol(...)  # some Symbol object
-   source_code = "example source code"
+   vector_database = JSONVectorDatabase("path/to/symbol_doc_embedding.json")
+   embedding_handler = SymbolDocEmbeddingHandler(vector_database)
 
-   # Build the symbol document embedding
-   symbol_doc_embedding = embedding_handler.build_symbol_doc_embedding(symbol, source_code)
-
-   # Retrieve the embedding of a symbol
+   symbol = Symbol.from_string("some-symbol-string")
    symbol_embedding = embedding_handler.get_embedding(symbol)
 
-   # Update the embedding for a symbol
+   # Update the symbol if needed
    embedding_handler.update_embedding(symbol)
 
 Limitations
 -----------
 
-The ``SymbolDocEmbeddingHandler`` relies on external APIs for generating
-context, document, and summary, which can introduce latency and
-inaccuracy. Additionally, the generation of context and search results
-depends on the underlying ``SymbolGraph`` and ``SymbolSearch`` and can
-be influenced by biases towards specific examples.
+The primary limitations of ``SymbolDocEmbeddingHandler`` include:
+
+1. The reliance on GPT-4 for generating the symbol documentation, which
+   may not always provide the most accurate or optimal results.
+2. The existing search and context building functionalities may not
+   always include the most relevant context for generating
+   documentation.
 
 Follow-up Questions:
 --------------------
 
--  Can the ``SymbolDocEmbeddingHandler`` be further optimized to reduce
-   the dependence on external APIs?
--  How can we improve the context generation and search results to
-   provide more accurate and diverse examples in the symbol
-   documentations?
+-  Can we improve the integration between context building and symbol
+   search to provide more accurate and relevant documentation context?
+-  Are there any strategies to improve the performance of GPT-4 in
+   generating symbol documentation and summary?

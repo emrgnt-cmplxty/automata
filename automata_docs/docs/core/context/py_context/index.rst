@@ -11,6 +11,9 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
+   py_context
+   py_context_config
+   py_context_retriever
    py_context_retriever_config
 
 

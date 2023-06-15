@@ -1,51 +1,50 @@
 RootDict
 ========
 
-``RootDict`` is a dictionary that represents the root logger. It is an
-integral part of the logging system, allowing the registration and
-organization of loggers within the application. The loggers can be
-useful in keeping track of the logs, error messages, and other
-information during the application’s run-time. This class serves as a
-base dictionary for the root logger which can be customized or extended
-by other classes to create specific loggers.
+``RootDict`` is a dictionary class that represents the root logger. It
+is a part of the ``automata_docs.core.utils.LoggingConfig`` class which
+represents the logging configuration for the application.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.cli.commands.RootDict``
 -  ``automata_docs.core.utils.LoggingConfig``
--  ``automata_docs.cli.commands.LoggingConfig``
--  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.cli.commands.HandlerDict``
 -  ``automata_docs.core.utils.HandlerDict``
 
 Example
 -------
 
+Below is an example on how to use ``RootDict`` in conjunction with the
+``LoggingConfig`` class.
+
 .. code:: python
 
-   from automata_docs.core.utils import RootDict
+   from automata_docs.core.utils import RootDict, LoggingConfig
 
-   root_dict = RootDict()
-   root_dict["level"] = "DEBUG"
-   root_dict["handlers"] = ["console"]
+   root_logger: RootDict = {
+       "level": "DEBUG",
+       "handlers": ["console"]
+   }
 
-   print(root_dict)  # {'level': 'DEBUG', 'handlers': ['console']}
+   logging_config: LoggingConfig = {
+       "version": 1,
+       "disable_existing_loggers": False,
+       "formatters": {...},
+       "handlers": {...},
+       "root": root_logger
+   }
 
-Limitations
------------
+Discussion
+----------
 
-``RootDict`` by itself does not provide any logging functionality. It
-serves as a building block for configuring the logging system by
-allowing the definition of loggers. This class does not implement any
-logging methods or inherently provide any form of logging. It must be
-used in conjunction with other classes and configurations to set up the
-logging system effectively.
+RootDict is simply a dictionary that represents the root logger
+configuration. It defines the log level and handlers for the root
+logger. To make use of this class as part of the complete logging
+configuration, you should work together with the ``LoggingConfig``
+class, and other related classes such as ``HandlerDict``.
 
 Follow-up Questions:
 --------------------
 
--  What are some common use cases for extending the ``RootDict`` class?
--  Are there any specific recommended practices for using or extending
-   ``RootDict`` for custom logging purposes?
+-  What happen if we omit the RootDict or set it as an empty dictionary,
+   how it will affect the logging configuration?

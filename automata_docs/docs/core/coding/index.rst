@@ -12,6 +12,7 @@ how to :ref:`installation` the project.
    :maxdepth: 1
 
    py_coding/index
+   directory
    directory_manager
    file
    node

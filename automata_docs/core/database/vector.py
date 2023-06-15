@@ -44,7 +44,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         """
         self.file_path = file_path
         self.data: List[SymbolEmbedding] = []
-        self.index: Dict[Symbol, int] = {}
+        self.index: Dict[str, int] = {}
         self.load()
 
     def save(self):
@@ -58,7 +58,8 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         try:
             with open(self.file_path, "r") as file:
                 self.data = jsonpickle.decode(file.read())
-                self.index = {embedding.symbol: i for i, embedding in enumerate(self.data)}
+                # We index on the dotpath of the symbol, which is unique and indepenent of commit hash
+                self.index = {embedding.symbol.dotpath: i for i, embedding in enumerate(self.data)}
         except FileNotFoundError:
             logger.info("Creating new vector embedding db at %s" % self.file_path)
 
@@ -70,7 +71,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
             embedding: The vector to add
         """
         self.data.append(embedding)
-        self.index[embedding.symbol] = len(self.data) - 1
+        self.index[embedding.symbol.dotpath] = len(self.data) - 1
 
     def update(self, embedding: SymbolEmbedding):
         """
@@ -84,7 +85,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         """
         if embedding.symbol not in self.index:
             raise KeyError("Symbol %s not in database" % embedding.symbol)
-        self.data[self.index[embedding.symbol]] = embedding
+        self.data[self.index[embedding.symbol.dotpath]] = embedding
 
     def discard(self, symbol: Symbol):
         """
@@ -96,11 +97,11 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         Raises:
             KeyError: If the symbol is not in the database
         """
-        if symbol not in self.index:
+        if symbol.dotpath not in self.index:
             raise KeyError("Symbol %s not in database" % symbol)
-        index = self.index[symbol]
+        index = self.index[symbol.dotpath]
         del self.data[index]
-        del self.index[symbol]
+        del self.index[symbol.dotpath]
 
     def contains(self, symbol: Symbol) -> bool:
         """
@@ -112,7 +113,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         Returns:
             True if the database contains a vector for the given symbol, False otherwise
         """
-        return symbol in self.index
+        return symbol.dotpath in self.index
 
     def get(self, symbol: Symbol) -> SymbolEmbedding:
         """
@@ -124,9 +125,9 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         Raises:
             KeyError: If the symbol is not in the database
         """
-        if symbol not in self.index:
+        if symbol.dotpath not in self.index:
             raise KeyError("Symbol %s not in database" % symbol)
-        return self.data[self.index[symbol]]
+        return self.data[self.index[symbol.dotpath]]
 
     def clear(self):
         """Removes all vectors from the database"""
@@ -147,5 +148,5 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         Returns:
             A list of all symbols in the database
         """
-        symbol_list = list(self.index.keys())
+        symbol_list = [embedding.symbol for embedding in self.data]
         return sorted(symbol_list, key=lambda x: str(x.dotpath))

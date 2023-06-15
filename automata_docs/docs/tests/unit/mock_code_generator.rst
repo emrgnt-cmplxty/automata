@@ -1,48 +1,30 @@
 MockCodeGenerator
 =================
 
-``MockCodeGenerator`` is a utility class used for generating random
-Python code based on the specified conditions, including class, method,
-and function definitions. It can also include docstrings and import
-statements. This class is used mainly for testing purposes of Python
-code generation and manipulation related functions.
+``MockCodeGenerator`` is a class used specifically for generating test
+code in the context of test functions for ``automata_docs``. It provides
+an easily configurable way to generate code strings for classes,
+methods, functions, and docstrings.
 
-Overview
---------
+Related Symbols
+---------------
 
-``MockCodeGenerator`` provides a way to generate random Python code
-snippets with specific predefined conditions like ``has_class``,
-``has_method``, ``has_function``, ``has_import``,
-``has_module_docstring``, ``has_class_docstring``,
-``has_method_docstring``, and ``has_function_docstring``. The generated
-code can then be used for testing code manipulation and inspection
-functions.
-
-Methods
--------
-
-``__init__(self, has_class: bool = False, has_method: bool = False, has_function: bool = False, has_import: bool = False, has_module_docstring: bool = False, has_class_docstring: bool = False, has_method_docstring: bool = False, has_function_docstring: bool = False)``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The constructor initializes the ``MockCodeGenerator`` object with the
-given conditions. Each condition corresponds to a component in the
-generated code snippet (e.g. class, method, function, import statement,
-or related docstrings). Default values are set to ``False``.
-
-``generate_code(self)``
-~~~~~~~~~~~~~~~~~~~~~~~
-
-This method generates a random Python code snippet based on the
-conditions set during the object’s initialization. The resulting code
-snippet will include the components specified by the conditions as True.
-
-``random_string(length: int)``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This static method generates a random string of the specified length.
+-  ``automata_docs.tests.unit.test_py_writer.test_create_class_source_class``
+-  ``automata_docs.tests.unit.test_py_writer.test_write_and_retrieve_mock_code``
+-  ``automata_docs.tests.unit.test_py_writer.test_create_function_source_function``
+-  ``automata_docs.tests.unit.test_py_writer.test_create_update_write_module``
+-  ``automata_docs.tests.unit.test_py_writer.test_extend_module``
+-  ``automata_docs.tests.unit.test_py_code_retriever.test_get_code_module``
+-  ``automata_docs.tests.unit.test_py_writer.test_reduce_module``
+-  ``automata_docs.tests.unit.test_py_writer.test_create_class_inheritance``
+-  ``automata_docs.tests.unit.test_py_writer.test_create_function_with_arguments``
 
 Example
 -------
+
+The following example demonstrates how to create an instance of
+``MockCodeGenerator`` and generate code with mock class, docstring,
+function, and method.
 
 .. code:: python
 
@@ -56,15 +38,24 @@ Example
        has_module_docstring=True,
        has_class_docstring=True,
        has_method_docstring=True,
-       has_function_docstring=True
+       has_function_docstring=True,
    )
+   source_code = mock_generator.generate_code()  # Returns the generated code in string format.
 
-   code_snippet = mock_generator.generate_code()
-   print(code_snippet)
+Limitations
+-----------
+
+The primary limitation of the ``MockCodeGenerator`` class is that it is
+specifically designed for use in testing scenarios within the
+``automata_docs``. While it offers a simple interface for generating
+mock code for a variety of code structures, it is not intended for use
+outside of those testing scenarios.
 
 Follow-up Questions:
 --------------------
 
--  In the provided context, there are references to “Mock” objects. Are
-   these the actual underlying objects or specific “Mock” classes for
-   testing purposes? If not, please provide the underlying objects.
+-  Can the ``MockCodeGenerator`` class be extended to accommodate
+   generation of other code structures?
+-  Is the ``MockCodeGenerator`` only usable for the ``automata_docs``
+   testing context, or can it be potentially adapted for other testing
+   scenarios as well?

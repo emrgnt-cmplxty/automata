@@ -6,7 +6,7 @@ import numpy as np
 from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.symbol.symbol_types import Symbol
 
-from .embedding_types import EmbeddingSimilarity, EmbeddingsProvider, NormType
+from .embedding_types import EmbeddingProvider, EmbeddingSimilarity, NormType
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
             An instance of SymbolSimilarity
         """
         self.embedding_handler: SymbolCodeEmbeddingHandler = symbol_embedding_manager
-        self.embedding_provider: EmbeddingsProvider = symbol_embedding_manager.embedding_provider
+        self.embedding_provider: EmbeddingProvider = symbol_embedding_manager.embedding_provider
         self.norm_type = norm_type
         supported_symbols = self.embedding_handler.get_all_supported_symbols()
         self.index_to_symbol = {i: symbol for i, symbol in enumerate(supported_symbols)}

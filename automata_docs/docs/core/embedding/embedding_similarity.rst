@@ -1,83 +1,81 @@
 EmbeddingSimilarity
 ===================
 
-``EmbeddingSimilarity`` is an abstract base class for search ranking
-algorithms. It provides a foundation for implementing methods to search
-for symbols or text queries that are similar to a given query. The
-similar symbols are returned as a dictionary with their respective
-similarity scores.
+``EmbeddingSimilarity`` is an abstract base class for calculating the
+similarity between a given query and embeddings of symbols. It is meant
+to be subclassed to implement the methods for calculating similarity and
+retrieving nearest symbols to a query based on their embeddings.
 
 Overview
 --------
 
-``EmbeddingSimilarity`` is designed to be used in conjunction with
-classes like ``SymbolSimilarity`` and relies on embeddings derived from
-various symbol structures like ``Symbol`` and ``SymbolEmbedding``. The
-class provides the following abstract methods:
+``EmbeddingSimilarity`` requires three main abstract methods to be
+implemented in a subclass:
 
--  ``__init__(symbol_embedding_manager, norm_type)``: Initializes an
-   instance of ``EmbeddingSimilarity``.
--  ``get_nearest_entries_for_query(query_text, k_nearest)``: Retrieves
-   the k nearest symbols to the provided ``query_text``.
--  ``get_query_similarity_dict(query_text)``: Computes the similarity
-   between the provided ``query_text`` and all available symbols.
+1. ``__init__``: Initialize the ``EmbeddingSimilarity`` subclass with
+   the required parameters, such as an ``EmbeddingHandler``, and
+   optionally a ``NormType``.
+2. ``get_nearest_entries_for_query``: Given a query and an integer
+   ``k_nearest``, return the ``k_nearest`` symbols that are most similar
+   to the query, based on their embeddings.
+3. ``get_query_similarity_dict``: Given a query, return a dictionary
+   containing the similarity scores between the query and all available
+   symbols.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
 -  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
 -  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
+-  ``automata_docs.core.database.vector.VectorDatabaseProvider.calculate_similarity``
 -  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
 
 Example
 -------
 
-The following example demonstrates how one might use a derivative of
-``EmbeddingSimilarity`` such as ``SymbolSimilarity``:
+The following is an example demonstrating how to create and use a custom
+``EmbeddingSimilarity`` subclass to calculate similarities between a
+given query and available symbols.
 
 .. code:: python
 
-   from automata_docs.core.database.vector import JSONVectorDatabase
-   from automata_docs.core.embedding.embedding_types import EmbeddingsProvider
+   from automata_docs.core.embedding.embedding_types import EmbeddingSimilarity
+   from automata_docs.core.symbol.symbol_types import Symbol
    from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-   from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
 
-   # Initialize a JSONVectorDatabase object
-   embedding_db = JSONVectorDatabase("path/to/json_file")
+   class CustomEmbeddingSimilarity(EmbeddingSimilarity):
+       def __init__(self, symbol_embedding_manager, norm_type):
+           super().__init__(symbol_embedding_manager, norm_type)
 
-   # Create an EmbeddingsProvider object
-   provider = EmbeddingsProvider()
+       def get_nearest_entries_for_query(self, query_text, k_nearest):
+           # Implement method to retrieve k_nearest symbols based on their embeddings
+           pass
 
-   # Initialize a SymbolCodeEmbeddingHandler object
-   handler = SymbolCodeEmbeddingHandler(embedding_db, provider)
+       def get_query_similarity_dict(self, query_text):
+           # Implement method to return a dictionary with similarity scores between the query and all available symbols
+           pass
 
-   # Create a SymbolSimilarity instance using the handler
-   symbol_similarity = SymbolSimilarity(handler)
-
-   # Query the 2 nearest symbols to the given text
-   query = "Example query text"
-   result = symbol_similarity.get_nearest_entries_for_query(query, k_nearest=2)
-
-   # The result is a dictionary with symbols as keys and similarity scores as values
-   print(result)
+   # Instantiate and use the custom subclass
+   symbol_similarity_instance = CustomEmbeddingSimilarity(symbol_embedding_manager, norm_type)
+   nearest_entries = symbol_similarity_instance.get_nearest_entries_for_query("example query", k_nearest=5)
+   query_similarity = symbol_similarity_instance.get_query_similarity_dict("example query")
 
 Limitations
 -----------
 
-The primary limitation of ``EmbeddingSimilarity`` is that it assumes
-specific data structures and related classes, like
-``EmbeddingsProvider`` and ``SymbolSimilarity``. As it is an abstract
-base class, it cannot be used directly but must be subclassed to provide
-the desired functionality.
+``EmbeddingSimilarity`` is an abstract base class and cannot be used
+directly. It must be subclassed, and the abstract methods must be
+implemented in the subclass to suit the requirements of the specific use
+case.
 
 Follow-up Questions:
 --------------------
 
--  How can ``EmbeddingSimilarity`` be used for other types of embeddings
-   besides code and documentation?
--  How can ``EmbeddingSimilarity`` be extended to support additional
-   similarity algorithms?
+-  How can we handle different types of embeddings when calculating
+   similarity in the subclass implementations?
+-  Can we provide different similarity measures apart from cosine
+   similarity when calculating the similarity between a query and
+   embeddings of symbols?

@@ -1,65 +1,72 @@
 EmbeddingHandler
 ================
 
-``EmbeddingHandler`` is an abstract class for handling the embedding of
-symbols. It provides a way to obtain embeddings for symbols as well as
-to update these embeddings. The class offers closely related symbols,
-such as ``SymbolCodeEmbeddingHandler`` and
-``SymbolDocEmbeddingHandler``.
-
-Overview
---------
-
-``EmbeddingHandler`` is used to handle the embeddings for symbols.
-Developers can subclass this class to implement specific embedding
-types. The abstract methods defined in this class are
-``get_all_supported_symbols``, ``get_embedding``, and
-``update_embedding``. The implementation of these methods is left to the
-subclasses.
+``EmbeddingHandler`` is an abstract class that defines the interface for
+handling the embeddings of symbols. It provides methods to get and
+update embeddings for a given symbol and is intended to be overridden by
+the specific implementation of embedding handlers in your application.
+The key methods include ``get_all_supported_symbols``,
+``get_embedding``, and ``update_embedding``.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolDocEmbeddingHandler``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbedding``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbeddingHandler``
+-  ``automata_docs.core.database.vector.VectorDatabaseProvider``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
 
 Example
 -------
 
-Here’s an example of how to use the ``SymbolCodeEmbeddingHandler``
-class, which is a subclass of ``EmbeddingHandler``.
+The following example demonstrates how to create a custom implementation
+of ``EmbeddingHandler`` in your application.
 
 .. code:: python
 
-   from automata_docs.core.embedding.embedding_types import VectorDatabaseProvider
-   from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler, EmbeddingsProvider
-   from automata_docs.core.symbol.symbol_types import Symbol
+   import numpy as np
+   from automata_docs.core.database.vector import VectorDatabaseProvider
+   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
+   from automata_docs.core.embedding.embedding_types import EmbeddingHandler
 
-   # Create an instance of SymbolCodeEmbeddingHandler
-   embedding_db = VectorDatabaseProvider() # Replace with your own implementation of VectorDatabaseProvider
-   embedding_provider = EmbeddingsProvider()
+   class MyEmbeddingHandler(EmbeddingHandler):
+       def __init__(self, embedding_db: VectorDatabaseProvider):
+           super().__init__(embedding_db)
+       
+       def get_all_supported_symbols(self) -> List[Symbol]:
+           # Implement method to return a list of all supported symbols
+           pass
 
-   code_embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, embedding_provider)
+       def get_embedding(self, symbol: Symbol) -> SymbolEmbedding:
+           # Implement method to get the embedding for a symbol
+           pass
 
-   # Use the handler to get embeddings for specific symbols
-   symbol = Symbol("example_symbol")
-   embedding = code_embedding_handler.get_embedding(symbol)
+       def update_embedding(self, symbol: Symbol):
+           # Implement method to update the embedding for a symbol
+           pass
+
+To use this custom implementation in your application:
+
+.. code:: python
+
+   my_embedding_database = VectorDatabaseProvider()
+   my_embedding_handler = MyEmbeddingHandler(my_embedding_database)
 
 Limitations
 -----------
 
-The primary limitation of ``EmbeddingHandler`` is that it only supports
-specific symbol types. Developers looking to use non-supported symbol
-types would need to implement their own subclasses of
-``EmbeddingHandler``. Additionally, the ``EmbeddingHandler`` class
-itself is an abstract class, so developers will need to use subclasses
-or create new subclasses that implement the abstract methods.
+The primary limitations of ``EmbeddingHandler`` include its reliance on
+a specific database provider (``VectorDatabaseProvider``) and the need
+for customization to fit your specific application requirements. The
+ability to customize this class provides flexibility, but may require
+additional work for users who need more general implementations.
 
 Follow-up Questions:
 --------------------
 
--  Are there any other limitations or caveats to using the
-   ``EmbeddingHandler`` class?
+-  What is the purpose of the ``embedding_provider`` attribute and the
+   ``EmbeddingsProvider`` class?
+-  How does the ``EmbeddingHandler`` connect to other components within
+   the system, such as symbol representations and embedding retrieval?

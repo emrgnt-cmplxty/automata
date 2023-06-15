@@ -1,16 +1,17 @@
+import logging
 import os
 from contextlib import contextmanager
-from typing import List, Optional, Set
+from typing import List, Set
 
 from redbaron import RedBaron
 
-from automata_docs.core.coding.py_coding.navigation import find_method_call_by_location
-from automata_docs.core.coding.py_coding.py_utils import build_repository_overview
 from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
 from automata_docs.core.symbol.graph import SymbolGraph
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor, SymbolReference
+from automata_docs.core.symbol.symbol_types import Symbol
 from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
 from automata_docs.core.utils import root_py_fpath
+
+logger = logging.getLogger(__name__)
 
 
 class PyContextRetrieverConfig:
@@ -19,54 +20,19 @@ class PyContextRetrieverConfig:
     def __init__(
         self,
         spacer: str = "  ",
-        max_dependency_print_depth: int = 2,
-        max_recursion_depth: int = 1,
-        nearest_symbols_count: int = 10,
-        print_imports=False,
-        process_directory_structure=False,
-        process_docstrings=True,
-        process_variables=True,
-        process_methods=True,
-        process_methods_constructor=True,
-        process_methods_summary=False,
-        process_nearest_symbols=True,
-        process_dependencies=False,
-        process_references=False,
-        process_callers=False,
+        max_dependencies_to_process: int = 10,
+        max_related_symbols_to_process: int = 10,
     ):
         """
         Args:
             spacer (str): The string to use for indentation
             max_dependency_print_depth (int): The maximum depth to print dependencies
             max_recursion_depth (int): The maximum depth to recurse into dependencies
-            nearest_symbols_count (int): The number of nearest symbols to print
-            print_imports (bool): Whether to print imports
-            process_directory_structure (bool): Whether to process the directory structure
-            process_docstrings (bool): Whether to process docstrings
-            process_variables (bool): Whether to process variables
-            process_methods (bool): Whether to process methods
-            process_methods_constructor (bool): Whether to process the constructor method
-            process_methods_summary (bool): Whether to process the summary method
-            process_nearest_symbols (bool): Whether to process the nearest symbols
-            process_dependencies (bool): Whether to process the dependencies
-            process_references (bool): Whether to process the references
-            process_callers (bool): Whether to process the callers
+            max_related_symbols_to_process (int): The number of nearest symbols to print
         """
         self.spacer = spacer
-        self.nearest_symbols_count = nearest_symbols_count
-        self.max_dependency_print_depth = max_dependency_print_depth
-        self.max_recursion_depth = max_recursion_depth
-        self.print_imports = print_imports
-        self.process_directory_structure = process_directory_structure
-        self.process_docstrings = process_docstrings
-        self.process_variables = process_variables
-        self.process_methods = process_methods
-        self.process_methods_constructor = process_methods_constructor
-        self.process_methods_summary = process_methods_summary
-        self.process_nearest_symbols = process_nearest_symbols
-        self.process_dependencies = process_dependencies
-        self.process_references = process_references
-        self.process_callers = process_callers
+        self.max_dependencies_to_process = max_dependencies_to_process
+        self.max_related_symbols_to_process = max_related_symbols_to_process
 
 
 class PyContextRetriever:
@@ -127,7 +93,7 @@ class PyContextRetriever:
     def process_symbol(
         self,
         symbol: Symbol,
-        ranked_symbols: List[Symbol] = [],
+        related_symbols: List[Symbol] = [],
     ):
         """
         Process the context of a symbol
@@ -138,44 +104,49 @@ class PyContextRetriever:
             ranked_symbols (List[Symbol]): The list ranked symbols to use
                 with the nearest symbol processor
         """
-        # Check if the symbol has already been processed
-        if symbol in self.obs_symbols:
-            return
-        self.obs_symbols.add(symbol)
-
-        if self._is_first_symbol_call() and self.config.process_directory_structure:
-            self.process_directory_structure(symbol)
-
-        self.process_headline(symbol)
-        if self.indent_level <= self.config.max_dependency_print_depth:
-            with self.IndentManager():
-                self.process_class(symbol)
-                if self.indent_level <= self.config.max_recursion_depth:
-                    if self.config.process_nearest_symbols:
-                        self.process_nearest_symbols(ranked_symbols)
-                    if self.config.process_dependencies:
-                        self.process_dependencies(symbol)
-                    if self.config.process_references:
-                        self.process_references(symbol)
-                    if self.config.process_callers:
-                        self.process_callers(symbol)
-
-    def process_directory_structure(self, symbol: Symbol):
-        """
-        Process the directory structure around a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-        """
-        # Print the directory structure
-        self.process_message(f"Local Directory Structure:")
+        print("Calling process symbol on = ", symbol.dotpath)
         with self.IndentManager():
-            symbol_path = str(symbol.dotpath).replace(".", os.path.sep)
-            dir_path = os.path.join(root_py_fpath(), "..", symbol_path)
-            while not os.path.isdir(dir_path):
-                dir_path = os.path.dirname(dir_path)
-            overview = build_repository_overview(dir_path, skip_func=True)
-            self.process_message(f"{overview}\n")
+            self.process_headline(symbol)
+            self.process_ast(symbol)
+
+            if self._is_main_symbol():
+                related_symbols_processed = 0
+                self.process_message(f"Building context for related symbols -\n")
+
+                print("Processing related symbols...")
+                for related_symbol in related_symbols:
+                    if related_symbols_processed >= self.config.max_related_symbols_to_process:
+                        break
+                    # Check that the related symbol passes filter requirements
+                    if not PyContextRetriever._pass_symbol_filter(symbol, related_symbol):
+                        continue
+
+                    if related_symbol not in self.obs_symbols:
+                        self.process_symbol(related_symbol)
+                        related_symbols_processed += 1
+
+                dependencies_processed = 0
+                self.process_message(f"Building context for dependencies -\n")
+                all_dependencies = list(self.graph.get_symbol_dependencies(symbol))
+                filtered_dependencies = get_rankable_symbols(all_dependencies)
+
+                print("Processing dependencies...")
+                for dependency in filtered_dependencies:
+                    if dependencies_processed >= self.config.max_dependencies_to_process:
+                        break
+                    # Check that the dependency passes filter requirements
+                    if not PyContextRetriever._pass_symbol_filter(symbol, dependency):
+                        continue
+
+                    if dependency not in self.obs_symbols:
+                        try:
+                            self.process_symbol(dependency)
+                        except Exception as e:
+                            logger.error(f"Failure processing dependent {dependency} with {e}")
+                            continue
+                        dependencies_processed += 1
+
+        self.obs_symbols.add(symbol)
 
     def process_headline(self, symbol: Symbol):
         """
@@ -185,314 +156,113 @@ class PyContextRetriever:
             symbol (Symbol): The symbol to process
         """
         # Print the headline
-        if self._is_first_symbol_call():
-            self.process_message(f"Context for -\n{symbol.dotpath} -\n")
+        if self._is_main_symbol():
+            self.process_message(f"Building context for primary symbol - {symbol.dotpath} -\n")
         else:
             self.process_message(f"{symbol.dotpath}\n")
 
-    def process_class(self, symbol: Symbol):
+    def process_ast(self, symbol: Symbol):
         """
-        Process the class of a symbol
+        Process the variables of a symbol
+
+        Args:
+            ast_object (RedBaron): The ast representation of the symbol
+        """
+        ast_object = convert_to_fst_object(symbol)
+        is_main_symbol = self._is_main_symbol()
+        methods = sorted(ast_object.find_all("DefNode"), key=lambda x: x.name)
+
+        with self.IndentManager():
+            if "test" in symbol.dotpath or "Config" in symbol.dotpath:
+                with self.IndentManager():
+                    self.process_message(f"{ast_object.dumps()}\n")
+            else:
+                if is_main_symbol:
+                    self.process_imports(symbol)
+                self.process_docstring(ast_object)
+
+                if len(methods) > 0:
+                    self.process_message(f"Methods:")
+                for method in methods:
+                    self.process_method(method, is_main_symbol)
+
+    def process_imports(self, symbol: Symbol):
+        """
+        Process the imports of a symbol
 
         Args:
             symbol (Symbol): The symbol to process
         """
+        # Compute the file path from the symbol's path
+        file_path = os.path.join(
+            root_py_fpath(), "..", str(symbol.dotpath).replace(".", os.path.sep)
+        )
+        while not os.path.isdir(os.path.dirname(file_path)):
+            file_path = os.path.dirname(file_path)
 
-        def process_imports(symbol: Symbol):
-            """
-            Process the imports of a symbol
+        # Load the source code with RedBaron
+        with open(file_path + ".py", "r") as f:
+            red = RedBaron(f.read())
 
-            Args:
-                symbol (Symbol): The symbol to process
-            """
-            # Compute the file path from the symbol's path
-            file_path = os.path.join(
-                root_py_fpath(), "..", str(symbol.dotpath).replace(".", os.path.sep)
-            )
-            while not os.path.isdir(os.path.dirname(file_path)):
-                file_path = os.path.dirname(file_path)
-
-            # Load the source code with RedBaron
-            with open(file_path + ".py", "r") as f:
-                red = RedBaron(f.read())
-
-            # Find and print import statements
+        # Find and print import statements
+        imports = red.find_all("ImportNode")
+        from_imports = red.find_all("FromImportNode")
+        if len(imports) + len(from_imports) > 0:
             self.process_message("Import Statements:")
             with self.IndentManager():
-                imports = red.find_all("ImportNode")
-                from_imports = red.find_all("FromImportNode")
                 for import_node in imports + from_imports:
                     self.process_message(str(import_node.dumps()))
                 self.process_message("")  # Add an empty line for separation
 
-        def process_docstring(ast_object: RedBaron):
-            """
-            Process the docstring of a symbol
+    def process_docstring(self, ast_object: RedBaron):
+        """
+        Process the docstring of a symbol
 
-            Args:
-                ast_object (RedBaron): The ast representation of the symbol
-            """
-            docstring = PyContextRetriever._get_docstring(ast_object)
-            # Print the docstring if it exists
-            if docstring:
-                self.process_message("Class Docstring:")
-                with self.IndentManager():
-                    self.process_message(docstring)
-                    self.process_message("")  # Add an empty line for separation
-
-        def process_variables(ast_object: RedBaron):
-            """
-            Process the variables of a symbol
-
-            Args:
-                ast_object (RedBaron): The ast representation of the symbol
-            """
-
-            assignments = ast_object.find_all("assignment")
-            num_good_assignments = len(
-                [
-                    assignment.parent == ast_object or "self." in str(assignment.target.dumps())
-                    for assignment in assignments
-                ]
-            )
-            if num_good_assignments > 0:
-                self.process_message(f"Variables:")
-
+        Args:
+            ast_object (RedBaron): The ast representation of the symbol
+        """
+        docstring = PyContextRetriever._get_docstring(ast_object)
+        # Print the docstring if it exists
+        if docstring:
+            self.process_message("Class Docstring:")
             with self.IndentManager():
-                for assignment in assignments:
-                    if assignment.parent == ast_object or "self." in str(
-                        assignment.target.dumps()
-                    ):
-                        self.process_message(
-                            f"{str(assignment.target.dumps())}={str(assignment.value.dumps())}"
-                        )
-                self.process_message("")
+                self.process_message(docstring)
+                self.process_message("")  # Add an empty line for separation
 
-        def process_methods(ast_object: RedBaron):
-            """
-            Process the variables of a symbol
-
-            Args:
-                ast_object (RedBaron): The ast representation of the symbol
-            """
-
-            methods = sorted(ast_object.find_all("DefNode"), key=lambda x: x.name)
-            if len(methods) > 0:
-                self.process_message(f"Methods:")
-            with self.IndentManager():
-                for method in methods:
-                    self.process_method(method)
-
-        # Convert the symbol to an AST object, return if it fails
-        try:
-            ast_object = convert_to_fst_object(symbol)
-        except Exception as e:
-            print(f"Error {e} while converting symbol {symbol.descriptors[-1].name}.")
-            return None
-
-        # If this is the first symbol call, we optionally print import statements
-        if self._is_first_symbol_call():
-            if self.config.print_imports:
-                process_imports(symbol)
-
-        # Check config for which parts of the class to print
-        if self.config.process_docstrings:
-            process_docstring(ast_object)
-        if self.config.process_variables:
-            process_variables(ast_object)
-        if self.config.process_methods:
-            process_methods(ast_object)
-
-    def process_method(self, method: RedBaron, detailed: bool = False):
+    def process_method(self, method: RedBaron, is_main_symbol: bool):
         """
         Processes a specified method
 
         Args:
             method (RedBaron): The ast representation of the method
         """
-
         if PyContextRetriever._is_private_method(method):
             return
-        if self._is_first_symbol_call():  # e.g. top level
-            for code_line in method.dumps().split("\n"):
-                self.process_message(code_line)
-        else:
-            valid_method_filters = ["init"]
-            if self.config.process_methods_constructor:
-                # Process the method constructor
-                if self.config.process_methods_constructor:
-                    if self._is_within_second_call():  # e.g. a dependency or related symbol
-                        is_valid_method = False
-                        for filter_ in valid_method_filters:
-                            if filter_ in method.name:
-                                is_valid_method = True
-                        if is_valid_method:
-                            for code_line in method.dumps().split("\n"):
-                                self.process_message(code_line)
-            # Process the method signature and return annotation
-            if self.config.process_methods_summary:
-                method_definition = f"{method.name}({method.arguments.dumps()})"
-                return_annotation = (
-                    method.return_annotation.dumps() if method.return_annotation else "None"
-                )
-                self.process_message(f"{method_definition} -> {return_annotation}\n")
-
-    def process_dependencies(self, symbol: Symbol):
-        """
-        Process the dependencies of a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-        """
-
-        if self._is_first_symbol_call():
-            self.process_message("Dependencies:")
-            with self.IndentManager():
-                all_dependencies = list(self.graph.get_symbol_dependencies(symbol))
-                filtered_dependencies = get_rankable_symbols(all_dependencies)
-                for dependency in filtered_dependencies:
-                    if not PyContextRetriever._is_class(dependency):
-                        continue
-                    if dependency == symbol:
-                        continue
-                    if (
-                        "automata" not in dependency.uri
-                    ):  # TODO - Make this cleaner in case "automata" is not the key URI
-                        continue
-                    self.process_symbol(dependency)
-
-    def process_references(self, symbol: Symbol):
-        """
-        Process the references of a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-        """
-
-        references = self.graph.get_references_to_symbol(symbol)
-        if len(references) > 0:
-            self.process_message("References:")
-            with self.IndentManager():
-                for file_path, symbol_references in references.items():
-                    self.process_message(f"File: {file_path}")
-                    with self.IndentManager():
-                        for ref in symbol_references:
-                            self.process_message(
-                                f"Line: {ref.line_number}, Column: {ref.column_number}"
-                            )
-
-    def process_callers(self, symbol: Symbol):
-        """
-        Process the callers of a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-        """
-
-        if self.indent_level < 2:
-            self.process_message(f"Callers:")
-        else:
-            self.process_message(f"Caller Callers:")
-
         with self.IndentManager():
-            all_potential_callers = list(self.graph.get_potential_symbol_callers(symbol))
+            print("method.name = ", method.name)
+            if is_main_symbol:
+                for code_line in method.dumps().split("\n"):
+                    self.process_message(code_line)
+            else:
+                if method.name == "__init__":
+                    for code_line in method.dumps().split("\n"):
+                        self.process_message(code_line)
+                else:
+                    method_definition = f"{method.name}({method.arguments.dumps()})"
+                    return_annotation = (
+                        method.return_annotation.dumps() if method.return_annotation else "None"
+                    )
+                    self.process_message(f"{method_definition} -> {return_annotation}\n")
 
-            def find_call(caller: SymbolReference) -> Optional[RedBaron]:
-                module = convert_to_fst_object(caller.symbol)
-                line_number = caller.line_number
-                column_number = caller.column_number + len(symbol.descriptors[-1].name)
-                return find_method_call_by_location(module, line_number, column_number)
-
-            for caller in all_potential_callers:
-                if "test" in str(caller.symbol.dotpath):
-                    continue
-
-                call = find_call(caller)
-                if call is None:
-                    continue
-
-                self.process_message(str(caller.symbol.dotpath))
-
-                # Call a level deeper when we encounter a factory or builder
-                if "Factory" in str(caller.symbol.dotpath) or "Builder" in str(
-                    caller.symbol.dotpath
-                ):
-                    self.process_callers(caller.symbol)
-
-                with self.IndentManager():
-                    call_parent = call.parent if call is None else None  # type: ignore
-                    if call_parent is None:
-                        continue
-                    self.process_message(str(call_parent.dumps()))
-
-    def process_nearest_symbols(
-        self,
-        search_list: List[Symbol],
-    ):
+    def _is_main_symbol(self) -> bool:
         """
-        Process the nearest symbols (most related symbols) of a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-            search_list (List[Symbol]): The list of nearest symbols
-        """
-
-        self.process_message("Closely Related Symbols:")
-
-        def bespoke_test_handler(test_symbol) -> bool:
-            try:
-                ast_object = convert_to_fst_object(test_symbol)
-            except Exception as e:
-                print(f"Error {e} while converting symbol {test_symbol.descriptors[-1].name}.")
-                return False
-            with self.IndentManager():
-                self.process_headline(test_symbol)
-                with self.IndentManager():
-                    self.process_message(ast_object.dumps())
-            return True
-
-        with self.IndentManager():
-            if len(search_list) > 0:
-                printed_nearby_symbols = 0
-                for ranked_symbol in search_list:
-                    if printed_nearby_symbols >= self.config.nearest_symbols_count:
-                        break
-                    # Bespoke handling for test class
-                    if "test" in str(ranked_symbol.dotpath):
-                        result = bespoke_test_handler(ranked_symbol)
-                        if result:
-                            printed_nearby_symbols += 1
-                        else:
-                            continue
-
-                    if ranked_symbol.symbol_kind_by_suffix() != SymbolDescriptor.PyKind.Class:
-                        continue
-                    elif ranked_symbol in self.obs_symbols:
-                        continue
-                    else:
-                        printed_nearby_symbols += 1
-                        self.process_symbol(ranked_symbol)
-
-    def _is_first_symbol_call(self) -> bool:
-        """
-        Check if this is the first symbol call
+        Check if this is the main symbol call
 
         Returns:
-            bool: True if this is the first symbol call, False otherwise
+            bool: True if this is the main symbol call, False otherwise
 
         """
-        return self.indent_level <= 2
-
-    def _is_within_second_call(self) -> bool:
-        """
-        Check if this is the first symbol call
-
-        Returns:
-            bool: True if this is within the second symbol call,
-                False otherwise
-
-        """
-        return self.indent_level <= 4
+        return self.indent_level == 1
 
     @staticmethod
     def _is_private_method(ast_object: RedBaron) -> bool:
@@ -508,20 +278,6 @@ class PyContextRetriever:
         return ast_object.name[0] == "_" and ast_object.name[1] != "_"
 
     @staticmethod
-    def _is_class(symbol: Symbol) -> bool:
-        """
-        Check if the symbol is a class
-
-        Args:
-            symbol (Symbol): The symbol to process
-
-        Returns:
-            bool: True if the method is private, False otherwise
-        """
-
-        return symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class
-
-    @staticmethod
     def _get_docstring(ast_object) -> str:
         """
         Get the docstring an ast object
@@ -535,3 +291,26 @@ class PyContextRetriever:
 
         raw_doctring = PyCodeRetriever.get_docstring_from_node(ast_object).split("\n")
         return "\n".join([ele.strip() for ele in raw_doctring]).strip()
+
+    @staticmethod
+    def _pass_symbol_filter(primary_symbol: Symbol, secondary_symbol: Symbol) -> bool:
+        """
+        Check if the symbol passes the filter on package and dotpath
+
+        Args:
+            primary_symbol (Symbol): The primary symbol
+            secondary_symbol (Symbol): The secondary symbol
+
+        Returns:
+            bool: True if the symbol passes the filter, False otherwise
+        """
+
+        primary_symbol_dotpath = primary_symbol.dotpath
+        primary_package = primary_symbol_dotpath.split(".")[0]
+
+        secondary_symbol_dotpath = secondary_symbol.dotpath
+        secondary_package = secondary_symbol_dotpath.split(".")[0]
+        return not (
+            primary_symbol_dotpath in secondary_symbol_dotpath
+            or primary_package != secondary_package
+        )

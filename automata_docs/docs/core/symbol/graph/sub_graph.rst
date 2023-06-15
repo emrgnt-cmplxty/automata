@@ -1,63 +1,69 @@
 SymbolGraph.SubGraph
---------------------
+====================
 
-``SymbolGraph.SubGraph`` is a representation of a subgraph within the
-``SymbolGraph`` class. It is used to store and access relevant parts of
-a symbol graph, offering the ability to work with specific portions of
-the larger graph while retaining its context.
+``SymbolGraph.SubGraph`` is a dataclass representing a subgraph of a
+larger ``SymbolGraph``. It helps in constructing and analyzing
+sub-graphs and extracting useful information from the relationships
+between the symbols in the graph. The subgraph can be used to perform
+various tasks such as retrieving the relationships between symbols,
+finding potential callees and callers, exploring the source code
+references, and ranking symbols based on their significance in the
+graph.
+
+Overview
+--------
+
+The ``SymbolGraph.SubGraph`` contains a NetworkX MultiDiGraph and a
+reference to its parent ``SymbolGraph``, from which it was derived. The
+subgraph can be created by methods such as
+``symbol_graph.get_rankable_symbol_subgraph()``. The subgraph provides
+information about its nodes and edges, which represent symbols and their
+relationships, respectively.
 
 Related Symbols
+---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.symbol.symbol_utils.get_rankable_symbols``
 -  ``automata_docs.core.symbol.graph.GraphBuilder``
--  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
 
 Example
 -------
 
-The following example demonstrates how to create a ``SymbolGraph``
-instance using ``SymbolGraph.Subgraph``.
+The following example demonstrates how to create and work with a
+``SymbolGraph.SubGraph``:
 
 .. code:: python
 
    from automata_docs.core.symbol.graph import SymbolGraph
 
-   # assuming the path to a valid index protobuf file, you should replace it with your own file path
-   file_dir = os.path.dirname(os.path.abspath(__file__))
-   index_path = os.path.join(file_dir, "index.scip")
-   graph = SymbolGraph(index_path)
+   # Initialize a SymbolGraph with a path to an index protobuf file.
+   symbol_graph = SymbolGraph(index_path="your_index_path.scip")
 
-   # Creating a SymbolSearch instance with a custom symbol_rank_config and code_subgraph
-   from automata_docs.core.symbol.search.symbol_search import SymbolSearch
-   from automata_docs.core.symbol.search.sources.symbol_similarity import SymbolSimilarity
-   from automata_docs.core.symbol.rank.SymbolRank import SymbolRankConfig
+   # Get a rankable symbol subgraph for analysis.
+   subgraph = symbol_graph.get_rankable_symbol_subgraph()
 
-   symbol_similarity = SymbolSimilarity()
-   symbol_rank_config = SymbolRankConfig(lambda_=0.85, tol=1e-06)
+   # Access nodes and edges in the subgraph.
+   nodes = subgraph.graph.nodes()
+   edges = subgraph.graph.edges()
 
-   symbol_search = SymbolSearch(
-       symbol_graph=graph,
-       symbol_similarity=symbol_similarity,
-       symbol_rank_config=symbol_rank_config,
-       code_subgraph=graph.get_rankable_symbol_subgraph("bidirectional")
-   )
+   # In case you need the parent graph
+   parent_graph = subgraph.parent
 
 Limitations
 -----------
 
-``SymbolGraph.SubGraph`` relies on the internal structure of the
-``SymbolGraph`` class and is not designed for standalone use. It is
-meant to be a convenient way to organize and work with specific parts of
-a larger graph. Due to its close dependence on ``SymbolGraph``,
-potential changes in the design of the ``SymbolGraph`` class might
-affect the functionality of ``SymbolGraph.SubGraph``.
+The primary limitation of ``SymbolGraph.SubGraph`` is that it relies on
+the ``SymbolGraph`` to provide it with data, thus requiring the index
+protobuf file. Creating custom subgraphs based on specific filtering
+criteria or requirements might need additional logic built around the
+``SymbolGraph`` to manipulate and generate the desired ``SubGraph``.
 
 Follow-up Questions:
 --------------------
 
--  Is there a need for additional functionality when using
-   ``SymbolGraph.SubGraph``, or can it be left as a barebones class for
-   subgraph organization?
--  Is it possible to sanitize the user input on ``SymbolGraph.SubGraph``
-   to ensure that only valid subgraphs are created?
+-  Are there any methods to merge related subgraphs into a single
+   subgraph?
+-  Can ``SymbolGraph.SubGraph`` support custom filtering or other
+   manipulations based on user requirements?
