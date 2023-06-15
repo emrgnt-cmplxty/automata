@@ -1,65 +1,76 @@
 SymbolDescriptor
 ================
 
-``SymbolDescriptor`` is a Python class that wraps the descriptor
-component of the URI into a Python object. It provides utility methods
-to convert between different formats of symbol descriptors and unparse
-the object back to a URI string. The class is closely related to
-``Symbol``, ``SymbolGraph``, ``SymbolReference``, ``SymbolParser``,
-``PyContextRetriever``, and ``SymbolCodeEmbeddingHandler``.
+``SymbolDescriptor`` is a class that wraps the descriptor component of
+the URI into a Python object. It provides methods for converting between
+the descriptor’s SCIP suffix and Python representation as well as
+unescaping and unescaping symbol names. The ``SymbolDescriptor`` class
+can be used in conjunction with other components such as the ``Symbol``,
+``SymbolParser`` and the ``SymbolGraph`` classes for processing and
+analyzing symbols in Python projects.
 
 Overview
 --------
 
-The ``SymbolDescriptor`` includes variables such as ``name``,
-``suffix``, and ``disambiguator``. It also includes methods such as
-``convert_scip_to_python_suffix``, ``get_escaped_name``, and
-``unparse``. It is often used for parsing symbol descriptors in the
-context of Python-based projects, enabling efficient symbol management
-and analysis.
+The ``SymbolDescriptor`` class offers the following methods:
+
+-  ``__init__(self, name: str, suffix: DescriptorProto, disambiguator: Optional[str] = None)``:
+   Initializes the ``SymbolDescriptor`` instance with the provided
+   ``name``, ``suffix``, and optional ``disambiguator``.
+-  ``__repr__(self)``: Provides a string representation of the
+   ``SymbolDescriptor`` instance.
+-  ``convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PyKind``:
+   Converts the given SCIP descriptor suffix to the corresponding Python
+   representation.
+-  ``get_escaped_name(name)``: Returns the escaped version of the input
+   ``name``.
+-  ``unparse(self)``: Converts the ``SymbolDescriptor`` instance back
+   into a URI string.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.symbol_types.SymbolReference``
--  ``automata_docs.core.symbol.parser.SymbolParser``
--  ``automata_docs.core.context.py_context.retriever.PyContextRetriever``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata_docs.core.symbol.symbol_types.Symbol``: Represents a
+   symbol with metadata, similar to a URI.
+-  ``automata_docs.core.symbol.parser.SymbolParser``: Contains methods
+   for parsing symbols into structured objects.
+-  ``automata_docs.core.symbol.graph.SymbolGraph``: A graph
+   representation of the symbols and their relationships.
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``SymbolDescriptor`` and unparse it back into a URI string:
+The following example demonstrates how to use ``SymbolDescriptor`` in
+conjunction with the ``parse_symbol`` function:
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import DescriptorProto, SymbolDescriptor
+   from automata_docs.core.symbol.parser import parse_symbol
+   from automata_docs.core.symbol.symbol_types import SymbolDescriptor
 
-   # Create a SymbolDescriptor object
-   descriptor = SymbolDescriptor("example_name", DescriptorProto.Namespace)
+   symbol_uri = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+   symbol = parse_symbol(symbol_uri)
+   descriptor = symbol.descriptors[-1]
 
-   # Unparse the descriptor back to a URI string
+   # Access the descriptor properties
+   print(descriptor.name) # Output: __init__
+   print(descriptor.suffix) # Output: 4 (integer representation of SCIP Suffix.Method)
+
+   # Unparse the descriptor into its URI string representation
    unparsed_descriptor = descriptor.unparse()
-
-   assert unparsed_descriptor == "example_name/"
+   print(unparsed_descriptor) # Output: __init__(Met).
 
 Limitations
 -----------
 
-The primary limitation of ``SymbolDescriptor`` is that it assumes
-specific syntax and structure for symbol descriptors. Any deviation in
-the symbol descriptor format will result in errors or incorrect results
-during use. Additionally, the class may not support all possible
-descriptor suffixes and may need to be extended to support new suffixes
-in the future.
+``SymbolDescriptor`` itself does not have any significant limitations.
+However, when working with related classes like ``SymbolParser`` and
+``Symbol``, it is important to ensure that their implementations are
+synchronized with the source library to keep the parsing and processing
+consistent.
 
 Follow-up Questions:
 --------------------
 
--  Are there plans to support additional descriptor suffixes in the
-   ``SymbolDescriptor`` class?
--  How should the class handle deviations in the symbol descriptor
-   format?
+-  Are there any additional utility methods you’d like to see
+   implemented in ``SymbolDescriptor``?

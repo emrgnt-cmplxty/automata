@@ -1,69 +1,67 @@
 JSONVectorDatabase
 ==================
 
-``JSONVectorDatabase`` is a concrete implementation of a vector database
-that saves data into a JSON file. It provides methods to add, update,
-get, and discard vector embeddings for a given symbol and can work with
-``SymbolEmbedding`` objects. The database maintains an internal data
-structure that associates symbols with their respective_embeddings, and
-the symbols are indexed for fast access.
-
-Overview
---------
-
-``JSONVectorDatabase`` provides a simple and effective way to work with
-vector embeddings stored as a JSON file. It offers essential
-functionality for managing a database of vector embeddings, such as
-adding, removing, updating, and checking for the presence of specific
-embeddings. The database uses ``jsonpickle`` to encode and decode data
-structures to and from JSON format, ensuring compatibility with other
-tools and libraries.
+``JSONVectorDatabase`` is a concrete class that provides a vector
+database that saves into a JSON file. It is a subclass of the
+``VectorDatabaseProvider`` and allows adding, updating, and removing
+vector embeddings related to different symbols. The class offers methods
+to load and save the vector database from and into a JSON file,
+respectively.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.database.vector.VectorDatabaseProvider``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata_docs.core.database.provider.SymbolDatabaseProvider``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
 
 Example
 -------
 
-The following is an example that demonstrates how to create and use a
-``JSONVectorDatabase``.
+The following example demonstrates how to create an instance of
+``JSONVectorDatabase`` with a given file path, add symbols, save the
+database, and retrieve the saved embeddings.
 
 .. code:: python
 
    from automata_docs.core.database.vector import JSONVectorDatabase
-   from automata_docs.core.symbol.symbol_types import SymbolEmbedding, Symbol
-   import numpy as np
+   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
-   file_path = "vector_db.json"
+   file_path = "path/to/json/file.json"
    vector_db = JSONVectorDatabase(file_path)
 
-   symbol = Symbol.parse("scip-python python automata_docs some_version some_symbol#")
-   embedding_vector = np.array([1.0, 2.0, 3.0])
+   symbol_0 = Symbol.from_string("sample_symbol_0")
+   symbol_1 = Symbol.from_string("sample_symbol_1")
 
-   embedding = SymbolEmbedding(symbol, embedding_vector)
-   vector_db.add(embedding)
+   embedding_0 = SymbolEmbedding(symbol_0, [1, 2, 3])
+   embedding_1 = SymbolEmbedding(symbol_1, [1, 2, 3, 4])
 
-   embedding_from_db = vector_db.get(symbol)
-   vector_db.update(embedding)
-   vector_db.discard(symbol)
+   vector_db.add(embedding_0)
+   vector_db.add(embedding_1)
+
+   vector_db.save()
+
+   loaded_embedding_0 = vector_db.get(symbol_0)
+   loaded_embedding_1 = vector_db.get(symbol_1)
+
+   print(loaded_embedding_0.vector)
+   print(loaded_embedding_1.vector)
 
 Limitations
 -----------
 
--  The ``calculate_similarity`` method is not implemented in
-   ``JSONVectorDatabase`` and needs to be provided in the derived class
-   or an external utility function used to compute similarity.
--  The JSON storage format may not be practical for very large vector
-   databases, as it requires loading the entire database into memory.
+The primary limitation of ``JSONVectorDatabase`` is that it currently
+does not implement the ``calculate_similarity`` method, which is meant
+to calculate the similarity between a given vector and the vectors in
+the database. Additionally, the storage format is limited to JSON only,
+and there is no support for other formats, such as binary file formats
+which can provide better performance and space-efficiency for large
+vector databases.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend this implementation to support calculating
-   similarity between vectors within the database?
--  How can we improve the storage format to handle large databases more
-   efficiently?
+-  What is the directory structure expected of the JSON files used by
+   this vector database?
+-  What is the specific similarity measure intended to be used when
+   implementing the ``calculate_similarity`` method?

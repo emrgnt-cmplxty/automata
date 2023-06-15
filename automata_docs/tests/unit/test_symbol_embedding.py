@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, Mock
 
 from automata_docs.core.database.vector import JSONVectorDatabase
 from automata_docs.core.embedding.symbol_embedding import (
-    EmbeddingsProvider,
+    EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
 )
 from automata_docs.core.symbol.symbol_types import SymbolCodeEmbedding
@@ -19,8 +19,8 @@ def test_update_embeddings(
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingsProvider methods
-    mock_provider = Mock(EmbeddingsProvider)
+    # Mock EmbeddingProvider methods
+    mock_provider = Mock(EmbeddingProvider)
     mock_provider.build_embedding.return_value = mock_embedding
 
     # Mock JSONVectorDatabase methods
@@ -51,14 +51,14 @@ def test_get_embedding(
     mock_embedding,
     mock_simple_method_symbols,
 ):
-    # Mock EmbeddingsProvider methods
-    mock_provider = Mock(EmbeddingsProvider)
+    # Mock EmbeddingProvider methods
+    mock_provider = Mock(EmbeddingProvider)
     mock_provider.build_embedding.return_value = mock_embedding
 
     # Mock JSONVectorDatabase methods
     mock_db = MagicMock(JSONVectorDatabase)
     mock_db.get.return_value = SymbolCodeEmbedding(
-        mock_simple_method_symbols[0], mock_embedding, "symbol_source"
+        mock_simple_method_symbols[0], "symbol_source", mock_embedding
     )
 
     # Create an instance of the class
@@ -78,8 +78,8 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingsProvider methods
-    mock_provider = Mock(EmbeddingsProvider)
+    # Mock EmbeddingProvider methods
+    mock_provider = Mock(EmbeddingProvider)
     mock_provider.build_embedding.return_value = [1, 2, 3]
 
     # Mock JSONVectorDatabase methods
@@ -103,8 +103,8 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingsProvider methods
-    mock_provider = Mock(EmbeddingsProvider)
+    # Mock EmbeddingProvider methods
+    mock_provider = Mock(EmbeddingProvider)
     mock_provider.build_embedding.return_value = [1, 2, 3]
 
     # Mock JSONVectorDatabase methods
@@ -112,6 +112,7 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
+    mock_db.discard = lambda x: mock_db.data.pop(0)
     mock_db.get = lambda x: mock_db.data[0]
 
     cem = SymbolCodeEmbeddingHandler(embedding_provider=mock_provider, embedding_db=mock_db)
@@ -125,8 +126,11 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     cem.embedding_provider.build_embedding.return_value = [1, 2, 3, 4]
     cem.embedding_db.contains = lambda x: True
     cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]
+    cem.embedding_db.get = lambda x: cem.embedding_db.data[0]
 
+    print("embedding_db.data = ", cem.embedding_db.data)
     cem.update_embedding(mock_simple_method_symbols[0])
+    print("embedding_db.data = ", cem.embedding_db.data)
     embedding = cem.embedding_db.data[0].vector
     assert len(cem.embedding_db.data) == 1  # Expect empty embedding map because of exception
     assert embedding == [1, 2, 3, 4]
@@ -139,8 +143,8 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingsProvider methods
-    mock_provider = Mock(EmbeddingsProvider)
+    # Mock EmbeddingProvider methods
+    mock_provider = Mock(EmbeddingProvider)
     mock_provider.build_embedding.side_effect = Exception("Test exception")
 
     # Mock JSONVectorDatabase methods
@@ -152,6 +156,9 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
     cem = SymbolCodeEmbeddingHandler(embedding_provider=mock_provider, embedding_db=mock_db)
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
-    cem.update_embedding(mock_simple_method_symbols[0])
+    try:
+        cem.update_embedding(mock_simple_method_symbols[0])
+    except Exception:
+        pass
 
     assert len(cem.embedding_db.data) == 0  # Expect empty embedding map because of exception

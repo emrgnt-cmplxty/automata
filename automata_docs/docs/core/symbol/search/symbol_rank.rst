@@ -1,39 +1,36 @@
 SymbolRank
 ==========
 
-``SymbolRank`` is a class that computes the PageRank algorithm on
-symbols in a graph. Given a directed graph and an optional
-configuration, it calculates the ranks of each node in the graph and
-returns a sorted list of tuples containing the symbol and its
-corresponding rank.
-
-Use ``SymbolRank`` for applications where you need to rank symbols in a
-graph based on their importance or relevance.
+``SymbolRank`` computes the PageRank algorithm on symbols in a graph. It
+takes a directed graph and an optional ``SymbolRankConfig`` as input,
+and calculates the SymbolRanks of each node in the graph. The class
+provides methods for processing the graph, preparing initial ranks, and
+calculating SymbolRanks.
 
 Overview
 --------
 
-``SymbolRank`` takes in a directed graph and an optional configuration,
-and provides a method ``get_ranks`` to calculate the rank for each node
-in the graph. ``get_ranks`` can also be supplied with optional
-dictionaries for query-to-symbol similarity, initial weights, and
-dangling nodes.
+``SymbolRank`` is useful for ranking symbols in a software system, such
+as methods, classes, and variables, based on their importance in the
+system’s call graph. It can also be used for search and recommendation
+tasks, by providing a ranked list of symbols based on their relevancy
+and importance in the system. Using the PageRank algorithm, it
+identifies the most important symbols in the graph, taking into account
+the structure of the graph and the relationships between symbols.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.search.rank.SymbolRankConfig``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata_docs.core.embedding.embedding_types.NormType``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
 
 Example
 -------
 
-The following example demonstrates how to use the ``SymbolRank`` class
-to calculate the ranks of nodes in a graph.
+The following example demonstrates how to use ``SymbolRank`` to compute
+the SymbolRanks for a given directed graph ``G`` and
+``SymbolRankConfig`` ``config``.
 
 .. code:: python
 
@@ -41,37 +38,32 @@ to calculate the ranks of nodes in a graph.
    from automata_docs.core.symbol.search.rank import SymbolRank
    from automata_docs.core.symbol.search.rank import SymbolRankConfig
 
-   # Create a directed graph
+   # Define a directed graph G (nodes and edges should be added in practice)
    G = nx.DiGraph()
-   G.add_edge(1, 2)
-   G.add_edge(2, 3)
-   G.add_edge(3, 1)
 
-   # Create a SymbolRankConfig object
+   # Create a SymbolRankConfig
    config = SymbolRankConfig()
 
-   # Initialize the SymbolRank object with the graph and configuration
-   pagerank = SymbolRank(G, config)
+   # Instantiate a SymbolRank object
+   pagerank = SymbolRank(G, config=config)
 
-   # Calculate the ranks of nodes in the graph
+   # Calculate SymbolRanks
    ranks = pagerank.get_ranks()
-
-   # Display the computed ranks
-   print(ranks)
 
 Limitations
 -----------
 
-The main limitation of ``SymbolRank`` is that it relies on the NetworkX
-library for graph operations, which may have certain performance
-constraints. Moreover, setting up the graph and configuring the
-``SymbolRank`` object requires some understanding of the underlying
-algorithms and representation of symbols.
+The primary limitation of ``SymbolRank`` is its reliance on the PageRank
+algorithm, which has some known shortcomings, such as high computation
+costs for large graphs and sensitivity to graph structure. Additionally,
+``SymbolRank`` assumes a specific graph representation using the
+NetworkX library, limiting its applicability to other graph
+representations.
 
 Follow-up Questions:
 --------------------
 
--  Is there any specific guidance on how to prepare the input graph for
-   optimal results?
--  Are there any performance metrics or benchmarks available for this
-   implementation?
+-  Are there alternative ranking algorithms that can be used in addition
+   to PageRank for ranking symbols in a graph?
+-  Can ``SymbolRank`` be extended to support other graph representations
+   beyond NetworkX?

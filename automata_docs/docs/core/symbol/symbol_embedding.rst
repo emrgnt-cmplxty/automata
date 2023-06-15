@@ -2,60 +2,55 @@ SymbolEmbedding
 ===============
 
 ``SymbolEmbedding`` is an abstract base class for different types of
-embeddings associated with symbols in the Automata codebase. It handles
-the initialization of a symbol embedding with a given symbol and its
-corresponding vector representation. This class serves as the foundation
-for creating more specialized types of symbol embeddings, like
-``SymbolCodeEmbedding`` and ``SymbolDocEmbedding``.
+embeddings. It provides functionality to store embeddings for symbols in
+vector format which can be used for various machine learning and natural
+language processing tasks. The related symbols for ``SymbolEmbedding``
+include ``SymbolCodeEmbedding``, ``SymbolDocEmbedding``,
+``EmbeddingsProvider``, ``EmbeddingHandler``, and several methods and
+classes in ``automata_docs.core.symbol`` module.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
 -  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbedding``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolDocEmbedding``
+-  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata_docs.core.symbol.symbol_types.Symbol``
 -  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingHandler``
 -  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbeddingHandler``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolDocEmbeddingHandler``
 
 Example
 -------
 
-The following example demonstrates how to create a custom symbol
-embedding class that inherits from ``SymbolEmbedding``. We’ll create a
-hypothetical ``CustomSymbolEmbedding`` class for this purpose.
+In the following example, we will create a ``SymbolEmbedding`` instance
+using a ``Symbol`` and a NumPy array representing the embedding vector.
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
    import numpy as np
-
-   class CustomSymbolEmbedding(SymbolEmbedding):
-       def __init__(self, symbol: Symbol, vector: np.array):
-           super().__init__(symbol, vector)
-
-Now, we can create an instance of our custom symbol embedding.
-
-.. code:: python
-
    from automata_docs.core.symbol.search.symbol_parser import parse_symbol
+   from automata_docs.core.symbol.symbol_types import SymbolEmbedding
 
-   symbol_ex = parse_symbol("scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#")
-   vector_ex = np.array([0.1, 0.2, 0.3])
+   symbol_str = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+   symbol = parse_symbol(symbol_str)
 
-   custom_embedding = CustomSymbolEmbedding(symbol_ex, vector_ex)
+   vector = np.random.random(300)
+
+   embedding = SymbolEmbedding(symbol, vector)
 
 Limitations
 -----------
 
-Since ``SymbolEmbedding`` is an abstract base class, it should not be
-used directly to create instances. Instead, it must be subclassed and
-extended with any additional properties and methods required for the
-specific embedding type.
+The primary limitations of ``SymbolEmbedding`` are related to its
+abstract nature. As an abstract base class, it cannot be instantiated
+directly. Instead, specific implementations like ``SymbolCodeEmbedding``
+or ``SymbolDocEmbedding`` should be used, which inherit from
+``SymbolEmbedding``. Moreover, the embeddings in the vector format are
+assumed to be compatible with the specific usage of the relevant
+downstream tasks or models.
 
 Follow-up Questions:
 --------------------
 
--  Are there more specific examples of ``SymbolEmbedding`` subclasses
-   that can be showcased?
--  What are the use cases for the different types of symbol embeddings?
+-  How can we extend the ``SymbolEmbedding`` class to support additional
+   embedding types not currently considered?

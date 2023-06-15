@@ -1,54 +1,51 @@
 LoggingConfig
 =============
 
-``LoggingConfig`` is a class that represents the logging configuration
-for the Automata Docs package. It allows you to configure the logging
-settings to suit your specific needs, while providing a default logging
-configuration that serves as a basis for most use cases.
+``LoggingConfig`` is a dictionary representing the logging configuration
+settings in the project. Its main purpose is to configure and manage log
+settings across various components of the application, such as version,
+formatters, handlers, and the root logger settings.
 
 Overview
 --------
 
-``LoggingConfig`` is a dictionary that contains various settings and
-values that control the logging behavior in the package. By customizing
-the ``LoggingConfig``, you can adjust log levels, enable/disable
-handlers, and ensure that your logging infrastructure works as intended
-in different circumstances.
+This class is a TypedDict subclass and provides type hints for the keys
+allowed in the dictionary. The keys include ``version``,
+``disable_existing_loggers``, ``formatters``, ``handlers``, and
+``root``. It works closely with related symbols such as ``HandlerDict``,
+``RootDict``, and ``get_logging_config``.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.cli.commands.LoggingConfig``
 -  ``automata_docs.core.utils.HandlerDict``
 -  ``automata_docs.core.utils.RootDict``
--  ``automata_docs.cli.commands.HandlerDict``
+-  ``automata_docs.core.utils.get_logging_config``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``LoggingConfig``.
+Below is an example of how to create a ``LoggingConfig`` dictionary and
+configure logging settings using the ``reconfigure_logging`` command:
 
 .. code:: python
 
-   from automata_docs.core.utils import LoggingConfig
+   from automata_docs.cli.commands.reconfigure_logging import reconfigure_logging
+   from automata_docs.core.utils import get_logging_config
 
-   logging_config = LoggingConfig()
+   logging_config = get_logging_config(log_level=logging.DEBUG, log_file='example.log')
+   reconfigure_logging(logging_config)
 
 Limitations
 -----------
 
-``LoggingConfig`` is limited in that it only provides a dictionary
-structure for representing the configuration. You’ll need to work with
-other parts of the logging system or use additional tools to make
-changes to the logging infrastructure more effectively.
+``LoggingConfig`` is a dictionary and cannot provide additional
+functionality beyond storing and accessing keys and values. It relies on
+external functions and utilities like ``get_logging_config`` and
+``reconfigure_logging`` for configuring the logging settings.
 
 Follow-up Questions:
 --------------------
 
--  What is the purpose of the related ``HandlerDict``, and ``RootDict``
-   classes?
--  How do the related symbols
-   ``automata_docs.cli.commands.LoggingConfig`` and
-   ``automata_docs.cli.commands.HandlerDict`` fit into the overall
-   logging setup?
+-  How can additional keys and values be added to the ``LoggingConfig``
+   dictionary, and what are the implications on the logging settings?

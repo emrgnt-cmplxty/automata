@@ -28,20 +28,14 @@ def main(*args, **kwargs):
         ConfigCategory.SYMBOL.value,
         kwargs.get("embedding_file", "symbol_doc_embedding_l2.json"),
     )
-    print("embedding_path = ", embedding_path)
 
     symbol_graph = SymbolGraph(scip_path)
     all_defined_symbols = symbol_graph.get_all_available_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
-    print("filtered_symbols[0:10] = ", filtered_symbols[0:10])
     embedding_db = JSONVectorDatabase(embedding_path)
-    print("embedding db loaded...")
     embedding_handler = SymbolDocEmbeddingHandler(embedding_db)
-    print("embedding handler loaded...")
-    print("Calling update embedding...")
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
-            print("Updating symbol = ", symbol)
             embedding_handler.update_embedding(symbol)
             embedding_db.save()
     return "Success"

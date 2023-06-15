@@ -1,79 +1,108 @@
 SymbolDatabaseProvider
 ======================
 
-``SymbolDatabaseProvider`` is an abstract base class for different types
-of database providers which can be used to store symbol embeddings. It
-lays out the interface that the derived classes must implement for
-adding, retrieving, updating, clearing, and saving symbol embeddings.
-The class also contains closely related symbols such as ``Symbol``,
-``SymbolEmbedding``, ``SymbolEmbeddingHandler``, and
-``JSONVectorDatabase``.
+``SymbolDatabaseProvider`` is an abstract base class that provides a
+standard interface for different types of database providers used for
+storing and managing symbol embeddings.
 
 Overview
 --------
 
-A ``SymbolDatabaseProvider`` is used to manage symbol embeddings in
-various ways, allowing for storage, retrieval, and manipulation of these
-embeddings in different types of databases. Each provider implementation
-can be used with different databases or formats, providing a flexible
-way to work with symbol embeddings.
+A ``SymbolDatabaseProvider`` defines methods for adding, updating,
+getting, discarding, and checking the existence of symbol embeddings.
+Subclasses should implement these methods according to their specific
+database provider’s requirements.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbedding``
+-  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
 -  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.database.vector.JSONVectorDatabase``
+-  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbeddingHandler``
+-  ``automata_docs.core.database.vector.VectorDatabaseProvider``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
+-  ``automata_docs.core.symbol.symbol_types.SymbolDescriptor``
+
+Methods
+-------
+
+add(embedding: SymbolEmbedding)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The abstract method to add an embedding to the database.
+
+update(embedding: SymbolEmbedding)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The abstract method to update an existing embedding in the database.
+
+get(symbol: Symbol) -> Any
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The abstract method to get a specific embedding from the database.
+
+discard(symbol: Symbol)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The abstract method to discard a specific embedding from the database.
+
+contains(symbol: Symbol) -> bool
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The abstract method to check if a specific embedding is present in the
+database.
+
+clear()
+~~~~~~~
+
+The abstract method to clear all embeddings from the database.
+
+load() -> Any
+~~~~~~~~~~~~~
+
+The abstract method to load data into the database provider.
+
+save()
+~~~~~~
+
+The abstract method to save data from the database provider.
 
 Example
 -------
 
-To create a ``SymbolDatabaseProvider``, you would need to implement a
-custom subclass that extends this abstract base class and fills in the
-necessary abstract methods:
-
 .. code:: python
 
+   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
    from automata_docs.core.database.provider import SymbolDatabaseProvider
-   from automata_docs.core.symbol.symbol_types import Symbol
-   from automata_docs.core.embedding.symbol_embedding import SymbolEmbedding
+   from automata_docs.core.database.vector import JSONVectorDatabase
 
-   class MyDatabaseProvider(SymbolDatabaseProvider):
+   class CustomDatabaseProvider(SymbolDatabaseProvider):
+       def __init__(self):
+           self.embedding_db = JSONVectorDatabase("embeddings.json")
+
        def add(self, embedding: SymbolEmbedding):
-           # Add the specified embedding to the database.
-           pass
+           self.embedding_db.add(embedding)
 
-       def clear(self):
-           # Clear all embeddings from this database.
-           pass
-
-       def contains(self, symbol: Symbol) -> bool:
-           # Check if a specific embedding is present in the database.
-           pass
-
-       # Implement other abstract methods...
-
-Once implemented, you can use your custom provider just like any other
-``SymbolDatabaseProvider``.
-
-.. code:: python
-
-   my_provider = MyDatabaseProvider()
-   # Use my_provider to add, update, retrieve, etc., embeddings...
+       # Implement other abstract methods according to specific requirements
 
 Limitations
 -----------
 
-The ``SymbolDatabaseProvider`` abstract base class only defines an
-interface and does not implement any concrete storage mechanism.
-Implementations need to be created as subclasses to support specific
-storage types and formats.
+As an abstract base class, ``SymbolDatabaseProvider`` cannot be directly
+instantiated. Subclasses must provide their own implementations of the
+abstract methods.
+
+Additionally, ``SymbolDatabaseProvider`` does not provide any specific
+functionality related to database management, such as transactions,
+caching, or query optimization. It only provides a standard interface to
+work with different types of symbol databases.
 
 Follow-up Questions:
 --------------------
 
--  Are there any existing concrete implementations of
-   ``SymbolDatabaseProvider`` that could be reused or adapted?
--  What are the use cases for creating a custom
-   ``SymbolDatabaseProvider`` implementation?
+-  Are there any default concrete implementations for the abstract
+   methods in ``SymbolDatabaseProvider``, or does each subclass have to
+   provide its own implementations?

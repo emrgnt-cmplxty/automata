@@ -1,71 +1,68 @@
 DotPathMap
 ==========
 
-``DotPathMap`` is a class that provides a map from module dotpaths to
-module filepaths. It offers utility methods for checking if a module
-exists in the map, retrieving the dotpath or filepath of a module, and
-adding a new module to the map.
+``DotPathMap`` is a class that provides a mapping between module
+dotpaths and their filepaths. A dotpath is a string showing the
+hierarchical structure of a program, separated by periods. The class has
+methods to add, check if a module exists, and fetch the dotpath or
+filepath for a specific module.
 
 Overview
 --------
 
-``DotPathMap`` is initialized with the absolute path to the root of the
-module tree and internally handles the conversion between module
-dotpaths and filepaths. It exposes methods for checking the existence of
-a module by its dotpath or filepath, retrieving the filepath by dotpath
-and vice versa, and adding a new module to the map.
+``DotPathMap`` is initialized with the root filesystem path of the
+module tree, where it builds and maintains maps between module dotpaths
+and their filepaths. It provides methods for checking if the map
+contains a module by its dotpath or filepath, and methods to retrieve
+the dotpath or filepath for a module given one or the other.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.symbol_types.SymbolFile``
--  ``automata_docs.core.coding.directory.DirectoryManager``
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata_docs.core.database.vector.JSONVectorDatabase``
 
 Example
 -------
 
-The following example demonstrates how to create and use a
-``DotPathMap`` to manage a small module tree.
+The following example demonstrates how to create an instance of
+``DotPathMap`` and perform various operations on it:
 
 .. code:: python
 
-   import os
    from automata_docs.core.coding.py_coding.module_tree import DotPathMap
 
-   project_root = os.path.abspath("my_project_root")
-   dot_path_map = DotPathMap(project_root)
+   # Create a DotPathMap instance with a specific path
+   path = "/path/to/python/module/root"
+   map_instance = DotPathMap(path)
 
-   # Check if a module exists in the map
-   module_dotpath = "my_project.module1"
-   assert not dot_path_map.contains_dotpath(module_dotpath)
+   # Check if the DotPathMap contains a module
+   module_dotpath = "automata_docs.core.agent.automata_agent"
+   is_module_exists = map_instance.contains_dotpath(module_dotpath)
 
-   # Put a new module in the map
-   dot_path_map.put_module(module_dotpath)
+   # Add a module to the DotPathMap
+   new_module_dotpath = "automata_docs.core.test.new_module"
+   map_instance.put_module(new_module_dotpath)
 
-   # Check if the module was added to the map successfully
-   assert dot_path_map.contains_dotpath(module_dotpath)
+   # Get the filepath of a module given its dotpath
+   module_filepath = map_instance.get_module_fpath_by_dotpath(new_module_dotpath)
 
-   module_fpath = dot_path_map.get_module_fpath_by_dotpath(module_dotpath)
-   print(f"Module filepath: {module_fpath}")
+   # Get the dotpath of a module given its filepath
+   fetched_module_dotpath = map_instance.get_module_dotpath_by_fpath(module_filepath)
 
 Limitations
 -----------
 
-``DotPathMap`` assumes that modules have the ``.py`` extension and it
-cannot handle any other types of files or directories that do not have
-this extension. In addition, the class only supports module-level
-dotpaths and filepaths, so nested modules or class-level mappings will
-not be considered.
+``DotPathMap`` assumes a specific directory structure for the module
+tree and relies on a one-to-one mapping between module dotpaths and
+filepaths. If the directory structure is changed or if there are
+multiple filepaths associated with a dotpath, the mapping might be
+inconsistent.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend ``DotPathMap`` to support other file types or more
-   granular mappings?
--  Are there any notable performance issues when dealing with very large
-   module trees?
+-  What happens if there are multiple filepaths associated with a single
+   dotpath?

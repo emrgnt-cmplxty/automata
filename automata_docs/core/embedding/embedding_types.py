@@ -1,13 +1,13 @@
 import abc
 import logging
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import numpy as np
 import openai
 
 from automata_docs.core.database.vector import VectorDatabaseProvider
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
+from automata_docs.core.symbol.symbol_types import Symbol
 
 logger = logging.getLogger(__name__)
 
@@ -18,14 +18,23 @@ class NormType(Enum):
     SOFTMAX = "softmax"
 
 
-class EmbeddingsProvider:
+class EmbeddingProvider(abc.ABC):
     """A class to provide embeddings for symbols"""
 
-    def __init__(self):
+    @abc.abstractmethod
+    def build_embedding(self, symbol_source: str) -> np.ndarray:
+        pass
+
+
+class OpenAIEmbedding(EmbeddingProvider):
+    """A class to provide embeddings for symbols"""
+
+    def __init__(self, engine: str = "text-embedding-ada-002"):
         if not openai.api_key:
             from config import OPENAI_API_KEY
 
             openai.api_key = OPENAI_API_KEY
+        self.engine = engine
 
     def build_embedding(self, symbol_source: str) -> np.ndarray:
         """
@@ -38,23 +47,23 @@ class EmbeddingsProvider:
         # wait to import build_embedding to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
-        return np.array(get_embedding(symbol_source, engine="text-embedding-ada-002"))
+        return np.array(get_embedding(symbol_source, engine=self.engine))
 
 
-class EmbeddingHandler(abc.ABC):
+class SymbolEmbeddingHandler(abc.ABC):
     """An abstract class to handle the embedding of symbols"""
 
-    @abc.abstractmethod
     def __init__(
         self,
         embedding_db: VectorDatabaseProvider,
-        embedding_provider: Optional[EmbeddingsProvider],
+        embedding_provider: EmbeddingProvider,
     ):
-        """An abstract constructor for EmbeddingHandler"""
-        pass
+        """An abstract constructor for SymbolEmbeddingHandler"""
+        self.embedding_db = embedding_db
+        self.embedding_provider = embedding_provider
 
     @abc.abstractmethod
-    def get_embedding(self, symbol: Symbol) -> SymbolEmbedding:
+    def get_embedding(self, symbol: Symbol) -> Any:
         """An abstract method to get the embedding for a symbol"""
         pass
 
@@ -63,22 +72,8 @@ class EmbeddingHandler(abc.ABC):
         """An abstract method to update the embedding for a symbol"""
         pass
 
-    @abc.abstractmethod
-    def get_all_supported_symbols(self) -> List[Symbol]:
-        """An abstract method to get all supported symbols"""
-        pass
-
 
 class EmbeddingSimilarity(abc.ABC):
-    @abc.abstractmethod
-    def __init__(
-        self,
-        symbol_embedding_manager: EmbeddingHandler,
-        norm_type: Optional[NormType],
-    ):
-        """An abstract constructor for EmbeddingSimilarity"""
-        pass
-
     @abc.abstractmethod
     def get_query_similarity_dict(self, query_text: str) -> Dict[Any, float]:
         """An abstract method to get the similarity between a query and all symbols"""

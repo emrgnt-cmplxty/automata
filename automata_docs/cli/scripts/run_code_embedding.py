@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 from automata_docs.config.config_enums import ConfigCategory
 from automata_docs.core.database.vector import JSONVectorDatabase
+from automata_docs.core.embedding.embedding_types import OpenAIEmbedding
 from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.symbol_utils import get_rankable_symbols
@@ -33,9 +34,12 @@ def main(*args, **kwargs):
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
     embedding_db = JSONVectorDatabase(embedding_path)
-    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db)
+    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, OpenAIEmbedding())
 
     for symbol in tqdm(filtered_symbols):
-        embedding_handler.update_embedding(symbol)
-        embedding_db.save()
+        try:
+            embedding_handler.update_embedding(symbol)
+            embedding_db.save()
+        except Exception as e:
+            logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
     return "Success"

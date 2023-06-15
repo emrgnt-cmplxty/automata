@@ -303,17 +303,17 @@ class SymbolFile:
 class SymbolEmbedding(abc.ABC):
     """Abstract base class for different types of embeddings"""
 
-    def __init__(self, symbol: Symbol, vector: np.array):
+    def __init__(self, symbol: Symbol, embedding_source: str, vector: np.array):
         self.symbol = symbol
+        self.embedding_source = embedding_source
         self.vector = vector
 
 
 class SymbolCodeEmbedding(SymbolEmbedding):
     """Embedding for symbol code"""
 
-    def __init__(self, symbol: Symbol, vector: np.array, source_code: str):
-        super().__init__(symbol, vector)
-        self.source_code = source_code
+    def __init__(self, symbol: Symbol, source_code: str, vector: np.array):
+        super().__init__(symbol, source_code, vector)
 
 
 class SymbolDocEmbedding(SymbolEmbedding):
@@ -322,14 +322,14 @@ class SymbolDocEmbedding(SymbolEmbedding):
     def __init__(
         self,
         symbol: Symbol,
-        vector: np.array,
-        source_code: str,
         document: str,
+        vector: np.array,
+        source_code: Optional[str] = None,
         summary: Optional[str] = None,
         context: Optional[str] = None,
     ):
-        super().__init__(symbol, vector)
+        super().__init__(symbol, document, vector)
+        # begin additional meta data
         self.source_code = source_code
-        self.document = document
         self.summary = summary
         self.context = context

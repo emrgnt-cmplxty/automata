@@ -383,6 +383,7 @@ class PyDocWriter:
         """
         doc_directory_manager = DirectoryManager(docs_dir)
         for root, dirs, _ in os.walk(docs_dir, topdown=False):
+            print("Root = ", root)
             root_relative_to_base = os.path.relpath(root, start=docs_dir)
             files = doc_directory_manager.get_files_in_dir(root_relative_to_base)
             dirs = doc_directory_manager.get_subdirectories(root_relative_to_base)

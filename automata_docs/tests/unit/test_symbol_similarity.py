@@ -4,7 +4,7 @@ import numpy as np
 
 from automata_docs.core.database.vector import JSONVectorDatabase
 from automata_docs.core.embedding.symbol_embedding import (
-    EmbeddingsProvider,
+    EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
 )
 from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
@@ -36,7 +36,7 @@ def test_get_nearest_symbols_for_query(
     embedding_db.add(embedding3)
 
     # Create an instance of the class
-    mock_provider = MagicMock(EmbeddingsProvider)
+    mock_provider = MagicMock(EmbeddingProvider)
     cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_provider=mock_provider)
 
     symbol_similarity = SymbolSimilarity(cem)

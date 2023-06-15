@@ -1,38 +1,36 @@
 SymbolParser
 ============
 
-``SymbolParser`` is a class that translates the logic defined in `this
-Go
+``SymbolParser`` is a class that parses URIs into structured objects. It
+provides a way to translate the logic defined in the `Go
 implementation <https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/bindings/go/scip/symbol.go>`__
-to parse URIs into structured objects. It converts symbol URIs into a
-list of ``SymbolDescriptor`` objects, which make up the components of
-the URI.
+for parsing URIs into Python.
 
 Overview
 --------
 
-``SymbolParser`` is a utility class to help extract information from
-symbol URIs. It provides various methods to accept and identify
-different parts of the URI, such as accept_identifier, accept_character,
-and parse_descriptor. It is used primarily for parsing symbol URIs while
-it is not in hard sync with the Go implementation, it is good enough for
-most use-cases.
+``SymbolParser`` enables you to parse symbol URIs and extract
+identifiers, characters, and other parts of the URI into structured
+objects. The class provides methods for accepting escaped identifiers,
+space-escaped identifiers, identifier characters, and other components
+of a symbol URI.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.symbol.parser.parse_symbol``
+-  ``automata_docs.tests.unit.test_symbol_parser.test_parse_symbol``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.context.py_context.retriever.PyContextRetriever``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
 -  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata_docs.core.context.py_context.retriever_slim.PyContext``
+-  ``automata_docs.core.embedding.symbol_embedding.SymbolDocEmbeddingHandler.build_symbol_doc_embedding``
 -  ``automata_docs.core.symbol.symbol_types.SymbolDescriptor``
+-  ``automata_docs.tests.unit.conftest.symbols``
 
-Example
--------
-
-The following is an example demonstrating how to use the
-``SymbolParser`` to parse a given symbol URI.
+Examples
+--------
 
 .. code:: python
 
@@ -42,16 +40,18 @@ The following is an example demonstrating how to use the
    parser = SymbolParser(symbol_uri)
    descriptors = parser.parse_descriptors()
 
+   for descriptor in descriptors:
+       print(descriptor)
+
 Limitations
 -----------
 
-``SymbolParser`` is not in hard sync with the Go implementation, meaning
-some discrepancies might exist between the two implementations.
-Furthermore, it assumes a specific format for the symbol URIs and cannot
-handle custom or non-standard URI formats.
+The primary limitation of the ``SymbolParser`` implementation is that
+it’s not in hard sync with the Go implementation. Therefore, it may not
+parse URIs the same way as the Go implementation in some cases.
 
 Follow-up Questions:
 --------------------
 
--  Are there plans to align the Go and Python implementations?
--  How can this implementation be extended to handle non-standard URIs?
+-  Are there any plans to synchronize the Python implementation with the
+   Go implementation for improved compatibility?

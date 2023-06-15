@@ -1,55 +1,57 @@
 SymbolFile
-----------
+==========
 
-``SymbolFile`` represents a file that contains an automata symbol. It
-provides methods for comparing a ``SymbolFile`` with other instances of
-``SymbolFile`` or its path as a string, as well as for retrieving the
-hash value of its path, which is useful in certain operations like
-working with dictionaries or sets.
+``SymbolFile`` represents a file that contains a symbol and is an object
+utilized in the Symbol Information package to manage file and symbol
+relationships. It provides the necessary structure for searching,
+indexing, and managing symbols in a file and includes closely related
+symbols like ``Symbol``, ``SymbolGraph``, and others.
 
-Closely Related Symbols
-~~~~~~~~~~~~~~~~~~~~~~~
+Overview
+--------
+
+``SymbolFile`` acts as an identifier for a file containing symbols. It
+is primarily used for determining whether two ``SymbolFile`` objects
+reference the same file in the context of symbolic operations. The class
+has a simple structure, including a class docstring and two main
+methods, namely ``__eq__`` and ``__hash__``.
+
+Related Symbols
+---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
 -  ``automata_docs.core.symbol.symbol_types.SymbolReference``
+-  ``automata_docs.core.database.vector.JSONVectorDatabase``
+-  ``automata_docs.core.symbol.parser.parse_symbol``
 
 Example
-~~~~~~~
+-------
 
-Consider the following example in which we create a ``SymbolFile`` from
-a given file path and then compare it with another ``SymbolFile`` and a
-string representation of the file path:
+In this example, we will instantiate a ``SymbolFile`` object and compare
+it to another ``SymbolFile`` object and a string.
 
 .. code:: python
 
    from automata_docs.core.symbol.symbol_types import SymbolFile
 
-   file1 = SymbolFile("path/to/file.py")
-   file2 = SymbolFile("path/to/file.py")
+   file1 = SymbolFile("path/to/file1.py")
+   file2 = SymbolFile("path/to/file1.py")
 
-   assert file1 == file2
-   assert file1 == "path/to/file.py"
-
-Overview of Methods
-~~~~~~~~~~~~~~~~~~~
-
-``__eq__(self, other)``
-^^^^^^^^^^^^^^^^^^^^^^^
-
-This method compares the current instance of ``SymbolFile`` with another
-``SymbolFile`` or a string representing its path. Returns ``True`` if
-they are the same, ``False`` otherwise.
-
-``__hash__(self) -> int``
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Returns the hash value of the path of the ``SymbolFile`` instance.
+   print(file1 == file2)  # True
+   print(file1 == "path/to/file1.py")  # True
 
 Limitations
-~~~~~~~~~~~
+-----------
 
-``SymbolFile`` can only represent an individual file with a single path
-and does not support working with directories or multiple files at once.
-It also has no functionality for file manipulation or inspection other
-than equality comparison and hashing.
+The primary limitation of ``SymbolFile`` is that it relies only on the
+file path to determine equality. If two files have different paths but
+contain the same symbols, ``SymbolFile`` cannot handle this case.
+
+Follow-up Questions:
+--------------------
+
+-  How can we handle the case where two files with different paths
+   contain the same symbols?
+-  Is there a way to extend the utility of this class by adding more
+   functionality to handle file contents?

@@ -89,7 +89,9 @@ class Directory(Node):
             bool: True if this directory is a leaf directory, False otherwise
         """
         subdirectories = [
-            child for child in self.children.values() if isinstance(child, Directory)
+            child
+            for child in self.children.values()
+            if isinstance(child, Directory) and "__pycache__" not in child.name
         ]
         return len(subdirectories) == 0
 

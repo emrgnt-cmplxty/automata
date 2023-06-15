@@ -1,64 +1,63 @@
-PyCodeWriter.ClassOrFunctionNotFound
-====================================
+PyCodeWriter
+============
 
-``PyCodeWriter.ClassOrFunctionNotFound`` is an exception that is raised
-when a class or function is not found in the module. This exception is
-primarily used in the ``PyCodeWriter`` class.
+PyCodeWriter is a Python utility class that assists in writing code and
+documentation for Python modules. It interacts with the PyCodeRetriever
+to obtain relevant information about the Python module, such as method
+and class signatures, import statements, and docstrings.
 
 Overview
 --------
 
-The ``PyCodeWriter.ClassOrFunctionNotFound`` exception is used within
-the ``PyCodeWriter`` class to indicate that a requested class or
-function could not be located in the module. This might happen, for
-instance, when you try to update or retrieve the code or docstring of a
-non-existent class or function in the module.
+PyCodeWriter is implemented by initializing an instance with a
+PyCodeRetriever object. PyCodeWriter supports various functions, such as
+creating or updating an existing module, generating module
+documentation, and writing documentation to files. It can also handle
+cases where a module is not found, by raising a
+``ClassOrFunctionNotFound`` exception.
 
 Related Symbols
 ---------------
 
--  ``PyCodeWriter``
--  ``PyCodeRetriever``
--  ``MockCodeGenerator``
--  ``PyContextRetriever``
--  ``Symbol``
+-  ``automata_docs.tests.unit.test_py_writer.MockCodeGenerator``
+-  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.coding.py_coding.writer.PyDocWriter``
 
-Example
--------
-
-The following is an example demonstrating how the
-``PyCodeWriter.ClassOrFunctionNotFound`` exception might be raised.
+Usage Example
+-------------
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.writer import PyCodeWriter
    from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata_docs.core.coding.directory import DirectoryManager
+   from automata_docs.core.coding.py_coding.writer import PyCodeWriter
 
-   # Create PyCodeWriter instance with a PyCodeRetriever
-   retriever = PyCodeRetriever()
-   writer = PyCodeWriter(python_retriever=retriever)
+   # Initialize the PyCodeRetriever and PyCodeWriter
+   directory_manager = DirectoryManager('/path/to/your/project')
+   retriever = PyCodeRetriever(directory_manager.get_module_tree_map())
+   writer = PyCodeWriter(retriever)
 
-   # Assume "sample_module" has only one class: "SampleClass"
-   try:
-       writer.update_class("sample_module", "NonExistentClass", "def new_method(self): pass")
-   except PyCodeWriter.ClassOrFunctionNotFound as e:
-       print(f"Exception: {e}")
-
-This code snippet demonstrates how the
-``PyCodeWriter.ClassOrFunctionNotFound`` exception is raised when trying
-to update a class that does not exist in the module.
+   # Generate code and create new or update existing module
+   source_code = "def sample_function():\n    return 'Hello, World!'"
+   writer.create_new_module('my_module', source_code, do_write=True)
+   updated_source_code = "def new_function():\n    return 'Another function!'"
+   writer.update_existing_module(source_code=updated_source_code, module_dotpath='my_module', do_write=True)
 
 Limitations
 -----------
 
-The ``PyCodeWriter.ClassOrFunctionNotFound`` exception is specific to
-the ``PyCodeWriter`` class and its use-cases, and it cannot be utilized
-for other code retrieving or writing scenarios. It depends on the
-implementation and handling of the ``PyCodeWriter`` and other related
-symbols.
+Due to the reliance on PyCodeRetriever, any limitations associated with
+PyCodeRetriever’s methods will carry over to PyCodeWriter. This includes
+the expectation of specific directory structures and module formats.
 
 Follow-up Questions:
 --------------------
 
--  Are there other scenarios where this exception might be raised,
-   outside the scope of the ``PyCodeWriter`` class?
+-  How can the source code generation, module creation, and update
+   process be made more flexible to handle various module formats and
+   directory structures?
+
+Note: In the context provided, the ``MockCodeGenerator`` is used for
+testing purposes. However, in actual use cases, you would replace this
+with the actual generator or provide the complete source code.
