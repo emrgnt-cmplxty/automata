@@ -5,8 +5,8 @@ from tqdm import tqdm
 
 from automata_docs.config.config_enums import ConfigCategory
 from automata_docs.core.database.vector import JSONVectorDatabase
+from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.embedding.embedding_types import OpenAIEmbedding
-from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.symbol_utils import get_rankable_symbols
 from automata_docs.core.utils import config_fpath

@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from automata_docs.core.embedding.symbol_embedding import SymbolCodeEmbeddingHandler
+from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.parser import parse_symbol

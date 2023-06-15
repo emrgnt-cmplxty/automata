@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, Mock
 
 from automata_docs.core.database.vector import JSONVectorDatabase
-from automata_docs.core.embedding.symbol_embedding import (
+from automata_docs.core.embedding.code_embedding import (
     EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
 )
