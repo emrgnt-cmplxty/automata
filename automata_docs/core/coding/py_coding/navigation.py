@@ -3,7 +3,15 @@ from __future__ import annotations
 import logging
 from typing import Optional, Union
 
-from redbaron import ClassNode, DefNode, FromImportNode, ImportNode, Node, NodeList, RedBaron
+from redbaron import (
+    ClassNode,
+    DefNode,
+    FromImportNode,
+    ImportNode,
+    Node,
+    NodeList,
+    RedBaron,
+)
 
 from automata_docs.core.coding.py_coding.py_utils import DOT_SEP
 

@@ -4,7 +4,15 @@ import string
 import textwrap
 
 import pytest
-from redbaron import ClassNode, DefNode, EndlNode, PassNode, RedBaron, ReturnNode, StringNode
+from redbaron import (
+    ClassNode,
+    DefNode,
+    EndlNode,
+    PassNode,
+    RedBaron,
+    ReturnNode,
+    StringNode,
+)
 
 from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata_docs.core.coding.py_coding.navigation import find_syntax_tree_node

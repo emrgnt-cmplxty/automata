@@ -5,7 +5,10 @@ from typing import Dict, Iterable, Optional, Tuple
 
 from redbaron import RedBaron
 
-from automata_docs.core.coding.py_coding.py_utils import DOT_SEP, convert_fpath_to_module_dotpath
+from automata_docs.core.coding.py_coding.py_utils import (
+    DOT_SEP,
+    convert_fpath_to_module_dotpath,
+)
 from automata_docs.core.utils import root_fpath
 
 logger = logging.getLogger(__name__)

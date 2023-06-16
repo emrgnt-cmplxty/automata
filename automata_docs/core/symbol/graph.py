@@ -16,7 +16,10 @@ from automata_docs.core.symbol.symbol_types import (
     SymbolFile,
     SymbolReference,
 )
-from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata_docs.core.symbol.symbol_utils import (
+    convert_to_fst_object,
+    get_rankable_symbols,
+)
 from automata_docs.core.utils import config_fpath
 
 logger = logging.getLogger(__name__)

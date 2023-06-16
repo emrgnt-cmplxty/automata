@@ -31,6 +31,8 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             embedding_db (VectorDatabaseProvider): The database to store the embeddings in
             embedding_provider (EmbeddingProvider): The provider to get the embeddings from
             code_embedding_handler (SymbolCodeEmbeddingHandler): The code embedding handler
+
+        TODO: Add more logic around documentation updating
         """
         super().__init__(embedding_db, embedding_provider)
 
@@ -177,12 +179,6 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         summary = get_summary(document)
         embedding = self.embedding_provider.build_embedding(document)
 
-        # print(f"Symbol Context = {retriever.get_context_buffer()}")
-        print("Symbol = ", symbol)
-        import tiktoken
-
-        encoding = tiktoken.encoding_for_model("gpt-4")
-        print("Len of context = ", len(encoding.encode(retriever.get_context_buffer())))
         return SymbolDocEmbedding(
             symbol,
             vector=embedding,
