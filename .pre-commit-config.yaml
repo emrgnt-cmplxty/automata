@@ -23,3 +23,16 @@ repos:
     hooks:
       - id: isort
         language_version: python3.9 # Replace with your Python version
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: config_validation
+        name: Config Validation
+        entry: python -m automata.cli.scripts.run_config_validation
+        language: system
+        types: [python]
