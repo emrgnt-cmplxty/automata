@@ -1,0 +1,21 @@
+input_variables:
+  - initializer_dummy_tool
+  - user_input_instructions
+initial_messages:
+  - role: "assistant"
+    content: >
+      - thoughts
+        - I will begin by initializing myself.
+          - actions
+            - tool_query_0
+              - tool_name
+                - {initializer_dummy_tool}
+              - tool_args
+                - Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
+
+  - role: "user"
+    content: >
+      - observation:
+        - tool_output_0
+          - task_0
+          - Please carry out the following instruction {user_input_instructions}.

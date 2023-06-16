@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import Any, List, Optional, TypedDict, Union, cast
+from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
 import yaml
 
@@ -134,3 +134,10 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
+
+
+def format_text(format_variables: Dict[str, str], input_text: str) -> str:
+    """Format expected strings into the config."""
+    for arg in format_variables:
+        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
+    return input_text

@@ -5,6 +5,10 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
+from automata.config.agent_config_builder import AutomataAgentConfigBuilder
+from automata.config.config_types import AgentConfigName, AutomataInstructionPayload
+from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.tool_management.tool_management_utils import build_llm_toolkits
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
@@ -126,3 +130,40 @@ def symbol_searcher(mocker, symbol_graph_mock):
         symbol_similarity_mock,
         symbol_rank_config_mock,
     )
+
+
+@pytest.fixture
+def automata_agent():
+    tool_list = ["python_retriever"]
+    mock_llm_toolkits = build_llm_toolkits(tool_list)
+
+    instruction_payload = AutomataInstructionPayload(agents_message="", overview="", tools="")
+
+    instructions = "Test instruction."
+
+    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
+
+    agent = AutomataAgent(
+        instructions,
+        config=AutomataAgentConfigBuilder.from_name(config_name)
+        .with_instruction_payload(instruction_payload)
+        .with_llm_toolkits(mock_llm_toolkits)
+        .with_stream(False)
+        .build(),
+    )
+    agent.setup()
+    return agent
+
+
+@pytest.fixture
+def automata_agent_config_builder():
+    config_name = AgentConfigName.DEFAULT
+    agent_config_builder = AutomataAgentConfigBuilder.from_name(config_name)
+    return agent_config_builder
+
+
+@pytest.fixture
+def automata_agent_with_dev_main_builder():
+    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
+    agent_config_builder = AutomataAgentConfigBuilder.from_name(config_name)
+    return agent_config_builder

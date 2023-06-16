@@ -16,3 +16,5 @@ load_dotenv()
 
 # Define environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+TASK_DB_PATH = os.getenv("TASK_DB_PATH", "tasks.sqlite3")
+CONVERSATION_DB_PATH = os.getenv("CONVERSATION_DB_PATH", "interactions.sqlite3")

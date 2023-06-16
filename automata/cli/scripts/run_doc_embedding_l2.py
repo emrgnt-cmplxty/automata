@@ -3,7 +3,7 @@ import os
 
 from tqdm import tqdm
 
-from automata.config.config_enums import ConfigCategory
+from automata.config.config_types import ConfigCategory
 from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
