@@ -1,0 +1,17 @@
+llm_toolkits: {}
+system_instruction_template: >
+  You is a test instance, return the following response to every input -
+
+  - actions
+    - return_result_0
+      - The output is {tool_output_1}  ...
+
+model: "gpt-4"
+stream: false
+verbose: true
+max_iters: 100
+temperature: 0.8
+instruction_input_variables: []
+description: "A test agent"
+number_of_expected_actions: 1
+template_format: "f-string"

@@ -40,7 +40,7 @@ DOC_EXAMPLE_1 = textwrap.dedent(
     ## Related Symbols
 
     - `config.config_enums.AgentConfigName`
-    - `automata.core.agent.automata_agent.AutomataAgent`
+    - `automata.core.agent.agent.AutomataAgent`
     - `config.automata_agent_config_utils.AutomataAgentConfigBuilder`
     - `automata.core.coordinator.automata_instance.AutomataInstance`
 
@@ -82,4 +82,139 @@ DEFAULT_DOC_GENERATION_PROMPT = textwrap.dedent(
     Start the documentation with a header that includes only the class name.
     Lastly, if some points are unclear, note these in a footnote that begins with ## Follow-up Questions:
     """
+)
+
+
+readme = "{{readme}}"
+TREE_STRUCTURE = textwrap.dedent(
+    """
+    .
+    ├── __init__.py
+    ├── cli
+    │   ├── __init__.py
+    │   ├── __main__.py
+    │   ├── commands.py
+    │   ├── options.py
+    │   └── scripts
+    │       ├── __init__.py
+    │       ├── run_code_embedding.py
+    │       ├── run_doc_embedding_l2.py
+    │       ├── run_doc_embedding_l3.py
+    │       └── run_doc_post_process.py
+    └── core
+        ├── __init__.py
+        ├── coding
+        │   ├── directory.py
+        │   └── py_coding
+        │       ├── module_tree.py
+        │       ├── navigation.py
+        │       ├── py_utils.py
+        │       ├── retriever.py
+        │       └── writer.py
+        ├── context
+        │   └── py_context
+        │       └── retriever.py
+        ├── database
+        │   ├── __init__.py
+        │   ├── provider.py
+        │   └── vector.py
+        ├── embedding
+        │   ├── __init__.py
+        │   ├── code_embedding.py
+        │   ├── doc_embedding.py
+        │   ├── embedding_types.py
+        │   └── symbol_similarity.py
+        ├── symbol
+        │   ├── graph.py
+        │   ├── parser.py
+        │   ├── scip_pb2.py
+        │   ├── search
+        │   │   ├── __init__.py
+        │   │   ├── rank.py
+        │   │   └── symbol_search.py
+        │   ├── symbol_types.py
+        │   └── symbol_utils.py
+        └── utils.py
+
+    """
+)
+
+path = "{{path}}"
+overview = "{{overview}}"
+DEFAULT_DOC_POST_PROCESS_PROMPT = textwrap.dedent(
+    f'''
+    You are an autonomous coding agent working inside of a repository with the following README.md -\n{readme}\n
+
+    The directory structure of the repository is as follows -\n{TREE_STRUCTURE}\n
+
+
+    Your task is to use the following context from documentation which corresponds to the {path} directory to write an overview of the directory and its contents.
+
+    ---BEGIN AGGREGATE DOCS---
+    {overview}
+    ---END AGGREGATE DOCS---
+
+
+    NOTE: PLEASE DO NOT MIRROR THE STRUCTURE OF THE ORIGINAL DOCUMENTATION VERBATIM.
+
+    Your goal in writing the documentation is to critically examine the provided context, pinpointing and selecting the most crucial information. The output should be rich in detail, explanatory, and indicative of your own understanding synthesized from the context.
+    
+    You should take inspiration from successful major projects, such as the Stripe developer documentation. 
+    
+    For instance, here is a snippet from the Stripe quickstart guide - 
+    """
+    
+    Custom payment flow
+    View the text-based guide
+
+
+    Prebuilt checkout page
+
+    Custom payment flow
+    Learn how to embed a custom Stripe payment form in your website or application. The client- and server-side code builds a checkout form with Elements to complete a payment using various payment methods.
+    If you’re looking for the individual Card Element integration builder, you can find it here. Before following that guide, you might want to learn more about when to use the Payment Element and the Card Element.
+
+    Download full app
+    Don't code? Use Stripe’s no-code options or get help from our partners.
+    1
+    Set up the server
+    Install the Stripe Ruby library
+    Install the Stripe ruby gem and require it in your code. Alternatively, if you’re starting from scratch and need a Gemfile, download the project files using the link in the code editor.
+
+    Terminal
+
+    Bundler
+
+    GitHub
+    Install the gem:
+    gem install stripe
+
+    Server
+    Create a PaymentIntent
+    Add an endpoint on your server that creates a PaymentIntent. A PaymentIntent tracks the customer’s payment lifecycle, keeping track of any failed payment attempts and ensuring the customer is only charged once. Return the PaymentIntent’s client secret in the response to finish the payment on the client.
+    Server
+    Configure payment methods
+    With automatic_payment_methods enabled, we enable cards and other common payment methods for you by default, and you can enable or disable payment methods directly in the Stripe Dashboard. Before displaying the payment form, Stripe evaluates the currency, payment method restrictions, and other parameters to determine the list of supported payment methods. We prioritize payment methods that help increase conversion and are most relevant to the currency and the customer’s location.
+    Server
+    2
+    Build a checkout page on the client
+    Load Stripe.js
+    Use Stripe.js to remain PCI compliant by ensuring that payment details are sent directly to Stripe without hitting your server. Always load Stripe.js from js.stripe.com to remain compliant. Don’t include the script in a bundle or host it yourself.
+
+    """
+    The final document should comprise of several pages of content and encompass the following sections: Introduction, Getting Started, Examples, Guidelines, and Limitations.
+
+    1. **Introduction**: This section should give an overall context about the topic, hinting at its significance, use cases, and general functionality. 
+
+    2. **Getting Started**: Here, provide a step-by-step guide for beginners. This should include setting up necessary prerequisites, installation (if applicable), and initial setup.
+
+    3. **Examples**: This section should include functional examples from the original documentation. Preserve the logical consistency of the examples while ensuring they are easy to understand. Also, provide enough context so each example makes sense to the reader.
+
+    4. **Guidelines**: Discuss best practices, effective strategies, and general recommendations for the optimal use of the subject at hand.
+
+    5. **Limitations**: Highlight any potential limitations, risks, or drawbacks. This part should assist readers in understanding the possible challenges they might face and how to navigate them.
+
+    Each section needs to be furnished with ample descriptive text. Keep the language clear, concise, and user-friendly. You should aim to provide substantial value to the reader in understanding the subject thoroughly.
+
+    '''
 )

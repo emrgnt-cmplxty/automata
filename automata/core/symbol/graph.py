@@ -7,7 +7,7 @@ import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
-from automata.config.config_enums import ConfigCategory
+from automata.config.config_types import ConfigCategory
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.scip_pb2 import Index, SymbolRole
 from automata.core.symbol.symbol_types import (

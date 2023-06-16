@@ -31,6 +31,8 @@ pre-commit install
 cp .env.example .env
 MY_API_KEY=your_openai_api_key_here
 sed -i "s/your_openai_api_key/${MY_API_KEY}/" .env
+sed -i "s/your_task_db_path/$PWD/tasks.sqlite3/" .env
+sed -i "s/your_openai_api_key/$PWD/conversations.sqlite3/" .env
 ```
 
 ### Build the docs
