@@ -2,12 +2,12 @@ from enum import Enum
 from typing import Callable, List, Optional, Union
 
 from automata.core.base.tool import Tool
-from automata.core.tools.search.symbol_searcher import (
+from automata.core.symbol.search.symbol_search import (
     ExactSearchResult,
     SourceCodeResult,
     SymbolRankResult,
     SymbolReferencesResult,
-    SymbolSearcher,
+    SymbolSearch,
 )
 
 
@@ -18,14 +18,14 @@ class SearchTool(Enum):
     EXACT_SEARCH = "exact-search"
 
 
-class SymbolSearcherToolManager:
+class SymbolSearchToolManager:
     def __init__(
         self,
-        symbol_searcher: SymbolSearcher,
+        symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
         post_processing: Optional[Callable] = None,
     ):
-        self.symbol_searcher = symbol_searcher
+        self.symbol_search = symbol_search
         self.search_tools = search_tools or list(SearchTool)
         self.post_processing = post_processing
 
@@ -65,21 +65,21 @@ class SymbolSearcherToolManager:
     # TODO - Cleanup these processors to ensure they behave well.
     # -- Right now these are just simplest implementations I can rattle off
     def _symbol_rank_search_processor(self, query: str) -> str:
-        query_result = self.symbol_searcher.symbol_rank_search(query)
+        query_result = self.symbol_search.symbol_rank_search(query)
         return "\n".join([symbol.uri for symbol, _rank in query_result])
 
     def _symbol_symbol_references_processor(self, query: str) -> str:
-        query_result = self.symbol_searcher.symbol_references(query)
+        query_result = self.symbol_search.symbol_references(query)
         return "\n".join(
             [f"{symbol}:{str(reference)}" for symbol, reference in query_result.items()]
         )
 
     def _retrieve_source_code_by_symbol_processor(self, query: str) -> str:
-        query_result = self.symbol_searcher.retrieve_source_code_by_symbol(query)
+        query_result = self.symbol_search.retrieve_source_code_by_symbol(query)
         return query_result or "No Result Found"
 
     def _exact_search_processor(self, query: str) -> str:
-        query_result = self.symbol_searcher.exact_search(query)
+        query_result = self.symbol_search.exact_search(query)
         processed_result = "\n".join(
             [f"{symbol}:{str(references)}" for symbol, references in query_result.items()]
         )
