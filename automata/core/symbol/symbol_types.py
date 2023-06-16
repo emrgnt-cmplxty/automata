@@ -5,7 +5,8 @@ from enum import Enum
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
-from automata_docs.core.symbol.scip_pb2 import Descriptor as DescriptorProto
+
+from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
 
 class SymbolDescriptor:
@@ -147,14 +148,14 @@ class Symbol:
     <escaped-characters>   ::= any UTF-8 character, escape backticks with double backtick.
 
     Examples -
-    from automata_docs.core.symbol.search.symbol_parser import parse_symbol
+    from automata.core.symbol.search.symbol_parser import parse_symbol
 
     symbol_class = parse_symbol(
-        "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
+        "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#"
     )
 
     symbol_method = parse_symbol(
-        "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+        "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__()."
     )
     """
 
@@ -254,7 +255,7 @@ class Symbol:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __, ___ = match.groups()
         # In current implementation, only the uri is used in re-construcing the symbol
-        from automata_docs.core.symbol.parser import parse_symbol
+        from automata.core.symbol.parser import parse_symbol
 
         return parse_symbol(uri)
 

@@ -6,16 +6,17 @@ from typing import Dict, List, Optional, Union, cast
 
 import numpy as np
 import pypandoc
-from automata_docs.core.coding.directory import DirectoryManager
-from automata_docs.core.coding.py_coding.navigation import (
+from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
+
+from automata.core.coding.directory import DirectoryManager
+from automata.core.coding.py_coding.navigation import (
     find_all_function_and_class_syntax_tree_nodes,
     find_import_syntax_tree_node_by_name,
     find_import_syntax_tree_nodes,
     find_syntax_tree_node,
 )
-from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
-from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
+from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
 

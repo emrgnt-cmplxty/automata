@@ -4,22 +4,23 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set
 
 import networkx as nx
-from automata_docs.config.config_enums import ConfigCategory
-from automata_docs.core.symbol.parser import parse_symbol
-from automata_docs.core.symbol.scip_pb2 import Index, SymbolRole
-from automata_docs.core.symbol.symbol_types import (
+from google.protobuf.json_format import MessageToDict
+from tqdm import tqdm
+
+from automata.config.config_enums import ConfigCategory
+from automata.core.symbol.parser import parse_symbol
+from automata.core.symbol.scip_pb2 import Index, SymbolRole
+from automata.core.symbol.symbol_types import (
     Symbol,
     SymbolDescriptor,
     SymbolFile,
     SymbolReference,
 )
-from automata_docs.core.symbol.symbol_utils import (
+from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
-from automata_docs.core.utils import config_fpath
-from google.protobuf.json_format import MessageToDict
-from tqdm import tqdm
+from automata.core.utils import config_fpath
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 import abc
 from typing import Any
 
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
+from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
 
 class SymbolDatabaseProvider(abc.ABC):

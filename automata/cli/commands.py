@@ -2,7 +2,8 @@ import logging
 import logging.config
 
 import click
-from automata_docs.core.utils import get_logging_config
+
+from automata.core.utils import get_logging_config
 
 from .options import common_options
 
@@ -53,7 +54,7 @@ def cli(ctx):
 @click.pass_context
 def run_code_embedding(ctx, *args, **kwargs):
     """Run the code embedding pipeline."""
-    from automata_docs.cli.scripts.run_code_embedding import main
+    from automata.cli.scripts.run_code_embedding import main
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_code_embedding")
@@ -75,7 +76,7 @@ def run_code_embedding(ctx, *args, **kwargs):
 @click.pass_context
 def run_doc_embedding_l2(ctx, *args, **kwargs):
     """Run the document embedding Level-2 pipeline."""
-    from automata_docs.cli.scripts.run_doc_embedding_l2 import main
+    from automata.cli.scripts.run_doc_embedding_l2 import main
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l2")
@@ -97,7 +98,7 @@ def run_doc_embedding_l2(ctx, *args, **kwargs):
 @click.pass_context
 def run_doc_embedding_l3(ctx, *args, **kwargs):
     """Run the document embedding Level-3 pipeline."""
-    from automata_docs.cli.scripts.run_doc_embedding_l3 import main
+    from automata.cli.scripts.run_doc_embedding_l3 import main
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l3")

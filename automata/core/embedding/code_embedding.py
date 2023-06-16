@@ -1,8 +1,8 @@
 import logging
 from typing import List
 
-from automata_docs.core.database.vector import VectorDatabaseProvider
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
+from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
 
 from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
 
@@ -47,7 +47,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         Raises:
             ValueError: If the symbol has no source code
         """
-        from automata_docs.core.symbol.symbol_utils import (  # imported late for mocking
+        from automata.core.symbol.symbol_utils import (  # imported late for mocking
             convert_to_fst_object,
         )
 

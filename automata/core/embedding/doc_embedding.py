@@ -2,13 +2,14 @@ import logging
 from typing import List, Optional
 
 import openai
-from automata_docs.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
-from automata_docs.core.context.py_context.retriever import PyContextRetriever
-from automata_docs.core.database.vector import VectorDatabaseProvider
-from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata_docs.core.symbol.graph import SymbolGraph
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 from jinja2 import Template
+
+from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
+from automata.core.context.py_context.retriever import PyContextRetriever
+from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.symbol.graph import SymbolGraph
+from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
 
@@ -35,9 +36,9 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         """
         super().__init__(embedding_db, embedding_provider)
 
-        from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-        from automata_docs.core.symbol.search.rank import SymbolRankConfig
-        from automata_docs.core.symbol.search.symbol_search import SymbolSearch
+        from automata.core.embedding.symbol_similarity import SymbolSimilarity
+        from automata.core.symbol.search.rank import SymbolRankConfig
+        from automata.core.symbol.search.symbol_search import SymbolSearch
 
         graph = SymbolGraph()
         subgraph = graph.get_rankable_symbol_subgraph()
@@ -72,7 +73,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             We should add some logic to check if the documentation needs updating
             This is non-trivial because of how dependencies interact
         """
-        from automata_docs.core.symbol.symbol_utils import (  # imported late for mocking
+        from automata.core.symbol.symbol_utils import (  # imported late for mocking
             convert_to_fst_object,
         )
 

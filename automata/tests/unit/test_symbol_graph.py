@@ -1,4 +1,4 @@
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolFile
+from automata.core.symbol.symbol_types import Symbol, SymbolFile
 
 
 def test_get_all_files(symbol_graph):

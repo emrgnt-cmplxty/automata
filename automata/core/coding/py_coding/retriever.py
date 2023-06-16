@@ -3,10 +3,11 @@ from __future__ import annotations
 import logging
 from typing import Optional, Union
 
-from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata_docs.core.coding.py_coding.navigation import find_syntax_tree_node
-from automata_docs.core.coding.py_coding.py_utils import NO_RESULT_FOUND_STR
 from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
+
+from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.coding.py_coding.navigation import find_syntax_tree_node
+from automata.core.coding.py_coding.py_utils import NO_RESULT_FOUND_STR
 
 logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]

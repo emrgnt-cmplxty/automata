@@ -2,8 +2,9 @@ import random
 
 import networkx as nx
 import pytest
-from automata_docs.core.symbol.search.rank import SymbolRank, SymbolRankConfig
 from networkx import DiGraph
+
+from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig
 
 
 def generate_random_graph(nodes, edges):

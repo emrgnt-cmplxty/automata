@@ -4,10 +4,6 @@ import string
 import textwrap
 
 import pytest
-from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata_docs.core.coding.py_coding.navigation import find_syntax_tree_node
-from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-from automata_docs.core.coding.py_coding.writer import PyCodeWriter
 from redbaron import (
     ClassNode,
     DefNode,
@@ -17,6 +13,11 @@ from redbaron import (
     ReturnNode,
     StringNode,
 )
+
+from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.coding.py_coding.navigation import find_syntax_tree_node
+from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.writer import PyCodeWriter
 
 
 class MockCodeGenerator:

@@ -1,9 +1,10 @@
 import os
 
 import pytest
-from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata_docs.core.coding.py_coding.py_utils import build_repository_overview
-from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
+
+from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.coding.py_coding.py_utils import build_repository_overview
+from automata.core.coding.py_coding.retriever import PyCodeRetriever
 
 
 @pytest.fixture

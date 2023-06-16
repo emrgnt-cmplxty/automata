@@ -5,8 +5,9 @@ from typing import Any, Dict
 
 import numpy as np
 import openai
-from automata_docs.core.database.vector import VectorDatabaseProvider
-from automata_docs.core.symbol.symbol_types import Symbol
+
+from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.symbol.symbol_types import Symbol
 
 logger = logging.getLogger(__name__)
 

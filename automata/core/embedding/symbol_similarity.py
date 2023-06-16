@@ -2,8 +2,9 @@ import logging
 from typing import Dict, List, Optional, Set
 
 import numpy as np
-from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata_docs.core.symbol.symbol_types import Symbol
+
+from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.symbol.symbol_types import Symbol
 
 from .embedding_types import EmbeddingProvider, EmbeddingSimilarity, NormType
 

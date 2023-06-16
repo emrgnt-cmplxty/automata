@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 from typing import Optional, Union
 
-from automata_docs.core.coding.py_coding.py_utils import DOT_SEP
 from redbaron import (
     ClassNode,
     DefNode,
@@ -13,6 +12,8 @@ from redbaron import (
     NodeList,
     RedBaron,
 )
+
+from automata.core.coding.py_coding.py_utils import DOT_SEP
 
 logger = logging.getLogger(__name__)
 

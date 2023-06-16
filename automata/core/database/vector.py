@@ -5,8 +5,9 @@ from typing import Dict, List
 
 import jsonpickle
 import numpy as np
-from automata_docs.core.database.provider import SymbolDatabaseProvider
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
+
+from automata.core.database.provider import SymbolDatabaseProvider
+from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
 logger = logging.getLogger(__name__)
 

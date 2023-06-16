@@ -4,16 +4,17 @@ from contextlib import contextmanager
 from typing import List, Optional, Set
 
 import tiktoken
-from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-from automata_docs.core.database.vector import VectorDatabaseProvider
-from automata_docs.core.symbol.graph import SymbolGraph
-from automata_docs.core.symbol.symbol_types import Symbol
-from automata_docs.core.symbol.symbol_utils import (
+from redbaron import RedBaron
+
+from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.symbol.graph import SymbolGraph
+from automata.core.symbol.symbol_types import Symbol
+from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
-from automata_docs.core.utils import root_py_fpath
-from redbaron import RedBaron
+from automata.core.utils import root_py_fpath
 
 logger = logging.getLogger(__name__)
 

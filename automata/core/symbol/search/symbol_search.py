@@ -3,13 +3,14 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import networkx as nx
 import numpy as np
-from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-from automata_docs.core.symbol.graph import SymbolGraph
-from automata_docs.core.symbol.parser import parse_symbol
-from automata_docs.core.symbol.search.rank import SymbolRank, SymbolRankConfig
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolReference
-from automata_docs.core.symbol.symbol_utils import convert_to_fst_object
+
+from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.symbol.graph import SymbolGraph
+from automata.core.symbol.parser import parse_symbol
+from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig
+from automata.core.symbol.symbol_types import Symbol, SymbolReference
+from automata.core.symbol.symbol_utils import convert_to_fst_object
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]

@@ -1,14 +1,15 @@
 import logging
 import os
 
-from automata_docs.config.config_enums import ConfigCategory
-from automata_docs.core.database.vector import JSONVectorDatabase
-from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata_docs.core.embedding.embedding_types import OpenAIEmbedding
-from automata_docs.core.symbol.graph import SymbolGraph
-from automata_docs.core.symbol.symbol_utils import get_rankable_symbols
-from automata_docs.core.utils import config_fpath
 from tqdm import tqdm
+
+from automata.config.config_enums import ConfigCategory
+from automata.core.database.vector import JSONVectorDatabase
+from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.embedding_types import OpenAIEmbedding
+from automata.core.symbol.graph import SymbolGraph
+from automata.core.symbol.symbol_utils import get_rankable_symbols
+from automata.core.utils import config_fpath
 
 logger = logging.getLogger(__name__)
 

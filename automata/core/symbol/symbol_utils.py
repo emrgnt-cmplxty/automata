@@ -1,8 +1,9 @@
 from typing import List, Optional
 
-from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata_docs.core.symbol.symbol_types import Symbol, SymbolDescriptor
 from redbaron import RedBaron
+
+from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 
 def convert_to_fst_object(

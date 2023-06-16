@@ -1,9 +1,10 @@
 from typing import Dict, Hashable, List, Optional, Tuple
 
 import networkx as nx
-from automata_docs.core.symbol.symbol_types import Symbol
 from networkx.exception import NetworkXError
 from pydantic import BaseModel
+
+from automata.core.symbol.symbol_types import Symbol
 
 
 class SymbolRankConfig(BaseModel):
