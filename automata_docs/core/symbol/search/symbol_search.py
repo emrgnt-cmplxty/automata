@@ -25,7 +25,7 @@ class SymbolSearch:
         self,
         symbol_graph: SymbolGraph,
         symbol_similarity: SymbolSimilarity,
-        symbol_rank_config: Optional[SymbolRankConfig],
+        symbol_rank_config: SymbolRankConfig,
         code_subgraph: Optional[SymbolGraph.SubGraph] = None,
         *args,
         **kwargs,

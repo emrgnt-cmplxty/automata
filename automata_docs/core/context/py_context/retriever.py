@@ -10,7 +10,10 @@ from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
 from automata_docs.core.database.vector import VectorDatabaseProvider
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.symbol_types import Symbol
-from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata_docs.core.symbol.symbol_utils import (
+    convert_to_fst_object,
+    get_rankable_symbols,
+)
 from automata_docs.core.utils import root_py_fpath
 
 logger = logging.getLogger(__name__)
@@ -125,6 +128,7 @@ class PyContextRetriever:
                 for related_symbol in related_symbols:
                     if related_symbols_processed >= self.config.max_related_symbols_to_process:
                         break
+
                     # Check that the related symbol passes filter requirements
                     if not PyContextRetriever._pass_symbol_filter(symbol, related_symbol):
                         continue
@@ -144,6 +148,7 @@ class PyContextRetriever:
                 for dependency in filtered_dependencies:
                     if dependencies_processed >= self.config.max_dependencies_to_process:
                         break
+
                     # Check that the dependency passes filter requirements
                     if not PyContextRetriever._pass_symbol_filter(symbol, dependency):
                         continue

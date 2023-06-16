@@ -36,7 +36,7 @@ class SymbolRankConfig(BaseModel):
 class SymbolRank:
     """Computes the PageRank algorithm on symbols in a graph"""
 
-    def __init__(self, graph: nx.DiGraph, config: Optional[SymbolRankConfig] = None):
+    def __init__(self, graph: nx.DiGraph, config: SymbolRankConfig):
         """
         Args:
             graph (nx.DiGraph): A directed graph
