@@ -1,108 +1,79 @@
 SymbolDatabaseProvider
 ======================
 
-``SymbolDatabaseProvider`` is an abstract base class that provides a
-standard interface for different types of database providers used for
-storing and managing symbol embeddings.
+``SymbolDatabaseProvider`` is an abstract base class for database
+providers that handle symbol embedding storage and retrieval. The class
+defines a set of abstract methods for interacting with symbol
+embeddings, such as adding, updating, clearing, and retrieving
+embeddings from the database. Implementations of
+``SymbolDatabaseProvider`` can utilize different storage methods, such
+as in-memory storage, file storage, or using external storage services.
+Related symbols include
+``automata_docs.core.symbol.symbol_types.Symbol``,
+``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``,
+and ``automata_docs.core.database.vector.JSONVectorDatabase``.
 
 Overview
 --------
 
-A ``SymbolDatabaseProvider`` defines methods for adding, updating,
-getting, discarding, and checking the existence of symbol embeddings.
-Subclasses should implement these methods according to their specific
-database provider’s requirements.
+The ``SymbolDatabaseProvider`` serves as a generic interface for
+managing database operations related to symbol embeddings. It provides a
+standardized way to interact with different types of databases, which
+allows for customization and flexibility in how symbol embeddings are
+stored and retrieved. The abstract base class ensures that all database
+implementations adhere to a consistent API. Subclasses may implement
+different storage mechanisms, which can be optimized for specific
+requirements or situations, while users can still interact with the
+database in a consistent way.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.database.vector.JSONVectorDatabase``
+-  ``automata_docs.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolEmbeddingHandler``
 -  ``automata_docs.core.database.vector.VectorDatabaseProvider``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingsProvider``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata_docs.core.embedding.embedding_types.SymbolEmbeddingHandler``
 -  ``automata_docs.core.symbol.symbol_types.SymbolDescriptor``
-
-Methods
--------
-
-add(embedding: SymbolEmbedding)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The abstract method to add an embedding to the database.
-
-update(embedding: SymbolEmbedding)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The abstract method to update an existing embedding in the database.
-
-get(symbol: Symbol) -> Any
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The abstract method to get a specific embedding from the database.
-
-discard(symbol: Symbol)
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The abstract method to discard a specific embedding from the database.
-
-contains(symbol: Symbol) -> bool
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The abstract method to check if a specific embedding is present in the
-database.
-
-clear()
-~~~~~~~
-
-The abstract method to clear all embeddings from the database.
-
-load() -> Any
-~~~~~~~~~~~~~
-
-The abstract method to load data into the database provider.
-
-save()
-~~~~~~
-
-The abstract method to save data from the database provider.
 
 Example
 -------
 
+An example implementation of ``SymbolDatabaseProvider`` using a JSON
+file for storage:
+
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
    from automata_docs.core.database.provider import SymbolDatabaseProvider
-   from automata_docs.core.database.vector import JSONVectorDatabase
+   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
-   class CustomDatabaseProvider(SymbolDatabaseProvider):
-       def __init__(self):
-           self.embedding_db = JSONVectorDatabase("embeddings.json")
+   class JSONSymbolDatabase(SymbolDatabaseProvider):
 
-       def add(self, embedding: SymbolEmbedding):
-           self.embedding_db.add(embedding)
+       def __init__(self, file_path: str):
+           self.file_path = file_path
+           # Initialize an empty list for storing SymbolEmbedding objects, and an empty dictionary for indexing.
+           self.data = []
+           self.index = {}
 
-       # Implement other abstract methods according to specific requirements
+       # Implement abstract methods as necessary for the specific storage method (e.g., adding, updating, clearing)
 
 Limitations
 -----------
 
-As an abstract base class, ``SymbolDatabaseProvider`` cannot be directly
-instantiated. Subclasses must provide their own implementations of the
-abstract methods.
-
-Additionally, ``SymbolDatabaseProvider`` does not provide any specific
-functionality related to database management, such as transactions,
-caching, or query optimization. It only provides a standard interface to
-work with different types of symbol databases.
+Since ``SymbolDatabaseProvider`` is an abstract base class, it cannot be
+directly instantiated and requires the implementation of its abstract
+methods. Therefore, users need to subclass ``SymbolDatabaseProvider`` to
+provide their own database implementation with specific storage
+mechanisms. This allows for customization but might require users to
+have a deeper understanding of the underlying storage methods.
 
 Follow-up Questions:
 --------------------
 
--  Are there any default concrete implementations for the abstract
-   methods in ``SymbolDatabaseProvider``, or does each subclass have to
-   provide its own implementations?
+-  Are there any performance considerations or trade-offs when choosing
+   different storage methods for ``SymbolDatabaseProvider``
+   implementations?

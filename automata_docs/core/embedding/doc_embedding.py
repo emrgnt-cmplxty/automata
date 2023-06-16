@@ -1,20 +1,17 @@
 import logging
-import os
 from typing import List, Optional
 
 import openai
 from jinja2 import Template
 
-from automata_docs.config.config_enums import ConfigCategory
 from automata_docs.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
 from automata_docs.core.context.py_context.retriever import PyContextRetriever
-from automata_docs.core.database.vector import JSONVectorDatabase, VectorDatabaseProvider
+from automata_docs.core.database.vector import VectorDatabaseProvider
 from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
-from automata_docs.core.utils import config_fpath
 
-from .embedding_types import EmbeddingProvider, OpenAIEmbedding, SymbolEmbeddingHandler
+from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +21,16 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         self,
         embedding_db: VectorDatabaseProvider,
         embedding_provider: EmbeddingProvider,
-        code_embedding_fpath: Optional[str] = None,
+        code_embedding_handler: SymbolCodeEmbeddingHandler,
+        embedding_db_l2: Optional[VectorDatabaseProvider] = None,
     ):
         """
         A constructor for SymbolDocEmbeddingHandler
 
         Args:
             embedding_db (VectorDatabaseProvider): The database to store the embeddings in
-            embedding_provider (Optional[EmbeddingsProvider]): The provider to get the embeddings from
-            code_embedding_fpath (Optional[str]): The path to the code embedding file
+            embedding_provider (EmbeddingProvider): The provider to get the embeddings from
+            code_embedding_handler (SymbolCodeEmbeddingHandler): The code embedding handler
         """
         super().__init__(embedding_db, embedding_provider)
 
@@ -40,21 +38,14 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         from automata_docs.core.symbol.search.rank import SymbolRankConfig
         from automata_docs.core.symbol.search.symbol_search import SymbolSearch
 
-        if not code_embedding_fpath:
-            code_embedding_fpath = os.path.join(
-                config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
-            )
-
         graph = SymbolGraph()
         subgraph = graph.get_rankable_symbol_subgraph()
-
-        code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
-        code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, OpenAIEmbedding())
         symbol_similarity = SymbolSimilarity(code_embedding_handler)
         self.graph = graph
         self.symbol_search = SymbolSearch(
             graph, symbol_similarity, symbol_rank_config=SymbolRankConfig(), code_subgraph=subgraph
         )
+        self.embedding_db_l2 = embedding_db_l2
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
         """
@@ -90,7 +81,8 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             raise ValueError(f"Symbol {symbol} has no source code")
 
         if self.embedding_db.contains(symbol):
-            self.embedding_db.discard(symbol)
+            # self.embedding_db.discard(symbol)
+            return
 
         symbol_embedding = self.build_symbol_doc_embedding(source_code, symbol)
         self.embedding_db.add(symbol_embedding)
@@ -173,7 +165,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             elif search_results_1[i] not in set_list:
                 search_list.append(search_results_1[i][0])
 
-        retriever = PyContextRetriever(self.graph)
+        retriever = PyContextRetriever(self.graph, doc_embedding_db=self.embedding_db_l2)
         retriever.process_symbol(symbol, search_list)
 
         prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
@@ -185,6 +177,12 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         summary = get_summary(document)
         embedding = self.embedding_provider.build_embedding(document)
 
+        # print(f"Symbol Context = {retriever.get_context_buffer()}")
+        print("Symbol = ", symbol)
+        import tiktoken
+
+        encoding = tiktoken.encoding_for_model("gpt-4")
+        print("Len of context = ", len(encoding.encode(retriever.get_context_buffer())))
         return SymbolDocEmbedding(
             symbol,
             vector=embedding,

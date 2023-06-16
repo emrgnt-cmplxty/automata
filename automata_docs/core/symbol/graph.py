@@ -156,7 +156,9 @@ class _CallerCalleeManager:
             try:
                 references_in_scope = self.navigator._get_symbol_references_in_scope(symbol_object)
             except Exception as e:
-                print(f"Failed to get references in scope for symbol {symbol} with error {e}")
+                logger.error(
+                    f"Failed to get references in scope for symbol {symbol} with error {e}"
+                )
                 continue
 
             for ref in references_in_scope:
@@ -189,7 +191,7 @@ class _CallerCalleeManager:
                             label="callee",
                         )
                 except Exception as e:
-                    print(f"Failed to add caller-callee edge for {symbol} with error {e} ")
+                    logger.error(f"Failed to add caller-callee edge for {symbol} with error {e} ")
                     continue
 
 

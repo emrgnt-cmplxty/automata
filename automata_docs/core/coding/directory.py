@@ -1,5 +1,8 @@
+import logging
 import os
 from typing import Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 
 class Node:
@@ -170,7 +173,7 @@ class DirectoryManager:
             directory_path (str): Path of the directory to create
         """
         if not os.path.exists(directory_path):
-            print(f"Creating directory_path = {directory_path}")
+            logger.info(f"Creating directory_path = {directory_path}")
             os.makedirs(directory_path)
             self.root = self._load_directory_structure(directory_path)
 

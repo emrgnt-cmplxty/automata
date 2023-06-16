@@ -12,9 +12,11 @@ how to :ref:`installation` the project.
    :maxdepth: 1
 
    embedding_handler
+   embedding_provider
    embedding_similarity
    embeddings_provider
    norm_type
+   open_ai_embedding
    symbol_code_embedding_handler
    symbol_doc_embedding_handler
    symbol_embedding_handler

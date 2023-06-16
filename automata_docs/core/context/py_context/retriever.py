@@ -1,11 +1,13 @@
 import logging
 import os
 from contextlib import contextmanager
-from typing import List, Set
+from typing import List, Optional, Set
 
+import tiktoken
 from redbaron import RedBaron
 
 from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
+from automata_docs.core.database.vector import VectorDatabaseProvider
 from automata_docs.core.symbol.graph import SymbolGraph
 from automata_docs.core.symbol.symbol_types import Symbol
 from automata_docs.core.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
@@ -22,6 +24,8 @@ class PyContextRetrieverConfig:
         spacer: str = "  ",
         max_dependencies_to_process: int = 10,
         max_related_symbols_to_process: int = 10,
+        model_name: str = "gpt-4",
+        max_context: int = 6_500,
     ):
         """
         Args:
@@ -33,6 +37,8 @@ class PyContextRetrieverConfig:
         self.spacer = spacer
         self.max_dependencies_to_process = max_dependencies_to_process
         self.max_related_symbols_to_process = max_related_symbols_to_process
+        self.model_name = model_name
+        self.max_context = max_context
 
 
 class PyContextRetriever:
@@ -42,6 +48,7 @@ class PyContextRetriever:
         self,
         graph: SymbolGraph,
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
+        doc_embedding_db: Optional[VectorDatabaseProvider] = None,
     ):
         """
         Args:
@@ -51,6 +58,9 @@ class PyContextRetriever:
         self.graph = graph
         self.config = config
         self.indent_level = 0
+        self.doc_embedding_db = doc_embedding_db
+        self.encoding = tiktoken.encoding_for_model(self.config.model_name)
+
         self.reset()
 
     @contextmanager
@@ -104,7 +114,6 @@ class PyContextRetriever:
             ranked_symbols (List[Symbol]): The list ranked symbols to use
                 with the nearest symbol processor
         """
-        print("Calling process symbol on = ", symbol.dotpath)
         with self.IndentManager():
             self.process_headline(symbol)
             self.process_ast(symbol)
@@ -113,13 +122,15 @@ class PyContextRetriever:
                 related_symbols_processed = 0
                 self.process_message(f"Building context for related symbols -\n")
 
-                print("Processing related symbols...")
                 for related_symbol in related_symbols:
                     if related_symbols_processed >= self.config.max_related_symbols_to_process:
                         break
                     # Check that the related symbol passes filter requirements
                     if not PyContextRetriever._pass_symbol_filter(symbol, related_symbol):
                         continue
+
+                    if not self._below_context_limit():
+                        break
 
                     if related_symbol not in self.obs_symbols:
                         self.process_symbol(related_symbol)
@@ -130,13 +141,15 @@ class PyContextRetriever:
                 all_dependencies = list(self.graph.get_symbol_dependencies(symbol))
                 filtered_dependencies = get_rankable_symbols(all_dependencies)
 
-                print("Processing dependencies...")
                 for dependency in filtered_dependencies:
                     if dependencies_processed >= self.config.max_dependencies_to_process:
                         break
                     # Check that the dependency passes filter requirements
                     if not PyContextRetriever._pass_symbol_filter(symbol, dependency):
                         continue
+
+                    if not self._below_context_limit():
+                        break
 
                     if dependency not in self.obs_symbols:
                         try:
@@ -179,6 +192,8 @@ class PyContextRetriever:
             else:
                 if is_main_symbol:
                     self.process_imports(symbol)
+                self.process_documentation(symbol, is_main_symbol)
+
                 self.process_docstring(ast_object)
 
                 if len(methods) > 0:
@@ -229,6 +244,17 @@ class PyContextRetriever:
                 self.process_message(docstring)
                 self.process_message("")  # Add an empty line for separation
 
+    def process_documentation(self, symbol: Symbol, is_main_symbol: bool):
+        if self.doc_embedding_db is not None:
+            if self.doc_embedding_db.contains(symbol):
+                if is_main_symbol:
+                    document = self.doc_embedding_db.get(symbol).embedding_source
+                else:
+                    document = self.doc_embedding_db.get(symbol).summary
+                with self.IndentManager():
+                    self.process_message(document)
+                    self.process_message("")  # Add an empty line for separation
+
     def process_method(self, method: RedBaron, is_main_symbol: bool):
         """
         Processes a specified method
@@ -239,7 +265,6 @@ class PyContextRetriever:
         if PyContextRetriever._is_private_method(method):
             return
         with self.IndentManager():
-            print("method.name = ", method.name)
             if is_main_symbol:
                 for code_line in method.dumps().split("\n"):
                     self.process_message(code_line)
@@ -263,6 +288,15 @@ class PyContextRetriever:
 
         """
         return self.indent_level == 1
+
+    def _below_context_limit(self) -> bool:
+        """
+        Check if we are below the context limit
+
+        Returns:
+            bool: True if we are below the context limit, False otherwise
+        """
+        return len(self.encoding.encode(self.context)) < self.config.max_context
 
     @staticmethod
     def _is_private_method(ast_object: RedBaron) -> bool:

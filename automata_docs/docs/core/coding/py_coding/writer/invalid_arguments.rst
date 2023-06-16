@@ -1,60 +1,88 @@
 PyCodeWriter
 ============
 
-``PyCodeWriter`` is a class used to write Python code documentation. It
-provides various methods for creating, updating, and writing Python
-modules. The class initializes with a ``PyCodeRetriever`` instance,
-which is used to retrieve Python code.
-
-Overview
---------
-
-The ``PyCodeWriter`` class is responsible for generating documentation
-for Python modules using the context built from the provided symbol and
-related symbols. The class is designed to create, update, and write
-Python modules given their source code. It uses ``PyCodeRetriever`` to
-fetch code and performs operations based on the given code.
+``PyCodeWriter`` is a utility class responsible for writing Python code
+along with the Abstract Syntax Tree (AST) nodes. It interacts with a
+``PyCodeRetriever`` instance to write and update Python source code
+files. The class offers methods to create new Python modules, update
+existing modules with new code, and delete specific code from an
+existing module.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata_docs.tests.unit.test_py_writer.python_writer``
--  ``automata_docs.core.context.py_context.retriever_slim.PyContext``
--  ``automata_docs.tests.unit.test_py_writer.test_create_update_write_module``
--  ``automata_docs.tests.unit.test_py_writer.test_write_and_retrieve_mock_code``
--  ``automata_docs.core.coding.py_coding.writer.PyDocWriter``
+-  ``automata_docs.core.coding.directory.DirectoryManager``
+-  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+
+Import Statements
+-----------------
+
+.. code:: python
+
+   import logging
+   import os
+   import re
+   import subprocess
+   import numpy as np
+   import pypandoc
+   from typing import Dict, List, Optional, Union, cast
+   from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
+   from automata_docs.core.coding.directory import DirectoryManager
+   from automata_docs.core.coding.py_coding.navigation import (
+       find_all_function_and_class_syntax_tree_nodes,
+       find_import_syntax_tree_node_by_name,
+       find_import_syntax_tree_nodes,
+       find_syntax_tree_node,
+   )
+   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata_docs.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 Example
 -------
 
-Here is an example that shows how to create an instance of
-``PyCodeWriter``:
+The following example demonstrates how to use ``PyCodeWriter`` to
+create, update, and write to a Python module.
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.writer import PyCodeWriter
-   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata_docs.tests.unit.test_py_writer import python_writer, MockCodeGenerator
 
-   sample_dir = "/path/to/sample/modules"
-   module_map = LazyModuleTreeMap(sample_dir)
-   retriever = PyCodeRetriever(module_map)
-   python_writer = PyCodeWriter(retriever)
+   # Create a mock code generator
+   mock_generator = MockCodeGenerator(
+       has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
+   )
+   source_code = mock_generator.generate_code()
+
+   # Instantiate a PythonWriter with a PyCodeRetriever
+   py_writer = python_writer()
+
+   # Create a new Python module with the generated source code
+   py_writer.create_new_module("sample_module", source_code, do_write=True)
+
+   # Update the existing Python module with new source code
+   new_generator = MockCodeGenerator(
+       has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
+   )
+   new_source_code = new_generator.generate_code()
+   py_writer.update_existing_module(
+       source_code=new_source_code, module_dotpath="sample_module", do_write=True
+   )
 
 Limitations
 -----------
 
-The primary limitation of ``PyCodeWriter`` is that it relies on the
-structure of the code it is given. The class assumes that the provided
-code is well-structured and will raise errors when given incorrectly
-structured code. Additionally, when generating the documentation, the
-class does not consider custom code dependencies that may exist within
-the project.
+``PyCodeWriter`` relies on the directory structure provided by
+``DirectoryManager``. It cannot create or update Python source code
+files that are outside of the directory specified in the ``base_path``
+used to initialize ``DirectoryManager``. Additionally, ``PyCodeWriter``
+handles only Python source code files and cannot be used for other
+programming languages or file types.
 
 Follow-up Questions:
 --------------------
 
--  How can ``PyCodeWriter`` handle custom code dependencies?
--  How does ``PyCodeWriter`` handle malformed code while generating
-   documentation?
+-  What is the role of ``PyCodeWriter`` in writing documentation for
+   Python modules?
+-  How does ``PyCodeWriter`` handle different code styles or formatting?

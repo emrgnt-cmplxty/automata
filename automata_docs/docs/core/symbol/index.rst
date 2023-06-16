@@ -14,6 +14,7 @@ how to :ref:`installation` the project.
    graph/index
    search/index
    symbol_types/index
+   graph_builder
    symbol
    symbol_code_embedding
    symbol_descriptor

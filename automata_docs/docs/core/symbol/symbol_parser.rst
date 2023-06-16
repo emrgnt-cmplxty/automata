@@ -1,57 +1,57 @@
 SymbolParser
 ============
 
-``SymbolParser`` is a class that parses URIs into structured objects. It
-provides a way to translate the logic defined in the `Go
-implementation <https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/bindings/go/scip/symbol.go>`__
-for parsing URIs into Python.
+SymbolParser is a class that provides functionality to parse URIs into
+structured objects. This implementation is based on the logic defined in
+`sourcegraph’s scip
+repository <https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/bindings/go/scip/symbol.go>`__
+and is used to parse URIs into a structured ``Symbol`` object. Although
+this implementation is not in hard sync with the Go version, it’s good
+enough for now.
 
-Overview
---------
-
-``SymbolParser`` enables you to parse symbol URIs and extract
-identifiers, characters, and other parts of the URI into structured
-objects. The class provides methods for accepting escaped identifiers,
-space-escaped identifiers, identifier characters, and other components
-of a symbol URI.
+The SymbolParser class has methods for accepting and parsing various
+parts of the symbol string like identifiers, namespaces, characters, or
+descriptor suffixes.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
 -  ``automata_docs.core.symbol.parser.parse_symbol``
--  ``automata_docs.tests.unit.test_symbol_parser.test_parse_symbol``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.context.py_context.retriever_slim.PyContext``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolDocEmbeddingHandler.build_symbol_doc_embedding``
 -  ``automata_docs.core.symbol.symbol_types.SymbolDescriptor``
--  ``automata_docs.tests.unit.conftest.symbols``
+-  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata_docs.core.context.py_context.retriever.PyContextRetriever``
 
-Examples
---------
+Example
+-------
+
+The following example demonstrates how to use the ``parse_symbol``
+function to create a ``Symbol`` object from a symbol URI string.
 
 .. code:: python
 
-   from automata_docs.core.symbol.parser import SymbolParser
+   from automata_docs.core.symbol.parser import parse_symbol
 
-   symbol_uri = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
-   parser = SymbolParser(symbol_uri)
-   descriptors = parser.parse_descriptors()
+   symbol_class = parse_symbol(
+       "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
+   )
 
-   for descriptor in descriptors:
-       print(descriptor)
+   symbol_method = parse_symbol(
+       "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+   )
 
 Limitations
 -----------
 
-The primary limitation of the ``SymbolParser`` implementation is that
-it’s not in hard sync with the Go implementation. Therefore, it may not
-parse URIs the same way as the Go implementation in some cases.
+One of the limitations of the current implementation is that it’s not in
+hard sync with the Go version of the SymbolParser, which means that it
+may not be able to parse all the symbols that the Go version can.
 
 Follow-up Questions:
 --------------------
 
--  Are there any plans to synchronize the Python implementation with the
-   Go implementation for improved compatibility?
+-  Are there any plans to update this implementation to be in sync with
+   the Go version?
+-  What changes or improvements can be made to this implementation to
+   better handle parsing limitations?

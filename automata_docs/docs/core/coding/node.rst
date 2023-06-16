@@ -1,49 +1,56 @@
 Node
 ====
 
-``Node`` is an abstract base class for a node in the file tree within a
-directory structure. It provides a base structure for representing files
-and directories as nodes with name and parent node information.
+``Node`` is an abstract base class representing a node in a file tree.
+It is part of the larger file management infrastructure in the
+``automata_docs.core.coding.directory`` package. The class includes a
+``name`` to represent the name of the node and a ``parent`` to point to
+the parent node in the file tree hierarchy.
 
-Related Symbols
----------------
+Related Symbols:
+----------------
 
 -  ``automata_docs.core.coding.directory.File``
 -  ``automata_docs.core.coding.directory.Directory``
 
-Example
--------
+Usage Example:
+--------------
 
-The following is an example demonstrating how to create an instance of a
-``Directory`` object, which inherits from the ``Node`` class:
-
-.. code:: python
-
-   from automata_docs.core.coding.directory import Directory
-
-   directory = Directory(name="example_directory", parent=None)
-
-Similarly, you can create an instance of a ``File`` object:
+The ``Node`` class is not directly instantiated but is a superclass for
+``File`` and ``Directory`` classes. Here is an example of how to use the
+``File`` and ``Directory`` classes representing files and directories in
+the file tree:
 
 .. code:: python
 
-   from automata_docs.core.coding.directory import File
+   from automata_docs.core.coding.directory import File, Directory
 
-   file_node = File(name="example_file.txt", parent=directory)
+   # Create a root directory and some subdirectories
+   root = Directory("root")
+   subdir1 = Directory("subdir1", root)
+   subdir2 = Directory("subdir2", root)
 
-Limitations
------------
+   # Create some files in root directory
+   file1 = File("file1.txt", root)
+   file2 = File("file2.txt", root)
 
-The ``Node`` class does not provide any methods or functionality for
-working with the file system. It only serves as a data structure to
-represent directories and files within a larger tree structure.
+   # Create some files in subdirectories
+   subdir1_file1 = File("file1.txt", subdir1)
+   subdir1_file2 = File("file2.txt", subdir1)
+   subdir2_file1 = File("file1.txt", subdir2)
+
+   # Add files and subdirectories to root and subdirectories
+   root.add_child(subdir1)
+   root.add_child(subdir2)
+   root.add_child(file1)
+   root.add_child(file2)
+   subdir1.add_child(subdir1_file1)
+   subdir1.add_child(subdir1_file2)
+   subdir2.add_child(subdir2_file1)
 
 Follow-up Questions:
 --------------------
 
--  How can we modify the ``Node`` class to work more closely with the
-   file system, including reading and writing files?
-
-Note: In the provided context, there are references to ‘Mock’ objects
-used in test files. As these are testing-specific objects, their
-inclusion in the examples and discussion has been omitted.
+-  In the usage example, the file names are given manually. Is there an
+   automated mechanism to traverse directories and create ``File`` and
+   ``Directory`` objects?

@@ -12,7 +12,6 @@ from automata_docs.core.symbol.symbol_utils import get_rankable_symbols
 from automata_docs.core.utils import config_fpath
 
 logger = logging.getLogger(__name__)
-CHUNK_SIZE = 10
 
 
 def main(*args, **kwargs):
