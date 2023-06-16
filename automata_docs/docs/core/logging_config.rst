@@ -1,51 +1,73 @@
 LoggingConfig
 =============
 
-``LoggingConfig`` is a dictionary representing the logging configuration
-settings in the project. Its main purpose is to configure and manage log
-settings across various components of the application, such as version,
-formatters, handlers, and the root logger settings.
+``LoggingConfig`` is a dictionary class representing the logging
+configuration for the application. It helps set up logging
+configurations such as version, loggers, formatters, handlers, and root
+logger settings. The class is designed to comply with the ``TypedDict``
+type and allows optional error-checking on dictionary key-value types.
 
 Overview
 --------
 
-This class is a TypedDict subclass and provides type hints for the keys
-allowed in the dictionary. The keys include ``version``,
-``disable_existing_loggers``, ``formatters``, ``handlers``, and
-``root``. It works closely with related symbols such as ``HandlerDict``,
-``RootDict``, and ``get_logging_config``.
+``LoggingConfig`` provides the necessary structure for setting up
+logging configurations, which can be used by various logging utilities
+and handlers in the application. The class defines keys like
+``version``, ``disable_existing_loggers``, ``formatters``, ``handlers``,
+and ``root`` to configure the different aspects of logging.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.utils.HandlerDict``
+-  ``automata_docs.cli.commands.reconfigure_logging``
 -  ``automata_docs.core.utils.RootDict``
 -  ``automata_docs.core.utils.get_logging_config``
 
 Example
 -------
 
-Below is an example of how to create a ``LoggingConfig`` dictionary and
-configure logging settings using the ``reconfigure_logging`` command:
+The following is an example demonstrating how to create an instance of
+``LoggingConfig`` and set up a basic logging configuration.
 
 .. code:: python
 
-   from automata_docs.cli.commands.reconfigure_logging import reconfigure_logging
-   from automata_docs.core.utils import get_logging_config
+   from automata_docs.core.utils import LoggingConfig
 
-   logging_config = get_logging_config(log_level=logging.DEBUG, log_file='example.log')
-   reconfigure_logging(logging_config)
+   log_config: LoggingConfig = {
+       "version": 1,
+       "disable_existing_loggers": False,
+       "formatters": {
+           "simple": {
+               "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+           },
+       },
+       "handlers": {
+           "console": {
+               "class": "logging.StreamHandler",
+               "formatter": "simple",
+               "level": "DEBUG",
+           },
+       },
+       "root": {
+           "level": "DEBUG",
+           "handlers": ["console"],
+       },
+   }
 
 Limitations
 -----------
 
-``LoggingConfig`` is a dictionary and cannot provide additional
-functionality beyond storing and accessing keys and values. It relies on
-external functions and utilities like ``get_logging_config`` and
-``reconfigure_logging`` for configuring the logging settings.
+The primary limitation of ``LoggingConfig`` is that it only provides a
+structure for setting up logging configurations and does not include
+built-in utilities or methods to directly modify or manage the logging
+configurations. It relies on external utilities and handlers for
+configuring the application’s logging, as shown in the example above.
 
 Follow-up Questions:
 --------------------
 
--  How can additional keys and values be added to the ``LoggingConfig``
-   dictionary, and what are the implications on the logging settings?
+-  Are there any specific pre-configured logging configurations that
+   need to be documented?
+-  How can we demonstrate using ``LoggingConfig`` in a more advanced
+   logging configuration scenario?

@@ -1,65 +1,57 @@
 SymbolCodeEmbedding
 ===================
 
-``SymbolCodeEmbedding`` is a class for embedding symbol codes into a
-standardized format. It extends the ``SymbolEmbedding`` abstract base
-class and adds a ``source_code`` attribute to store the source code of
-the symbol.
+``SymbolCodeEmbedding`` is a class that represents code embeddings for a
+given symbol. It is an extension of the ``SymbolEmbedding`` base class
+and is primarily used to store and handle code embeddings of symbols in
+a given codebase.
 
 Overview
 --------
 
-``SymbolCodeEmbedding`` is designed for handling embeddings of symbol
-codes in a structured and maintainable way. It stores the symbol and its
-vector representation, along with the source code of the symbol. The
-class is used in conjunction with the ``SymbolCodeEmbeddingHandler``,
-which provides methods for getting and updating symbol embeddings.
+``SymbolCodeEmbedding`` is an extension of the ``SymbolEmbedding``
+abstract base class. It is a class used to store the code embeddings for
+a given symbol, along with the symbol object, the source code, and the
+embedding vector. It comes with an initializer method that takes the
+symbol object, source code, and a vector as arguments.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata_docs.core.symbol.scip_pb2.Descriptor as DescriptorProto``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``SymbolCodeEmbedding``:
+The following example demonstrates how to create an instance of
+``SymbolCodeEmbedding``.
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolCodeEmbedding, Symbol
+   from automata_docs.core.symbol.symbol_types import SymbolCodeEmbedding
    from automata_docs.core.symbol.parser import parse_symbol
    import numpy as np
 
-   symbol_str = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+   symbol_str = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
    symbol = parse_symbol(symbol_str)
-   vector = np.random.random((10,))
+   source_code = "def example_function():\n    pass"
+   vector = np.random.random((300,))
 
-   source_code = "def __init__(self, message: str, tool_name: str):\n   super().__init__(message)\n   self.tool_name = tool_name"
-
-   symbol_code_embedding = SymbolCodeEmbedding(symbol, vector, source_code)
+   embedding = SymbolCodeEmbedding(symbol, source_code, vector)
 
 Limitations
 -----------
 
-``SymbolCodeEmbedding`` relies on having a valid instance of the
-``Symbol`` class as well as a corresponding ``np.array`` for the vector
-representation. Additionally, it is limited to using the ``source_code``
-attribute to store the source code of the symbol, which may not be
-optimal for all use cases.
+``SymbolCodeEmbedding`` is primarily a container for symbol code
+embeddings, and it does not include functionality for generating or
+handling embeddings on its own. To generate and manage symbol code
+embeddings, the ``SymbolCodeEmbeddingHandler`` class should be used.
 
 Follow-up Questions:
 --------------------
 
--  Are there any potential use cases where the ``source_code`` attribute
-   might be insufficient or not suitable for storing the source code of
-   a symbol?
-
--  In the current implementation, how might one handle cases where a
-   symbol’s source code changes over time? Would it require updating the
-   ``SymbolCodeEmbedding`` instance, or is there a more optimal way to
-   handle this?
+-  Can we implement a method in ``SymbolCodeEmbedding`` to generate the
+   code embeddings for the given source code?

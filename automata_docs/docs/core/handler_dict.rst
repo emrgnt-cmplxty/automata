@@ -1,59 +1,62 @@
 HandlerDict
 ===========
 
-``HandlerDict`` is a dictionary representing a logging handler. This
-class is mainly used in the ``LoggingConfig`` configuration dictionary
-to handle the logging handlers.
+``HandlerDict`` is a dictionary class, representing a logging handler in
+the context of logging configuration. This class is used together with
+other related symbols in different parts of the library to manage and
+configure logging settings.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.utils.RootDict``
 -  ``automata_docs.core.utils.LoggingConfig``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.OKjJY``
+-  ``automata_docs.tests.unit.sample_modules.sample_module_2.fhFSO``
+-  ``automata_docs.tests.unit.sample_modules.sample_module_2.ObNMl``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.KavpK``
--  ``automata_docs.tests.unit.sample_modules.sample.EmptyClass``
+-  ``automata_docs.tests.unit.sample_modules.sample_module_2.EmptyClass``
+-  ``automata_docs.core.coding.py_coding.writer.PyCodeWriter.ModuleNotFound``
 -  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 
 Example
 -------
 
-The following example demonstrates the use of ``HandlerDict`` in the
-context of ``LoggingConfig``.
+The following is an example demonstrating how to create an instance of
+``HandlerDict`` and use it within the context of creating a
+``LoggingConfig`` object.
 
 .. code:: python
 
-   from typing import Union
    from automata_docs.core.utils import HandlerDict, LoggingConfig, RootDict
 
-   logging_handler = HandlerDict(level="DEBUG", formatter="simple")
+   handler_dict = HandlerDict({"level": "WARNING", "class": "logging.StreamHandler", "formatter": "simple"})
 
-   logging_config: LoggingConfig = {
-       "version": 1,
-       "disable_existing_loggers": False,
-       "formatters": {
+   logging_config = LoggingConfig(
+       version=1,
+       disable_existing_loggers=False,
+       formatters={
            "simple": {
-               "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-           },
+               "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+           }
        },
-       "handlers": {"console": logging_handler},
-       "root": RootDict(level="INFO", handlers=["console"]),
-   }
-
-This example shows how to create a ``HandlerDict`` object and add it to
-a ``LoggingConfig`` dictionary specifying the configuration for the
-logging system.
+       handlers={
+           "console": handler_dict
+       },
+       root=RootDict({"level": "DEBUG", "handlers": ["console"]})
+   )
 
 Limitations
 -----------
 
-``HandlerDict`` is primarily used in the context of ``LoggingConfig``.
-It is not meant to be used as a standalone dictionary for other
-purposes.
+``HandlerDict`` itself is a utility class with limited functionality and
+its primary purpose is to serve as a structured representation for
+logging handlers. It is highly dependent on the context it is used in,
+meaning it may not provide much value when used in isolation.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  Are there other use cases for ``HandlerDict`` outside of
-   ``LoggingConfig``?
+-  Is there any specific functionality or methods that should be added
+   to the ``HandlerDict`` class for better flexibility and usage?
+-  Are there any other potential use cases in which ``HandlerDict``
+   might be beneficial?

@@ -1,60 +1,51 @@
 NormType
 ========
 
-``NormType`` is an enumeration in the
-``automata_docs.core.embedding.embedding_types`` module. It represents
-different norm types that can be used for normalizing embeddings and
-calculating similarity between embeddings. ``NormType`` values are used
-as parameters for methods in related classes like ``SymbolSimilarity``
-to specify which norm to use.
+``NormType`` is an enumeration class representing the different
+normalization techniques available for use while calculating similarity
+in a ``SymbolSimilarity`` object. It offers three options, L1, L2, and
+softmax for normalization, which can be utilized by the
+``SymbolSimilarity`` class while computing similarities between symbols
+in a related codebase.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.database.vector.VectorDatabaseProvider``
-
-Overview
---------
-
-``NormType`` enumeration includes the following members:
-
--  ``NormType.L1``: Use L1 norm (also known as Manhattan distance) for
-   normalization.
--  ``NormType.L2``: Use L2 norm (also known as Euclidean distance) for
-   normalization.
--  ``NormType.SOFTMAX``: Use softmax normalization.
-
-These norm types determine how to normalize embeddings and calculate the
-similarity between them for subsequent processing and comparisons.
 
 Example
 -------
 
-The following example demonstrates how to use ``NormType`` to initialize
-a ``SymbolSimilarity`` instance.
+The following example demonstrates how to create a ``SymbolSimilarity``
+instance using a custom ``NormType``.
 
 .. code:: python
 
    from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
    from automata_docs.core.embedding.embedding_types import NormType
-   from automata_docs.core.embedding.symbol_code_embedding_handler import SymbolCodeEmbeddingHandler
+   from automata_docs.core.embedding.manager.code_embedding_manager import SymbolCodeEmbeddingHandler
 
    symbol_embedding_manager = SymbolCodeEmbeddingHandler()
-   norm_type = NormType.L2
-   symbol_similarity = SymbolSimilarity(symbol_embedding_manager, norm_type=norm_type)
+   custom_norm_type = NormType.L1
+
+   symbol_similarity = SymbolSimilarity(symbol_embedding_manager, custom_norm_type)
 
 Limitations
 -----------
 
-``NormType`` is specific to the ``automata_docs`` package and may not be
-applicable or recognized in other contexts. Additionally, it only
-supports three norm types (L1, L2, and softmax). Any other norm types or
-custom normalization techniques would need to be implemented separately.
+One potential limitation of using different normalization techniques
+within ``SymbolSimilarity`` is the possibility of differences in the
+interpretation of similarity results. While some techniques like L2
+(Euclidean) are more commonly used and understood, others like L1 or
+softmax might be less familiar. Additionally, the choice of
+normalization technique can impact the efficiency of the similarity
+calculation algorithm.
 
 Follow-up Questions:
 --------------------
 
--  Are there plans to expand ``NormType`` with additional normalization
-   options?
+-  Are there other normalization techniques that could be added to the
+   ``NormType`` class?
+-  How do different normalization techniques impact the performance and
+   interpretation of similarity calculations?

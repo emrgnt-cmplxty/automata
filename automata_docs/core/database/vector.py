@@ -102,6 +102,8 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         index = self.index[symbol.dotpath]
         del self.data[index]
         del self.index[symbol.dotpath]
+        # Recalculate indices after deletion
+        self.index = {embedding.symbol.dotpath: i for i, embedding in enumerate(self.data)}
 
     def contains(self, symbol: Symbol) -> bool:
         """

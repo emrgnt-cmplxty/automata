@@ -1,64 +1,68 @@
 DirectoryManager
 ================
 
-``DirectoryManager`` is a class that handles operations related to
-directory structure. It provides functionalities to work with
-directories, such as loading directory structure, creating directories,
-listing files and subdirectories within the given path. The class has
-methods such as ``ensure_directory_exists``, ``get_files_in_dir``, and
-``get_subdirectories``.
+``DirectoryManager`` is a utility class that handles operations related
+to directory structures. It provides methods to create directories, get
+the list of files in a given directory, and get the list of
+subdirectories in a given directory.
 
 Overview
 --------
 
-``DirectoryManager`` is initialized with a ``base_path`` representing
-the base directory structure. It provides functionalities to ensure that
-a directory exists by creating it if necessary, get a list of files and
-subdirectories in the given directory path. The class utilizes related
-symbols like ``Directory``, ``Node``, and other helper
-functions/methods.
+``DirectoryManager`` is initialized with a base path of the directory
+structure, which is then used in various methods to perform operations
+on directories and their contents. To create a directory manager
+instance:
+
+.. code:: python
+
+   from automata_docs.core.coding.directory import DirectoryManager
+   dm = DirectoryManager("/path/to/base/directory")
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.coding.directory.Directory``
+-  ``automata_docs.core.coding.directory.File``
 -  ``automata_docs.core.coding.directory.Node``
--  ``automata_docs.tests.unit.test_directory_manager.create_test_dir_structure``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``DirectoryManager`` and use its methods to interact with the directory
-structure.
+The following examples demonstrate how to use ``DirectoryManager`` to
+create a directory and retrieve the list of files and subdirectories in
+a given directory.
 
 .. code:: python
 
    from automata_docs.core.coding.directory import DirectoryManager
 
+   # Creating a new directory
    base_path = "/path/to/base/directory"
-   dir_manager = DirectoryManager(base_path)
+   dm = DirectoryManager(base_path)
+   dm.ensure_directory_exists("new_directory")
 
-   # Ensure a directory exists
-   dir_manager.ensure_directory_exists("/path/to/target/directory")
-
-   # Get files in a directory
-   files = dir_manager.get_files_in_dir("/path/to/directory")
-   print(files)  # ["file1.txt", "file2.txt"]
-
-   # Get subdirectories in a directory
-   subdirectories = dir_manager.get_subdirectories("/path/to/directory")
-   print(subdirectories)  # ["subdir1", "subdir2"]
+   # Retrieving the list of files and subdirectories in a given directory
+   files = dm.get_files_in_dir("new_directory")
+   subdirs = dm.get_subdirectories("new_directory")
+   print("Files:", files)
+   print("Subdirectories:", subdirs)
 
 Limitations
 -----------
 
-``DirectoryManager`` assumes a fixed directory structure and relies on
-the provided base path for working with the directory. It does not
-provide extensive error handling or advanced functionalities.
+``DirectoryManager`` has some limitations:
+
+-  It assumes a specific directory structure based on the base path
+   provided during initialization.
+-  It does not provide any error handling for incorrect or inaccessible
+   paths. If the path is incorrect or not accessible, the functions may
+   fail with unclear error messages.
 
 Follow-up Questions:
 --------------------
 
--  Are there any specific error handling or validations that should be
-   added to the methods in ``DirectoryManager``?
+-  Are there any additional methods that would be useful for a
+   DirectoryManager class?
+-  How can error handling be improved to provide clearer error messages
+   when dealing with incorrect or inaccessible paths?

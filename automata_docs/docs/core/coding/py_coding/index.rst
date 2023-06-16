@@ -14,6 +14,8 @@ how to :ref:`installation` the project.
    writer/index
    dot_path_map
    lazy_module_tree_map
+   py_code_retriever
+   py_code_writer
    py_doc_writer
 
 

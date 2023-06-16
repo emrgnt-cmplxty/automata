@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, Mock
 
 from automata_docs.core.database.vector import JSONVectorDatabase
-from automata_docs.core.embedding.symbol_embedding import (
+from automata_docs.core.embedding.code_embedding import (
     EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
 )
@@ -128,9 +128,7 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]
     cem.embedding_db.get = lambda x: cem.embedding_db.data[0]
 
-    print("embedding_db.data = ", cem.embedding_db.data)
     cem.update_embedding(mock_simple_method_symbols[0])
-    print("embedding_db.data = ", cem.embedding_db.data)
     embedding = cem.embedding_db.data[0].vector
     assert len(cem.embedding_db.data) == 1  # Expect empty embedding map because of exception
     assert embedding == [1, 2, 3, 4]

@@ -1,82 +1,69 @@
 VectorDatabaseProvider
 ======================
 
-``VectorDatabaseProvider`` is an abstract base class for different types
-of vector database providers which allows you to efficiently calculate
-similarity between a given symbol embedding and all other embeddings
-stored in the database, as well as retrieve all available symbols stored
-in the database.
+``VectorDatabaseProvider`` is an abstract base class for implementing
+different types of vector database providers. Its main purpose is to
+provide the basic structure for a vector storage system, allowing
+developers to easily customize and implement their own solutions.
 
-Overview
---------
-
-The main purpose of ``VectorDatabaseProvider`` is to define the
-interface for interacting with different types of vector databases. It
-provides two main abstract methods, ``calculate_similarity``, which
-calculates the similarity between the given vector and vectors in the
-database, and ``get_all_symbols``, which returns all the symbols stored
-in the database.
-
-``VectorDatabaseProvider`` is usually subclassed to create concrete
-implementations for specific vector database types, such as
-JSONVectorDatabase, which is a concrete implementation that uses a JSON
-file to store and load the vector database.
-
-Related symbols and classes include Symbol, SymbolEmbedding, and
-JSONVectorDatabase.
+Subclasses must implement the abstract methods
+``calculate_similarity()`` and ``get_all_symbols()`` to work correctly.
+``calculate_similarity()`` computes the similarity between a provided
+vector and all vectors stored in the database, returning a list of
+dictionaries containing each symbol and its similarity score.
+``get_all_symbols()`` retrieves a list of all symbols stored in the
+database.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.database.vector.JSONVectorDatabase``
+-  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata_docs.core.database.provider.SymbolDatabaseProvider``
+-  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``JSONVectorDatabase`` (a specific subclass of
-``VectorDatabaseProvider``) and use its methods to manage a vector
-database.
+The following example demonstrates a basic implementation of the
+``VectorDatabaseProvider`` class.
 
 .. code:: python
 
-   from automata_docs.core.database.vector import JSONVectorDatabase
-   from automata_docs.core.symbol.symbol_types import Symbol
-   import numpy as np
+   class MyVectorDatabase(VectorDatabaseProvider):
 
-   # Initialize a JSONVectorDatabase with a path to a JSON file
-   file_path = "vector_database.json"
-   vector_db = JSONVectorDatabase(file_path)
+       def __init__(self):
+           self.data: List[SymbolEmbedding] = []
+           self.index: Dict[str, int] = {}
 
-   # Add a new symbol embedding to the database
-   symbol = Symbol.from_string("example.symbol")
-   vector = np.random.randn(300)
-   embedding = SymbolEmbedding(symbol, vector)
-   vector_db.add(embedding)
+       def calculate_similarity(self, embedding: SymbolEmbedding) -> List[Dict[Symbol, float]]:
+           similarities = []
+           for stored_embedding in self.data:
+               similarity = compute_cosine_similarity(embedding.vector, stored_embedding.vector)
+               similarities.append({stored_embedding.symbol: similarity})
+           return similarities
 
-   # Calculate the similarity between a new vector and the database vectors
-   query_vector = np.random.randn(300)
-   similarity_results = vector_db.calculate_similarity(query_vector)
+       def get_all_symbols(self) -> List[Symbol]:
+           return [embedding.symbol for embedding in self.data]
 
-   # Retrieve all symbols in the database
-   all_symbols = vector_db.get_all_symbols()
+   # Usage
+   my_vector_db = MyVectorDatabase()
 
 Limitations
 -----------
 
-The primary limitation of ``VectorDatabaseProvider`` is that it is an
-abstract base class and must be subclassed for specific vector database
-implementations. Additionally, while it provides the method signatures
-for calculating similarity and retrieving all symbols, the actual
-implementation details and performance depend upon the underlying vector
-database implementation.
+Since ``VectorDatabaseProvider`` is an abstract base class, it cannot be
+used directly. Instead, developers must create a subclass that
+implements the required abstract methods. Furthermore, this base class
+does not provide any built-in functionality for adding, updating, or
+removing symbols and their embeddings. Implementers must handle these
+operations in their own subclasses.
 
 Follow-up Questions:
 --------------------
 
--  How can we implement the ``VectorDatabaseProvider`` with different
-   storage backends like databases and cloud storages?
--  What is the performance comparison between different vector database
-   implementations, and how can it be improved?
+-  Are there any pre-built subclasses or examples of using
+   ``VectorDatabaseProvider`` in a real project?
+-  What are some other examples of vector databases, and how could they
+   be implemented using this base class?

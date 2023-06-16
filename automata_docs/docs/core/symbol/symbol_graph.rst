@@ -1,81 +1,71 @@
 SymbolGraph
 ===========
 
-``SymbolGraph`` is a class that represents a directed graph of symbols
-and their relationships. It is designed to provide an efficient way to
-access and navigate the relationships between symbols in a given
-codebase. The class provides methods to get information about symbols
-such as their dependencies, callers, and related symbols.
-``SymbolGraph`` comes with a navigator, which handles graph navigation
-and symbol lookup.
+The ``SymbolGraph`` class represents the symbol graph that captures the
+relationships between symbols found in various source code files. The
+symbol graph can be built from an index protobuf file, making it the
+central class for working with symbols and their relationships. Some of
+the primary methods in ``SymbolGraph`` include
+``get_all_available_symbols``, ``get_all_files``,
+``get_potential_symbol_callees``, ``get_potential_symbol_callers``,
+``get_references_to_symbol``, ``get_symbol_dependencies``, and
+``get_symbol_relationships``.
 
 Overview
 --------
 
-``SymbolGraph`` is initialized with the path of an index protobuf file
-and optionally whether to build caller-callee relationships. Once
-initialized, the graph can be queried for symbols, files, and
-relationships between symbols. Furthermore, a rankable subgraph can be
-generated based on the symbol graph, which can be useful for ranking
-symbols by importance and relevance.
+``SymbolGraph`` uses NetworkX’s MultiDiGraph to represent the
+relationships between symbols as a directed graph. It includes methods
+to query for callers, callees, and references to a symbol, as well as
+obtaining all available symbols and files in the graph. The graph can be
+filtered to subgraphs containing only rankable symbols. Getting
+reachable objects in the symbol subgraph requires using the navigator
+interface, \_SymbolGraphNavigator.
 
 Related Symbols
 ---------------
 
 -  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.tests.unit.test_symbol_graph.test_get_all_symbols``
--  ``automata_docs.core.symbol.search.tests.conftest.symbol_graph_mock``
--  ``automata_docs.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
 -  ``automata_docs.core.symbol.graph.GraphBuilder``
--  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
--  ``config.config_enums.ConfigCategory``
+-  ``automata_docs.core.symbol.graph._SymbolGraphNavigator``
+-  ``automata_docs.core.symbol.search.SymbolSearch``
 
 Example
 -------
 
-The following is an example of how to instantiate a ``SymbolGraph`` and
-use its methods to access information about symbols.
+The following example demonstrates how to create an instance of
+``SymbolGraph`` using an index protobuf file.
 
 .. code:: python
 
-   import os
    from automata_docs.core.symbol.graph import SymbolGraph
 
-   file_dir = os.path.dirname(os.path.abspath(__file__))
-   index_path = os.path.join(file_dir, "index.scip")
+   # Assuming the path to a valid index protobuf file, you should replace it with your own file path
+   index_path = "path/to/index.scip"
    symbol_graph = SymbolGraph(index_path)
-
-   # Get all available symbols in the graph
-   symbols = symbol_graph.get_all_available_symbols()
-
-   # Get all file nodes in the graph
-   files = symbol_graph.get_all_files()
-
-   # Get callers and callees of a specific symbol
-   symbol = symbols[0]
-   callers = symbol_graph.get_potential_symbol_callers(symbol)
-   callees = symbol_graph.get_potential_symbol_callees(symbol)
+   all_symbols = symbol_graph.get_all_available_symbols()
 
 Limitations
 -----------
 
-``SymbolGraph`` assumes that the input index protobuf file is properly
-formatted and contains the necessary information to build the graph. If
-the protobuf file is improperly formatted or missing data, the resulting
-graph may not accurately represent the codebase and its relationships.
-
-Additionally, some methods like ``get_potential_symbol_callers()`` and
-``get_potential_symbol_callees()`` require downstream filtering to
-remove non-call statements, which can be a performance concern for large
-graphs. There might be more efficient ways to achieve this filtering
-that have not been implemented yet.
+SymbolGraph can only be built from an index protobuf file. In addition,
+the method ``get_potential_symbol_callers`` returns potential callers,
+but this list requires downstream filtering to remove non-call
+statements.
 
 Follow-up Questions:
 --------------------
 
--  Is there any performance optimization planned for methods that
-   require downstream filtering such as
-   ``get_potential_symbol_callers()`` and
-   ``get_potential_symbol_callees()``?
--  Are there any plans to support custom index protobuf file formats, or
-   is it assumed that users are only working with the default format?
+-  How to better handle edge cases in the symbol graph building process?
+-  How to make ``get_potential_symbol_callers`` more efficient with
+   fewer potential callers?
+
+Footnotes
+---------
+
+In the context provided, some information was referring to ‘mock’
+objects which are used for testing purposes. In the final documentation,
+it is recommended to replace mocked objects with actual underlying
+objects whenever possible. A list of some of the imported modules and
+methods is provided for reference, which may be useful in illustrating
+certain aspects of the SymbolGraph class.

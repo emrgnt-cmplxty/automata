@@ -1,51 +1,46 @@
 Symbol
 ======
 
-``Symbol`` is similar to a URI and identifies a class, method, or a
-local variable. It has the ability to interact with rich metadata about
-symbols such as the docstring. Symbol has a standardized string
-representation, which is the following:
-``<symbol> ::= <scheme> ' ' <package> ' ' (<descriptor>)+ | 'local ' <local-id>``.
-The class is part of the ``automata_docs.core.symbol.symbol_types``
-module and the import statement is as follows:
-
-.. code:: python
-
-   from automata_docs.core.symbol.symbol_types import Symbol
+``Symbol`` is a class that identifies a class, method, or local variable
+in a package. It works similarly to a URI and includes rich metadata
+such as the docstring. It has a standardized string representation that
+can be used interchangeably with Symbol. The syntax and examples of
+Symbol can be found below.
 
 Overview
 --------
 
-``Symbol`` allows parsing and transforming of Symbol string
-representations and provides information about the symbol. It supports
-comparison, hashing, and string conversion. Moreover, it provides
-utility methods such as ``dotpath``, ``module_name``, ``parent``, and
-others to facilitate symbol examination and manipulation.
+``Symbol`` identifies a class, method, or local variable and includes
+rich metadata. It has a standardized string representation that can be
+used interchangeably with Symbol. ``Symbol`` instances can be created
+from string representations and can be compared with one another. Each
+``Symbol`` instance comes with utility methods for parsing, creating,
+and querying symbolic data. Related symbols include those within
+embedding, graph, and parser modules.
 
 Related Symbols
 ---------------
 
+-  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.embedding.symbol_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata_docs.tests.unit.test_symbol_parser.test_parse_symbol``
 -  ``automata_docs.core.symbol.parser.parse_symbol``
+-  ``automata_docs.core.database.vector.JSONVectorDatabase``
 -  ``automata_docs.tests.unit.test_database_vector.test_delete_symbol``
 -  ``automata_docs.tests.unit.test_database_vector.test_lookup_symbol``
 -  ``automata_docs.tests.unit.test_symbol_parser.test_is_local_symbol``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
 -  ``automata_docs.tests.unit.test_symbol_graph.test_get_all_symbols``
--  ``automata_docs.tests.unit.test_database_vector.test_add_symbol``
+-  ``automata_docs.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
 
 Example
 -------
 
-The following examples demonstrate how to create ``Symbol`` instances
-using a class and a method.
+The following examples demonstrate how to create an instance of
+``Symbol`` using the ``parse_symbol`` function.
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import Symbol
-   from automata_docs.core.symbol.parser import parse_symbol
+   from automata_docs.core.symbol.search.symbol_parser import parse_symbol
 
    symbol_class = parse_symbol(
        "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
@@ -58,15 +53,12 @@ using a class and a method.
 Limitations
 -----------
 
-The primary limitation of ``Symbol`` is that it mostly relies on its
-string representation for parsing and transformation. As a result, any
-changes or updates to the string representation may have undesired
-effects on the behavior of the ``Symbol`` instances.
+``Symbol`` assumes specific syntax when parsing string representations,
+and it can only handle specific symbol types. It does not support custom
+symbol types or variations in syntax.
 
 Follow-up Questions:
 --------------------
 
--  How can we handle non-standard string representations when working
-   with Symbol?
--  How can we avoid potential issues caused by updates to the string
-   representation of Symbol?
+-  How can we extend Symbol to support custom symbol types and
+   variations in syntax?
