@@ -21,11 +21,11 @@ determining the similarity between query texts and symbols.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingSimilarity``
--  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.embedding.embedding_types.NormType``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.embedding.embedding_types.EmbeddingSimilarity``
+-  ``automata.core.symbol.search.symbol_search.SymbolSearch``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.embedding.embedding_types.NormType``
 
 Example
 -------
@@ -36,9 +36,9 @@ The following example demonstrates how to create an instance of
 .. code:: python
 
    import numpy as np
-   from automata_docs.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-   from automata_docs.core.embedding.embedding_types import EmbeddingProvider, NormType
-   from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+   from automata.core.embedding.embedding_types import EmbeddingProvider, NormType
+   from automata.core.embedding.symbol_similarity import SymbolSimilarity
 
    # Instance of a SymbolCodeEmbeddingHandler
    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_provider=embedding_provider)

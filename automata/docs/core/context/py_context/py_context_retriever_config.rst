@@ -17,12 +17,12 @@ context information of symbols in a Python project. The
 Related Symbols
 ---------------
 
--  ``automata_docs.core.context.py_context.retriever.PyContextRetriever``
--  ``automata_docs.tests.unit.test_py_code_retriever.getter``
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata_docs.tests.unit.test_py_writer.python_writer``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.coding.py_coding.writer.PyCodeWriter``
+-  ``automata.core.context.py_context.retriever.PyContextRetriever``
+-  ``automata.tests.unit.test_py_code_retriever.getter``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.tests.unit.test_py_writer.python_writer``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 
 Example
 -------
@@ -32,7 +32,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.context.py_context.retriever import PyContextRetrieverConfig
+   from automata.core.context.py_context.retriever import PyContextRetrieverConfig
 
    config = PyContextRetrieverConfig(
        spacer="    ",  # Custom spacer with 4 spaces instead of the default 2 spaces

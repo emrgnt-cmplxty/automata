@@ -20,11 +20,11 @@ their location and use in the codebase.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.parser.parse_symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolDescriptor``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.symbol_types.SymbolDescriptor``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
 -------
@@ -34,8 +34,8 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolReference
-   from automata_docs.core.symbol.parser import parse_symbol
+   from automata.core.symbol.symbol_types import SymbolReference
+   from automata.core.symbol.parser import parse_symbol
 
    symbol_uri = "example_uri"
    line_number = 10

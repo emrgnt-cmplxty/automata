@@ -20,10 +20,10 @@ dotpath into the map.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
 -------
@@ -32,7 +32,7 @@ Here’s an example of utilizing ``DotPathMap``:
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.module_tree import DotPathMap
+   from automata.core.coding.py_coding.module_tree import DotPathMap
 
    # Set the path to the root of the Python project
    path_to_project_root = "/path/to/python/project"

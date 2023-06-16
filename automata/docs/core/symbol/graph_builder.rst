@@ -21,10 +21,10 @@ set to ``True``.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolFile``
--  ``automata_docs.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolFile``
+-  ``automata.core.symbol.parser.parse_symbol``
 
 Example
 -------
@@ -34,8 +34,8 @@ instance and build a graph from an ``Index`` object.
 
 .. code:: python
 
-   from automata_docs.core.symbol.graph import GraphBuilder
-   from automata_docs.core.symbol.scip_pb2 import Index
+   from automata.core.symbol.graph import GraphBuilder
+   from automata.core.symbol.scip_pb2 import Index
 
    index = Index()  # Assuming a populated index object.
    build_caller_relationships = True  # Optional

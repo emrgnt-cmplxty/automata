@@ -38,10 +38,10 @@ The following example demonstrates how to create an instance of
 .. code:: python
 
    import numpy as np
-   from automata_docs.core.symbol.symbol_types import Symbol
-   from automata_docs.core.symbol.symbol_types import SymbolDocEmbedding
+   from automata.core.symbol.symbol_types import Symbol
+   from automata.core.symbol.symbol_types import SymbolDocEmbedding
 
-   symbol_str = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
+   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#"
    symbol = Symbol.from_string(symbol_str)
 
    document = "This is a sample document"

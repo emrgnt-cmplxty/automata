@@ -24,13 +24,13 @@ The main functionality provided by ``PyCodeWriter`` includes:
 Related Symbols
 ---------------
 
--  ``automata_docs.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.tests.unit.test_py_writer.python_writer``
--  ``automata_docs.core.coding.py_coding.writer.PyDocWriter``
--  ``automata_docs.core.context.py_context.retriever.PyContextRetriever``
--  ``automata_docs.tests.unit.test_py_code_retriever.getter``
+-  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.tests.unit.test_py_writer.python_writer``
+-  ``automata.core.coding.py_coding.writer.PyDocWriter``
+-  ``automata.core.context.py_context.retriever.PyContextRetriever``
+-  ``automata.tests.unit.test_py_code_retriever.getter``
 
 Example
 -------
@@ -41,8 +41,8 @@ disk.
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata_docs.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.coding.py_coding.writer import PyCodeWriter
 
    # Initialize the PyCodeWriter with a PyCodeRetriever instance
    retriever = PyCodeRetriever()

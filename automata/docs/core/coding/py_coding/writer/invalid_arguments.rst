@@ -11,10 +11,10 @@ existing module.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.coding.directory.DirectoryManager``
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.coding.directory.DirectoryManager``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 
 Import Statements
 -----------------
@@ -29,15 +29,15 @@ Import Statements
    import pypandoc
    from typing import Dict, List, Optional, Union, cast
    from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
-   from automata_docs.core.coding.directory import DirectoryManager
-   from automata_docs.core.coding.py_coding.navigation import (
+   from automata.core.coding.directory import DirectoryManager
+   from automata.core.coding.py_coding.navigation import (
        find_all_function_and_class_syntax_tree_nodes,
        find_import_syntax_tree_node_by_name,
        find_import_syntax_tree_nodes,
        find_syntax_tree_node,
    )
-   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata_docs.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 Example
 -------
@@ -47,7 +47,7 @@ create, update, and write to a Python module.
 
 .. code:: python
 
-   from automata_docs.tests.unit.test_py_writer import python_writer, MockCodeGenerator
+   from automata.tests.unit.test_py_writer import python_writer, MockCodeGenerator
 
    # Create a mock code generator
    mock_generator = MockCodeGenerator(

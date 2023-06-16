@@ -20,11 +20,11 @@ ranges.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.search.rank.SymbolRank``
--  ``automata_docs.tests.unit.test_symbol_rank.test_get_ranks``
--  ``automata_docs.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
--  ``automata_docs.tests.unit.test_symbol_rank.test_prepare_initial_ranks``
--  ``automata_docs.tests.unit.test_symbol_rank.test_pagerank_config_validation``
+-  ``automata.core.symbol.search.rank.SymbolRank``
+-  ``automata.tests.unit.test_symbol_rank.test_get_ranks``
+-  ``automata.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
+-  ``automata.tests.unit.test_symbol_rank.test_prepare_initial_ranks``
+-  ``automata.tests.unit.test_symbol_rank.test_pagerank_config_validation``
 
 Example
 -------
@@ -34,7 +34,7 @@ The following example demonstrates how to create a custom
 
 .. code:: python
 
-   from automata_docs.core.symbol.search.rank import SymbolRankConfig
+   from automata.core.symbol.search.rank import SymbolRankConfig
 
    custom_config = SymbolRankConfig(alpha=0.5, max_iterations=100, tolerance=1.0e-5)
    custom_config.validate(custom_config)

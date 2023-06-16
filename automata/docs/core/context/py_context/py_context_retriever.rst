@@ -21,17 +21,17 @@ the context and stores it in the local message buffer.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_utils.convert_to_fst_object``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata_docs.core.context.py_context.retriever import PyContextRetriever
-   from automata_docs.core.symbol.graph import SymbolGraph
+   from automata.core.context.py_context.retriever import PyContextRetriever
+   from automata.core.symbol.graph import SymbolGraph
 
    graph = SymbolGraph()
    py_context_retriever = PyContextRetriever(graph)

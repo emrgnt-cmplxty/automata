@@ -17,11 +17,11 @@ database.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.database.provider.SymbolDatabaseProvider``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.database.provider.SymbolDatabaseProvider``
+-  ``automata.core.embedding.embedding_types.EmbeddingProvider``
 
 Example
 -------

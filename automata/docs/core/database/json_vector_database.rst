@@ -11,9 +11,9 @@ and retrieving all symbols present in the database.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.database.provider.SymbolDatabaseProvider``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.database.provider.SymbolDatabaseProvider``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
 -  ``numpy``
 
 Example
@@ -25,18 +25,18 @@ from it, and save the database to a JSON file.
 
 .. code:: python
 
-   from automata_docs.core.database.vector import JSONVectorDatabase
-   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
+   from automata.core.database.vector import JSONVectorDatabase
+   from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
    import numpy as np
 
    # Initialize the JSONVectorDatabase
    vector_db = JSONVectorDatabase("example_vector_db.json")
 
    # Create SymbolEmbeddings
-   symbol_1 = Symbol.from_string("scip-python python automata_docs example_symbol_1#")
+   symbol_1 = Symbol.from_string("scip-python python automata example_symbol_1#")
    embedding_1 = SymbolEmbedding(symbol_1, "embedding_source", np.array([1, 2, 3]))
 
-   symbol_2 = Symbol.from_string("scip-python python automata_docs example_symbol_2#")
+   symbol_2 = Symbol.from_string("scip-python python automata example_symbol_2#")
    embedding_2 = SymbolEmbedding(symbol_2, "embedding_source", np.array([4, 5, 6]))
 
    # Add SymbolEmbeddings to the database

@@ -18,10 +18,10 @@ symbol object, source code, and a vector as arguments.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.symbol.scip_pb2.Descriptor as DescriptorProto``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.scip_pb2.Descriptor as DescriptorProto``
 
 Example
 -------
@@ -31,11 +31,11 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolCodeEmbedding
-   from automata_docs.core.symbol.parser import parse_symbol
+   from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+   from automata.core.symbol.parser import parse_symbol
    import numpy as np
 
-   symbol_str = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
+   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#"
    symbol = parse_symbol(symbol_str)
    source_code = "def example_function():\n    pass"
    vector = np.random.random((300,))

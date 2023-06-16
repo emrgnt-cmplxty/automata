@@ -17,10 +17,10 @@ generated documentation.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.coding.directory.DirectoryManager``
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.coding.directory.DirectoryManager``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 
 Example
 -------
@@ -30,7 +30,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.writer import PyDocWriter
+   from automata.core.coding.py_coding.writer import PyDocWriter
 
    base_path = "path/to/project"
    docs_dir = "path/to/output/docs"

@@ -25,10 +25,10 @@ interface, \_SymbolGraphNavigator.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.graph.GraphBuilder``
--  ``automata_docs.core.symbol.graph._SymbolGraphNavigator``
--  ``automata_docs.core.symbol.search.SymbolSearch``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.graph.GraphBuilder``
+-  ``automata.core.symbol.graph._SymbolGraphNavigator``
+-  ``automata.core.symbol.search.SymbolSearch``
 
 Example
 -------
@@ -38,7 +38,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.symbol.graph import SymbolGraph
+   from automata.core.symbol.graph import SymbolGraph
 
    # Assuming the path to a valid index protobuf file, you should replace it with your own file path
    index_path = "path/to/index.scip"

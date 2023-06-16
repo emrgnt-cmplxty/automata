@@ -9,14 +9,14 @@ configure logging settings.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.utils.RootDict``
--  ``automata_docs.core.utils.LoggingConfig``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.fhFSO``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.ObNMl``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.EmptyClass``
--  ``automata_docs.core.coding.py_coding.writer.PyCodeWriter.ModuleNotFound``
--  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
+-  ``automata.core.utils.RootDict``
+-  ``automata.core.utils.LoggingConfig``
+-  ``automata.tests.unit.sample_modules.sample_module_2.fhFSO``
+-  ``automata.tests.unit.sample_modules.sample_module_2.ObNMl``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.tests.unit.sample_modules.sample_module_2.EmptyClass``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter.ModuleNotFound``
+-  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 
 Example
 -------
@@ -27,7 +27,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.utils import HandlerDict, LoggingConfig, RootDict
+   from automata.core.utils import HandlerDict, LoggingConfig, RootDict
 
    handler_dict = HandlerDict({"level": "WARNING", "class": "logging.StreamHandler", "formatter": "simple"})
 

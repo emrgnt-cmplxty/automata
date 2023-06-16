@@ -40,15 +40,15 @@ How to build the documentation (refreshing is not yet fully formed)
 ```bash
 
 # Update the code embeddings
-automata-docs run-code-embedding
+automata run-code-embedding
 
 # "L1" docs are the docstrings written into the code
 
 # Build and embed the L2 docs
-automata-docs run-doc-embedding-l2
+automata run-doc-embedding-l2
 
 # Build and embed the L3 docs
-automata-docs run-doc-embedding-l3
+automata run-doc-embedding-l3
 ```
 
 ### Indexing (Optional)
@@ -63,10 +63,10 @@ source local_env/bin/activate
 npm install @sourcegraph/scip-python
 
 # Generate the local index
-scip-python index . index  --project-name automata_docs --output index.scip
+scip-python index . index  --project-name automata --output index.scip
 
 # Copy into the default index location
-mv index.scip automata_docs/config/symbol/index.scip
+mv index.scip automata/config/symbol/index.scip
 ```
 
 Note, this command may result in a buffer overflow error that requires a manual code modification to fix.

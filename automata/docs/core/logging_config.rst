@@ -19,10 +19,10 @@ and ``root`` to configure the different aspects of logging.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.utils.HandlerDict``
--  ``automata_docs.cli.commands.reconfigure_logging``
--  ``automata_docs.core.utils.RootDict``
--  ``automata_docs.core.utils.get_logging_config``
+-  ``automata.core.utils.HandlerDict``
+-  ``automata.cli.commands.reconfigure_logging``
+-  ``automata.core.utils.RootDict``
+-  ``automata.core.utils.get_logging_config``
 
 Example
 -------
@@ -32,7 +32,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.utils import LoggingConfig
+   from automata.core.utils import LoggingConfig
 
    log_config: LoggingConfig = {
        "version": 1,

@@ -2,10 +2,10 @@
 requires = ["setuptools", "wheel"]
 
 [tool.poetry.scripts]
-automata_docs = 'automata_docs.cli.__main__:cli'
+automata = 'automata.cli.__main__:cli'
 
 [tool.poetry]
-name = "automata_docs"
+name = "automata"
 version = "0.1.0"
 description = "An automata for building docs."
 authors = ["owen@emergentagi.com"]

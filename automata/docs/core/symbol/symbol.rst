@@ -21,16 +21,16 @@ embedding, graph, and parser modules.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.tests.unit.test_symbol_parser.test_parse_symbol``
--  ``automata_docs.core.symbol.parser.parse_symbol``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.tests.unit.test_database_vector.test_delete_symbol``
--  ``automata_docs.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata_docs.tests.unit.test_symbol_parser.test_is_local_symbol``
--  ``automata_docs.tests.unit.test_symbol_graph.test_get_all_symbols``
--  ``automata_docs.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_database_vector.test_delete_symbol``
+-  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
+-  ``automata.tests.unit.test_symbol_parser.test_is_local_symbol``
+-  ``automata.tests.unit.test_symbol_graph.test_get_all_symbols``
+-  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
 
 Example
 -------
@@ -40,14 +40,14 @@ The following examples demonstrate how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.symbol.search.symbol_parser import parse_symbol
+   from automata.core.symbol.search.symbol_parser import parse_symbol
 
    symbol_class = parse_symbol(
-       "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.agent.automata_agent_enums`/ActionIndicator#"
+       "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#"
    )
 
    symbol_method = parse_symbol(
-       "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+       "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__()."
    )
 
 Limitations

@@ -14,13 +14,13 @@ types of similarity calculations and embedding providers.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.database.vector.VectorDatabaseProvider.calculate_similarity``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.database.vector.VectorDatabaseProvider.calculate_similarity``
+-  ``automata.core.embedding.embedding_types.EmbeddingProvider``
 
 Example
 -------
@@ -31,7 +31,7 @@ of ``EmbeddingSimilarity``:
 .. code:: python
 
    import numpy as np
-   from automata_docs.core.embedding.embedding_types import EmbeddingSimilarity
+   from automata.core.embedding.embedding_types import EmbeddingSimilarity
 
    class CustomEmbeddingSimilarity(EmbeddingSimilarity):
        

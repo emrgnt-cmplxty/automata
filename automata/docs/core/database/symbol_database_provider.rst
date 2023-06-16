@@ -9,9 +9,9 @@ embeddings from the database. Implementations of
 ``SymbolDatabaseProvider`` can utilize different storage methods, such
 as in-memory storage, file storage, or using external storage services.
 Related symbols include
-``automata_docs.core.symbol.symbol_types.Symbol``,
-``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``,
-and ``automata_docs.core.database.vector.JSONVectorDatabase``.
+``automata.core.symbol.symbol_types.Symbol``,
+``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``,
+and ``automata.core.database.vector.JSONVectorDatabase``.
 
 Overview
 --------
@@ -29,16 +29,16 @@ database in a consistent way.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.database.vector.VectorDatabaseProvider``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.embedding.embedding_types.SymbolEmbeddingHandler``
--  ``automata_docs.core.symbol.symbol_types.SymbolDescriptor``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.database.vector.VectorDatabaseProvider``
+-  ``automata.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
+-  ``automata.core.symbol.symbol_types.SymbolDescriptor``
 
 Example
 -------
@@ -48,8 +48,8 @@ file for storage:
 
 .. code:: python
 
-   from automata_docs.core.database.provider import SymbolDatabaseProvider
-   from automata_docs.core.symbol.symbol_types import Symbol, SymbolEmbedding
+   from automata.core.database.provider import SymbolDatabaseProvider
+   from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
    class JSONSymbolDatabase(SymbolDatabaseProvider):
 

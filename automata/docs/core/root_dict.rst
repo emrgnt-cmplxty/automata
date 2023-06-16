@@ -11,21 +11,21 @@ Overview
 ``TypedDict`` base class. It provides a type-safe way to store the root
 logger information, which includes logging level, handlers, and others.
 The primary purpose of the ``RootDict`` class is to be used in
-conjunction with the ``automata_docs.core.utils.LoggingConfig`` class
+conjunction with the ``automata.core.utils.LoggingConfig`` class
 and other related symbols for configuring logging settings in an
 application.
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.utils.LoggingConfig``
--  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.utils.HandlerDict``
--  ``automata_docs.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata_docs.core.coding.py_coding.module_tree.DotPathMap``
--  ``automata_docs.tests.unit.test_py_code_retriever.module_map``
--  ``automata_docs.core.coding.directory.DirectoryManager``
+-  ``automata.core.utils.LoggingConfig``
+-  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.utils.HandlerDict``
+-  ``automata.tests.unit.sample_modules.sample.EmptyClass``
+-  ``automata.core.coding.py_coding.module_tree.DotPathMap``
+-  ``automata.tests.unit.test_py_code_retriever.module_map``
+-  ``automata.core.coding.directory.DirectoryManager``
 
 Example
 -------
@@ -35,7 +35,7 @@ to store root logger information.
 
 .. code:: python
 
-   from automata_docs.core.utils import RootDict
+   from automata.core.utils import RootDict
 
    root_dict: RootDict = {
        "level": "INFO",

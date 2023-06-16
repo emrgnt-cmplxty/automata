@@ -16,15 +16,15 @@ instance:
 
 .. code:: python
 
-   from automata_docs.core.coding.directory import DirectoryManager
+   from automata.core.coding.directory import DirectoryManager
    dm = DirectoryManager("/path/to/base/directory")
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.coding.directory.Directory``
--  ``automata_docs.core.coding.directory.File``
--  ``automata_docs.core.coding.directory.Node``
+-  ``automata.core.coding.directory.Directory``
+-  ``automata.core.coding.directory.File``
+-  ``automata.core.coding.directory.Node``
 
 Example
 -------
@@ -35,7 +35,7 @@ a given directory.
 
 .. code:: python
 
-   from automata_docs.core.coding.directory import DirectoryManager
+   from automata.core.coding.directory import DirectoryManager
 
    # Creating a new directory
    base_path = "/path/to/base/directory"

@@ -12,11 +12,11 @@ Python projects.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.context.py_context.retriever.PyContextRetriever``
--  ``automata_docs.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata_docs.tests.unit.test_py_code_retriever.getter``
--  ``automata_docs.core.coding.py_coding.navigation.find_syntax_tree_node``
--  ``automata_docs.tests.unit.test_py_writer.python_writer``
+-  ``automata.core.context.py_context.retriever.PyContextRetriever``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter``
+-  ``automata.tests.unit.test_py_code_retriever.getter``
+-  ``automata.core.coding.py_coding.navigation.find_syntax_tree_node``
+-  ``automata.tests.unit.test_py_writer.python_writer``
 
 Example
 -------
@@ -26,8 +26,8 @@ retrieve the source code of a function from a specified module.
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
 
    module_tree_map = LazyModuleTreeMap.cached_default()
    code_retriever = PyCodeRetriever(module_tree_map)
