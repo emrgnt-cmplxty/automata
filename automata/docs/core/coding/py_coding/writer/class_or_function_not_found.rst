@@ -21,7 +21,7 @@ Related Symbols
 ---------------
 
 -  ``PyCodeRetriever``
--  ``automata_docs.tests.unit.test_py_writer.MockCodeGenerator``
+-  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
 
 Example
 -------
@@ -31,9 +31,9 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata_docs.core.coding.py_coding.writer import PyCodeWriter
-   from automata_docs.core.coding.directory import DirectoryManager
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.coding.directory import DirectoryManager
 
    python_retriever = PyCodeRetriever(DirectoryManager().module_tree_map)
    code_writer = PyCodeWriter(python_retriever)

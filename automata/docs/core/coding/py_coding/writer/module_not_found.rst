@@ -21,10 +21,10 @@ is useful for code introspection and source-to-source transformations.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata_docs.core.coding.directory.DirectoryManager``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.coding.directory.DirectoryManager``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 
 Example
 -------
@@ -34,8 +34,8 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata_docs.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.coding.py_coding.writer import PyCodeWriter
 
    python_retriever = PyCodeRetriever()  # create a PyCodeRetriever instance
    code_writer = PyCodeWriter(python_retriever)  # initialize PyCodeWriter with the PyCodeRetriever instance

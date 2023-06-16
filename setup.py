@@ -7,7 +7,7 @@ def read_requirements():
 
 
 setup(
-    name="automata-docs",
+    name="automata",
     version="0.1.0",
     packages=find_packages(),
     install_requires=read_requirements(),
@@ -15,7 +15,7 @@ setup(
         "console_scripts": [
             # If you want to create command-line executables, you can define them here.
             # e.g.: 'my-command=your_project_name.framework.main:main',
-            "automata-docs=automata.cli.__main__:cli",
+            "automata=automata.cli.__main__:cli",
         ],
     },
     python_requires=">=3.9",  # Adjust this to your desired minimum Python version

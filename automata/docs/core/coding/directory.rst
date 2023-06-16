@@ -29,22 +29,22 @@ Import Statements
 Related Symbols
 ---------------
 
--  ``automata_docs.tests.unit.test_directory_manager.test_load_directory_structure``
--  ``automata_docs.tests.unit.test_directory_manager.test_get_files_in_dir``
--  ``automata_docs.tests.unit.test_directory_manager.test_get_subdirectories``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.tests.unit.test_directory_manager.test_get_node_for_path``
--  ``automata_docs.core.coding.directory.File``
--  ``automata_docs.tests.unit.sample_modules.sample.OuterClass``
--  ``automata_docs.core.coding.py_coding.module_tree.LazyModuleTreeMap``
+-  ``automata.tests.unit.test_directory_manager.test_load_directory_structure``
+-  ``automata.tests.unit.test_directory_manager.test_get_files_in_dir``
+-  ``automata.tests.unit.test_directory_manager.test_get_subdirectories``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_directory_manager.test_get_node_for_path``
+-  ``automata.core.coding.directory.File``
+-  ``automata.tests.unit.sample_modules.sample.OuterClass``
+-  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 
 Examples
 --------
 
 .. code:: python
 
-   from automata_docs.core.coding.directory import Directory
+   from automata.core.coding.directory import Directory
 
    # Create a sample root directory
    root_dir = Directory(name="root")

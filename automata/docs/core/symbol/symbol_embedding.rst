@@ -12,14 +12,14 @@ and the vector representing the embedding in the feature space.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
--  ``automata_docs.core.symbol.symbol_types.SymbolCodeEmbedding``
--  ``automata_docs.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
--  ``automata_docs.core.embedding.embedding_types.SymbolEmbeddingHandler``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.symbol.symbol_types.SymbolCodeEmbedding``
+-  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
+-  ``automata.core.database.vector.JSONVectorDatabase``
 
 Example
 -------
@@ -29,11 +29,11 @@ derived class ``SymbolCodeEmbedding``:
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolCodeEmbedding
-   from automata_docs.core.symbol.parser import parse_symbol
+   from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+   from automata.core.symbol.parser import parse_symbol
    import numpy as np
 
-   symbol_str = "scip-python python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065 `automata_docs.core.base.tool`/ToolNotFoundError#__init__()."
+   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__()."
    symbol = parse_symbol(symbol_str)
    source_code = "def __init__(self, message): pass"
    vector = np.array([0.1, 0.2, 0.3])

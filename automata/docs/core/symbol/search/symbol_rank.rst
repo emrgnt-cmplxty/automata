@@ -20,11 +20,11 @@ generation.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.search.symbol_search.SymbolSearch``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
 -------
@@ -36,7 +36,7 @@ graph.
 .. code:: python
 
    import networkx as nx
-   from automata_docs.core.symbol.search.rank import SymbolRank
+   from automata.core.symbol.search.rank import SymbolRank
 
    # Create a simple directed graph
    G = nx.DiGraph()

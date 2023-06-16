@@ -11,8 +11,8 @@ in a related codebase.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol.symbol_types.Symbol``
 
 Example
 -------
@@ -22,9 +22,9 @@ instance using a custom ``NormType``.
 
 .. code:: python
 
-   from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-   from automata_docs.core.embedding.embedding_types import NormType
-   from automata_docs.core.embedding.manager.code_embedding_manager import SymbolCodeEmbeddingHandler
+   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.embedding.embedding_types import NormType
+   from automata.core.embedding.manager.code_embedding_manager import SymbolCodeEmbeddingHandler
 
    symbol_embedding_manager = SymbolCodeEmbeddingHandler()
    custom_norm_type = NormType.L1

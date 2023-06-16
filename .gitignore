@@ -2,7 +2,7 @@
 .env
 notebooks/
 # Local Cruft
-automata_docs.egg-info/
+automata.egg-info/
 **/**/.DS_Store
 local_env/*
 __pycache__/

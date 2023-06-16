@@ -12,13 +12,13 @@ represent the object as a URI string.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.parser.SymbolParser.parse_descriptor``
--  ``automata_docs.core.symbol.parser.SymbolParser.parse_descriptors``
--  ``automata_docs.core.symbol.parser.parse_symbol``
--  ``automata_docs.core.symbol.symbol_types.Symbol.dotpath``
--  ``automata_docs.core.symbol.symbol_types.Symbol.is_local``
--  ``automata_docs.core.symbol.symbol_types.Symbol.is_meta``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.parser.SymbolParser.parse_descriptor``
+-  ``automata.core.symbol.parser.SymbolParser.parse_descriptors``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.symbol_types.Symbol.dotpath``
+-  ``automata.core.symbol.symbol_types.Symbol.is_local``
+-  ``automata.core.symbol.symbol_types.Symbol.is_meta``
 
 Example
 -------
@@ -29,8 +29,8 @@ disambiguator.
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolDescriptor
-   from automata_docs.core.symbol.scip_pb2 import Descriptor as DescriptorProto
+   from automata.core.symbol.symbol_types import SymbolDescriptor
+   from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
    name = "example_descriptor"
    suffix = DescriptorProto.Type

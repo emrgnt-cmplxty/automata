@@ -16,8 +16,8 @@ package.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.parser.parse_symbol``
 
 Example
 -------
@@ -27,15 +27,15 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolPackage
+   from automata.core.symbol.symbol_types import SymbolPackage
 
-   example_package = SymbolPackage(manager="python", name="automata_docs", version="75482692a6fe30c72db516201a6f47d9fb4af065")
-   print(repr(example_package))  # Output: Package(python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065)
+   example_package = SymbolPackage(manager="python", name="automata", version="75482692a6fe30c72db516201a6f47d9fb4af065")
+   print(repr(example_package))  # Output: Package(python automata 75482692a6fe30c72db516201a6f47d9fb4af065)
 
 .. code:: python
 
    unparsed_package = example_package.unparse()
-   print(unparsed_package)  # Output: python automata_docs 75482692a6fe30c72db516201a6f47d9fb4af065
+   print(unparsed_package)  # Output: python automata 75482692a6fe30c72db516201a6f47d9fb4af065
 
 Limitations
 -----------

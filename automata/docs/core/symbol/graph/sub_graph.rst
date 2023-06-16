@@ -18,8 +18,8 @@ it closely to the ``SymbolGraph`` class and related methods.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.graph.SymbolGraph.get_rankable_symbol_subgraph``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.graph.SymbolGraph.get_rankable_symbol_subgraph``
 -  ``networkx.DiGraph``
 
 Example
@@ -30,7 +30,7 @@ The following is an example demonstrating how to obtain and use a
 
 .. code:: python
 
-   from automata_docs.core.symbol.graph import SymbolGraph
+   from automata.core.symbol.graph import SymbolGraph
 
    # assuming the path to a valid index protobuf file
    index_path = "path/to/index.scip"

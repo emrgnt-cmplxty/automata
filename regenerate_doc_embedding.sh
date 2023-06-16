@@ -4,7 +4,7 @@
 # python -m automata.cli.scripts.run_docs_l1 --top_n_symbols=100 --update_docs 
 
 ## Run this command to constract a map of class symbols to documentation
-python -m automata_docs.cli.scripts.run_docs_l2 --top_n_symbols=2 --update_docs 
+python -m automata.cli.scripts.run_docs_l2 --top_n_symbols=2 --update_docs 
 
 ## Run this command to aggregate documentation into directory structure
 # doc_gen = PythonDocumentWriter(relative_dir)

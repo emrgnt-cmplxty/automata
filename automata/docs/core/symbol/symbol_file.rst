@@ -9,9 +9,9 @@ represent files containing symbols.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.symbol_types.SymbolReference``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.SymbolReference``
 
 Example
 -------
@@ -22,7 +22,7 @@ another instance.
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolFile
+   from automata.core.symbol.symbol_types import SymbolFile
 
    file_1 = SymbolFile("path/to/symbol/file")
    file_2 = SymbolFile("path/to/symbol/file")

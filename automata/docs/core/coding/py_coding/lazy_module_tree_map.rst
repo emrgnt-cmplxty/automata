@@ -14,10 +14,10 @@ dotpaths.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.coding.py_coding.retriever.PyCodeRetriever.__init__``
--  ``automata_docs.tests.unit.test_py_code_retriever.module_map``
--  ``automata_docs.tests.unit.test_py_code_retriever.getter``
--  ``automata_docs.core.symbol.symbol_utils.convert_to_fst_object``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever.__init__``
+-  ``automata.tests.unit.test_py_code_retriever.module_map``
+-  ``automata.tests.unit.test_py_code_retriever.getter``
+-  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
 
 Example
 -------
@@ -27,14 +27,14 @@ The following example demonstrates how to create and use a
 
 .. code:: python
 
-   from automata_docs.core.coding.py_coding.module_tree import LazyModuleTreeMap
-   from automata_docs.core.utils import root_fpath
+   from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+   from automata.core.utils import root_fpath
 
    path_to_root = root_fpath()
    module_tree_map = LazyModuleTreeMap(path_to_root)
 
    # Fetch an existing module by its dotpath
-   module_dotpath = "automata_docs.core.agent.automata_agent"
+   module_dotpath = "automata.core.agent.automata_agent"
    module = module_tree_map.fetch_module(module_dotpath)
 
    # Check if a module with the given dotpath exists

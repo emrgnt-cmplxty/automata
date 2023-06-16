@@ -3,15 +3,15 @@ Node
 
 ``Node`` is an abstract base class representing a node in a file tree.
 It is part of the larger file management infrastructure in the
-``automata_docs.core.coding.directory`` package. The class includes a
+``automata.core.coding.directory`` package. The class includes a
 ``name`` to represent the name of the node and a ``parent`` to point to
 the parent node in the file tree hierarchy.
 
 Related Symbols:
 ----------------
 
--  ``automata_docs.core.coding.directory.File``
--  ``automata_docs.core.coding.directory.Directory``
+-  ``automata.core.coding.directory.File``
+-  ``automata.core.coding.directory.Directory``
 
 Usage Example:
 --------------
@@ -23,7 +23,7 @@ the file tree:
 
 .. code:: python
 
-   from automata_docs.core.coding.directory import File, Directory
+   from automata.core.coding.directory import File, Directory
 
    # Create a root directory and some subdirectories
    root = Directory("root")

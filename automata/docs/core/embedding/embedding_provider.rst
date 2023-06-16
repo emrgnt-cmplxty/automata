@@ -12,14 +12,14 @@ provide the specific embedding implementation.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata_docs.core.embedding.embedding_types.SymbolEmbeddingHandler``
--  ``automata_docs.core.embedding.embedding_types.OpenAIEmbedding``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata_docs.core.symbol.symbol_types.SymbolDocEmbedding``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
+-  ``automata.core.embedding.embedding_types.OpenAIEmbedding``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.symbol.symbol_types.Symbol``
 
 Example
 -------
@@ -29,7 +29,7 @@ which is a concrete implementation of ``EmbeddingProvider``.
 
 .. code:: python
 
-   from automata_docs.core.embedding.embedding_types import OpenAIEmbedding
+   from automata.core.embedding.embedding_types import OpenAIEmbedding
    import numpy as np
 
    symbol_source = "This is an example of a Python function."

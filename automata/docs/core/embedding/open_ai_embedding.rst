@@ -22,16 +22,16 @@ Import Statements
 
    import numpy as np
    import openai
-   from automata_docs.core.embedding.embedding_types import EmbeddingProvider
+   from automata.core.embedding.embedding_types import EmbeddingProvider
    from config import OPENAI_API_KEY
    from openai.embeddings_utils import get_embedding
 
 Related Symbols
 ---------------
 
--  ``automata_docs.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata_docs.core.embedding.embedding_types.EmbeddingProvider``
--  ``automata_docs.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
 -  ``config.OPENAI_API_KEY``
 
 Example
@@ -42,7 +42,7 @@ build embeddings for a symbol source.
 
 .. code:: python
 
-   from automata_docs.core.embedding.embedding_types import OpenAIEmbedding
+   from automata.core.embedding.embedding_types import OpenAIEmbedding
 
    # Initialize OpenAIEmbedding instance
    embedding_provider = OpenAIEmbedding()

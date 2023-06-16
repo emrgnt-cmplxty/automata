@@ -26,12 +26,12 @@ query.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.core.symbol.parser.parse_symbol``
--  ``automata_docs.core.symbol.symbol_utils.convert_to_fst_object``
--  ``automata_docs.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata_docs.core.symbol.search.rank.SymbolRank``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
+-  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol.search.rank.SymbolRank``
 
 Example
 -------
@@ -41,9 +41,9 @@ process a query and retrieve the search results.
 
 .. code:: python
 
-   from automata_docs.core.symbol.graph import SymbolGraph
-   from automata_docs.core.embedding.symbol_similarity import SymbolSimilarity
-   from automata_docs.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.symbol.graph import SymbolGraph
+   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol.search.symbol_search import SymbolSearch
 
    # Initialize necessary objects
    symbol_graph = SymbolGraph()

@@ -3,7 +3,7 @@ SymbolDescriptor
 
 ``SymbolDescriptor`` is a class that wraps the descriptor component of
 the URI into a Python object. It serves as a building block for creating
-and parsing symbols within the ``automata_docs.core.symbol`` framework.
+and parsing symbols within the ``automata.core.symbol`` framework.
 Additionally, it provides methods for working with descriptor
 components, such as converting descriptor suffixes and unparsing
 descriptor objects.
@@ -11,11 +11,11 @@ descriptor objects.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.core.symbol.parser.SymbolParser``
--  ``automata_docs.core.symbol.parser.parse_symbol``
--  ``automata_docs.core.symbol.symbol_types.SymbolReference``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.parser.SymbolParser``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.symbol_types.SymbolReference``
+-  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
 -------
@@ -25,8 +25,8 @@ instance:
 
 .. code:: python
 
-   from automata_docs.core.symbol.symbol_types import SymbolDescriptor
-   from automata_docs.core.symbol.scip_pb2 import Descriptor as DescriptorProto
+   from automata.core.symbol.symbol_types import SymbolDescriptor
+   from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
    descriptor = SymbolDescriptor(
        name="ActionIndicator",
@@ -55,7 +55,7 @@ Limitations
 -----------
 
 ``SymbolDescriptor`` is closely tied to the
-``automata_docs.core.symbol`` framework and assumes a specific syntax
+``automata.core.symbol`` framework and assumes a specific syntax
 and representation for descriptor components. If the underlying
 descriptor format or parser implementation changes, updates to
 ``SymbolDescriptor`` may be necessary.
@@ -64,4 +64,4 @@ Follow-up Questions:
 --------------------
 
 -  How does the ``SymbolDescriptor`` interact with other parts of the
-   ``automata_docs.core.symbol`` framework?
+   ``automata.core.symbol`` framework?

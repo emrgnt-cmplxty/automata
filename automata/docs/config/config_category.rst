@@ -9,15 +9,15 @@ configurations.
 Related Symbols
 ---------------
 
--  ``automata_docs.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata_docs.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata_docs.cli.commands.cli``
--  ``automata_docs.core.context.py_context.retriever.PyContextRetrieverConfig``
--  ``automata_docs.tests.unit.test_py_writer.MockCodeGenerator.generate_code``
--  ``automata_docs.tests.unit.test_py_code_retriever.test_build_overview``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.ObNMl``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.ObNMl.method``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
+-  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
+-  ``automata.tests.unit.sample_modules.sample.EmptyClass``
+-  ``automata.cli.commands.cli``
+-  ``automata.core.context.py_context.retriever.PyContextRetrieverConfig``
+-  ``automata.tests.unit.test_py_writer.MockCodeGenerator.generate_code``
+-  ``automata.tests.unit.test_py_code_retriever.test_build_overview``
+-  ``automata.tests.unit.sample_modules.sample_module_2.ObNMl``
+-  ``automata.tests.unit.sample_modules.sample_module_2.ObNMl.method``
+-  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
 -------
@@ -26,7 +26,7 @@ Here’s an example of how to use the ``ConfigCategory`` enumeration:
 
 .. code:: python
 
-   from automata_docs.config.config_enums import ConfigCategory
+   from automata.config.config_enums import ConfigCategory
 
    config_name = ConfigCategory.PROMPT
    print(config_name.value)

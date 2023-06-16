@@ -15,15 +15,15 @@ a directory.
 Related Symbols
 ---------------
 
--  ``automata_docs.core.symbol.symbol_types.SymbolFile``
--  ``automata_docs.core.database.vector.JSONVectorDatabase``
--  ``automata_docs.core.symbol.symbol_types.Symbol``
--  ``automata_docs.tests.unit.test_symbol_graph.test_get_all_files``
--  ``automata_docs.core.symbol.graph.SymbolGraph``
--  ``automata_docs.tests.unit.sample_modules.sample_module_2.ObNMl``
--  ``automata_docs.tests.unit.test_database_vector.test_init_vector``
--  ``automata_docs.core.symbol.symbol_types.SymbolReference``
--  ``automata_docs.tests.unit.test_database_vector.test_save``
+-  ``automata.core.symbol.symbol_types.SymbolFile``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.tests.unit.sample_modules.sample_module_2.ObNMl``
+-  ``automata.tests.unit.test_database_vector.test_init_vector``
+-  ``automata.core.symbol.symbol_types.SymbolReference``
+-  ``automata.tests.unit.test_database_vector.test_save``
 
 Example
 -------
@@ -33,7 +33,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata_docs.core.coding.directory import File
+   from automata.core.coding.directory import File
 
    file_name = "example.txt"
    parent_node = None
