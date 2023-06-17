@@ -119,6 +119,7 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
-    PYTHON_RETRIEVER = auto()
-    PYTHON_WRITER = auto()
+    PY_RETRIEVER = auto()
+    PY_WRITER = auto()
     SYMBOL_SEARCHER = auto()
+    CONTEXT_ORACLE = auto()

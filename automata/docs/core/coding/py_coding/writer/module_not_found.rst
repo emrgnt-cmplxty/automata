@@ -37,8 +37,8 @@ The following example demonstrates how to create an instance of
    from automata.core.coding.py_coding.retriever import PyCodeRetriever
    from automata.core.coding.py_coding.writer import PyCodeWriter
 
-   python_retriever = PyCodeRetriever()  # create a PyCodeRetriever instance
-   code_writer = PyCodeWriter(python_retriever)  # initialize PyCodeWriter with the PyCodeRetriever instance
+   py_retriever = PyCodeRetriever()  # create a PyCodeRetriever instance
+   code_writer = PyCodeWriter(py_retriever)  # initialize PyCodeWriter with the PyCodeRetriever instance
 
    source_code = """def foo():
        return 'Hello, world!'

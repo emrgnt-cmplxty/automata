@@ -21,12 +21,12 @@ class PyCodeRetrieverTool(AgentTool):
         Initializes a PythonInspectorToolManager object with the given inputs.
 
         Args:
-        - python_retriever (PyCodeRetriever): A PyCodeRetriever object which allows inspecting of local code.
+        - py_retriever (PyCodeRetriever): A PyCodeRetriever object which allows inspecting of local code.
 
         Returns:
         - None
         """
-        self.code_retriever: PyCodeRetriever = kwargs.get("python_retriever", PyCodeRetriever())
+        self.code_retriever: PyCodeRetriever = kwargs.get("py_retriever", PyCodeRetriever())
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False

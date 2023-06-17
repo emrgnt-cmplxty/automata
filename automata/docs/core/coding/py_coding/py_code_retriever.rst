@@ -16,7 +16,7 @@ Related Symbols
 -  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 -  ``automata.tests.unit.test_py_code_retriever.getter``
 -  ``automata.core.coding.py_coding.navigation.find_syntax_tree_node``
--  ``automata.tests.unit.test_py_writer.python_writer``
+-  ``automata.tests.unit.test_py_writer.py_writer``
 
 Example
 -------

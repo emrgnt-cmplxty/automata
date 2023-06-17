@@ -30,7 +30,7 @@ class PyCodeWriterTool(AgentTool):
         Returns:
         - None
         """
-        self.writer: PyCodeWriter = kwargs.get("python_writer")
+        self.writer: PyCodeWriter = kwargs.get("py_writer")
         # TODO: unused
         self.automata_version = kwargs.get("automata_version") or AgentConfigName.AUTOMATA_WRITER
         self.model = kwargs.get("model", "gpt-4")

@@ -14,7 +14,7 @@ from automata.core.utils import root_py_fpath
 def python_retriever_tool_builder():
     path_to_here = os.path.join(root_py_fpath(), "tools", "tool_management", "tests")
     python_code_retriever = PyCodeRetriever(LazyModuleTreeMap(path_to_here))
-    return PyCodeRetrieverTool(python_retriever=python_code_retriever)
+    return PyCodeRetrieverTool(py_retriever=python_code_retriever)
 
 
 def test_init(python_retriever_tool_builder):

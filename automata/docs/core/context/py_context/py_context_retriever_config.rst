@@ -20,7 +20,7 @@ Related Symbols
 -  ``automata.core.context.py_context.retriever.PyContextRetriever``
 -  ``automata.tests.unit.test_py_code_retriever.getter``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.tests.unit.test_py_writer.python_writer``
+-  ``automata.tests.unit.test_py_writer.py_writer``
 -  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 
