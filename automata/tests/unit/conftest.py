@@ -141,7 +141,7 @@ def automata_agent():
 
     instructions = "Test instruction."
 
-    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
+    config_name = AgentConfigName.AUTOMATA_MAIN
 
     agent = AutomataAgent(
         instructions,
@@ -164,6 +164,6 @@ def automata_agent_config_builder():
 
 @pytest.fixture
 def automata_agent_with_dev_main_builder():
-    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
+    config_name = AgentConfigName.AUTOMATA_MAIN
     agent_config_builder = AutomataAgentConfigBuilder.from_name(config_name)
     return agent_config_builder

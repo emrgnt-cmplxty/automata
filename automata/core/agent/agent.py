@@ -101,7 +101,6 @@ class AutomataAgent(Agent):
         observations = self._generate_observations(response_text)
 
         completion_message = retrieve_completion_message(observations)
-        print("completion_message = ", completion_message)
         if completion_message is not None:
             self.completed = True
             self._save_message(
@@ -290,7 +289,6 @@ class AutomataAgent(Agent):
             for match in matches:
                 output_name, output_value = match.group(1), match.group(2).strip()
                 outputs[output_name] = output_value
-
         return outputs
 
     def _parse_completion_message(self, completion_message: str) -> str:

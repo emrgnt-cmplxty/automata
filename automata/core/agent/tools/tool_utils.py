@@ -1,10 +1,12 @@
-import importlib
 import logging
 import os
 from typing import Dict, List
 
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
+from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
+from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
+from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.coding.py_coding.writer import PyCodeWriter
@@ -25,33 +27,21 @@ class ToolManagerFactory:
     A class for creating tool managers.
     """
 
-    _retriever_instance = None  # store instance of PyCodeRetriever
+    _retriever_instance = None
 
     @staticmethod
     def create_tool_manager(toolkit_type: ToolkitType) -> AgentTool:
         if toolkit_type == ToolkitType.PYTHON_RETRIEVER:
             if ToolManagerFactory._retriever_instance is None:
                 ToolManagerFactory._retriever_instance = PyCodeRetriever()
-
-            PyCodeRetrieverTool = importlib.import_module(
-                "automata.core.agent.tools.py_code_retriever"
-            ).PyCodeRetrieverTool
             return PyCodeRetrieverTool(python_retriever=ToolManagerFactory._retriever_instance)
         elif toolkit_type == ToolkitType.PYTHON_WRITER:
             if ToolManagerFactory._retriever_instance is None:
                 ToolManagerFactory._retriever_instance = PyCodeRetriever()
-
-            PyCodeWriterTool = importlib.import_module(
-                "automata.core.agent.tools.py_code_writer"
-            ).PyCodeWriterTool
             return PyCodeWriterTool(
                 python_writer=PyCodeWriter(ToolManagerFactory._retriever_instance)
             )
         elif toolkit_type == ToolkitType.SYMBOL_SEARCHER:
-            SymbolSearchTool = importlib.import_module(
-                "automata.core.agent.tools.symbol_search_manager"
-            ).SymbolSearchTool
-
             graph = SymbolGraph()
             subgraph = graph.get_rankable_symbol_subgraph()
 

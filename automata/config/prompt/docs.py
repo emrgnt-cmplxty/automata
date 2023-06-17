@@ -52,7 +52,7 @@ DOC_EXAMPLE_1 = textwrap.dedent(
     from config.automata_agent_config import AutomataAgentConfig
     from config.config_enums import AgentConfigName
 
-    config_name = AgentConfigName.AUTOMATA_MAIN_DEV
+    config_name = AgentConfigName.AUTOMATA_MAIN
     config = AutomataAgentConfig.load(config_name)
     ```
 

@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import Callable, List, Optional, Union
+from typing import List, Optional, Union
 
+from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.tool import Tool
 from automata.core.symbol.search.symbol_search import (
     ExactSearchResult,
@@ -18,16 +19,14 @@ class SearchTool(Enum):
     EXACT_SEARCH = "exact-search"
 
 
-class SymbolSearchTool:
+class SymbolSearchTool(AgentTool):
     def __init__(
         self,
         symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
-        post_processing: Optional[Callable] = None,
     ):
         self.symbol_search = symbol_search
         self.search_tools = search_tools or list(SearchTool)
-        self.post_processing = post_processing
 
     def build_tool(self, tool_type: SearchTool) -> Tool:
         tool_funcs = {
@@ -58,8 +57,6 @@ class SymbolSearchTool:
     ) -> Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult,]:
         tools_dict = {tool.name: tool.func for tool in self.build()}
         result = tools_dict[tool_type.value](query)
-        if self.post_processing:
-            result = self.post_processing(result)
         return result
 
     # TODO - Cleanup these processors to ensure they behave well.

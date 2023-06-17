@@ -248,7 +248,7 @@ def test_extract_actions_8():
     - actions
         - agent_query_1
             - agent_version
-                - automata_indexer_dev
+                - automata_indexer
             - agent_instruction
                 - Retrieve the code for the function 'run' from AutomataAgent, including all necessary imports and docstrings.
     """
