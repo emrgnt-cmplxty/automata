@@ -28,8 +28,7 @@ class InstructionConfigVersion(Enum):
     Corresponds to the name of the yaml file in automata/configs/instruction_configs.
     """
 
-    AGENT_INTRODUCTION_DEV = "agent_introduction_dev"
-    AGENT_INTRODUCTION_PROD = "agent_introduction_prod"
+    AGENT_INTRODUCTION = "agent_introduction"
 
 
 class AgentConfigName(Enum):
@@ -42,12 +41,9 @@ class AgentConfigName(Enum):
     TEST = "test"
     # The initializer is a dummy agent used to spoof the initial message context.
     AUTOMATA_INITIALIZER = "automata_initializer"
-    AUTOMATA_INDEXER_DEV = "automata_indexer_dev"
-    AUTOMATA_WRITER_DEV = "automata_writer_dev"
-    AUTOMATA_MAIN_DEV = "automata_main_dev"
-    AUTOMATA_INDEXER_PROD = "automata_indexer_prod"
-    AUTOMATA_WRITER_PROD = "automata_writer_prod"
-    AUTOMATA_MASTER_PROD = "automata_main_prod"
+    AUTOMATA_INDEXER = "automata_indexer"
+    AUTOMATA_MAIN = "automata_main"
+    AUTOMATA_WRITER = "automata_writer"
 
 
 @dataclass
@@ -107,9 +103,7 @@ class AutomataAgentConfig(BaseModel):
     temperature: float = 0.7
     session_id: Optional[str] = None
     system_instruction: Optional[str] = None
-    instruction_version: InstructionConfigVersion = (
-        InstructionConfigVersion.AGENT_INTRODUCTION_PROD
-    )
+    instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
     helper_agent_configs: Dict[AgentConfigName, "AutomataAgentConfig"] = {}
 
     def setup(self):

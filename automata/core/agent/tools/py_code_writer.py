@@ -32,9 +32,7 @@ class PyCodeWriterTool(AgentTool):
         """
         self.writer: PyCodeWriter = kwargs.get("python_writer")
         # TODO: unused
-        self.automata_version = (
-            kwargs.get("automata_version") or AgentConfigName.AUTOMATA_WRITER_PROD
-        )
+        self.automata_version = kwargs.get("automata_version") or AgentConfigName.AUTOMATA_WRITER
         self.model = kwargs.get("model", "gpt-4")
         self.verbose = kwargs.get("verbose", False)
         self.stream = kwargs.get("stream", True)
@@ -105,7 +103,6 @@ class PyCodeWriterTool(AgentTool):
     ) -> str:
         """Writes the given code to the given module path and class name."""
         try:
-            print("Attempting to write update to existing module_path = ", module_dotpath)
             self.writer.update_existing_module(module_dotpath, code, disambiguator, self.do_write)
             return "Success"
         except Exception as e:
@@ -118,7 +115,6 @@ class PyCodeWriterTool(AgentTool):
     ) -> str:
         """Writes the given code to the given module path and class name."""
         try:
-            print("Attempting to reduce existing module_path = ", module_dotpath)
             self.writer.delete_from_existing__module(module_dotpath, object_dotpath, self.do_write)
             return "Success"
         except Exception as e:
@@ -127,7 +123,6 @@ class PyCodeWriterTool(AgentTool):
     def _create_new_module(self, module_dotpath, code):
         """Writes the given code to the given module path and class name."""
         try:
-            print("Attempting to write new module_path = ", module_dotpath)
             self.writer.create_new_module(module_dotpath, code, self.do_write)
             return "Success"
         except Exception as e:

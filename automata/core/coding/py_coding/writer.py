@@ -374,7 +374,7 @@ class PyDocWriter:
                     rst_string = pypandoc.convert_text(doc_md_string, "rst", format="md")
                     f.write(rst_string)
                 except Exception as e:
-                    print(f"Error converting {symbol_name} to rst: {e}")
+                    logger.error(f"Error converting {symbol_name} to rst: {e}")
 
     def generate_index_files(self, docs_dir: str):
         """

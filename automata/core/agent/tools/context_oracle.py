@@ -1,3 +1,4 @@
+import logging
 import textwrap
 from typing import List
 
@@ -5,6 +6,8 @@ from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.tool import Tool
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.search.symbol_search import SymbolSearch
+
+logger = logging.getLogger(__name__)
 
 
 class ContextOracle(AgentTool):
@@ -30,7 +33,7 @@ class ContextOracle(AgentTool):
 
     def build(self) -> List[Tool]:
         """
-        Builds all the context tools.
+        Builds the tools associated with the context oracle.
 
         Returns:
             List[Tool]: The list of built tools.
@@ -76,12 +79,15 @@ class ContextOracle(AgentTool):
 
         for symbol, _ in rank_output[0:10]:
             try:
-                print("Processing symbol = ", symbol)
                 result += "%s\n" % symbol.dotpath
                 result += self.symbol_doc_similarity.embedding_handler.get_embedding(
                     symbol
                 ).summary
             except Exception as e:
-                print("Exception = ", e)
+                logger.error(
+                    "Failed to get embedding for symbol %s with error: %s",
+                    symbol,
+                    e,
+                )
                 continue
         return result

@@ -37,9 +37,7 @@ def test_build(python_writer_tool_builder):
 # Check that we can bootstrap a new module "sample3.py" with a new function "f(x) -> x + 1"
 def test_bootstrap_module_with_new_function(python_writer_tool_builder):
     current_file = inspect.getframeinfo(inspect.currentframe()).filename
-    print("current_file = ", current_file)
     absolute_path = os.sep.join(os.path.abspath(current_file).split(os.sep)[:-1])
-    print("absolute_path = ", absolute_path)
 
     tools = python_writer_tool_builder.build()
     create_module_tool = tools[1]
@@ -49,9 +47,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    print("file_py_path = ", file_py_path)
     create_module_tool.func((file_py_path, function_def))
-    print("file_abs_path = ", file_abs_path)
 
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()

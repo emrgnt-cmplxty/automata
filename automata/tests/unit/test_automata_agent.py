@@ -8,6 +8,7 @@ from automata.config.config_types import AutomataInstructionPayload
 from automata.core.agent.agent import AutomataAgent
 from automata.core.agent.memories import AutomataMemoryDatabase
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.base.openai import OpenAIChatMessage
 
 
 def test_build_tool_message(automata_agent_config_builder):
@@ -160,6 +161,15 @@ def mock_openai_response_with_completion_tool_message_to_parse():
 def test_iter_step_with_parsed_completion_message(
     mock_openai_chatcompletion_create, api_response, automata_agent
 ):
+    observation = textwrap.dedent(
+        """
+        - observations
+          - tool_output_0
+            - task_0
+                - Please carry out the following instruction Test instruction..
+        """
+    )
+    automata_agent.messages.append(OpenAIChatMessage("user", observation))
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = api_response
     automata_agent.iter_step()
@@ -204,7 +214,7 @@ def test_iter_step_with_parsed_completion_message_2(
 ):
     instructions = "This is a test instruction."
     automata_agent_config = (
-        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction_dev")
+        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction")
         .with_stream(False)
         .with_instruction_payload(
             AutomataInstructionPayload(agents_message="", overview="", tools="")
@@ -235,7 +245,7 @@ def test_iter_step_with_parsed_completion_message_main_2(
 ):
     instructions = "This is a test instruction."
     automata_agent_config = (
-        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction_dev")
+        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction")
         .with_stream(False)
         .with_instruction_payload(
             AutomataInstructionPayload(agents_message="", overview="", tools="")
