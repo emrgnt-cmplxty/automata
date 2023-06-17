@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
@@ -98,12 +97,3 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         else:
             logger.debug("Passing for %s", symbol)
             pass
-
-    def get_all_supported_symbols(self) -> List[Symbol]:
-        """
-        Get all the symbols in the database.
-
-        Returns:
-            List[Symbol]: List of all the symbols in the database
-        """
-        return self.embedding_db.get_all_symbols()

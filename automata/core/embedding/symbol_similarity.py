@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Set
 
 import numpy as np
 
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.embedding_types import SymbolEmbeddingHandler
 from automata.core.symbol.symbol_types import Symbol
 
 from .embedding_types import EmbeddingProvider, EmbeddingSimilarity, NormType
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class SymbolSimilarity(EmbeddingSimilarity):
     def __init__(
         self,
-        symbol_embedding_manager: SymbolCodeEmbeddingHandler,
+        symbol_embedding_manager: SymbolEmbeddingHandler,
         norm_type: NormType = NormType.L2,
     ):
         """
@@ -27,7 +27,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
         Returns:
             An instance of SymbolSimilarity
         """
-        self.embedding_handler: SymbolCodeEmbeddingHandler = symbol_embedding_manager
+        self.embedding_handler: SymbolEmbeddingHandler = symbol_embedding_manager
         self.embedding_provider: EmbeddingProvider = symbol_embedding_manager.embedding_provider
         self.norm_type = norm_type
         supported_symbols = self.embedding_handler.get_all_supported_symbols()

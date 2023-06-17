@@ -7,7 +7,7 @@ import pytest
 from automata.config.config_types import AutomataInstructionPayload
 from automata.core.agent.agent import AutomataAgent
 from automata.core.agent.memories import AutomataMemoryDatabase
-from automata.core.agent.tool_management.tool_management_utils import build_llm_toolkits
+from automata.core.agent.tools.tool_utils import build_llm_toolkits
 
 
 def test_build_tool_message(automata_agent_config_builder):

@@ -5,7 +5,7 @@ from automata.config.config_types import (
     AutomataAgentConfig,
     AutomataInstructionPayload,
 )
-from automata.core.agent.tool_management.tool_management_utils import build_llm_toolkits
+from automata.core.agent.tools.tool_utils import build_llm_toolkits
 
 
 def test_automata_agent_init(automata_agent):

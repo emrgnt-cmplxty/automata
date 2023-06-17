@@ -1,7 +1,7 @@
 import abc
 import logging
 from enum import Enum
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import numpy as np
 import openai
@@ -53,6 +53,7 @@ class OpenAIEmbedding(EmbeddingProvider):
 class SymbolEmbeddingHandler(abc.ABC):
     """An abstract class to handle the embedding of symbols"""
 
+    @abc.abstractmethod
     def __init__(
         self,
         embedding_db: VectorDatabaseProvider,
@@ -71,6 +72,15 @@ class SymbolEmbeddingHandler(abc.ABC):
     def update_embedding(self, symbol: Symbol):
         """An abstract method to update the embedding for a symbol"""
         pass
+
+    def get_all_supported_symbols(self) -> List[Symbol]:
+        """
+        Get all the symbols in the database.
+
+        Returns:
+            List[Symbol]: List of all the symbols in the database
+        """
+        return self.embedding_db.get_all_symbols()
 
 
 class EmbeddingSimilarity(abc.ABC):

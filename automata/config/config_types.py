@@ -127,9 +127,7 @@ class AutomataAgentConfig(BaseModel):
     @classmethod
     def load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
         """Loads the automata.yaml config file."""
-        from automata.core.agent.tool_management.tool_management_utils import (
-            build_llm_toolkits,
-        )
+        from automata.core.agent.tools.tool_utils import build_llm_toolkits
 
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
         config_abs_path = os.path.join(

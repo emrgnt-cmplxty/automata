@@ -3,6 +3,7 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
+import colorlog
 import yaml
 
 
@@ -98,19 +99,23 @@ class LoggingConfig(TypedDict, total=False):
 def get_logging_config(
     log_level: int = logging.INFO, log_file: Optional[str] = None
 ) -> dict[str, Any]:
-    """
-    Returns logging configuration.
-
-    Args:
-        log_level (int): The log level.
-        log_file (Optional[str]): The log file path.
-    Returns
-        dict[str, Any]: The logging configuration.
-    """
+    """Returns logging configuration."""
+    color_scheme = {
+        "DEBUG": "cyan",
+        "INFO": "green",
+        "WARNING": "yellow",
+        "ERROR": "red",
+        "CRITICAL": "bold_red",
+    }
     logging_config: LoggingConfig = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
+            "colored": {
+                "()": colorlog.ColoredFormatter,
+                "format": "%(log_color)s%(levelname)s:%(name)s:%(message)s",
+                "log_colors": color_scheme,
+            },
             "standard": {  # a standard formatter for file handler
                 "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
             },
@@ -118,12 +123,13 @@ def get_logging_config(
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "standard",
+                "formatter": "colored",
                 "level": log_level,
             }
         },
         "root": {"handlers": ["console"], "level": log_level},
     }
+
     if log_file:  # if log_file is provided, add file handler
         logging_config["handlers"]["file"] = {
             "class": "logging.FileHandler",

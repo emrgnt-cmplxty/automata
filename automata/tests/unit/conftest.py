@@ -8,7 +8,7 @@ import pytest
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName, AutomataInstructionPayload
 from automata.core.agent.agent import AutomataAgent
-from automata.core.agent.tool_management.tool_management_utils import build_llm_toolkits
+from automata.core.agent.tools.tool_utils import build_llm_toolkits
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
