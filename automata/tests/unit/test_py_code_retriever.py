@@ -23,7 +23,7 @@ def getter(module_map):
 def test_build_overview():
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     result = build_repository_overview(sample_dir)
-    first_module_overview = "sample\n     - func sample_function\n     - cls Person\n       - func __init__\n       - func say_hello\n       - func run\n     - func f\n     - cls EmptyClass\n     - cls OuterClass\n       - cls InnerClass\n         - func inner_method\nsample2\n     - cls PythonAgentToolBuilder\n       - func __init__\n       - func build_tools\n         - func python_agent_python_task"
+    first_module_overview = "sample\n     - func sample_function\n     - cls Person\n       - func __init__\n       - func say_hello\n       - func run\n     - func f\n     - cls EmptyClass\n     - cls OuterClass\n       - cls InnerClass\n         - func inner_method\nsample2\n     - cls PythonAgentToolBuilder\n       - func __init__\n       - func build\n         - func python_agent_python_task"
 
     assert first_module_overview in result
 

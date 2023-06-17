@@ -101,6 +101,7 @@ class AutomataAgent(Agent):
         observations = self._generate_observations(response_text)
 
         completion_message = retrieve_completion_message(observations)
+        print("completion_message = ", completion_message)
         if completion_message is not None:
             self.completed = True
             self._save_message(

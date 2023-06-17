@@ -6,16 +6,14 @@ This project is inspired by the theory that code is essentially a form of memory
 
 ## Installation and Usage
 
----
-
 ### Initial Setup
 
 Follow these steps to setup the Automata environment
 
 ```bash
 # Clone the repository
-git clone git@github.com:EmergentAGI/AutomataDocs.git
-cd AutomataDocs
+git clone git@github.com:EmergentAGI/Automata.git
+cd Automata
 
 # Create the local environment
 python3 -m venv local_env
@@ -31,7 +29,6 @@ pre-commit install
 cp .env.example .env
 MY_API_KEY=your_openai_api_key_here
 sed -i "s/your_openai_api_key/${MY_API_KEY}/" .env
-sed -i "s/your_task_db_path/$PWD/tasks.sqlite3/" .env
 sed -i "s/your_openai_api_key/$PWD/conversations.sqlite3/" .env
 ```
 
