@@ -219,7 +219,7 @@ system_instruction_template: >
     Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
 
 description: >
-  This agent is automata_indexer, an agent which parses natural language queries to retrieve code from the local Python repository.
+  This agent is automata_retriever, an agent which parses natural language queries to retrieve code from the local Python repository.
 
 number_of_expected_actions: 11
 

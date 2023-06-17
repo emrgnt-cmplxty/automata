@@ -47,7 +47,7 @@ create, update, and write to a Python module.
 
 .. code:: python
 
-   from automata.tests.unit.test_py_writer import python_writer, MockCodeGenerator
+   from automata.tests.unit.test_py_writer import py_writer, MockCodeGenerator
 
    # Create a mock code generator
    mock_generator = MockCodeGenerator(
@@ -56,7 +56,7 @@ create, update, and write to a Python module.
    source_code = mock_generator.generate_code()
 
    # Instantiate a PythonWriter with a PyCodeRetriever
-   py_writer = python_writer()
+   py_writer = py_writer()
 
    # Create a new Python module with the generated source code
    py_writer.create_new_module("sample_module", source_code, do_write=True)

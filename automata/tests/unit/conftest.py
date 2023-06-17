@@ -134,7 +134,7 @@ def symbol_searcher(mocker, symbol_graph_mock):
 
 @pytest.fixture
 def automata_agent():
-    tool_list = ["python_retriever"]
+    tool_list = ["py_retriever"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     instruction_payload = AutomataInstructionPayload(agents_message="", overview="", tools="")

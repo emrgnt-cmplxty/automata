@@ -18,9 +18,9 @@ def python_writer_tool_builder(tmpdir):
     os.chdir(temp_directory)
     path_to_here = os.path.join(root_py_fpath(), "tests", "unit")
     module_map = LazyModuleTreeMap(path_to_here)
-    python_retriever = PyCodeRetriever(module_map)
-    python_writer = PyCodeWriter(python_retriever)
-    return PyCodeWriterTool(python_writer=python_writer)
+    py_retriever = PyCodeRetriever(module_map)
+    py_writer = PyCodeWriter(py_retriever)
+    return PyCodeWriterTool(py_writer=py_writer)
 
 
 def test_init(python_writer_tool_builder):

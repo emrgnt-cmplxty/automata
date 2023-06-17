@@ -39,14 +39,14 @@ class PyCodeWriter:
 
         pass
 
-    def __init__(self, python_retriever: PyCodeRetriever):
+    def __init__(self, py_retriever: PyCodeRetriever):
         """
         Initialize the PyCodeWriter with a PyCodeRetriever instance
 
         Args:
-            python_retriever (PyCodeRetriever): The PyCodeRetriever instance to use
+            py_retriever (PyCodeRetriever): The PyCodeRetriever instance to use
         """
-        self.code_retriever = python_retriever
+        self.code_retriever = py_retriever
 
     def create_new_module(self, module_dotpath: str, source_code: str, do_write: bool = False):
         """

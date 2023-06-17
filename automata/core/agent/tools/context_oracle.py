@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class ContextOracle(AgentTool):
     """
-    ContextOracleManager is responsible for managing context oracle tools.
+    ContextOracle is responsible for managing context oracle tools.
     """
 
     def __init__(
@@ -21,8 +21,7 @@ class ContextOracle(AgentTool):
         symbol_doc_similarity: SymbolSimilarity,
     ):
         """
-        Initializes ContextOracleManager with given SymbolSearch, SymbolSimilarity,
-        optional ContextTool, and post processing function.
+        Initializes PyContextOracle with given SymbolSearch, SymbolSimilarity.
 
         Args:
             symbol_search (SymbolSearch): The symbol search object.
@@ -41,7 +40,7 @@ class ContextOracle(AgentTool):
         tools = [
             Tool(
                 name="context-oracle",
-                func=self._context_oracle_processor,
+                func=self._context_generator,
                 description=textwrap.dedent(
                     """
                 This tool combines SymbolSearch and SymbolSimilarity to create contexts. 
@@ -60,9 +59,9 @@ class ContextOracle(AgentTool):
         ]
         return tools
 
-    def _context_oracle_processor(self, query: str) -> str:
+    def _context_generator(self, query: str) -> str:
         """
-        The context oracle tool processor function.
+        The generate the context corresponding to a query.
 
         Args:
             query (str): The query string.

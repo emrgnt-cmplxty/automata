@@ -153,7 +153,7 @@ class MockCodeGenerator:
 
 
 @pytest.fixture
-def python_writer():
+def py_writer():
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     module_map = LazyModuleTreeMap(sample_dir)
     retriever = PyCodeRetriever(module_map)
@@ -187,23 +187,23 @@ def test_create_class_source_class():
     mock_generator._check_class_obj()
 
 
-def test_extend_module(python_writer):
+def test_extend_module(py_writer):
     # Arrange
     # create module
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    python_writer.create_new_module("sample_module_2", source_code)
+    py_writer.create_new_module("sample_module_2", source_code)
     mock_generator_2 = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code_2 = mock_generator_2.generate_code()
 
-    python_writer.update_existing_module("sample_module_2", source_code_2)
+    py_writer.update_existing_module("sample_module_2", source_code_2)
 
     # Check module 2 is merged into module 1
-    module_obj = python_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
+    module_obj = py_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
     mock_generator._check_module_obj(module_obj)
     mock_generator._check_class_obj(module_obj[0])
     mock_generator._check_function_obj(module_obj[1])
@@ -211,17 +211,17 @@ def test_extend_module(python_writer):
     mock_generator_2._check_function_obj(module_obj[3])
 
 
-def test_reduce_module(python_writer):
+def test_reduce_module(py_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    python_writer.create_new_module("sample_module_2", source_code)
-    module_obj = python_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
+    py_writer.create_new_module("sample_module_2", source_code)
+    module_obj = py_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
     class_obj = module_obj.find("class")
 
     function_obj = module_obj.find_all("def")[-1]
-    python_writer.delete_from_existing__module("sample_module_2", class_obj.name)
+    py_writer.delete_from_existing__module("sample_module_2", class_obj.name)
     assert module_obj[0] == function_obj
 
 
@@ -231,12 +231,12 @@ def assert_code_lines_equal(code_1: str, code_2: str):
     assert all(line_1 == line_2 for line_1, line_2 in zip(code_1_lines, code_2_lines))
 
 
-def test_create_update_write_module(python_writer):
+def test_create_update_write_module(py_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    python_writer.create_new_module("sample_module_write", source_code, do_write=True)
+    py_writer.create_new_module("sample_module_write", source_code, do_write=True)
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     fpath = os.path.join(root_dir, "sample_module_write.py")
     assert os.path.exists(fpath)
@@ -250,7 +250,7 @@ def test_create_update_write_module(python_writer):
     source_code_2 = mock_generator_2.generate_code()
 
     assert source_code != source_code_2
-    python_writer.update_existing_module(
+    py_writer.update_existing_module(
         source_code=source_code_2, module_dotpath="sample_module_write", do_write=True
     )
 
@@ -327,23 +327,23 @@ def test_create_class_inheritance():
     assert class_obj.inherit_from.name.value == mock_generator.class_name
 
 
-def test_reduce_module_remove_function(python_writer):
+def test_reduce_module_remove_function(py_writer):
     mock_generator = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
 
-    module_obj = python_writer._create_module_from_source_code("sample_module_2", source_code)
+    module_obj = py_writer._create_module_from_source_code("sample_module_2", source_code)
     class_obj = module_obj[1]
     function_obj = module_obj[2]
 
-    python_writer.delete_from_existing__module("sample_module_2", function_obj.name)
+    py_writer.delete_from_existing__module("sample_module_2", function_obj.name)
 
     assert module_obj[0] == class_obj
     assert len(module_obj.filtered()) == 1
 
 
-def test_update_existing_function(python_writer):
+def test_update_existing_function(py_writer):
     mock_generator = MockCodeGenerator(has_function=True)
     source_code = mock_generator.generate_code()
     # Create a new config of the function with a different body
@@ -353,8 +353,8 @@ def test_update_existing_function(python_writer):
             return "Updated"
         """
     )
-    module_obj = python_writer._create_module_from_source_code("sample_module_2", source_code)
-    python_writer.update_existing_module(
+    module_obj = py_writer._create_module_from_source_code("sample_module_2", source_code)
+    py_writer.update_existing_module(
         source_code=source_code_updated, module_dotpath="sample_module_2"
     )
     updated_function_obj = find_syntax_tree_node(module_obj, mock_generator.function_name)
@@ -362,7 +362,7 @@ def test_update_existing_function(python_writer):
     assert isinstance(updated_function_obj[0], ReturnNode)
 
 
-def test_write_and_retrieve_mock_code(python_writer):
+def test_write_and_retrieve_mock_code(py_writer):
     mock_generator = MockCodeGenerator(
         has_class=True,
         has_method=True,
@@ -374,9 +374,9 @@ def test_write_and_retrieve_mock_code(python_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
-    python_writer._create_module_from_source_code("sample_module_2", source_code)
+    py_writer._create_module_from_source_code("sample_module_2", source_code)
 
-    python_writer._write_module_to_disk("sample_module_2")
+    py_writer._write_module_to_disk("sample_module_2")
 
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     module_map = LazyModuleTreeMap(sample_dir)

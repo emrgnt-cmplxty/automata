@@ -12,7 +12,7 @@ from automata.core.base.openai import OpenAIChatMessage
 
 
 def test_build_tool_message(automata_agent_config_builder):
-    tool_list = ["python_retriever", "python_writer"]
+    tool_list = ["py_retriever", "py_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()

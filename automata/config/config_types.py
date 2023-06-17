@@ -37,11 +37,14 @@ class AgentConfigName(Enum):
     Corresponds to the name of the yaml file in automata/configs/agent_configs.
     """
 
+    # Helper Configs
     DEFAULT = "default"
     TEST = "test"
     # The initializer is a dummy agent used to spoof the initial message context.
     AUTOMATA_INITIALIZER = "automata_initializer"
-    AUTOMATA_INDEXER = "automata_indexer"
+
+    # Production Configs
+    AUTOMATA_RETRIEVER = "automata_retriever"
     AUTOMATA_MAIN = "automata_main"
     AUTOMATA_WRITER = "automata_writer"
 

@@ -27,7 +27,7 @@ Related Symbols
 -  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.tests.unit.test_py_writer.python_writer``
+-  ``automata.tests.unit.test_py_writer.py_writer``
 -  ``automata.core.coding.py_coding.writer.PyDocWriter``
 -  ``automata.core.context.py_context.retriever.PyContextRetriever``
 -  ``automata.tests.unit.test_py_code_retriever.getter``

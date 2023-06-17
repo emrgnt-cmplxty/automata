@@ -52,7 +52,7 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
 
 
 def test_builder_accepts_all_fields(automata_agent_config_builder):
-    tool_list = ["python_retriever", "python_writer"]
+    tool_list = ["py_retriever", "py_writer"]
     mock_llm_toolkits = build_llm_toolkits(tool_list)
 
     config = (
