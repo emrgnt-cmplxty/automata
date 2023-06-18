@@ -7,9 +7,9 @@ import openai
 from termcolor import colored
 
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
-from automata.core.agent.actions import AgentAction
-from automata.core.agent.actions import AutomataActionExtractor as ActionExtractor
-from automata.core.agent.actions import ResultAction, ToolAction
+from automata.core.agent.action import AgentAction
+from automata.core.agent.action import AutomataActionExtractor as ActionExtractor
+from automata.core.agent.action import ResultAction, ToolAction
 from automata.core.agent.agent_utils import (
     generate_user_observation_message,
     retrieve_completion_message,
@@ -121,29 +121,10 @@ class AutomataAgent(Agent):
 
         return (assistant_message, user_message)
 
-    def _get_debug_summary(self):
-        user_message = "Provide a succinct one-sentence summary of the errors encountered. Write nothing else."
-        self._save_message("user", user_message)
-        response_text = self._get_openai_response()
-        return response_text
-
-    def _get_openai_response(self) -> str:
-        response_summary = openai.ChatCompletion.create(
-            model=self.config.model,
-            messages=[ele.to_dict() for ele in self.messages],
-            temperature=self.config.temperature,
-            stream=self.config.stream,
-        )
-        response_text = (
-            self._stream_message(response_summary)
-            if self.config.stream
-            else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
-        )
-        return response_text
-
     def run(self) -> str:
         """
-        Runs the agent and iterates through the tasks until a result is produced or the max iterations are exceeded.
+        Runs the agent and iterates through the tasks until a result is produced
+          or the max iterations are exceeded.
 
         Returns:
             str: The final result or an error message if the result wasn't found in time.
@@ -396,3 +377,25 @@ class AutomataAgent(Agent):
             raise Exception("Agent has no coordinator.")
 
         return self.coordinator.run_agent(agent_action)
+
+    def _get_debug_summary(self):
+        """Get the debug summary for the agent."""
+        user_message = "Provide a succinct one-sentence summary of the errors encountered. Write nothing else."
+        self._save_message("user", user_message)
+        response_text = self._get_openai_response()
+        return response_text
+
+    def _get_openai_response(self) -> str:
+        """Get the response from OpenAI."""
+        response_summary = openai.ChatCompletion.create(
+            model=self.config.model,
+            messages=[ele.to_dict() for ele in self.messages],
+            temperature=self.config.temperature,
+            stream=self.config.stream,
+        )
+        response_text = (
+            self._stream_message(response_summary)
+            if self.config.stream
+            else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
+        )
+        return response_text

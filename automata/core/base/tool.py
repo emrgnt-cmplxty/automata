@@ -30,9 +30,7 @@ class Tool(BaseTool):
         raise NotImplementedError("Tool does not support async")
 
     # TODO: this is for backwards compatibility, remove in future
-    def __init__(
-        self, name: str, func: Callable[[str], str], description: str, **kwargs: Any
-    ) -> None:
+    def __init__(self, name: str, func: Callable[[str], str], description: str, **kwargs: Any):
         """Initialize tool."""
         super(Tool, self).__init__(name=name, func=func, description=description, **kwargs)  # type: ignore
 

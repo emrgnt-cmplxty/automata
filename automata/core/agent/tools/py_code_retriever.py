@@ -33,11 +33,16 @@ class PyCodeRetrieverTool(AgentTool):
         self.stream = kwargs.get("stream") or True
 
     def build(self) -> List[Tool]:
-        """Builds a list of Tool objects for interacting with PythonIndexer."""
+        """
+        Builds the tools associated with the python code retriever.
+
+        Returns:
+            List[Tool]: The list of built tools.
+        """
         tools = [
             Tool(
-                name="python-indexer-retrieve-code",
-                func=self._func_retrieve_code,
+                name="py-retriever-retrieve-code",
+                func=lambda query: self._run_indexer_retrieve_code(*query),
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given python path, without docstrings."
                 f' If no match is found, then "{NO_RESULT_FOUND_STR}" is returned.\n\n'
@@ -56,16 +61,16 @@ class PyCodeRetrieverTool(AgentTool):
                 verbose=True,
             ),
             Tool(
-                name="python-indexer-retrieve-docstring",
-                func=self._func_retrieve_docstring,
-                description=f"Identical to python-indexer-retrieve-code, except returns the docstring instead of raw code.",
+                name="py-retriever-retrieve-docstring",
+                func=lambda query: self._run_indexer_retrieve_docstring(*query),
+                description=f"Identical to py-retriever-retrieve-code, except returns the docstring instead of raw code.",
                 return_direct=True,
                 verbose=True,
             ),
             Tool(
-                name="python-indexer-retrieve-raw-code",
-                func=self._func_retrieve_raw_code,
-                description=f"Identical to python-indexer-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
+                name="py-retriever-retrieve-raw-code",
+                func=lambda query: self._run_indexer_retrieve_raw_code(*query),
+                description=f"Identical to py-retriever-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
                 return_direct=True,
                 verbose=True,
             ),
@@ -75,7 +80,20 @@ class PyCodeRetrieverTool(AgentTool):
     def _run_indexer_retrieve_code(
         self, module_path: str, object_path: Optional[str] = None
     ) -> str:
-        """PythonIndexer retrieves the code of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
+        """
+        PythonIndexer retrieves the code of the python package,
+         module, standalone function, class, or method at the given
+         python path, without docstrings.
+
+         Args:
+            - module_path (str): The path to the module to retrieve code from.
+            - object_path (Optional[str]): The path to the object to retrieve code from.
+
+        Returns:
+            - str: The code of the python package, module,
+              standalone function, class, or method at the given
+              python path, without docstrings.
+        """
         try:
             result = self.code_retriever.get_source_code_without_docstrings(
                 module_path, object_path
@@ -87,7 +105,18 @@ class PyCodeRetrieverTool(AgentTool):
     def _run_indexer_retrieve_docstring(
         self, module_path: str, object_path: Optional[str] = None
     ) -> str:
-        """PythonIndexer retrieves the docstring of the python package, module, standalone function, class, or method at the given python path, without docstrings."""
+        """
+        PythonIndexer retrieves the docstring of the python package,
+         module, standalone function, class, or method at the given
+         python path, without docstrings.
+
+         Args:
+            - module_path (str): The path to the module to retrieve code from.
+            - object_path (Optional[str]): The path to the object to retrieve code from.
+
+        Returns:
+            - str: The docstring of the python package, module,
+        """
         try:
             result = self.code_retriever.get_docstring(module_path, object_path)
             return result
@@ -97,18 +126,20 @@ class PyCodeRetrieverTool(AgentTool):
     def _run_indexer_retrieve_raw_code(
         self, module_path: str, object_path: Optional[str] = None
     ) -> str:
-        """PythonIndexer retrieves the raw code of the python package, module, standalone function, class, or method at the given python path, with docstrings."""
+        """
+        PythonIndexer retrieves the raw code of the python package,
+         module, standalone function, class, or method at the given
+         python path, with docstrings.
+
+        Args:
+            - module_path (str): The path to the module to retrieve code from.
+            - object_path (Optional[str]): The path to the object to retrieve code from.
+
+        Returns:
+            - str: The raw code of the python package, module,
+        """
         try:
             result = self.code_retriever.get_source_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
-
-    def _func_retrieve_code(self, module_object_tuple):
-        return self._run_indexer_retrieve_code(*module_object_tuple)
-
-    def _func_retrieve_docstring(self, module_object_tuple):
-        return self._run_indexer_retrieve_docstring(*module_object_tuple)
-
-    def _func_retrieve_raw_code(self, module_object_tuple):
-        return self._run_indexer_retrieve_raw_code(*module_object_tuple)

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from automata.config.agent_config_builder import AutomataAgentConfigFactory
 from automata.config.config_types import AgentConfigName
-from automata.core.agent.actions import AgentAction
+from automata.core.agent.action import AgentAction
 
 if TYPE_CHECKING:
     from automata.core.agent.agent import AutomataAgent
@@ -14,10 +14,6 @@ class AutomataInstance(BaseModel):
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}
-
-    @classmethod
-    def create(cls, config_name: AgentConfigName, description: str = "", **kwargs):
-        return cls(config_name=config_name, description=description, kwargs=kwargs)
 
     def run(self, instructions: str) -> str:
         """
@@ -46,6 +42,10 @@ class AutomataInstance(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+    @classmethod
+    def create(cls, config_name: AgentConfigName, description: str = "", **kwargs):
+        return cls(config_name=config_name, description=description, kwargs=kwargs)
+
 
 class AutomataCoordinator:
     def __init__(self):
@@ -55,7 +55,7 @@ class AutomataCoordinator:
         """
         self.agent_instances: List[AutomataInstance] = []
 
-    def add_agent_instance(self, agent_instance: AutomataInstance) -> None:
+    def add_agent_instance(self, agent_instance: AutomataInstance):
         """
         Adds a new AutomataInstance to the list of managed agent instances.
 
@@ -70,7 +70,7 @@ class AutomataCoordinator:
             raise ValueError("Agent already exists.")
         self.agent_instances.append(agent_instance)
 
-    def remove_agent_instance(self, config_name: AgentConfigName) -> None:
+    def remove_agent_instance(self, config_name: AgentConfigName):
         """
         Removes an AutomataInstance from the list of managed agent instances by its config_name.
 

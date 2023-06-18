@@ -40,10 +40,15 @@ class PyCodeWriterTool(AgentTool):
         self.do_write = kwargs.get("do_write", True)
 
     def build(self) -> List[Tool]:
-        """Builds a list of Tool object for interacting with PythonWriter."""
+        """
+        Builds the tools associated with the python code writer.
+
+        Returns:
+            List[Tool]: The list of built tools.
+        """
         tools = [
             Tool(
-                name="python-writer-update-module",
+                name="py-writer-update-module",
                 func=lambda module_object_code_tuple: self._update_existing_module(
                     *module_object_code_tuple
                 ),
@@ -55,38 +60,38 @@ class PyCodeWriterTool(AgentTool):
                 f" the correct function call follows:\n"
                 f" - tool_query_1\n"
                 f"   - tool_name\n"
-                f"     - python-writer-update-module\n"
+                f"     - py-writer-update-module\n"
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
                 f"     - MyClass\n"
-                f'     - def my_method() -> None:\n   """My Method"""\n    print("hello world")\n'
+                f'     - def my_method():\n   """My Method"""\n    print("hello world")\n'
                 f"If new import statements are necessary, then introduce them at the top of the submitted input code.\n"
                 f"Provide the full code as input, as this tool has no context outside of passed arguments.\n",
                 return_direct=True,
             ),
             Tool(
-                name="python-writer-create-new-module",
+                name="py-writer-create-new-module",
                 func=lambda module_object_code_tuple: self._create_new_module(
                     *module_object_code_tuple
                 ),
                 description=f"Creates a new module at the given path with the given code. For example:"
                 f" - tool_query_1\n"
                 f"   - tool_name\n"
-                f"     - python-writer-create-new-module\n"
+                f"     - py-writer-create-new-module\n"
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
-                f'     - import math\ndef my_method() -> None:\n   """My Method"""\n    print(math.sqrt(4))\n',
+                f'     - import math\ndef my_method():\n   """My Method"""\n    print(math.sqrt(4))\n',
                 return_direct=True,
             ),
             Tool(
-                name="python-writer-delete-from-existing-module",
+                name="py-writer-delete-from-existing-module",
                 func=lambda module_object_code_tuple: self._delete_from_existing_module(
                     *module_object_code_tuple
                 ),
                 description=f"Deletes python objects and their code by name from existing module. For example:"
                 f" - tool_query_1\n"
                 f"   - tool_name\n"
-                f"     - python-writer-delete-from-existing-module\n"
+                f"     - py-writer-delete-from-existing-module\n"
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
                 f"     - MyClass.my_method\n",
@@ -101,7 +106,17 @@ class PyCodeWriterTool(AgentTool):
         disambiguator: Optional[str],
         code: str,
     ) -> str:
-        """Writes the given code to the given module path and class name."""
+        """
+        Writes the given code to the given module path and class name.
+
+        Args:
+            module_dotpath (str): The dotpath of the module to update.
+            disambiguator (Optional[str]): The disambiguator of the module to update.
+            code (str): The code to write to the module.
+
+        Returns:
+            str: The result of the update.
+        """
         try:
             self.writer.update_existing_module(module_dotpath, code, disambiguator, self.do_write)
             return "Success"
@@ -113,7 +128,16 @@ class PyCodeWriterTool(AgentTool):
         module_dotpath: str,
         object_dotpath: str,
     ) -> str:
-        """Writes the given code to the given module path and class name."""
+        """
+        Writes the given code to the given module path and class name.
+
+        Args:
+            module_dotpath (str): The dotpath of the module to update.
+            object_dotpath (str): The dotpath of the object to delete.
+
+        Returns:
+            str: The result of the deletion.
+        """
         try:
             self.writer.delete_from_existing__module(module_dotpath, object_dotpath, self.do_write)
             return "Success"
@@ -121,7 +145,16 @@ class PyCodeWriterTool(AgentTool):
             return "Failed to reduce the module with error - " + str(e)
 
     def _create_new_module(self, module_dotpath, code):
-        """Writes the given code to the given module path and class name."""
+        """
+        Writes the given code to the given module path and class name.
+
+        Args:
+            module_dotpath (str): The dotpath of the module to update.
+            code (str): The code to write to the module.
+
+        Returns:
+            str: The result of the creation.
+        """
         try:
             self.writer.create_new_module(module_dotpath, code, self.do_write)
             return "Success"
