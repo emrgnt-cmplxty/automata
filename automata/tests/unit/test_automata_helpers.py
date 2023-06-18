@@ -1,6 +1,6 @@
 import textwrap
 
-from automata.core.agent.actions import AutomataActionExtractor as ActionExtractor
+from automata.core.agent.action import AutomataActionExtractor as ActionExtractor
 from automata.core.agent.agent_utils import (
     generate_user_observation_message,
     retrieve_completion_message,
@@ -220,23 +220,23 @@ def test_extract_actions_7():
         - actions
             - tool_query_0
                 - tool_name
-                    - python-indexer-retrieve-docstring
+                    - py-retriever-retrieve-docstring
                 - tool_args
                     - core.utils
                     - calculate_similarity
             - tool_query_1
                 - tool_name
-                    - python-indexer-retrieve-code
+                    - py-retriever-retrieve-code
                 - tool_args
                     - core.utils
                     - calculate_similarity
         """
     )
     actions = ActionExtractor.extract_actions(text)
-    assert actions[0].tool_name == "python-indexer-retrieve-docstring"
+    assert actions[0].tool_name == "py-retriever-retrieve-docstring"
     assert actions[0].tool_args == ["core.utils", "calculate_similarity"]
 
-    assert actions[1].tool_name == "python-indexer-retrieve-code"
+    assert actions[1].tool_name == "py-retriever-retrieve-code"
     assert actions[1].tool_args == ["core.utils", "calculate_similarity"]
 
 

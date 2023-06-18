@@ -18,10 +18,10 @@ def test_build_tool_message(automata_agent_config_builder):
     config = automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits).build()
     tools_messages = config._build_tool_message()
     assert len(tools_messages) > 1_000
-    assert "python-indexer-retrieve-code" in tools_messages
-    assert "python-indexer-retrieve-docstring" in tools_messages
-    assert "python-indexer-retrieve-raw-code" in tools_messages
-    assert "python-writer-update-module" in tools_messages
+    assert "py-retriever-retrieve-code" in tools_messages
+    assert "py-retriever-retrieve-docstring" in tools_messages
+    assert "py-retriever-retrieve-raw-code" in tools_messages
+    assert "py-writer-update-module" in tools_messages
 
 
 def test_build_initial_messages(automata_agent):

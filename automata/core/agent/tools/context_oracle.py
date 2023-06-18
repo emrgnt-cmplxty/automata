@@ -10,9 +10,9 @@ from automata.core.symbol.search.symbol_search import SymbolSearch
 logger = logging.getLogger(__name__)
 
 
-class ContextOracle(AgentTool):
+class ContextOracleTool(AgentTool):
     """
-    ContextOracle is responsible for managing context oracle tools.
+    ContextOracleTool is responsible for managing context oracle tools.
     """
 
     def __init__(
@@ -21,7 +21,7 @@ class ContextOracle(AgentTool):
         symbol_doc_similarity: SymbolSimilarity,
     ):
         """
-        Initializes PyContextOracle with given SymbolSearch, SymbolSimilarity.
+        Initializes ContextOracleTool with given SymbolSearch, SymbolSimilarity.
 
         Args:
             symbol_search (SymbolSearch): The symbol search object.
@@ -40,7 +40,7 @@ class ContextOracle(AgentTool):
         tools = [
             Tool(
                 name="context-oracle",
-                func=self._context_generator,
+                func=lambda context: self._context_generator(*context),
                 description=textwrap.dedent(
                     """
                 This tool combines SymbolSearch and SymbolSimilarity to create contexts. 

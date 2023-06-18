@@ -81,7 +81,7 @@ system_instruction_template: >
       - actions
         - tool_query_1
           - tool_name
-            - python-writer-update-module
+            - py-writer-update-module
           - tool_args
             - tools.python_tools.documentation.documentation_gpt
             - DocumentationGPT
@@ -123,7 +123,7 @@ system_instruction_template: >
       - actions
         - tool_query_1
           - tool_name
-            - python-writer-update-module
+            - py-writer-update-module
           - tool_args
             - tools.python_tools.tool_management.base_tool_manager
             - BaseToolManager
@@ -161,7 +161,7 @@ system_instruction_template: >
       - actions
         - tool_query_1
           - tool_name
-            - python-writer-update-module
+            - py-writer-update-module
           - tool_args
             - tools.utils
             - None
@@ -187,7 +187,7 @@ system_instruction_template: >
       - actions
         - tool_query_1
           - tool_name
-            - python-writer-update-module
+            - py-writer-update-module
           - tool_args
             - tools.utils
             - None
@@ -211,7 +211,7 @@ system_instruction_template: >
       - actions
         - tool_query_1
           - tool_name
-            - python-writer-update-module
+            - py-writer-update-module
           - tool_args
             - tools.utils
             - None

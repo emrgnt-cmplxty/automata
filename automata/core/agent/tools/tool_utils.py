@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
+from automata.core.agent.tools.context_oracle import ContextOracleTool
 from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
 from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
 from automata.core.agent.tools.symbol_search import SymbolSearchTool
@@ -12,6 +13,7 @@ from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.coding.py_coding.writer import PyCodeWriter
 from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
@@ -31,6 +33,18 @@ class AgentToolFactory:
 
     @staticmethod
     def create_agent_tool(toolkit_type: ToolkitType) -> AgentTool:
+        """
+        Create a tool manager for the specified toolkit type.
+
+        Args:
+            toolkit_type (ToolkitType): The type of toolkit to create a tool manager for.
+
+        Returns:
+            AgentTool: The tool manager for the specified toolkit type.
+        # TODO - Decide on how to avoid hard-coding the json file paths.
+        # TODO - The likely answer is to introduce some element of dependency injection.
+                 Likely through the use of kwargs
+        """
         if toolkit_type == ToolkitType.PY_RETRIEVER:
             if AgentToolFactory._retriever_instance is None:
                 AgentToolFactory._retriever_instance = PyCodeRetriever()
@@ -59,6 +73,40 @@ class AgentToolFactory:
                 code_subgraph=subgraph,
             )
             return SymbolSearchTool(symbol_search=symbol_search)
+        elif toolkit_type == ToolkitType.CONTEXT_ORACLE:
+            graph = SymbolGraph()
+            subgraph = graph.get_rankable_symbol_subgraph()
+
+            code_embedding_fpath = os.path.join(
+                config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+            )
+            embedding_provider = OpenAIEmbedding()
+            code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
+            code_embedding_handler = SymbolCodeEmbeddingHandler(
+                code_embedding_db, embedding_provider
+            )
+
+            symbol_similarity = SymbolSimilarity(code_embedding_handler)
+            symbol_search = SymbolSearch(
+                graph,
+                symbol_similarity,
+                symbol_rank_config=SymbolRankConfig(),
+                code_subgraph=subgraph,
+            )
+
+            doc_embedding_fpath = os.path.join(
+                config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
+            )
+            doc_embedding_db = JSONVectorDatabase(doc_embedding_fpath)
+            doc_embedding_handler = SymbolDocEmbeddingHandler(
+                doc_embedding_db, embedding_provider, code_embedding_handler
+            )
+
+            symbol_doc_similarity = SymbolSimilarity(doc_embedding_handler)
+            return ContextOracleTool(
+                symbol_search=symbol_search, symbol_doc_similarity=symbol_doc_similarity
+            )
+
         else:
             raise ValueError("Unknown toolkit type: %s" % toolkit_type)
 

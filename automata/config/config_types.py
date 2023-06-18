@@ -87,7 +87,7 @@ class AutomataAgentConfig(BaseModel):
     """
 
     class Config:
-        SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo"]
+        SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k"]
         arbitrary_types_allowed = True
 
     config_name: AgentConfigName = AgentConfigName.DEFAULT
@@ -154,7 +154,7 @@ class AutomataAgentConfig(BaseModel):
         return config
 
     @classmethod
-    def _add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig") -> None:
+    def _add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig"):
         """Handles the overview input for the agent."""
         from automata.core.utils import root_py_fpath
 

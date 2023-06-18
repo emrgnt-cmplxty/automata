@@ -1,15 +1,18 @@
 from enum import Enum
 
+SUPPORTED_CODING_LANGUAGES = ["python"]
+
 
 class ActionIndicator(Enum):
+    """The action indicator for the action line of a tool."""
+
     ACTION = "- "
     CODE = "```"
 
 
-SUPPORTED_CODING_LANGUAGES = ["python"]
-
-
 class ToolField(Enum):
+    """The fields of a tool."""
+
     INDICATOR = "tool_query"
     NAME = "tool_name"
     ARGS = "tool_args"
@@ -18,6 +21,8 @@ class ToolField(Enum):
 
 
 class AgentField(Enum):
+    """The fields of an agent."""
+
     INDICATOR = "agent_query"
     NAME = "agent_version"
     ARGS = "agent_instruction"
@@ -26,5 +31,7 @@ class AgentField(Enum):
 
 
 class ResultField(Enum):
+    """The fields of a result."""
+
     INDICATOR = "return_result"
     SPEC_LINES = 2

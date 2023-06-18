@@ -5,7 +5,7 @@ import pytest
 
 from automata.config.agent_config_builder import build_agent_message
 from automata.config.config_types import AgentConfigName, AutomataAgentConfig
-from automata.core.agent.actions import AgentAction
+from automata.core.agent.action import AgentAction
 from automata.core.agent.coordinator import AutomataCoordinator, AutomataInstance
 
 
@@ -172,13 +172,13 @@ def mock_openai_response_with_agent_query_and_tool_queries():
                         - actions
                             - tool_query_0
                                 - tool_name
-                                    - python-indexer-retrieve-docstring
+                                    - py-retriever-retrieve-docstring
                                 - tool_args
                                     - core.utils
                                     - calculate_similarity
                             - tool_query_1
                                 - tool_name
-                                    - python-indexer-retrieve-code
+                                    - py-retriever-retrieve-code
                                 - tool_args
                                     - core.utils
                                     - calculate_similarity
