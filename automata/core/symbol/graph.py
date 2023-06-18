@@ -1,7 +1,8 @@
 import logging
 import os
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict
@@ -21,6 +22,7 @@ from automata.core.symbol.symbol_utils import (
     get_rankable_symbols,
 )
 from automata.core.utils import config_fpath
+from config import MAX_WORKERS
 
 logger = logging.getLogger(__name__)
 
@@ -301,6 +303,8 @@ class _SymbolGraphNavigator:
             graph (nx.MultiDiGraph): A networkx graph
         """
         self._graph = graph
+        print("Precomputing bounding boxes...")
+        self.bounding_boxes = self._pre_compute_bounding_boxes()
 
     def get_all_files(self) -> List[SymbolFile]:
         """
@@ -454,13 +458,16 @@ class _SymbolGraphNavigator:
             List[SymbolReference]: A list of SymbolReference objects in scope
         """
         file_name = self._get_symbol_containing_file(symbol)
-        fst_object = convert_to_fst_object(symbol)
+        if symbol not in self.bounding_boxes:
+            return []
+        
+        bounding_box = self.bounding_boxes[symbol]
 
         # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
-            fst_object.absolute_bounding_box.top_left.line - 1,
-            fst_object.absolute_bounding_box.top_left.column - 1,
-            fst_object.absolute_bounding_box.bottom_right.line - 1,
+            bounding_box.top_left.line - 1,
+            bounding_box.top_left.column - 1,
+            bounding_box.bottom_right.line - 1,
         )
 
         references_in_parent_module = self._get_references_to_module(file_name)
@@ -490,6 +497,39 @@ class _SymbolGraphNavigator:
                 result.append(data.get("symbol_reference"))
 
         return result
+
+    def _pre_compute_bounding_boxes(self):
+        """
+        Pre-computes bounding boxes for all symbols in the graph
+        """
+        filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
+
+        bounding_boxes = {}
+        with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            results = executor.map(_SymbolGraphNavigator.process_symbol_bounds, filtered_symbols)
+            for result in results:
+                if result is not None:
+                    symbol, bounding_box = result
+                    bounding_boxes[symbol] = bounding_box
+        return bounding_boxes
+
+    @staticmethod
+    def process_symbol_bounds(symbol) -> Optional[Tuple[Symbol, Any]]:
+        """
+        Processes the bounding box for a symbol
+
+        Args:
+            symbol (Symbol): The symbol to process the bounding box for
+        Returns:
+            Optional[Tuple[Symbol, BoundingBox]]: A tuple of the symbol and its bounding box
+        """
+        try:
+            fst_object = convert_to_fst_object(symbol)
+            bounding_box = fst_object.absolute_bounding_box
+            return symbol, bounding_box
+        except Exception as e:
+            logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
+            return None
 
 
 class SymbolGraph:
@@ -627,11 +667,7 @@ class SymbolGraph:
         for symbol in tqdm(filtered_symbols):
             try:
                 dependencies = self.get_symbol_dependencies(symbol)
-                relationships = self.get_symbol_relationships(symbol)
-                filtered_related_symbols = get_rankable_symbols(
-                    list(dependencies.union(relationships))
-                )
-                for dependency in filtered_related_symbols:
+                for dependency in dependencies:
                     if flow_rank == "to_dependents":
                         G.add_edge(symbol, dependency)
                     elif flow_rank == "from_dependents":
