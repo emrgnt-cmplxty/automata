@@ -1,8 +1,6 @@
 import logging
-import os
-from typing import Dict, List
+from typing import Any, Dict, List, Tuple
 
-from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.agent.tools.context_oracle import ContextOracleTool
 from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
@@ -11,146 +9,172 @@ from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.coding.py_coding.writer import PyCodeWriter
-from automata.core.database.vector import JSONVectorDatabase
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.symbol.graph import SymbolGraph
-from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.utils import config_fpath
 
 logger = logging.getLogger(__name__)
+
+
+class ToolCreationError(Exception):
+    """An exception for when a tool cannot be created."""
+
+    ERROR_STRING = "Must provide a valid %s to construct a %s."
+
+    def __init__(self, arg_type: str, class_name: str):
+        super().__init__(self.ERROR_STRING % (arg_type, class_name))
+
+
+class UnknownToolError(Exception):
+    """An exception for when an unknown toolkit type is provided."""
+
+    ERROR_STRING = "Unknown toolkit type: %s"
+
+    def __init__(self, tool_kit: ToolkitType):
+        super().__init__(self.ERROR_STRING % (tool_kit))
 
 
 class AgentToolFactory:
     """
     A class for creating tool managers.
+    TODO: It is unfortunate that we must maintain these mappings locally
+        in this class. It would be better if we could generate it dynamically
+        perhaps by using a decorator on the tool classes themselves.
     """
 
     _retriever_instance = None
 
+    TOOLKIT_TYPE_TO_TOOL_CLASS = {
+        ToolkitType.PY_RETRIEVER: PyCodeRetrieverTool,
+        ToolkitType.PY_WRITER: PyCodeWriterTool,
+        ToolkitType.SYMBOL_SEARCHER: SymbolSearchTool,
+        ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
+    }
+
+    TOOLKIT_TYPE_TO_ARGS: Dict[ToolkitType, List[Tuple[str, Any]]] = {
+        ToolkitType.PY_RETRIEVER: [("py_retriever", PyCodeRetriever)],
+        ToolkitType.PY_WRITER: [("py_writer", PyCodeWriter)],
+        ToolkitType.SYMBOL_SEARCHER: [("symbol_search", SymbolSearch)],
+        ToolkitType.CONTEXT_ORACLE: [
+            ("symbol_search", SymbolSearch),
+            ("symbol_doc_similarity", SymbolSimilarity),
+        ],
+    }
+
     @staticmethod
-    def create_agent_tool(toolkit_type: ToolkitType) -> AgentTool:
+    def create_agent_tool(toolkit_type: ToolkitType, **kwargs) -> AgentTool:
         """
         Create a tool manager for the specified toolkit type.
 
         Args:
             toolkit_type (ToolkitType): The type of toolkit to create a tool manager for.
 
+            kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
+              for the specified toolkit type. The possible arguments are:
+                py_retriever - PyCodeRetriever
+                py_writer - PyCodeWriter
+                symbol_search - SymbolSearch
+                symbol_doc_similarity - SymbolSimilarity
+
         Returns:
             AgentTool: The tool manager for the specified toolkit type.
-        # TODO - Decide on how to avoid hard-coding the json file paths.
-        # TODO - The likely answer is to introduce some element of dependency injection.
-                 Likely through the use of kwargs
+
+        Raises:
+            ToolCreationError: If the required arguments are not provided.
+            UnknownToolError: If the toolkit type is not recognized.
         """
-        if toolkit_type == ToolkitType.PY_RETRIEVER:
-            if AgentToolFactory._retriever_instance is None:
-                AgentToolFactory._retriever_instance = PyCodeRetriever()
-            return PyCodeRetrieverTool(py_retriever=AgentToolFactory._retriever_instance)
-        elif toolkit_type == ToolkitType.PY_WRITER:
-            if AgentToolFactory._retriever_instance is None:
-                AgentToolFactory._retriever_instance = PyCodeRetriever()
-            return PyCodeWriterTool(py_writer=PyCodeWriter(AgentToolFactory._retriever_instance))
-        elif toolkit_type == ToolkitType.SYMBOL_SEARCHER:
-            graph = SymbolGraph()
-            subgraph = graph.get_rankable_symbol_subgraph()
 
-            code_embedding_fpath = os.path.join(
-                config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
-            )
-            code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
-            code_embedding_handler = SymbolCodeEmbeddingHandler(
-                code_embedding_db, OpenAIEmbedding()
-            )
+        if toolkit_type not in AgentToolFactory.TOOLKIT_TYPE_TO_TOOL_CLASS:
+            raise UnknownToolError(toolkit_type)
 
-            symbol_similarity = SymbolSimilarity(code_embedding_handler)
-            symbol_search = SymbolSearch(
-                graph,
-                symbol_similarity,
-                symbol_rank_config=SymbolRankConfig(),
-                code_subgraph=subgraph,
-            )
-            return SymbolSearchTool(symbol_search=symbol_search)
-        elif toolkit_type == ToolkitType.CONTEXT_ORACLE:
-            graph = SymbolGraph()
-            subgraph = graph.get_rankable_symbol_subgraph()
+        tool_class = AgentToolFactory.TOOLKIT_TYPE_TO_TOOL_CLASS[toolkit_type]
+        args = AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[toolkit_type]
 
-            code_embedding_fpath = os.path.join(
-                config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
-            )
-            embedding_provider = OpenAIEmbedding()
-            code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
-            code_embedding_handler = SymbolCodeEmbeddingHandler(
-                code_embedding_db, embedding_provider
-            )
+        tool_kwargs = {}
+        for arg_name, arg_class in args:
+            arg_value = kwargs.get(arg_name, None)
+            if arg_value is None or not isinstance(arg_value, arg_class):
+                raise ToolCreationError(arg_name, tool_class.__name__)
+            tool_kwargs[arg_name] = arg_value
 
-            symbol_similarity = SymbolSimilarity(code_embedding_handler)
-            symbol_search = SymbolSearch(
-                graph,
-                symbol_similarity,
-                symbol_rank_config=SymbolRankConfig(),
-                code_subgraph=subgraph,
-            )
-
-            doc_embedding_fpath = os.path.join(
-                config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
-            )
-            doc_embedding_db = JSONVectorDatabase(doc_embedding_fpath)
-            doc_embedding_handler = SymbolDocEmbeddingHandler(
-                doc_embedding_db, embedding_provider, code_embedding_handler
-            )
-
-            symbol_doc_similarity = SymbolSimilarity(doc_embedding_handler)
-            return ContextOracleTool(
-                symbol_search=symbol_search, symbol_doc_similarity=symbol_doc_similarity
-            )
-
-        else:
-            raise ValueError("Unknown toolkit type: %s" % toolkit_type)
+        return tool_class(**tool_kwargs)
 
 
 class ToolkitBuilder:
+    """A class for building toolkits."""
+
     def __init__(self, **kwargs):
-        """Initializes a ToolkitBuilder object with the given inputs."""
+        """
+        Initializes a ToolkitBuilder.
+
+        Note:
+            The kwargs should contain the required AgentTool arguments for the specified toolkit type.
+            For more information, see the AgentToolFactory.create_agent_tool method.
+        """
 
         self._tool_management: Dict[ToolkitType, AgentTool] = {}
+        self.kwargs = kwargs
 
-    def _build_toolkit(self, toolkit_type: ToolkitType) -> Toolkit:
-        """Builds a toolkit of the given type."""
-        agent_tool = AgentToolFactory.create_agent_tool(toolkit_type)
+    def build_toolkit(self, toolkit_type: ToolkitType) -> Toolkit:
+        """
+        Builds a toolkit of the given type.
+
+        Args:
+            toolkit_type (ToolkitType): The type of toolkit to build.
+
+        Returns:
+            Toolkit: The toolkit of the given type.
+
+        Raises:
+            UnknownToolError: If the toolkit type is not recognized.
+        """
+        agent_tool = AgentToolFactory.create_agent_tool(toolkit_type, **self.kwargs)
 
         if not agent_tool:
-            raise ValueError("Unknown toolkit type: %s" % toolkit_type)
+            raise UnknownToolError(toolkit_type)
+
         tools = ToolkitBuilder.build(agent_tool)
         return Toolkit(tools)
 
     @staticmethod
     def build(agent_tool: AgentTool) -> List[Tool]:
-        """Build tools from a tool manager."""
+        """
+        Build tools from a tool manager.
+
+        Args:
+            agent_tool (AgentTool): The agent tool to build.
+
+        Returns:
+            List[Tool]: The list of tools built from the tool manager.
+        """
         return agent_tool.build()
 
 
 def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Toolkit]:
+    """
+    This function builds a list of toolkits from a list of toolkit names.
+
+    Args:
+        tool_list (List[str]): A list of toolkit names.
+          These tool names must map onto valid ToolkitType values.
+
+    Returns:
+        Dict[ToolkitType, Toolkit]: A dictionary mapping toolkit types to toolkits.
+
+    Raises:
+        UnknownToolError: If a toolkit name is not recognized.
+
+    """
     toolkits: Dict[ToolkitType, Toolkit] = {}
     toolkit_builder = ToolkitBuilder(**kwargs)
+
     for tool_name in tool_list:
         tool_name = tool_name.strip()
-        toolkit_type = None
-        if tool_name == "py_retriever":
-            toolkit_type = ToolkitType.PY_RETRIEVER
-        elif tool_name == "py_writer":
-            toolkit_type = ToolkitType.PY_WRITER
-        elif tool_name == "symbol_searcher":
-            toolkit_type = ToolkitType.SYMBOL_SEARCHER
-        elif tool_name == "context_oracle":
-            toolkit_type = ToolkitType.CONTEXT_ORACLE
-        else:
-            logger.warning("Unknown tool: %s", tool_name)
-            continue
+        toolkit_type = ToolkitType(tool_name)
 
-        toolkit = toolkit_builder._build_toolkit(toolkit_type)  # type: ignore
+        if toolkit_type is None:
+            raise UnknownToolError(toolkit_type)
+
+        toolkit = toolkit_builder.build_toolkit(toolkit_type)
         toolkits[toolkit_type] = toolkit
 
     return toolkits

@@ -9,6 +9,7 @@ from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName, AutomataInstructionPayload
 from automata.core.agent.agent import AutomataAgent
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
@@ -133,9 +134,11 @@ def symbol_searcher(mocker, symbol_graph_mock):
 
 
 @pytest.fixture
-def automata_agent():
+def automata_agent(mocker):
     tool_list = ["py_retriever"]
-    mock_llm_toolkits = build_llm_toolkits(tool_list)
+    mock_llm_toolkits = build_llm_toolkits(
+        tool_list, py_retriever=mocker.MagicMock(spec=PyCodeRetriever)
+    )
 
     instruction_payload = AutomataInstructionPayload(agents_message="", overview="", tools="")
 

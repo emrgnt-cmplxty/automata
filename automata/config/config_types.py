@@ -123,9 +123,15 @@ class AutomataAgentConfig(BaseModel):
 
     @classmethod
     def load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
-        """Loads the automata.yaml config file."""
-        from automata.core.agent.tools.tool_utils import build_llm_toolkits
+        """
+        Loads the automata.yaml config file.
 
+        Args:
+            config_name (AgentConfigName): The config_name of the agent to use.
+
+        Returns:
+            Dict: The loaded yaml config.
+        """
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
         config_abs_path = os.path.join(
             file_dir_path, ConfigCategory.AGENT.value, f"{config_name.value}.yaml"
@@ -133,11 +139,6 @@ class AutomataAgentConfig(BaseModel):
 
         with open(config_abs_path, "r") as file:
             loaded_yaml = yaml.safe_load(file)
-
-        if "tools" in loaded_yaml:
-            tools = loaded_yaml["tools"].split(",")
-            loaded_yaml["llm_toolkits"] = build_llm_toolkits(tools)
-
         loaded_yaml["config_name"] = config_name
         return loaded_yaml
 

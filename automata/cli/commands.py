@@ -58,7 +58,7 @@ def run_code_embedding(ctx, *args, **kwargs):
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_code_embedding")
-    main(kwargs)
+    main(**kwargs)
 
 
 @common_options
@@ -80,7 +80,7 @@ def run_doc_embedding_l2(ctx, *args, **kwargs):
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l2")
-    main(kwargs)
+    main(**kwargs)
 
 
 @common_options
@@ -102,7 +102,7 @@ def run_doc_embedding_l3(ctx, *args, **kwargs):
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l3")
-    main(kwargs)
+    main(**kwargs)
 
 
 @common_options
@@ -124,11 +124,21 @@ def run_doc_post_process(ctx, *args, **kwargs):
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l3")
-    main(kwargs)
+    main(**kwargs)
 
 
 @common_options
 @cli.command()
+@click.option(
+    "--instructions",
+    default="This is a dummy instruction, return True.",
+    help="Which instructions to use for the agent.",
+)
+@click.option(
+    "--tools",
+    default="context_oracle",
+    help="Which tools to use?.",
+)
 @click.pass_context
 def run_agent(ctx, *args, **kwargs):
     """Run the agent."""
@@ -136,4 +146,5 @@ def run_agent(ctx, *args, **kwargs):
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Running agent")
-    main(kwargs)
+    print("kwargs = ", kwargs)
+    main(**kwargs)
