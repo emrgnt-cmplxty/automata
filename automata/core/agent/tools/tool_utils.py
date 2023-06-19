@@ -1,6 +1,8 @@
 import logging
+import os
 from typing import Any, Dict, List, Tuple
 
+from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.agent.tools.context_oracle import ContextOracleTool
 from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
@@ -9,10 +11,121 @@ from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.coding.py_coding.writer import PyCodeWriter
+from automata.core.context.py_context.retriever import (
+    PyContextRetriever,
+    PyContextRetrieverConfig,
+)
+from automata.core.database.vector import JSONVectorDatabase
+from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
+from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.symbol.graph import SymbolGraph
+from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
+from automata.core.utils import config_fpath
 
 logger = logging.getLogger(__name__)
+
+
+class DependencyFactory:
+    """Creates dependencies for input Toolkit construction."""
+
+    DEFAULT_SCIP_FPATH = os.path.join(config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
+
+    DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
+        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+    )
+
+    DEFAULT_DOC_EMBEDDING_FPATH = os.path.join(
+        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
+    )
+
+    def __init__(self, **kwargs):
+        """
+        Acceptable Overrides (kwargs):
+            symbol_graph_path - Defaults to DependencyFactory.DEFAULT_SCIP_FPATH
+            flow_rank - Defaults to "bidirectional"
+            embedding_provider - Defaults to OpenAIEmbedding()
+            code_embedding_fpath - Defaults to DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
+            doc_embedding_fpath - Defaults to DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
+            symbol_rank_config - Defaults to SymbolRankConfig()
+            py_context_retriever_config - Defaults to PyContextRetrieverConfig()
+        }
+        """
+        self._instances = {}
+        self.overrides = kwargs
+
+    def get(self, dependency: str):
+        if dependency in self.overrides:
+            return self.overrides[dependency]
+
+        if dependency in self._instances:
+            return self._instances[dependency]
+
+        method_name = f"create_{dependency}"
+        if hasattr(self, method_name):
+            creation_method = getattr(self, method_name)
+            logger.info("Creating dependency {dependency}")
+            instance = creation_method()
+        else:
+            raise ValueError(f"Dependency {dependency} not found.")
+
+        self._instances[dependency] = instance
+
+        return instance
+
+    def create_symbol_graph(self):
+        return SymbolGraph(
+            self.overrides.get("symbol_graph_path", DependencyFactory.DEFAULT_SCIP_FPATH)
+        )
+
+    def create_subgraph(self):
+        symbol_graph = self.get("symbol_graph")
+        return symbol_graph.get_rankable_symbol_subgraph(
+            self.overrides.get("flow_rank", "bidirectional")
+        )
+
+    def create_symbol_code_similarity(self):
+        code_embedding_fpath = self.overrides.get(
+            "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
+        )
+        code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
+
+        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbedding())
+        code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
+        return SymbolSimilarity(code_embedding_handler)
+
+    def create_symbol_doc_similarity(self):
+        doc_embedding_fpath = self.overrides.get(
+            "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
+        )
+        doc_embedding_db = JSONVectorDatabase(doc_embedding_fpath)
+
+        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbedding())
+        symbol_search = self.get("symbol_search")
+        py_context_retriever = self.get("py_context_retriever")
+
+        doc_embedding_handler = SymbolDocEmbeddingHandler(
+            doc_embedding_db, embedding_provider, symbol_search, py_context_retriever
+        )
+        return SymbolSimilarity(doc_embedding_handler)
+
+    def create_symbol_search(self):
+        symbol_graph = self.get("symbol_graph")
+        symbol_code_similarity = self.get("symbol_code_similarity")
+        symbol_rank_config = self.overrides.get("symbol_rank_config", SymbolRankConfig())
+        symbol_graph_subgraph = self.get("subgraph")
+        return SymbolSearch(
+            symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
+        )
+
+    def create_py_context_retriever(self):
+        symbol_graph = self.get("symbol_graph")
+        py_context_retriever_config = self.overrides.get(
+            "py_context_retriever_config", PyContextRetrieverConfig()
+        )
+        return PyContextRetriever(symbol_graph, py_context_retriever_config)
 
 
 class ToolCreationError(Exception):

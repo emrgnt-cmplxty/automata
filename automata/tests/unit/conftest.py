@@ -125,11 +125,12 @@ def symbol_searcher(mocker, symbol_graph_mock):
     symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
     symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
     symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
+    code_subgraph_mock = mocker.MagicMock(spec=SymbolGraph.SubGraph)
+    code_subgraph_mock.parent = symbol_graph_mock
+    code_subgraph_mock.graph = mocker.MagicMock()
 
     return SymbolSearch(
-        symbol_graph_mock,
-        symbol_similarity_mock,
-        symbol_rank_config_mock,
+        symbol_graph_mock, symbol_similarity_mock, symbol_rank_config_mock, code_subgraph_mock
     )
 
 

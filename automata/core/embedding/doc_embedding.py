@@ -7,8 +7,7 @@ from jinja2 import Template
 from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
 from automata.core.context.py_context.retriever import PyContextRetriever
 from automata.core.database.vector import VectorDatabaseProvider
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.symbol.graph import SymbolGraph
+from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
@@ -21,7 +20,8 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         self,
         embedding_db: VectorDatabaseProvider,
         embedding_provider: EmbeddingProvider,
-        code_embedding_handler: SymbolCodeEmbeddingHandler,
+        symbol_search: SymbolSearch,
+        retriever: PyContextRetriever,
         embedding_db_l2: Optional[VectorDatabaseProvider] = None,
     ):
         """
@@ -35,18 +35,8 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         TODO: Add more logic around documentation updating
         """
         super().__init__(embedding_db, embedding_provider)
-
-        from automata.core.embedding.symbol_similarity import SymbolSimilarity
-        from automata.core.symbol.search.rank import SymbolRankConfig
-        from automata.core.symbol.search.symbol_search import SymbolSearch
-
-        graph = SymbolGraph()
-        subgraph = graph.get_rankable_symbol_subgraph()
-        symbol_similarity = SymbolSimilarity(code_embedding_handler)
-        self.graph = graph
-        self.symbol_search = SymbolSearch(
-            graph, symbol_similarity, symbol_rank_config=SymbolRankConfig(), code_subgraph=subgraph
-        )
+        self.symbol_search = symbol_search
+        self.retriever = retriever
         self.embedding_db_l2 = embedding_db_l2
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
@@ -167,12 +157,12 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             elif search_results_1[i] not in set_list:
                 search_list.append(search_results_1[i][0])
 
-        retriever = PyContextRetriever(self.graph, doc_embedding_db=self.embedding_db_l2)
-        retriever.process_symbol(symbol, search_list)
+        self.retriever.reset()
+        self.retriever.process_symbol(symbol, search_list)
 
         prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
             symbol_dotpath=abbreviated_selected_symbol,
-            symbol_context=retriever.get_context_buffer(),
+            symbol_context=self.retriever.get_context_buffer(),
         )
 
         document = get_doc(prompt)

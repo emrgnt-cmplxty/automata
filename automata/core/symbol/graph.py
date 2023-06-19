@@ -1,5 +1,4 @@
 import logging
-import os
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -8,7 +7,6 @@ import networkx as nx
 from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
-from automata.config.config_types import ConfigCategory
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.scip_pb2 import Index, SymbolRole
 from automata.core.symbol.symbol_types import (
@@ -21,7 +19,6 @@ from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
-from automata.core.utils import config_fpath
 from config import MAX_WORKERS
 
 logger = logging.getLogger(__name__)
@@ -554,11 +551,7 @@ class SymbolGraph:
         parent: "SymbolGraph"
         graph: nx.DiGraph
 
-    DEFAULT_SCIP_PATH = os.path.join(config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
-
-    def __init__(
-        self, index_path: str = DEFAULT_SCIP_PATH, build_caller_relationships: bool = False
-    ):
+    def __init__(self, index_path: str, build_caller_relationships: bool = False):
         """
         Initializes SymbolGraph with the path of an index protobuf file.
 
