@@ -69,7 +69,7 @@ class SymbolSearch:
         """
         query_vec = self.symbol_similarity.get_query_similarity_dict(query)
         transformed_query_vec = SymbolSearch.transform_dict_values(
-            query_vec, SymbolSearch.shifted_z_score_sq
+            query_vec, SymbolSearch.shifted_z_score_powered
         )
         ranks = self.symbol_rank.get_ranks(query_to_symbol_similarity=transformed_query_vec)
         return ranks
@@ -160,7 +160,9 @@ class SymbolSearch:
                 graph.remove_node(symbol)
 
     @staticmethod
-    def shifted_z_score_sq(values: Union[List[float], np.ndarray]) -> np.ndarray:
+    def shifted_z_score_powered(
+        values: Union[List[float], np.ndarray], power: int = 4
+    ) -> np.ndarray:
         """
         Compute z-score of a list of values
 
@@ -176,7 +178,7 @@ class SymbolSearch:
         mean = np.mean(values)
         std_dev = np.std(values)
         zscores = [(value - mean) / std_dev for value in values]
-        return (zscores - np.min(zscores)) ** 2
+        return (zscores - np.min(zscores)) ** power
 
     @staticmethod
     def transform_dict_values(

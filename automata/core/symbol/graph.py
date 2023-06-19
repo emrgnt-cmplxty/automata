@@ -303,8 +303,8 @@ class _SymbolGraphNavigator:
             graph (nx.MultiDiGraph): A networkx graph
         """
         self._graph = graph
-        print("Precomputing bounding boxes...")
-        self.bounding_boxes = self._pre_compute_bounding_boxes()
+        # TODO - Find the correct way to define a bounding box
+        self.bounding_box: Dict[Symbol, Any] = {}  # Default to empty bounding boxes
 
     def get_all_files(self) -> List[SymbolFile]:
         """
@@ -456,12 +456,19 @@ class _SymbolGraphNavigator:
 
         Returns:
             List[SymbolReference]: A list of SymbolReference objects in scope
+
+        Notes:
+            To cache the bounding boxes before calling this function, call
+            `self._pre_compute_rankable_bounding_boxes()`
+            This is recommended for scenarios where this function is called
+            across the entire
         """
-        file_name = self._get_symbol_containing_file(symbol)
-        if symbol not in self.bounding_boxes:
-            return []
-        
-        bounding_box = self.bounding_boxes[symbol]
+        # bounding boxes are cached
+        if len(self.bounding_box) > 0:
+            bounding_box = self.bounding_box[symbol]
+        else:
+            fst_object = convert_to_fst_object(symbol)
+            bounding_box = fst_object.absolute_bounding_box
 
         # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
@@ -470,6 +477,7 @@ class _SymbolGraphNavigator:
             bounding_box.bottom_right.line - 1,
         )
 
+        file_name = self._get_symbol_containing_file(symbol)
         references_in_parent_module = self._get_references_to_module(file_name)
         references_in_range = [
             ref
@@ -498,28 +506,36 @@ class _SymbolGraphNavigator:
 
         return result
 
-    def _pre_compute_bounding_boxes(self):
+    def _pre_compute_rankable_bounding_boxes(self):
         """
         Pre-computes bounding boxes for all symbols in the graph
         """
+
+        # Bounding boxes are already loaded
+        if len(self.bounding_box) > 0:
+            return
+
+        logger.info("Pre-computing bounding boxes for all rankable symbols")
         filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
 
         bounding_boxes = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            results = executor.map(_SymbolGraphNavigator.process_symbol_bounds, filtered_symbols)
+            results = executor.map(_SymbolGraphNavigator._process_symbol_bounds, filtered_symbols)
             for result in results:
                 if result is not None:
                     symbol, bounding_box = result
                     bounding_boxes[symbol] = bounding_box
-        return bounding_boxes
+        logger.info("Finished pre-computing bounding boxes for all rankable symbols")
+        self.bounding_box = bounding_boxes
 
     @staticmethod
-    def process_symbol_bounds(symbol) -> Optional[Tuple[Symbol, Any]]:
+    def _process_symbol_bounds(symbol: Symbol) -> Optional[Tuple[Symbol, Any]]:
         """
-        Processes the bounding box for a symbol
+        Processes the bounding box for a given symbol
 
         Args:
             symbol (Symbol): The symbol to process the bounding box for
+
         Returns:
             Optional[Tuple[Symbol, BoundingBox]]: A tuple of the symbol and its bounding box
         """
@@ -548,6 +564,7 @@ class SymbolGraph:
 
         Args:
             index_path (str): Path to index protobuf file
+
         Returns:
             SymbolGraph instance
         """
@@ -562,6 +579,7 @@ class SymbolGraph:
 
         Args:
             None
+
         Returns:
             List of all defined symbols.
         """
@@ -573,6 +591,7 @@ class SymbolGraph:
 
         Args:
             None
+
         Returns:
             List[Symbol]: List of all defined symbols.
         """
@@ -584,6 +603,7 @@ class SymbolGraph:
 
         Args:
             partial_py_path (PyPath): The partial path to explain
+
         Returns:
             Set[Symbol]: Set of symbols that follow the partial path
         """
@@ -595,6 +615,7 @@ class SymbolGraph:
 
         Args:
             symbol (Symbol): The symbol to get relationships for.
+
         Returns:
             Set[Symbol]: The list of relationships for the symbol.
 
@@ -609,6 +630,7 @@ class SymbolGraph:
 
         Args:
             symbol (Symbol): The symbol to get callers for.
+
         Returns:
             Dict[Symbol]: The map of callers to callees for the symbol.
         """
@@ -622,6 +644,7 @@ class SymbolGraph:
 
         Args:
             symbol (Symbol): The symbol to get callees for.
+
         Returns:
             Dict[Symbol]: The map of callees to callers for the symbol.
         """
@@ -633,6 +656,7 @@ class SymbolGraph:
 
         Args:
             module (Symbol): The module to locate references for
+
         Returns:
             List[SymbolReference]: List of symbol references
         """
@@ -649,12 +673,9 @@ class SymbolGraph:
 
         Returns:
             List[str]: The list of dependencies for the symbol.
-        TODO: Consider ways to make this more efficient.
         TODO: Find ways to better handle edge cases
         """
         G = nx.DiGraph()
-
-        # Filter the symbols based on the provided path filter
 
         filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
 
@@ -663,11 +684,17 @@ class SymbolGraph:
                 sym for sym in filtered_symbols if sym.dotpath.startswith(path_filter)  # type: ignore
             ]
 
+        self.navigator._pre_compute_rankable_bounding_boxes()
+
         logger.info("Building the rankable symbol subgraph...")
         for symbol in tqdm(filtered_symbols):
             try:
                 dependencies = self.get_symbol_dependencies(symbol)
-                for dependency in dependencies:
+                relationships = self.get_symbol_relationships(symbol)
+                filtered_related_symbols = get_rankable_symbols(
+                    list(dependencies.union(relationships))
+                )
+                for dependency in filtered_related_symbols:
                     if flow_rank == "to_dependents":
                         G.add_edge(symbol, dependency)
                     elif flow_rank == "from_dependents":

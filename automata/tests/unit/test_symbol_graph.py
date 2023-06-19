@@ -15,23 +15,6 @@ def test_get_all_symbols(symbol_graph):
     assert all(isinstance(s, Symbol) for s in graph_symbols)
 
 
-def test_build_real_graph():
-    # get local pwd
-    import os
-
-    path = os.path.dirname(os.path.realpath(__file__))
-
-    graph = SymbolGraph(os.path.join(path, "index.scip"))
-    all_symbols = sorted(graph.get_all_available_symbols(), key=lambda x: x.dotpath)
-    all_files = graph.get_all_files()
-
-    assert isinstance(graph, SymbolGraph)
-    assert len(all_symbols) == 1_874
-    assert len(all_files) == 91
-
-    assert False
-
-
 def test_build_real_graph_and_subgraph():
     # get local pwd
     import os
@@ -40,8 +23,6 @@ def test_build_real_graph_and_subgraph():
 
     graph = SymbolGraph(os.path.join(path, "index.scip"))
     subgraph = graph.get_rankable_symbol_subgraph()
-    print("len(subgraph) = ", len(subgraph.graph))
-    print("subgraph.nodes = ", subgraph.graph)
     all_symbols = sorted(graph.get_all_available_symbols(), key=lambda x: x.dotpath)
     all_files = graph.get_all_files()
 
@@ -50,5 +31,3 @@ def test_build_real_graph_and_subgraph():
     assert len(all_files) == 91
     assert len(subgraph.graph) == 87
     assert subgraph.graph.number_of_edges() == 255
-
-    assert False
