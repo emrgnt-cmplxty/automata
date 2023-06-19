@@ -107,7 +107,7 @@ class PyCodeWriterTool(AgentTool):
         code: str,
     ) -> str:
         """
-        Writes the given code to the given module path and class name.
+        Updates an existing module with the given code.
 
         Args:
             module_dotpath (str): The dotpath of the module to update.
@@ -129,7 +129,7 @@ class PyCodeWriterTool(AgentTool):
         object_dotpath: str,
     ) -> str:
         """
-        Writes the given code to the given module path and class name.
+        Deletes an object from an existing module.
 
         Args:
             module_dotpath (str): The dotpath of the module to update.
@@ -146,7 +146,7 @@ class PyCodeWriterTool(AgentTool):
 
     def _create_new_module(self, module_dotpath, code):
         """
-        Writes the given code to the given module path and class name.
+        Creates a new module with the given code.
 
         Args:
             module_dotpath (str): The dotpath of the module to update.
