@@ -1,5 +1,5 @@
 """Interface for tools."""
-from enum import Enum, auto
+from enum import Enum
 from inspect import signature
 from typing import Any, Awaitable, Callable, List, Optional, Tuple, Union
 
@@ -117,7 +117,7 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
-    PY_RETRIEVER = auto()
-    PY_WRITER = auto()
-    SYMBOL_SEARCHER = auto()
-    CONTEXT_ORACLE = auto()
+    PY_RETRIEVER = "py_retriever"
+    PY_WRITER = "py_writer"
+    SYMBOL_SEARCHER = "symbol_searcher"
+    CONTEXT_ORACLE = "context_oracle"

@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from automata.config.config_types import (
@@ -53,7 +55,14 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
 
 def test_builder_accepts_all_fields(automata_agent_config_builder):
     tool_list = ["py_retriever", "py_writer"]
-    mock_llm_toolkits = build_llm_toolkits(tool_list)
+    from automata.core.coding.py_coding.retriever import PyCodeRetriever
+    from automata.core.coding.py_coding.writer import PyCodeWriter
+
+    mock_llm_toolkits = build_llm_toolkits(
+        tool_list,
+        py_retriever=MagicMock(spec=PyCodeRetriever),
+        py_writer=MagicMock(spec=PyCodeWriter),
+    )
 
     config = (
         automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits)

@@ -24,37 +24,32 @@ class SymbolSearch:
     def __init__(
         self,
         symbol_graph: SymbolGraph,
-        symbol_similarity: SymbolSimilarity,
+        symbol_code_similarity: SymbolSimilarity,
         symbol_rank_config: SymbolRankConfig,
-        code_subgraph: Optional[SymbolGraph.SubGraph] = None,
+        code_subgraph: SymbolGraph.SubGraph,
         *args,
         **kwargs,
     ):
         """
         Args:
             symbol_graph (SymbolGraph): A SymbolGraph
-            symbol_similarity (SymbolSimilarity): A SymbolSimilarity object
+            symbol_code_similarity (SymbolSimilarity): A SymbolSimilarity object with a code embedding handler
             symbol_rank_config (Optional[SymbolRankConfig]): A SymbolRankConfig object
-            code_subgraph (Optional[SymbolGraph.SubGraph]): A subgraph of the SymbolGraph
+            code_subgraph: A subgraph of the SymbolGraph
         """
 
-        if not code_subgraph:
-            code_subgraph = symbol_graph.get_rankable_symbol_subgraph(
-                kwargs.get("flow_rank", "bidirectional")
-            )
-        else:
-            if not code_subgraph.parent == symbol_graph:
-                raise ValueError("code_subgraph must be a subgraph of symbol_graph")
+        if not code_subgraph.parent == symbol_graph:
+            raise ValueError("code_subgraph must be a subgraph of symbol_graph")
 
         graph_symbols = symbol_graph.get_all_available_symbols()
-        embedding_symbols = symbol_similarity.embedding_handler.get_all_supported_symbols()
+        embedding_symbols = symbol_code_similarity.embedding_handler.get_all_supported_symbols()
         available_symbols = set(graph_symbols).intersection(set(embedding_symbols))
         SymbolSearch.filter_graph(code_subgraph.graph, available_symbols)
 
         # TODO - Do we need to filter the SymbolGraph as well?
         self.symbol_graph = symbol_graph
-        self.symbol_similarity = symbol_similarity
-        symbol_similarity.set_available_symbols(available_symbols)
+        self.symbol_code_similarity = symbol_code_similarity
+        symbol_code_similarity.set_available_symbols(available_symbols)
         self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
@@ -67,7 +62,7 @@ class SymbolSearch:
         Returns:
             A list of tuples of the form (symbol_uri, rank)
         """
-        query_vec = self.symbol_similarity.get_query_similarity_dict(query)
+        query_vec = self.symbol_code_similarity.get_query_similarity_dict(query)
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )
