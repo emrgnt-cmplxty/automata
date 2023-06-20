@@ -54,11 +54,11 @@ Methods
 Limitations
 -----------
 
-``SymbolDescriptor`` is closely tied to the
-``automata.core.symbol`` framework and assumes a specific syntax
-and representation for descriptor components. If the underlying
-descriptor format or parser implementation changes, updates to
-``SymbolDescriptor`` may be necessary.
+``SymbolDescriptor`` is closely tied to the ``automata.core.symbol``
+framework and assumes a specific syntax and representation for
+descriptor components. If the underlying descriptor format or parser
+implementation changes, updates to ``SymbolDescriptor`` may be
+necessary.
 
 Follow-up Questions:
 --------------------

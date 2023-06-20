@@ -19,7 +19,7 @@ pytest = "^6.0"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression' --ignore=**/sample_modules/*"
+addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python/"
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]

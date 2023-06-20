@@ -12,7 +12,10 @@ how to :ref:`installation` the project.
    :maxdepth: 1
 
    sample_modules/index
+   mock_automata_instance
    mock_code_generator
+   mock_tool
+   test_tool
 
 
 Summary of content
