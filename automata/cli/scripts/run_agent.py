@@ -17,6 +17,17 @@ logger = logging.getLogger(__name__)
 def main(*args, **kwargs) -> str:
     """
     Runs the main automata agent
+
+    Keyword Args:
+        instructions (str): The instructions to run the agent with
+            Defaults to "This is a dummy instruction, return True."
+        tools (str): A comma-separated list of tools to use
+            Defaults to "context_oracle"
+            Valid tools can be quickly observed in automata/core/agent/tools/tool_utils
+        model (str): The model to use for the agent
+            Defaults to "GPT-4"
+        agent_name (str): The name of the agent
+            Defaults to "automata_retriever"
     """
     logger.info("Building toolkits...")
 
@@ -33,16 +44,15 @@ def main(*args, **kwargs) -> str:
     for dependency in dependencies:
         logger.info(f"Building {dependency}...")
         kwargs[dependency] = DependencyFactory().get(dependency)
-    print("kwargs = ", kwargs)
 
     llm_toolkits = build_llm_toolkits(tool_list, **kwargs)
     logger.info("Done building toolkits...")
 
-    config_name = AgentConfigName.AUTOMATA_RETRIEVER
+    config_name = AgentConfigName(kwargs.get("agent_name", "automata_retriever"))
     agent_config = (
         AutomataAgentConfigBuilder.from_name(config_name)
         .with_llm_toolkits(llm_toolkits)
-        .with_model("gpt-3.5-turbo-16k")
+        .with_model(kwargs.get("model", "gpt-4"))
         .build()
     )
 

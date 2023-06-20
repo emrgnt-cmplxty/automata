@@ -137,7 +137,17 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
 @click.option(
     "--tools",
     default="context_oracle",
-    help="Which tools to use?.",
+    help="Which tools to use?",
+)
+@click.option(
+    "--model",
+    default="gpt-4",
+    help="Which model to use?",
+)
+@click.option(
+    "--agent_name",
+    default="automata_retriever",
+    help="Which agent to use for this task?",
 )
 @click.pass_context
 def run_agent(ctx, *args, **kwargs) -> None:

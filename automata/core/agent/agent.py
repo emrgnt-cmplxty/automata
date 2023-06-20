@@ -14,7 +14,7 @@ from automata.core.agent.agent_utils import (
     generate_user_observation_message,
     retrieve_completion_message,
 )
-from automata.core.agent.memories import AutomataMemoryDatabase
+from automata.core.agent.database import AutomataAgentDatabase
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
 from automata.core.base.tool import ToolNotFoundError
 from automata.core.utils import format_text, load_config
@@ -152,7 +152,7 @@ class AutomataAgent(Agent):
         openai.api_key = OPENAI_API_KEY
         if not self.config.session_id:
             raise ValueError("Config was not properly initialized.")
-        self.database_manager: AutomataMemoryDatabase = AutomataMemoryDatabase(
+        self.database_manager: AutomataAgentDatabase = AutomataAgentDatabase(
             self.config.session_id
         )
         self.database_manager._init_database()

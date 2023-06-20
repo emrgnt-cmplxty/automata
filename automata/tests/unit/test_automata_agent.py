@@ -6,7 +6,7 @@ import pytest
 
 from automata.config.config_types import AutomataInstructionPayload
 from automata.core.agent.agent import AutomataAgent
-from automata.core.agent.memories import AutomataMemoryDatabase
+from automata.core.agent.database import AutomataAgentDatabase
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
 from automata.core.base.openai import OpenAIChatMessage
 
@@ -43,7 +43,7 @@ def test_build_initial_messages(automata_agent):
 
 
 def test_init_database(automata_agent):
-    automata_agent_db = AutomataMemoryDatabase(session_id=0)
+    automata_agent_db = AutomataAgentDatabase(session_id=0)
     assert automata_agent_db.conn is not None
     assert automata_agent_db.cursor is not None
 
@@ -51,7 +51,7 @@ def test_init_database(automata_agent):
 def test_save_and_load_interaction(automata_agent):
     # automata_agent._init_database()
     session_id = str(uuid.uuid4())
-    automata_agent_db = AutomataMemoryDatabase(session_id=session_id)
+    automata_agent_db = AutomataAgentDatabase(session_id=session_id)
 
     automata_agent_db.put_message("assistant", "Test message.", session_id)
     # Add assertions to check if the message is saved correctly.
