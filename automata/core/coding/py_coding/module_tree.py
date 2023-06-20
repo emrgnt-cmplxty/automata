@@ -121,15 +121,19 @@ class LazyModuleTreeMap:
     """
     A lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
     Loads and caches modules in memory as they are accessed
+
+    FIXME: Defaulting 'py_dir' to automata for now and then introducing smarter
+           logic to infer the py_dir from the path later
     """
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, py_dir="automata") -> None:
         """
         Args:
             path: The absolute path to the root of the module tree
         """
         self._dotpath_map = DotPathMap(path)
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
+        self.py_dir = py_dir
 
     def __contains__(self, dotpath: str) -> bool:
         """
@@ -218,8 +222,13 @@ class LazyModuleTreeMap:
         self._dotpath_map.put_module(module_dotpath)
 
     def _load_all_modules(self) -> None:
-        """Loads all modules in the map"""
+        """Loads all modules in the map
+
+        FIXME: Filter on py_dir for now and then introduce smarter logic later
+        """
         for module_dotpath, fpath in self._dotpath_map.items():
+            if self.py_dir not in module_dotpath:
+                continue
             if module_dotpath not in self._loaded_modules:
                 self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
 
