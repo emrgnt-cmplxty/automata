@@ -18,7 +18,7 @@ class SymbolParser:
     It's not great that this implementation is not in hard sync with the Go one, but it's good enough for now.
     """
 
-    def __init__(self, symbol: str):
+    def __init__(self, symbol: str) -> None:
         """
         Args:
             symbol (str): The symbol URI to parse

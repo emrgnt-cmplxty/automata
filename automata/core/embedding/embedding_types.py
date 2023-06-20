@@ -29,7 +29,7 @@ class EmbeddingProvider(abc.ABC):
 class OpenAIEmbedding(EmbeddingProvider):
     """A class to provide embeddings for symbols"""
 
-    def __init__(self, engine: str = "text-embedding-ada-002"):
+    def __init__(self, engine: str = "text-embedding-ada-002") -> None:
         if not openai.api_key:
             from config import OPENAI_API_KEY
 
@@ -58,7 +58,7 @@ class SymbolEmbeddingHandler(abc.ABC):
         self,
         embedding_db: VectorDatabaseProvider,
         embedding_provider: EmbeddingProvider,
-    ):
+    ) -> None:
         """An abstract constructor for SymbolEmbeddingHandler"""
         self.embedding_db = embedding_db
         self.embedding_provider = embedding_provider
@@ -69,7 +69,7 @@ class SymbolEmbeddingHandler(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update_embedding(self, symbol: Symbol):
+    def update_embedding(self, symbol: Symbol) -> None:
         """An abstract method to update the embedding for a symbol"""
         pass
 

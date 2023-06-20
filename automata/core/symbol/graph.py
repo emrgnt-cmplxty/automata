@@ -8,7 +8,7 @@ from google.protobuf.json_format import MessageToDict
 from tqdm import tqdm
 
 from automata.core.symbol.parser import parse_symbol
-from automata.core.symbol.scip_pb2 import Index, SymbolRole
+from automata.core.symbol.scip_pb2 import Index, SymbolRole  # type: ignore
 from automata.core.symbol.symbol_types import (
     Symbol,
     SymbolDescriptor,
@@ -29,7 +29,7 @@ class _RelationshipManager:
     Manages the relationships between symbols in a graph
     """
 
-    def __init__(self, graph: nx.MultiDiGraph, symbol_information: Any):
+    def __init__(self, graph: nx.MultiDiGraph, symbol_information: Any) -> None:
         """
         Args:
             graph (nx.MultiDiGraph): A networkx graph
@@ -38,7 +38,7 @@ class _RelationshipManager:
         self._graph = graph
         self.symbol_information = symbol_information
 
-    def process(self):
+    def process(self) -> None:
         """
         Processes the relationships in the local graph
         """
@@ -59,7 +59,7 @@ class _OccurrenceManager:
     Manages the occurrences of a symbol in a graph
     """
 
-    def __init__(self, graph: nx.MultiDiGraph, document: Any):
+    def __init__(self, graph: nx.MultiDiGraph, document: Any) -> None:
         """
         Args:
             graph (nx.MultiDiGraph): A networkx graph
@@ -68,7 +68,7 @@ class _OccurrenceManager:
         self._graph = graph
         self.document = document
 
-    def process(self):
+    def process(self) -> None:
         """
         Processes the occurrences in the local graph
         """
@@ -129,7 +129,7 @@ class _CallerCalleeManager:
     Manages the caller-callee relationships of a symbol in a graph.
     """
 
-    def __init__(self, graph: nx.MultiDiGraph, document: Any):
+    def __init__(self, graph: nx.MultiDiGraph, document: Any) -> None:
         """
         Args:
             graph (nx.MultiDiGraph): A networkx graph
@@ -139,7 +139,7 @@ class _CallerCalleeManager:
         self.navigator = _SymbolGraphNavigator(graph)
         self.document = document
 
-    def process(self):
+    def process(self) -> None:
         """
         Processes the caller-callee relationships in the local graph
 
@@ -202,7 +202,7 @@ class GraphBuilder:
     Builds a symbol graph from an Index.
     """
 
-    def __init__(self, index: Index, build_caller_relationships: bool = False):
+    def __init__(self, index: Index, build_caller_relationships: bool = False) -> None:
         """
         Args:
             index (Index): An Index object
@@ -213,7 +213,7 @@ class GraphBuilder:
         self.build_caller_relationships = build_caller_relationships
         self._graph = nx.MultiDiGraph()
 
-    def build_graph(self):
+    def build_graph(self) -> nx.MultiDiGraph:
         """
         Builds the graph from the index
         """
@@ -227,7 +227,7 @@ class GraphBuilder:
 
         return self._graph
 
-    def _add_file_vertices(self, document: Any):
+    def _add_file_vertices(self, document: Any) -> None:
         """
         Adds the file vertices to the graph
 
@@ -240,7 +240,7 @@ class GraphBuilder:
             label="file",
         )
 
-    def _add_symbol_vertices(self, document: Any):
+    def _add_symbol_vertices(self, document: Any) -> None:
         """
         Adds the symbol vertices to the graph
 
@@ -257,7 +257,7 @@ class GraphBuilder:
             self._graph.add_node(symbol, label="symbol")
             self._graph.add_edge(document.relative_path, symbol, label="contains")
 
-    def _process_relationships(self, document: Any):
+    def _process_relationships(self, document: Any) -> None:
         """
         Processes the relationships in the local graph
 
@@ -268,7 +268,7 @@ class GraphBuilder:
             relationship_manager = _RelationshipManager(self._graph, symbol_information)
             relationship_manager.process()
 
-    def _process_occurrences(self, document: Any):
+    def _process_occurrences(self, document: Any) -> None:
         """
         Processes the occurrences in the local graph
 
@@ -278,7 +278,7 @@ class GraphBuilder:
         occurrence_manager = _OccurrenceManager(self._graph, document)
         occurrence_manager.process()
 
-    def _process_caller_callee_relationships(self, document: Any):
+    def _process_caller_callee_relationships(self, document: Any) -> None:
         """
         Processes the caller-callee relationships in the local graph
 
@@ -294,7 +294,7 @@ class _SymbolGraphNavigator:
     Handles navigation of a symbol graph.
     """
 
-    def __init__(self, graph: nx.MultiDiGraph):
+    def __init__(self, graph: nx.MultiDiGraph) -> None:
         """
         Args:
             graph (nx.MultiDiGraph): A networkx graph
@@ -503,7 +503,7 @@ class _SymbolGraphNavigator:
 
         return result
 
-    def _pre_compute_rankable_bounding_boxes(self):
+    def _pre_compute_rankable_bounding_boxes(self) -> None:
         """
         Pre-computes bounding boxes for all symbols in the graph
         """
@@ -551,7 +551,7 @@ class SymbolGraph:
         parent: "SymbolGraph"
         graph: nx.DiGraph
 
-    def __init__(self, index_path: str, build_caller_relationships: bool = False):
+    def __init__(self, index_path: str, build_caller_relationships: bool = False) -> None:
         """
         Initializes SymbolGraph with the path of an index protobuf file.
 

@@ -43,19 +43,21 @@ class AutomataInstance(BaseModel):
         arbitrary_types_allowed = True
 
     @classmethod
-    def create(cls, config_name: AgentConfigName, description: str = "", **kwargs):
+    def create(
+        cls, config_name: AgentConfigName, description: str = "", **kwargs
+    ) -> "AutomataInstance":
         return cls(config_name=config_name, description=description, kwargs=kwargs)
 
 
 class AutomataCoordinator:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the AutomataCoordinator, which is responsible for managing
         multiple AutomataInstances.
         """
         self.agent_instances: List[AutomataInstance] = []
 
-    def add_agent_instance(self, agent_instance: AutomataInstance):
+    def add_agent_instance(self, agent_instance: AutomataInstance) -> None:
         """
         Adds a new AutomataInstance to the list of managed agent instances.
 
@@ -70,7 +72,7 @@ class AutomataCoordinator:
             raise ValueError("Agent already exists.")
         self.agent_instances.append(agent_instance)
 
-    def remove_agent_instance(self, config_name: AgentConfigName):
+    def remove_agent_instance(self, config_name: AgentConfigName) -> None:
         """
         Removes an AutomataInstance from the list of managed agent instances by its config_name.
 
@@ -87,7 +89,7 @@ class AutomataCoordinator:
             instance for instance in self.agent_instances if instance.config_name != config_name
         ]
 
-    def set_main_agent(self, main_agent: "AutomataAgent"):
+    def set_main_agent(self, main_agent: "AutomataAgent") -> None:
         """
         Sets the main agent for the AutomataCoordinator.
 

@@ -25,7 +25,9 @@ def generate_user_observation_message(observations: Dict[str, str], include_pref
     return message
 
 
-def append_observation_message(observation_name: str, observations: Dict[str, str], message: str):
+def append_observation_message(
+    observation_name: str, observations: Dict[str, str], message: str
+) -> str:
     """
     Append an observation message to an existing message.
 

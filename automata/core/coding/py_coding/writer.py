@@ -39,7 +39,7 @@ class PyCodeWriter:
 
         pass
 
-    def __init__(self, py_retriever: PyCodeRetriever):
+    def __init__(self, py_retriever: PyCodeRetriever) -> None:
         """
         Initialize the PyCodeWriter with a PyCodeRetriever instance
 
@@ -48,7 +48,9 @@ class PyCodeWriter:
         """
         self.code_retriever = py_retriever
 
-    def create_new_module(self, module_dotpath: str, source_code: str, do_write: bool = False):
+    def create_new_module(
+        self, module_dotpath: str, source_code: str, do_write: bool = False
+    ) -> None:
         """
         Create a new module object from source code
 
@@ -69,7 +71,7 @@ class PyCodeWriter:
         source_code: str,
         disambiguator: Optional[str] = "",
         do_write: bool = False,
-    ):
+    ) -> None:
         """
         Update code or insert new code into an existing module
 
@@ -102,7 +104,7 @@ class PyCodeWriter:
 
     def delete_from_existing__module(
         self, module_dotpath: str, object_dotpath: str, do_write: bool = False
-    ):
+    ) -> None:
         """
         Reduce an existing module by removing a class or function
 
@@ -129,7 +131,7 @@ class PyCodeWriter:
             if do_write:
                 self._write_module_to_disk(module_dotpath)
 
-    def _write_module_to_disk(self, module_dotpath: str):
+    def _write_module_to_disk(self, module_dotpath: str) -> None:
         """
         Write the modified module to a file at the specified output path
 
@@ -178,7 +180,7 @@ class PyCodeWriter:
         module_dotpath: str,
         existing_module_obj: RedBaron,
         disambiguator: Optional[str],
-    ):
+    ) -> None:
         """
         Update a module object according to the received code
 
@@ -215,7 +217,7 @@ class PyCodeWriter:
     def _update_node_with_children(
         class_or_function_nodes: NodeList,
         node_to_update: Union[ClassNode, RedBaron],
-    ):
+    ) -> None:
         """
         Update a class object according to the received code
 
@@ -232,7 +234,7 @@ class PyCodeWriter:
                 node_to_update.append(new_node)
 
     @staticmethod
-    def _delete_node(node: Node):
+    def _delete_node(node: Node) -> None:
         """
         Delete a node from the FST
 
@@ -289,7 +291,7 @@ class PyCodeWriter:
         return source_code
 
     @staticmethod
-    def _update_imports(module_obj: RedBaron, new_import_statements: NodeList):
+    def _update_imports(module_obj: RedBaron, new_import_statements: NodeList) -> None:
         """
         Manage the imports in the module
 
@@ -314,7 +316,7 @@ class PyCodeWriter:
 class PyDocWriter:
     """A class to write documentation for Python modules"""
 
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str) -> None:
         """
         Args:
             base_path (str): The base path of the project
@@ -322,7 +324,7 @@ class PyDocWriter:
         self.base_path = base_path
         self.directory_manager = DirectoryManager(base_path)
 
-    def generate_module_summary(self, module_dir: str):
+    def generate_module_summary(self, module_dir: str) -> None:
         """
         Function to generate a module-level summary. Here, we just assume that
         all the .rst files in a directory correspond to the same module.
@@ -346,7 +348,7 @@ class PyDocWriter:
 
     def generate_rst_files(
         self, docs: Dict[Symbol, SymbolDocEmbedding], symbols: List[Symbol], docs_dir: str
-    ):
+    ) -> None:
         """
         Generate individual .rst files for each key (a key represents a module)
             and updates the file structure.
@@ -376,7 +378,7 @@ class PyDocWriter:
                 except Exception as e:
                     logger.error(f"Error converting {symbol_name} to rst: {e}")
 
-    def generate_index_files(self, docs_dir: str):
+    def generate_index_files(self, docs_dir: str) -> None:
         """
         Generate index files for each directory that
             contains .rst files or subdirectories.
@@ -416,7 +418,7 @@ class PyDocWriter:
 
     def write_documentation(
         self, docs: Dict[Symbol, SymbolDocEmbedding], symbols: List[Symbol], docs_dir: str
-    ):
+    ) -> None:
         """
         Generate the full documentation given the symbols and a directory.
 

@@ -34,7 +34,7 @@ yaml_schema = {
 
 
 # Validation test function
-def test_yaml_validation(file_path):
+def test_yaml_validation(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
 
@@ -46,7 +46,7 @@ def test_yaml_validation(file_path):
 
 
 # Compatibility test function
-def test_yaml_compatibility(file_path):
+def test_yaml_compatibility(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
 
@@ -75,7 +75,7 @@ def test_yaml_compatibility(file_path):
             logger.debug(f"Compatibility test '{test['test_name']}' for {file_path} passed.")
 
 
-def test_action_extraction(file_path):
+def test_action_extraction(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
     actions = AutomataActionExtractor.extract_actions(yaml_data["system_instruction_template"])

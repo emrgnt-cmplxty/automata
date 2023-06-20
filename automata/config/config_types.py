@@ -109,7 +109,7 @@ class AutomataAgentConfig(BaseModel):
     instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
     helper_agent_configs: Dict[AgentConfigName, "AutomataAgentConfig"] = {}
 
-    def setup(self):
+    def setup(self) -> None:
         """Setup the agent."""
         if "tools" in self.instruction_input_variables:
             self.instruction_payload.tools = self._build_tool_message()
@@ -155,7 +155,7 @@ class AutomataAgentConfig(BaseModel):
         return config
 
     @classmethod
-    def _add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig"):
+    def _add_overview_to_instruction_payload(cls, config: "AutomataAgentConfig") -> None:
         """Handles the overview input for the agent."""
         from automata.core.utils import root_py_fpath
 
@@ -170,7 +170,7 @@ class AutomataAgentConfig(BaseModel):
                 input_text = input_text.replace(f"{{{arg}}}", format_variables.__dict__[arg])
         return input_text
 
-    def _build_tool_message(self):
+    def _build_tool_message(self) -> str:
         """
         Builds a message containing information about all available tools.
 

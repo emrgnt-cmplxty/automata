@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class DotPathMap:
     """A map from module dotpaths to module filepaths"""
 
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
         """
         Args:
             path: The absolute path to the root of the module tree
@@ -94,7 +94,7 @@ class DotPathMap:
         """
         return module_fpath in self._module_fpath_to_dotpath_map
 
-    def put_module(self, module_dotpath: str):
+    def put_module(self, module_dotpath: str) -> None:
         """
         Puts a module with the given dotpath in the map
 
@@ -123,7 +123,7 @@ class LazyModuleTreeMap:
     Loads and caches modules in memory as they are accessed
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
         """
         Args:
             path: The absolute path to the root of the module tree
@@ -131,7 +131,7 @@ class LazyModuleTreeMap:
         self._dotpath_map = DotPathMap(path)
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
 
-    def __contains__(self, dotpath):
+    def __contains__(self, dotpath: str) -> bool:
         """
         Checks if the map contains a module with the given dotpath
 
@@ -206,7 +206,7 @@ class LazyModuleTreeMap:
         """
         return self._dotpath_map.get_module_dotpath_by_fpath(module_fpath)
 
-    def put_module(self, module_dotpath: str, module: RedBaron):
+    def put_module(self, module_dotpath: str, module: RedBaron) -> None:
         """
         Put a module with the given dotpath in the map
 
@@ -217,7 +217,7 @@ class LazyModuleTreeMap:
         self._loaded_modules[module_dotpath] = module
         self._dotpath_map.put_module(module_dotpath)
 
-    def _load_all_modules(self):
+    def _load_all_modules(self) -> None:
         """Loads all modules in the map"""
         for module_dotpath, fpath in self._dotpath_map.items():
             if module_dotpath not in self._loaded_modules:

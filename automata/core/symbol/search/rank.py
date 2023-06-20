@@ -15,8 +15,8 @@ class SymbolRankConfig(BaseModel):
     tolerance: float = 1.0e-6
     weight_key: str = "weight"
 
-    @classmethod
-    def validate(cls, config):
+    @staticmethod
+    def validate_config(config) -> None:
         """
         Validate configuration parameters.
 
@@ -36,7 +36,7 @@ class SymbolRankConfig(BaseModel):
 class SymbolRank:
     """Computes the PageRank algorithm on symbols in a graph"""
 
-    def __init__(self, graph: nx.DiGraph, config: SymbolRankConfig):
+    def __init__(self, graph: nx.DiGraph, config: SymbolRankConfig) -> None:
         """
         Args:
             graph (nx.DiGraph): A directed graph
@@ -46,7 +46,7 @@ class SymbolRank:
             config = SymbolRankConfig()
         self.graph = graph
         self.config = config
-        self.config.validate(self.config)
+        self.config.validate_config(self.config)
 
     def get_ranks(
         self,

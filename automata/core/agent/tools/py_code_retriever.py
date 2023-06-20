@@ -16,9 +16,9 @@ class PyCodeRetrieverTool(AgentTool):
     the code state of a of local Python files.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
-        Initializes a PythonInspectorToolManager object with the given inputs.
+        Initializes a PyCodeRetrieverTool object with the given inputs.
 
         Args:
         - py_retriever (PyCodeRetriever): A PyCodeRetriever object which allows inspecting of local code.

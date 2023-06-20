@@ -29,12 +29,12 @@ def test_generate_random_graph():
 def test_pagerank_config_validation():
     with pytest.raises(ValueError):
         invalid_config_alpha = SymbolRankConfig(alpha=1.5, max_iterations=100, tolerance=1.0e-5)
-        invalid_config_alpha.validate(invalid_config_alpha)
+        invalid_config_alpha.validate_config(invalid_config_alpha)
     with pytest.raises(ValueError):
         invalid_config_tolerance = SymbolRankConfig(
             alpha=0.5, max_iterations=100, tolerance=1.0e-3
         )
-        invalid_config_tolerance.validate(invalid_config_tolerance)
+        invalid_config_tolerance.validate_config(invalid_config_tolerance)
 
 
 def test_prepare_initial_ranks():

@@ -41,7 +41,7 @@ class DependencyFactory:
         config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
         Acceptable Overrides (kwargs):
             symbol_graph_path - Defaults to DependencyFactory.DEFAULT_SCIP_FPATH
@@ -53,10 +53,10 @@ class DependencyFactory:
             py_context_retriever_config - Defaults to PyContextRetrieverConfig()
         }
         """
-        self._instances = {}
+        self._instances: Dict[str, Any] = {}
         self.overrides = kwargs
 
-    def get(self, dependency: str):
+    def get(self, dependency: str) -> Any:
         if dependency in self.overrides:
             return self.overrides[dependency]
 
@@ -75,18 +75,18 @@ class DependencyFactory:
 
         return instance
 
-    def create_symbol_graph(self):
+    def create_symbol_graph(self) -> SymbolGraph:
         return SymbolGraph(
             self.overrides.get("symbol_graph_path", DependencyFactory.DEFAULT_SCIP_FPATH)
         )
 
-    def create_subgraph(self):
+    def create_subgraph(self) -> SymbolGraph.SubGraph:
         symbol_graph = self.get("symbol_graph")
         return symbol_graph.get_rankable_symbol_subgraph(
             self.overrides.get("flow_rank", "bidirectional")
         )
 
-    def create_symbol_code_similarity(self):
+    def create_symbol_code_similarity(self) -> SymbolSimilarity:
         code_embedding_fpath = self.overrides.get(
             "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
         )
@@ -96,7 +96,7 @@ class DependencyFactory:
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
         return SymbolSimilarity(code_embedding_handler)
 
-    def create_symbol_doc_similarity(self):
+    def create_symbol_doc_similarity(self) -> SymbolSimilarity:
         doc_embedding_fpath = self.overrides.get(
             "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
         )
@@ -111,7 +111,7 @@ class DependencyFactory:
         )
         return SymbolSimilarity(doc_embedding_handler)
 
-    def create_symbol_search(self):
+    def create_symbol_search(self) -> SymbolSearch:
         symbol_graph = self.get("symbol_graph")
         symbol_code_similarity = self.get("symbol_code_similarity")
         symbol_rank_config = self.overrides.get("symbol_rank_config", SymbolRankConfig())
@@ -120,7 +120,7 @@ class DependencyFactory:
             symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
         )
 
-    def create_py_context_retriever(self):
+    def create_py_context_retriever(self) -> PyContextRetriever:
         symbol_graph = self.get("symbol_graph")
         py_context_retriever_config = self.overrides.get(
             "py_context_retriever_config", PyContextRetrieverConfig()
@@ -133,7 +133,7 @@ class ToolCreationError(Exception):
 
     ERROR_STRING = "Must provide a valid %s to construct a %s."
 
-    def __init__(self, arg_type: str, class_name: str):
+    def __init__(self, arg_type: str, class_name: str) -> None:
         super().__init__(self.ERROR_STRING % (arg_type, class_name))
 
 
@@ -142,7 +142,7 @@ class UnknownToolError(Exception):
 
     ERROR_STRING = "Unknown toolkit type: %s"
 
-    def __init__(self, tool_kit: ToolkitType):
+    def __init__(self, tool_kit: ToolkitType) -> None:
         super().__init__(self.ERROR_STRING % (tool_kit))
 
 
@@ -215,7 +215,7 @@ class AgentToolFactory:
 class ToolkitBuilder:
     """A class for building toolkits."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
         Initializes a ToolkitBuilder.
 

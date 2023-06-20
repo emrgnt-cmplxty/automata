@@ -16,7 +16,9 @@ FSTNode = Union[Node, RedBaron]
 class PyCodeRetriever:
     """Code retriever for fetching python code"""
 
-    def __init__(self, module_tree_map: LazyModuleTreeMap = LazyModuleTreeMap.cached_default()):
+    def __init__(
+        self, module_tree_map: LazyModuleTreeMap = LazyModuleTreeMap.cached_default()
+    ) -> None:
         self.module_tree_map = module_tree_map
 
     def get_source_code(self, module_dotpath: str, object_path: Optional[str] = None) -> str:
@@ -78,7 +80,7 @@ class PyCodeRetriever:
                 if not found
         """
 
-        def _remove_docstrings(node: FSTNode):
+        def _remove_docstrings(node: FSTNode) -> None:
             """
             Remove docstrings from the specified node, recursively
 

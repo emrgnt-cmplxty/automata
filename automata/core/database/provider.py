@@ -10,7 +10,7 @@ class SymbolDatabaseProvider(abc.ABC):
     """
 
     @abc.abstractmethod
-    def save(self):
+    def save(self) -> Any:
         """
         Abstract method to save data.
         """
@@ -24,21 +24,21 @@ class SymbolDatabaseProvider(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def add(self, embedding: SymbolEmbedding):
+    def add(self, embedding: SymbolEmbedding) -> Any:
         """
         Abstract method to add an embedding to the database.
         """
         pass
 
     @abc.abstractmethod
-    def update(self, embedding: SymbolEmbedding):
+    def update(self, embedding: SymbolEmbedding) -> Any:
         """
         Abstract method to update an existing embedding.
         """
         pass
 
     @abc.abstractmethod
-    def discard(self, symbol: Symbol):
+    def discard(self, symbol: Symbol) -> Any:
         """
         Abstract method to discard a specific embedding.
         """
@@ -52,7 +52,7 @@ class SymbolDatabaseProvider(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def clear(self):
+    def clear(self) -> Any:
         """
         Abstract method to clear all embeddings.
         """

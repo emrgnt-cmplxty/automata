@@ -29,7 +29,7 @@ class PyContextRetrieverConfig:
         max_related_symbols_to_process: int = 10,
         model_name: str = "gpt-4",
         max_context: int = 6_500,
-    ):
+    ) -> None:
         """
         Args:
             spacer (str): The string to use for indentation
@@ -52,7 +52,7 @@ class PyContextRetriever:
         graph: SymbolGraph,
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
-    ):
+    ) -> None:
         """
         Args:
             graph (SymbolGraph): The symbol graph to use
@@ -95,7 +95,7 @@ class PyContextRetriever:
         """
         return self.context
 
-    def reset(self):
+    def reset(self) -> None:
         """
         Reset the retriever to its initial state
         """
@@ -107,7 +107,7 @@ class PyContextRetriever:
         self,
         symbol: Symbol,
         related_symbols: List[Symbol] = [],
-    ):
+    ) -> None:
         """
         Process the context of a symbol
         Theh output is stored into the local message buffer
@@ -166,7 +166,7 @@ class PyContextRetriever:
 
         self.obs_symbols.add(symbol)
 
-    def process_headline(self, symbol: Symbol):
+    def process_headline(self, symbol: Symbol) -> None:
         """
         Process the headline of a symbol
 
@@ -179,7 +179,7 @@ class PyContextRetriever:
         else:
             self.process_message(f"{symbol.dotpath}\n")
 
-    def process_ast(self, symbol: Symbol):
+    def process_ast(self, symbol: Symbol) -> None:
         """
         Process the variables of a symbol
 
@@ -206,7 +206,7 @@ class PyContextRetriever:
                 for method in methods:
                     self.process_method(method, is_main_symbol)
 
-    def process_imports(self, symbol: Symbol):
+    def process_imports(self, symbol: Symbol) -> None:
         """
         Process the imports of a symbol
 
@@ -234,7 +234,7 @@ class PyContextRetriever:
                     self.process_message(str(import_node.dumps()))
                 self.process_message("")  # Add an empty line for separation
 
-    def process_docstring(self, ast_object: RedBaron):
+    def process_docstring(self, ast_object: RedBaron) -> None:
         """
         Process the docstring of a symbol
 
@@ -249,7 +249,7 @@ class PyContextRetriever:
                 self.process_message(docstring)
                 self.process_message("")  # Add an empty line for separation
 
-    def process_documentation(self, symbol: Symbol, is_main_symbol: bool):
+    def process_documentation(self, symbol: Symbol, is_main_symbol: bool) -> None:
         if self.doc_embedding_db is not None:
             if self.doc_embedding_db.contains(symbol):
                 if is_main_symbol:
@@ -260,7 +260,7 @@ class PyContextRetriever:
                     self.process_message(document)
                     self.process_message("")  # Add an empty line for separation
 
-    def process_method(self, method: RedBaron, is_main_symbol: bool):
+    def process_method(self, method: RedBaron, is_main_symbol: bool) -> None:
         """
         Processes a specified method
 

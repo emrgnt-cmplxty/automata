@@ -27,9 +27,7 @@ class SymbolSearch:
         symbol_code_similarity: SymbolSimilarity,
         symbol_rank_config: SymbolRankConfig,
         code_subgraph: SymbolGraph.SubGraph,
-        *args,
-        **kwargs,
-    ):
+    ) -> None:
         """
         Args:
             symbol_graph (SymbolGraph): A SymbolGraph
@@ -141,7 +139,7 @@ class SymbolSearch:
             raise ValueError(f"Unknown search type: {search_type}")
 
     @staticmethod
-    def filter_graph(graph: nx.DiGraph, available_symbols: Set[Symbol]):
+    def filter_graph(graph: nx.DiGraph, available_symbols: Set[Symbol]) -> None:
         """
         Filters a graph to only contain nodes that are in the available_symbols set
 
@@ -178,7 +176,7 @@ class SymbolSearch:
     @staticmethod
     def transform_dict_values(
         dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]
-    ):
+    ) -> Dict[Any, float]:
         """
         Apply a function to each value in a dictionary and return a new dictionary
 

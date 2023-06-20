@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class Node:
     """Abstract base class for a node in the file tree"""
 
-    def __init__(self, name: str, parent: Optional["Node"] = None):
+    def __init__(self, name: str, parent: Optional["Node"] = None) -> None:
         """
         Args:
             name (str): Name of the node
@@ -21,7 +21,7 @@ class Node:
 class File(Node):
     """Represents a file in the tree"""
 
-    def __init__(self, name: str, parent: Optional["Node"] = None):
+    def __init__(self, name: str, parent: Optional["Node"] = None) -> None:
         """
         Args:
             name (str): Name of the file
@@ -33,7 +33,7 @@ class File(Node):
 class Directory(Node):
     """Represents a directory. Has children which can be directories or files"""
 
-    def __init__(self, name: str, parent: Optional["Node"] = None):
+    def __init__(self, name: str, parent: Optional["Node"] = None) -> None:
         """
         Args:
             name (str): Name of the directory
@@ -42,7 +42,7 @@ class Directory(Node):
         super().__init__(name, parent)
         self.children: Dict[str, Node] = {}
 
-    def add_child(self, child: "Node"):
+    def add_child(self, child: "Node") -> None:
         """
         Adds a child node to this directory
 
@@ -102,7 +102,7 @@ class Directory(Node):
 class DirectoryManager:
     """Handles operations related to directory structure."""
 
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str) -> None:
         """
         Args:
             base_path (str): Base path of the directory structure
@@ -165,7 +165,7 @@ class DirectoryManager:
         else:
             return []
 
-    def ensure_directory_exists(self, directory_path: str):
+    def ensure_directory_exists(self, directory_path: str) -> None:
         """
         Creates the directory if it does not exist already
 
