@@ -26,5 +26,5 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
     assert isinstance(symbol_graph_static_test, SymbolGraph)
     assert len(all_symbols) == 1_874
     assert len(all_files) == 91
-    assert len(subgraph.graph) == 69
-    assert subgraph.graph.number_of_edges() == 203
+    assert len(subgraph.graph) == 70
+    assert subgraph.graph.number_of_edges() == 204
