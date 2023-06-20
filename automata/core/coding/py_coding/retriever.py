@@ -34,9 +34,10 @@ class PyCodeRetriever:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
-
-        if module := self.module_tree_map.fetch_module(module_dotpath):
-            if result := find_syntax_tree_node(module, object_path):
+        module = self.module_tree_map.fetch_module(module_dotpath)
+        if module:
+            result = find_syntax_tree_node(module, object_path)
+            if result:
                 return result.dumps()
 
         return NO_RESULT_FOUND_STR
@@ -54,8 +55,8 @@ class PyCodeRetriever:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
-
-        if module := self.module_tree_map.fetch_module(module_dotpath):
+        module = self.module_tree_map.fetch_module(module_dotpath)
+        if module:
             return PyCodeRetriever.get_docstring_from_node(
                 find_syntax_tree_node(module, object_path)
             )

@@ -241,7 +241,9 @@ class PyContextRetriever:
         Args:
             ast_object (RedBaron): The ast representation of the symbol
         """
-        if docstring := PyContextRetriever._get_docstring(ast_object):
+        docstring = PyContextRetriever._get_docstring(ast_object)
+
+        if docstring:
             self.process_message("Class Docstring:")
             with self.IndentManager():
                 self.process_message(docstring)

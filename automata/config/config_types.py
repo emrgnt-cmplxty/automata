@@ -62,7 +62,9 @@ class AutomataInstructionPayload:
 
     def validate_fields(self, required_fields: List[str]):
         initialized_fields = {field for field, value in self.__dict__.items() if value is not None}
-        if missing_fields := set(required_fields) - set(initialized_fields):
+        missing_fields = set(required_fields) - set(initialized_fields)
+
+        if missing_fields:
             raise ValueError(f"Missing fields in AutomataInstructionPayload: {missing_fields}")
 
 
