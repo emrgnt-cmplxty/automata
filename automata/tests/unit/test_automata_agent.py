@@ -217,11 +217,11 @@ def mock_openai_response_with_completion_agent_message_to_parse():
 def test_iter_step_with_parsed_completion_message_2(
     mock_openai_chatcompletion_create,
     api_response,
-    automata_agent_with_dev_main_builder,
+    automata_agent_config_builder,
 ):
     instructions = "This is a test instruction."
     automata_agent_config = (
-        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction")
+        automata_agent_config_builder.with_instruction_version("agent_introduction")
         .with_stream(False)
         .with_instruction_payload(
             AutomataInstructionPayload(agents_message="", overview="", tools="")
@@ -248,11 +248,11 @@ def test_iter_step_with_parsed_completion_message_2(
 def test_iter_step_with_parsed_completion_message_main_2(
     mock_openai_chatcompletion_create,
     api_response,
-    automata_agent_with_dev_main_builder,
+    automata_agent_config_builder,
 ):
     instructions = "This is a test instruction."
     automata_agent_config = (
-        automata_agent_with_dev_main_builder.with_instruction_version("agent_introduction")
+        automata_agent_config_builder.with_instruction_version("agent_introduction")
         .with_stream(False)
         .with_instruction_payload(
             AutomataInstructionPayload(agents_message="", overview="", tools="")

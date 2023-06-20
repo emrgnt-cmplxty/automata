@@ -10,7 +10,7 @@ The classes and functions in this file are used to convert the symbol URI into a
 """
 
 
-class SymbolParser:
+class _SymbolParser:
     """
     Translation of the logic defined in
     https://github.com/sourcegraph/scip/blob/ee677ba3756cdcdb55b39942b5701f0fde9d69fa/bindings/go/scip/symbol.go
@@ -227,7 +227,7 @@ def parse_symbol(symbol_uri: str, include_descriptors: bool = True) -> Symbol:
     Returns:
         Symbol - The parsed symbol
     """
-    s = SymbolParser(symbol_uri)
+    s = _SymbolParser(symbol_uri)
     scheme = s.accept_space_escaped_identifier("scheme")
 
     if scheme == "local":
