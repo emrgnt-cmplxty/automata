@@ -143,6 +143,13 @@ class AutomataAgent(Agent):
             latest_responses = self.iter_step()
         return self.messages[-1].content
 
+    def run_further_with_new_instructions(self, further_instructions: str) -> str:
+        if not self.completed:
+            raise ValueError("Cannot run an agent further that has not completed.")
+        self.completed = False
+        self.messages.append(OpenAIChatMessage("user", further_instructions))
+        return self.run()
+        
     def setup(self) -> None:
         """
         Sets up the agent by initializing the database and loading the config.
