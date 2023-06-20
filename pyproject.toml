@@ -5,10 +5,10 @@ requires = ["setuptools", "wheel"]
 automata = 'automata.cli.__main__:cli'
 
 [tool.poetry]
-name = "agentic_automata"
+name = "automata"
 version = "0.1.0"
-description = "An agentic automata."
-authors = ["maks@sporker.com"]
+description = "An automata for building docs."
+authors = ["owen@emergentagi.com"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -19,7 +19,7 @@ pytest = "^6.0"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression' --ignore=**/sample_modules/*"
+addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python/"
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]
@@ -42,8 +42,6 @@ exclude = '''
     | local_env
     | build
   )/
-  | foo.py           # also separately exclude a file named foo.py in
-                      # the root of the project
 )
 '''
 
@@ -60,7 +58,7 @@ skip_glob = ["local_env/*", "**/sample_code/*"]
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(random|local_env|data|results|notebooks|sample_code)/'
+exclude = '(local_env)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"

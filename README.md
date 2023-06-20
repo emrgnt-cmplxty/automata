@@ -1,70 +1,111 @@
-Automata Code Repository
+# Automata: The Self-Coding Machine
 
-This repository contains a collection of tools and utilities for various tasks.
+**Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 
-Main Packages and Modules:
+This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them.
 
-1. automata.core.agent.automata_agent:
-   AutomataAgent is an autonomous agent that performs the actual work of the Automata system. Automata are responsible for executing instructions and reporting the results back to the main.
+## Installation and Usage
 
-2. automata.core.agent.main_automata_agent:
-   MasterAutomataAgent is a specialized AutomataAgent that can interact with an AutomataCoordinator to execute and manipulate other AutomataAgents as part of the conversation.
+### Initial Setup
 
-3. automata.core.agent.automata_agent_builder:
-   AutomataAgentBuilder is a class for building and configuring AutomataAgent instances.
+Follow these steps to setup the Automata environment
 
-4. automata.core.coordinator.automata_coordinator:
-   AutomataCoordinator is a class for managing the interactions between multiple AutomataAgents.
+```bash
+# Clone the repository
+git clone git@github.com:EmergentAGI/Automata.git
+cd Automata
 
-5. automata.tools.python_tools.python_indexer:
-   A module providing functionality to extract information about classes, functions, and their docstrings from a given directory of Python files. It defines the `PythonIndexer` class that can be used to get the source code, docstrings, and list of functions or classes within a specific file.
+# Create the local environment
+python3 -m venv local_env
+source local_env/bin/activate
 
-6. automata.tools.python_tools.python_writer:
-   A module which provides the ability to change the in-memory representation of a python module in the PythonIndexer and to
-   write this out to disk
+# Install the project in editable mode
+pip3 install -e .
 
-7. automata.tools.oracle.codebase_oracle:
-   A codebase oracle module. The documentation for this module is currently unavailable.
+# Setup pre-commit hooks
+pre-commit install
 
-# Getting Started
+# Set up .env
+cp .env.example .env
+MY_API_KEY=your_openai_api_key_here
+DB_PATH="$PWD/conversations.sqlite3"
+sed -i "s|your_openai_api_key|$MY_API_KEY|" .env
+sed -i "s|your_conversation_db_path|$DB_PATH|" .env
+```
 
-To run the code, follow these steps:
+### Build the docs
 
-1. Clone the repository on your local machine.
-2. Navigate to the project directory.
-3. Create and activate a virtual environment by running `python3 -m venv local_env && source local_env/bin/activate`
-4. Upgrade to the latest pip by running `python3 -m pip install --upgrade pip`
-5. Install the project in editable mode by running `pip3 install -e .`
-6. Install pre-commit hooks by running `pre-commit install`
-7. Build appropriate .env file
-8. Execute the main script as in this example - `automata main --instructions="Query the indexer agent for the class AutomataMasterAgent's method 'run' and return the raw code code" -v`
+How to build the documentation (refreshing is not yet fully formed)
 
-# References
+```bash
 
-## Automata Agent CLI
+# Update the code embeddings
+automata run-code-embedding
 
-The Automata Agent CLI provides a simple and convenient way to interact with the agent. The available commands and options can be found in the [Automata Agent CLI Documentation](automata/cli/cli.md).
+# "L1" docs are the docstrings written into the code
 
-## Automata Agent
+# Build and embed the L2 docs
+automata run-doc-embedding-l2
 
-The AutomataAgent is an autonomous agent designed to execute instructions and report the results back to the main system. It communicates with the OpenAI API to generate responses based on given instructions and manages interactions with various tools. More information can be found in the [Automata Agent Documentation](automata/core/agent/agent.md).
+# Build and embed the L3 docs
+automata run-doc-embedding-l3
+```
 
-## Automata Coordinator
+### Indexing (Optional)
 
-The AutomataCoordinator is responsible for managing multiple AutomataAgents, including the MasterAutomataAgent. It allows them to work together to perform various tasks and generate results. The AutomataInstance is a representation of an AutomataAgent, including its configuration, description, and builder class. More information can be found in the [Automata Coordinator Documentation](automata/core/coordinator/coordinator.md).
+[SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Interpreter. These indices are used to create the code graph which facilitates search. New indices are generated and uploaded periodically for the Automata Interpreter codebase, but developers must be generate them manually if necessary for their local development. We recommend following the [instructions here](https://github.com/sourcegraph/scip-python).
 
-## Automata Tools
+```bash
+# Activate the local repository
+source local_env/bin/activate
 
-The AutomataTools provide capabilities to index, write, and search Python codebases. This documentation covers PythonIndexer, PythonWriter, and CodeBaseOracle classes, which are part of the AutomataTools. More information can be found in the [Automata Tools Documentation](automata/tools/tools.md).
+# Install scip-python locally
+cd scip-python
+npm install
 
-## Automata Tool Management
+# Build the tool
+cd packages/pyright-scip
+npm run build
 
-This Automata Tool Management workflow provides agents with managers that interact with different APIs and provide functionality to read and modify the code state of Python files, build low-level manipulation (LLM) toolkits, and facilitate code searches. More information can be found in the [Automata Tool Management Documentation](automata/tool_management/tool_management.md).
+# Return to working dir
+cd ../../../
 
-## Automata Task Management
+# Generate the local index
+node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
 
-This Automata repository provides a task workflow. It covers the Task class hierarchy and how to use the TaskExecutor to execute and manage tasks. More information can be found here [Automata Task Documentation](automata/core/tasks/task.md).
+# Copy into the default index location
+mv index.scip automata/config/symbol/index.scip
 
-## Evaluation Suite
 
-The Eval class is a base class for evaluating the performance of an AutomataAgent given a set of instructions. It provides methods for generating evaluation results and extracting actions from the agent's responses. Subclasses of the Eval class should override the eval_sample and run methods to customize evaluation behavior. More information can be found in the [Automata Eval Documentation](automata/evals/eval.md).
+### Alternatively, you mean run ./regenerate_index after changing local permissions and completing the above install.
+```
+
+Note, this command may result in a buffer overflow error that requires a manual code modification to fix.
+
+---
+
+## Understanding Automata
+
+Automata works by combining Large Language Models, such as GPT-4, with a vector database to form an integrated system capable of documenting, searching, and writing code. The procedure initiates with the generation of comprehensive documentation and code instances. This, coupled with search capabilities, forms the foundation for Automata's self-coding potential.
+
+Automata employs downstream tooling to execute advanced coding tasks, continually building its expertise and autonomy. This self-coding approach mirrors an autonomous craftsman's work, where tools and techniques are consistently refined based on feedback and accumulated experience.
+
+## Hierarchical Operation
+
+Automata operates in a hierarchical structure, where agents at lower levels specialize in specific tasks like generating code snippets or analyzing a document segment. In contrast, higher-level agents supervise lower-level operations, assemble their outputs into a coherent whole, and strategically decide on the project's direction. This system, inspired by human cognition and organization theories, facilitates the emergence of complex behavior from the collaboration of simpler, specialized subsystems.
+
+Automata's design accommodates extensibility, enabling seamless integration with various APIs and libraries to enhance its capabilities. Additionally, it can leverage external data sources and real-time feedback from its interactions to constantly update its knowledge and skills.
+
+## Future
+
+The ultimate goal of the Automata system is to achieve a level of proficiency where it can independently design, write, test, and refine complex software systems. This includes the ability to understand and navigate large codebases, reason about software architecture, optimize performance, and even invent new algorithms or data structures when necessary.
+
+While the complete realization of this goal is likely to be a complex and long-term endeavor, each incremental step towards it not only has the potential to dramatically increase the productivity of human programmers, but also to shed light on fundamental questions in AI and computer science.
+
+## Inspiration and Future Endeavors
+
+Automata was born from the amalgamation of inspiring projects like [Auto-GPT](https://github.com/Significant-Gravitas/Auto-GPT), [BabyAGI](https://github.com/yoheinakajima/babyagi), [AgentGPT](https://github.com/reworkd/AgentGPT), and is designed to inspire many more. We're eager to see what you're building and how we can learn and evolve together in this uncharted AI territory.
+
+## License
+
+Automata is licensed under the Apache License 2.0.

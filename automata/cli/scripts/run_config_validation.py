@@ -6,9 +6,9 @@ import os
 import yaml
 from jsonschema import ValidationError, validate
 
-from automata.configs.config_enums import ConfigCategory
-from automata.core.agent.automata_action_extractor import AutomataActionExtractor
-from automata.core.utils import config_path, get_logging_config
+from automata.config.config_types import ConfigCategory
+from automata.core.agent.action import AutomataActionExtractor
+from automata.core.utils import config_fpath, get_logging_config
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -34,7 +34,7 @@ yaml_schema = {
 
 
 # Validation test function
-def test_yaml_validation(file_path):
+def test_yaml_validation(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
 
@@ -46,7 +46,7 @@ def test_yaml_validation(file_path):
 
 
 # Compatibility test function
-def test_yaml_compatibility(file_path):
+def test_yaml_compatibility(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
 
@@ -75,7 +75,7 @@ def test_yaml_compatibility(file_path):
             logger.debug(f"Compatibility test '{test['test_name']}' for {file_path} passed.")
 
 
-def test_action_extraction(file_path):
+def test_action_extraction(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
     actions = AutomataActionExtractor.extract_actions(yaml_data["system_instruction_template"])
@@ -88,7 +88,7 @@ def test_action_extraction(file_path):
 
 if __name__ == "__main__":
     # Find all .yaml files in the specified directory
-    yaml_files = glob.glob(os.path.join(config_path(), ConfigCategory.AGENT.value, "*.yaml"))
+    yaml_files = glob.glob(os.path.join(config_fpath(), ConfigCategory.AGENT.value, "*.yaml"))
 
     # Run validation and compatibility tests on each YAML file
     for yaml_file in yaml_files:

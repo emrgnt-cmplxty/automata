@@ -1,5 +1,5 @@
 """Interface for tools."""
-from enum import Enum, auto
+from enum import Enum
 from inspect import signature
 from typing import Any, Awaitable, Callable, List, Optional, Tuple, Union
 
@@ -7,7 +7,7 @@ from automata.core.base.base_tool import BaseTool
 
 
 class ToolNotFoundError(Exception):
-    def __init__(self, tool_name):
+    def __init__(self, tool_name) -> None:
         self.tool_name = tool_name
         super().__init__(f"Error: Tool '{tool_name}' not found.")
 
@@ -30,9 +30,7 @@ class Tool(BaseTool):
         raise NotImplementedError("Tool does not support async")
 
     # TODO: this is for backwards compatibility, remove in future
-    def __init__(
-        self, name: str, func: Callable[[str], str], description: str, **kwargs: Any
-    ) -> None:
+    def __init__(self, name: str, func: Callable[[str], str], description: str, **kwargs: Any):
         """Initialize tool."""
         super(Tool, self).__init__(name=name, func=func, description=description, **kwargs)  # type: ignore
 
@@ -119,7 +117,7 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
-    PYTHON_RETRIEVER = auto()
-    PYTHON_WRITER = auto()
-    COVERAGE_PROCESSOR = auto()
-    SYMBOL_SEARCHER = auto()
+    PY_RETRIEVER = "py_retriever"
+    PY_WRITER = "py_writer"
+    SYMBOL_SEARCHER = "symbol_searcher"
+    CONTEXT_ORACLE = "context_oracle"
