@@ -71,7 +71,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             raise ValueError(f"Symbol {symbol} has no source code")
 
         if self.embedding_db.contains(symbol):
-            # self.embedding_db.discard(symbol)
+            self.update_existing_embedding(source_code, symbol)
             return
 
         symbol_embedding = self.build_symbol_doc_embedding(source_code, symbol)
@@ -175,3 +175,34 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             summary=summary,
             context=prompt,
         )
+
+    def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
+        """
+        Check if the embedding for a symbol needs to be updated.
+        This is done by comparing the source code of the symbol to the source code
+
+        Args:
+            source_code (str): The source code of the symbol
+            symbol (Symbol): The symbol to update
+        """
+        existing_embedding = self.embedding_db.get(symbol)
+        # FIXME - We need to add logic similar to what we have
+        # in the code embedding handler to update documentation
+        # when a sufficient threshold has been breached
+        # the following is a representative snippet -
+        # if existing_embedding.embedding_source != source_code:
+        # logger.debug("Building a new embedding for %s", symbol)
+        # self.embedding_db.discard(symbol)
+        # symbol_embedding = self.build_embedding(source_code, symbol)
+        # self.embedding_db.add(symbol_embedding)
+
+        # For now, we will just automatically roll the existing documentation forward
+        if existing_embedding.symbol != symbol:
+            logger.debug(
+                f"Rolling forward the embedding for {existing_embedding.symbol} to {symbol}"
+            )
+            self.embedding_db.discard(symbol)
+            existing_embedding.symbol = symbol
+            self.embedding_db.add(existing_embedding)
+        else:
+            logger.debug("Passing for %s", symbol)

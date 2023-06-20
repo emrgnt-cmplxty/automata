@@ -31,7 +31,7 @@ class OpenAIEmbedding(EmbeddingProvider):
 
     def __init__(self, engine: str = "text-embedding-ada-002") -> None:
         if not openai.api_key:
-            from config import OPENAI_API_KEY
+            from automata.config import OPENAI_API_KEY
 
             openai.api_key = OPENAI_API_KEY
         self.engine = engine

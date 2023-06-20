@@ -65,7 +65,7 @@ cd ../../../
 node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
 
 # Copy into the default index location
-mv index.scip automata/config/symbol/index.scip
+mv index_from_fork.scip automata/config/symbol/index.scip
 
 
 ### Alternatively, you mean run ./regenerate_index after changing local permissions and completing the above install.
@@ -80,6 +80,8 @@ How to build the documentation (refreshing is not yet fully formed)
 automata run-code-embedding
 
 # "L1" docs are the docstrings written into the code
+# "L2" docs are generated from the L1 docs + symbol context
+# "L3" docs are generated from the L2 docs + symbol context
 
 # Build and embed the L2 docs
 automata run-doc-embedding-l2
