@@ -167,7 +167,8 @@ class SymbolRank:
         """
         if query_to_symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
-        if missing := set(self.graph) - set(query_to_symbol_similarity):
+        missing = set(self.graph) - set(query_to_symbol_similarity)
+        if missing:
             raise NetworkXError(
                 f"query_to_symbol_similarity dictionary must have a value for every node. Missing nodes {missing}"
             )
@@ -191,7 +192,8 @@ class SymbolRank:
         """
         if dangling is None:
             return query_to_symbol_similarity
-        if missing := set(self.graph) - set(dangling):
+        missing = set(self.graph) - set(dangling)
+        if missing:
             raise NetworkXError(
                 f"Dangling node dictionary must have a value for every node. Missing nodes {missing}"
             )

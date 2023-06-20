@@ -4,6 +4,7 @@
 
 [![Unit Tests](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
+[![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/SigGravitas)
 
 **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 
@@ -36,6 +37,9 @@ MY_API_KEY=your_openai_api_key_here
 DB_PATH="$PWD/conversations.sqlite3"
 sed -i "s|your_openai_api_key|$MY_API_KEY|" .env
 sed -i "s|your_conversation_db_path|$DB_PATH|" .env
+
+# Fetch the submodules
+git submodule update --init --recursive
 ```
 
 ### Build the docs

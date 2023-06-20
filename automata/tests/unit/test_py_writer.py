@@ -194,16 +194,16 @@ def test_extend_module(py_writer):
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    py_writer.create_new_module("sample_module_2", source_code)
+    py_writer.create_new_module("sample_module_22", source_code)
     mock_generator_2 = MockCodeGenerator(
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code_2 = mock_generator_2.generate_code()
 
-    py_writer.update_existing_module("sample_module_2", source_code_2)
+    py_writer.update_existing_module("sample_module_22", source_code_2)
 
     # Check module 2 is merged into module 1
-    module_obj = py_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
+    module_obj = py_writer.code_retriever.module_tree_map.fetch_module("sample_module_22")
     mock_generator._check_module_obj(module_obj)
     mock_generator._check_class_obj(module_obj[0])
     mock_generator._check_function_obj(module_obj[1])
@@ -383,3 +383,7 @@ def test_write_and_retrieve_mock_code(py_writer):
     retriever = PyCodeRetriever(module_map)
     module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
+
+    root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    fpath = os.path.join(root_dir, "sample_module_2.py")
+    os.remove(fpath)
