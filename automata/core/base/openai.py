@@ -72,7 +72,7 @@ class Prompt(ABC):
     """
 
     @abstractmethod
-    def to_formatted_prompt(self):
+    def to_formatted_prompt(self) -> str:
         """
         Return the actual data to be passed as the `prompt` field to your model.
         See the above types to see what each API call is able to handle.
@@ -110,7 +110,7 @@ class CompletionResult(ABC):
 
 
 class OpenAIBaseCompletionResult(CompletionResult):
-    def __init__(self, raw_data: Any):
+    def __init__(self, raw_data: Any) -> None:
         self.raw_data = raw_data
 
     def get_completions(self) -> list[str]:

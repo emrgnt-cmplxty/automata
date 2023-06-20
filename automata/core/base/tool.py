@@ -7,7 +7,7 @@ from automata.core.base.base_tool import BaseTool
 
 
 class ToolNotFoundError(Exception):
-    def __init__(self, tool_name):
+    def __init__(self, tool_name) -> None:
         self.tool_name = tool_name
         super().__init__(f"Error: Tool '{tool_name}' not found.")
 

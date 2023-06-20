@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from automata.config.config_types import AgentConfigName
 from automata.core.base.tool import Tool
+from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.coding.py_coding.writer import PyCodeWriter
 
 from .agent_tool import AgentTool
@@ -20,7 +21,7 @@ class PyCodeWriterTool(AgentTool):
     def __init__(
         self,
         **kwargs,
-    ):
+    ) -> None:
         """
         Initializes a PyCodeWriterTool object with the given inputs.
 
@@ -30,7 +31,7 @@ class PyCodeWriterTool(AgentTool):
         Returns:
         - None
         """
-        self.writer: PyCodeWriter = kwargs.get("py_writer")
+        self.writer: PyCodeWriter = kwargs.get("py_writer", PyCodeWriter(PyCodeRetriever()))
         # TODO: unused
         self.automata_version = kwargs.get("automata_version") or AgentConfigName.AUTOMATA_WRITER
         self.model = kwargs.get("model", "gpt-4")
@@ -144,7 +145,7 @@ class PyCodeWriterTool(AgentTool):
         except Exception as e:
             return "Failed to reduce the module with error - " + str(e)
 
-    def _create_new_module(self, module_dotpath, code):
+    def _create_new_module(self, module_dotpath, code) -> str:
         """
         Creates a new module with the given code.
 

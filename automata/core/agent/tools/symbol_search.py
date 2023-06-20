@@ -28,7 +28,7 @@ class SymbolSearchTool(AgentTool):
         self,
         symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
-    ):
+    ) -> None:
         """
         Args:
             symbol_search (SymbolSearch): The symbol search object.

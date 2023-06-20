@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import List
 
 import openai
 from jinja2 import Template
@@ -22,8 +22,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_provider: EmbeddingProvider,
         symbol_search: SymbolSearch,
         retriever: PyContextRetriever,
-        embedding_db_l2: Optional[VectorDatabaseProvider] = None,
-    ):
+    ) -> None:
         """
         A constructor for SymbolDocEmbeddingHandler
 
@@ -37,7 +36,6 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         super().__init__(embedding_db, embedding_provider)
         self.symbol_search = symbol_search
         self.retriever = retriever
-        self.embedding_db_l2 = embedding_db_l2
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
         """
@@ -49,7 +47,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         """
         return self.embedding_db.get(symbol)
 
-    def update_embedding(self, symbol: Symbol):
+    def update_embedding(self, symbol: Symbol) -> None:
         """
         Concrete method to update the embedding for a symbol.
 

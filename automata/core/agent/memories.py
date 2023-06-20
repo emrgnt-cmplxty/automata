@@ -6,23 +6,23 @@ from config import CONVERSATION_DB_PATH
 
 
 class AutomataMemoryDatabase:
-    def __init__(self, session_id: str):
+    def __init__(self, session_id: str) -> None:
         self.session_id = session_id
         self.conn = sqlite3.connect(CONVERSATION_DB_PATH)
         self.cursor = self.conn.cursor()
         self._init_database()
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Close the connection to the agent."""
         if self.conn:
             self.conn.close()
 
-    def put_message(self, role: str, content: str, interaction_id: int):
+    def put_message(self, role: str, content: str, interaction_id: int) -> OpenAIChatMessage:
         """
         Inserts the message into the appropriate session and interaction id
         Args:
-            role (str): The role of the message sender (e.g., "user" or "assistant").
-            content (str): The content of the message.
+            role (str The role of the message sender (e.g., "user" or "assistant").
+            content (str The content of the message.
 
         Returns:
             OpenAIChatMessage: The saved interaction.
@@ -49,8 +49,11 @@ class AutomataMemoryDatabase:
             for (role, content) in self.cursor.fetchall()
         ]
 
-    def _init_database(self):
-        """Initializes the database connection and creates the interactions table if it does not exist."""
+    def _init_database(self) -> None:
+        """
+        Initializes the database connection and creates the
+        interactions table if it does not exist.
+        """
         self.conn = sqlite3.connect(CONVERSATION_DB_PATH)
         self.cursor = self.conn.cursor()
         self.cursor.execute(

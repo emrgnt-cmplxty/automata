@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 
-from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
+from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto  # type: ignore
 
 
 class SymbolDescriptor:
@@ -27,17 +27,19 @@ class SymbolDescriptor:
         Parameter = "parameter"
         TypeParameter = "type_parameter"
 
-    def __init__(self, name: str, suffix: DescriptorProto, disambiguator: Optional[str] = None):
+    def __init__(
+        self, name: str, suffix: DescriptorProto, disambiguator: Optional[str] = None
+    ) -> None:
         self.name = name
         self.suffix = suffix
         self.disambiguator = disambiguator
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Descriptor({self.name}, {self.suffix}" + (
             f", {self.disambiguator})" if self.disambiguator else ")"
         )
 
-    def unparse(self):
+    def unparse(self) -> str:
         """Converts back into URI string"""
         escaped_name = SymbolDescriptor.get_escaped_name(self.name)
         if self.suffix == SymbolDescriptor.ScipSuffix.Namespace:
@@ -58,7 +60,7 @@ class SymbolDescriptor:
             raise ValueError(f"Invalid descriptor suffix: {self.suffix}")
 
     @staticmethod
-    def get_escaped_name(name):
+    def get_escaped_name(name) -> str:
         def is_simple_identifier(name):
             return re.match(r"^[\w$+-]+$", name) is not None
 
@@ -108,10 +110,10 @@ class SymbolPackage:
     name: str
     version: str
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Package({self.unparse()})"
 
-    def unparse(self):
+    def unparse(self) -> str:
         """Converts back into URI string"""
         return f"{self.manager} {self.name} {self.version}"
 
@@ -172,7 +174,7 @@ class Symbol:
         """Hashes the URI string"""
         return hash(self.uri)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Compares the URI string"""
         if isinstance(other, Symbol):
             return self.uri == other.uri
@@ -273,7 +275,7 @@ class SymbolReference:
         # This could cause collisions if the same symbol is referenced in different files at the same location
         return hash(f"{self.symbol.uri}-{self.line_number}-{self.column_number}")
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, SymbolReference):
             return (
                 f"{self.symbol.uri}-{self.line_number}-{self.column_number}"
@@ -292,7 +294,7 @@ class SymbolFile:
     def __hash__(self) -> int:
         return hash(self.path)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, SymbolFile):
             return self.path == other.path
         elif isinstance(other, str):
@@ -303,7 +305,7 @@ class SymbolFile:
 class SymbolEmbedding(abc.ABC):
     """Abstract base class for different types of embeddings"""
 
-    def __init__(self, symbol: Symbol, embedding_source: str, vector: np.array):
+    def __init__(self, symbol: Symbol, embedding_source: str, vector: np.ndarray):
         self.symbol = symbol
         self.embedding_source = embedding_source
         self.vector = vector
@@ -312,7 +314,7 @@ class SymbolEmbedding(abc.ABC):
 class SymbolCodeEmbedding(SymbolEmbedding):
     """Embedding for symbol code"""
 
-    def __init__(self, symbol: Symbol, source_code: str, vector: np.array):
+    def __init__(self, symbol: Symbol, source_code: str, vector: np.ndarray):
         super().__init__(symbol, source_code, vector)
 
 
@@ -323,11 +325,11 @@ class SymbolDocEmbedding(SymbolEmbedding):
         self,
         symbol: Symbol,
         document: str,
-        vector: np.array,
+        vector: np.ndarray,
         source_code: Optional[str] = None,
         summary: Optional[str] = None,
         context: Optional[str] = None,
-    ):
+    ) -> None:
         super().__init__(symbol, document, vector)
         # begin additional meta data
         self.source_code = source_code

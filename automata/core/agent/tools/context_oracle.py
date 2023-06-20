@@ -19,7 +19,7 @@ class ContextOracleTool(AgentTool):
         self,
         symbol_search: SymbolSearch,
         symbol_doc_similarity: SymbolSimilarity,
-    ):
+    ) -> None:
         """
         Initializes ContextOracleTool with given SymbolSearch, SymbolSimilarity.
 

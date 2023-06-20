@@ -10,7 +10,7 @@ from .options import common_options
 logger = logging.getLogger(__name__)
 
 
-def reconfigure_logging(log_level_str: str):
+def reconfigure_logging(log_level_str: str) -> None:
     """
     Configure the logging settings.
 
@@ -35,7 +35,7 @@ def reconfigure_logging(log_level_str: str):
 
 @click.group()
 @click.pass_context
-def cli(ctx):
+def cli(ctx) -> None:
     pass
 
 
@@ -52,7 +52,7 @@ def cli(ctx):
     help="Which embedding file to save to.",
 )
 @click.pass_context
-def run_code_embedding(ctx, *args, **kwargs):
+def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
     from automata.cli.scripts.run_code_embedding import main
 
@@ -74,7 +74,7 @@ def run_code_embedding(ctx, *args, **kwargs):
     help="Which embedding file to save to.",
 )
 @click.pass_context
-def run_doc_embedding_l2(ctx, *args, **kwargs):
+def run_doc_embedding_l2(ctx, *args, **kwargs) -> None:
     """Run the document embedding Level-2 pipeline."""
     from automata.cli.scripts.run_doc_embedding_l2 import main
 
@@ -96,7 +96,7 @@ def run_doc_embedding_l2(ctx, *args, **kwargs):
     help="Which embedding file to save to.",
 )
 @click.pass_context
-def run_doc_embedding_l3(ctx, *args, **kwargs):
+def run_doc_embedding_l3(ctx, *args, **kwargs) -> None:
     """Run the document embedding Level-3 pipeline."""
     from automata.cli.scripts.run_doc_embedding_l3 import main
 
@@ -118,7 +118,7 @@ def run_doc_embedding_l3(ctx, *args, **kwargs):
     help="Which embedding file to save to.",
 )
 @click.pass_context
-def run_doc_post_process(ctx, *args, **kwargs):
+def run_doc_post_process(ctx, *args, **kwargs) -> None:
     """Run the document post-processing."""
     from automata.cli.scripts.run_doc_post_process import main
 
@@ -140,7 +140,7 @@ def run_doc_post_process(ctx, *args, **kwargs):
     help="Which tools to use?.",
 )
 @click.pass_context
-def run_agent(ctx, *args, **kwargs):
+def run_agent(ctx, *args, **kwargs) -> None:
     """Run the agent."""
     from automata.cli.scripts.run_agent import main
 

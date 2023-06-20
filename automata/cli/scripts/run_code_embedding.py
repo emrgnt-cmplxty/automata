@@ -14,7 +14,7 @@ from automata.core.utils import config_fpath
 logger = logging.getLogger(__name__)
 
 
-def main(*args, **kwargs):
+def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """

@@ -16,7 +16,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
         self,
         symbol_embedding_manager: SymbolEmbeddingHandler,
         norm_type: NormType = NormType.L2,
-    ):
+    ) -> None:
         """
         Initialize SymbolSimilarity
 
@@ -35,7 +35,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(supported_symbols)}
         self.available_symbols: Optional[Set[Symbol]] = None
 
-    def set_available_symbols(self, available_symbols: Set[Symbol]):
+    def set_available_symbols(self, available_symbols: Set[Symbol]) -> None:
         """
         Set the available symbols to use for similarity calculation
 
@@ -109,7 +109,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
             top_k_indices = [available_indices[i] for i in top_k_indices_in_available]
         else:
             # Get the indices of the k symbols with the highest similarity scores
-            top_k_indices = np.argsort(similarity_scores)[-k:]
+            top_k_indices = list(np.argsort(similarity_scores)[-k:])
 
         # Return the corresponding symbols
         return {

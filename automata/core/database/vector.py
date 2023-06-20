@@ -4,7 +4,6 @@ import logging.config
 from typing import Dict, List
 
 import jsonpickle
-import numpy as np
 
 from automata.core.database.provider import SymbolDatabaseProvider
 from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
@@ -136,7 +135,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         self.data = []
         self.index = {}
 
-    def calculate_similarity(self, vector: np.array) -> List[Dict[Symbol, float]]:
+    def calculate_similarity(self, embedding: SymbolEmbedding) -> List[Dict[Symbol, float]]:
         # Implement the logic to calculate similarity between the given vector and vectors in the data.
         # This will depend on how the data is structured and the specific similarity measure to be used (e.g., cosine similarity).
         # Here, just returning the data as a placeholder.

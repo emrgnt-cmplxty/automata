@@ -23,7 +23,7 @@ class Action(ABC):
 
     @classmethod
     @abstractmethod
-    def from_lines(cls, lines: List[str], index: int):
+    def from_lines(cls, lines: List[str], index: int) -> "Action":
         """
         A method to create an instance of an Action subclass from a list of lines and an index.
 
@@ -38,7 +38,7 @@ class Action(ABC):
 
 
 class ToolAction(Action):
-    def __init__(self, tool_name: str, tool_query: str, tool_args: List[str]):
+    def __init__(self, tool_name: str, tool_query: str, tool_args: List[str]) -> None:
         """
         Initialize a ToolAction instance.
 
@@ -61,7 +61,7 @@ class ToolAction(Action):
         return f"ToolAction(name={self.tool_name}, query={self.tool_query}, args={self.tool_args})"
 
     @classmethod
-    def from_lines(cls, lines: List[str], index: int):
+    def from_lines(cls, lines: List[str], index: int) -> "ToolAction":
         """
         Create a ToolAction instance from a list of lines and an index.
 
@@ -83,7 +83,7 @@ class AgentAction(Action):
         agent_version: AgentConfigName,
         agent_query: str,
         agent_instruction: List[str],
-    ):
+    ) -> None:
         """
         Initialize an AgentAction instance.
 
@@ -106,7 +106,7 @@ class AgentAction(Action):
         return f"AgentAction(version={self.agent_version}, query={self.agent_query}, instruction={self.agent_instruction})"
 
     @classmethod
-    def from_lines(cls, lines: List[str], index: int):
+    def from_lines(cls, lines: List[str], index: int) -> "AgentAction":
         """
         Create an AgentAction instance from a list of lines and an index.
 
@@ -125,7 +125,7 @@ class AgentAction(Action):
 
 
 class ResultAction(Action):
-    def __init__(self, result_name: str, result_outputs: List[str]):
+    def __init__(self, result_name: str, result_outputs: List[str]) -> None:
         """
         Initialize a ResultAction instance.
 
@@ -146,7 +146,7 @@ class ResultAction(Action):
         return f"ResultAction(name={self.result_name}, outputs={self.result_outputs})"
 
     @classmethod
-    def from_lines(cls, lines: List[str], index: int):
+    def from_lines(cls, lines: List[str], index: int) -> "ResultAction":
         """
         Create a ResultAction instance from a list of lines and an index.
 
@@ -266,7 +266,7 @@ class AutomataActionExtractor:
     def _is_code_start(
         index: int,
         lines: List[str],
-    ):
+    ) -> bool:
         """
         Check if the current line represents the start of a code block.
 

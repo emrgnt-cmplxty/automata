@@ -13,7 +13,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         self,
         embedding_db: VectorDatabaseProvider,
         embedding_provider: EmbeddingProvider,
-    ):
+    ) -> None:
         """
         A constructor for SymbolCodeEmbeddingHandler
 
@@ -36,7 +36,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         """
         return self.embedding_db.get(symbol)
 
-    def update_embedding(self, symbol: Symbol):
+    def update_embedding(self, symbol: Symbol) -> None:
         """
         Concrete method to update the embedding for a symbol.
 
@@ -74,7 +74,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_vector = self.embedding_provider.build_embedding(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
-    def update_existing_embedding(self, source_code: str, symbol: Symbol):
+    def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         """
         Check if the embedding for a symbol needs to be updated.
         This is done by comparing the source code of the symbol to the source code

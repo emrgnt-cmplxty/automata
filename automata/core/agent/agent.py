@@ -32,7 +32,7 @@ class Agent(ABC):
     """
 
     @abstractmethod
-    def set_coordinator(self, coordinator: "AutomataCoordinator"):
+    def set_coordinator(self, coordinator: "AutomataCoordinator") -> None:
         pass
 
     @abstractmethod
@@ -56,7 +56,7 @@ class AutomataAgent(Agent):
     INITIALIZER_DUMMY: Final = "automata_initializer"
     ERROR_DUMMY_TOOL: Final = "error_reporter"
 
-    def __init__(self, instructions: str, config: AutomataAgentConfig):
+    def __init__(self, instructions: str, config: AutomataAgentConfig) -> None:
         """
         Initializes an AutomataAgent.
 
@@ -73,7 +73,7 @@ class AutomataAgent(Agent):
         self.messages: List[OpenAIChatMessage] = []
         self.coordinator: Optional["AutomataCoordinator"] = None
 
-    def set_coordinator(self, coordinator: "AutomataCoordinator"):
+    def set_coordinator(self, coordinator: "AutomataCoordinator") -> None:
         """
         Set the coordinator for the AutomataAgent, necessary for the main agent.
 
@@ -143,9 +143,11 @@ class AutomataAgent(Agent):
             latest_responses = self.iter_step()
         return self.messages[-1].content
 
-    def setup(self):
+    def setup(self) -> None:
         """
         Sets up the agent by initializing the database and loading the config.
+
+        Note: This should be called before running the agent.
         """
         openai.api_key = OPENAI_API_KEY
         if not self.config.session_id:

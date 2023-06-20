@@ -20,7 +20,7 @@ class AutomataAgentConfigBuilder(BaseModel):
 
     _config: AutomataAgentConfig = PrivateAttr()
 
-    def __init__(self, config: Optional[AutomataAgentConfig] = None):
+    def __init__(self, config: Optional[AutomataAgentConfig] = None) -> None:
         super().__init__()
         self._config = config or AutomataAgentConfig()
 
@@ -231,7 +231,7 @@ class AutomataAgentConfigBuilder(BaseModel):
         return self._config
 
     @staticmethod
-    def _validate_type(value, expected_type, param_name: str):
+    def _validate_type(value, expected_type, param_name: str) -> None:
         """
         Validate the type of the provided value and raise a ValueError if it doesn't match the expected type.
         """
