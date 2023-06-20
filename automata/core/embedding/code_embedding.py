@@ -96,4 +96,3 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
             self.embedding_db.add(existing_embedding)
         else:
             logger.debug("Passing for %s", symbol)
-            pass

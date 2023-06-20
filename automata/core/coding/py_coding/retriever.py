@@ -35,10 +35,8 @@ class PyCodeRetriever:
                 if not found
         """
 
-        module = self.module_tree_map.fetch_module(module_dotpath)
-        if module:
-            result = find_syntax_tree_node(module, object_path)
-            if result:
+        if module := self.module_tree_map.fetch_module(module_dotpath):
+            if result := find_syntax_tree_node(module, object_path):
                 return result.dumps()
 
         return NO_RESULT_FOUND_STR
@@ -57,8 +55,7 @@ class PyCodeRetriever:
                 if not found
         """
 
-        module = self.module_tree_map.fetch_module(module_dotpath)
-        if module:
+        if module := self.module_tree_map.fetch_module(module_dotpath):
             return PyCodeRetriever.get_docstring_from_node(
                 find_syntax_tree_node(module, object_path)
             )

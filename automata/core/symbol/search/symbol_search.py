@@ -36,7 +36,7 @@ class SymbolSearch:
             code_subgraph: A subgraph of the SymbolGraph
         """
 
-        if not code_subgraph.parent == symbol_graph:
+        if code_subgraph.parent != symbol_graph:
             raise ValueError("code_subgraph must be a subgraph of symbol_graph")
 
         graph_symbols = symbol_graph.get_all_available_symbols()
@@ -64,8 +64,7 @@ class SymbolSearch:
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )
-        ranks = self.symbol_rank.get_ranks(query_to_symbol_similarity=transformed_query_vec)
-        return ranks
+        return self.symbol_rank.get_ranks(query_to_symbol_similarity=transformed_query_vec)
 
     def symbol_references(self, symbol_uri: str) -> SymbolReferencesResult:
         """
@@ -190,11 +189,7 @@ class SymbolSearch:
         # Apply the function to the accumulated values
         transformed_values = func([dictionary[key] for key in dictionary])
 
-        # Re-distribute the transformed values back into the dictionary
-        transformed_dict = {}
-        for i, key in enumerate(dictionary):
-            transformed_dict[key] = transformed_values[i]
-        return transformed_dict
+        return {key: transformed_values[i] for i, key in enumerate(dictionary)}
 
     @staticmethod
     def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
@@ -212,7 +207,8 @@ class SymbolSearch:
         for module_path, module in module_map.items():
             if module:
                 lines = module.dumps().splitlines()
-                line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
-                if line_numbers:
+                if line_numbers := [
+                    i + 1 for i, line in enumerate(lines) if pattern in line.strip()
+                ]:
                     matches[module_path] = line_numbers
         return matches

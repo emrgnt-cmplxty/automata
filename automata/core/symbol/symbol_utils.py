@@ -84,11 +84,7 @@ def get_rankable_symbols(
     filtered_symbols = []
 
     for symbol in symbols:
-        do_continue = False
-        for filter_string in filter_strings:
-            if filter_string in symbol.uri:
-                do_continue = True
-
+        do_continue = any(filter_string in symbol.uri for filter_string in filter_strings)
         if do_continue:
             continue
 

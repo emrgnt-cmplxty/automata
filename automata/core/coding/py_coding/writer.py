@@ -125,8 +125,7 @@ class PyCodeWriter:
             raise PyCodeWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
-        node = find_syntax_tree_node(module_obj, object_dotpath)
-        if node:
+        if node := find_syntax_tree_node(module_obj, object_dotpath):
             PyCodeWriter._delete_node(node)
             if do_write:
                 self._write_module_to_disk(module_dotpath)
@@ -227,8 +226,7 @@ class PyCodeWriter:
         """
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
-            existing_node = find_syntax_tree_node(node_to_update, child_node_name)
-            if existing_node:
+            if existing_node := find_syntax_tree_node(node_to_update, child_node_name):
                 existing_node.replace(new_node)
             else:
                 node_to_update.append(new_node)
@@ -433,7 +431,7 @@ class PyDocWriter:
     @staticmethod
     def get_payload(directory: str) -> str:
         """Returns a formatted string for the main body of the index.rst file."""
-        payload = f"""{os.path.basename(directory)}
+        return f"""{os.path.basename(directory)}
 {"=" * len(os.path.basename(directory))}
 
 **Automata** is a Python library for autonomous agents.
@@ -444,7 +442,6 @@ how to :ref:`installation` the project.
 .. note::
 
 """
-        return payload
 
     @staticmethod
     def generate_summary(content: str) -> str:

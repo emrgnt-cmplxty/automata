@@ -16,8 +16,7 @@ def root_py_fpath() -> str:
 
     """
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    data_folder = os.path.join(script_dir, "..")
-    return data_folder
+    return os.path.join(script_dir, "..")
 
 
 def root_fpath() -> str:
@@ -28,8 +27,7 @@ def root_fpath() -> str:
         str - A fpath object in string form
 
     """
-    data_folder = os.path.join(root_py_fpath(), "..")
-    return data_folder
+    return os.path.join(root_py_fpath(), "..")
 
 
 def config_fpath() -> str:
@@ -40,8 +38,7 @@ def config_fpath() -> str:
         str - A fpath object in string form
 
     """
-    data_folder = os.path.join(root_py_fpath(), "config")
-    return data_folder
+    return os.path.join(root_py_fpath(), "config")
 
 
 def load_config(

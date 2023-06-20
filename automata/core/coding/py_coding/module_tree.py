@@ -180,11 +180,14 @@ class LazyModuleTreeMap:
         Returns:
             str: The module dotpath for the specified module object.
         """
-        # there is no way a module that has a redbaron object is not loaded
-        for module_dotpath, module in self._loaded_modules.items():
-            if module == module_obj:
-                return module_dotpath
-        return None
+        return next(
+            (
+                module_dotpath
+                for module_dotpath, module in self._loaded_modules.items()
+                if module == module_obj
+            ),
+            None,
+        )
 
     def fetch_existing_module_fpath_by_dotpath(self, module_dotpath: str) -> Optional[str]:
         """
@@ -250,8 +253,7 @@ class LazyModuleTreeMap:
             Module: RedBaron FST object.
         """
         try:
-            module = RedBaron(open(path).read())
-            return module
+            return RedBaron(open(path).read())
         except Exception as e:
             logger.error(f"Failed to load module '{path}' due to: {e}")
             return None

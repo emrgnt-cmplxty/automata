@@ -20,7 +20,7 @@ def generate_user_observation_message(observations: Dict[str, str], include_pref
     message = ""
     if include_prefix:
         message += f"{ActionIndicator.ACTION.value} observations\n"
-    for observation_name in observations.keys():
+    for observation_name in observations:
         message = append_observation_message(observation_name, observations, message)
     return message
 
@@ -55,7 +55,7 @@ def retrieve_completion_message(processed_inputs: Dict[str, str]) -> Optional[st
     Returns:
         Optional[str]: The completion message if found, otherwise None.
     """
-    for processed_input in processed_inputs.keys():
+    for processed_input in processed_inputs:
         if ResultField.INDICATOR.value in processed_input:
             return processed_inputs[processed_input]
     return None

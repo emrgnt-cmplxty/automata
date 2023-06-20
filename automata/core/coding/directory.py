@@ -96,7 +96,7 @@ class Directory(Node):
             for child in self.children.values()
             if isinstance(child, Directory) and "__pycache__" not in child.name
         ]
-        return len(subdirectories) == 0
+        return not subdirectories
 
 
 class DirectoryManager:
@@ -198,14 +198,13 @@ class DirectoryManager:
 
         # Iterate through path parts
         for part in path_parts:
-            if part in node.children:
-                new_node = node.children[part]
-                if not isinstance(new_node, Directory):
-                    # If part is a file, return None
-                    return None
-                node = new_node
-            else:
+            if part not in node.children:
                 # If part not found in children, return None
                 return None
 
+            new_node = node.children[part]
+            if not isinstance(new_node, Directory):
+                # If part is a file, return None
+                return None
+            node = new_node
         return node

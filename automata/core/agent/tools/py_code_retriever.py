@@ -39,7 +39,7 @@ class PyCodeRetrieverTool(AgentTool):
         Returns:
             List[Tool]: The list of built tools.
         """
-        tools = [
+        return [
             Tool(
                 name="py-retriever-retrieve-code",
                 func=lambda query: self._run_indexer_retrieve_code(*query),
@@ -75,7 +75,6 @@ class PyCodeRetrieverTool(AgentTool):
                 verbose=True,
             ),
         ]
-        return tools
 
     def _run_indexer_retrieve_code(
         self, module_path: str, object_path: Optional[str] = None
@@ -95,10 +94,7 @@ class PyCodeRetrieverTool(AgentTool):
               python path, without docstrings.
         """
         try:
-            result = self.code_retriever.get_source_code_without_docstrings(
-                module_path, object_path
-            )
-            return result
+            return self.code_retriever.get_source_code_without_docstrings(module_path, object_path)
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
 

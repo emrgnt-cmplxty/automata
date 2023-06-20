@@ -31,7 +31,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
         self.embedding_provider: EmbeddingProvider = symbol_embedding_manager.embedding_provider
         self.norm_type = norm_type
         supported_symbols = self.embedding_handler.get_all_supported_symbols()
-        self.index_to_symbol = {i: symbol for i, symbol in enumerate(supported_symbols)}
+        self.index_to_symbol = dict(enumerate(supported_symbols))
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(supported_symbols)}
         self.available_symbols: Optional[Set[Symbol]] = None
 
@@ -74,12 +74,11 @@ class SymbolSimilarity(EmbeddingSimilarity):
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_query_similarity_vec(query_embedding)
 
-        similarity_dict = {
+        return {
             self.index_to_symbol[i]: similarity_scores[i]
             for i in range(len(self.index_to_symbol))
             if (not self.available_symbols) or self.index_to_symbol[i] in self.available_symbols
         }
-        return similarity_dict
 
     def get_nearest_entries_for_query(self, query_text: str, k: int = 10) -> Dict[Symbol, float]:
         """
@@ -148,10 +147,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
             query_embedding[np.newaxis, :], self.norm_type
         )[0]
 
-        # Compute the dot product between normalized embeddings and query
-        similarity_scores = np.dot(embeddings_norm, query_embedding_norm)
-
-        return similarity_scores
+        return np.dot(embeddings_norm, query_embedding_norm)
 
     @staticmethod
     def _normalize_embeddings(embeddings: np.ndarray, norm_type: NormType) -> np.ndarray:
