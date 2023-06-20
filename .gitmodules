@@ -1,0 +1,3 @@
+[submodule "scip-python"]
+	path = scip-python
+	url = https://github.com/emrgnt-cmplxty/scip-python
