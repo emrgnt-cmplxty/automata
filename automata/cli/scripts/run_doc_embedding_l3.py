@@ -27,7 +27,7 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
-    print("We are in run doc embedding l3....")
+    logger.info("Running....")
     scip_path = os.path.join(
         config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
     )
@@ -79,4 +79,5 @@ def main(*args, **kwargs) -> str:
             except Exception as e:
                 logger.error(f"Error updating embedding for {symbol.dotpath}: {e}")
 
+    logger.info("Complete.")
     return "Success"
