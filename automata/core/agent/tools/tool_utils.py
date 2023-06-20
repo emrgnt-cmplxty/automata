@@ -43,20 +43,35 @@ class DependencyFactory:
 
     def __init__(self, **kwargs) -> None:
         """
-        Acceptable Overrides (kwargs):
-            symbol_graph_path - Defaults to DependencyFactory.DEFAULT_SCIP_FPATH
-            flow_rank - Defaults to "bidirectional"
-            embedding_provider - Defaults to OpenAIEmbedding()
-            code_embedding_fpath - Defaults to DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
-            doc_embedding_fpath - Defaults to DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
-            symbol_rank_config - Defaults to SymbolRankConfig()
-            py_context_retriever_config - Defaults to PyContextRetrieverConfig()
+        Keyword Args (Defaults):
+            symbol_graph_path (DependencyFactory.DEFAULT_SCIP_FPATH)
+            flow_rank ("bidirectional")
+            embedding_provider (OpenAIEmbedding())
+            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH)
+            symbol_rank_config (SymbolRankConfig())
+            py_context_retriever_config (PyContextRetrieverConfig())
         }
         """
         self._instances: Dict[str, Any] = {}
         self.overrides = kwargs
 
     def get(self, dependency: str) -> Any:
+        """
+        Gets a dependency by name.
+
+        Args:
+            dependency: The name of the dependency to get
+
+        Returns:
+            The dependency instance
+
+        Raises:
+            ValueError: If the dependency is not found
+
+        Notes:
+            Dependencies correspond to the method names of the DependencyFactory class.
+        """
         if dependency in self.overrides:
             return self.overrides[dependency]
 
@@ -66,7 +81,7 @@ class DependencyFactory:
         method_name = f"create_{dependency}"
         if hasattr(self, method_name):
             creation_method = getattr(self, method_name)
-            logger.info("Creating dependency {dependency}")
+            logger.info(f"Creating dependency {dependency}")
             instance = creation_method()
         else:
             raise ValueError(f"Dependency {dependency} not found.")
@@ -76,17 +91,36 @@ class DependencyFactory:
         return instance
 
     def create_symbol_graph(self) -> SymbolGraph:
+        """
+        Creates a SymbolGraph instance.
+
+        Keyword Args:
+            symbol_graph_path (DependencyFactory.DEFAULT_SCIP_FPATH)
+        """
         return SymbolGraph(
             self.overrides.get("symbol_graph_path", DependencyFactory.DEFAULT_SCIP_FPATH)
         )
 
     def create_subgraph(self) -> SymbolGraph.SubGraph:
+        """
+        Creates a SymbolGraph.SubGraph instance.
+
+        Keyword Args:
+            flow_rank ("bidirectional")
+        """
         symbol_graph = self.get("symbol_graph")
         return symbol_graph.get_rankable_symbol_subgraph(
             self.overrides.get("flow_rank", "bidirectional")
         )
 
     def create_symbol_code_similarity(self) -> SymbolSimilarity:
+        """
+        Creates a SymbolSimilarity instance for symbol code similarity.
+
+        Keyword Args:
+            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            embedding_provider (OpenAIEmbedding())
+        """
         code_embedding_fpath = self.overrides.get(
             "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
         )
@@ -97,6 +131,13 @@ class DependencyFactory:
         return SymbolSimilarity(code_embedding_handler)
 
     def create_symbol_doc_similarity(self) -> SymbolSimilarity:
+        """
+        Creates a SymbolSimilarity instance for symbol doc similarity.
+
+        Keyword Args:
+            doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH)
+            embedding_provider (OpenAIEmbedding())
+        """
         doc_embedding_fpath = self.overrides.get(
             "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
         )
@@ -112,6 +153,12 @@ class DependencyFactory:
         return SymbolSimilarity(doc_embedding_handler)
 
     def create_symbol_search(self) -> SymbolSearch:
+        """
+        Creates a SymbolSearch instance.
+
+        Keyword Args:
+            symbol_rank_config (SymbolRankConfig())
+        """
         symbol_graph = self.get("symbol_graph")
         symbol_code_similarity = self.get("symbol_code_similarity")
         symbol_rank_config = self.overrides.get("symbol_rank_config", SymbolRankConfig())
@@ -121,6 +168,12 @@ class DependencyFactory:
         )
 
     def create_py_context_retriever(self) -> PyContextRetriever:
+        """
+        Creates a PyContextRetriever instance.
+
+        Keyword Args:
+            py_context_retriever_config (PyContextRetrieverConfig())
+        """
         symbol_graph = self.get("symbol_graph")
         py_context_retriever_config = self.overrides.get(
             "py_context_retriever_config", PyContextRetrieverConfig()
