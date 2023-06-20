@@ -47,6 +47,10 @@ todo
 # Testing files
 **/sample_modules/**
 
+# Actions
+coverage*
+.coverage*
+
 # Ignore Local
 notebooks/
 local_env/*

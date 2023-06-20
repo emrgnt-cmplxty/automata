@@ -1,6 +1,9 @@
 # Automata: The Self-Coding Machine
 
+![Banner](./automata_banner.png)
+
 [![Unit Tests](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml)
+[![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
 
 **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 
