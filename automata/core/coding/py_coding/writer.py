@@ -125,7 +125,8 @@ class PyCodeWriter:
             raise PyCodeWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
-        if node := find_syntax_tree_node(module_obj, object_dotpath):
+        node = find_syntax_tree_node(module_obj, object_dotpath)
+        if node:
             PyCodeWriter._delete_node(node)
             if do_write:
                 self._write_module_to_disk(module_dotpath)
@@ -226,7 +227,8 @@ class PyCodeWriter:
         """
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
-            if existing_node := find_syntax_tree_node(node_to_update, child_node_name):
+            existing_node = find_syntax_tree_node(node_to_update, child_node_name)
+            if existing_node:
                 existing_node.replace(new_node)
             else:
                 node_to_update.append(new_node)
