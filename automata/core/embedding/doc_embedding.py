@@ -198,7 +198,9 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
 
         # For now, we will just automatically roll the existing documentation forward
         if existing_embedding.symbol != symbol:
-            logger.debug("Rolling forward the embedding for %s", symbol)
+            logger.debug(
+                f"Rolling forward the embedding for {existing_embedding.symbol} to {symbol}"
+            )
             self.embedding_db.discard(symbol)
             existing_embedding.symbol = symbol
             self.embedding_db.add(existing_embedding)

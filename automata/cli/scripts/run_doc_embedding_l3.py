@@ -73,6 +73,7 @@ def main(*args, **kwargs) -> str:
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
+            print("symbol = ", symbol)
             try:
                 embedding_handler.update_embedding(symbol)
                 embedding_db_l3.save()
