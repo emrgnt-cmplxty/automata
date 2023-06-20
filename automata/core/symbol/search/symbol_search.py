@@ -207,8 +207,7 @@ class SymbolSearch:
         for module_path, module in module_map.items():
             if module:
                 lines = module.dumps().splitlines()
-                if line_numbers := [
-                    i + 1 for i, line in enumerate(lines) if pattern in line.strip()
-                ]:
+                line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
+                if line_numbers:
                     matches[module_path] = line_numbers
         return matches

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional, Tuple, cast
 import openai
 from termcolor import colored
 
+from automata.config import OPENAI_API_KEY
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
 from automata.core.agent.action import AgentAction
 from automata.core.agent.action import AutomataActionExtractor as ActionExtractor
@@ -18,7 +19,6 @@ from automata.core.agent.database import AutomataAgentDatabase
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
 from automata.core.base.tool import ToolNotFoundError
 from automata.core.utils import format_text, load_config
-from config import OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 import sqlite3
 from typing import List
 
+from automata.config import CONVERSATION_DB_PATH
 from automata.core.base.openai import OpenAIChatMessage
-from config import CONVERSATION_DB_PATH
 
 
 class AutomataAgentDatabase:

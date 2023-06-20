@@ -65,7 +65,7 @@ cd ../../../
 node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
 
 # Copy into the default index location
-mv index.scip automata/config/symbol/index.scip
+mv index_from_fork.scip automata/config/symbol/index.scip
 
 
 ### Alternatively, you mean run ./regenerate_index after changing local permissions and completing the above install.

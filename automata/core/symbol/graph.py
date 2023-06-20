@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
-from google.protobuf.json_format import MessageToDict
+from google.protobuf.json_format import MessageToDict  # type: ignore
 from tqdm import tqdm
 
+from automata.config import MAX_WORKERS
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.scip_pb2 import Index, SymbolRole  # type: ignore
 from automata.core.symbol.symbol_types import (
@@ -19,7 +20,6 @@ from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
-from config import MAX_WORKERS
 
 logger = logging.getLogger(__name__)
 
