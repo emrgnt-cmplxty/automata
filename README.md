@@ -59,14 +59,25 @@ automata run-doc-embedding-l3
 # Activate the local repository
 source local_env/bin/activate
 
-# Install the scip-python package
-npm install @sourcegraph/scip-python
+# Install scip-python locally
+cd scip-python
+npm install
+
+# Build the tool
+cd packages/pyright-scip
+npm run build
+
+# Return to working dir
+cd ../../../
 
 # Generate the local index
-scip-python index . index  --project-name automata --output index.scip
+node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
 
 # Copy into the default index location
 mv index.scip automata/config/symbol/index.scip
+
+
+### Alternatively, you mean run ./regenerate_index after changing local permissions and completing the above install.
 ```
 
 Note, this command may result in a buffer overflow error that requires a manual code modification to fix.

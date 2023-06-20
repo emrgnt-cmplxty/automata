@@ -50,3 +50,4 @@ todo
 # Ignore Local
 notebooks/
 local_env/*
+playground/*

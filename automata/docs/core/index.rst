@@ -11,6 +11,8 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
+   agent/index
+   base/index
    coding/index
    context/index
    database/index

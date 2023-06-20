@@ -8,8 +8,7 @@ embeddings, such as adding, updating, clearing, and retrieving
 embeddings from the database. Implementations of
 ``SymbolDatabaseProvider`` can utilize different storage methods, such
 as in-memory storage, file storage, or using external storage services.
-Related symbols include
-``automata.core.symbol.symbol_types.Symbol``,
+Related symbols include ``automata.core.symbol.symbol_types.Symbol``,
 ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``,
 and ``automata.core.database.vector.JSONVectorDatabase``.
 

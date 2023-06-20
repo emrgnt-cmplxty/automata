@@ -35,7 +35,7 @@ The following example demonstrates how to create an instance of
    from automata.core.coding.py_coding.writer import PyCodeWriter
    from automata.core.coding.directory import DirectoryManager
 
-   py_retriever = PyCodeRetriever(DirectoryManager().module_tree_map)
+   python_retriever = PyCodeRetriever(DirectoryManager().module_tree_map)
    code_writer = PyCodeWriter(py_retriever)
 
 Limitations

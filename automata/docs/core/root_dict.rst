@@ -11,8 +11,8 @@ Overview
 ``TypedDict`` base class. It provides a type-safe way to store the root
 logger information, which includes logging level, handlers, and others.
 The primary purpose of the ``RootDict`` class is to be used in
-conjunction with the ``automata.core.utils.LoggingConfig`` class
-and other related symbols for configuring logging settings in an
+conjunction with the ``automata.core.utils.LoggingConfig`` class and
+other related symbols for configuring logging settings in an
 application.
 
 Related Symbols
