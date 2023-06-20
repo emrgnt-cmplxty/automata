@@ -78,3 +78,47 @@ def test_symbol_rank_search_on_symbol(symbol_search_live):  # noqa
         expected_in_top_hits = SR_SEARCHES_TO_HITS[search]
         found_top_hits = get_top_n_results_desc_name(filtered_results, 10)
         check_hits(expected_in_top_hits, found_top_hits)
+
+
+EXACT_CALLS_TO_HITS = {
+    "AutomataAgent": [
+        "automata.core.agent.coordinator",
+        "automata.core.agent.database",
+        "automata.core.agent.agent",
+        "automata.config.config_types",
+        "automata.config.agent_config_builder",
+    ],
+    "SymbolRank": [
+        "automata.core.symbol.search.symbol_search",
+        "automata.core.symbol.search.rank",
+        "automata.core.agent.tools.symbol_search",
+        "automata.core.agent.tools.tool_utils",
+    ],
+}
+
+
+@pytest.mark.regression
+def test_exact_search(symbol_search_live):  # noqa : F811
+    for search in EXACT_CALLS_TO_HITS:
+        expected_in_exact_hits = EXACT_CALLS_TO_HITS[search]
+        found_in_exact_hits = list(symbol_search_live.exact_search(search).keys())
+        check_hits(expected_in_exact_hits, found_in_exact_hits)
+
+
+SOURCE_CODE_HITS = {
+    "AutomataAgent#": ["class AutomataAgent", "def run"],
+}
+
+
+@pytest.mark.regression
+def test_source_code_retrieval(symbol_search_live):  # noqa : F811
+    symbols = symbol_search_live.symbol_graph.get_all_available_symbols()
+
+    for search in SOURCE_CODE_HITS:
+        symbol = [symbol for symbol in symbols if search[:-1] == symbol.descriptors[-1].name][0]
+        found_source_code = symbol_search_live.retrieve_source_code_by_symbol(symbol.uri)
+        expected_in_source = SOURCE_CODE_HITS[search]
+        for source_hit in expected_in_source:
+            assert (
+                source_hit in found_source_code
+            ), f"Expected to find {source_hit} in source code, but it was not found"
