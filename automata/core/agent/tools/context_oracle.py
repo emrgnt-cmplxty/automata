@@ -37,7 +37,7 @@ class ContextOracleTool(AgentTool):
         Returns:
             List[Tool]: The list of built tools.
         """
-        tools = [
+        return [
             Tool(
                 name="context-oracle",
                 func=lambda context: self._context_generator(*context),
@@ -57,7 +57,6 @@ class ContextOracleTool(AgentTool):
                 return_direct=True,
             )
         ]
-        return tools
 
     def _context_generator(self, query: str) -> str:
         """

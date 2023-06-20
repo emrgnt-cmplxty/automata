@@ -20,8 +20,7 @@ def convert_fpath_to_module_dotpath(root_abs_path: str, module_path: str) -> str
     Returns:
         The dotpath of the module
     """
-    module_rel_path = (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[:-3]
-    return module_rel_path
+    return (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[:-3]
 
 
 def build_repository_overview(path: str, skip_test: bool = True, skip_func: bool = False) -> str:
@@ -68,7 +67,7 @@ def _overview_traverse_helper(
 
     if isinstance(node, ClassDef):
         line_items.append("  " * num_spaces + " - cls " + node.name)
-    elif (isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef)) and not skip_func:
+    elif (isinstance(node, (FunctionDef, AsyncFunctionDef))) and not skip_func:
         line_items.append("  " * num_spaces + " - func " + node.name)
 
     for child in ast.iter_child_nodes(node):

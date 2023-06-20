@@ -32,8 +32,6 @@ class PyCodeWriterTool(AgentTool):
         - None
         """
         self.writer: PyCodeWriter = kwargs.get("py_writer", PyCodeWriter(PyCodeRetriever()))
-        # TODO: unused
-        self.automata_version = kwargs.get("automata_version") or AgentConfigName.AUTOMATA_WRITER
         self.model = kwargs.get("model", "gpt-4")
         self.verbose = kwargs.get("verbose", False)
         self.stream = kwargs.get("stream", True)
@@ -47,7 +45,7 @@ class PyCodeWriterTool(AgentTool):
         Returns:
             List[Tool]: The list of built tools.
         """
-        tools = [
+        return [
             Tool(
                 name="py-writer-update-module",
                 func=lambda module_object_code_tuple: self._update_existing_module(
@@ -99,7 +97,6 @@ class PyCodeWriterTool(AgentTool):
                 return_direct=True,
             ),
         ]
-        return tools
 
     def _update_existing_module(
         self,
@@ -122,7 +119,7 @@ class PyCodeWriterTool(AgentTool):
             self.writer.update_existing_module(module_dotpath, code, disambiguator, self.do_write)
             return "Success"
         except Exception as e:
-            return "Failed to update the module with error - " + str(e)
+            return f"Failed to update the module with error - {str(e)}"
 
     def _delete_from_existing_module(
         self,
@@ -143,7 +140,7 @@ class PyCodeWriterTool(AgentTool):
             self.writer.delete_from_existing__module(module_dotpath, object_dotpath, self.do_write)
             return "Success"
         except Exception as e:
-            return "Failed to reduce the module with error - " + str(e)
+            return f"Failed to reduce the module with error - {str(e)}"
 
     def _create_new_module(self, module_dotpath, code) -> str:
         """
@@ -160,4 +157,4 @@ class PyCodeWriterTool(AgentTool):
             self.writer.create_new_module(module_dotpath, code, self.do_write)
             return "Success"
         except Exception as e:
-            return "Failed to create the module with error - " + str(e)
+            return f"Failed to create the module with error - {str(e)}"

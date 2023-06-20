@@ -117,11 +117,11 @@ class _OccurrenceManager:
         Args:
             role (int): The symbol role
         """
-        result = {}
-        for role_name, role_value in SymbolRole.items():
-            if (role & role_value) > 0:
-                result[role_name] = (role & role_value) > 0
-        return result
+        return {
+            role_name: (role & role_value) > 0
+            for role_name, role_value in SymbolRole.items()
+            if (role & role_value) > 0
+        }
 
 
 class _CallerCalleeManager:
@@ -165,10 +165,10 @@ class _CallerCalleeManager:
 
             for ref in references_in_scope:
                 try:
-                    if (
-                        ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Method
-                        or ref.symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class
-                    ):
+                    if ref.symbol.symbol_kind_by_suffix() in [
+                        SymbolDescriptor.PyKind.Method,
+                        SymbolDescriptor.PyKind.Class,
+                    ]:
                         if ref.symbol == symbol_object:
                             continue
                         # TODO - This approach will include non-call statements, like return statements
@@ -338,18 +338,14 @@ class _SymbolGraphNavigator:
             Set[Symbol]: A set of Symbol objects
         """
         references_in_range = self._get_symbol_references_in_scope(symbol)
-        symbols_in_range = set([ref.symbol for ref in references_in_range])
-        return symbols_in_range
+        return {ref.symbol for ref in references_in_range}
 
     def get_symbol_relationships(self, symbol: Symbol) -> Set[Symbol]:
-        related_symbol_nodes = set(
-            [
-                target
-                for _, target, data in self._graph.out_edges(symbol, data=True)
-                if data.get("label") == "relationship"
-            ]
-        )
-        return related_symbol_nodes
+        return {
+            target
+            for _, target, data in self._graph.out_edges(symbol, data=True)
+            if data.get("label") == "relationship"
+        }
 
     def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
         """
@@ -389,7 +385,7 @@ class _SymbolGraphNavigator:
                 Symbol calleers (SymbolReference objects).
         TODO - Remove non-call statements from this return object
         """
-        callers = {
+        return {
             SymbolReference(
                 symbol=caller,
                 line_number=data.get("line_number"),
@@ -399,7 +395,6 @@ class _SymbolGraphNavigator:
             for callee, caller, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "callee"
         }
-        return callers
 
     def get_potential_symbol_callees(self, symbol: Symbol) -> Dict[Symbol, SymbolReference]:
         """
@@ -412,7 +407,7 @@ class _SymbolGraphNavigator:
             Dict[Symbol, SymbolReference]: A dictionary of Symbol objects to
                 Symbol callees (SymbolReference objects).
         """
-        callees = {
+        return {
             callee: SymbolReference(
                 symbol=caller,
                 line_number=data.get("line_number"),
@@ -422,7 +417,6 @@ class _SymbolGraphNavigator:
             for caller, callee, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "caller"
         }
-        return callees
 
     def _get_symbol_containing_file(self, symbol: Symbol) -> str:
         """
@@ -476,14 +470,12 @@ class _SymbolGraphNavigator:
 
         file_name = self._get_symbol_containing_file(symbol)
         references_in_parent_module = self._get_references_to_module(file_name)
-        references_in_range = [
+        return [
             ref
             for ref in references_in_parent_module
             if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
             and ref.column_number >= parent_symbol_start_col
         ]
-
-        return references_in_range
 
     def _get_references_to_module(self, module_name: str) -> List[SymbolReference]:
         """
@@ -496,12 +488,11 @@ class _SymbolGraphNavigator:
             List[SymbolReference]: A list of SymbolReference objects in scope
         """
         reference_edges_in_module = self._graph.in_edges(module_name, data=True)
-        result = []
-        for _, __, data in reference_edges_in_module:
-            if data["label"] == "reference":
-                result.append(data.get("symbol_reference"))
-
-        return result
+        return [
+            data.get("symbol_reference")
+            for _, __, data in reference_edges_in_module
+            if data["label"] == "reference"
+        ]
 
     def _pre_compute_rankable_bounding_boxes(self) -> None:
         """

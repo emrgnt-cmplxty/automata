@@ -105,9 +105,9 @@ class AutomataAgent(Agent):
             self.completed = True
             self._save_message(
                 "assistant",
-                self._parse_completion_message(completion_message)
-                if not self.config.eval_mode
-                else response_text,
+                response_text
+                if self.config.eval_mode
+                else self._parse_completion_message(completion_message),
             )
             return None
 
@@ -149,7 +149,7 @@ class AutomataAgent(Agent):
         self.completed = False
         self.messages.append(OpenAIChatMessage("user", further_instructions))
         return self.run()
-        
+
     def setup(self) -> None:
         """
         Sets up the agent by initializing the database and loading the config.
@@ -180,7 +180,7 @@ class AutomataAgent(Agent):
             "Initializing with System Instruction:%s\n\n" % self.config.system_instruction
         )
         logger.debug("-" * 60)
-        logger.debug("Session ID: %s" % self.config.session_id)
+        logger.debug(f"Session ID: {self.config.session_id}")
         logger.debug("-" * 60)
 
     def _generate_observations(self, response_text: str) -> Dict[str, str]:
@@ -292,10 +292,10 @@ class AutomataAgent(Agent):
             str: The parsed completion message with placeholders replaced by tool outputs.
         """
         tool_pattern = r"-\s(tool_output_\d+)\s+-\s(.*?)(?=-\s(tool_output_\d+)|$)"
-        agent_pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
         outputs = self._extract_outputs(tool_pattern, self.messages)
 
         if self._has_helper_agents():
+            agent_pattern = r"-\s(agent_output_\d+)\s+-\s(.*?)(?=-\s(agent_output_\d+)|$)"
             agent_outputs = self._extract_outputs(agent_pattern, self.messages)
             outputs.update(agent_outputs)
 
@@ -391,8 +391,7 @@ class AutomataAgent(Agent):
         """Get the debug summary for the agent."""
         user_message = "Provide a succinct one-sentence summary of the errors encountered. Write nothing else."
         self._save_message("user", user_message)
-        response_text = self._get_openai_response()
-        return response_text
+        return self._get_openai_response()
 
     def _get_openai_response(self) -> str:
         """Get the response from OpenAI."""
@@ -402,9 +401,8 @@ class AutomataAgent(Agent):
             temperature=self.config.temperature,
             stream=self.config.stream,
         )
-        response_text = (
+        return (
             self._stream_message(response_summary)
             if self.config.stream
             else OpenAIChatCompletionResult(raw_data=response_summary).get_completion()
         )
-        return response_text

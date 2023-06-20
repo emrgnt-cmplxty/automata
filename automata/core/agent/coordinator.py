@@ -114,10 +114,9 @@ class AutomataCoordinator:
         # Run the selected agent and return the result
         try:
             agent_instance = self._select_agent_instance(action.agent_version)
-            output = agent_instance.run("\n".join(action.agent_instruction))
-            return output
+            return agent_instance.run("\n".join(action.agent_instruction))
         except Exception as e:
-            return str("Execution fail with error: " + str(e))
+            return str(f"Execution fail with error: {str(e)}")
 
     def _select_agent_instance(self, config_name: AgentConfigName) -> AutomataInstance:
         """

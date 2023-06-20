@@ -49,7 +49,7 @@ def chat_prompt_to_text_prompt(prompt: OpenAICreateChatPrompt, for_completion: b
     text = ""
     for msg in prompt:
         role = msg.role
-        prefix = chat_to_prefixes.get(role, role.capitalize() + ": ")
+        prefix = chat_to_prefixes.get(role, f"{role.capitalize()}: ")
         content = msg.content
         text += f"{prefix}{content}\n"
     if for_completion:

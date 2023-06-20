@@ -108,23 +108,27 @@ def find_method_call_by_location(
     try:
         # Find all CallNode instances
         all_calls = module.find_all("call")
-        for call in all_calls:
-            # Check if call start is before and end is after our reference point
-            if (
-                call.absolute_bounding_box.top_left.line - 1 < line_number
-                or (
-                    call.absolute_bounding_box.top_left.line - 1 == line_number
-                    and call.absolute_bounding_box.top_left.column - 1 <= column_number
+        return next(
+            (
+                call
+                for call in all_calls
+                if (
+                    call.absolute_bounding_box.top_left.line - 1 < line_number
+                    or (
+                        call.absolute_bounding_box.top_left.line - 1 == line_number
+                        and call.absolute_bounding_box.top_left.column - 1 <= column_number
+                    )
                 )
-            ) and (
-                call.absolute_bounding_box.bottom_right.line - 1 > line_number
-                or (
-                    call.absolute_bounding_box.bottom_right.line - 1 == line_number
-                    and call.absolute_bounding_box.bottom_right.column - 1 >= column_number
+                and (
+                    call.absolute_bounding_box.bottom_right.line - 1 > line_number
+                    or (
+                        call.absolute_bounding_box.bottom_right.line - 1 == line_number
+                        and call.absolute_bounding_box.bottom_right.column - 1 >= column_number
+                    )
                 )
-            ):
-                return call
-        return None
+            ),
+            None,
+        )
     except IndexError:
         return None
 

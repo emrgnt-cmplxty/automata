@@ -107,7 +107,7 @@ class PyContextRetriever:
         self,
         symbol: Symbol,
         related_symbols: List[Symbol] = [],
-    ) -> None:
+    ) -> None:  # sourcery skip: extract-method
         """
         Process the context of a symbol
         Theh output is stored into the local message buffer
@@ -202,7 +202,7 @@ class PyContextRetriever:
                 self.process_docstring(ast_object)
 
                 if len(methods) > 0:
-                    self.process_message(f"Methods:")
+                    self.process_message("Methods:")
                 for method in methods:
                     self.process_method(method, is_main_symbol)
 
@@ -221,7 +221,7 @@ class PyContextRetriever:
             file_path = os.path.dirname(file_path)
 
         # Load the source code with RedBaron
-        with open(file_path + ".py", "r") as f:
+        with open(f"{file_path}.py", "r") as f:
             red = RedBaron(f.read())
 
         # Find and print import statements
@@ -241,24 +241,21 @@ class PyContextRetriever:
         Args:
             ast_object (RedBaron): The ast representation of the symbol
         """
-        docstring = PyContextRetriever._get_docstring(ast_object)
-        # Print the docstring if it exists
-        if docstring:
+        if docstring := PyContextRetriever._get_docstring(ast_object):
             self.process_message("Class Docstring:")
             with self.IndentManager():
                 self.process_message(docstring)
                 self.process_message("")  # Add an empty line for separation
 
     def process_documentation(self, symbol: Symbol, is_main_symbol: bool) -> None:
-        if self.doc_embedding_db is not None:
-            if self.doc_embedding_db.contains(symbol):
-                if is_main_symbol:
-                    document = self.doc_embedding_db.get(symbol).embedding_source
-                else:
-                    document = self.doc_embedding_db.get(symbol).summary
-                with self.IndentManager():
-                    self.process_message(document)
-                    self.process_message("")  # Add an empty line for separation
+        if self.doc_embedding_db is not None and self.doc_embedding_db.contains(symbol):
+            if is_main_symbol:
+                document = self.doc_embedding_db.get(symbol).embedding_source
+            else:
+                document = self.doc_embedding_db.get(symbol).summary
+            with self.IndentManager():
+                self.process_message(document)
+                self.process_message("")  # Add an empty line for separation
 
     def process_method(self, method: RedBaron, is_main_symbol: bool) -> None:
         """
@@ -270,19 +267,15 @@ class PyContextRetriever:
         if PyContextRetriever._is_private_method(method):
             return
         with self.IndentManager():
-            if is_main_symbol:
+            if not is_main_symbol and method.name == "__init__" or is_main_symbol:
                 for code_line in method.dumps().split("\n"):
                     self.process_message(code_line)
             else:
-                if method.name == "__init__":
-                    for code_line in method.dumps().split("\n"):
-                        self.process_message(code_line)
-                else:
-                    method_definition = f"{method.name}({method.arguments.dumps()})"
-                    return_annotation = (
-                        method.return_annotation.dumps() if method.return_annotation else "None"
-                    )
-                    self.process_message(f"{method_definition} -> {return_annotation}\n")
+                method_definition = f"{method.name}({method.arguments.dumps()})"
+                return_annotation = (
+                    method.return_annotation.dumps() if method.return_annotation else "None"
+                )
+                self.process_message(f"{method_definition} -> {return_annotation}\n")
 
     def _is_main_symbol(self) -> bool:
         """

@@ -306,8 +306,7 @@ class AutomataActionExtractor:
         contains_indicator = line.strip() == ActionIndicator.CODE.value
         for language in SUPPORTED_CODING_LANGUAGES:
             contains_indicator = (
-                contains_indicator
-                or "%s%s" % (ActionIndicator.CODE.value, language) in line.strip()
+                contains_indicator or f"{ActionIndicator.CODE.value}{language}" in line.strip()
             )
 
         return contains_indicator
@@ -346,10 +345,9 @@ class AutomataActionExtractor:
 
             if AutomataActionExtractor._is_code_start(index, lines) and (not is_code):
                 is_code = True
-                contains_language_definition = False
-                for language in SUPPORTED_CODING_LANGUAGES:
-                    if language in line:
-                        contains_language_definition = True
+                contains_language_definition = any(
+                    language in line for language in SUPPORTED_CODING_LANGUAGES
+                )
                 if contains_language_definition:
                     inputs.append("")
                 else:

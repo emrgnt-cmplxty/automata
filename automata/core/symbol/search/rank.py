@@ -80,23 +80,21 @@ class SymbolRank:
             last_rank_vec = rank_vec
             rank_vec = {k: 0.0 for k in last_rank_vec.keys()}
             danglesum = self.config.alpha * sum(last_rank_vec[node] for node in dangling_nodes)  # type: ignore
-            for node in rank_vec:
+            for node, value in rank_vec.items():
                 for nbr in stochastic_graph[node]:
                     rank_vec[nbr] += (
                         self.config.alpha
                         * last_rank_vec[node]
                         * stochastic_graph[node][nbr][self.config.weight_key]
                     )
-                rank_vec[node] += (
+                value += (
                     danglesum * dangling_weights[node]
                     + (1.0 - self.config.alpha) * prepared_similarity[node]
                 )
 
             err = sum(abs(rank_vec[node] - last_rank_vec[node]) for node in rank_vec)
             if err < node_count * self.config.tolerance:
-                sorted_dict = sorted(rank_vec.items(), key=lambda x: x[1], reverse=True)
-                return sorted_dict
-
+                return sorted(rank_vec.items(), key=lambda x: x[1], reverse=True)
         raise NetworkXError(
             "SymbolRank: power iteration failed to converge in %d iterations."
             % self.config.max_iterations
@@ -137,9 +135,8 @@ class SymbolRank:
         node_count = stochastic_graph.number_of_nodes()
         if initial_weights is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
-        else:
-            s = sum(initial_weights.values())
-            return {k: v / s for k, v in initial_weights.items()}
+        s = sum(initial_weights.values())
+        return {k: v / s for k, v in initial_weights.items()}
 
     def _prepare_query_to_symbol_similarity(
         self,
@@ -167,15 +164,12 @@ class SymbolRank:
         """
         if query_to_symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
-        else:
-            missing = set(self.graph) - set(query_to_symbol_similarity)
-            if missing:
-                raise NetworkXError(
-                    "query_to_symbol_similarity dictionary must have a value for every node. Missing nodes %s"
-                    % missing
-                )
-            s = sum(query_to_symbol_similarity.values())
-            return {k: v / s for k, v in query_to_symbol_similarity.items()}
+        if missing := set(self.graph) - set(query_to_symbol_similarity):
+            raise NetworkXError(
+                f"query_to_symbol_similarity dictionary must have a value for every node. Missing nodes {missing}"
+            )
+        s = sum(query_to_symbol_similarity.values())
+        return {k: v / s for k, v in query_to_symbol_similarity.items()}
 
     def _prepare_dangling_weights(
         self,
@@ -194,15 +188,12 @@ class SymbolRank:
         """
         if dangling is None:
             return query_to_symbol_similarity
-        else:
-            missing = set(self.graph) - set(dangling)
-            if missing:
-                raise NetworkXError(
-                    "Dangling node dictionary must have a value for every node. Missing nodes %s"
-                    % missing
-                )
-            s = sum(dangling.values())
-            return {k: v / s for k, v in dangling.items()}
+        if missing := set(self.graph) - set(dangling):
+            raise NetworkXError(
+                f"Dangling node dictionary must have a value for every node. Missing nodes {missing}"
+            )
+        s = sum(dangling.values())
+        return {k: v / s for k, v in dangling.items()}
 
     def _get_dangling_nodes(self, stochastic_graph: nx.DiGraph) -> List[Hashable]:
         """

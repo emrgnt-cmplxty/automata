@@ -90,8 +90,7 @@ class SymbolSearchTool(AgentTool):
             Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult]: The result of the query.
         """
         tools_dict = {tool.name: tool.func for tool in self.build()}
-        result = tools_dict[tool_type.value](query)
-        return result
+        return tools_dict[tool_type.value](query)
 
     # TODO - Cleanup these processors to ensure they behave well.
     # -- Right now these are just simplest implementations I can rattle off
@@ -147,7 +146,6 @@ class SymbolSearchTool(AgentTool):
             str: The result of the query.
         """
         query_result = self.symbol_search.exact_search(query)
-        processed_result = "\n".join(
+        return "\n".join(
             [f"{symbol}:{str(references)}" for symbol, references in query_result.items()]
         )
-        return processed_result

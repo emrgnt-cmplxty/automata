@@ -95,7 +95,7 @@ def tool(*args: Union[str, Callable], return_direct: bool = False) -> Callable:
         # if the argument is a function, then we use the function name as the tool name
         # Example usage: @tool
         return _make_with_name(args[0].__name__)(args[0])
-    elif len(args) == 0:
+    elif not args:
         # if there are no arguments, then we use the function name as the tool name
         # Example usage: @tool(return_direct=True)
         def _partial(func: Callable[[str], str]) -> BaseTool:
