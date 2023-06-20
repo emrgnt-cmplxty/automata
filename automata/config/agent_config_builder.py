@@ -35,8 +35,7 @@ class AutomataAgentConfigBuilder(BaseModel):
         Returns:
             AutomataAgentConfigBuilder: A new AutomataAgentConfigBuilder instance
         """
-        instance = cls(AutomataAgentConfig.load(config_name))
-        return instance
+        return cls(AutomataAgentConfig.load(config_name))
 
     @classmethod
     def from_config(cls, config: AutomataAgentConfig) -> "AutomataAgentConfigBuilder":
@@ -49,8 +48,7 @@ class AutomataAgentConfigBuilder(BaseModel):
         Returns:
             AutomataAgentConfigBuilder: A new AutomataAgentConfigBuilder instance
         """
-        instance = cls(config)
-        return instance
+        return cls(config)
 
     def with_instruction_payload(
         self, instruction_payload: AutomataInstructionPayload
