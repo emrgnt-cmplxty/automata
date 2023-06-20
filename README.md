@@ -18,7 +18,7 @@ Follow these steps to setup the Automata environment
 
 ```bash
 # Clone the repository
-git clone git@github.com:EmergentAGI/Automata.git
+git clone git@github.com:emrgnt-cmplxty/Automata.git
 cd Automata
 
 # Create the local environment
@@ -42,27 +42,9 @@ sed -i "s|your_conversation_db_path|$DB_PATH|" .env
 git submodule update --init --recursive
 ```
 
-### Build the docs
+### Indexing
 
-How to build the documentation (refreshing is not yet fully formed)
-
-```bash
-
-# Update the code embeddings
-automata run-code-embedding
-
-# "L1" docs are the docstrings written into the code
-
-# Build and embed the L2 docs
-automata run-doc-embedding-l2
-
-# Build and embed the L3 docs
-automata run-doc-embedding-l3
-```
-
-### Indexing (Optional)
-
-[SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Interpreter. These indices are used to create the code graph which facilitates search. New indices are generated and uploaded periodically for the Automata Interpreter codebase, but developers must be generate them manually if necessary for their local development. We recommend following the [instructions here](https://github.com/sourcegraph/scip-python).
+[SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates all dependencies. New indices are generated and uploaded periodically for the Automata Interpreter codebase, but developers must be generate them manually if necessary for their local development. If you encounter issues, we recommending referring to the [instructions here](https://github.com/sourcegraph/scip-python).
 
 ```bash
 # Activate the local repository
@@ -87,6 +69,23 @@ mv index.scip automata/config/symbol/index.scip
 
 
 ### Alternatively, you mean run ./regenerate_index after changing local permissions and completing the above install.
+```
+
+### Build the docs
+
+How to build the documentation (refreshing is not yet fully formed)
+
+```bash
+# Update the code embeddings
+automata run-code-embedding
+
+# "L1" docs are the docstrings written into the code
+
+# Build and embed the L2 docs
+automata run-doc-embedding-l2
+
+# Build and embed the L3 docs
+automata run-doc-embedding-l3
 ```
 
 Note, this command may result in a buffer overflow error that requires a manual code modification to fix.
