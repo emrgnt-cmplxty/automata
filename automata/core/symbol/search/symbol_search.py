@@ -154,7 +154,7 @@ class SymbolSearch:
 
     @staticmethod
     def shifted_z_score_powered(
-        values: Union[List[float], np.ndarray], power: int = 4
+        values: Union[List[float], np.ndarray], power: int = 3
     ) -> np.ndarray:
         """
         Compute z-score of a list of values

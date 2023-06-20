@@ -70,7 +70,7 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
 )
 @click.option(
     "--embedding_file",
-    default="symbol_doc_embedding.json",
+    default="symbol_doc_embedding_l2.json",
     help="Which embedding file to save to.",
 )
 @click.pass_context
@@ -92,7 +92,7 @@ def run_doc_embedding_l2(ctx, *args, **kwargs) -> None:
 )
 @click.option(
     "--embedding_file",
-    default="symbol_doc_embedding.json",
+    default="symbol_doc_embedding_l3.json",
     help="Which embedding file to save to.",
 )
 @click.pass_context
@@ -114,8 +114,8 @@ def run_doc_embedding_l3(ctx, *args, **kwargs) -> None:
 )
 @click.option(
     "--embedding_file",
-    default="symbol_doc_embedding.json",
-    help="Which embedding file to save to.",
+    default="symbol_doc_embedding_l3.json",
+    help="Which embedding file to load.",
 )
 @click.pass_context
 def run_doc_post_process(ctx, *args, **kwargs) -> None:
@@ -156,5 +156,4 @@ def run_agent(ctx, *args, **kwargs) -> None:
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Running agent")
-    print("kwargs = ", kwargs)
     main(**kwargs)
