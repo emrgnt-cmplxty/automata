@@ -17,7 +17,7 @@ class VectorDatabaseProvider(SymbolDatabaseProvider):
     """
 
     @abc.abstractmethod
-    def calculate_similarity(self, embedding: SymbolEmbedding) -> List[Dict[Symbol, float]]:
+    def calculate_similarity(self, embedding: SymbolEmbedding) -> Dict[Symbol, float]:
         """
         Abstract method to calculate the similarity between the given vector and vectors in the database.
         """
@@ -135,8 +135,8 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         self.data = []
         self.index = {}
 
-    def calculate_similarity(self, embedding: SymbolEmbedding) -> List[Dict[Symbol, float]]:
-        # Implement the logic to calculate similarity between the given vector and vectors in the data.
+    def calculate_similarity(self, embedding: SymbolEmbedding) -> Dict[Symbol, float]:
+        # Implement the logic to calculate similarity between the given embedding and vectors in the data.
         # This will depend on how the data is structured and the specific similarity measure to be used (e.g., cosine similarity).
         # Here, just returning the data as a placeholder.
         # return self.data
