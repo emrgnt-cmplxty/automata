@@ -52,7 +52,7 @@ class ContextOracleTool(AgentTool):
             )
         ]
 
-    def _context_generator(self, query: str) -> str:
+    def _context_generator(self, query: str, max_related_symbols=5) -> str:
         """
         The generate the context corresponding to a query.
 
@@ -67,14 +67,22 @@ class ContextOracleTool(AgentTool):
 
         result = self.symbol_doc_similarity.embedding_handler.get_embedding(
             sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
+        ).source_code
+
+        result += self.symbol_doc_similarity.embedding_handler.get_embedding(
+            sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
         ).embedding_source
 
-        for symbol, _ in rank_output[:10]:
+        counter = 0
+        for symbol, _ in rank_output:
+            if counter >= max_related_symbols:
+                break
             try:
                 result += "%s\n" % symbol.dotpath
                 result += self.symbol_doc_similarity.embedding_handler.get_embedding(
                     symbol
                 ).summary
+                counter += 1
             except Exception as e:
                 logger.error(
                     "Failed to get embedding for symbol %s with error: %s",
@@ -82,4 +90,5 @@ class ContextOracleTool(AgentTool):
                     e,
                 )
                 continue
+        logger.debug(f"ContextOracleTool is returning this result: {result}")
         return result

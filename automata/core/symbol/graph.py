@@ -1,6 +1,7 @@
 import logging
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
+from time import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
@@ -498,7 +499,7 @@ class _SymbolGraphNavigator:
         """
         Pre-computes bounding boxes for all symbols in the graph
         """
-
+        now = time()
         # Bounding boxes are already loaded
         if len(self.bounding_box) > 0:
             return
@@ -513,7 +514,9 @@ class _SymbolGraphNavigator:
                 if result is not None:
                     symbol, bounding_box = result
                     bounding_boxes[symbol] = bounding_box
-        logger.info("Finished pre-computing bounding boxes for all rankable symbols")
+        logger.info(
+            f"Finished pre-computing bounding boxes for all rankable symbols in {time() - now} seconds"
+        )
         self.bounding_box = bounding_boxes
 
     @staticmethod
