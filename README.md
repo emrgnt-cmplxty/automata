@@ -4,7 +4,7 @@
 
 [![Unit Tests](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
-[![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/SigGravitas)
+[![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/ocolegro)
 
 **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 
@@ -17,6 +17,8 @@ This project is inspired by the theory that code is essentially a form of memory
 Follow these steps to setup the Automata environment
 
 ```bash
+## NOTE - the code below is contained in setup.sh.example
+
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git
 cd Automata
@@ -40,6 +42,18 @@ sed -i "s|your_conversation_db_path|$DB_PATH|" .env
 
 # Fetch the submodules
 git submodule update --init --recursive
+
+### NOTE -
+### If you have not previously installed git-lfs, you must now.
+### For Ubuntu, run the following:
+# sudo apt-get install git-lfs
+### For Mac, run the following:
+# brew install git-lfs
+###
+### Then, initialize by running the following:
+# git lfs install
+### Lastly, fetch the files
+# git lfs pull
 ```
 
 ### Indexing
