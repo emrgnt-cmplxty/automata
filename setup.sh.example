@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 ### Initialize the repository
-=======
->>>>>>> 544729f (Add example setup script)
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git
 cd Automata
