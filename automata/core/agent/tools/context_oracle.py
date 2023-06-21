@@ -75,7 +75,7 @@ class ContextOracleTool(AgentTool):
             sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
         ).embedding_source
 
-        for symbol, _ in rank_output[0:10]:
+        for symbol, _ in rank_output[:10]:
             try:
                 result += "%s\n" % symbol.dotpath
                 result += self.symbol_doc_similarity.embedding_handler.get_embedding(
