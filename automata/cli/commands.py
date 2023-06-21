@@ -31,6 +31,8 @@ def reconfigure_logging(log_level_str: str) -> None:
     requests_logger.setLevel(logging.INFO)
     matplotlib_logger = logging.getLogger("matplotlib")
     matplotlib_logger.setLevel(logging.INFO)
+    matplotlib_logger = logging.getLogger("openai")
+    matplotlib_logger.setLevel(logging.INFO)
 
 
 @click.group()
