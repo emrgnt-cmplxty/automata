@@ -82,11 +82,13 @@ class SymbolEmbeddingHandler(abc.ABC):
 
 class EmbeddingSimilarity(abc.ABC):
     @abc.abstractmethod
-    def get_query_similarity_dict(self, query_text: str) -> Dict[Any, float]:
+    def get_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
         """An abstract method to get the similarity between a query and all symbols"""
         pass
 
     @abc.abstractmethod
-    def get_nearest_entries_for_query(self, query_text: str, k_nearest: int) -> Dict[Any, float]:
+    def get_nearest_entries_for_query(
+        self, query_text: str, k_nearest: int
+    ) -> Dict[Symbol, float]:
         """An abstract method to get the k nearest symbols to a query"""
         pass
