@@ -5,7 +5,6 @@ from pydantic import BaseModel, PrivateAttr
 from automata.config.config_types import (
     AgentConfigName,
     AutomataAgentConfig,
-    AutomataInstructionPayload,
     InstructionConfigVersion,
 )
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
@@ -50,21 +49,6 @@ class AutomataAgentConfigBuilder(BaseModel):
         """
         return cls(config)
 
-    def with_instruction_payload(
-        self, instruction_payload: AutomataInstructionPayload
-    ) -> "AutomataAgentConfigBuilder":
-        """
-        Set the initial payload for the AutomataAgent instance.
-
-        Args:
-            instruction_payload (AutomataInstructionPayload): A dictionary containing the initial payload for the AutomataAgent.
-
-        Returns:
-            AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated instruction_payload.
-        """
-        self._config.instruction_payload = instruction_payload
-        return self
-
     def with_llm_toolkits(
         self, llm_toolkits: Dict[ToolkitType, Toolkit]
     ) -> "AutomataAgentConfigBuilder":
@@ -78,6 +62,27 @@ class AutomataAgentConfigBuilder(BaseModel):
             AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated llm_toolkits.
         """
         self._config.llm_toolkits = llm_toolkits
+        return self
+
+    def with_system_template_formatter(
+        self, system_template_formatter: Dict[str, str]
+    ) -> "AutomataAgentConfigBuilder":
+        """
+        Set the template formatter for the AutomataAgent instance and validate if it is supported.
+
+        Args:
+            model (str): A string containing the model name for the AutomataAgent.
+
+        Raises:
+            ValueError: If the provided model is not found in the list of supported models.
+
+        Returns:
+            AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated model.
+        """
+        self._config.system_template_formatter = system_template_formatter
+        for key, value in system_template_formatter.items():
+            self._validate_type(key, str, "Template Formatter")
+            self._validate_type(value, str, "Template Formatter")
         return self
 
     def with_model(self, model: str) -> "AutomataAgentConfigBuilder":
@@ -169,20 +174,6 @@ class AutomataAgentConfigBuilder(BaseModel):
         self._config.session_id = session_id
         return self
 
-    def with_eval_mode(self, eval_mode: bool) -> "AutomataAgentConfigBuilder":
-        """
-        Set the evaluation mode for the AutomataAgent instance.
-
-        Args:
-            eval_mode (bool): A boolean value indicating whether to use evaluation mode for the AutomataAgent.
-
-        Returns:
-            AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated eval_mode value.
-        """
-        self._validate_type(eval_mode, bool, "Eval mode")
-        self._config.eval_mode = eval_mode
-        return self
-
     def with_instruction_version(self, instruction_version: str) -> "AutomataAgentConfigBuilder":
         """
         Set the instruction version for the AutomataAgent instance.
@@ -195,27 +186,6 @@ class AutomataAgentConfigBuilder(BaseModel):
         """
         self._validate_type(instruction_version, str, "Instruction version")
         self._config.instruction_version = InstructionConfigVersion(instruction_version)
-        return self
-
-    def with_helper_agent_configs(
-        self, helper_agent_configs: Dict[AgentConfigName, AutomataAgentConfig]
-    ) -> "AutomataAgentConfigBuilder":
-        """
-        Set the helper agent config list
-
-        Args:
-            instruction_version (str): A string representing the instruction version for the AutomataAgent.
-
-        Returns:
-            AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated instruction_version value.
-        """
-        for agent in helper_agent_configs.values():
-            self._validate_type(
-                agent,
-                AutomataAgentConfig,
-                "Helper agent configs",
-            )
-        self._config.helper_agent_configs = helper_agent_configs
         return self
 
     def build(self) -> AutomataAgentConfig:
@@ -262,6 +232,7 @@ class AutomataAgentConfigFactory:
         Args:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
+
         Returns:
             AutomataAgentConfig: An AutomataAgentConfig instance.
         """
@@ -281,18 +252,6 @@ class AutomataAgentConfigFactory:
         else:
             builder = AutomataAgentConfigBuilder.from_config(main_config)  # type: ignore
 
-        instruction_payload = kwargs.get("instruction_payload", {})
-
-        if "helper_agent_configs" in kwargs:
-            instruction_payload["agents_message"] = build_agent_message(
-                kwargs["helper_agent_configs"]
-            )
-            builder = builder.with_helper_agent_configs(kwargs["helper_agent_configs"])
-
-        if instruction_payload != {}:
-            instruction_payload = AutomataInstructionPayload(**instruction_payload)
-            builder = builder.with_instruction_payload(instruction_payload)
-
         if "model" in kwargs:
             builder = builder.with_model(kwargs["model"])
 
@@ -311,8 +270,5 @@ class AutomataAgentConfigFactory:
         if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
             llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","))
             builder = builder.with_llm_toolkits(llm_toolkits)
-
-        if "eval_mode" in kwargs:
-            builder = builder.with_eval_mode(kwargs["eval_mode"])
 
         return builder.build()

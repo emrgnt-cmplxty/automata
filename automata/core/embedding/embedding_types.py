@@ -4,10 +4,10 @@ from enum import Enum
 from typing import Any, Dict, List
 
 import numpy as np
-import openai
 
 from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.symbol_types import Symbol
+from automata.core.utils import set_openai_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +30,8 @@ class OpenAIEmbedding(EmbeddingProvider):
     """A class to provide embeddings for symbols"""
 
     def __init__(self, engine: str = "text-embedding-ada-002") -> None:
-        if not openai.api_key:
-            from automata.config import OPENAI_API_KEY
-
-            openai.api_key = OPENAI_API_KEY
         self.engine = engine
+        set_openai_api_key()
 
     def build_embedding(self, symbol_source: str) -> np.ndarray:
         """

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional, Tuple, cast
 import openai
 from termcolor import colored
 
-from automata.config import OPENAI_API_KEY
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
 from automata.core.agent.action import AgentAction
 from automata.core.agent.action import AutomataActionExtractor as ActionExtractor
@@ -18,7 +17,7 @@ from automata.core.agent.agent_utils import (
 from automata.core.agent.database import AutomataAgentDatabase
 from automata.core.base.openai import OpenAIChatCompletionResult, OpenAIChatMessage
 from automata.core.base.tool import ToolNotFoundError
-from automata.core.utils import format_text, load_config
+from automata.core.utils import format_text, load_config, set_openai_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +63,6 @@ class AutomataAgent(Agent):
             instructions (str): The instructions to be executed by the agent.
             config (AutomataAgentConfig): The configuration for the agent. Defaults to None.
         """
-
-        if config is None:
-            config = AutomataAgentConfig()
         self.config = config
         self.completed = False
         self.instructions = instructions
@@ -103,12 +99,7 @@ class AutomataAgent(Agent):
         completion_message = retrieve_completion_message(observations)
         if completion_message is not None:
             self.completed = True
-            self._save_message(
-                "assistant",
-                response_text
-                if self.config.eval_mode
-                else self._parse_completion_message(completion_message),
-            )
+            self._save_message("assistant", self._parse_completion_message(completion_message))
             return None
 
         assistant_message = self._save_message("assistant", response_text)
@@ -144,6 +135,20 @@ class AutomataAgent(Agent):
         return self.messages[-1].content
 
     def run_further_with_new_instructions(self, further_instructions: str) -> str:
+        """
+        Runs the agent further with new instructions.
+        This is intended to be called after the agent has completed its task.
+        The intended use case is to allow users to submit follow-up instructions
+
+        Args:
+            further_instructions (str): The new instructions to be executed by the agent.
+
+        Returns:
+            str: The final result or an error message if the result wasn't found in time.
+
+        Raises:
+            ValueError: If the agent has not completed its task.
+        """
         if not self.completed:
             raise ValueError("Cannot run an agent further that has not completed.")
         self.completed = False
@@ -155,8 +160,12 @@ class AutomataAgent(Agent):
         Sets up the agent by initializing the database and loading the config.
 
         Note: This should be called before running the agent.
+
+        Raises:
+            ValueError: If the config was not properly initialized.
         """
-        openai.api_key = OPENAI_API_KEY
+        set_openai_api_key()
+
         if not self.config.session_id:
             raise ValueError("Config was not properly initialized.")
         self.database_manager: AutomataAgentDatabase = AutomataAgentDatabase(

@@ -2,11 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.config.config_types import (
-    AgentConfigName,
-    AutomataAgentConfig,
-    AutomataInstructionPayload,
-)
+from automata.config.config_types import AgentConfigName, AutomataAgentConfig
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
 
 
@@ -73,10 +69,6 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
         .with_temperature(0.5)
         .with_session_id("test-session-id")
         .build()
-    )
-    assert (
-        config.instruction_payload.__dict__.items()
-        == AutomataInstructionPayload().__dict__.items()
     )
     assert config.llm_toolkits == mock_llm_toolkits
     assert config.model == "gpt-3.5-turbo"

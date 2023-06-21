@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.config.config_types import AutomataInstructionPayload
 from automata.core.agent.agent import AutomataAgent
 from automata.core.agent.database import AutomataAgentDatabase
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
@@ -223,9 +222,6 @@ def test_iter_step_with_parsed_completion_message_2(
     automata_agent_config = (
         automata_agent_config_builder.with_instruction_version("agent_introduction")
         .with_stream(False)
-        .with_instruction_payload(
-            AutomataInstructionPayload(agents_message="", overview="", tools="")
-        )
         .build()
     )
 
@@ -254,9 +250,6 @@ def test_iter_step_with_parsed_completion_message_main_2(
     automata_agent_config = (
         automata_agent_config_builder.with_instruction_version("agent_introduction")
         .with_stream(False)
-        .with_instruction_payload(
-            AutomataInstructionPayload(agents_message="", overview="", tools="")
-        )
         .build()
     )
 

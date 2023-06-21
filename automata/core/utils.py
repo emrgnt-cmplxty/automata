@@ -4,7 +4,16 @@ import os
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
 import colorlog
+import openai
 import yaml
+
+
+def set_openai_api_key(override_key: Optional[str] = None) -> None:
+    """Sets the OpenAI API key from the environment variable OPENAI_API_KEY"""
+    if not openai.api_key:
+        from automata.config import OPENAI_API_KEY
+
+        openai.api_key = override_key or OPENAI_API_KEY
 
 
 def root_py_fpath() -> str:
