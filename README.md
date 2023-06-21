@@ -2,8 +2,8 @@
 
 ![Banner](./automata_banner.png)
 
-[![Unit Tests](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml)
-[![Type Checks](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml)
+[![Codecov](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml)
+[![Type Checking](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/ocolegro)
 
