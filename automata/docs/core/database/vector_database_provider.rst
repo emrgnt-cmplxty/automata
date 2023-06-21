@@ -37,7 +37,7 @@ The following example demonstrates a basic implementation of the
            self.data: List[SymbolEmbedding] = []
            self.index: Dict[str, int] = {}
 
-       def calculate_similarity(self, embedding: SymbolEmbedding) -> List[Dict[Symbol, float]]:
+       def calculate_similarity(self, embedding: SymbolEmbedding) -> Dict[Symbol, float]:
            similarities = []
            for stored_embedding in self.data:
                similarity = compute_cosine_similarity(embedding.vector, stored_embedding.vector)
