@@ -3,7 +3,7 @@
 ![Banner](./automata_banner.png)
 
 [![Unit Tests](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/test-with-codecov.yml)
-[![Type Checks](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml.yml)
+[![Type Checks](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/ocolegro)
 
@@ -49,11 +49,11 @@ git submodule update --init --recursive
 ### For Ubuntu, run the following:
 ##  sudo apt-get install git-lfs
 ### For Mac, run the following:
-## brew install git-lfs
+##  brew install git-lfs
 ###
 ### Then, initialize by running the following:
-## git lfs install
-## git lfs pull
+##  git lfs install
+##  git lfs pull
 ```
 
 ### Indexing
