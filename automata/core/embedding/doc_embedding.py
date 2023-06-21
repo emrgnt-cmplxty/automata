@@ -142,18 +142,22 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         # Splice the search results on the symbol
         # with the search results biased on tests
         # this is to get bias towards specific examples for the documentation
-        search_results_0 = self.symbol_search.symbol_rank_search(f"{abbreviated_selected_symbol}")
-        search_results_1 = self.symbol_search.symbol_rank_search(
-            f"{abbreviated_selected_symbol} tests or conftest"
-        )
-
+        search_results = self.symbol_search.symbol_rank_search(f"{abbreviated_selected_symbol}")
+        search_results_with_tests = [ele for ele in search_results if "test" in ele[0].uri]
+        search_results_without_tests = [ele for ele in search_results if "test" not in ele[0].uri]
         search_list: List[Symbol] = []
-        for i in range(len(search_results_0)):
+        for i in range(max(len(search_results_with_tests), len(search_results_without_tests))):
             set_list = set(search_list)
-            if search_results_0[i] not in set_list:
-                search_list.append(search_results_0[i][0])
-            elif search_results_1[i] not in set_list:
-                search_list.append(search_results_1[i][0])
+            if (
+                i < len(search_results_with_tests) - 1
+                and search_results_with_tests[i] not in set_list
+            ):
+                search_list.append(search_results_with_tests[i][0])
+            if (
+                i < len(search_results_without_tests) - 1
+                and search_results_with_tests[i] not in set_list
+            ):
+                search_list.append(search_results_without_tests[i][0])
 
         self.retriever.reset()
         self.retriever.process_symbol(symbol, search_list)
@@ -197,12 +201,13 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         # self.embedding_db.add(symbol_embedding)
 
         # For now, we will just automatically roll the existing documentation forward
-        if existing_embedding.symbol != symbol:
+        if existing_embedding.symbol != symbol or existing_embedding.source_code != source_code:
             logger.debug(
                 f"Rolling forward the embedding for {existing_embedding.symbol} to {symbol}"
             )
             self.embedding_db.discard(symbol)
             existing_embedding.symbol = symbol
+            existing_embedding.source_code = source_code
             self.embedding_db.add(existing_embedding)
         else:
             logger.debug("Passing for %s", symbol)
