@@ -1,3 +1,4 @@
+### Initialize the repository
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git
 cd Automata
@@ -21,3 +22,30 @@ sed -i "s|your_conversation_db_path|$DB_PATH|" .env
 
 # Fetch the submodules
 git submodule update --init --recursive
+
+### NOTE -
+### If you have not previously installed git-lfs, you must now.
+### For Ubuntu, run the following:
+# sudo apt-get install git-lfs
+### For Mac, run the following:
+# brew install git-lfs
+###
+### Then, initialize by running the following:
+# git lfs install
+### Lastly, fetch the files
+# git lfs pull
+
+### Build indexing software
+# Activate the local repository
+source local_env/bin/activate
+
+# Install scip-python locally
+cd scip-python
+npm install
+
+# Build the tool
+cd packages/pyright-scip
+npm run build
+
+# Return to working dir
+cd ../../../
