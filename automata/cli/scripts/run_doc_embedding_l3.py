@@ -74,11 +74,11 @@ def main(*args, **kwargs) -> str:
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             print("symbol = ", symbol)
-            try:
-                embedding_handler.update_embedding(symbol)
-                embedding_db_l3.save()
-            except Exception as e:
-                logger.error(f"Error updating embedding for {symbol.dotpath}: {e}")
+            # try:
+            embedding_handler.update_embedding(symbol)
+            embedding_db_l3.save()
+            # except Exception as e:
+            # logger.error(f"Error updating embedding for {symbol.dotpath}: {e}")
 
     logger.info("Complete.")
     return "Success"

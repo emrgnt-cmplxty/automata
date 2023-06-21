@@ -155,7 +155,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
                 search_list.append(search_results_with_tests[i][0])
             if (
                 i < len(search_results_without_tests) - 1
-                and search_results_with_tests[i] not in set_list
+                and search_results_without_tests[i] not in set_list
             ):
                 search_list.append(search_results_without_tests[i][0])
 
