@@ -40,6 +40,7 @@ def main(*args, **kwargs) -> str:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
             dependencies.add(dependency_name)
     kwargs = {}
+
     logger.info("  - Building dependencies...")
     for dependency in dependencies:
         logger.info(f"Building {dependency}...")
