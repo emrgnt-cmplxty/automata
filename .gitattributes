@@ -1,2 +1,5 @@
 *.json filter=lfs diff=lfs merge=lfs -text
 automata/configs/symbols/symbol_embedding.json filter=lfs diff=lfs merge=lfs -text
+automata/config/symbol/symbol_code_embedding.json filter=lfs diff=lfs merge=lfs -text
+automata/config/symbol/symbol_doc_embedding_l2.json filter=lfs diff=lfs merge=lfs -text
+automata/config/symbol/symbol_doc_embedding_l3.json filter=lfs diff=lfs merge=lfs -text
