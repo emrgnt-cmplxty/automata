@@ -67,19 +67,24 @@ class ContextOracleTool(AgentTool):
 
         result = self.symbol_doc_similarity.embedding_handler.get_embedding(
             sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
+        ).source_code
+
+        result += self.symbol_doc_similarity.embedding_handler.get_embedding(
+            sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
         ).embedding_source
 
-        for symbol, _ in rank_output[:10]:
+        for symbol, _ in rank_output[1:6]:
             try:
                 result += "%s\n" % symbol.dotpath
                 result += self.symbol_doc_similarity.embedding_handler.get_embedding(
                     symbol
                 ).summary
             except Exception as e:
-                logger.error(
-                    "Failed to get embedding for symbol %s with error: %s",
-                    symbol,
-                    e,
-                )
+                # logger.error(
+                #     "Failed to get embedding for symbol %s with error: %s",
+                #     symbol,
+                #     e,
+                # )
                 continue
+        logger.debug(f"ContextOracleTool is returning this result: {result}")
         return result
