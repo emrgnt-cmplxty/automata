@@ -1,3 +1,4 @@
+import functools
 import logging
 import os
 from typing import Any, Dict, List, Tuple
@@ -28,6 +29,27 @@ from automata.core.utils import config_fpath
 logger = logging.getLogger(__name__)
 
 
+def classmethod_lru_cache():
+    """
+    Class method LRU cache decorator.
+
+    Returns:
+        decorator: A decorator that caches the return value of a class method
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            cache_key = (func.__name__,) + args + tuple(sorted(kwargs.items()))
+            if cache_key not in self._class_cache:
+                self._class_cache[cache_key] = func(self, *args, **kwargs)
+            return self._class_cache[cache_key]
+
+        return wrapper
+
+    return decorator
+
+
 class DependencyFactory:
     """Creates dependencies for input Toolkit construction."""
 
@@ -40,6 +62,9 @@ class DependencyFactory:
     DEFAULT_DOC_EMBEDDING_FPATH = os.path.join(
         config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
     )
+
+    # Used to cache the symbol subgraph across multiple instances
+    _class_cache: Dict[str, Any] = {}
 
     def __init__(self, **kwargs) -> None:
         """
@@ -90,6 +115,7 @@ class DependencyFactory:
 
         return instance
 
+    @classmethod_lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:
         """
         Creates a SymbolGraph instance.
@@ -101,6 +127,7 @@ class DependencyFactory:
             self.overrides.get("symbol_graph_path", DependencyFactory.DEFAULT_SCIP_FPATH)
         )
 
+    @classmethod_lru_cache()
     def create_subgraph(self) -> SymbolGraph.SubGraph:
         """
         Creates a SymbolGraph.SubGraph instance.
@@ -113,6 +140,7 @@ class DependencyFactory:
             self.overrides.get("flow_rank", "bidirectional")
         )
 
+    @classmethod_lru_cache()
     def create_symbol_code_similarity(self) -> SymbolSimilarity:
         """
         Creates a SymbolSimilarity instance for symbol code similarity.
@@ -130,6 +158,7 @@ class DependencyFactory:
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
         return SymbolSimilarity(code_embedding_handler)
 
+    @classmethod_lru_cache()
     def create_symbol_doc_similarity(self) -> SymbolSimilarity:
         """
         Creates a SymbolSimilarity instance for symbol doc similarity.
@@ -152,6 +181,7 @@ class DependencyFactory:
         )
         return SymbolSimilarity(doc_embedding_handler)
 
+    @classmethod_lru_cache()
     def create_symbol_search(self) -> SymbolSearch:
         """
         Creates a SymbolSearch instance.
@@ -167,6 +197,7 @@ class DependencyFactory:
             symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
         )
 
+    @classmethod_lru_cache()
     def create_py_context_retriever(self) -> PyContextRetriever:
         """
         Creates a PyContextRetriever instance.

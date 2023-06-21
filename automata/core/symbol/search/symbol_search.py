@@ -34,6 +34,8 @@ class SymbolSearch:
             symbol_code_similarity (SymbolSimilarity): A SymbolSimilarity object with a code embedding handler
             symbol_rank_config (Optional[SymbolRankConfig]): A SymbolRankConfig object
             code_subgraph: A subgraph of the SymbolGraph
+
+            TODO - We should modify SymbolSearch to receive a completed instance of SymbolRank.
         """
 
         if code_subgraph.parent != symbol_graph:

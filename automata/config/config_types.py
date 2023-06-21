@@ -69,6 +69,50 @@ class AutomataAgentConfig(BaseModel):
         SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k"]
         arbitrary_types_allowed = True
 
+    class TemplateFormatter:
+        @staticmethod
+        def create_default_formatter(
+            config: "AutomataAgentConfig", max_default_overview_symbols: int = 100
+        ) -> Dict[str, str]:
+            """
+            Create a default template formatter.
+
+            Args:
+                config (AutomataAgentConfig): The AutomataAgentConfig to use.
+
+            Returns:
+                Dict[str, str]: The default template formatter.
+
+            Raises:
+                NotImplementedError: If the config_name is not supported.
+
+            TODO:
+                - Consider how we might implement dependency injection across this call stack
+                - Replace symbol_search with symbol_rank when it is implemented on DependencyFactory
+            """
+            formatter = {}
+            if config.config_name == AgentConfigName.AUTOMATA_RETRIEVER:
+                from automata.core.agent.tools.tool_utils import DependencyFactory
+
+                symbol_search = DependencyFactory().get("symbol_search")
+                symbol_rank = symbol_search.symbol_rank
+                ranks = symbol_rank.get_ranks()
+                symbol_dotpaths = [
+                    ".".join(symbol.dotpath.split(".")[1:])
+                    for symbol, _ in ranks[:max_default_overview_symbols]
+                ]
+                formatter["symbol_rank_overview"] = "\n".join(sorted(symbol_dotpaths))
+            elif config.config_name == AgentConfigName.AUTOMATA_MAIN:
+                raise NotImplementedError(
+                    "AutomataMain does not have a default template formatter."
+                )
+            elif config.config_name == AgentConfigName.AUTOMATA_WRITER:
+                raise NotImplementedError(
+                    "AutomataWriter does not have a default template formatter."
+                )
+
+            return formatter
+
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     llm_toolkits: Dict[ToolkitType, Toolkit] = {}
     instructions: str = ""
@@ -90,6 +134,10 @@ class AutomataAgentConfig(BaseModel):
         """Setup the agent."""
         if not self.session_id:
             self.session_id = str(uuid.uuid4())
+        if not self.system_template_formatter:
+            self.system_template_formatter = (
+                AutomataAgentConfig.TemplateFormatter.create_default_formatter(self)
+            )
         if not self.system_instruction:
             self.system_instruction = self._formatted_prompt()
 
