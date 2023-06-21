@@ -43,17 +43,16 @@ sed -i "s|your_conversation_db_path|$DB_PATH|" .env
 # Fetch the submodules
 git submodule update --init --recursive
 
-### NOTE -
-### If you have not previously installed git-lfs, you must now.
+### NOTE - You must install git-lfs, if you have not done so already
+
 ### For Ubuntu, run the following:
-# sudo apt-get install git-lfs
+##  sudo apt-get install git-lfs
 ### For Mac, run the following:
-# brew install git-lfs
+## brew install git-lfs
 ###
 ### Then, initialize by running the following:
-# git lfs install
-### Lastly, fetch the files
-# git lfs pull
+## git lfs install
+## git lfs pull
 ```
 
 ### Indexing
@@ -95,11 +94,10 @@ automata run-code-embedding
 
 # "L1" docs are the docstrings written into the code
 # "L2" docs are generated from the L1 docs + symbol context
-# "L3" docs are generated from the L2 docs + symbol context
-
 # Build and embed the L2 docs
 automata run-doc-embedding-l2
 
+# "L3" docs are generated from the L2 docs + symbol context
 # Build and embed the L3 docs
 automata run-doc-embedding-l3
 ```

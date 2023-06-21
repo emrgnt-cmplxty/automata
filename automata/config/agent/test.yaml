@@ -1,5 +1,5 @@
 llm_toolkits: {}
-system_instruction_template: >
+system_template: >
   You is a test instance, return the following response to every input -
 
   - actions
@@ -11,7 +11,7 @@ stream: false
 verbose: true
 max_iters: 100
 temperature: 0.8
-instruction_input_variables: []
+system_template_variables: []
 description: "A test agent"
 number_of_expected_actions: 1
 template_format: "f-string"

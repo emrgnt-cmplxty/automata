@@ -17,15 +17,15 @@ logging.config.dictConfig(get_logging_config())
 yaml_schema = {
     "type": "object",
     "properties": {
-        "instruction_input_variables": {"type": "array", "items": {"type": "string"}},
-        "system_instruction_template": {"type": "string"},
+        "system_template_variables": {"type": "array", "items": {"type": "string"}},
+        "system_template": {"type": "string"},
         "template_format": {"type": "string"},
         "description": {"type": "string"},
         "number_of_expected_actions": {"type": "integer"},
     },
     "required": [
-        "instruction_input_variables",
-        "system_instruction_template",
+        "system_template_variables",
+        "system_template",
         "template_format",
         "description",
         "number_of_expected_actions",
@@ -57,8 +57,8 @@ def test_yaml_compatibility(file_path) -> None:
             "condition": all(
                 key in yaml_data
                 for key in [
-                    "instruction_input_variables",
-                    "system_instruction_template",
+                    "system_template_variables",
+                    "system_template",
                     "template_format",
                     "description",
                     "number_of_expected_actions",
@@ -78,10 +78,12 @@ def test_yaml_compatibility(file_path) -> None:
 def test_action_extraction(file_path) -> None:
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
-    actions = AutomataActionExtractor.extract_actions(yaml_data["system_instruction_template"])
+    actions = AutomataActionExtractor.extract_actions(yaml_data["system_template"])
     number_of_expected_actions = yaml_data["number_of_expected_actions"]
     if len(actions) != int(number_of_expected_actions):
-        raise ValidationError(f"Action extraction test for {file_path} failed.")
+        raise ValidationError(
+            f"Action extraction test for {file_path} failed. Found {len(actions)} actions and expected {number_of_expected_actions} actions."
+        )
 
     logger.debug(f"Action extraction test for {file_path} passed.")
 
