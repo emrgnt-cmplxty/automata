@@ -3,6 +3,7 @@
 ![Banner](./automata_banner.png)
 
 [![codecov](https://codecov.io/github/emrgnt-cmplxty/Automata/branch/main/graph/badge.svg?token=ZNE7RDUJQD)](https://codecov.io/github/emrgnt-cmplxty/Automata)
+[![Documentation Status](https://readthedocs.org/projects/automata/badge/?version=latest)](https://automata.readthedocs.io/en/latest/?badge=latest)
 [![Type Checking](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml/badge.svg)](https://github.com/emrgnt-cmplxty/Automata/actions/workflows/check-mypy.yml)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/ocolegro)
@@ -10,6 +11,8 @@
 **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 
 This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them. More information follows below.
+
+## 🧠 [Read the Docs](https://automata.readthedocs.io/en/latest/)
 
 ## Demo
 
