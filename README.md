@@ -13,11 +13,13 @@ This project is inspired by the theory that code is essentially a form of memory
 
 ## Demo
 
-https://github.com/emrgnt-cmplxty/Automata/assets/68796651/b5c7f7cc-9a03-4e2d-9c0c-125044de7f67
+
+
+https://github.com/emrgnt-cmplxty/Automata/assets/68796651/9b27de2b-d3d3-422b-b21e-8b3c2c9e8dce
+
 
 ## Schematic Sketch
-
-<img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/e18d507a-348c-4e36-b928-90a99c913079">
+<img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/57ae3418-c01b-4b3f-a548-2f050c234b34">
 
 ## Installation and Usage
 
