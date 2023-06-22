@@ -152,6 +152,6 @@ Automata was born from the amalgamation of inspiring projects like [Auto-GPT](ht
 
 Automata is licensed under the Apache License 2.0.
 
-## Other Acknowledgements
+## Other
 
-This project is extending an initial effort between [emrgnt-cmplxty](https://github.com/emrgnt-cmplxty) and [maks-ivanov](https://github.com/maks-ivanov) that began with this repository here https://github.com/maks-ivanov/automata.
+This project is an extension of an initial effort between [emrgnt-cmplxty](https://github.com/emrgnt-cmplxty) and [maks-ivanov](https://github.com/maks-ivanov) that began with this [repository](https://github.com/maks-ivanov/automata).
