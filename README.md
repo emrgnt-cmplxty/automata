@@ -9,11 +9,15 @@
 
 **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 
-This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them.
+This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them. More information follows below.
 
 ## Demo
 
 https://github.com/emrgnt-cmplxty/Automata/assets/68796651/b5c7f7cc-9a03-4e2d-9c0c-125044de7f67
+
+## Schematic Sketch
+
+<img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/e18d507a-348c-4e36-b928-90a99c913079">
 
 ## Installation and Usage
 
