@@ -16,16 +16,12 @@ This project is inspired by the theory that code is essentially a form of memory
 
 ## Demo
 
-
-
 https://github.com/emrgnt-cmplxty/Automata/assets/68796651/9b27de2b-d3d3-422b-b21e-8b3c2c9e8dce
-
-
 
 _Note - This demo will shortly be expanded to be more autonomous. E.g. automatically fetching the GitHub issues given a user specification and automatically writing the code // creating a PR. These are minor additions to the core logic demonstrated above._
 
-
 ## Schematic Sketch
+
 <img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/57ae3418-c01b-4b3f-a548-2f050c234b34">
 
 ## Installation and Usage
@@ -53,9 +49,13 @@ pre-commit install
 
 # Set up .env
 cp .env.example .env
-MY_API_KEY=your_openai_api_key_here
-DB_PATH="$PWD/conversations.sqlite3"
-sed -i "s|your_openai_api_key|$MY_API_KEY|" .env
+GITHUB_API_KEY=your_github_api_key
+OPEN_API_KEY=your_openai_api_key_here
+# default DB_PATH is $HOME/conversations.sqlite3
+DB_PATH="$HOME/conversations.sqlite3"
+# default Max Workers is 8, manually change the .env to update this quantity.
+sed -i "s|your_openai_api_key|$GITHUB_API_KEY|" .env
+sed -i "s|your_github_api_key|$OPEN_API_KEY|" .env
 sed -i "s|your_conversation_db_path|$DB_PATH|" .env
 
 # Fetch the submodules
