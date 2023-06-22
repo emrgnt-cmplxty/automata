@@ -1,69 +1,87 @@
 BaseTool
 ========
 
-``BaseTool`` is a base class from which specific tools can inherit when
-building tools for the Automata ecosystem. The tools are designed to
-automate tasks and interact with various systems. The ``BaseTool`` class
-provides a flexible foundation for creating new tools and managing their
-configurations, as well as organizing them within toolkits.
+``BaseTool`` is a class responsible for defining a tool or skill for a
+Lower-level Manager (LLM) in the ``automata`` library. Tools can perform
+various tasks and return results that can be further utilized by the
+library. ``BaseTool`` can be inherited to create custom tools that suit
+different purposes.
 
 Overview
 --------
 
-``BaseTool`` primarily serves as a base class to be inherited by other
-classes when creating custom tools. The class contains a ``Config``
-class, which defines configuration options for the tool. It also
-provides methods to be implemented or overridden by the inheriting
-subclasses.
+``BaseTool`` provides a base class for tools that are used within an
+LLM. It employs methods like ``run``, ``arun``, and ``__call__`` for
+synchronous or asynchronous execution of the tool given a certain input.
+When creating custom tools, the ``_run`` and/or ``_arun`` methods must
+be implemented.
+
+``BaseTool.Config`` is a nested class representing the configuration for
+the given BaseTool object. It handles pydantic object configuration
+settings, like forbidding extra fields and allowing arbitrary types.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.config.config_types.AgentConfigName``
--  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.base.tool.InvalidTool``
+-  ``automata.tests.unit.test_base_tool.test_base_tool_instantiation``
+-  ``automata.tests.unit.test_base_tool.test_base_tool_call``
+-  ``automata.core.base.tool.Toolkit``
+-  ``automata.core.agent.tools.agent_tool.AgentTool``
 
-Example
--------
+Examples
+--------
 
-The following example shows how to create a custom tool class by
-inheriting from ``BaseTool``:
+Here is an example of creating a custom synchronous tool inheriting from
+``BaseTool``.
 
 .. code:: python
 
    from automata.core.base.base_tool import BaseTool
+   from typing import Tuple, Optional
 
-   class CustomTool(BaseTool):
+   class MyCustomTool(BaseTool):
+       def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
+           # Perform some tasks and return the result as a string
+           result = "My custom tool result"
+           return result
 
-       def __init__(self, name: str, description: str):
-           super().__init__(name=name, description=description)
+   # Instantiate and use the custom tool
+   tool = MyCustomTool(name="MyCustomTool", description="A custom tool example")
+   tool_input = ("input_data",)
+   response = tool(tool_input)
 
-       def execute(self, *args, **kwargs):
-           # Implement the functionality of the custom tool
-           pass
+For asynchronous operation, create a custom asynchronous tool like this:
 
-   tool = CustomTool(name="example_tool", description="A custom tool example")
+.. code:: python
+
+   from automata.core.base.base_tool import BaseTool
+   from typing import Tuple, Optional
+
+   class MyAsyncCustomTool(BaseTool):
+
+       async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
+           # Perform some async tasks and return the result as a string
+           result = await some_async_operation()
+           return result
+
+   # Instantiate and use the custom async tool
+   tool = MyAsyncCustomTool(name="MyAsyncCustomTool", description="A custom async tool example")
+   tool_input = ("input_data",)
+   response = await tool.arun(tool_input)
 
 Limitations
 -----------
 
-The primary limitation of ``BaseTool`` is that it only offers a
-foundation for creating tools. Developers need to subclass and implement
-or override the required methods to create functional tools. Also, the
-functional scope of the tools is determined by the developer and may be
-limited by the libraries and systems they integrate with.
+``BaseTool`` doesn’t implement the ``_run`` and ``_arun`` methods
+directly, and they must be implemented in the child class when creating
+custom tools.
 
 Follow-up Questions:
 --------------------
 
--  What are the best practices for creating new tools within the
-   Automata ecosystem?
--  How do I integrate custom tools within the Automata Agent and
-   coordinate their usage?
+-  Are there any examples of ``BaseTool`` in practical usage within the
+   ``automata`` library?
+-  What are some common use cases for tools inheriting from
+   ``BaseTool``?

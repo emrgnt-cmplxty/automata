@@ -1,60 +1,71 @@
 OpenAIBaseCompletionResult
 ==========================
 
-``OpenAIBaseCompletionResult`` is an abstract base class that provides
-an interface for interacting with and extracting completions from
-different OpenAI API completion results. Classes inheriting this
-interface should implement the ``get_completions`` method to retrieve
-the completion results.
+``OpenAIBaseCompletionResult`` is an abstract base class for handling
+the completion results from OpenAI API responses. It provides an
+interface for extracting relevant completions from the returned raw
+data.
+
+Overview
+--------
+
+``OpenAIBaseCompletionResult`` aims to simplify the processing of OpenAI
+API responses by defining an interface for extracting completion
+results. Classes inheriting from this base class are expected to
+implement the ``get_completions`` method, which should return a list of
+extracted completions.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.base.openai.OpenAIChatCompletionResult``
 -  ``automata.core.base.openai.CompletionResult``
+-  ``automata.core.agent.agent.AutomataAgent``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of a
-class that inherits from ``OpenAIBaseCompletionResult`` and implements
-the ``get_completions`` method.
+Suppose we have a custom class called ``MyOpenAICompletionResult`` that
+inherits from ``OpenAIBaseCompletionResult``.
 
 .. code:: python
 
    from automata.core.base.openai import OpenAIBaseCompletionResult
 
-   class MyCompletionResult(OpenAIBaseCompletionResult):
-       def __init__(self, raw_data):
-           super().__init__(raw_data)
-
+   class MyOpenAICompletionResult(OpenAIBaseCompletionResult):
        def get_completions(self) -> list[str]:
-           return self.raw_data["choices"][0]["text"]
+           # Custom logic to extract completions from raw_data
+           return ["completion 1", "completion 2"]
 
-   # Assume raw_data is the response from an OpenAI API call
-   raw_data = {
-       'choices': [
-           {
-               'text': '...generated completion text...'
-           }
+We can then use this class to process an OpenAI API response:
+
+.. code:: python
+
+   response_data = {
+       "choices": [
+           {"message": {"content": "completion 1"}},
+           {"message": {"content": "completion 2"}},
        ]
    }
 
-   completion_result = MyCompletionResult(raw_data)
-   completions = completion_result.get_completions()
-   print(completions)
+   my_result = MyOpenAICompletionResult(response_data)
+   completions = my_result.get_completions()
+   print(completions)  # Output: ["completion 1", "completion 2"]
 
 Limitations
 -----------
 
-The primary limitation of ``OpenAIBaseCompletionResult`` is that it does
-not provide any implementations for extracting completions from OpenAI
-API results by default. Classes inheriting from this interface should
-provide their own implementation of the ``get_completions`` method to
-extract completions based on the specific API response format.
+``OpenAIBaseCompletionResult`` is an interface and cannot be used
+directly without providing an implementation for the ``get_completions``
+method. It means that you must create a custom class inheriting from
+``OpenAIBaseCompletionResult`` and provide the appropriate logic for
+extracting the desired completion results.
 
 Follow-up Questions:
 --------------------
 
--  How do we handle different API response formats when extracting
-   completions from an inherited class of
-   ``OpenAIBaseCompletionResult``?
+-  Can you provide an example of a comprehensive custom implementation
+   of ``OpenAIBaseCompletionResult`` to handle different types of OpenAI
+   API responses?
+-  Are there other necessary methods or attributes that should be added
+   to ``OpenAIBaseCompletionResult`` to cover more use cases?

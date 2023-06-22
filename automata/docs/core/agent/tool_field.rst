@@ -1,53 +1,59 @@
 ToolField
 =========
 
-``ToolField`` is an enumeration that represents the fields of a tool,
-which are part of the ``automata.core.agent.agent_enums`` module. This
-enum is used in the context of ``automata.core.agent.agent`` and other
-related classes and methods.
+``ToolField`` is an enumeration class that represents the fields of a
+tool in automata.core.agent.agent_enums. The fields represent properties
+of a tool such as its name, description, and the functions or coroutines
+it uses.
 
 Overview
 --------
 
-``ToolField`` is a simple enumeration that provides a way to identify
-the various fields of a tool. It is mainly used to help users navigate
-and work with the different properties of a tool when implementing
-agent-related features, like managing interactions between tools.
+``ToolField`` provides a simple and manageable way to reference
+important fields of a tool in the Automata ecosystem. It is primarily
+used for internal purposes within the core.agent package and related
+modules, facilitating ordered, readable, and easily iterable tool
+properties.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
 -  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.agent_enums.AgentField``
+-  ``automata.core.base.base_tool.BaseTool``
+-  ``automata.core.agent.agent_enums.ResultField``
+-  ``automata.tests.unit.test_base_tool.MockTool``
 
 Example
 -------
 
-You generally won’t be working directly with ``ToolField`` in your
-implementation. However, in case you need to reference a tool field
-while working with agent-related classes or methods, you can do so as
-shown below:
+An example of using the ``ToolField`` enumeration to access the fields
+of a tool.
 
 .. code:: python
 
-   from enum import Enum
    from automata.core.agent.agent_enums import ToolField
+   from automata.core.base.tool import Tool
 
-   tool_field_example = ToolField.Name
-   print(tool_field_example)
+   tool = Tool(name="ExampleTool", func=lambda x: "Example response", description="An example tool for demonstration purposes")
+
+   name_field = ToolField.NAME
+   tool_name = getattr(tool, name_field.value)
+   print(tool_name)  # Output: ExampleTool
 
 Limitations
 -----------
 
-``ToolField`` is a basic enumeration with a limited scope and purpose.
-Its primary use is for internally organizing and referencing the fields
-of a tool. The enumeration itself does not provide any methods or
-additional functionality beyond identifying the fields.
+``ToolField`` has limited direct application outside of the internal
+usage in the core.agent package and related modules. It mainly serves to
+provide a cleaner reference for accessing tool properties and does not
+offer extended functionalities or customization options.
 
 Follow-up Questions:
 --------------------
 
--  Are there any other uses for ToolField besides internally organizing
-   and referencing fields of a tool?
+-  Are there additional properties or attributes expected in a tool that
+   need to be accounted for in the ``ToolField`` enumeration?
+
+**Note**: Mock objects mentioned in the context, such as ``MockTool``,
+are used for test purposes and can be replaced with actual underlying
+objects.

@@ -2,66 +2,59 @@ SymbolReference
 ===============
 
 ``SymbolReference`` is a class that represents a reference to a symbol
-in a file. It is used for tracking and managing references to symbols
-within a codebase. It provides utility methods for comparing and hashing
-symbol references based on their URI, line number, and column number.
-This class is used in conjunction with other classes related to symbols,
-such as ``Symbol``, ``SymbolDescriptor``, and ``SymbolEmbedding``.
+in a file. It stores information about the symbol, its location in the
+file (line and column number), and provides methods to compare and hash
+instances of the class. ``SymbolReference`` is commonly used in symbol
+search and retrieval, and is closely related to the ``Symbol`` class.
 
 Overview
 --------
 
-A ``SymbolReference`` object represents a unique reference to a symbol
-based on its URI, line number, and column number. It provides methods to
-check for equality and uniqueness with other symbol references. It is
-useful in tracking and managing references to symbols in files based on
-their location and use in the codebase.
+A ``SymbolReference`` is created using a ``Symbol`` object and the
+location (line and column number) of the reference in a file. It is used
+in various parts of the system to identify where a particular symbol is
+being used or referenced. It provides a robust way to track symbol
+references and can be used in combination with other tools and methods
+to perform code analysis, search, and navigation.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.parser.parse_symbol``
--  ``automata.core.symbol.symbol_types.SymbolDescriptor``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.tests.unit.test_symbol_search.test_symbol_references``
+-  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
+-  ``automata.core.symbol.graph._SymbolGraphNavigator._get_symbol_references_in_scope``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``SymbolReference`` and compare it with other symbol references.
+Given an instance of a ``Symbol``, you can create a ``SymbolReference``
+by providing the line number and column number of the symbol reference
+in the file.
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import SymbolReference
+   from automata.core.symbol.symbol_types import Symbol, SymbolReference
    from automata.core.symbol.parser import parse_symbol
 
-   symbol_uri = "example_uri"
-   line_number = 10
-   column_number = 5
-   symbol = parse_symbol(symbol_uri)
+   # Parse a symbol from its string representation
+   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   symbol = parse_symbol(symbol_str)
 
-   symbol_ref1 = SymbolReference(symbol, line_number, column_number)
-   symbol_ref2 = SymbolReference(symbol, line_number + 1, column_number)
-
-   assert symbol_ref1 != symbol_ref2
-   assert hash(symbol_ref1) != hash(symbol_ref2)
-
-   symbol_ref3 = SymbolReference(symbol, line_number, column_number)
-   assert symbol_ref1 == symbol_ref3
+   # Create a SymbolReference with the symbol and its location in the file
+   line_number = 42
+   column_number = 12
+   symbol_reference = SymbolReference(symbol, line_number, column_number)
 
 Limitations
 -----------
 
-The primary limitation of ``SymbolReference`` is that it could cause
-collisions when the same symbol is referenced in different files at the
-same location (line and column). This situation is relatively rare, but
-it is worth noting as a potential limitation when working with a large
-number of symbol references across multiple files.
+``SymbolReference`` could cause hash collisions if the same symbol is
+referenced in different files at the same location. However, such cases
+are expected to be rare, and the impact of these occasional collisions
+should not be significant.
 
 Follow-up Questions:
 --------------------
 
--  Is there any way to mitigate the collision issue while maintaining
-   the utility methods provided by ``SymbolReference``?
+-  Are there better ways to handle potential hash collisions?

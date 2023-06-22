@@ -1,55 +1,60 @@
 ToolkitType
 ===========
 
-``ToolkitType`` is an enumeration that helps identify the type of
-toolkit used in certain toolkit wrapper classes. It provides enumeration
-values to easily work with various toolkits in a consistent and
-efficient manner.
+The ``ToolkitType`` is an enumeration class that represents various
+types of toolkits available in the automata project. The enumeration is
+used to identify and manage different toolkits that can be used by the
+Automata tools system.
 
 Overview
 --------
 
-``ToolkitType`` is used to categorize different types of toolkits used
-within the Automata ecosystem. This enumeration is useful in maintaining
-a robust system where each toolkit can be identified by its
-corresponding ``ToolkitType``. It is primarily used in managing the
-mapping of toolkits to their respective types.
+The current supported ``ToolkitType`` enumeration values include:
+
+-  ``PY_RETRIEVER``: Represents a toolkit for Python retrieval
+   operations.
+-  ``PY_WRITER``: Represents a toolkit for Python writing operations.
+-  ``SYMBOL_SEARCHER``: Represents a toolkit for searching and
+   identifying symbols.
+-  ``CONTEXT_ORACLE``: Represents an oracle toolkit for generating
+   context.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.base.tool.Toolkit``
+-  ``automata.tests.unit.test_tool.TestTool``
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.agent.agent.AutomataAgent``
+-  ``automata.core.agent.tools.tool_utils.UnknownToolError``
 
 Example
 -------
 
-The following is an example of how to use ``ToolkitType``:
+Here is an example of using ``ToolkitType``:
 
 .. code:: python
 
    from automata.core.base.tool import ToolkitType
 
-   def process_toolkit(toolkit_type: ToolkitType):
-       if toolkit_type == ToolkitType.TEXT_PREPROCESSING:
-           print("This is a text preprocessing toolkit.")
-       elif toolkit_type == ToolkitType.DATA_PROCESSING:
-           print("This is a data processing toolkit.")
-       else:
-           print("Unknown toolkit type.")
+   toolkit_type = ToolkitType.PY_RETRIEVER
+   print(toolkit_type.name)
 
-   process_toolkit(ToolkitType.TEXT_PREPROCESSING)
+This will output:
+
+::
+
+   PY_RETRIEVER
 
 Limitations
 -----------
 
-``ToolkitType`` is a simple enumeration for categorizing different
-toolkit types. The primary limitation is that it is limited to the types
-of toolkits defined within this enumeration.
+The ``ToolkitType`` enum class does not have any direct methods or
+functionality associated with it, and it can be used only to define or
+recognize the type of toolkit being used for an operation. The
+enumeration values available in the class need to be manually extended
+to support more toolkit types in the future.
 
 Follow-up Questions:
 --------------------
 
--  Are there any plans to add more enumeration values to ``ToolkitType``
-   for further categorization of toolkits?
+-  What are the specific use cases for each toolkit type?

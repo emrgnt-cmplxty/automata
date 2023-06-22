@@ -1,58 +1,54 @@
 File
 ====
 
-``File`` is a class that represents a file in the file tree. It inherits
-from the abstract base class ``Node``.
+``File`` represents a file in a tree structure used in the
+``automata.core.coding.directory`` module. This class is used to store
+information about the name and parent node of a file within the file
+tree. It inherits from the ``Node`` base class.
 
 Overview
 --------
 
-The ``File`` class provides a way to represent a file in a file tree,
-including its name and parent node. This class is useful when working
-with file trees for managing, navigating, or analyzing file structure in
-a directory.
+``File`` provides a convenient way to store and manage information about
+a file in the file tree. It provides a simple interface to set the name
+and parent node of a file, which is required for constructing a
+hierarchical tree representation of a file.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.SymbolFile``
+-  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.tests.unit.sample_modules.sample_module_2.ObNMl``
--  ``automata.tests.unit.test_database_vector.test_init_vector``
 -  ``automata.core.symbol.symbol_types.SymbolReference``
--  ``automata.tests.unit.test_database_vector.test_save``
 
-Example
--------
+Usage Example
+-------------
 
-The following example demonstrates how to create an instance of
-``File``.
+The following example demonstrates how to create an instance of a
+``File`` object:
 
 .. code:: python
 
    from automata.core.coding.directory import File
+   from automata.core.coding.directory import Node
 
    file_name = "example.txt"
-   parent_node = None
-
-   new_file = File(file_name, parent_node)
+   parent = Node("parent")
+   file = File(file_name, parent)
+   print(file.name)  # Output: example.txt
+   print(file.parent.name)  # Output: parent
 
 Limitations
 -----------
 
-The ``File`` class is primarily a basic representation of a file within
-a file tree. It does not provide built-in functionality for reading or
-writing contents, modifying file attributes, or traversing the file
-tree. For these operations, additional functionality may need to be
-developed or other Python libraries may be employed.
+The primary limitation of the ``File`` class is that it represents only
+a single file in the tree and does not handle the hierarchical data
+structure of the file tree on its own. Additional logic is required to
+build and manage a complete file tree using the ``File`` class.
 
 Follow-up Questions:
 --------------------
 
--  What are some ways to improve the class to provide additional
-   functionality for manipulating the files?
--  How can we incorporate file reading and writing capabilities within
-   this class?
+-  Are there any ways to improve the ``File`` class to better handle
+   hierarchical file tree structures?

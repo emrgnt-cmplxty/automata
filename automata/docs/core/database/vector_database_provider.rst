@@ -1,69 +1,70 @@
 VectorDatabaseProvider
 ======================
 
-``VectorDatabaseProvider`` is an abstract base class for implementing
-different types of vector database providers. Its main purpose is to
-provide the basic structure for a vector storage system, allowing
-developers to easily customize and implement their own solutions.
+``VectorDatabaseProvider`` is an abstract base class for different types
+of vector database providers. It provides a foundation for implementing
+concrete classes capable of calculating similarities between vectors and
+storing/retrieving them in a database.
 
-Subclasses must implement the abstract methods
-``calculate_similarity()`` and ``get_all_symbols()`` to work correctly.
-``calculate_similarity()`` computes the similarity between a provided
-vector and all vectors stored in the database, returning a list of
-dictionaries containing each symbol and its similarity score.
-``get_all_symbols()`` retrieves a list of all symbols stored in the
-database.
+Overview
+--------
+
+``VectorDatabaseProvider`` contains two abstract methods,
+``calculate_similarity`` and ``get_all_symbols``, which are implemented
+by concrete subclasses. These methods define the core functionality
+expected by any vector database provider: calculating similarity between
+a given vector and vectors in the database, and retrieving all symbol
+instances from the database.
 
 Related Symbols
 ---------------
 
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.database.provider.SymbolDatabaseProvider``
--  ``automata.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 
 Example
 -------
 
-The following example demonstrates a basic implementation of the
-``VectorDatabaseProvider`` class.
+The following example demonstrates how to create a custom vector
+database provider by extending the ``VectorDatabaseProvider`` abstract
+base class.
 
 .. code:: python
 
-   class MyVectorDatabase(VectorDatabaseProvider):
+   from automata.core.database.vector import VectorDatabaseProvider
+   from typing import Dict, List
+   from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
-       def __init__(self):
-           self.data: List[SymbolEmbedding] = []
-           self.index: Dict[str, int] = {}
-
+   class CustomVectorDatabaseProvider(VectorDatabaseProvider):
        def calculate_similarity(self, embedding: SymbolEmbedding) -> Dict[Symbol, float]:
-           similarities = []
-           for stored_embedding in self.data:
-               similarity = compute_cosine_similarity(embedding.vector, stored_embedding.vector)
-               similarities.append({stored_embedding.symbol: similarity})
-           return similarities
-
+           # Implement the method to calculate similarity
+           pass
+       
        def get_all_symbols(self) -> List[Symbol]:
-           return [embedding.symbol for embedding in self.data]
+           # Implement the method to get all symbol instances
+           pass
 
-   # Usage
-   my_vector_db = MyVectorDatabase()
+   custom_vector_database_provider = CustomVectorDatabaseProvider()
 
 Limitations
 -----------
 
-Since ``VectorDatabaseProvider`` is an abstract base class, it cannot be
-used directly. Instead, developers must create a subclass that
-implements the required abstract methods. Furthermore, this base class
-does not provide any built-in functionality for adding, updating, or
-removing symbols and their embeddings. Implementers must handle these
-operations in their own subclasses.
+The primary limitation of ``VectorDatabaseProvider`` is that it only
+provides a basis for creating vector database providers. Developers must
+extend this abstract base class and implement the required methods
+according to their specific requirements, including the choice of
+database (e.g., file-based, in-memory, or remote) and similarity
+calculation method (e.g., cosine similarity, euclidean distance, or
+custom measures).
 
 Follow-up Questions:
 --------------------
 
--  Are there any pre-built subclasses or examples of using
-   ``VectorDatabaseProvider`` in a real project?
--  What are some other examples of vector databases, and how could they
-   be implemented using this base class?
+-  Are there any default implementations of ``VectorDatabaseProvider``
+   that can be used out-of-the-box?
+-  What is the preferred similarity measure for comparing vectors in the
+   database?

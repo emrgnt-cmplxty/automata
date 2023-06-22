@@ -1,59 +1,86 @@
 AutomataAgentConfigBuilder
 ==========================
 
-``AutomataAgentConfigBuilder`` is a builder class that simplifies the
-creation of ``AutomataAgentConfig`` instances. It provides an
-easy-to-use interface to set various properties of the agent
-configuration before instantiation. These properties include instruction
-payload, toolkits, model, stream flag, verbose flag, and others.
+The ``AutomataAgentConfigBuilder`` class is a builder for constructing
+instances of ``AutomataAgents``. It offers a flexible and easy-to-use
+interface for setting various properties of the agent before
+instantiation. The class can be used to build custom configurations for
+an ``AutomataAgent`` and initialize an agent based on the specified
+configuration.
 
 Overview
 --------
 
-``AutomataAgentConfigBuilder`` takes in an ``AutomataAgentConfig``
-instance or an optional configuration object and exposes various
-``with_`` methods to set various properties. It simplifies the process
-of setting agent configurations and validating the provided settings.
-The class returns a new ``AutomataAgentConfig`` instance after building
-the configuration with the updated attributes.
+``AutomataAgentConfigBuilder`` is used to create and modify
+``AutomataAgentConfig`` instances. It allows users to set different
+properties of the agent, such as the instruction payload, the model, the
+temperature, and other important values. The builder provides several
+methods to easily set properties and build the final agent configuration
+object.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``config.config_types.AgentConfigName``
+-  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
+-  ``automata.tests.conftest.automata_agent_config_builder``
+-  ``automata.config.config_types.AgentConfigName``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
 -  ``config.config_types.AutomataAgentConfig``
--  ``config.config_types.InstructionConfigVersion``
--  ``core.base.tool.Tool``
--  ``core.agent.coordinator.AutomataInstance``
--  ``core.agent.coordinator.AutomataCoordinator``
--  ``core.symbol.graph.SymbolGraph``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``AutomataAgentConfigBuilder``.
+The following example demonstrates how to create an
+``AutomataAgentConfigBuilder`` instance and set various properties for
+the agent.
 
 .. code:: python
 
    from automata.config.agent_config_builder import AutomataAgentConfigBuilder
-   from config.config_types import AutomataAgentConfig, AgentConfigName
+   from automata.config.config_types import AgentConfigName, AutomataInstructionPayload
 
-   builder = AutomataAgentConfigBuilder.from_name(AgentConfigName.DEFAULT)
-   config = builder.with_temperature(0.8).with_stream(True).build()
+   config_name = AgentConfigName.TEST
+   agent_config_builder = AutomataAgentConfigBuilder.from_name(config_name)
+
+   instruction_payload = AutomataInstructionPayload(
+       agents_message="Test message",
+       overview="Repository overview",
+       tools="Available tools"
+   )
+
+   new_agent_config = (
+       agent_config_builder.with_instruction_payload(instruction_payload)
+       .with_model("gpt-4")
+       .with_stream(False)
+       .with_verbose(True)
+       .with_max_iters(100)
+       .with_temperature(0.8)
+       .with_session_id("sample-session-id")
+       .with_eval_mode(False) # Change this depending on actual use-case
+       .build()
+   )
+
+Once you have the ``new_agent_config`` instance, you can use it to
+create an ``AutomataAgent``.
+
+.. code:: python
+
+   from automata.core.agent.agent import AutomataAgent
+
+   instructions = "Execute the given instructions."
+   agent = AutomataAgent(instructions, config=new_agent_config)
 
 Limitations
 -----------
 
-The ``AutomataAgentConfigBuilder`` does not have any significant
-limitations. However, it is essential to be aware that the validity of
-the provided settings is checked while setting individual attributes,
-and any invalid attribute will raise a ``ValueError``.
+``AutomataAgentConfigBuilder`` assumes that the agent has a specific set
+of properties and configuration settings. If there are additional
+settings that an agent might need, they should be added as properties
+and methods to the builder class.
 
 Follow-up Questions:
 --------------------
 
--  Can you provide an example of replacing ‘Mock’ objects with actual
-   underlying objects?
+-  How can users add their custom configuration settings to the
+   ``AutomataAgentConfigBuilder`` class?

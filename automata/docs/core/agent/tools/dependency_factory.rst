@@ -1,65 +1,53 @@
 DependencyFactory
 =================
 
-``DependencyFactory`` is a helper class that creates dependencies
-required for configuring ``Toolkit`` constructors. It provides a way to
-manage instances of dependencies and can be used in conjunction with
-other tools such as ``AgentTool`` and ``Toolkit``.
-
-Overview
---------
-
-``DependencyFactory`` maintains a dictionary of instances that are
-created as required. It provides methods to create instances of various
-dependencies such as ``PyContextRetriever``, ``SymbolGraph.SubGraph``,
-``SymbolSimilarity``, and others. Users can also override dependency
-configurations using keyword arguments when initializing the factory.
+``DependencyFactory`` is a class responsible for creating dependencies
+for input Toolkit construction. It provides methods to create instances
+of various classes like ``PyContextRetriever``,
+``SymbolGraph.SubGraph``, ``SymbolSimilarity``, ``SymbolGraph``, and
+``SymbolSearch``. These instances are constructed based on the
+dependencies required and can also be fetched by their names using the
+``get`` method.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``base.tool.Tool, Toolkit, ToolkitType``
--  ``config.config_types.ConfigCategory``
--  ``coding.py_coding.retriever.PyCodeRetriever``
--  ``coding.py_coding.writer.PyCodeWriter``
--  ``context.py_context.retriever.PyContextRetriever, PyContextRetrieverConfig``
--  ``database.vector.JSONVectorDatabase``
--  ``embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``embedding.embedding_types.OpenAIEmbedding``
--  ``embedding.symbol_similarity.SymbolSimilarity``
--  ``symbol.graph.SymbolGraph``
--  ``symbol.search.rank.SymbolRankConfig``
--  ``symbol.search.symbol_search.SymbolSearch``
--  ``core.utils.config_fpath``
+-  ``automata.core.agent.tools.context_oracle.ContextOracleTool``
+-  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
+-  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.agent.tools.symbol_search.SymbolSearchTool``
+-  ``automata.core.base.tool.Toolkit``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``DependencyFactory`` and retrieve a dependency.
+The following is an example demonstrating how to use
+``DependencyFactory`` to create various instances and get them by their
+dependency names.
 
 .. code:: python
 
    from automata.core.agent.tools.tool_utils import DependencyFactory
 
-   factory = DependencyFactory(symbol_graph_path="path/to/symbol/graph")
-   symbol_graph = factory.get("symbol_graph")
+   dependency_factory = DependencyFactory()
+   py_context_retriever = dependency_factory.get("py_context_retriever")
+   subgraph = dependency_factory.get("subgraph")
+   symbol_code_similarity = dependency_factory.get("symbol_code_similarity")
+   symbol_doc_similarity = dependency_factory.get("symbol_doc_similarity")
+   symbol_graph = dependency_factory.get("symbol_graph")
+   symbol_search = dependency_factory.get("symbol_search")
 
 Limitations
 -----------
 
-The primary limitation of ``DependencyFactory`` is that it relies on
-pre-defined methods for creating dependency instances. This means that
-adding new dependencies requires updates to the class definition.
-Furthermore, the class does not support dynamically generating
-dependencies, which might be useful for creating instances of
-dependencies with custom configurations without having to manually
-override the default values.
+One primary limitation of ``DependencyFactory`` is that to support a new
+dependency, the respective ``create_`` method must be added to the
+class. This imposes a constraint where the class has to be updated for
+every new dependency required.
 
 Follow-up Questions:
 --------------------
 
--  Are there any alternative ways to dynamically generate dependencies
-   without having to define methods for each dependency?
+-  How can the DependencyFactory be extended to support new dependencies
+   without the need for updating the class with new ``create_`` methods?

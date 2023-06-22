@@ -1,61 +1,60 @@
 ResultAction
 ============
 
-``ResultAction`` is a class that represents an action returned as a
-result from the ``AutomataActionExtractor`` class. This action is based
-on the input specification provided and consists of a result name and a
-list of output values associated with that result. It provides methods
-to initialize the instance, generate a string representation of the
-instance, and create a ``ResultAction`` instance from a list of lines
-provided as input.
+``ResultAction`` is a class that represents a specific action to be
+performed by an ``AutomataAgent``. It is primarily used in the context
+of agent instructions and interactions. ResultAction instances are
+created from a name and a list of outputs.
 
 Overview
 --------
 
-``ResultAction`` instances are used to represent actions returned by the
-``AutomataActionExtractor``. The class provides an interface to create,
-manage, and manipulate the results in a structured manner. The primary
-methods include the initialization of the instance, constructing the
-string representation, and creating a ``ResutlAction`` instance from a
-list of lines.
+This class inherits from the base ``Action`` class and implements its
+abstract methods. The main capabilities of ``ResultAction`` include
+initialization, conversion to a string representation, and creating an
+instance from a list of lines and an index. The ``from_lines`` method
+provides a convenient way to extract ResultAction instances from a
+provided sequence of lines in the AutomataActions configuration format.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.action.AutomataActionExtractor``
 -  ``automata.core.agent.agent_enums.ActionIndicator``
--  ``automata.core.agent.action.Action``
+-  ``automata.core.agent.action.AutomataActionExtractor``
+-  ``automata.tests.unit.test_automata_helpers``
 
-Example
--------
+Usage Example
+-------------
 
-Here’s an example demonstrating how to create and use a ``ResultAction``
-instance:
+Here’s an example of how to create an instance of ``ResultAction`` and
+display its string representation:
 
 .. code:: python
 
    from automata.core.agent.action import ResultAction
 
-   result_name = "ExampleResult"
-   result_outputs = ["This is an example output"]
-
+   result_name = "return_result_0"
+   result_outputs = ["Function 'run' has been added to core.tests.sample_code.test."]
    result_action = ResultAction(result_name, result_outputs)
 
-   print(result_action)
-   # Output: ResultAction(name=ExampleResult, outputs=['This is an example output'])
+   print(str(result_action))
+
+This would output:
+
+::
+
+   ResultAction(name=return_result_0, outputs=['Function \'run\' has been added to core.tests.sample_code.test.'])
 
 Limitations
 -----------
 
-The primary limitation of ``ResultAction`` is its reliance on the
-``AutomataActionExtractor`` class and the line-based input provided to
-create an instance of the class. It assumes certain line structures for
-parsing and constructing the instance.
+It’s important to note that the ``ResultAction`` class assumes a
+specific format for the provided sequence of lines when parsing for
+ResultAction instances. Any changes in the format would require updating
+the parsing logic in the ``from_lines`` method.
 
 Follow-up Questions:
 --------------------
 
--  Are there any other methods or attributes needed for ``ResultAction``
-   to improve its functionality and ease of use?
--  How can the parsing of lines provided as input be improved to
-   accommodate varying input structure formats?
+-  How can we make the ``from_lines`` method more flexible to handle
+   changes in the AutomataActions configuration format?

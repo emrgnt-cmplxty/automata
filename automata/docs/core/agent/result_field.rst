@@ -2,49 +2,53 @@ ResultField
 ===========
 
 ``ResultField`` is an enumeration class that represents the fields of a
-result in the ``automata.core.agent.agent_enums`` module.
+result. These fields are essential for identifying and accessing
+different parts of a result returned by a ``Tool``, ``Agent``, or
+execution of a specific action like ``ResultAction``. The class provides
+a fixed set of options that can be used to programmatically interact
+with the results.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``config.config_types.AgentConfigName``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.agent.agent_enums.ToolField``
+-  ``automata.core.agent.agent_enums.AgentField``
+-  ``automata.core.agent.action.ResultAction``
+-  ``automata.core.base.openai.CompletionResult``
 
-Usage Example
--------------
+Example
+-------
+
+Here’s an example demonstrating how to use the ``ResultField`` enum to
+process and access specific fields in a result:
 
 .. code:: python
 
+   from automata.core.agent.action import ResultAction
    from automata.core.agent.agent_enums import ResultField
 
-   # Accessing a ResultField value
-   result_field = ResultField.STATUS
-   print(result_field.name)  # Output: STATUS
-   print(result_field.value)  # Output: 1
+   result_action = ResultAction(result_name="test_result", result_outputs=["output1", "output2", "output3"])
 
-Overview
---------
-
-This enumeration is used in the context of the ``AutomataAgent`` and
-other related classes during their processing and reporting stages to
-access and manipulate specific fields in the generated result.
+   if ResultField.NAME in result_action.result_outputs:
+       print("The result name exists in the outputs:", result_action.result_name)
 
 Limitations
 -----------
 
-``ResultField`` is a simple enumeration class with a limited set of
-values. If more fields are required in the future, they need to be added
-manually to this enumeration.
+The primary limitation of ``ResultField`` is that it provides a fixed
+set of fields that are applicable to the results returned by ``Tool``,
+``Agent``, or the execution of actions. Custom fields may not be
+directly supported and might require extending the enumeration with
+additional options.
+
+Mock objects were referenced in the context. These have been replaced or
+removed, as they are used only for testing purposes and should not be
+relevant to the documentation.
 
 Follow-up Questions:
 --------------------
 
--  Are there any plans to expand the list of fields in the
-   ``ResultField`` enumeration?
+-  How can we extend the ``ResultField`` enum to support custom fields
+   in results?
+-  What other underlying objects might be worth highlighting for their
+   interaction with ``ResultField``?

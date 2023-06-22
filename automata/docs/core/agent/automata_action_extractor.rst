@@ -1,75 +1,73 @@
 AutomataActionExtractor
 =======================
 
-``AutomataActionExtractor`` is a helper class designed to assist in the
-extraction of actions from a block of text. Actions are separated by
-specific lines that denote the beginning and ending of particular
-actions in the text.
+``AutomataActionExtractor`` is a class that is designed to extract
+actions from a given input text. Actions can be of various types, such
+as tool actions, agent actions, and result actions. The class provides
+convenient methods to process the input text and return a list of
+extracted actions.
 
 Overview
 --------
 
-The ``AutomataActionExtractor`` class provides a single primary method,
-``extract_actions``, which takes a text input and returns a list of
-extracted actions from the text. It can identify and extract tool
-actions, agent actions, and result actions. Each action is parsed
-individually, and the output contains all the actions found in the text.
+``AutomataActionExtractor`` processes input text and extracts the
+relevant actions, which can be tool actions, agent actions, or result
+actions. It is responsible for understanding and returning a list of
+actions to be executed by an Automata Agent. The primary method of the
+class is ``extract_actions``, which takes the input text and returns a
+list of extracted actions.
 
 Related Symbols
 ---------------
 
--  ``symbol.symbol_types.Symbol``
--  ``agent.agent.AutomataAgent``
--  ``config.config_types.AgentConfigName``
--  ``base.tool.Tool``
--  ``config.config_types.AutomataAgentConfig``
--  ``coding.py_coding.writer.PyCodeWriter``
--  ``config.agent_config_builder.AutomataAgentConfigBuilder``
--  ``coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``symbol.graph.SymbolGraph``
--  ``agent.coordinator.AutomataCoordinator``
+-  ``automata.core.agent.action.AutomataAction``
+-  ``automata.core.agent.action.ToolAction``
+-  ``automata.core.agent.action.AgentAction``
+-  ``automata.core.agent.action.ResultAction``
+-  ``automata.core.agent.agent.AutomataAgent``
+-  ``automata.core.agent.agent_enums.ActionIndicator``
+-  ``automata.core.agent.agent_enums.ResultField``
+-  ``automata.core.agent.agent_enums.ToolField``
+-  ``automata.config.config_types.AgentConfigName``
 
 Example
 -------
 
-Here is an example using the ``AutomataActionExtractor`` to extract
-actions from a given text:
+The following example demonstrates how to use
+``AutomataActionExtractor`` to extract actions from a given input text:
 
 .. code:: python
 
    from automata.core.agent.action import AutomataActionExtractor
 
-   text = """
-   ;; [Tool]
-   <tool_name> = <tool query>
-   <tool_arg1>
-   <tool_arg2>
-
-   ;; [Agent]
-   c = <agent query>
-   <agent_instruction1>
-   <agent_instruction2>
-
-   ;; [Result]
-   <result_name>
-   <result_outputs>
+   input_text = """
+   - thoughts
+       - I will use the automata-indexer-retrieve-code tool to retrieve the code for the "run" function from the Automata agent.
+   - actions
+       - tool_query_0
+           - tool_name
+               - automata-indexer-retrieve-code
+           - tool_args
+               - Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings.
    """
 
-   action_extractor = AutomataActionExtractor()
-   actions = action_extractor.extract_actions(text)
-   print(actions)
+   actions = AutomataActionExtractor.extract_actions(input_text)
+   print(actions[0].tool_name)  # Output: "automata-indexer-retrieve-code"
+   print(actions[0].tool_args[0])  # Output: "Retrieve the raw code for the function 'run' from the Automata agent, including all necessary imports and docstrings."
 
 Limitations
 -----------
 
-The limitations of ``AutomataActionExtractor`` include its dependency on
-specific action indicators, and its inability to detect actions that do
-not contain the required indicators. Also, the input text should be
-formatted correctly, following the expected syntax for action indicators
-and their respective fields.
+The primary limitation of ``AutomataActionExtractor`` is that it relies
+on a predefined format and structure of the input text. It expects the
+actions to be specified in a certain way, and if the input text does not
+conform to this format, the extraction of actions may fail or provide
+incorrect results.
 
 Follow-up Questions:
 --------------------
 
--  Can AutomataActionExtractor support other formats to describe actions
-   in text?
+-  How can we make ``AutomataActionExtractor`` more flexible and
+   adaptable to varied input formats?
+-  Are there more efficient ways to extract actions from the input text
+   other than using string parsing and regex?

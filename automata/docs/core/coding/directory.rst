@@ -1,77 +1,67 @@
 Directory
 =========
 
-``Directory`` represents a directory, which can contain other
-directories or files as children. It provides methods for working with
-directory structures like adding child nodes, getting file names and
-subdirectories, checking if a directory is a leaf or root directory, and
-more.
+``Directory`` is a class that represents a directory in a tree
+structure. It is part of the core coding logic for directory management
+in Automata. It can have children which can be directories or files. It
+provides methods for adding child nodes, getting file names, getting
+subdirectory names, checking if it is a leaf or root directory.
 
 Overview
 --------
 
-The ``Directory`` class is designed for working with directory
-structures. It extends the abstract base class ``Node``. Its main
-purpose is to model directories, but it also provides relevant
-functionality for working with those directories. Building context and
-understanding the Directory class allows you to work more easily with
-file systems and directory settings in your project.
-
-Import Statements
------------------
-
-.. code:: python
-
-   import logging
-   import os
-   from typing import Dict, List, Optional
+``Directory`` inherits from the ``Node`` class and extends its
+functionality by maintaining a dictionary of children nodes. This class
+is utilized in managing the file and directory structure of a project
+and is often used in conjunction with other directory management classes
+like ``DirectoryManager``.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.coding.directory.File``
+-  ``automata.core.coding.directory.Node``
+-  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 -  ``automata.tests.unit.test_directory_manager.test_load_directory_structure``
 -  ``automata.tests.unit.test_directory_manager.test_get_files_in_dir``
 -  ``automata.tests.unit.test_directory_manager.test_get_subdirectories``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.database.vector.JSONVectorDatabase``
 -  ``automata.tests.unit.test_directory_manager.test_get_node_for_path``
--  ``automata.core.coding.directory.File``
--  ``automata.tests.unit.sample_modules.sample.OuterClass``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 
 Examples
 --------
 
+The following is an example demonstrating how to create a ``Directory``
+and add children nodes (files or directories).
+
 .. code:: python
 
-   from automata.core.coding.directory import Directory
+   from automata.core.coding.directory import Directory, File
 
-   # Create a sample root directory
-   root_dir = Directory(name="root")
+   root_dir = Directory("root")
+   child_file = File("file.txt")
+   child_dir = Directory("subdirectory")
 
-   # Create a sample child directory
-   child_dir = Directory(name="child", parent=root_dir)
-
-   # Add the child directory to the root directory
+   root_dir.add_child(child_file)
    root_dir.add_child(child_dir)
 
-   # Get the subdirectories of the root directory
-   subdirectories = root_dir.get_subdirectories()
-   print(subdirectories)  # Output: ['child']
+   print(root_dir.get_file_names())  # Output: ["file.txt"]
+   print(root_dir.get_subdirectories())  # Output: ["subdirectory"]
+   print(root_dir.is_leaf_dir())  # Output: False
+   print(root_dir.is_root_dir())  # Output: True
 
-Limitations
------------
+Discussion
+----------
 
-The primary limitation of the ``Directory`` class is that it doesn’t
-provide advanced functionality for working with the contents of
-directories or files, such as searching for a specific file or
-directory, moving or renaming files/directories, etc. Additionally, it
-models only a simple file tree structure without support for links or
-other more complex features found in actual file systems.
+The ``Directory`` class is a useful utility for managing file systems
+and project structures in Automata. It abstracts the concepts of files
+and directories and provides easy-to-use methods for managing directory
+trees. The primary limitation of this class is that it does not provide
+functionality related to file I/O (input and output). This class focuses
+on the logical structure of directories and their relationships to each
+other.
 
 Follow-up Questions:
 --------------------
 
--  How can we implement more advanced features for working with files
-   and directories, like searching or moving/renaming files and
-   directories within a ``Directory`` object’s structure?
+-  How can we extend the ``Directory`` class to include functionality
+   related to file I/O?

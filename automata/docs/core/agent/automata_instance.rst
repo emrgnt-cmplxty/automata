@@ -1,62 +1,60 @@
 AutomataInstance
 ================
 
-``AutomataInstance`` is a class that represents an instance of an
-autonomous agent that can be configured using the given configuration
-settings. The class provides methods to create and run an agent,
-providing a convenient interface for using the agent’s functionality.
+``AutomataInstance`` is a class representing an agent instance with a
+specific configuration. It allows a user to create and run agents based
+on the given configuration name. Each ``AutomataInstance`` has a
+``config_name`` and a ``description``.
 
 Overview
 --------
 
-``AutomataInstance`` provides two methods: ``create`` and ``run``. The
-``create`` method is used to create a new instance of the class, and
-takes the configuration settings as its input. The ``run`` method is
-used to execute the agent with the given instructions, producing output
-based on the given instruction set.
+``AutomataInstance`` provides a way to create agent instances with
+specified configurations and run instructions on that agent. It
+facilitates the creation and management of agents for various tasks in
+the application. The class offers a convenient way to create and run an
+agent with the desired configurations, interacting with the
+``AutomataAgentConfigFactory``, and ``AutomataAgent``.
 
 Related Symbols
 ---------------
 
--  ``config.agent_config_builder.AutomataAgentConfigFactory``
--  ``core.agent.agent.AutomataAgent``
 -  ``config.config_types.AgentConfigName``
--  ``core.agent.action.AutomataAction``
+-  ``config.agent_config_builder.AutomataAgentConfigFactory``
+-  ``core.agent.coordinator.AutomataCoordinator``
+-  ``core.agent.agent.AutomataAgent``
 
 Example
 -------
 
-The following is an example demonstrating how to create an
-``AutomataInstance`` using a predefined agent configuration name and
-runs the agent with a set of instructions.
+The following is an example demonstrating how to create an instance of
+``AutomataInstance``, create the agent using
+``AutomataInstance.create()``, and run specific instructions with the
+``run()`` method.
 
 .. code:: python
 
-   from automata.core.agent.coordinator import AutomataInstance
-   from automata.config.config_types import AgentConfigName
+   from core.agent.coordinator import AutomataInstance
+   from config.config_types import AgentConfigName
 
    config_name = AgentConfigName.AUTOMATA_MAIN
-   instance = AutomataInstance.create(config_name=config_name, description="Example automata agent")
+   automata_instance = AutomataInstance.create(config_name)
 
-   instructions = "Create a simple function that adds two numbers together"
-   output = instance.run(instructions)
-
-   print(output)
+   instructions = "Execute a specific action with the agent."
+   result = automata_instance.run(instructions)
 
 Limitations
 -----------
 
-The primary limitation of ``AutomataInstance`` is that it assumes a
-specific directory structure for agent configurations, which are defined
-by ``AgentConfigName``. In addition, ``AutomataInstance`` does not
-provide explicit ways to access the underlying agent nor the ability to
-update the agent’s state or configurations on the fly.
+The primary limitation of ``AutomataInstance`` is that it requires the
+``AutomataAgentConfigFactory`` to create the agent configurations. The
+configurations are assumed to be stored in a specific directory
+structure, and the names should correspond to the ``AgentConfigName``
+enum. When using custom agent configurations, a user must ensure their
+configuration names conform to this assumption.
 
 Follow-up Questions:
 --------------------
 
--  How can we include custom agent configurations for loading into the
-   ``AutomataInstance`` class?
--  How could we access or modify the underlying agent in more detail
-   without directly interacting with the underlying ``AutomataAgent``
-   class?
+-  How can we include custom agent configuration files for creating
+   ``AutomataInstance`` objects?

@@ -1,68 +1,65 @@
 SymbolDocEmbedding
 ==================
 
-``SymbolDocEmbedding`` is a class that represents the embedding for
-symbol documents. It extends the ``SymbolEmbedding`` class and adds
-additional metadata such as the source code, summary, and context of the
-symbol.
+``SymbolDocEmbedding`` is a class representing the embedding vector
+associated with a symbol’s document. This class extends the
+``SymbolEmbedding`` abstract base class and includes additional metadata
+attributes such as the source code, summary, and contextual information
+of the symbol.
 
 Overview
 --------
 
-``SymbolDocEmbedding`` provides a way to store and access the embeddings
-for symbol documents, which are important for tasks like search and
-similarity comparison. The class is used in conjunction with
-``SymbolDocEmbeddingHandler`` to create, update, and retrieve embeddings
-for a given symbol.
+The primary purpose of ``SymbolDocEmbedding`` is to store the document
+embedding of a symbol along with any additional information that may be
+useful for retrieval or other processing tasks. This class is mainly
+useful within the ``SymbolDocEmbeddingHandler``, which manages the
+creation, updating, and retrieval of document embeddings for symbols.
 
 Related Symbols
 ---------------
 
--  ``Symbol``: A class representing the primary symbol URI, which can be
-   a class, method, or a local variable.
--  ``SymbolDocEmbeddingHandler``: A handler class to manage
-   ``SymbolDocEmbedding`` objects, providing methods to create, update,
-   and retrieve embeddings.
--  ``SymbolCodeEmbedding``: A class representing the embeddings for
-   symbol code.
--  ``SymbolCodeEmbeddingHandler``: A handler class to manage
-   ``SymbolCodeEmbedding`` objects, providing methods to create, update,
-   and retrieve embeddings.
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``SymbolDocEmbedding``.
+The following example shows how to instantiate a ``SymbolDocEmbedding``
+object with sample data:
 
 .. code:: python
 
    import numpy as np
-   from automata.core.symbol.symbol_types import Symbol
-   from automata.core.symbol.symbol_types import SymbolDocEmbedding
+   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
-   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.automata_agent_enums`/ActionIndicator#"
-   symbol = Symbol.from_string(symbol_str)
+   symbol = Symbol.from_string("sample.symbol")
+   document = "This is a sample document."
+   vector = np.random.rand(300)
 
-   document = "This is a sample document"
-   vector = np.array([0.1, 0.2, 0.3])
-   source_code = "class ActionIndicator(Enum): ..."
-   summary = "This class represents an enum for action indicators."
-   context = "The ActionIndicator enum is used to describe the current state..."
-
-   embedding = SymbolDocEmbedding(symbol, document, vector, source_code=source_code, summary=summary, context=context)
+   symbol_doc_embedding = SymbolDocEmbedding(
+       symbol=symbol,
+       document=document,
+       vector=vector,
+       source_code="def sample_function():\n    pass",
+       summary="A sample function that does nothing.",
+       context="This sample function is part of a larger module of functions."
+   )
 
 Limitations
 -----------
 
-``SymbolDocEmbedding`` relies on external handler classes like
-``SymbolDocEmbeddingHandler`` for proper creation, updating, and
-retrieval of embeddings. Moreover, it assumes the embeddings are
-provided as NumPy arrays, which may limit the usage of other types of
-embeddings.
+``SymbolDocEmbedding`` is primarily a data storage class and does not
+contain functionality for processing or manipulation of embeddings. The
+actual creation and management of document embeddings is handled by the
+``SymbolDocEmbeddingHandler``. Additionally, ``SymbolDocEmbedding``
+assumes that the symbol and document correspond correctly, and it does
+not perform validation checks to ensure consistency.
 
 Follow-up Questions:
 --------------------
 
--  Can the ``SymbolDocEmbedding`` class be extended to support different
-   types of embeddings, other than NumPy arrays?
+-  Are there cases where ``SymbolDocEmbedding`` objects might contain
+   incorrect or inconsistent data, and how can we minimize such issues?

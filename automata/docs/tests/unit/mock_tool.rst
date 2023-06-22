@@ -1,53 +1,56 @@
 MockTool
+========
+
+``MockTool`` is a mock implementation of the ``BaseTool`` class used for
+testing purposes within the Automata project. It provides two simple
+methods, ``_run()`` and ``_arun()``, for synchronous and asynchronous
+execution respectively. It is mainly used in unit tests where an
+instance of a ``BaseTool`` subclass is required but the actual
+functionality is not important.
+
+Overview
 --------
 
-``MockTool`` is a concrete implementation of the ``BaseTool`` class that
-is used for testing purposes. It provides a simple tool that returns a
-mock response when called. This allows testing your agents or any
-tool-related components while mocking the actual functionality.
+``MockTool`` inherits from the ``BaseTool`` and provides mock
+implementations of the ``_run()`` and ``_arun()`` methods, returning
+fixed strings as responses. This class is used in unit tests that
+require ``BaseTool`` subclasses but do not need the specific
+implementation.
 
-Important Symbols
-~~~~~~~~~~~~~~~~~
+Related Symbols
+---------------
 
 -  ``automata.core.base.base_tool.BaseTool``
+-  ``automata.core.base.tool.Tool``
+-  ``automata.core.base.tool.InvalidTool``
+-  ``automata.core.base.tool.Toolkit``
+-  ``automata.core.base.tool.tool``
 
 Example
-~~~~~~~
-
-The following is an example demonstrating how to create an instance of
-``MockTool`` and use it.
+-------
 
 .. code:: python
 
    from automata.tests.unit.test_base_tool import MockTool
 
-   # Instantiate the MockTool
-   tool = MockTool()
-
-   # Running the MockTool
-   tool_response = tool.run(("input",))
-   print(tool_response)  # Output: "MockTool response"
-
-   # Using the MockTool in an asynchronous context
-   import asyncio
-
-   async def main():
-       async_response = await tool.arun(("input",))
-       print(async_response)  # Output: "MockTool async response"
-
-   asyncio.run(main())
+   tool = MockTool(name="MockTool", description="A mock tool for testing purposes")
+   tool_input = ("test",)
+   response = tool(tool_input)
+   print(response)  # Outputs: "MockTool response"
 
 Limitations
-~~~~~~~~~~~
+-----------
 
-As ``MockTool`` is designed for testing and mocking purposes, it should
-not be used in production systems or as a practical tool. Its purpose is
-to facilitate the testing of more complex tools and systems by
-simulating the responses and behavior of a real tool without affecting
-the actual functionality.
+``MockTool`` is created solely for testing purposes and is not intended
+for usage in production code. It has minimal functionality, providing
+only simple mock implementations of the ``_run()`` and ``_arun()``
+methods. Consequently, using this class for anything other than testing
+will not provide meaningful or correct results.
 
 Follow-up Questions:
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
--  How can the ``MockTool`` class be extended or modified to include
-   more complex test scenarios or responses?
+-  Are there any specific usage requirements for ``MockTool`` in the
+   unit tests where it is used?
+-  Can the ``_run()`` and ``_arun()`` methods be customized to provide
+   different responses or side effects when testing? If so, how?

@@ -2,56 +2,64 @@ SymbolEmbedding
 ===============
 
 ``SymbolEmbedding`` is an abstract base class for different types of
-embeddings representing symbols, such as ``SymbolCodeEmbedding`` and
-``SymbolDocEmbedding``. It provides a basic structure for initializing
-and managing symbol embeddings, considering the source of the embedding
-and the vector representing the embedding in the feature space.
-``SymbolEmbedding`` is used in various embedding handlers, such as
-``SymbolCodeEmbeddingHandler`` and ``SymbolDocEmbeddingHandler``.
+embeddings of symbols. The class contains an initializer for a symbol,
+an embedding source, and a vector representing the embedding. It is
+primarily used in the Automata library for creating embeddings for
+symbol documents and symbol code. The related symbols and examples
+provided here involve methods for getting and updating embeddings.
+
+Overview
+--------
+
+``SymbolEmbedding`` provides a basic structure for storing and
+interacting with embeddings of symbols within the context of the
+Automata library. The class has methods for initializing, updating, and
+retrieving embeddings from a symbol. It works with related symbols such
+as ``SymbolCodeEmbedding``, ``SymbolDocEmbedding``, and various tests
+that use or manipulate symbol embeddings.
 
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
+-  ``automata.tests.unit.test_symbol_embedding.test_get_embedding_exception``
 -  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
 -  ``automata.core.symbol.symbol_types.SymbolCodeEmbedding``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.tests.unit.test_symbol_embedding.test_update_embedding``
+-  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``
 -  ``automata.core.embedding.embedding_types.EmbeddingProvider``
--  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
--  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
+-  ``automata.core.symbol.symbol_types.Symbol``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of a
-derived class ``SymbolCodeEmbedding``:
+The following is an example demonstrating how to create an instance of
+``SymbolCodeEmbedding`` using the ``SymbolEmbedding`` base class.
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import SymbolCodeEmbedding
-   from automata.core.symbol.parser import parse_symbol
    import numpy as np
+   from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
 
-   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__()."
-   symbol = parse_symbol(symbol_str)
-   source_code = "def __init__(self, message): pass"
-   vector = np.array([0.1, 0.2, 0.3])
+   symbol = Symbol.from_string("example_symbol")
+   source_code = "source_code_example"
+   vector = np.array([1.0, 0.5, 0.4])
 
-   symbol_code_embedding = SymbolCodeEmbedding(symbol, source_code, vector)
+   code_embedding = SymbolCodeEmbedding(symbol=symbol, source_code=source_code, vector=vector)
 
 Limitations
 -----------
 
-``SymbolEmbedding`` serves as a base class to be extended by classes
-with specific embedding types, like ``SymbolCodeEmbedding`` or
-``SymbolDocEmbedding``. So, the functionality provided by
-``SymbolEmbedding`` is limited to its role as a base class.
+As an abstract base class, ``SymbolEmbedding`` is not intended to be
+directly instantiated. Instead, it is meant to be extended by other
+classes that represent specific types of embeddings, such as
+``SymbolCodeEmbedding`` and ``SymbolDocEmbedding``.
 
 Follow-up Questions:
 --------------------
 
--  Are there more concrete classes derived from ``SymbolEmbedding``
-   other than ``SymbolCodeEmbedding`` and ``SymbolDocEmbedding``?
--  How are the embedding vectors for ``SymbolEmbedding`` instances
-   usually generated?
+-  Are there any other specific use cases that need to be covered in the
+   examples?

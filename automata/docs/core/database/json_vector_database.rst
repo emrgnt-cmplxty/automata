@@ -1,65 +1,67 @@
 JSONVectorDatabase
 ==================
 
-``JSONVectorDatabase`` is a concrete class to provide a vector database
-that saves into a JSON file. It is part of the Automata documentation
-processing pipeline and is responsible for loading, saving, adding,
-updating, and discarding SymbolEmbedding objects in a JSON file. The
-class also includes methods for calculating similarity between vectors
-and retrieving all symbols present in the database.
+``JSONVectorDatabase`` is a concrete class that provides a vector
+database that saves into a JSON file. It inherits from
+``VectorDatabaseProvider``, an abstract base class for different types
+of vector database providers. The main purpose of ``JSONVectorDatabase``
+is to store and manage symbol embeddings in a JSON file, allowing for
+adding, updating, and discarding symbol embeddings, among other
+functionalities.
 
 Related Symbols
 ---------------
 
--  ``automata.core.database.provider.SymbolDatabaseProvider``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``VectorDatabaseProvider``
+-  ``Symbol``
+-  ``SymbolEmbedding``
 -  ``automata.core.symbol.symbol_types.SymbolEmbedding``
--  ``numpy``
 
 Example
 -------
 
-The following example demonstrates how to initialize a
-``JSONVectorDatabase``, add and retrieve ``SymbolEmbedding`` objects
-from it, and save the database to a JSON file.
+The following is an example demonstrating how to create an instance of
+``JSONVectorDatabase``, add symbol embeddings, and save them to a JSON
+file.
 
 .. code:: python
 
    from automata.core.database.vector import JSONVectorDatabase
    from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
-   import numpy as np
 
-   # Initialize the JSONVectorDatabase
-   vector_db = JSONVectorDatabase("example_vector_db.json")
+   # Create an instance of JSONVectorDatabase with a JSON file path
+   file_path = "path/to/json_file.json"
+   vector_db = JSONVectorDatabase(file_path)
 
-   # Create SymbolEmbeddings
-   symbol_1 = Symbol.from_string("scip-python python automata example_symbol_1#")
-   embedding_1 = SymbolEmbedding(symbol_1, "embedding_source", np.array([1, 2, 3]))
+   # Create Symbol objects
+   symbol1 = Symbol.from_string("example.symbol1")
+   symbol2 = Symbol.from_string("example.symbol2")
 
-   symbol_2 = Symbol.from_string("scip-python python automata example_symbol_2#")
-   embedding_2 = SymbolEmbedding(symbol_2, "embedding_source", np.array([4, 5, 6]))
+   # Create SymbolEmbedding objects
+   embedding1 = SymbolEmbedding(symbol1, "embedding_source1", [1, 2, 3])
+   embedding2 = SymbolEmbedding(symbol2, "embedding_source2", [4, 5, 6])
 
    # Add SymbolEmbeddings to the database
-   vector_db.add(embedding_1)
-   vector_db.add(embedding_2)
+   vector_db.add(embedding1)
+   vector_db.add(embedding2)
 
-   # Retrieve embedding for a specific symbol
-   retrieved_embedding = vector_db.get(symbol_1)
-
-   # Save the vector database to a JSON file
+   # Save the vector database to the JSON file
    vector_db.save()
 
 Limitations
 -----------
 
-The class currently has a ``NotImplementedError`` for the
-``calculate_similarity`` method, which means there is no logic
-implemented for calculating similarity between vectors.
+The main limitation of ``JSONVectorDatabase`` is its reliance on a
+single JSON file to store the vector database. This can lead to file
+size and processing speed limitations, especially when working with
+large databases. Additionally, the similarity calculation method is not
+implemented and needs to be defined according to the data and specific
+similarity measure.
 
 Follow-up Questions:
 --------------------
 
--  What similarity measure should be used for calculating similarity
-   between vectors in the database?
--  Is there more efficient storage structure to use other than a JSON
-   file?
+-  Are there any performance optimizations that can be made in
+   JSONVectorDatabase?
+-  What is the best way to implement the similarity calculation in a
+   generic manner?

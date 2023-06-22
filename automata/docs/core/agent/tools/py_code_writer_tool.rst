@@ -3,33 +3,30 @@ PyCodeWriterTool
 
 ``PyCodeWriterTool`` is a class for interacting with the PythonWriter
 API, which provides functionality to modify the code state of a given
-directory of Python files. It is a subclass of ``AgentTool`` and works
-by defining a set of associated tools to perform code writing tasks such
-as updating existing modules, creating new modules, or deleting objects
-from existing modules.
+directory of Python files. It includes import statements, class
+docstrings, methods, and utilities to work with Python code. This class
+is mainly used for tasks like updating or deleting code in existing
+modules, and creating new Python modules.
 
 Overview
 --------
 
-``PyCodeWriterTool`` is built on top of the ``PyCodeWriter`` utility
-class, which itself is a wrapper to interact with Python abstract syntax
-trees. The primary goal of ``PyCodeWriterTool`` is to expose
-functionality for updating existing modules, creating new modules, or
-deleting objects from existing modules through a set of tools that can
-be used by an agent in the context of code manipulation tasks. It can be
-used alongside other agent-related classes like ``AutomataAgent`` and
-``AgentConfigName`` to create powerful agents capable of code writing
-tasks.
+-  Import Statements
+-  Class Docstring
+-  Methods
+
+   -  ``__init__``: Initializes a PyCodeWriterTool object with the given
+      inputs.
+   -  ``build``: Builds the tools associated with the python code
+      writer.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
 -  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.base.tool.Tool``
 
 Usage Example
 -------------
@@ -37,48 +34,27 @@ Usage Example
 .. code:: python
 
    from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
-   from automata.core.coding.py_coding.writer import PyCodeWriter
-   from automata.config.config_types import AgentConfigName
-   from automata.core.base.tool import Tool
    from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.coding.py_coding.writer import PyCodeWriter
 
-   # Create a PyCodeRetriever
-   retriever = PyCodeRetriever()
-
-   # Create a PyCodeWriter using the PyCodeRetriever
-   writer = PyCodeWriter(py_retriever=retriever)
-
-   # Initialize PyCodeWriterTool
-   py_code_writer_tool = PyCodeWriterTool(py_writer=writer, automata_version=AgentConfigName.AUTOMATA_WRITER)
-
-   # Build the associated tools
-   tools = py_code_writer_tool.build()
-
-   # Use created tools to interact with code modifications
-   new_code = 'def example_function():\n    """An example function"""\n    print("Hello, world!")\n'
-   tool_to_update_module = tools[0]
-   result = tool_to_update_module.func(('my_project.my_module', 'ClassName', new_code))
-
-   # Access the other tools using indices from 'tools' list
-   tool_to_create_new_module = tools[1]
-   tool_to_delete_from_existing_module = tools[2]
+   py_retriever = PyCodeRetriever()
+   py_writer = PyCodeWriter(py_retriever)
+   py_code_writer_tool = PyCodeWriterTool(py_writer=py_writer)
 
 Limitations
 -----------
 
-The main limitation of ``PyCodeWriterTool`` is that it currently focuses
-on updating, creating, and deleting functions, classes, or methods in
-Python modules. It does not provide a built-in mechanism for modifying
-other types of statements or handling more complex code structures.
-Furthermore, to perform code modification tasks, users need to follow
-the required input parameters and format for the tools, which can be
-cumbersome and limiting in some cases.
+``PyCodeWriterTool`` relies on the underlying ``PyCodeWriter`` and
+``PyCodeRetriever`` classes for handling code manipulation. It assumes a
+certain directory structure for the Python modules, which mightn’t be
+true in all cases. In addition, the pattern of modules, imports, and
+code modifications may not cover all use cases and might require some
+tweaking.
 
 Follow-up Questions:
 --------------------
 
--  Are there any plans to extend the current functionality of
-   ``PyCodeWriterTool`` to support more complex code modifications?
--  Is there any preferred formatting for input code when utilizing the
-   associated tools, considering that the input code should be directly
-   modifiable by the tools?
+-  Are there any specific functionalities that the ``PyCodeWriterTool``
+   should include or improve?
+-  How might this tool be used in a broader context, for example
+   updating code across multiple repositories or projects?

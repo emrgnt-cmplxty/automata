@@ -2,79 +2,68 @@ AutomataCoordinator
 ===================
 
 ``AutomataCoordinator`` is a class responsible for managing multiple
-``AutomataAgent`` instances. It allows users to add, remove, and run
-agent instances according to the specified action.
+``AutomataAgent`` instances. It allows you to add, remove, and run
+various agent instances and keep them in a list. It provides utility
+methods to add and remove agent instances by their configuration name
+and to execute specific actions on the agent instances.
 
 Overview
 --------
 
-``AutomataCoordinator`` provides methods for adding and removing agent
-instances by using their configuration names. It can also execute a
-specified action on the selected agent instance and return the output
-produced by the agent. The class works closely with ``AutomataInstance``
-and related symbols.
+``AutomataCoordinator`` is used to manage a list of agent instances,
+providing methods to add and remove instances, select and run an agent
+based on a given action. Once instantiated, the coordinator can be used
+to run agent actions using the given agent instances, providing a
+centralized way to manage multiple agents. The class offers convenient
+utility methods and closely integrates with the ``AutomataAgent``.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.agent.agent.AutomataAgent``
--  ``config.config_types.AgentConfigName``
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``config.agent_config_builder.AutomataAgentConfigBuilder``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.agent.action.AgentAction``
 -  ``automata.core.agent.coordinator.AutomataInstance``
+-  ``config.config_types.AgentConfigName``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``AutomataCoordinator``, add an agent, and execute an action on it:
-
 .. code:: python
 
-   from automata.core.agent.coordinator import AutomataCoordinator
    from automata.config.config_types import AgentConfigName
-   from automata.core.agent.coordinator import AutomataInstance
+   from automata.core.agent.coordinator import AutomataInstance, AutomataCoordinator
    from automata.core.agent.action import AgentAction
 
-   # Create an AutomataCoordinator
+   # Instantiate the AutomataCoordinator
    coordinator = AutomataCoordinator()
 
-   # Add an agent instance
-   config_name = AgentConfigName.AUTOMATA_MAIN
-   agent_instance = AutomataInstance.create(config_name)
-   coordinator.add_agent_instance(agent_instance)
+   # Create and add two AutomataInstances to the coordinator
+   instance1 = AutomataInstance(config_name=AgentConfigName.TEST, description="Test instance 1")
+   instance2 = AutomataInstance(config_name=AgentConfigName.DEFAULT, description="Test instance 2")
+   coordinator.add_agent_instance(instance1)
+   coordinator.add_agent_instance(instance2)
 
-   # Run an action on the agent
+   # Define an AgentAction using the agent_version, agent_query, and agent_instruction
    action = AgentAction(
-       agent_version=config_name,
-       agent_query="How to use AutomataCoordinator?",
-       agent_instruction=["First, create an instance of AutomataCoordinator...",
-                          "Next, create an AutomataInstance...",
-                          "Finally, execute the action on the agent."]
+       agent_version=AgentConfigName.TEST,
+       agent_query="Find the square of 2.",
+       agent_instruction=["Compute the square of the given number."]
    )
+
+   # Run the agent and receive the output
    output = coordinator.run_agent(action)
    print(output)
 
 Limitations
 -----------
 
-``AutomataCoordinator`` can only manage instances of ``AutomataAgent``.
-Therefore, it might not be able to handle other types of agents
-directly. Additionally, it relies on predefined configuration names
-(``AgentConfigName``) which limits its ability to load custom
-configuration files.
+``AutomataCoordinator`` currently assumes that agent instances use
+unique ``AgentConfigName`` in their configurations. If there is a need
+to manage multiple agent instances with the same configuration name, the
+coordinator does not provide an easy way to track them.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend ``AutomataCoordinator`` to handle other types of
-   agents?
--  How can we include custom configuration files for agent instances in
-   ``AutomataCoordinator``?
+-  How can we support managing multiple agent instances with the same
+   configuration name?

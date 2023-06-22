@@ -2,46 +2,57 @@ SymbolFile
 ==========
 
 ``SymbolFile`` is a class that represents a file that contains a symbol.
-It provides methods to perform equality checks and hashing operations on
-a file. This class is primarily used within the ``SymbolGraph`` to
-represent files containing symbols.
+It is used to store information about the file path where a symbol is
+located. This class provides equality and hashing methods for instances
+of the class to be used in data structures like sets or as keys in
+dictionaries.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.symbol.symbol_types.SymbolReference``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_database_vector.test_add_symbol``
 
 Example
 -------
 
-The following example demonstrates how to use the ``SymbolFile`` class
-to create an instance of a file containing a symbol and compare it with
-another instance.
+The following example demonstrates how to create and use instances of
+``SymbolFile``:
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import SymbolFile
+   from automata.core.database.vector import JSONVectorDatabase
 
-   file_1 = SymbolFile("path/to/symbol/file")
-   file_2 = SymbolFile("path/to/symbol/file")
+   vector_db = JSONVectorDatabase("vector_database.json")
+   file_1 = SymbolFile("file_1.txt")
+   file_2 = SymbolFile("file_2.txt")
 
-   # Comparing SymbolFile instances
-   assert file_1 == file_2
+   vector_db.add_file(file_1)
+   vector_db.add_file(file_2)
 
-   # Comparing SymbolFile instance with a string representing the path
-   assert file_1 == "path/to/symbol/file"
+   all_files = vector_db.get_all_files()
+
+   for file in all_files:
+       print(file.path)
+
+This example adds two ``SymbolFile`` instances, one for each file, to a
+``JSONVectorDatabase`` instance. It then retrieves a list of all files
+and prints their paths.
 
 Limitations
 -----------
 
-``SymbolFile`` is a simple class and focuses on providing a way to
-represent files containing symbols. It does not provide methods to
-modify the file or access the symbol within the file.
+The primary limitation of ``SymbolFile`` is that it only stores the file
+path where a symbol is located. It does not store any additional
+information about the symbol or the file contents. This means that
+``SymbolFile`` is only useful when working with other modules that can
+provide more context, like ``SymbolGraph`` and ``JSONVectorDatabase``.
 
 Follow-up Questions:
 --------------------
 
--  What is the process to access the symbol within a ``SymbolFile``
-   instance?
+-  Is there any plan to extend the functionality of ``SymbolFile`` to
+   store additional information about the file or its contents?

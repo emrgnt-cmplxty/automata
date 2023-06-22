@@ -1,61 +1,71 @@
 TestTool
 ========
 
-``TestTool`` is a simple, test implementation of the Tool class that
-returns fixed strings in both synchronous and asynchronous contexts. It
-extends the ``Tool`` class and overrides the ``_run`` and ``_arun``
-methods, making it a minimal example of how to create a custom tool.
+``TestTool`` is a class derived from the ``Tool`` base class. It’s a
+simple tool implementation that allows synchronous and asynchronous
+execution of a provided function or coroutine and returns a specific
+output in the form of a string. This class is mainly used for testing
+purposes.
 
 Overview
 --------
 
-``TestTool`` demonstrates how to create a basic implementation of the
-``Tool`` class by returning fixed strings as responses when calling the
-tool synchronously or asynchronously. It serves as a simple example for
-developers looking to create their own custom tools.
+As a subclass of ``Tool``, ``TestTool`` provides an implementation for
+the ``_run`` and ``_arun`` methods, making it easy to execute
+synchronous and asynchronous functions respectively. This class is
+useful for creating simple tests using the test_tool_run function.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.base.tool.Tool``
+-  ``automata.tests.unit.test_tool.test_tool_run``
+-  ``automata.tests.unit.test_tool.test_tool_instantiation``
+-  ``automata.tests.unit.test_tool.test_toolkit``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``TestTool`` and call its methods:
+The following code demonstrates the creation of a ``TestTool`` instance
+and how to execute its synchronous and asynchronous methods.
 
 .. code:: python
 
    from automata.tests.unit.test_tool import TestTool
 
-   test_tool = TestTool()
+   test_tool = TestTool(
+       name="TestTool",
+       description="A test tool for testing purposes",
+       func=lambda x: "TestTool response",
+   )
 
-   # Synchronous usage
-   response = test_tool.run(("input",))
+   tool_input = ("test",)
+
+   # Synchronous execution
+   response = test_tool.run(tool_input)
    print(response)  # Output: "TestTool response"
 
-   # Asynchronous usage
+   # Asynchronous execution
    import asyncio
 
-   async def main():
-       async_response = await test_tool.arun(("input",))
-       print(async_response)  # Output: "TestTool async response"
+   async def test_async():
+       async_response = await test_tool.arun(tool_input)
+       print(async_response)
 
-   asyncio.run(main())
+   asyncio.run(test_async())  # Output: "TestTool async response"
 
 Limitations
 -----------
 
-The primary limitation of ``TestTool`` is that it is a very basic
-example of implementing the ``Tool`` class and only serves as a
-demonstration. In real-world scenarios, more complex tools with specific
-functionalities might be required.
+As it is mainly used for testing purposes, ``TestTool`` is not intended
+for actual use in production environments or comprehensive applications.
+Its functions are primarily for verifying that the underlying
+functionalities of the ``Tool`` class and related objects are
+implemented correctly, and largely serve as a utility for these specific
+testing needs.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend the ``TestTool`` class to add custom
-   functionalities or handle different types of input?
+-  Are there any other use cases for the ``TestTool`` class beyond
+   testing purposes?

@@ -1,67 +1,54 @@
 AgentTool
 =========
 
-``AgentTool`` is an abstract class for building tools for agents. It is
-primarily used as a base class for creating specialized tools that can
-be utilized by the agents.
+``AgentTool`` is an abstract class for building tools for agents. This
+class provides a structure for creating custom tools to be used in an
+agent’s toolkit. Being an abstract class, it contains an abstract method
+``build`` that needs to be implemented by any concrete class that
+extends ``AgentTool``.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
 -  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.action.AutomataActionExtractor``
+-  ``automata.tests.unit.test_tool.TestTool``
+-  ``automata.tests.unit.test_base_tool.MockTool``
+-  ``automata.core.base.base_tool.BaseTool``
+-  ``automata.core.base.tool.Toolkit``
 
 Example
 -------
 
-To create a new tool, simply subclass ``AgentTool`` and implement its
-abstract ``build`` method. The following example demonstrates how to
-create a custom tool called ``MyTool``:
+Here is an example demonstrating how to create a custom tool by
+extending the ``AgentTool`` class:
 
 .. code:: python
 
    from automata.core.agent.tools.agent_tool import AgentTool
+   from typing import Any
 
-   class MyTool(AgentTool):
-
-       def __init__(self):
-           super().__init__()
-
-       def build(self):
-           # Implement the custom logic for the tool
+   class CustomTool(AgentTool):
+       def __init__(self, **kwargs) -> None:
+           super().__init__(**kwargs)
+       
+       def build(self) -> Any:
+           # Implementation of the build method
            pass
-
-Usage
------
-
-Once a custom tool is created, it can be used in combination with the
-agents. Here’s an example of how to use the ``MyTool`` class with an
-``AutomataAgent``:
-
-.. code:: python
-
-   from automata.core.agent.agent import AutomataAgent
-   from automata.config.automata_agent_config import AutomataAgentConfig
-   from config.config_enums import AgentConfigName
-   from my_tool import MyTool
-
-   config_name = AgentConfigName.AUTOMATA_MAIN
-   config = AutomataAgentConfig.load(config_name)
-   tool = MyTool()
-
-   agent = AutomataAgent(instructions="Some instructions", config=config)
-   agent.add_tool(tool)
-   agent.run()
 
 Limitations
 -----------
 
-Since ``AgentTool`` is an abstract class, it cannot be used directly as
-a standalone tool. It serves as a base for creating specialized tools.
+As an abstract class, ``AgentTool`` cannot be instantiated directly. It
+must be extended by a concrete class that provides an implementation for
+the ``build`` method. A potential limitation of this abstract class is
+that it may not offer enough flexibility for all types of custom tools,
+in which case it would be necessary to create a new abstract class or
+directly implement all logic in a concrete tool class.
 
 Follow-up Questions:
 --------------------
 
--  How do we add multiple custom tools to the agent?
+-  Are there any alternative patterns for designing agent tools that
+   provide more flexibility?
+-  How can mock objects be replaced with the actual underlying objects
+   within the examples provided, if possible?

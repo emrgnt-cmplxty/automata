@@ -1,60 +1,65 @@
 MockAutomataInstance
 ====================
 
-``MockAutomataInstance`` is a class that inherits from
-``AutomataInstance``. It provides a simple example implementation of the
-interface, and has a ``run`` method that takes an ``instruction`` as
-input and returns a string indicating that the input instruction was
-“run” on the instance.
+``MockAutomataInstance`` is a mock implementation of the
+``AutomataInstance`` class. It provides a test-friendly representation
+of a working ``AutomataInstance`` object, mainly for use with unit
+tests. This class can be used to create instances that can simulate the
+behavior of an ``AutomataInstance`` object, which can be helpful in the
+context of unit testing.
 
 Overview
 --------
 
-The ``MockAutomataInstance`` class demonstrates a basic implementation
-of the ``AutomataInstance`` interface. It takes a ``config_name`` (of
-type ``AgentConfigName``) and ``description`` (of type ``str``) as
-arguments and initializes the instance with these. The ``run`` method
-has a simple return statement for executing instructions while
-demonstrating the use of the Automata Instance.
+The main purpose of the ``MockAutomataInstance`` class is to act as a
+test-friendly implementation of ``AutomataInstance``. By providing an
+implementation of the ``.run()`` method, it allows users to create a
+mock ``AutomataInstance`` that can simulate its behavior in unit
+tests [1]_.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.agent.coordinator.AutomataInstance``
--  ``config.config_types.AgentConfigName``
--  ``automata.core.agent.action.AutomataActionExtractor``
+-  ``automata.config.config_types.AgentConfigName``
+-  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
+-  ``automata.core.agent.coordinator.AutomataCoordinator``
+-  ``automata.core.agent.agent.AutomataAgent``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``MockAutomataInstance``, run an instruction, and fetch its response.
+The following example demonstrates how to create a
+``MockAutomataInstance`` and use it to simulate the behavior of an
+``AutomataInstance`` object in a test environment.
 
 .. code:: python
 
    from automata.tests.unit.test_automata_coordinator import MockAutomataInstance
-   from config.config_types import AgentConfigName
+   from automata.config.config_types import AgentConfigName
 
    config_name = AgentConfigName.TEST
-   description = "This is a mock Automata instance example."
+   mock_instance = MockAutomataInstance(config_name=config_name, description="Mock Instance for Testing")
+   result = mock_instance.run("sample_instruction")
 
-   mock_instance = MockAutomataInstance(config_name=config_name, description=description)
-   instruction = "fetch information"
-
-   result = mock_instance.run(instruction)
-   print(result)     # Output: "Running fetch information on test."
+   print(result)  # Output: Running sample_instruction on test.
 
 Limitations
 -----------
 
-``MockAutomataInstance`` is a simple example class and does not provide
-any actual functionality beyond demonstrating the structure and use of
-an Automata Instance. Moreover, it assumes a specific set of related
-symbols to be available, which may not cover all cases and use
-scenarios.
+The ``MockAutomataInstance`` class is meant for testing purposes only
+and should not be used in production code. It is a simplified
+implementation and may not accurately represent all the behavior of a
+real ``AutomataInstance``. In general, users should work with
+``AutomataInstance`` objects directly.
 
 Follow-up Questions:
 --------------------
 
--  Is there a more realistic example or use case that can be used to
-   demonstrate the work of ``MockAutomataInstance``?
+-  Are there other mock objects that should be included for testing
+   purposes in the documentation?
+
+.. [1]
+   Mock objects are used in testing to simplify working with complex
+   objects. The provided example uses a mock object which is meant for
+   testing purposes only and should not be used in production code.

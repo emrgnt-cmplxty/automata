@@ -1,61 +1,63 @@
 EmbeddingProvider
 =================
 
-``EmbeddingProvider`` is an abstract base class that provides an
-interface for obtaining embeddings for symbols. Embeddings are
-mathematical representations of symbols that can be used for various
-tasks such as similarity search, ranking, and other natural language
-processing related work. The class contains a single abstract method,
-``build_embedding``, which should be implemented by all subclasses to
-provide the specific embedding implementation.
+``EmbeddingProvider`` is an abstract base class that provides embeddings
+for symbols. It is used in different embedding types such as
+``OpenAIEmbedding`` and as an input in classes like
+``SymbolCodeEmbeddingHandler`` and ``SymbolDocEmbeddingHandler`` for
+managing symbol embeddings.
+
+Overview
+--------
+
+The primary purpose of the ``EmbeddingProvider`` is to provide a
+consistent interface for generating embeddings for symbols. Any class
+that implements the ``EmbeddingProvider`` interface must provide a
+``build_embedding`` method that takes a ``symbol_source`` as input and
+returns a numpy ndarray.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.embedding.embedding_types.OpenAIEmbedding``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
--  ``automata.core.embedding.embedding_types.OpenAIEmbedding``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.symbol.symbol_types.Symbol``
 
 Example
 -------
 
-The following is an example of how to use the ``OpenAIEmbedding`` class,
-which is a concrete implementation of ``EmbeddingProvider``.
+The following is an example demonstrating how to create an instance of a
+class that inherits from ``EmbeddingProvider`` and implement the
+``build_embedding`` method.
 
 .. code:: python
 
-   from automata.core.embedding.embedding_types import OpenAIEmbedding
    import numpy as np
+   from automata.core.embedding.embedding_types import EmbeddingProvider
 
-   symbol_source = "This is an example of a Python function."
-   embedding_provider = OpenAIEmbedding() 
+   class MyEmbeddingProvider(EmbeddingProvider):
+
+       def build_embedding(self, symbol_source: str) -> np.ndarray:
+           # Implement your own logic to generate the embedding for a given symbol source
+           embedding = np.random.randn(1024)
+           return embedding
+
+   embedding_provider = MyEmbeddingProvider()
+   symbol_source = "some_symbol_source"
    embedding = embedding_provider.build_embedding(symbol_source)
-
-   # Check if the generated embedding is a numpy array
-   assert isinstance(embedding, np.ndarray)
 
 Limitations
 -----------
 
-As ``EmbeddingProvider`` is an abstract base class, it cannot be
-instantiated directly. Users must create their own classes that inherit
-from ``EmbeddingProvider`` and implement the necessary methods. This can
-be a limitation for users who are not familiar with creating custom
-classes and implementing abstract methods.
-
-Additionally, the specific embedding approach and model used by a
-concrete implementation of ``EmbeddingProvider`` may limit the overall
-performance and accuracy of the embeddings.
+Since ``EmbeddingProvider`` is an abstract base class, it cannot be used
+directly to generate embeddings. Instead, it should be inherited and
+implemented by a subclass providing a specific kind of embedding, such
+as an implementation using OpenAI’s API.
 
 Follow-up Questions:
 --------------------
 
--  How can we efficiently implement new embedding providers for
-   different types of models?
--  What are the best practices for selecting an optimal embedding
-   provider for a given task?
+-  Are there any specific requirements for the input ``symbol_source``
+   when using the ``build_embedding`` method?
+-  What are some example use cases for creating custom
+   ``EmbeddingProvider`` implementations?
