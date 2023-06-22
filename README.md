@@ -14,7 +14,9 @@ This project is inspired by the theory that code is essentially a form of memory
 
 ## Demo
 
-https://github.com/emrgnt-cmplxty/Automata/assets/68796651/d59d75d9-b942-4da3-877d-8b7624d6dc0f
+
+https://github.com/emrgnt-cmplxty/Automata/assets/68796651/b5c7f7cc-9a03-4e2d-9c0c-125044de7f67
+
 
 ## Installation and Usage
 
