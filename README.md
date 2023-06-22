@@ -1,4 +1,4 @@
-# Automata: The Self-Coding Machine
+# Automata: The Future is Self-Written
 
 ![Banner](./automata_banner.png)
 
