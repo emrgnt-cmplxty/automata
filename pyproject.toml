@@ -7,7 +7,7 @@ automata = 'automata.cli.__main__:cli'
 [tool.poetry]
 name = "automata"
 version = "0.1.0"
-description = "An automata for building docs."
+description = "Automata: The Self-Coding Machine"
 authors = ["owen@emergentagi.com"]
 
 [tool.poetry.dependencies]
@@ -69,7 +69,6 @@ module = "yaml"
 ignore_missing_imports = true
 
 [tool.coverage.run]
-branch = true
 source = ["."]
 omit = ["*/tests/*", "*/site-packages/*", "*/distutils/*", "*/venv/*", "setup.py", "conftest.py"]
 
