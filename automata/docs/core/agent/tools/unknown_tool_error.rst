@@ -2,46 +2,53 @@ UnknownToolError
 ================
 
 ``UnknownToolError`` is an exception class that is raised when an
-unknown toolkit type is provided. It extends the standard ``Exception``
-class in Python and is primarily used in the context of managing
-toolkits within the Automata project. This error is specifically used
-when the provided ``tool_kit`` variable is not a valid toolkit type.
+unknown toolkit type is provided. It inherits from the ``Exception``
+class and overrides the ``__init__`` method to provide a custom error
+message.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.base.tool.ToolNotFoundError``
+-  ``automata.tests.unit.test_tool.test_invalid_tool``
+-  ``automata.tests.unit.test_tool.test_invalid_tool_async``
 -  ``automata.core.base.tool.InvalidTool``
+-  ``automata.tests.unit.test_base_tool.TestTool``
+-  ``automata.tests.unit.test_base_tool.MockTool``
 -  ``automata.core.agent.tools.tool_utils.ToolCreationError``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.base.tool.ToolkitType``
 
 Example
 -------
 
-The following example demonstrates how to catch an ``UnknownToolError``
-when attempting to use an invalid toolkit type:
+Here’s an example showcasing the use of ``UnknownToolError``. Note that
+this example assumes an unknown toolkit type.
 
 .. code:: python
 
+   from automata.core.base.tool import ToolkitType
    from automata.core.agent.tools.tool_utils import UnknownToolError
 
-   def create_toolkit(tool_kit):
-       try:
-           # This function may raise an UnknownToolError
-           toolkit_instance = setup_toolkit(tool_kit)
-       except UnknownToolError:
-           print(f"Error: Unknown toolkit type '{tool_kit}'")
+   def get_tool_by_toolkit(toolkit_type: ToolkitType):
+       if toolkit_type == ToolkitType.UNKNOWN:
+           raise UnknownToolError(toolkit_type)
+       # ... (handle other toolkit types)
+
+   try:
+       get_tool_by_toolkit(ToolkitType.UNKNOWN)
+   except UnknownToolError as e:
+       print(e)  # Prints: "Error: Unknown toolkit type: ToolkitType.UNKNOWN"
 
 Limitations
 -----------
 
-``UnknownToolError`` only provides information about the invalid toolkit
-type input but does not suggest any alternative toolkit type or provide
-any functionality to resolve the issue automatically.
+The primary limitation of ``UnknownToolError`` is that it only handles a
+single type of error - when an unknown toolkit type is provided. It does
+not cover other scenarios where errors could occur, such as when a tool
+cannot be created or a tool is not found.
 
 Follow-up Questions:
 --------------------
 
--  Are there other exceptions or error classes within the Automata
-   project that should be documented more comprehensively?
+-  Are there any other scenarios where creating a custom error class
+   like ``UnknownToolError`` would be beneficial in the process of
+   handling errors?

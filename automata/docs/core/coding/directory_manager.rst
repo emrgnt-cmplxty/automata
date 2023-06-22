@@ -1,23 +1,20 @@
 DirectoryManager
 ================
 
-``DirectoryManager`` is a utility class that handles operations related
-to directory structures. It provides methods to create directories, get
-the list of files in a given directory, and get the list of
-subdirectories in a given directory.
+``DirectoryManager`` is a class that handles operations related to
+directory structure. It provides methods to ensure a directory exists,
+obtain a list of files in a directory, and retrieve a list of the
+subdirectories in a directory.
 
 Overview
 --------
 
-``DirectoryManager`` is initialized with a base path of the directory
-structure, which is then used in various methods to perform operations
-on directories and their contents. To create a directory manager
-instance:
-
-.. code:: python
-
-   from automata.core.coding.directory import DirectoryManager
-   dm = DirectoryManager("/path/to/base/directory")
+The ``DirectoryManager`` class allows you to interact with the directory
+structure of your file system. It offers methods for creating a new
+directory if it does not already exist, getting a list of file names in
+a directory, and obtaining a list of subdirectories in a directory. The
+class works with related classes like ``Directory``, ``File``, and
+``Node``.
 
 Related Symbols
 ---------------
@@ -25,44 +22,46 @@ Related Symbols
 -  ``automata.core.coding.directory.Directory``
 -  ``automata.core.coding.directory.File``
 -  ``automata.core.coding.directory.Node``
+-  ``automata.tests.unit.test_directory_manager``
 
 Example
 -------
 
-The following examples demonstrate how to use ``DirectoryManager`` to
-create a directory and retrieve the list of files and subdirectories in
-a given directory.
+The following example demonstrates how to use ``DirectoryManager`` to
+interact with the directory structure:
 
 .. code:: python
 
    from automata.core.coding.directory import DirectoryManager
 
-   # Creating a new directory
-   base_path = "/path/to/base/directory"
-   dm = DirectoryManager(base_path)
-   dm.ensure_directory_exists("new_directory")
+   # Create a DirectoryManager with a specified base path
+   base_path = "/path/to/your/base/directory"
+   dir_manager = DirectoryManager(base_path)
 
-   # Retrieving the list of files and subdirectories in a given directory
-   files = dm.get_files_in_dir("new_directory")
-   subdirs = dm.get_subdirectories("new_directory")
-   print("Files:", files)
-   print("Subdirectories:", subdirs)
+   # Ensure a directory exists
+   directory_path = "/path/to/your/directory"
+   dir_manager.ensure_directory_exists(directory_path)
+
+   # Get a list of files in a directory
+   path = "/path/to/directory"
+   files = dir_manager.get_files_in_dir(path)
+   print(files)  # Output: List of file names
+
+   # Get a list of subdirectories in a directory
+   subdirectories = dir_manager.get_subdirectories(path)
+   print(subdirectories)  # Output: List of subdirectories
 
 Limitations
 -----------
 
-``DirectoryManager`` has some limitations:
-
--  It assumes a specific directory structure based on the base path
-   provided during initialization.
--  It does not provide any error handling for incorrect or inaccessible
-   paths. If the path is incorrect or not accessible, the functions may
-   fail with unclear error messages.
+The ``DirectoryManager`` class assumes a specific structure for its
+directories and works best with directories that adhere to this
+structure. It also relies on the ``os`` package for interacting with the
+file system, limiting it to the functionalities provided by that
+package.
 
 Follow-up Questions:
 --------------------
 
--  Are there any additional methods that would be useful for a
-   DirectoryManager class?
--  How can error handling be improved to provide clearer error messages
-   when dealing with incorrect or inaccessible paths?
+-  How can we modify DirectoryManager to work with custom directory
+   structures?

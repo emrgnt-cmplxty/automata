@@ -22,10 +22,10 @@ configurations and includes closely related symbols like
 Related Symbols
 ---------------
 
--  ``config.config_enums.AgentConfigName``
+-  ``automata.config.config_types.AgentConfigName``
 -  ``automata.core.agent.agent.AutomataAgent``
--  ``config.automata_agent_config_utils.AutomataAgentConfigBuilder``
--  ``automata.core.coordinator.automata_instance.AutomataInstance``
+-  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
+-  ``automata.core.agent.coordinator.AutomataInstance``
 
 Example
 -------
@@ -35,8 +35,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from config.automata_agent_config import AutomataAgentConfig
-   from config.config_enums import AgentConfigName
+   from automata.config.config_types import AutomataAgentConfig, AgentConfigName
 
    config_name = AgentConfigName.AUTOMATA_MAIN
    config = AutomataAgentConfig.load(config_name)

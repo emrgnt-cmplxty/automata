@@ -1,57 +1,43 @@
 AutomataInstructionPayload
 ==========================
 
-``AutomataInstructionPayload`` is a class that stores the payload for
-formatting the introduction instruction. It contains fields that are
-used to format the introduction instruction and provides a method to
-validate whether all the required fields are initialized.
-
-Overview
---------
-
-The class has a method called ``validate_fields`` which checks if all
-the required fields are initialized. It raises a ``ValueError`` if any
-of the required fields are missing.
+``AutomataInstructionPayload`` is a dataclass used to store the payload
+for formatting the introduction instruction. Fields on this class are
+used to format the introduction instruction. The class provides a method
+called ``validate_fields`` to ensure that all the required fields are
+initialized while setting up the payload.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.config.config_types.AutomataAgentConfig``
 -  ``automata.core.agent.agent.AutomataAgent``
--  ``config.config_types.AgentConfigName``
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``config.agent_config_builder.AutomataAgentConfigBuilder``
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.agent.coordinator.AutomataInstance``
+-  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
 
 Example
 -------
 
-The following is an example demonstrating how to create an
-``AutomataInstructionPayload`` instance and validate the required
-fields:
+The following example demonstrates how to create and use an instance of
+``AutomataInstructionPayload``.
 
 .. code:: python
 
    from automata.config.config_types import AutomataInstructionPayload
 
-   payload = AutomataInstructionPayload(overview="This is the overview", tools="These are the tools")
-   required_fields = ["overview", "tools"]
-   payload.validate_fields(required_fields)
+   payload = AutomataInstructionPayload(agents_message="Hello, I'm an AI Assistant.", tools="List of available tools")
+   payload.validate_fields(["agents_message", "tools"])
 
 Limitations
 -----------
 
-``AutomataInstructionPayload`` is mainly used for formatting an
-introduction instruction and doesn’t have any other major
-functionalities. It assumes a predefined structure for the payload and
-its fields.
+The primary limitation of ``AutomataInstructionPayload`` is that it
+requires the user to manually validate the fields using the
+``validate_fields`` method. It is essential to use this method to ensure
+the reliability of the instructions.
 
 Follow-up Questions:
 --------------------
 
--  Can the fields in the ``AutomataInstructionPayload`` be extended to
-   cover more use cases?
+-  Can the validation of fields be automated without the need to
+   manually call ``validate_fields``?

@@ -1,71 +1,78 @@
 SymbolGraph
 ===========
 
-The ``SymbolGraph`` class represents the symbol graph that captures the
-relationships between symbols found in various source code files. The
-symbol graph can be built from an index protobuf file, making it the
-central class for working with symbols and their relationships. Some of
-the primary methods in ``SymbolGraph`` include
-``get_all_available_symbols``, ``get_all_files``,
-``get_potential_symbol_callees``, ``get_potential_symbol_callers``,
-``get_references_to_symbol``, ``get_symbol_dependencies``, and
-``get_symbol_relationships``.
+``SymbolGraph`` is a class used to represent and manipulate a directed
+multi-graph of symbols from an index protobuf file. It provides methods
+for retrieving available symbols, analyzing dependencies and
+relationships between symbols, and extracting information about files
+and references to symbols. The main components of the ``SymbolGraph``
+include the ``GraphBuilder``, ``SubGraph``, and the
+``_SymbolGraphNavigator``.
 
 Overview
 --------
 
-``SymbolGraph`` uses NetworkX’s MultiDiGraph to represent the
-relationships between symbols as a directed graph. It includes methods
-to query for callers, callees, and references to a symbol, as well as
-obtaining all available symbols and files in the graph. The graph can be
-filtered to subgraphs containing only rankable symbols. Getting
-reachable objects in the symbol subgraph requires using the navigator
-interface, \_SymbolGraphNavigator.
+``SymbolGraph`` is designed to assist in the following tasks:
+
+-  Retrieve all available symbols and files in the graph
+-  Analyze potential callers and callees of a given symbol
+-  Extract symbol dependencies and relationships
+-  Navigate and manipulate the graph in a flexible way
+
+The ``SymbolGraph`` class is primarily used with related symbols such as
+``Symbol``, ``SymbolDescriptor``, ``SymbolFile``, and
+``SymbolReference``.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.graph.GraphBuilder``
--  ``automata.core.symbol.graph._SymbolGraphNavigator``
--  ``automata.core.symbol.search.SymbolSearch``
+-  ``automata.core.symbol.symbol_types.Symbol``: Represents a class,
+   method, or local variable in the graph.
+-  ``automata.core.symbol.symbol_types.SymbolDescriptor``: Describes the
+   metadata and attributes of a symbol.
+-  ``automata.core.symbol.symbol_types.SymbolFile``: Represents a file
+   that contains symbols.
+-  ``automata.core.symbol.symbol_types.SymbolReference``: Represents a
+   reference to a symbol in a file.
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``SymbolGraph`` using an index protobuf file.
+The following is an example demonstrating how to create an instance of
+``SymbolGraph`` and retrieve the available symbols and files in the
+graph:
 
 .. code:: python
 
    from automata.core.symbol.graph import SymbolGraph
 
-   # Assuming the path to a valid index protobuf file, you should replace it with your own file path
-   index_path = "path/to/index.scip"
+   # Assuming the path to a valid index protobuf file
+   index_path = "path/to/index.protobuf"
    symbol_graph = SymbolGraph(index_path)
-   all_symbols = symbol_graph.get_all_available_symbols()
+
+   # Get all available symbols and files in the graph
+   symbols = symbol_graph.get_all_available_symbols()
+   files = symbol_graph.get_all_files()
+
+   print(f"Number of symbols: {len(symbols)}")
+   print(f"Number of files: {len(files)}")
 
 Limitations
 -----------
 
-SymbolGraph can only be built from an index protobuf file. In addition,
-the method ``get_potential_symbol_callers`` returns potential callers,
-but this list requires downstream filtering to remove non-call
-statements.
+The primary limitations of the ``SymbolGraph`` include:
+
+-  The ``SymbolGraph`` relies heavily on the quality and structure of
+   the index protobuf file. If the input file is malformed or structured
+   differently, the graph will not work as intended.
+-  The ``SymbolGraph`` assumes a specific directory structure and naming
+   convention for the protobuf file, which may limit its usability with
+   customized format.
 
 Follow-up Questions:
 --------------------
 
--  How to better handle edge cases in the symbol graph building process?
--  How to make ``get_potential_symbol_callers`` more efficient with
-   fewer potential callers?
-
-Footnotes
----------
-
-In the context provided, some information was referring to ‘mock’
-objects which are used for testing purposes. In the final documentation,
-it is recommended to replace mocked objects with actual underlying
-objects whenever possible. A list of some of the imported modules and
-methods is provided for reference, which may be useful in illustrating
-certain aspects of the SymbolGraph class.
+-  Are there any alternative ways to represent and manipulate symbol
+   graphs?
+-  How robust and efficient is the current implementation of the
+   ``SymbolGraph`` in handling large and complex graphs?

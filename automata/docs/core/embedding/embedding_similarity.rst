@@ -2,69 +2,59 @@ EmbeddingSimilarity
 ===================
 
 ``EmbeddingSimilarity`` is an abstract base class that provides an
-interface for finding the most similar symbols to a given query text in
-a codebase. It relies on embeddings, which are numerical representations
-of text data. Given a query, EmbeddingSimilarity computes the similarity
-between this query and the existing symbols in the codebase and returns
-the results. The primary methods in this class are
-``get_nearest_entries_for_query`` and ``get_query_similarity_dict``.
-Implementations of this class provide the functionality for different
-types of similarity calculations and embedding providers.
+interface for estimating the similarity between an embedding and a
+collection of symbols. This class contains two abstract methods,
+``get_nearest_entries_for_query`` and ``get_query_similarity_dict``,
+which return the k nearest symbols and the similarity between a given
+query and all symbols, respectively.
 
 Related Symbols
 ---------------
 
+-  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
 -  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.core.database.vector.VectorDatabaseProvider.calculate_similarity``
--  ``automata.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
+-  ``automata.core.database.vector.JSONVectorDatabase.calculate_similarity``
+-  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
 
 Example
 -------
 
-Below is an example demonstrating how to create a custom implementation
-of ``EmbeddingSimilarity``:
+The following is an example demonstrating how to subclass
+``EmbeddingSimilarity`` and implement its abstract methods.
 
 .. code:: python
 
-   import numpy as np
    from automata.core.embedding.embedding_types import EmbeddingSimilarity
 
-   class CustomEmbeddingSimilarity(EmbeddingSimilarity):
-       
-       def __init__(self, embedding_handler):
-           self.embedding_handler = embedding_handler
-       
-       def get_nearest_entries_for_query(self, query_text: str, k_nearest: int) -> Dict[Symbol, float]:
-           # Implement custom logic to find k nearest entries
-           pass
-           
-       def get_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
-           # Implement custom logic to compute similarity between query and symbols
+   class MyEmbeddingSimilarity(EmbeddingSimilarity):
+
+       def get_nearest_entries_for_query(self, query_text: str, k_nearest: int) -> Dict[Any, float]:
+           # Implement logic for finding the k nearest entries for the given query text
            pass
 
-   # Create an instance
-   embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, embedding_provider)
-   custom_similarity = CustomEmbeddingSimilarity(embedding_handler)
+       def get_query_similarity_dict(self, query_text: str) -> Dict[Any, float]:
+           # Implement logic for finding the similarity between the query text and all supported symbols
+           pass
 
 Limitations
 -----------
 
-The ``EmbeddingSimilarity`` class itself serves as an interface for the
-specific implementations, which allows for different approaches to
-calculate similarity. The primary issue here is that those
-implementations can handle different types of embeddings and similarity
-calculations, so choosing or creating the correct one is crucial for
-achieving accurate results. Also, depending on the chosen embedding
-provider, the quality and speed of retrieving embeddings could vary. As
-it is an abstract class, it cannot be instantiated directly and requires
-implementation of its methods.
+As an abstract base class, ``EmbeddingSimilarity`` cannot be
+instantiated directly. It serves as a template for creating custom
+classes to estimate embedding similarity by having the custom class
+inherit from ``EmbeddingSimilarity`` and implementing its abstract
+methods. Additionally, the example provided above uses dummy ``pass``
+statements for the custom implementation of the abstract methods. In a
+real implementation, these methods need to be replaced with appropriate
+logic for obtaining the desired similarity measures.
 
 Follow-up Questions:
 --------------------
 
--  How can we optimize the performance of similarity calculations for
-   large codebases?
+-  How can the supplied context be expanded to provide more
+   comprehensive and executable examples for ``EmbeddingSimilarity``
+   subclasses?

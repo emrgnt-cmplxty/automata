@@ -1,58 +1,71 @@
 PyDocWriter
 ===========
 
-``PyDocWriter`` is a class to write documentation for Python modules. It
-helps in generating the documentation files for specified modules or
-symbols in the Restructured Text (reST) format.
+``PyDocWriter`` is a class responsible for writing documentation for
+Python modules. It provides methods for generating .rst (restructured
+text) files for classes and methods, generating index files for a
+directory, and generating a summary for a module by reading its .rst
+files.
 
 Overview
 --------
 
-``PyDocWriter`` provides methods to generate documentation for the
-modules, classes, and methods within a Python project. It generates reST
-files for each key in the documentation dictionary and creates directory
-indices for reST files. You can customize the output directory for the
-generated documentation.
+The primary goal of ``PyDocWriter`` is to generate documentation for
+Python modules. It does this by converting markdown documentation to
+.rst files and generating index files for each directory containing .rst
+files or subdirectories. Moreover, it generates module-level summaries
+by reading the .rst files and using a language model to generate the
+summary.
 
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.DirectoryManager``
+-  ``automata.core.coding.py_coding.writer.PyDocWriter``
+-  ``automata.tests.unit.sample_modules.sample.OuterClass``
+-  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``PyDocWriter`` and write documentation for the specified symbols.
+Below is a usage example for ``PyDocWriter``, assuming that you have
+generated documentation using the appropriate symbols and directory
+structure:
 
 .. code:: python
 
    from automata.core.coding.py_coding.writer import PyDocWriter
+   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
-   base_path = "path/to/project"
-   docs_dir = "path/to/output/docs"
-   docs = {...}  # The documentation dictionary
-   symbols = [...]  # The symbols of the documentation dictionary
+   # Assuming you have the documentation info in the following variables:
+   # - docs: a dictionary containing the {Symbol: SymbolDocEmbedding} pairs
+   # - symbols: a list of symbols
 
-   doc_writer = PyDocWriter(base_path)
+   docs_dir = "docs_directory"  # the directory where you want the documentation to be written
+
+   doc_writer = PyDocWriter("base_project_path")
    doc_writer.write_documentation(docs, symbols, docs_dir)
+
+This example assumes you have already generated the ``docs`` and
+``symbols`` objects. Please refer to the documentation of ``Symbol`` and
+``SymbolDocEmbedding`` for information on generating these objects.
 
 Limitations
 -----------
 
-The ``PyDocWriter`` assumes that the input symbols follow the camel case
-naming convention and will not generate documentation for symbols that
-do not meet this requirement. Additionally, the summary generation
-function (``generate_summary``) is currently a placeholder and does not
-generate a meaningful summary from the content.
+``PyDocWriter`` assumes a specific directory structure for the project.
+The class currently only supports the generation of .rst (restructured
+text) files and assumes the project uses Sphinx as its documentation
+tool. The current implementation will only convert strings from camel
+case to snake case if they match a regular expression pattern, which may
+not work for all naming conventions.
 
 Follow-up Questions:
 --------------------
 
--  How can we improve the ``generate_summary`` function to generate
-   meaningful summaries from the content?
--  Are there any additional features planned for the ``PyDocWriter``
-   class?
+-  What other file formats and documentation tools should be supported
+   by ``PyDocWriter``?
+-  Is there a more accurate way to identify camel case strings for
+   conversion to snake case?

@@ -63,15 +63,14 @@ class ContextOracleTool(AgentTool):
             str: The processed result.
         """
         doc_output = self.symbol_doc_similarity.get_query_similarity_dict(query)
+        most_similar_doc_embedding = self.symbol_doc_similarity.embedding_handler.get_embedding(
+            sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
+        )
         rank_output = self.symbol_search.symbol_rank_search(query)
 
-        result = self.symbol_doc_similarity.embedding_handler.get_embedding(
-            sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
-        ).source_code
+        result = most_similar_doc_embedding.source_code
 
-        result += self.symbol_doc_similarity.embedding_handler.get_embedding(
-            sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
-        ).embedding_source
+        result += most_similar_doc_embedding.embedding_source
 
         counter = 0
         for symbol, _ in rank_output:

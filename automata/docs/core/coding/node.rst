@@ -1,56 +1,46 @@
 Node
 ====
 
-``Node`` is an abstract base class representing a node in a file tree.
-It is part of the larger file management infrastructure in the
-``automata.core.coding.directory`` package. The class includes a
-``name`` to represent the name of the node and a ``parent`` to point to
-the parent node in the file tree hierarchy.
+``Node`` is an abstract base class for a node in the file tree. It
+represents the basic structure of a node along with the ``name`` and
+``parent`` attributes. The subclasses of ``Node`` are ``Directory`` and
+``File``. Both subclasses inherit its basic methods and properties while
+adding specific functionalities.
 
-Related Symbols:
-----------------
+Related Symbols
+---------------
 
--  ``automata.core.coding.directory.File``
 -  ``automata.core.coding.directory.Directory``
+-  ``automata.core.coding.directory.File``
 
-Usage Example:
---------------
+Example
+-------
 
-The ``Node`` class is not directly instantiated but is a superclass for
-``File`` and ``Directory`` classes. Here is an example of how to use the
-``File`` and ``Directory`` classes representing files and directories in
-the file tree:
+The following example demonstrates how to create an instance of
+``Directory`` and ``File``:
 
 .. code:: python
 
-   from automata.core.coding.directory import File, Directory
+   from automata.core.coding.directory import Directory, File
 
-   # Create a root directory and some subdirectories
-   root = Directory("root")
-   subdir1 = Directory("subdir1", root)
-   subdir2 = Directory("subdir2", root)
+   # Creating a Directory node
+   root_directory = Directory("root_dir")
 
-   # Create some files in root directory
-   file1 = File("file1.txt", root)
-   file2 = File("file2.txt", root)
+   # Creating a File node inside the root_directory
+   file_in_root = File("file1.txt", root_directory)
 
-   # Create some files in subdirectories
-   subdir1_file1 = File("file1.txt", subdir1)
-   subdir1_file2 = File("file2.txt", subdir1)
-   subdir2_file1 = File("file1.txt", subdir2)
+Limitations
+-----------
 
-   # Add files and subdirectories to root and subdirectories
-   root.add_child(subdir1)
-   root.add_child(subdir2)
-   root.add_child(file1)
-   root.add_child(file2)
-   subdir1.add_child(subdir1_file1)
-   subdir1.add_child(subdir1_file2)
-   subdir2.add_child(subdir2_file1)
+-  ``Node`` being an abstract base class, it cannot be instantiated
+   directly. You have to create an instance of its subclasses
+   ``Directory`` or ``File``.
+-  There are no built-in operations for performing actions like moving,
+   copying, or deleting a node, you would need to use the built-in
+   Python ``os`` module for those operations.
 
 Follow-up Questions:
 --------------------
 
--  In the usage example, the file names are given manually. Is there an
-   automated mechanism to traverse directories and create ``File`` and
-   ``Directory`` objects?
+-  How to perform more advanced operations like move, copy, and delete
+   for a ``Node``?

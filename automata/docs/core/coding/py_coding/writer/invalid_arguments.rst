@@ -1,88 +1,82 @@
 PyCodeWriter
 ============
 
-``PyCodeWriter`` is a utility class responsible for writing Python code
-along with the Abstract Syntax Tree (AST) nodes. It interacts with a
-``PyCodeRetriever`` instance to write and update Python source code
-files. The class offers methods to create new Python modules, update
-existing modules with new code, and delete specific code from an
-existing module.
+``PyCodeWriter`` is a utility class for writing Python code along
+Abstract Syntax Tree (AST) nodes. This class is responsible for
+creating, updating, and deleting code elements within existing Python
+modules.
+
+Overview
+--------
+
+``PyCodeWriter`` is initialized with an instance of ``PyCodeRetriever``,
+which retrieves the Python code to be edited. The class provides various
+methods to create new modules, delete from existing modules, replace
+code line by line, update existing modules, and replace newline
+characters in a given string.
 
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.DirectoryManager``
+-  ``automata.tests.unit.test_py_writer.py_writer``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter``
+-  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
-
-Import Statements
------------------
-
-.. code:: python
-
-   import logging
-   import os
-   import re
-   import subprocess
-   import numpy as np
-   import pypandoc
-   from typing import Dict, List, Optional, Union, cast
-   from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
-   from automata.core.coding.directory import DirectoryManager
-   from automata.core.coding.py_coding.navigation import (
-       find_all_function_and_class_syntax_tree_nodes,
-       find_import_syntax_tree_node_by_name,
-       find_import_syntax_tree_nodes,
-       find_syntax_tree_node,
-   )
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 Example
 -------
 
-The following example demonstrates how to use ``PyCodeWriter`` to
-create, update, and write to a Python module.
+The following example demonstrates how to initialize a ``PyCodeWriter``
+object, create a new module, and update the existing module with new
+code:
 
 .. code:: python
 
-   from automata.tests.unit.test_py_writer import py_writer, MockCodeGenerator
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.coding.py_coding.writer import PyCodeWriter
 
-   # Create a mock code generator
-   mock_generator = MockCodeGenerator(
-       has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
-   )
-   source_code = mock_generator.generate_code()
+   retriever = PyCodeRetriever()
+   code_writer = PyCodeWriter(retriever)
 
-   # Instantiate a PythonWriter with a PyCodeRetriever
-   py_writer = py_writer()
+   # Sample source code
+   source_code = '''
+   class MyClass:
+       """MyClass docstring"""
 
-   # Create a new Python module with the generated source code
-   py_writer.create_new_module("sample_module", source_code, do_write=True)
+       def __init__(self):
+           pass
 
-   # Update the existing Python module with new source code
-   new_generator = MockCodeGenerator(
-       has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
-   )
-   new_source_code = new_generator.generate_code()
-   py_writer.update_existing_module(
-       source_code=new_source_code, module_dotpath="sample_module", do_write=True
-   )
+       def method(self):
+           """Method docstring"""
+           pass
+   '''
+
+   # Create a new module
+   code_writer.create_new_module("new_module", source_code, do_write=True)
+
+   # Add another method to the existing class
+   additional_code = '''
+   def new_method(self):
+       """New method docstring"""
+       return "Hello, world!"
+   '''
+
+   code_writer.update_existing_module("new_module", additional_code, do_write=True)
 
 Limitations
 -----------
 
-``PyCodeWriter`` relies on the directory structure provided by
-``DirectoryManager``. It cannot create or update Python source code
-files that are outside of the directory specified in the ``base_path``
-used to initialize ``DirectoryManager``. Additionally, ``PyCodeWriter``
-handles only Python source code files and cannot be used for other
-programming languages or file types.
+``PyCodeWriter`` depends on the existence of the ``PyCodeRetriever``
+class, which only serves to retrieve the Python source code. The
+functionalities of ``PyCodeWriter`` are limited by the capabilities of
+``PyCodeRetriever``.
 
 Follow-up Questions:
 --------------------
 
--  What is the role of ``PyCodeWriter`` in writing documentation for
-   Python modules?
--  How does ``PyCodeWriter`` handle different code styles or formatting?
+-  Can we extend the functionality of ``PyCodeWriter`` to tackle
+   language-agnostic code editing?
+-  How can we improve the code writing capabilities of ``PyCodeWriter``
+   by implementing better algorithms for automatically detecting and
+   replacing code components?

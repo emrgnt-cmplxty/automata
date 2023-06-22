@@ -1,52 +1,57 @@
 PyCodeWriter
 ============
 
-``PyCodeWriter`` is a utility class for writing Python code along AST
-nodes. It builds on the ``PyCodeRetriever`` object and provides various
-methods for creating, updating, and deleting modules. The
-``PyCodeWriter`` class can be extended to write documentation for Python
-modules and execute code generation tasks.
-
-Overview
---------
-
-The main functionality of ``PyCodeWriter`` is centered around creating,
-updating, and deleting Python modules using AST nodes. It provides
-methods to perform these actions, such as ``create_new_module``,
-``delete_from_existing_module``, and ``update_existing_module``. The
-class is initialized with a ``PyCodeRetriever`` instance that retrieves
-Python code from modules and objects.
+``PyCodeWriter`` is a utility class for writing and modifying Python
+code by working with Abstract Syntax Tree (AST) nodes. It provides
+various methods for creating new Python modules, updating existing
+modules, and deleting specific objects in a module.
 
 Related Symbols
 ---------------
 
--  ``PyCodeRetriever``
--  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
+-  ``automata.core.coding.directory.DirectoryManager``
+-  ``automata.core.coding.py_coding.navigation.find_all_function_and_class_syntax_tree_nodes``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
+-  ``automata.core.coding.py_coding.writer.PyDocWriter``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``PyCodeWriter`` with a ``PyCodeRetriever`` instance:
+The following example demonstrates how to create a new Python module
+using ``PyCodeWriter``.
 
 .. code:: python
 
+   from automata.core.coding.directory import DirectoryManager
    from automata.core.coding.py_coding.retriever import PyCodeRetriever
    from automata.core.coding.py_coding.writer import PyCodeWriter
-   from automata.core.coding.directory import DirectoryManager
 
-   python_retriever = PyCodeRetriever(DirectoryManager().module_tree_map)
-   code_writer = PyCodeWriter(py_retriever)
+   # Create PyCodeWriter instance
+   directory_manager = DirectoryManager("path/to/your/project")
+   module_tree_map = directory_manager.create_lazy_module_tree_map()
+   py_retriever = PyCodeRetriever(module_tree_map)
+   py_writer = PyCodeWriter(py_retriever)
+
+   # Create new Python module with a provided source code
+   source_code = "def hello_world():\n    print('Hello, World!')"
+   py_writer.create_new_module("my_new_module", source_code, do_write=True)
 
 Limitations
 -----------
 
-``PyCodeWriter`` assumes that the provided module paths have the given
-structure and can only work on modules with that structure. This makes
-it less flexible for working with different modules’ structures.
+``PyCodeWriter`` only works with the directory structure and modules
+specified in the ``DirectoryManager`` and ``LazyModuleTreeMap``. It
+might not cover all use cases and edge cases when working with Python
+code and AST nodes. Also, it may not handle complex refactorings or
+restructuring of codebase.
 
-Follow-up Questions
--------------------
+Follow-up Questions:
+--------------------
 
--  Are there any plans to extend support for custom module structures in
-   the future?
+-  How can we extend ``PyCodeWriter`` to handle more complex code
+   transformations and refactorings?
+-  Are there any approaches to make it more flexible and adaptable to
+   different codebases and directory structures?

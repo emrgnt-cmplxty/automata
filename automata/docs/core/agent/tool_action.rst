@@ -1,64 +1,60 @@
 ToolAction
 ==========
 
-``ToolAction`` is a class representing an agent action that interacts
-with a specific tool. It provides methods to initialize, access, and
-manage the properties of the ToolAction object. The class supports
-interaction with various tools and provides a way to execute a query
-with a tool using the specified arguments.
+``ToolAction`` is a class representing a single action that uses a
+specific tool in the Automata agent workflow. It is a part of the
+Automata’s action framework and is used to execute actions within an
+``AutomataAgent`` through its various methods. ``ToolAction`` instances
+can be created from lines in an AutomataActions configuration file.
 
 Overview
 --------
 
-The primary properties of the ``ToolAction`` class are its
-``tool_name``, ``tool_query``, and ``tool_args``. The ``tool_name``
-property identifies the tool that the action is associated with. The
-``tool_query`` contains the query to be executed by the tool, and the
-``tool_args`` is a list of arguments to be passed to the tool. The class
-also provides utility methods like ``from_lines`` that allows creating a
-``ToolAction`` instance from a list of lines.
+-  ``ToolAction`` helps in executing defined queries and methods using a
+   third-party or custom-developed tool.
+-  Instances of the class can be created using the ``from_lines`` class
+   method.
+-  The class can be used as a part of a pipeline or a sequence of
+   actions in an ``AutomataAgent`` object.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
 -  ``automata.core.base.tool.Tool``
 -  ``automata.core.agent.action.AutomataActionExtractor``
--  ``config.config_types.AgentConfigName``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.agent.action.AutomataActionExtractor.extract_actions``
--  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.agent.agent_enums.ActionIndicator``
+-  ``core.agent.action.AutomataActionExtractor.extract_actions``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``ToolAction`` with a designated tool and query.
+The following is an example demonstrating how to create an instance of
+``ToolAction`` using lines from an AutomataActions configuration file.
 
 .. code:: python
 
    from automata.core.agent.action import ToolAction
 
-   tool_name = "example_tool"
-   tool_query = "example query"
-   tool_args = ["arg1", "arg2"]
+   example_lines = [
+       "tool_query_0\n",
+       "tool_name\n",
+       "automata-indexer-retrieve-code\n",
+   ]
 
-   tool_action = ToolAction(tool_name=tool_name, tool_query=tool_query, tool_args=tool_args)
+   index = 0
+
+   tool_action_instance = ToolAction.from_lines(example_lines, index)
 
 Limitations
 -----------
 
-``ToolAction`` class is mainly limited by its simplicity, as it only
-stores basic information about a tool action. It does not directly
-execute the action nor interact with the associated tool, but rather
-serves as a container for the tool action information.
+The primary limitation of the ``ToolAction`` class is that it requires
+the proper formatting of the AutomataActions configuration file. The
+class may not function correctly if there are any discrepancies in the
+formatting or structure of the configuration file.
 
 Follow-up Questions:
 --------------------
 
--  How can we directly execute a ``ToolAction`` with a specific tool?
--  What other properties and methods might be useful for the
-   ``ToolAction`` class?
+-  How can we ensure proper formatting in the AutomataActions
+   configuration file while generating tool actions?

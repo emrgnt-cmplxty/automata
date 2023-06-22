@@ -1,52 +1,55 @@
 ToolNotFoundError
 =================
 
-``ToolNotFoundError`` is a custom exception class that is raised when a
-tool is not found while using the ``automata`` package. This class
-inherits from the ``BaseException`` class. The exception contains a
-``tool_name`` attribute that represents the name of the tool that was
-not found.
+``ToolNotFoundError`` is an exception class that is raised when a
+specified tool with a given name cannot be found during the execution of
+a toolset. It extends the ``BaseTool`` class and inherits all its
+methods and properties.
 
-Overview
---------
-
-``ToolNotFoundError`` is used to signal errors in finding tools in the
-``automata`` software suite. It is commonly used in the
-``automata.core.base`` module, particularly in the ``BaseTool`` class
-when an operation involves using a tool that does not exist.
+This error may occur when trying to execute an invalid tool or a tool
+that has not been properly loaded into the toolset.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.agent.tools.tool_utils.ToolCreationError``
+-  ``automata.core.agent.tools.tool_utils.UnknownToolError``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter.ClassOrFunctionNotFound``
+-  ``automata.core.base.tool.InvalidTool``
 
-Example
--------
-
-The following example shows how to raise a ``ToolNotFoundError``:
+Usage Example
+-------------
 
 .. code:: python
 
    from automata.core.base.tool import ToolNotFoundError
+   from automata.tests.unit.test_tool import TestTool
+
+   def find_tool(tool_name: str):
+       available_tools = {"test_tool": TestTool}
+       
+       try:
+           return available_tools[tool_name]()
+       except KeyError:
+           raise ToolNotFoundError(tool_name)
 
    try:
-       # code that may result in a nonexistent tool being requested
-       raise ToolNotFoundError("my_tool")
+       test_tool_instance = find_tool("invalid_tool_name")
    except ToolNotFoundError as e:
-       print(e)  # Output: Error: Tool 'my_tool' not found.
+       print(e)
 
 Limitations
 -----------
 
-``ToolNotFoundError`` is a relatively simple exception class that only
-provides an error message indicating the tool name that was not found.
-It does not provide additional information about why the tool was not
-found or where the user might look to find or install the missing tool.
+``ToolNotFoundError`` assumes that the tool name provided is unique
+within the toolset and can unambiguously identify the tool. If there are
+duplicate tool names, this error might not accurately pinpoint the
+issue. Additionally, the error message generated might not provide
+enough context to determine why the tool was not found.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend ``ToolNotFoundError`` to provide more informative
-   error messages, such as suggesting potential alternatives or
-   installation instructions for the missing tool?
+-  How can the error message be improved to provide more information
+   about why a tool was not found?

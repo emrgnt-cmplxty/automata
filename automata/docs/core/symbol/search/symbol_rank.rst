@@ -2,66 +2,70 @@ SymbolRank
 ==========
 
 ``SymbolRank`` is a class that computes the PageRank algorithm on
-symbols in a graph. It takes a directed graph as input and calculates
-the SymbolRanks of each node in the graph. It provides a way to rank the
-relevance of symbols in a given graph based on their connectivity and
-usage.
+symbols in a graph. It provides methods to set up and initialize the
+graph, as well as to calculate the SymbolRanks of each node in the
+graph.
 
 Overview
 --------
 
-The ``SymbolRank`` class is used to calculate the symbol ranks for a
-directed graph. It uses the PageRank algorithm to assign a rank value to
-each symbol in the graph based on their connections and usage. This
-ranking can be used to determine the importance of symbols in various
-contexts, such as symbol search, code analysis, and documentation
-generation.
+``SymbolRank`` is mainly used to evaluate the importance or relevance of
+symbols in a graph, based on their interconnections. It accepts a
+directed graph and a configuration object as its inputs, and calculates
+the ranks of nodes by iterating through the graph. The algorithm
+converges when the error between rank values of consecutive iterations
+is below a certain threshold.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata.core.symbol.graph.SymbolGraph``
+-  ``nx.DiGraph``
+-  ``networkx.exception.NetworkXError``
+-  ``automata.tests.unit.test_symbol_rank``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``SymbolRank`` and calculate the symbol ranks for a simple directed
-graph.
+The following is an example demonstrating how to use the ``SymbolRank``
+class with a sample directed graph.
 
 .. code:: python
 
    import networkx as nx
    from automata.core.symbol.search.rank import SymbolRank
+   from automata.core.symbol.search.rank_config import SymbolRankConfig
 
-   # Create a simple directed graph
+   # Create a sample directed graph with some edges
    G = nx.DiGraph()
    G.add_edge(1, 2)
    G.add_edge(2, 3)
    G.add_edge(3, 1)
 
-   # Initialize SymbolRank with the graph
-   symbol_rank = SymbolRank(G)
+   # Initialize the SymbolRank class with the graph and a configuration object
+   config = SymbolRankConfig()
+   symbol_rank = SymbolRank(G, config)
 
-   # Calculate SymbolRanks for the graph
+   # Calculate the ranks of each node in the graph
    ranks = symbol_rank.get_ranks()
+   print("Ranks: ", ranks)
 
-   print(ranks)
+   # Output: Ranks: [(1, 0.3333333333333333), (2, 0.3333333333333333), (3, 0.3333333333333333)]
 
 Limitations
 -----------
 
-The primary limitation of the ``SymbolRank`` class is that it only
-supports directed graphs with symbols as nodes. Additionally, the
-convergence of the power iteration used by the PageRank algorithm is not
-guaranteed for all graphs.
+The primary limitation of ``SymbolRank`` is that it assumes the input
+graph is directed and well-formed, containing symbols as nodes. It also
+depends on the correct configuration, such as tolerance, alpha, and
+maximum iterations, for the algorithm to converge successfully. In
+addition, the algorithm may not converge if the graph is not well-formed
+or contains dangling nodes that negatively impact the iteration process.
 
 Follow-up Questions:
 --------------------
 
--  Is there a way to make the SymbolRank algorithm more efficient for
-   larger graphs?
+-  How can we extend the ``SymbolRank`` class to work with different
+   types of graphs or other ranking algorithms?
+-  How can we improve the handling of dangling nodes to ensure
+   convergence of the algorithm?

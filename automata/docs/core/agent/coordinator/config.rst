@@ -1,51 +1,77 @@
 AutomataInstance
 ================
 
-``AutomataInstance`` is a class that represents an active instance of
-Automata, a core autonomous agent designed to execute instructions and
-report results back to the main system. It communicates with the OpenAI
-API to generate responses based on given instructions and manages
-interactions with various tools.
+``AutomataInstance`` is a base class for creating specific instances of
+Automata agents. It serves as a foundation to define specific Automata
+agents with different configurations, descriptions, and behaviors.
+Instances of Automata agents can then be managed by the
+``AutomataCoordinator`` to execute instructions and coordinate the work
+of the agents.
+
+Overview
+--------
+
+The ``AutomataInstance`` class provides an interface to create and
+manage different Automata agent instances. It helps specify the
+configuration and the description of the agent, while also providing a
+method to run instructions in the context of the agent. The class works
+alongside the ``AutomataCoordinator`` and other related symbols such as
+``AgentConfigName`` and ``AutomataAgent``.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.agent.coordinator.AutomataInstance.Config``
+-  ``automata.tests.unit.test_automata_coordinator.MockAutomataInstance``
+-  ``automata.core.agent.coordinator.AutomataInstance``
+-  ``automata.config.config_types.AgentConfigName``
 -  ``automata.core.agent.agent.AutomataAgent``
--  ``config.config_types.AgentConfigName``
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
 -  ``automata.core.agent.coordinator.AutomataCoordinator``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 
 Example
 -------
 
-Here is an example of how to create an instance of ``AutomataInstance``:
+The following example demonstrates how to create an instance of a custom
+Automata agent by subclassing ``AutomataInstance``.
 
 .. code:: python
 
    from automata.core.agent.coordinator import AutomataInstance
-   from config.config_types import AgentConfigName
-   from automata.config.automata_agent_config import AutomataAgentConfigBuilder
+   from automata.config.config_types import AgentConfigName
 
-   config_name = AgentConfigName.AUTOMATA_RETRIEVER
-   config_builder = AutomataAgentConfigBuilder.from_name(config_name)
-   instance = AutomataInstance(config_builder.build())
+   class CustomAutomataInstance(AutomataInstance):
+       def __init__(
+           self,
+           config_name: AgentConfigName,
+           description: str,
+       ):
+           super().__init__(config_name=config_name, description=description)
+
+       def run(self, instruction):
+           return f"Executing {instruction} on {self.config_name.value}."
+
+   # Create a custom AutomataInstance
+   config_name = AgentConfigName.AUTOMATA_MAIN
+   description = "Custom Automata Agent"
+   custom_instance = CustomAutomataInstance(config_name=config_name, description=description)
+
+   # Run custom instance with an instruction
+   instruction = "Example task"
+   result = custom_instance.run(instruction)
+   print(result)
 
 Limitations
 -----------
 
-The main limitation of ``AutomataInstance`` is that it relies on the
-predefined configurations based on ``AgentConfigName`` and relies on the
-``AutomataAgentConfigBuilder`` for building the configuration. It cannot
-directly load custom configuration files.
+``AutomataInstance`` serves as a base class for instances of Automata
+agents and does not include any specific implementation for performing
+tasks. You need to create a subclass of ``AutomataInstance`` and define
+the ``run()`` method on it to execute instructions. Moreover, the class
+relies on ``AgentConfigName`` for configuration settings, which can only
+be loaded from predefined configuration files.
 
 Follow-up Questions:
 --------------------
 
--  How can we include custom configuration files for loading into the
-   ``AutomataInstance`` class?
+-  How can more complex behaviors be implemented in subclasses of
+   ``AutomataInstance``?

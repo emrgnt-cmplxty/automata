@@ -1,46 +1,63 @@
 AgentField
 ==========
 
-``AgentField`` is an enumeration class that represents the fields of an
-``agent``. The current associated fields include fields of the
-``config.config_enums.AgentConfigName`` and
-``automata.core.agent.agent.AutomataAgent``.
+``AgentField`` is an enumeration class representing the fields of an
+agent in the Automata ecosystem. It is primarily used to work with and
+organize the information required to initialize and manage agents.
+
+Overview
+--------
+
+``AgentField`` consists of a set of field names that help identify,
+categorize, and manage agent-related information. As a part of the
+automata.core.agent.agent_enums module, it works together with other
+enums like ``ResultField`` and ``ToolField`` to provide a comprehensive
+and consistent way to work with agent-related data. This also makes it
+easier to update or extend the agent fields as needed.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.agent.agent_enums.ResultField``
+-  ``automata.core.agent.agent_enums.ToolField``
 -  ``automata.core.agent.agent.AutomataAgent``
 -  ``config.config_types.AgentConfigName``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
 
 Example
 -------
 
-Currently, no specific examples are provided for the ``AgentField``
-class. This enum may be used internally by related symbols or classes to
-identify the fields of an agent.
+The following example demonstrates how to use ``AgentField`` to extract
+specific information from a dictionary containing agent-related data.
 
-Limitations & Follow-up Questions
----------------------------------
+.. code:: python
 
-The ``AgentField`` enum may only be used in conjunction with its related
-symbols and classes. No limitations are mentioned in the provided
-context.
+   from automata.core.agent.agent_enums import AgentField
 
-1. Can you provide a specific use-case example for the ``AgentField``
-   enum?
+   agent_data = {
+       "name": "SampleAgent",
+       "status": "running",
+       "completion_status": "in_progress",
+   }
 
-2. Are there other fields that need to be added to this enumeration?
+   # Accessing agent fields using AgentField enumeration
+   agent_name = agent_data[AgentField.NAME.value]
+   agent_status = agent_data[AgentField.STATUS.value]
+   agent_completion = agent_data[AgentField.COMPLETION_STATUS.value]
 
-3. Can the ``AgentField`` enum be applied to custom agents, or are the
-   supported fields limited to the predefined configurations?
+   print("Agent Name:", agent_name)
+   print("Agent Status:", agent_status)
+   print("Agent Completion Status:", agent_completion)
 
-4. Is it possible to modify or extend the ``AgentField`` enumeration
-   based on different agent configurations?
+Limitations
+-----------
+
+``AgentField`` is primarily used for working with agent-related
+information, and its usage scope is limited to working with agent
+fields. It may not be sufficient for handling more complex or customized
+data structures.
+
+Follow-up Questions:
+--------------------
+
+-  Are there any other use-cases or broader applications of
+   ``AgentField`` that may be relevant in the future?

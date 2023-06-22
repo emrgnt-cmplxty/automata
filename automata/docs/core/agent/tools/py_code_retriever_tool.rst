@@ -2,32 +2,39 @@ PyCodeRetrieverTool
 ===================
 
 ``PyCodeRetrieverTool`` is a class for interacting with the
-PythonIndexer API, which provides functionality to read the code state
-of local Python files.
+``PythonIndexer`` API, which provides functionality to read the code
+state of local Python files. It extends the ``AgentTool`` and builds a
+list of ``Tool`` instances that allow users to retrieve code,
+docstrings, or raw text of Python files and symbols. It comes with
+various methods like ``build``, ``_run_indexer_retrieve_code``,
+``_run_indexer_retrieve_docstring``, and
+``_run_indexer_retrieve_raw_code`` to interact with the
+``PyCodeRetriever`` for extracting information.
 
 Overview
 --------
 
-``PyCodeRetrieverTool`` works as a tool to retrieve code, docstrings, or
-raw code from Python files using the ``PyCodeRetriever`` object. The
-tool can be used with an ``AutomataAgent`` to perform code retrieval
-tasks. It exposes methods that can be used to build and return tools to
-fetch code, docstrings, or raw code from the specified Python paths.
+``PyCodeRetrieverTool`` is useful when a user wants to search the
+contents of a Python file programmatically. It creates instances of
+``Tool`` that utilize ``PyCodeRetriever`` methods to access the source
+code, docstrings, and raw text of a Python file. The ``Tool`` instances
+can be used to perform the necessary operations on the desired Python
+files and symbols.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever.get_source_code_without_docstrings``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever.get_docstring``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever.get_source_code``
+-  ``automata.core.base.tool.Tool``
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``PyCodeRetrieverTool`` and use it to retrieve code, docstrings, or raw
-code from Python files.
+The following is an example demonstrating how to create an instance of
+``PyCodeRetrieverTool`` and use it to retrieve the code of a Python
+file.
 
 .. code:: python
 
@@ -35,37 +42,26 @@ code from Python files.
    from automata.core.coding.py_coding.retriever import PyCodeRetriever
 
    py_retriever = PyCodeRetriever()
-   py_code_retriever_tool = PyCodeRetrieverTool(py_retriever=py_retriever)
-   tools = py_code_retriever_tool.build()
+   tool_instance = PyCodeRetrieverTool(py_retriever=py_retriever)
 
-   # Retrieve code without docstrings
-   tool_retrieve_code = tools[0]
-   code = tool_retrieve_code.func(('my_directory.my_file', None, 'my_function'))
-   print(code)
+   tools = tool_instance.build()
 
-   # Retrieve docstrings
-   tool_retrieve_docstring = tools[1]
-   docstring = tool_retrieve_docstring.func(('my_directory.my_file', 'MyClass.my_function'))
-   print(docstring)
-
-   # Retrieve raw code
-   tool_retrieve_raw_code = tools[2]
-   raw_code = tool_retrieve_raw_code.func(('my_directory.my_file'))
-   print(raw_code)
+   # Suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory
+   tool_args = ["my_file", None, "my_function"]
+   result = tools[0].func(tool_args)
+   print(result)  # Prints the code of the function without docstrings
 
 Limitations
 -----------
 
-The primary limitation of ``PyCodeRetrieverTool`` is that it only
-supports retrieving code, docstrings, or raw code from Python files. It
-cannot work with other programming languages or file formats.
-Additionally, its performance heavily depends on the underlying
-``PyCodeRetriever`` object.
+The primary limitation of ``PyCodeRetrieverTool`` is that it relies on
+file paths and a proper setup of ``PyCodeRetriever`` to work as
+intended. If the user does not provide a correct file path or properly
+initialize the ``PyCodeRetriever``, the tool may fail to find the
+desired code or docstrings.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend the ``PyCodeRetrieverTool`` to support other
-   programming languages?
--  Is there any potential performance issue when using
-   ``PyCodeRetrieverTool`` with large codebases?
+-  How can we improve the error handling for incorrect file paths or
+   invalid setup of ``PyCodeRetriever``?

@@ -1,49 +1,72 @@
 SearchTool
 ==========
 
-``SearchTool`` is a class that represents a search tool for retrieving
-information about symbols from the source code. It is an enumeration of
-available search tools and is used in conjunction with classes from the
-``automata.core.symbol.search`` package.
+``SearchTool`` is a class that provides an interface for a set of search
+tools, each with a different functionality. The primary search tools
+include exact-search, symbol-rank-search, source-code-search, and
+symbol-references-search. The ``SearchTool`` class is part of the
+``automata.core.agent.tools.symbol_search`` module and can be used to
+build specific tools by specifying the desired search tool type.
+
+Overview
+--------
+
+``SearchTool`` is an enumeration class that defines the available search
+tools. It can be used in conjunction with the ``SymbolSearchTool``,
+which provides methods to build and execute search tools. For example, a
+tool for exact-search can be built by specifying the
+``SearchTool.EXACT_SEARCH`` as its type.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tools.agent_tool.AgentTool``
+-  ``automata.core.agent.tools.symbol_search.SymbolSearchTool``
 -  ``automata.core.base.tool.Tool``
--  ``automata.core.symbol.search.symbol_search.ExactSearchResult``
--  ``automata.core.symbol.search.symbol_search.SourceCodeResult``
--  ``automata.core.symbol.search.symbol_search.SymbolRankResult``
--  ``automata.core.symbol.search.symbol_search.SymbolReferencesResult``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.search.symbol_search.*``
 
 Example
 -------
 
-Below is an example of how to use the ``SearchTool`` enumeration when
-working with the ``SymbolSearch`` class:
+The following example demonstrates how to use ``SearchTool`` to create
+and execute an exact-search tool:
 
 .. code:: python
 
-   from automata.core.agent.tools.symbol_search import SearchTool
    from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.agent.tools.symbol_search import (
+       SymbolSearchTool,
+       SearchTool,
+   )
 
-   search_tool = SearchTool.SYMBOL_RANK
-   symbol_search = SymbolSearch(search_tool)
+   # Create a SymbolSearch object
+   symbol_search = SymbolSearch()
+    
+   # Create a SymbolSearchTool object
+   symbol_search_tool = SymbolSearchTool(symbol_search)
+
+   # Build all available search tools
+   tools = symbol_search_tool.build()
+
+   # Execute a specific search tool (exact-search in this example)
+   tool_type = SearchTool.EXACT_SEARCH
+   query = "module.path, pattern"
+
+   for tool in tools:
+       if tool.name == tool_type.value:
+           result = tool.func(query)
+           print(result)
 
 Limitations
 -----------
 
-``SearchTool`` is an enumeration and does not provide any functionality
-within the class itself. It is only used to indicate the type of search
-tool to be used when working with classes from the
-``automata.core.symbol.search`` package.
+One limitation of the ``SearchTool`` is that it only provides a
+predefined set of search tools, which may not cover all possible search
+needs. The ``SearchTool`` enumeration cannot be extended inline, as
+opposed to using other methods for building or combining search tools.
 
 Follow-up Questions:
 --------------------
 
--  What are the different types of search tools available in the
-   ``SearchTool`` enumeration?
--  How does the chosen search tool affect the behavior of classes from
-   the ``automata.core.symbol.search`` package?
+-  Are additional search tools needed to address specific search needs?
+-  How can we customize the search process to make it more robust and
+   flexible for different use cases?

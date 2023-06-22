@@ -1,41 +1,38 @@
 AgentConfigName
 ===============
 
-``AgentConfigName`` is an enumeration representing different agent
-config names. It corresponds to the name of the YAML configuration file
-located in the ``automata/configs/agent_configs`` directory. This
-enumeration can be used when setting up an ``AutomataAgent`` with custom
-configurations using the ``AutomataAgentConfig`` class.
+``AgentConfigName`` is an enum that represents the possible agent config
+names. Corresponding to the name of the YAML file in
+``automata/configs/agent_configs``. This can be used to load the
+required configuration while creating an instance of
+``AutomataAgentConfig``.
 
 Overview
 --------
 
-``AgentConfigName`` provides a way to specify the configuration name
-when loading agent configurations using the ``AutomataAgentConfig.load``
-method. It contains several helper configurations, like ``DEFAULT``,
-``TEST``, and ``AUTOMATA_INITIALIZER``, as well as production configs,
-such as ``AUTOMATA_RETRIEVER``, ``AUTOMATA_MAIN``, and
-``AUTOMATA_WRITER``.
+``AgentConfigName`` comprises two types of configs: Helper Configs and
+Production Configs. Helper Configs include ``DEFAULT``, ``TEST``, and
+``AUTOMATA_INITIALIZER``. Production Configs include
+``AUTOMATA_RETRIEVER``, ``AUTOMATA_MAIN``, and ``AUTOMATA_WRITER``.
 
 Related Symbols
 ---------------
 
--  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``config.automata_agent_config_utils.AutomataAgentConfigBuilder``
--  ``config.automata_agent_config.AutomataAgentConfig``
+-  ``automata.config.config_types.AutomataAgentConfig``
+-  ``automata.tests.conftest.automata_agent_config_builder``
+-  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
+-  ``automata.core.agent.coordinator.AutomataInstance.Config``
 
 Example
 -------
 
 The following is an example demonstrating how to use the
-``AgentConfigName`` enumeration when loading ``AutomataAgentConfig``
-configurations:
+``AgentConfigName`` enum.
 
 .. code:: python
 
-   from automata.config.config_types import AgentConfigName
-   from automata.config.automata_agent_config import AutomataAgentConfig
+   from config.config_enums import AgentConfigName
+   from config.automata_agent_config import AutomataAgentConfig
 
    config_name = AgentConfigName.AUTOMATA_MAIN
    config = AutomataAgentConfig.load(config_name)
@@ -43,15 +40,14 @@ configurations:
 Limitations
 -----------
 
-``AgentConfigName`` enumeration has a limited set of values that
-correspond to predefined configurations. Any new custom configurations
-need to be added to the ``AgentConfigName`` enumeration and also need to
-have a corresponding YAML file in the ``automata/configs/agent_configs``
-directory.
+``AgentConfigName`` enums are limited to the available YAML
+configuration files in the ``automata/configs/agent_configs`` directory.
+If you want to use a custom configuration name, you will need to add the
+corresponding YAML file in that directory and update the
+``AgentConfigName`` enum accordingly.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend the ``AgentConfigName`` enumeration to include
-   custom configuration names without going through the process of
-   modifying the code and creating new YAML files?
+-  What are the specific configurations and setup options for each of
+   the available ``AgentConfigName`` enums?

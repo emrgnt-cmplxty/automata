@@ -9,40 +9,39 @@ instructions and manages interactions with various tools.
 Overview
 --------
 
-``AutomataAgent`` provides a flexible interface for running tasks and
-iterating through them until a result is produced or the maximum
-iterations are exceeded. It allows users to specify instructions for the
-agent to execute and can be configured using an instance of
-``AutomataAgentConfig``.
+``AutomataAgent`` uses the OpenAI API for generating responses,
+processing those responses, and managing interactions with the
+corresponding tools. It can retrieve completion messages, perform
+specific actions using the available tools, and generate observed user
+messages. The ``AutomataAgent`` class takes ``instructions`` and an
+optional ``config`` (AutomataAgentConfig) as input during instantiation.
+The agent can be run until it produces a result or until the maximum
+iterations are exceeded.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
+-  ``automata.core.agent.agent.Agent``
 -  ``automata.core.agent.coordinator.AutomataCoordinator``
--  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
+-  ``automata.core.agent.database.AutomataAgentDatabase``
+-  ``automata.core.agent.action.AutomataActionExtractor``
+-  ``automata.core.agent.action.ToolAction``
 
 Example
 -------
 
-The following example demonstrates how to create and configure an
-``AutomataAgent`` using the ``AutomataAgentConfigBuilder``. The agent is
-set up with a specific ``AgentConfigName``, and instructions are
-provided for it to execute.
+The following example demonstrates how to create an instance of
+``AutomataAgent`` and run it to execute a set of instructions.
 
 .. code:: python
 
    from automata.core.agent.agent import AutomataAgent
-   from automata.config.agent_config_builder import AutomataAgentConfigBuilder
-   from automata.config.config_enums import AgentConfigName
+   from automata.config import AutomataAgentConfig
+   from automata.config.config_types import AgentConfigName
 
-   instructions = "Create a list of even numbers from 10 to 20."
-
-   config_builder = AutomataAgentConfigBuilder.from_name(config_name=AgentConfigName.TEST)
-   config = config_builder.with_instructions(instructions).build()
+   instructions = "your instructions here"
+   config_name = AgentConfigName.AUTOMATA_MAIN
+   config = AutomataAgentConfig.load(config_name)
 
    agent = AutomataAgent(instructions, config)
    agent.setup()
@@ -53,14 +52,16 @@ provided for it to execute.
 Limitations
 -----------
 
-The primary limitations of ``AutomataAgent`` are that it relies heavily
-on the OpenAI API and the specified agent configuration. The performance
-and capabilities of the agent may be dependent on the API’s response.
+The primary limitations of ``AutomataAgent`` are:
+
+-  It relies on OpenAI API for response generation, which can result in
+   rate-limiting or other API-related issues.
+-  It depends on the availability and proper functioning of the tools it
+   interacts with. If a specific tool is unavailable or not working
+   correctly, the agent may produce incomplete or incorrect results.
 
 Follow-up Questions:
 --------------------
 
--  How can we improve the ``AutomataAgent`` class to be more efficient
-   and flexible in executing tasks?
--  What are some alternative approaches to using the OpenAI API for
-   generating responses based on instructions provided to the agent?
+-  What happens if, during execution, one of the tools becomes
+   unavailable or encounters an error?

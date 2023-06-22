@@ -1,62 +1,93 @@
 PyContextRetriever
 ==================
 
-``PyContextRetriever`` is a class used to retrieve the context of a
-symbol in a Python project. The retriever is capable of processing
-abstract syntax tree (AST) nodes of classes, methods, and module-level
-code to extract relevant information about the symbol. The
-PyContextRetriever is useful for generating detailed documentation and
-understanding the relationships between symbols in a codebase.
+The PyContextRetriever is used to retrieve the context of a symbol in a
+Python project. The retriever processes the symbol, its related symbols,
+and the dependencies associated with the symbol. The context information
+is stored in an internal context buffer, which can then be accessed to
+get the context in textual form.
+
+Import Statements
+-----------------
+
+.. code:: python
+
+   import logging
+   import os
+   import tiktoken
+   from contextlib import contextmanager
+   from typing import List, Optional, Set
+   from redbaron import RedBaron
+   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.database.vector import VectorDatabaseProvider
+   from automata.core.symbol.graph import SymbolGraph
+   from automata.core.symbol.symbol_types import Symbol
+   from automata.core.symbol.symbol_utils import (
+       convert_to_fst_object,
+       get_rankable_symbols,
+   )
+   from automata.core.utils import root_py_fpath
 
 Overview
 --------
 
-``PyContextRetriever`` operates on a ``SymbolGraph`` and takes in a
-configuration object ``PyContextRetrieverConfig``. With these inputs, it
-offers several methods to process symbols, AST nodes of the methods and
-class docstrings, and related symbols. The main entry point for
-processing a symbol is the ``process_symbol`` method, which retrieves
-the context and stores it in the local message buffer.
+The PyContextRetriever provides a way to generate context for a given
+symbol, primarily focusing on Python projects. By processing the main
+symbol, related symbols, and dependencies, it enables users to gain
+insight into various aspects of the symbol and its relationships within
+a project.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
+-  ``automata.core.symbol.symbol_utils``
+-  ``automata.core.utils.root_py_fpath``
 
-Usage Example
--------------
+Example
+-------
+
+To illustrate how to use the PyContextRetriever, the following example
+demonstrates its basic functionality.
 
 .. code:: python
 
    from automata.core.context.py_context.retriever import PyContextRetriever
    from automata.core.symbol.graph import SymbolGraph
+   from automata.core.symbol.symbol_types import Symbol
 
    graph = SymbolGraph()
-   py_context_retriever = PyContextRetriever(graph)
-   symbol = some_symbol
+   symbol = Symbol.from_string("some_string_representation_of_symbol")
+   config = PyContextRetrieverConfig()
+   retriever = PyContextRetriever(graph, config)
 
-   # Process the context of the symbol
-   py_context_retriever.process_symbol(symbol)
+   # Process the symbol
+   retriever.process_symbol(symbol)
 
-   # Retrieve the context buffer
-   context_buffer = py_context_retriever.get_context_buffer()
+   # Get the context buffer
+   context_buffer = retriever.get_context_buffer()
+   print(context_buffer)
+
+In the example above, a symbol object is created and passed to the
+PyContextRetriever instance to process the symbol. Once completed, the
+context buffer can be accessed, providing context information about the
+symbol.
 
 Limitations
 -----------
 
-``PyContextRetriever`` relies on the ``SymbolGraph`` and
-``PyContextRetrieverConfig`` passed to it. It assumes that all symbols
-are represented in the ``SymbolGraph`` and that the configuration values
-are set correctly in the ``PyContextRetrieverConfig``. Inaccuracies or
-errors in these inputs may lead to issues when processing symbols and
-their relationships.
+The PyContextRetriever assumes that the user knows how to construct and
+handle a SymbolGraph and Symbol instances. Additionally, it requires the
+configuration to be properly set up, which may not be straightforward
+for beginners.
 
 Follow-up Questions:
 --------------------
 
--  What if symbol relationships in the ``SymbolGraph`` are not correctly
-   defined?
--  How can we update or modify the ``PyContextRetrieverConfig`` after
-   initializing the ``PyContextRetriever``?
+-  How can users be guided to properly construct a SymbolGraph and
+   Symbol instances for use with the PyContextRetriever?
+-  Are there any existing examples or tutorials for using the
+   PyContextRetriever effectively?

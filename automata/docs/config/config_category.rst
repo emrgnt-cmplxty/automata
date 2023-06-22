@@ -1,50 +1,46 @@
 ConfigCategory
 ==============
 
-``ConfigCategory`` is an enumeration representing the different
-categories of configuration options used in the Automata software. It is
-primarily used to categorize configurations in the context of agent
-configurations.
+``ConfigCategory`` is an enumeration class that represents the different
+categories of configuration options. It is used as a way to organize and
+manage various configuration settings.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
+-  ``automata.tests.unit.sample_modules.sample.EmptyClass``
+-  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
+-  ``automata.core.agent.coordinator.AutomataInstance.Config``
+-  ``automata.tests.unit.test_py_code_retriever.test_build_overview``
+-  ``automata.config.config_types.AutomataAgentConfig.Config``
+-  ``automata.tests.unit.test_py_writer.test_extend_module``
 -  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.base.tool.Tool``
+-  ``automata.tests.unit.test_py_writer.MockCodeGenerator.generate_code``
 -  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.agent.action.AutomataActionExtractor``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
+
+Overview
+--------
+
+The ``ConfigCategory`` class is an enumeration mainly used to manage
+configuration files for the Automata project. The enumeration values
+correspond to specific configuration settings. It can be used for
+organizing and loading configurations within related symbols.
 
 Example
 -------
 
-The following example demonstrates how to import and use
-``ConfigCategory``.
+Here is an example of using ``ConfigCategory``:
 
 .. code:: python
 
    from automata.config.config_types import ConfigCategory
 
-   print(ConfigCategory.AGENT)  # Output: agent
-   print(ConfigCategory.PROMPT)  # Output: prompt
-
-Limitations
------------
-
-The primary limitation of ``ConfigCategory`` is that it only contains a
-limited set of predefined configuration categories. It cannot be
-extended to include custom categories without modifying the enumeration
-definition in the source code.
+   agent_category = ConfigCategory.AGENT
+   print(agent_category.value)  # Output: "agent"
 
 Follow-up Questions:
 --------------------
 
--  Is it possible to add custom configuration categories in addition to
-   the predefined ones within ``ConfigCategory``?
--  How are the ``ConfigCategory`` values used in the larger context of
-   configuration management in Automata?
+-  What other categories are needed for configuration options in the
+   project?

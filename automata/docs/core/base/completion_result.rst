@@ -1,71 +1,63 @@
 CompletionResult
 ================
 
-``CompletionResult`` is an abstract base class that provides a method
-``get_completions()`` which should be implemented by any classes
-extending it. The purpose of ``CompletionResult`` is to provide a
-standard way of retrieving completions resulting from the AI interaction
-using OpenAI’s API.
+``CompletionResult`` is an abstract base class representing the result
+of an OpenAI API completion request. It serves as a base model for
+different types of completion results, such as
+``OpenAIBaseCompletionResult`` and ``OpenAIChatCompletionResult``. The
+primary method exposed by the class is ``get_completions``, which
+returns a list of generated completions based on the API response.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``config.config_types.AgentConfigName``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.core.database.vector.JSONVectorDatabase``
-
-Method
-------
-
--  ``get_completions() -> list[str]:`` An abstract method that should be
-   implemented by the extending class. It should return a list of string
-   completions.
+-  ``automata.core.base.openai.OpenAIBaseCompletionResult``
+-  ``automata.core.base.openai.OpenAIChatCompletionResult``
 
 Example
 -------
 
-The following example demonstrates how to create a custom class
-extending ``CompletionResult`` and implementing the
-``get_completions()`` method.
+The following example demonstrates how to get completions from an
+instance of ``OpenAIBaseCompletionResult``.
 
 .. code:: python
 
-   from automata.core.base.openai import CompletionResult
+   from automata.core.base.openai import OpenAIBaseCompletionResult
 
-   class CustomCompletionResult(CompletionResult):
-       def __init__(self, completions):
-           self._completions = completions
+   # Assume `raw_data` is the API response data containing choice objects
+   raw_data = {
+       "choices": [
+           {
+               "text": "This is the first completion."
+           },
+           {
+               "text": "This is the second completion."
+           }
+       ]
+   }
 
-       def get_completions(self) -> list[str]:
-           return self._completions
+   completion_result = OpenAIBaseCompletionResult(raw_data)
+   completions = completion_result.get_completions()
 
-   completions = ["completion_1", "completion_2", "completion_3"]
-   custom_completion_result = CustomCompletionResult(completions)
-   result_completions = custom_completion_result.get_completions()
-
-   print(result_completions)  # Output: ['completion_1', 'completion_2', 'completion_3']
+   assert completions == [
+       "This is the first completion.",
+       "This is the second completion."
+   ]
 
 Limitations
 -----------
 
-The ``CompletionResult`` class is limited by the fact that it does not
-provide any native functionality for interacting with the OpenAI API.
-The responsibility of generating completions and interacting with the
-API is left to the classes extending ``CompletionResult``. It simply
-provides a standardized method for extracting completions provided by
-the implementing classes.
+``CompletionResult`` serves as an abstract base class, and its usability
+is limited to its subclasses, which provide specific implementations for
+handling various completion scenarios. When dealing with different types
+of API responses and desired output formats, using the subclass that
+handles those specific requirements is necessary.
 
 Follow-up Questions:
 --------------------
 
--  What is the primary use case for the ``CompletionResult`` class in
-   the context of the other related classes?
--  Are there any other important methods or properties that should be
-   included in the ``CompletionResult`` class?
+-  What are some common use cases for different subclasses of
+   ``CompletionResult`` that handle unique circumstances or
+   requirements?
+-  Are there other limitations or nuances when working with
+   ``CompletionResult`` missing from this documentation?

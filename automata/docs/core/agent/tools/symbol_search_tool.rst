@@ -1,74 +1,65 @@
 SymbolSearchTool
 ================
 
-``SymbolSearchTool`` is a class that encapsulates the search
-functionalities for symbols in a codebase. It provides methods to build
-and execute queries using various search tools provided by the
-``SearchTool`` enumeration, and it relies on the ``SymbolSearch`` class
-for performing the searches.
+``SymbolSearchTool`` is a class that provides various search tools used
+to search for symbols in a program’s codebase. The tools are built on
+top of the ``SymbolSearch`` class and utilize the different search
+functions available. ``SymbolSearchTool`` includes search tools such as
+Symbol Rank Search, Symbol References, Retrieve Source Code by Symbol,
+and Exact Search.
 
 Overview
 --------
 
-``SymbolSearchTool`` allows users to search for symbols, their
-references, source code, and perform exact pattern matching in the
-codebase. The class takes a ``SymbolSearch`` object as input, along with
-an optional list of ``SearchTool`` instances to build. It exposes
-methods to build tools, process queries, and get results for different
-types of searches.
+``SymbolSearchTool`` offers a convenient way to build, initialize, and
+process various searches related to symbols in the codebase. It takes a
+``SymbolSearch`` object and an optional list of search tools as input
+during initialization. The available search tools can be built on
+demand, and a specific search tool can be utilized by processing a query
+using the desired tool.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.agent.tools.symbol_search.SearchTool``
+-  ``automata.core.base.tool.Tool``
 
 Example
 -------
 
 The following example demonstrates how to create an instance of
-``SymbolSearchTool`` and perform a symbol rank search with a given query
-string.
+``SymbolSearchTool``, build search tools, and process a query using one
+of the available search tools.
 
 .. code:: python
 
    from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.symbol.graph import SymbolGraph
-   from automata.core.symbol.similarity import SymbolSimilarity
-   from automata.core.symbol.descriptors import SymbolDescriptor
    from automata.core.agent.tools.symbol_search import SymbolSearchTool, SearchTool
 
-   symbol_graph = SymbolGraph()
-   similarity = SymbolSimilarity()
-   search_tools = [SearchTool.SYMBOL_RANK_SEARCH]
+   symbol_search = SymbolSearch()  # Note: Replace with actual SymbolSearch instance
+   symbol_search_tool = SymbolSearchTool(symbol_search)
 
-   symbol_search = SymbolSearch(
-       symbol_graph=symbol_graph,
-       symbol_similarity=similarity,
-       symbol_rank_config=None,
-       code_subgraph=None,
-   )
+   tools = symbol_search_tool.build()
+   tool_type = SearchTool.SYMBOL_RANK_SEARCH
+   query = "example_query"
 
-   search_tool = SymbolSearchTool(
-       symbol_search=symbol_search,
-       search_tools=search_tools
-   )
-
-   query = "Find the user-defined symbols in the codebase"
-   result = search_tool.process_query(tool_type=SearchTool.SYMBOL_RANK_SEARCH, query=query)
+   result = symbol_search_tool.process_query(tool_type, query)
 
 Limitations
 -----------
 
-``SymbolSearchTool`` relies on the functionalities provided by
-``SymbolSearch`` and the search tools available in ``SearchTool``.
-Therefore, it inherits the limitations of those underlying classes. For
-example, it assumes that the ``SymbolGraph`` and ``SymbolSimilarity``
-instances are properly initialized and accurate.
+The primary limitation of ``SymbolSearchTool`` is that it relies on the
+search functions available in the ``SymbolSearch`` class. Any new search
+functionality needs to be implemented in ``SymbolSearch`` and then added
+as a search tool in ``SymbolSearchTool``. Moreover, it currently takes
+only a list of search tools and builds all of them at once, which may
+not be efficient in certain scenarios.
 
 Follow-up Questions:
 --------------------
 
--  Are there any specific limitations or caveats while using
-   ``SymbolSearchTool``?
+-  How does the ``SymbolSearch`` class work, and how does it interact
+   with ``SymbolSearchTool``?
+-  Can we make the ``SymbolSearchTool`` more flexible in terms of adding
+   new search tools or building only specific tools on demand?

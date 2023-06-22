@@ -1,60 +1,63 @@
 AgentAction
 ===========
 
-``AgentAction`` is a class that represents an action to be executed by
-an AutomataAgent. It contains the agent configuration version, the agent
-query, and the instructions for the agent. It also provides a method to
-create an instance of ``AgentAction`` from a list of lines and an index
-from a configuration file.
+``AgentAction`` represents the actions performed by an agent in the
+system. It includes essential information like the version of the agent
+configuration (``agent_version``), the query to be executed by the agent
+(``agent_query``), and the instructions for the agent
+(``agent_instruction``). This class has been designed to work with the
+``AutomataAgent`` class for communication and coordination.
 
 Overview
 --------
 
-The ``AgentAction`` class provides a way to represent and create an
-instance of an action for an AutomataAgent. It’s useful in scenarios
-where you want to specify the agent configuration version, agent query,
-and instructions to be executed by the agent. The class also provides a
-method to create an instance of ``AgentAction`` from a list of lines and
-an index, allowing for easy parsing of agent action configurations.
+The ``AgentAction`` class is responsible for storing the essential
+information needed by an agent to perform actions. It is an abstract
+base class that needs to be implemented by subclasses with specific
+action implementation. The framework depends on this class to provide
+proper formatting and information for agent actions.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.config.config_types.AgentConfigName``
+-  ``automata.core.agent.agent.Agent``
+-  ``automata.core.agent.agent_enums.ActionIndicator``
 -  ``automata.core.agent.agent.AutomataAgent``
--  ``config.config_types.AgentConfigName``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``config.config_types.AutomataAgentConfig``
 
 Example
 -------
 
-Here’s an example demonstrating how to create an instance of
-``AgentAction``:
+The following example demonstrates how to create an instance of
+``AgentAction`` and use it in a coordinator.
 
 .. code:: python
 
    from automata.core.agent.action import AgentAction
-   from config.config_types import AgentConfigName
+   from automata.config.config_types import AgentConfigName
 
-   agent_version = AgentConfigName.AUTOMATA_MAIN
-   agent_query = "Perform Code Analysis"
-   agent_instruction = ["Analyze the code to find potential issues"]
+   # Create an AgentAction instance
+   action = AgentAction(
+       agent_version=AgentConfigName.TEST,
+       agent_query="mock_agent_query",
+       agent_instruction=["Test instruction."]
+   )
 
-   agent_action = AgentAction(agent_version, agent_query, agent_instruction)
-   print(agent_action)
+   # Use the action in the coordinator
+   coordinator.run_agent(action)
 
 Limitations
 -----------
 
-The primary limitation of ``AgentAction`` is that it assumes a specific
-format and structure for the input configuration lines and index when
-using the ``from_lines`` method. If the format is not as expected, it
-might not work correctly.
+The ``AgentAction`` class needs to be subclassed for specific action
+implementations, as it is an abstract base class. This requires
+developers to implement the necessary internal logic for each action in
+their respective subclasses.
 
 Follow-up Questions:
 --------------------
 
--  How can ``AgentAction`` accommodate different configuration formats
-   or custom configuration files when creating an instance from lines
-   and an index?
+-  Are there any specific actions that need to be implemented as
+   subclasses of ``AgentAction``?
+-  How are the pre-defined ``AgentAction`` instances stored and accessed
+   in the system?

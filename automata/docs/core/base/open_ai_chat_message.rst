@@ -1,53 +1,61 @@
 OpenAIChatMessage
 =================
 
-``OpenAIChatMessage`` is a simple data structure used to represent chat
-messages in the context of OpenAI’s Chat API. It contains two
-attributes: ``role`` and ``content``. The ``role`` attribute represents
-the role of the message sender, which can be “system”, “user”, or
-“assistant”. The ``content`` attribute holds the text of the chat
-message.
+``OpenAIChatMessage`` is a data class used by ``AutomataAgent`` to store
+the role and content of the messages exchanged during the agent’s
+interactions with the OpenAI API. This makes it easy to convert the
+messages into a dictionary format which can be used during API calls.
 
-Methods
--------
+Overview
+--------
 
--  ``to_dict``: Convert the OpenAIChatMessage instance to a dictionary
-   with “role” and “content” as keys.
-
-Example
--------
-
-.. code:: python
-
-   from automata.core.base.openai import OpenAIChatMessage
-   msg = OpenAIChatMessage(role="user", content="Hello, world!")
-   msg_dict = msg.to_dict()
+``OpenAIChatMessage`` holds two main attributes: the role of the message
+sender (such as “system”, “user”, or “assistant”), and the content of
+the message itself. It helps manage and organize messages exchanged
+between the agent and the OpenAI API in a unified format. The
+``to_dict`` method allows converting the message into a dictionary
+format, which is required for making API calls.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.agent.agent.AutomataAgent``
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.action.AutomataActionExtractor``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
+-  ``automata.core.base.openai.OpenAIChatCompletionResult``
+
+Example
+-------
+
+The following example demonstrates how to create an instance of
+``OpenAIChatMessage`` and convert it into a dictionary format.
+
+.. code:: python
+
+   from automata.core.base.openai import OpenAIChatMessage
+
+   role = "user"
+   content = "Find the files where AutomataAgent is imported."
+   message = OpenAIChatMessage(role=role, content=content)
+   message_dict = message.to_dict()
+
+   print(message_dict)
+
+Output:
+
+.. code:: python
+
+   {"role": "user", "content": "Find the files where AutomataAgent is imported."}
 
 Limitations
 -----------
 
-``OpenAIChatMessage`` is a basic data structure and is not responsible
-for handling the communication with the Chat API directly. It is
-designed to be used in conjunction with other classes to structure and
-format messages to interact with the API. Consequently, it does not
-provide any functionality beyond representing and converting messages to
-dictionaries.
+The current limitations of ``OpenAIChatMessage`` include its lack of
+support for more advanced message formats and structures that the OpenAI
+API may evolve to support. The class is primarily designed to work with
+the current chat-based API format and may require updates to accommodate
+future API changes.
 
 Follow-up Questions:
 --------------------
 
--  How are the ``OpenAIChatMessage`` instances being utilized when
-   interacting with the Chat API?
+-  Are there any known upcoming changes or updates to the OpenAI API
+   that may affect the structure or usage of ``OpenAIChatMessage``?

@@ -1,57 +1,56 @@
 AutomataAgentConfigFactory
 ==========================
 
-``AutomataAgentConfigFactory`` is a class that provides a method for
-creating ``AutomataAgentConfig`` instances with the given arguments in a
-flexible and easy-to-use way. The main method provided by this class is
-``create_config`` which takes variable-length argument lists and
-arbitrary keyword arguments.
+``AutomataAgentConfigFactory`` is a factory class that provides a simple
+and convenient way to create ``AutomataAgentConfig`` instances based on
+the provided arguments. It allows users to create agent configurations
+with custom settings and handles any conflicting or missing arguments.
 
 Overview
 --------
 
-The ``AutomataAgentConfigFactory`` class contains one static method,
-``create_config``, which creates an ``AutomataAgentConfig`` instance
-based on the given arguments. Internally, ``create_config`` uses the
-``AutomataAgentConfigBuilder`` class to interactively set required agent
-configurations and instantiate the agent accordingly.
+``AutomataAgentConfigFactory`` utilizes the ``create_config`` method to
+create an instance of the ``AutomataAgentConfig``. This method takes in
+various arguments that are used to create an ``AutomataAgentConfig`` and
+offers the flexibility to override or change the default settings as
+needed. The class also checks for any conflicts or missing mandatory
+arguments during the creation process.
 
 Related Symbols
 ---------------
 
--  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.config.config_types.AgentConfigName``
--  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.config.agent_config_builder.build_llm_toolkits``
+-  ``config.automata_agent_config.AutomataAgentConfig``
+-  ``config.automata_agent_config_utils.AutomataAgentConfigBuilder``
+-  ``core.agent.agent.AutomataAgent``
+-  ``config.config_enums.AgentConfigName``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
+The following example demonstrates how to create an
 ``AutomataAgentConfig`` using the ``AutomataAgentConfigFactory``.
 
 .. code:: python
 
-   from automata.config.agent_config_builder import AutomataAgentConfigFactory
-   from automata.config.config_types import AgentConfigName
+   from automata.core.agent.agent import AutomataAgentConfig
+   from automata.config.agent_config_builder import AutomataAgentConfigFactory, AgentConfigName
 
-   config = AutomataAgentConfigFactory.create_config(main_config_name=AgentConfigName.AUTOMATA_MAIN)
+   instructions = "Execute the following query: SELECT * FROM users;"
+   config_name = AgentConfigName.AUTOMATA_MAIN
+   config = AutomataAgentConfigFactory.create_config(main_config_name=config_name)
 
 Limitations
 -----------
 
-``AutomataAgentConfigFactory`` relies on the
-``AutomataAgentConfigBuilder`` class, which in turn depends on the
-predefined configuration files based on ``AgentConfigName``. Thus,
-``AutomataAgentConfigFactory`` can only create configurations from those
-files and cannot create custom configurations that are not defined
-within the existing configuration files.
+``AutomataAgentConfigFactory`` relies on predefined configurations from
+the ``AutomataAgentConfig`` and ``AutomataAgentConfigBuilder`` classes.
+The user should have knowledge of these configurations and their default
+values before using the factory method. Additionally, the factory method
+may raise exceptions for any conflicting or missing mandatory arguments,
+which the user must handle.
 
 Follow-up Questions:
 --------------------
 
--  Is there a way to provide a custom configuration file to the
-   ``AutomataAgentConfigFactory`` in order to create an agent with a
-   custom configuration?
+-  Can the factory method implementation be improved to provide better
+   error handling and be more user-friendly?

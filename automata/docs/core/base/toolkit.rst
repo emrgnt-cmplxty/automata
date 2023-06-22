@@ -1,72 +1,63 @@
 Toolkit
 =======
 
-``Toolkit`` is a collection of tools that provide various
-functionalities. It contains a list of tools and supports adding and
-using tools.
+``Toolkit`` is a container class that holds a set of tools. Tools are
+essentially functions or coroutines that perform specific tasks, used by
+agents for various purposes. ``Toolkit`` keeps such tools organized and
+simplifies their usage by providing methods for representing the toolkit
+and handling its tools.
 
 Overview
 --------
 
-The ``Toolkit`` class provides an interface to store and manage a
-collection of tools. A tool is a callable object, like a Python function
-or a coroutine that takes a string input and returns a string output
-with additional metadata. The ``Toolkit`` class has a ``__repr__``
-method to provide a string representation of the toolkit.
+``Toolkit`` has an attribute ``tools`` that is a list of the tools it
+contains. The primary methods of the ``Toolkit`` class are ``__init__``
+for initialization and ``__repr__`` for representing the toolkit as a
+string.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.base.base_tool.BaseTool``
 -  ``automata.core.base.tool.Tool``
--  ``automata.core.base.toolkit.List``
--  ``automata.core.base.toolkit.Optional``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.agent.agent.AutomataAgent``
+-  ``automata.tests.unit.test_tool.TestTool``
+-  ``automata.core.agent.tools.tool_utils.ToolkitType``
+-  ``automata.core.agent.agent_enums.ToolField``
 
 Example
 -------
 
-The following example demonstrates how to create an instance of
-``Toolkit`` with a list of tools.
+The following is an example demonstrating how to create an instance of
+``Toolkit`` containing a single instance of ``TestTool``.
 
 .. code:: python
 
-   from automata.core.base.tool import Tool
-   from automata.core.base.toolkit import Toolkit
+   from automata.core.base.tool import Toolkit
+   from automata.tests.unit.test_tool import TestTool
 
-   # Define example tools
-   def tool_one(input: str) -> str:
-       return f"Tool One: {input}"
+   test_tool = TestTool(
+       name="TestTool",
+       description="A test tool for testing purposes",
+       func=lambda x: "TestTool response",
+   )
 
-   def tool_two(input: str) -> str:
-       return f"Tool Two: {input}"
+   tools = [test_tool]
+   toolkit = Toolkit(tools)
 
-   tool_list = [
-       Tool(name="Tool One", func=tool_one, description="Example Tool One"),
-       Tool(name="Tool Two", func=tool_two, description="Example Tool Two")
-   ]
-
-   # Create a Toolkit instance
-   my_toolkit = Toolkit(tools=tool_list)
-
-   # Display the Toolkit
-   print(my_toolkit)
+   assert len(toolkit.tools) == 1
+   assert isinstance(toolkit.tools[0], TestTool)
+   assert toolkit.tools[0].name == "TestTool"
 
 Limitations
 -----------
 
-The primary limitation from using the ``Toolkit`` class is that it
-requires a specific structure for the tools that are to be added. The
-tools must be instances of the ``Tool`` class or other subclasses that
-extend ``BaseTool``. This limitation enforces a level of consistency,
-but may restrict rapid prototyping and quick addition of tools that are
-not in the desired format.
+``Toolkit`` assumes that the tools it contains are well-formed instances
+of ``Tool`` or subclasses thereof. If a user introduces a malformed
+tool, it might lead to unexpected behavior during the execution of an
+agent using the toolkit.
 
 Follow-up Questions:
 --------------------
 
--  Is there a more flexible way to add tools to a toolkit yet still
-   maintain readability and maintainability of the code?
--  Can we provide wrapper functions to automatically convert functions
-   to Tool instances for a more convenient addition to the toolkit?
+-  How can we enforce the validation of tools within the toolkit at
+   initialization?
