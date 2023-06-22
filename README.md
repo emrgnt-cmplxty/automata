@@ -146,7 +146,7 @@ While the complete realization of this goal is likely to be a complex and long-t
 
 ## Inspiration and Future Endeavors
 
-Automata was born from the amalgamation of inspiring projects like [Auto-GPT](https://github.com/Significant-Gravitas/Auto-GPT), [BabyAGI](https://github.com/yoheinakajima/babyagi), [AgentGPT](https://github.com/reworkd/AgentGPT), and is designed to inspire many more. We're eager to see what you're building and how we can learn and evolve together in this uncharted AI territory.
+Automata was born from the amalgamation of inspiring projects like [Auto-GPT](https://github.com/Significant-Gravitas/Auto-GPT), [BabyAGI](https://github.com/yoheinakajima/babyagi), [AgentGPT](https://github.com/reworkd/AgentGPT), and [GPT-Engineer](https://github.com/AntonOsika/gpt-engineer) and is designed to inspire many more. We're eager to see what you're building and how we can learn and evolve together in this uncharted AI territory.
 
 ## License
 
