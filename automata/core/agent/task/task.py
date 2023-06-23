@@ -1,7 +1,6 @@
 import logging
 import logging.config
 import os
-from typing import Optional
 
 from automata.core.base.task import Task
 from automata.core.utils import get_logging_config, root_py_fpath
@@ -30,8 +29,6 @@ class AutomataTask(Task):
         if "instructions" not in self.kwargs or self.kwargs["instructions"] == "":
             raise AutomataMissingInstructions()
         self.instructions = self.kwargs["instructions"]
-        self.result: Optional[str] = None
-        self.error: Optional[str] = None
         self.path_to_root_py = kwargs.get("path_to_root_py", root_py_fpath())
 
     def initialize_logging(self) -> None:

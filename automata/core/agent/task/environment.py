@@ -4,7 +4,7 @@ import os
 
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.github_manager import GitHubManager
-from automata.core.base.task import TaskEnvironment, TaskStatus
+from automata.core.base.task import Task, TaskEnvironment, TaskStatus
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class AutomataTaskEnvironment(TaskEnvironment):
         """
         self.github_manager = github_manager
 
-    def setup(self, task: AutomataTask) -> None:
+    def setup(self, task: Task) -> None:
         """
         Set up the environment by cloning the repository into the task directory.
         Sets the task status to REGISTERED.
@@ -33,6 +33,9 @@ class AutomataTaskEnvironment(TaskEnvironment):
             raise Exception(
                 f"Cannot setup task environment because task is not in REGISTERED state. Task status = {task.status}"
             )
+        if not isinstance(task, AutomataTask):
+            raise TypeError("AutomataTaskEnvironment requires an AutomataTask instance")
+
         logger.debug(f"Setting up the task environment in directory {task.task_dir}.")
         # TODO - Consider more methods for environment initlization than git clone
         self.github_manager.clone_repository(task.task_dir)

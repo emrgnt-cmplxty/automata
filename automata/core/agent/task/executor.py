@@ -5,7 +5,7 @@ import time
 from automata.config.agent_config_builder import AutomataAgentConfigFactory
 from automata.core.agent.agent import AutomataAgent
 from automata.core.agent.task.task import AutomataTask
-from automata.core.base.task import ITaskExecution, TaskStatus
+from automata.core.base.task import ITaskExecution, Task, TaskStatus
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class IAutomataTaskExecution(ITaskExecution):
     Class for executing general tasks.
     """
 
-    def execute(self, task: AutomataTask) -> None:
+    def execute(self, task: Task) -> None:
         """
         Executes the task by creawting and running an AutomataAgent
         Incremetns the task's retry count if the task fails.
@@ -23,6 +23,9 @@ class IAutomataTaskExecution(ITaskExecution):
         Raises:
             Exception: If the task fails on execution
         """
+        if not isinstance(task, AutomataTask):
+            raise TypeError("AutomataTaskEnvironment requires an AutomataTask instance")
+
         task.status = TaskStatus.RUNNING
         try:
             agent = IAutomataTaskExecution._build_agent(task)

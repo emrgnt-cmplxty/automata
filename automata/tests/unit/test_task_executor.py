@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from automata.core.agent.task.executor import AutomataTaskExecutor, ITaskExecution
-from automata.core.agent.task.task import AutomataTask
-from automata.core.base.task import TaskStatus
+from automata.core.base.task import Task, TaskStatus
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.coding.py_coding.writer import PyCodeWriter
@@ -16,7 +15,7 @@ class TestExecuteBehavior(ITaskExecution):
     Class for executing test tasks.
     """
 
-    def execute(self, task: AutomataTask):
+    def execute(self, task: Task):
         import os
 
         module_map = LazyModuleTreeMap(root_py_fpath())
