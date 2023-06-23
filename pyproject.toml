@@ -15,7 +15,7 @@ python = "^3.9"
 # Add your project dependencies here
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.0"
+pytest = "^7.4"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
