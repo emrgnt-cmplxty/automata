@@ -5,7 +5,7 @@ import click
 
 from automata.core.utils import get_logging_config
 
-from .options import common_options
+from .options import agent_options, common_options
 
 logger = logging.getLogger(__name__)
 
@@ -43,16 +43,6 @@ def cli(ctx) -> None:
 
 @common_options
 @cli.command()
-@click.option(
-    "--index_file",
-    default="index.scip",
-    help="Which index file to use for the embedding modifications.",
-)
-@click.option(
-    "--embedding_file",
-    default="symbol_code_embedding.json",
-    help="Which embedding file to save to.",
-)
 @click.pass_context
 def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
@@ -65,16 +55,6 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
 
 @common_options
 @cli.command()
-@click.option(
-    "--index_file",
-    default="index.scip",
-    help="Which index file to use for the embedding modifications.",
-)
-@click.option(
-    "--embedding_file",
-    default="symbol_doc_embedding_l2.json",
-    help="Which embedding file to save to.",
-)
 @click.pass_context
 def run_doc_embedding_l2(ctx, *args, **kwargs) -> None:
     """Run the document embedding Level-2 pipeline."""
@@ -87,16 +67,6 @@ def run_doc_embedding_l2(ctx, *args, **kwargs) -> None:
 
 @common_options
 @cli.command()
-@click.option(
-    "--index_file",
-    default="index.scip",
-    help="Which index file to use for the embedding modifications.",
-)
-@click.option(
-    "--embedding_file",
-    default="symbol_doc_embedding_l3.json",
-    help="Which embedding file to save to.",
-)
 @click.pass_context
 def run_doc_embedding_l3(ctx, *args, **kwargs) -> None:
     """Run the document embedding Level-3 pipeline."""
@@ -107,6 +77,7 @@ def run_doc_embedding_l3(ctx, *args, **kwargs) -> None:
     main(**kwargs)
 
 
+@common_options
 @cli.command()
 @click.pass_context
 def run_doc_post_process(ctx, *args, **kwargs) -> None:
@@ -119,27 +90,8 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
 
 
 @common_options
+@agent_options
 @cli.command()
-@click.option(
-    "--instructions",
-    default="This is a dummy instruction, return True.",
-    help="Which instructions to use for the agent.",
-)
-@click.option(
-    "--tools",
-    default="context_oracle",
-    help="Which tools to use?",
-)
-@click.option(
-    "--model",
-    default="gpt-4",
-    help="Which model to use?",
-)
-@click.option(
-    "--agent_name",
-    default="automata_retriever",
-    help="Which agent to use for this task?",
-)
 @click.pass_context
 def run_agent(ctx, *args, **kwargs) -> None:
     """Run the agent."""
@@ -147,4 +99,24 @@ def run_agent(ctx, *args, **kwargs) -> None:
 
     reconfigure_logging(kwargs.get("log_level", "DEBUG"))
     logger.info("Running agent")
+    main(**kwargs)
+
+
+@common_options
+@agent_options
+@cli.command()
+@click.pass_context
+def run_agent_task(ctx, *args, **kwargs) -> None:
+    """
+    Run an agent task.
+
+    Note - This is similar to run_agent, but executes the agent
+    within the task framework. This allows for more flexibility
+    across multiple tasks.
+
+    """
+    from automata.cli.scripts.run_agent_task import main
+
+    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    logger.info("Running the task")
     main(**kwargs)

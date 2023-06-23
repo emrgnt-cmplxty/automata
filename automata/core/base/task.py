@@ -4,7 +4,7 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Optional
 
-from automata.config import TASK_OUTPUT_PATH
+from automata.config import TASK_DB_PATH
 from automata.core.utils import root_fpath
 
 
@@ -87,9 +87,7 @@ class Task:
     @staticmethod
     def _get_tasks_dir() -> str:
         return (
-            TASK_OUTPUT_PATH
-            if TASK_OUTPUT_PATH != "tasks"
-            else os.path.join(root_fpath(), TASK_OUTPUT_PATH)
+            TASK_DB_PATH if TASK_DB_PATH != "tasks" else os.path.join(root_fpath(), TASK_DB_PATH)
         )
 
     @staticmethod

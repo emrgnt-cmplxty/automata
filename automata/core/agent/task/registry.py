@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Tuple
 
 import jsonpickle
 
+from automata.config import TASK_DB_PATH
 from automata.core.agent.task.task import AutomataTask, TaskStatus
 from automata.core.base.github_manager import GitHubManager
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class AutomataTaskDatabase:
-    def __init__(self, db_path: str):
+    def __init__(self, db_path: str = TASK_DB_PATH):
         self.conn = sqlite3.connect(db_path)
         self.create_table()
 
