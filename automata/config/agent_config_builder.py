@@ -268,7 +268,7 @@ class AutomataAgentConfigFactory:
             builder = builder.with_max_iters(kwargs["with_max_iters"])
 
         if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
-            llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","))
+            llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","), **kwargs)
             builder = builder.with_llm_toolkits(llm_toolkits)
 
         return builder.build()

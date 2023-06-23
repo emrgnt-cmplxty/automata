@@ -1,5 +1,6 @@
 import os
 import random
+from typing import Any
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -176,6 +177,9 @@ class MockRepositoryManager(RepositoryManager):
 
     def branch_exists(self, branch_name: str) -> bool:
         return False
+
+    def fetch_issue(self, issue_number: int) -> Any:
+        pass
 
 
 @pytest.fixture

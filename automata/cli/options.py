@@ -47,13 +47,12 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
     options = [
         click.option(
             "--instructions",
-            default="This is a dummy instruction, return True.",
             help="Which instructions to use for the agent.",
         ),
         click.option(
-            "--tools",
+            "--llm_toolkits",
             default="context_oracle",
-            help="Which tools to use?",
+            help="Which LLM toolkits to use?",
         ),
         click.option(
             "--model",
@@ -61,7 +60,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which model to use?",
         ),
         click.option(
-            "--agent_name",
+            "--main_config_name",
             default="automata_retriever",
             help="Which agent to use for this task?",
         ),
