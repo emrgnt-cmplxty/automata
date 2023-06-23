@@ -6,11 +6,11 @@ from typing import Any, Dict, List, Tuple
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.agent.tools.context_oracle import ContextOracleTool
-from automata.core.agent.tools.py_retriever import PyCodeRetrieverTool
+from automata.core.agent.tools.py_reader import PyCodeReaderTool
 from automata.core.agent.tools.py_writer import PyCodeWriterTool
 from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.coding.py_coding.writer import PyCodeWriter
 from automata.core.context.py_context.retriever import (
     PyContextRetriever,
@@ -212,18 +212,18 @@ class DependencyFactory:
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
 
     @classmethod_lru_cache()
-    def create_py_retriever(self) -> PyCodeRetriever:
+    def create_py_retriever(self) -> PyCodeReader:
         """
-        Creates a PyCodeRetriever instance.
+        Creates a PyCodeReader instance.
         """
-        return PyCodeRetriever()
+        return PyCodeReader()
 
     @classmethod_lru_cache()
     def create_py_writer(self) -> PyCodeWriter:
         """
-        Creates a PyCodeRetriever instance.
+        Creates a PyCodeReader instance.
         """
-        return PyCodeWriter(self.get("py_retriever"))
+        return PyCodeWriter(self.get("py_reader"))
 
 
 class ToolCreationError(Exception):
@@ -255,14 +255,14 @@ class AgentToolFactory:
     _retriever_instance = None
 
     TOOLKIT_TYPE_TO_TOOL_CLASS = {
-        ToolkitType.PY_RETRIEVER: PyCodeRetrieverTool,
+        ToolkitType.PY_RETRIEVER: PyCodeReaderTool,
         ToolkitType.PY_WRITER: PyCodeWriterTool,
         ToolkitType.SYMBOL_SEARCHER: SymbolSearchTool,
         ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
     }
 
     TOOLKIT_TYPE_TO_ARGS: Dict[ToolkitType, List[Tuple[str, Any]]] = {
-        ToolkitType.PY_RETRIEVER: [("py_retriever", PyCodeRetriever)],
+        ToolkitType.PY_RETRIEVER: [("py_reader", PyCodeReader)],
         ToolkitType.PY_WRITER: [("py_writer", PyCodeWriter)],
         ToolkitType.SYMBOL_SEARCHER: [("symbol_search", SymbolSearch)],
         ToolkitType.CONTEXT_ORACLE: [
@@ -281,7 +281,7 @@ class AgentToolFactory:
 
             kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
               for the specified toolkit type. The possible arguments are:
-                py_retriever - PyCodeRetriever
+                py_reader - PyCodeReader
                 py_writer - PyCodeWriter
                 symbol_search - SymbolSearch
                 symbol_doc_similarity - SymbolSimilarity

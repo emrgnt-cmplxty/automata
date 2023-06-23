@@ -14,7 +14,7 @@ from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
@@ -138,9 +138,9 @@ def automata_agent_config_builder():
 @pytest.fixture
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
-    tool_list = ["py_retriever"]
+    tool_list = ["py_reader"]
     mock_llm_toolkits = build_llm_toolkits(
-        tool_list, py_retriever=mocker.MagicMock(spec=PyCodeRetriever)
+        tool_list, py_reader=mocker.MagicMock(spec=PyCodeReader)
     )
 
     instructions = "Test instruction."

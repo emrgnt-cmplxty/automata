@@ -7,7 +7,7 @@ import pytest
 from automata.core.agent.tools.py_writer import PyCodeWriterTool
 from automata.core.base.tool import Tool
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.coding.py_coding.writer import PyCodeWriter
 from automata.core.utils import root_py_fpath
 
@@ -18,8 +18,8 @@ def python_writer_tool_builder(tmpdir):
     os.chdir(temp_directory)
     path_to_here = os.path.join(root_py_fpath(), "tests", "unit")
     module_map = LazyModuleTreeMap(path_to_here)
-    py_retriever = PyCodeRetriever(module_map)
-    py_writer = PyCodeWriter(py_retriever)
+    py_reader = PyCodeReader(module_map)
+    py_writer = PyCodeWriter(py_reader)
     return PyCodeWriterTool(py_writer=py_writer)
 
 

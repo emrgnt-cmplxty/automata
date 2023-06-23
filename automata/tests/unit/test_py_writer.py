@@ -16,7 +16,7 @@ from redbaron import (
 
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata.core.coding.py_coding.navigation import find_syntax_tree_node
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.coding.py_coding.writer import PyCodeWriter
 
 
@@ -156,7 +156,7 @@ class MockCodeGenerator:
 def py_writer():
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     module_map = LazyModuleTreeMap(sample_dir)
-    retriever = PyCodeRetriever(module_map)
+    retriever = PyCodeReader(module_map)
     return PyCodeWriter(retriever)
 
 
@@ -380,7 +380,7 @@ def test_write_and_retrieve_mock_code(py_writer):
 
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     module_map = LazyModuleTreeMap(sample_dir)
-    retriever = PyCodeRetriever(module_map)
+    retriever = PyCodeReader(module_map)
     module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
 

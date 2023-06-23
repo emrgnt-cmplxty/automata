@@ -60,13 +60,13 @@ SR_SEARCHES_TO_HITS = {
     ],
     "python": [
         "PyCodeWriter",
-        "PyCodeRetriever",
+        "PyCodeReader",
         "PyCodeWriterTool",
-        "PyCodeRetrieverTool",
+        "PyCodeReaderTool",
         "PyContextRetriever",
         "PyDocWriter",
     ],
-    "code": ["PyCodeWriter", "PyCodeRetriever", "SymbolCodeEmbedding"],
+    "code": ["PyCodeWriter", "PyCodeReader", "SymbolCodeEmbedding"],
 }
 
 

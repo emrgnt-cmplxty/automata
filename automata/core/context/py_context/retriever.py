@@ -6,7 +6,7 @@ from typing import List, Optional, Set
 import tiktoken
 from redbaron import RedBaron
 
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_types import Symbol
@@ -323,7 +323,7 @@ class PyContextRetriever:
             str: Newline separated docstring
         """
 
-        raw_doctring = PyCodeRetriever.get_docstring_from_node(ast_object).split("\n")
+        raw_doctring = PyCodeReader.get_docstring_from_node(ast_object).split("\n")
         return "\n".join([ele.strip() for ele in raw_doctring]).strip()
 
     @staticmethod

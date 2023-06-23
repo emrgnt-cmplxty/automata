@@ -15,7 +15,7 @@ from automata.core.coding.py_coding.navigation import (
     find_import_syntax_tree_nodes,
     find_syntax_tree_node,
 )
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
@@ -39,14 +39,14 @@ class PyCodeWriter:
 
         pass
 
-    def __init__(self, py_retriever: PyCodeRetriever) -> None:
+    def __init__(self, py_reader: PyCodeReader) -> None:
         """
-        Initialize the PyCodeWriter with a PyCodeRetriever instance
+        Initialize the PyCodeWriter with a PyCodeReader instance
 
         Args:
-            py_retriever (PyCodeRetriever): The PyCodeRetriever instance to use
+            py_reader (PyCodeReader): The PyCodeReader instance to use
         """
-        self.code_retriever = py_retriever
+        self.code_retriever = py_reader
 
     def create_new_module(
         self, module_dotpath: str, source_code: str, do_write: bool = False

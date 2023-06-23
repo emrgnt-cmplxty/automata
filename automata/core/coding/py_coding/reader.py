@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]
 
 
-class PyCodeRetriever:
+class PyCodeReader:
     """Code retriever for fetching python code"""
 
     def __init__(
@@ -57,9 +57,7 @@ class PyCodeRetriever:
         """
         module = self.module_tree_map.fetch_module(module_dotpath)
         if module:
-            return PyCodeRetriever.get_docstring_from_node(
-                find_syntax_tree_node(module, object_path)
-            )
+            return PyCodeReader.get_docstring_from_node(find_syntax_tree_node(module, object_path))
         return NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(

@@ -4,7 +4,7 @@ import pytest
 
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata.core.coding.py_coding.py_utils import build_repository_overview
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def module_map():
 
 @pytest.fixture
 def getter(module_map):
-    return PyCodeRetriever(module_map)
+    return PyCodeReader(module_map)
 
 
 def test_build_overview():

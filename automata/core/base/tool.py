@@ -117,7 +117,7 @@ class Toolkit:
 
 
 class ToolkitType(Enum):
-    PY_RETRIEVER = "py_retriever"
+    PY_RETRIEVER = "py_reader"
     PY_WRITER = "py_writer"
     SYMBOL_SEARCHER = "symbol_searcher"
     CONTEXT_ORACLE = "context_oracle"

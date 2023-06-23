@@ -3,22 +3,22 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tools.py_retriever import PyCodeRetrieverTool
+from automata.core.agent.tools.py_reader import PyCodeReaderTool
 from automata.core.base.tool import Tool
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py_coding.reader import PyCodeReader
 from automata.core.utils import root_py_fpath
 
 
 @pytest.fixture
 def python_retriever_tool_builder():
     path_to_here = os.path.join(root_py_fpath(), "tools", "tool_management", "tests")
-    python_code_retriever = PyCodeRetriever(LazyModuleTreeMap(path_to_here))
-    return PyCodeRetrieverTool(py_retriever=python_code_retriever)
+    python_code_retriever = PyCodeReader(LazyModuleTreeMap(path_to_here))
+    return PyCodeReaderTool(py_reader=python_code_retriever)
 
 
 def test_init(python_retriever_tool_builder):
-    assert isinstance(python_retriever_tool_builder.code_retriever, PyCodeRetriever)
+    assert isinstance(python_retriever_tool_builder.code_retriever, PyCodeReader)
 
 
 def test_build(python_retriever_tool_builder):
