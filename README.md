@@ -49,14 +49,22 @@ pre-commit install
 
 # Set up .env
 cp .env.example .env
-GITHUB_API_KEY=your_github_api_key
 OPEN_API_KEY=your_openai_api_key_here
-# default DB_PATH is $HOME/conversations.sqlite3
-DB_PATH="$HOME/conversations.sqlite3"
-# default Max Workers is 8, manually change the .env to update this quantity.
-sed -i "s|your_openai_api_key|$GITHUB_API_KEY|" .env
-sed -i "s|your_github_api_key|$OPEN_API_KEY|" .env
-sed -i "s|your_conversation_db_path|$DB_PATH|" .env
+GITHUB_API_KEY=your_github_api_key
+CONVERSATION_DB_PATH="$PWD/conversation_db.sqlite3"
+TASK_DB_PATH="$PWD/task_db.sqlite3"
+TASKS_OUTPUT_PATH="$PWD/tasks"
+REPOSITORY_NAME="emrgnt-cmplxty/Automata"
+sed -i "s|your_openai_api_key|$OPEN_API_KEY|" .env
+sed -i "s|your_github_api_key|$GITHUB_API_KEY|" .env
+sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" .env
+sed -i "s|your_task_db_path|$TASK_DB_PATH|" .env
+sed -i "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" .env
+sed -i "s|your_repository_name|$REPOSITORY_NAME|" .env
+# Additional Notes -
+# Default Max Workers is 8, manually change the .env to update this quantity.
+# For MAC users, the example should read as follows -
+## sed -i '' "s|your_openai_api_key|$OPEN_API_KEY|" .env
 
 # Fetch the submodules
 git submodule update --init --recursive

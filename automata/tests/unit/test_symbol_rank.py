@@ -58,7 +58,6 @@ def test_get_ranks():
 
     ranks = rank.get_ranks()
     assert len(ranks) == nodes
-    print("Ranks = ", ranks)
     assert sum(ele[1] for ele in ranks) == pytest.approx(1.0)
 
 

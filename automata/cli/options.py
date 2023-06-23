@@ -18,6 +18,53 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
             default="DEBUG",
             help="Execute script in verbose mode?",
         ),
+        click.option(
+            "--index_file",
+            default="index.scip",
+            help="Which index file to use for the embedding modifications.",
+        ),
+        click.option(
+            "--embedding_file",
+            default="symbol_code_embedding.json",
+            help="Which embedding file to save to.",
+        ),
+    ]
+    for option in reversed(options):
+        command = option(command)
+    return command
+
+
+def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
+    """
+    Common options used in agent configuration
+
+    Args:
+        command (click.Command): Command to add options to
+
+    Returns:
+        click.Command: Command with options added
+    """
+    options = [
+        click.option(
+            "--instructions",
+            default="This is a dummy instruction, return True.",
+            help="Which instructions to use for the agent.",
+        ),
+        click.option(
+            "--tools",
+            default="context_oracle",
+            help="Which tools to use?",
+        ),
+        click.option(
+            "--model",
+            default="gpt-4",
+            help="Which model to use?",
+        ),
+        click.option(
+            "--agent_name",
+            default="automata_retriever",
+            help="Which agent to use for this task?",
+        ),
     ]
     for option in reversed(options):
         command = option(command)
