@@ -6,9 +6,9 @@ from automata.core.base.openai import OpenAIChatMessage
 
 
 class AutomataAgentDatabase:
-    def __init__(self, session_id: str) -> None:
+    def __init__(self, session_id: str, db_path: str = CONVERSATION_DB_PATH) -> None:
         self.session_id = session_id
-        self.conn = sqlite3.connect(CONVERSATION_DB_PATH)
+        self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self._init_database()
 
@@ -54,8 +54,6 @@ class AutomataAgentDatabase:
         Initializes the database connection and creates the
         interactions table if it does not exist.
         """
-        self.conn = sqlite3.connect(CONVERSATION_DB_PATH)
-        self.cursor = self.conn.cursor()
         self.cursor.execute(
             "\n            CREATE TABLE IF NOT EXISTS interactions (\n                session_id INTEGER,\n                interaction_id INTEGER,\n                role TEXT,\n                content TEXT,\n                PRIMARY KEY (session_id, interaction_id)\n            )\n            "
         )
