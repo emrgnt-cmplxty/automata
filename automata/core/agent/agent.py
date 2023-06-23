@@ -230,7 +230,7 @@ class AutomataAgent(Agent):
                 agent_output = self._execute_agent(action)
                 query_name = action.agent_query.replace("query", "output")
                 outputs[query_name] = agent_output
-
+        logger.debug(f"The latest actions generated the following observations:\n{outputs}")
         return outputs
 
     def _execute_tool(self, tool_name: str, tool_input: List[str]) -> str:

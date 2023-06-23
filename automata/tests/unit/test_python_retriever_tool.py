@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
+from automata.core.agent.tools.py_retriever import PyCodeRetrieverTool
 from automata.core.base.tool import Tool
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata.core.coding.py_coding.retriever import PyCodeRetriever

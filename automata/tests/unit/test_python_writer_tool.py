@@ -4,7 +4,7 @@ import textwrap
 
 import pytest
 
-from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
+from automata.core.agent.tools.py_writer import PyCodeWriterTool
 from automata.core.base.tool import Tool
 from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
 from automata.core.coding.py_coding.retriever import PyCodeRetriever

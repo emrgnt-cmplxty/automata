@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Tuple
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.agent.tools.context_oracle import ContextOracleTool
-from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
-from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
+from automata.core.agent.tools.py_retriever import PyCodeRetrieverTool
+from automata.core.agent.tools.py_writer import PyCodeWriterTool
 from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py_coding.retriever import PyCodeRetriever

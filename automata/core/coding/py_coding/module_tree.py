@@ -230,8 +230,9 @@ class LazyModuleTreeMap:
         FIXME: Filter on py_dir for now and then introduce smarter logic later
         """
         for module_dotpath, fpath in self._dotpath_map.items():
-            if self.py_dir not in module_dotpath:
+            if self.py_dir not in module_dotpath or "tasks" in module_dotpath:
                 continue
+            print("loading dotpath = ", module_dotpath)
             if module_dotpath not in self._loaded_modules:
                 self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
 
