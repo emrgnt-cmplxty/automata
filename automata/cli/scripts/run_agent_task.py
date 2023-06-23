@@ -17,7 +17,7 @@ from automata.core.base.tool import ToolkitType
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ISSUES_PROMPT = """Provide an explanation and code snippets (in Markdown) which address the Github issue(s) that follow. You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. Answer each question with working code snippets. The issues begin now:"""
+DEFAULT_ISSUES_PROMPT = """Provide an explanation and code snippets (in Markdown) which address the Github issue(s) that follow. You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
 
 
 def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> List[str]:
