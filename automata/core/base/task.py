@@ -1,15 +1,16 @@
 import os
 import uuid
+from abc import ABC, abstractmethod
 from collections.abc import Hashable
 from enum import Enum
 from typing import Callable, Optional
 
-from automata.config import TASK_DB_PATH
-from automata.core.utils import root_fpath
+from automata.config import TASK_OUTPUT_PATH
 
 
 class TaskStatus(Enum):
-    SETUP = "setup"
+    CREATED = "created"
+    REGISTERED = "registered"
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -20,13 +21,17 @@ class TaskStatus(Enum):
 
 class Task:
     """
-    A generic task object.
+    A generic task object used by the task executor.
+
+    The task object is responsible for storing the task id, priority, and max retries. It also
+    provides a method to generate a deterministic task id based on the hash of the hashable kwargs.
+
     """
 
     TASK_LOG_NAME = "task_TASK_ID.log"
     TASK_LOG_REL_DIR = "logs"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         Initializes a task object.
 
@@ -44,21 +49,40 @@ class Task:
         )
         self.priority = kwargs.get("priority", 0)
         self.max_retries = kwargs.get("max_retries", 3)
-        self._status = TaskStatus.SETUP
+        self._status = TaskStatus.CREATED
         self.retry_count = 0
         self.observer: Optional[Callable] = None
-        self.task_dir = self._get_task_dir()
+        self.task_dir = self._get_task_dir(kwargs.get("task_dir", TASK_OUTPUT_PATH))
 
-    def notify_observer(self):
+    def __str__(self):
+        return f"Task {self.task_id} ({self.status})"
+
+    def notify_observer(self) -> None:
+        """
+        Used to notify the observer when the task status changes.
+        """
         if self.observer:
             self.observer(self)
 
     @property
     def status(self) -> TaskStatus:
+        """
+        The status of the task is updated by the task executor as the task progresses through
+        different stages of execution.
+        """
         return self._status
 
     @status.setter
-    def status(self, new_status) -> None:
+    def status(self, new_status: TaskStatus) -> None:
+        """
+        Sets the status of the task.
+
+        If the new status is RETRYING, the retry count is incremented
+        and the task status is set to FAILED if the retry count exceeds the max retries.
+
+        Args:
+            new_status (TaskStatus): The new status of the task.
+        """
         if new_status == TaskStatus.RETRYING:
             self.retry_count += 1
             if self.retry_count == self.max_retries:
@@ -69,9 +93,16 @@ class Task:
             self._status = new_status
         self.notify_observer()
 
-    def _deterministic_task_id(self, **kwargs):
+    def _deterministic_task_id(self, **kwargs) -> uuid.UUID:
         """
-        Returns a deterministic session id for the task.
+        Returns a deterministic session id for the task which is
+        generated based on the hash of the hashable kwargs.
+
+        Keyword Args:
+            kwargs (dict): The keyword arguments passed to the task.
+
+        Returns:
+            uuid.UUID: The deterministic task id.
         """
         # Generate the hash of the hashable kwargs
         hashable_items = sorted([item for item in kwargs.items() if isinstance(item[1], Hashable)])
@@ -80,20 +111,65 @@ class Task:
         # Combine the hashes and use it as a seed for generating a deterministic UUID
         return uuid.uuid5(uuid.NAMESPACE_DNS, f"{kwargs_hash}")
 
-    def _get_task_dir(self) -> str:
-        # Generate a unique directory name for the task
-        return os.path.join(Task._get_tasks_dir(), f"task_{self.task_id}")
+    def _get_task_dir(self, base_dir: str) -> str:
+        """
+        Gets the output directory for the task.
+        Use of the task id as the directory name ensures that the task directory is unique.
 
-    @staticmethod
-    def _get_tasks_dir() -> str:
-        return (
-            TASK_DB_PATH if TASK_DB_PATH != "tasks" else os.path.join(root_fpath(), TASK_DB_PATH)
-        )
+        Returns:
+            str: The unique directory name for the task.
+        """
+        return os.path.join(base_dir, f"task_{self.task_id}")
 
-    @staticmethod
-    def _get_log_dir() -> str:
-        # Generate a unique directory name for the task
-        return os.path.join(Task._get_tasks_dir(), Task.TASK_LOG_REL_DIR)
+    def _get_log_dir(self) -> str:
+        """
+        Gets the output directory where task logs are saved
 
-    def __str__(self):
-        return f"Task {self.task_id} ({self.status})"
+        Returns:
+            str: The directory where task logs are saved.
+        """
+        return os.path.join(self.task_dir, Task.TASK_LOG_REL_DIR)
+
+
+class ITaskExecution(ABC):
+    """
+    Interface for task execution behaviors.
+    """
+
+    @abstractmethod
+    def execute(self, task: Task):
+        pass
+
+
+class TaskEnvironment(ABC):
+    """
+    This is the abstract base class for an environment.
+    """
+
+    @abstractmethod
+    def setup(self):
+        """
+        Set up the environment.
+        """
+        pass
+
+    @abstractmethod
+    def teardown(self):
+        """
+        Tear down the environment.
+        """
+        pass
+
+    @abstractmethod
+    def validate(self):
+        """
+        Validate the environment.
+        """
+        pass
+
+    @abstractmethod
+    def reset(self):
+        """
+        Reset the environment to its initial state.
+        """
+        pass
