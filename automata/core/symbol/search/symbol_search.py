@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 import networkx as nx
 import numpy as np
 
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
@@ -27,6 +27,7 @@ class SymbolSearch:
         symbol_code_similarity: SymbolSimilarity,
         symbol_rank_config: SymbolRankConfig,
         code_subgraph: SymbolGraph.SubGraph,
+        module_loader: ModuleLoader,
     ) -> None:
         """
         Args:
@@ -51,6 +52,7 @@ class SymbolSearch:
         self.symbol_code_similarity = symbol_code_similarity
         symbol_code_similarity.set_available_symbols(available_symbols)
         self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
+        self.module_loader = module_loader
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """
@@ -92,7 +94,7 @@ class SymbolSearch:
         Returns:
             The raw text of the symbol or None if not found
         """
-        node = convert_to_fst_object(parse_symbol(symbol_uri))
+        node = convert_to_fst_object(parse_symbol(symbol_uri), self.module_loader)
         return str(node) if node else None
 
     def exact_search(self, pattern: str) -> ExactSearchResult:
@@ -105,7 +107,7 @@ class SymbolSearch:
         Returns:
             A dict of paths to files that contain the pattern and corresponding line numbers
         """
-        return SymbolSearch.find_pattern_in_modules(pattern)
+        return self._find_pattern_in_modules(pattern)
 
     def process_query(
         self, query: str
@@ -193,8 +195,7 @@ class SymbolSearch:
 
         return {key: transformed_values[i] for i, key in enumerate(dictionary)}
 
-    @staticmethod
-    def find_pattern_in_modules(pattern: str) -> Dict[str, List[int]]:
+    def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
         """
         Finds exact line matches for a given pattern string in all modules
 
@@ -205,8 +206,7 @@ class SymbolSearch:
             Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values
         """
         matches = {}
-        module_map = LazyModuleTreeMap.cached_default()
-        for module_path, module in module_map.items():
+        for module_path, module in self.module_loader.items():
             if module:
                 lines = module.dumps().splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]

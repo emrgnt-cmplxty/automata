@@ -6,12 +6,13 @@ from typing import Any, Dict, List, Tuple
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.agent.tools.context_oracle import ContextOracleTool
-from automata.core.agent.tools.py_reader import PyCodeReaderTool
-from automata.core.agent.tools.py_writer import PyCodeWriterTool
+from automata.core.agent.tools.py_reader import PyReaderTool
+from automata.core.agent.tools.py_writer import PyWriterTool
 from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
-from automata.core.coding.py_coding.reader import PyCodeReader
-from automata.core.coding.py_coding.writer import PyCodeWriter
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.reader import PyReader
+from automata.core.coding.py.writer import PyWriter
 from automata.core.context.py_context.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
@@ -24,7 +25,7 @@ from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.utils import config_fpath
+from automata.core.utils import config_fpath, root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,7 @@ class DependencyFactory:
             doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH)
             symbol_rank_config (SymbolRankConfig())
             py_context_retriever_config (PyContextRetrieverConfig())
+            coding_project_path (root_py_fpath())
         }
         """
         self._instances: Dict[str, Any] = {}
@@ -114,6 +116,16 @@ class DependencyFactory:
         self._instances[dependency] = instance
 
         return instance
+
+    @classmethod_lru_cache()
+    def create_module_loader(self) -> ModuleLoader:
+        """
+        Creates a ModuleLoader instance.
+
+        Keyword Args:
+            symbol_graph_path (DependencyFactory.DEFAULT_SCIP_FPATH)
+        """
+        return ModuleLoader(self.overrides.get("coding_project_path", root_py_fpath))
 
     @classmethod_lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:
@@ -193,8 +205,13 @@ class DependencyFactory:
         symbol_code_similarity = self.get("symbol_code_similarity")
         symbol_rank_config = self.overrides.get("symbol_rank_config", SymbolRankConfig())
         symbol_graph_subgraph = self.get("subgraph")
+        module_loader = self.get("module_loader")
         return SymbolSearch(
-            symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
+            symbol_graph,
+            symbol_code_similarity,
+            symbol_rank_config,
+            symbol_graph_subgraph,
+            module_loader,
         )
 
     @classmethod_lru_cache()
@@ -206,24 +223,26 @@ class DependencyFactory:
             py_context_retriever_config (PyContextRetrieverConfig())
         """
         symbol_graph = self.get("symbol_graph")
+        module_loader = self.get("module_loader")
         py_context_retriever_config = self.overrides.get(
             "py_context_retriever_config", PyContextRetrieverConfig()
         )
-        return PyContextRetriever(symbol_graph, py_context_retriever_config)
+        return PyContextRetriever(symbol_graph, module_loader, py_context_retriever_config)
 
     @classmethod_lru_cache()
-    def create_py_retriever(self) -> PyCodeReader:
+    def create_py_retriever(self) -> PyReader:
         """
-        Creates a PyCodeReader instance.
+        Creates a PyReader instance.
         """
-        return PyCodeReader()
+        module_loader = self.get("module_loader")
+        return PyReader(module_loader)
 
     @classmethod_lru_cache()
-    def create_py_writer(self) -> PyCodeWriter:
+    def create_py_writer(self) -> PyWriter:
         """
-        Creates a PyCodeReader instance.
+        Creates a PyReader instance.
         """
-        return PyCodeWriter(self.get("py_reader"))
+        return PyWriter(self.get("py_reader"))
 
 
 class ToolCreationError(Exception):
@@ -255,16 +274,16 @@ class AgentToolFactory:
     _retriever_instance = None
 
     TOOLKIT_TYPE_TO_TOOL_CLASS = {
-        ToolkitType.PY_RETRIEVER: PyCodeReaderTool,
-        ToolkitType.PY_WRITER: PyCodeWriterTool,
-        ToolkitType.SYMBOL_SEARCHER: SymbolSearchTool,
+        ToolkitType.PY_RETRIEVER: PyReaderTool,
+        ToolkitType.PY_WRITER: PyWriterTool,
+        ToolkitType.SYMBOL_SEARCH: SymbolSearchTool,
         ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
     }
 
     TOOLKIT_TYPE_TO_ARGS: Dict[ToolkitType, List[Tuple[str, Any]]] = {
-        ToolkitType.PY_RETRIEVER: [("py_reader", PyCodeReader)],
-        ToolkitType.PY_WRITER: [("py_writer", PyCodeWriter)],
-        ToolkitType.SYMBOL_SEARCHER: [("symbol_search", SymbolSearch)],
+        ToolkitType.PY_RETRIEVER: [("py_reader", PyReader)],
+        ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
+        ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         ToolkitType.CONTEXT_ORACLE: [
             ("symbol_search", SymbolSearch),
             ("symbol_doc_similarity", SymbolSimilarity),
@@ -281,8 +300,8 @@ class AgentToolFactory:
 
             kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
               for the specified toolkit type. The possible arguments are:
-                py_reader - PyCodeReader
-                py_writer - PyCodeWriter
+                py_reader - PyReader
+                py_writer - PyWriter
                 symbol_search - SymbolSearch
                 symbol_doc_similarity - SymbolSimilarity
 

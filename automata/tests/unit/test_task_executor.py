@@ -4,9 +4,9 @@ import pytest
 
 from automata.core.agent.task.executor import AutomataTaskExecutor, ITaskExecution
 from automata.core.base.task import Task, TaskStatus
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.reader import PyCodeReader
-from automata.core.coding.py_coding.writer import PyCodeWriter
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.reader import PyReader
+from automata.core.coding.py.writer import PyWriter
 from automata.core.utils import root_py_fpath
 
 
@@ -18,9 +18,9 @@ class TestExecuteBehavior(ITaskExecution):
     def execute(self, task: Task):
         import os
 
-        module_map = LazyModuleTreeMap(root_py_fpath())
-        retriever = PyCodeReader(module_map)
-        writer = PyCodeWriter(retriever)
+        module_loader = ModuleLoader(root_py_fpath())
+        retriever = PyReader(module_loader)
+        writer = PyWriter(retriever)
 
         # Create a new module
         writer.create_new_module(

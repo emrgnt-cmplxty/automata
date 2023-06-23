@@ -3,7 +3,7 @@ import logging.config
 import os
 
 from automata.core.base.task import Task
-from automata.core.utils import get_logging_config, root_py_fpath
+from automata.core.utils import get_logging_config, root_fpath, root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +23,25 @@ class AutomataTask(Task):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Keyword Args:
+            instructions (str): The instructions for the task.
+            path_to_root_py (str): The path to the root python folder.
+        """
+
         super().__init__(*args, **kwargs)
         self.args = args
         self.kwargs = kwargs
         if "instructions" not in self.kwargs or self.kwargs["instructions"] == "":
             raise AutomataMissingInstructions()
         self.instructions = self.kwargs["instructions"]
-        self.path_to_root_py = kwargs.get("path_to_root_py", root_py_fpath())
+        # Note, this  assumes the python folder is in the root folder
+        default_python_folder = os.path.relpath(root_py_fpath(), root_fpath())
+        self.path_to_root_py = kwargs.get("path_to_root_py", default_python_folder)
 
     def initialize_logging(self) -> None:
         """

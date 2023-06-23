@@ -1,22 +1,20 @@
-from typing import List, Optional
+from typing import List
 
 from redbaron import RedBaron
 
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 
-def convert_to_fst_object(
-    symbol: Symbol, module_map: Optional[LazyModuleTreeMap] = None
-) -> RedBaron:
+def convert_to_fst_object(symbol: Symbol, module_loader: ModuleLoader) -> RedBaron:
     """
     Converts a specified symbol into a red baron FST object
 
     Args:
         symbol (str): The symbol which corresponds to a module, class, or method.
-        module_map (Optional[LazyModuleTreeMap]): The module tree mapping to use. If None, the default
+        module_loader ModuleLoader: The module tree mapping to use. If None, the default
 
-    Returns:
+    Returns:ModuleLoader
         Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found
 
     Raises:
@@ -31,7 +29,6 @@ def convert_to_fst_object(
     # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)
     obj = None
-    module_map = module_map or LazyModuleTreeMap.cached_default()
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
@@ -41,7 +38,7 @@ def convert_to_fst_object(
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
                 module_dotpath = module_dotpath[len("") :]  # indexer omits this
-            obj = module_map.fetch_module(module_dotpath)
+            obj = module_loader.fetch_module(module_dotpath)
             # TODO - Understand why some modules might be None
             if not obj:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")

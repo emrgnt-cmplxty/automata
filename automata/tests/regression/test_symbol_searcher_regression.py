@@ -59,14 +59,14 @@ SR_SEARCHES_TO_HITS = {
         "VectorDatabaseProvider",
     ],
     "python": [
-        "PyCodeWriter",
-        "PyCodeReader",
-        "PyCodeWriterTool",
-        "PyCodeReaderTool",
+        "PyWriter",
+        "PyReader",
+        "PyWriterTool",
+        "PyReaderTool",
         "PyContextRetriever",
         "PyDocWriter",
     ],
-    "code": ["PyCodeWriter", "PyCodeReader", "SymbolCodeEmbedding"],
+    "code": ["PyWriter", "PyReader", "SymbolCodeEmbedding"],
 }
 
 

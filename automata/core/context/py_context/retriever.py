@@ -6,7 +6,8 @@ from typing import List, Optional, Set
 import tiktoken
 from redbaron import RedBaron
 
-from automata.core.coding.py_coding.reader import PyCodeReader
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.reader import PyReader
 from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_types import Symbol
@@ -50,6 +51,7 @@ class PyContextRetriever:
     def __init__(
         self,
         graph: SymbolGraph,
+        module_loader: ModuleLoader,
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
     ) -> None:
@@ -59,6 +61,7 @@ class PyContextRetriever:
             config (PyContextRetrieverConfig): The configuration to use
         """
         self.graph = graph
+        self.module_loader = module_loader
         self.config = config
         self.indent_level = 0
         self.doc_embedding_db = doc_embedding_db
@@ -186,7 +189,7 @@ class PyContextRetriever:
         Args:
             ast_object (RedBaron): The ast representation of the symbol
         """
-        ast_object = convert_to_fst_object(symbol)
+        ast_object = convert_to_fst_object(symbol, self.module_loader)
         is_main_symbol = self._is_main_symbol()
         methods = sorted(ast_object.find_all("DefNode"), key=lambda x: x.name)
 
@@ -323,7 +326,7 @@ class PyContextRetriever:
             str: Newline separated docstring
         """
 
-        raw_doctring = PyCodeReader.get_docstring_from_node(ast_object).split("\n")
+        raw_doctring = PyReader.get_docstring_from_node(ast_object).split("\n")
         return "\n".join([ele.strip() for ele in raw_doctring]).strip()
 
     @staticmethod

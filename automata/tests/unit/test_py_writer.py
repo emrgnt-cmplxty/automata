@@ -14,10 +14,10 @@ from redbaron import (
     StringNode,
 )
 
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.navigation import find_syntax_tree_node
-from automata.core.coding.py_coding.reader import PyCodeReader
-from automata.core.coding.py_coding.writer import PyCodeWriter
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.navigation import find_syntax_tree_node
+from automata.core.coding.py.reader import PyReader
+from automata.core.coding.py.writer import PyWriter
 
 
 class MockCodeGenerator:
@@ -155,9 +155,9 @@ class MockCodeGenerator:
 @pytest.fixture
 def py_writer():
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    module_map = LazyModuleTreeMap(sample_dir)
-    retriever = PyCodeReader(module_map)
-    return PyCodeWriter(retriever)
+    module_loader = ModuleLoader(sample_dir)
+    retriever = PyReader(module_loader)
+    return PyWriter(retriever)
 
 
 def test_create_function_source_function():
@@ -203,7 +203,7 @@ def test_extend_module(py_writer):
     py_writer.update_existing_module("sample_module_22", source_code_2)
 
     # Check module 2 is merged into module 1
-    module_obj = py_writer.code_retriever.module_tree_map.fetch_module("sample_module_22")
+    module_obj = py_writer.py_reader.module_tree_map.fetch_module("sample_module_22")
     mock_generator._check_module_obj(module_obj)
     mock_generator._check_class_obj(module_obj[0])
     mock_generator._check_function_obj(module_obj[1])
@@ -217,7 +217,7 @@ def test_reduce_module(py_writer):
     )
     source_code = mock_generator.generate_code()
     py_writer.create_new_module("sample_module_2", source_code)
-    module_obj = py_writer.code_retriever.module_tree_map.fetch_module("sample_module_2")
+    module_obj = py_writer.py_reader.module_tree_map.fetch_module("sample_module_2")
     class_obj = module_obj.find("class")
 
     function_obj = module_obj.find_all("def")[-1]
@@ -379,8 +379,8 @@ def test_write_and_retrieve_mock_code(py_writer):
     py_writer._write_module_to_disk("sample_module_2")
 
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    module_map = LazyModuleTreeMap(sample_dir)
-    retriever = PyCodeReader(module_map)
+    module_loader = ModuleLoader(sample_dir)
+    retriever = PyReader(module_loader)
     module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
 

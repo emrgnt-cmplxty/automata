@@ -94,5 +94,5 @@ def test_toolkit_type():
     assert len(ToolkitType) == 4
     assert ToolkitType.PY_RETRIEVER.name == "PY_RETRIEVER"
     assert ToolkitType.PY_WRITER.name == "PY_WRITER"
-    assert ToolkitType.SYMBOL_SEARCHER.name == "SYMBOL_SEARCHER"
+    assert ToolkitType.SYMBOL_SEARCH.name == "SYMBOL_SEARCH"
     assert ToolkitType.CONTEXT_ORACLE.name == "CONTEXT_ORACLE"

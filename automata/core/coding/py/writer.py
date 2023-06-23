@@ -9,19 +9,19 @@ import pypandoc
 from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
 
 from automata.core.coding.directory import DirectoryManager
-from automata.core.coding.py_coding.navigation import (
+from automata.core.coding.py.navigation import (
     find_all_function_and_class_syntax_tree_nodes,
     find_import_syntax_tree_node_by_name,
     find_import_syntax_tree_nodes,
     find_syntax_tree_node,
 )
-from automata.core.coding.py_coding.reader import PyCodeReader
+from automata.core.coding.py.reader import PyReader
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
 
 
-class PyCodeWriter:
+class PyWriter:
     """A utility class for writing Python code along AST nodes"""
 
     class ModuleNotFound(Exception):
@@ -39,14 +39,14 @@ class PyCodeWriter:
 
         pass
 
-    def __init__(self, py_reader: PyCodeReader) -> None:
+    def __init__(self, py_reader: PyReader) -> None:
         """
-        Initialize the PyCodeWriter with a PyCodeReader instance
+        Initialize the PyWriter with a PyReader instance
 
         Args:
-            py_reader (PyCodeReader): The PyCodeReader instance to use
+            py_reader (PyReader): The PyReader instance to use
         """
-        self.code_retriever = py_reader
+        self.py_reader = py_reader
 
     def create_new_module(
         self, module_dotpath: str, source_code: str, do_write: bool = False
@@ -88,12 +88,12 @@ class PyCodeWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        module_obj = self.code_retriever.module_tree_map.fetch_module(module_dotpath)
+        module_obj = self.py_reader.module_tree_map.fetch_module(module_dotpath)
         if not module_obj:
-            raise PyCodeWriter.ModuleNotFound(
+            raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
-        PyCodeWriter._update_existing_module(
+        PyWriter._update_existing_module(
             source_code,
             module_dotpath,
             module_obj,
@@ -120,14 +120,14 @@ class PyCodeWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        module_obj = self.code_retriever.module_tree_map.fetch_module(module_dotpath)
+        module_obj = self.py_reader.module_tree_map.fetch_module(module_dotpath)
         if not module_obj:
-            raise PyCodeWriter.ModuleNotFound(
+            raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
         node = find_syntax_tree_node(module_obj, object_dotpath)
         if node:
-            PyCodeWriter._delete_node(node)
+            PyWriter._delete_node(node)
             if do_write:
                 self._write_module_to_disk(module_dotpath)
 
@@ -141,17 +141,17 @@ class PyCodeWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        if module_dotpath not in self.code_retriever.module_tree_map:
-            raise PyCodeWriter.ModuleNotFound(
+        if module_dotpath not in self.py_reader.module_tree_map:
+            raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
-        source_code = self.code_retriever.get_source_code(module_dotpath)
-        module_fpath = self.code_retriever.module_tree_map.fetch_existing_module_fpath_by_dotpath(
+        source_code = self.py_reader.get_source_code(module_dotpath)
+        module_fpath = self.py_reader.module_tree_map.fetch_existing_module_fpath_by_dotpath(
             module_dotpath
         )
 
         if not module_fpath:
-            raise PyCodeWriter.ModuleNotFound(
+            raise PyWriter.ModuleNotFound(
                 f"Module fpath found in module map for dotpath: {module_dotpath}"
             )
         module_fpath = cast(str, module_fpath)
@@ -171,7 +171,7 @@ class PyCodeWriter:
             RedBaron: The created module object
         """
         parsed = RedBaron(source_code)
-        self.code_retriever.module_tree_map.put_module(module_dotpath, parsed)
+        self.py_reader.module_tree_map.put_module(module_dotpath, parsed)
         return parsed
 
     @staticmethod
@@ -197,21 +197,21 @@ class PyCodeWriter:
 
         new_fst = RedBaron(source_code)
         new_import_nodes = find_import_syntax_tree_nodes(new_fst)
-        PyCodeWriter._update_imports(existing_module_obj, new_import_nodes)
+        PyWriter._update_imports(existing_module_obj, new_import_nodes)
 
         new_class_or_function_nodes = find_all_function_and_class_syntax_tree_nodes(new_fst)
         if disambiguator:  # splice the class
             disambiguator_node = find_syntax_tree_node(existing_module_obj, disambiguator)
             if isinstance(disambiguator_node, (ClassNode, DefNode)):
-                PyCodeWriter._update_node_with_children(
+                PyWriter._update_node_with_children(
                     new_class_or_function_nodes,
                     disambiguator_node,
                 )
             else:
-                raise PyCodeWriter.ClassOrFunctionNotFound(
+                raise PyWriter.ClassOrFunctionNotFound(
                     f"Node {disambiguator} not found in module {module_dotpath}"
                 )
-        PyCodeWriter._update_node_with_children(new_class_or_function_nodes, existing_module_obj)
+        PyWriter._update_node_with_children(new_class_or_function_nodes, existing_module_obj)
 
     @staticmethod
     def _update_node_with_children(

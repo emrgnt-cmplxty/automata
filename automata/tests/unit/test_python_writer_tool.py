@@ -4,11 +4,11 @@ import textwrap
 
 import pytest
 
-from automata.core.agent.tools.py_writer import PyCodeWriterTool
+from automata.core.agent.tools.py_writer import PyWriterTool
 from automata.core.base.tool import Tool
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.reader import PyCodeReader
-from automata.core.coding.py_coding.writer import PyCodeWriter
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.reader import PyReader
+from automata.core.coding.py.writer import PyWriter
 from automata.core.utils import root_py_fpath
 
 
@@ -17,14 +17,14 @@ def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
     path_to_here = os.path.join(root_py_fpath(), "tests", "unit")
-    module_map = LazyModuleTreeMap(path_to_here)
-    py_reader = PyCodeReader(module_map)
-    py_writer = PyCodeWriter(py_reader)
-    return PyCodeWriterTool(py_writer=py_writer)
+    module_loader = ModuleLoader(path_to_here)
+    py_reader = PyReader(module_loader)
+    py_writer = PyWriter(py_reader)
+    return PyWriterTool(py_writer=py_writer)
 
 
 def test_init(python_writer_tool_builder):
-    assert isinstance(python_writer_tool_builder.writer, PyCodeWriter)
+    assert isinstance(python_writer_tool_builder.writer, PyWriter)
 
 
 def test_build(python_writer_tool_builder):

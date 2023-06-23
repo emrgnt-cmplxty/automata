@@ -14,7 +14,8 @@ from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
-from automata.core.coding.py_coding.reader import PyCodeReader
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
@@ -115,7 +116,7 @@ def symbol_graph_mock(mocker):
 
 
 @pytest.fixture
-def symbol_searcher(mocker, symbol_graph_mock):
+def symbol_search(mocker, module_loader, symbol_graph_mock):
     """Creates a SymbolSearch object with Mock dependencies for testing"""
     symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
     symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
@@ -125,7 +126,11 @@ def symbol_searcher(mocker, symbol_graph_mock):
     code_subgraph_mock.graph = mocker.MagicMock()
 
     return SymbolSearch(
-        symbol_graph_mock, symbol_similarity_mock, symbol_rank_config_mock, code_subgraph_mock
+        symbol_graph_mock,
+        symbol_similarity_mock,
+        symbol_rank_config_mock,
+        code_subgraph_mock,
+        module_loader,
     )
 
 
@@ -136,11 +141,16 @@ def automata_agent_config_builder():
 
 
 @pytest.fixture
-def automata_agent(mocker, automata_agent_config_builder):
+def module_loader():
+    return ModuleLoader()
+
+
+@pytest.fixture
+def automata_agent(mocker, module_loader, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
     tool_list = ["py_reader"]
     mock_llm_toolkits = build_llm_toolkits(
-        tool_list, py_reader=mocker.MagicMock(spec=PyCodeReader)
+        tool_list, module_loader=module_loader, py_reader=mocker.MagicMock(spec=PyReader)
     )
 
     instructions = "Test instruction."

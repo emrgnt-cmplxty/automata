@@ -5,16 +5,13 @@ from typing import Dict, Iterable, Optional, Tuple
 
 from redbaron import RedBaron
 
-from automata.core.coding.py_coding.py_utils import (
-    DOT_SEP,
-    convert_fpath_to_module_dotpath,
-)
-from automata.core.utils import root_fpath
+from automata.core.coding.py.py_utils import DOT_SEP, convert_fpath_to_module_dotpath
+from automata.core.utils import root_fpath, root_py_fpath
 
 logger = logging.getLogger(__name__)
 
 
-class DotPathMap:
+class _DotPathMap:
     """A map from module dotpaths to module filepaths"""
 
     def __init__(self, path: str) -> None:
@@ -117,7 +114,7 @@ class DotPathMap:
         return self._module_dotpath_to_fpath_map.items()
 
 
-class LazyModuleTreeMap:
+class ModuleLoader:
     """
     A lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
     Loads and caches modules in memory as they are accessed
@@ -126,14 +123,27 @@ class LazyModuleTreeMap:
            logic to infer the py_dir from the path later
     """
 
-    def __init__(self, path: str, py_dir="automata") -> None:
+    def __init__(self, path: str = root_py_fpath(), py_dir: Optional[str] = None) -> None:
         """
         Args:
             path: The absolute path to the root of the module tree
         """
-        self._dotpath_map = DotPathMap(path)
+        self._dotpath_map = _DotPathMap(path)
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
+        if not py_dir:
+            py_dir = os.path.relpath(root_py_fpath(), root_fpath())
         self.py_dir = py_dir
+
+    @classmethod
+    @lru_cache(maxsize=1)
+    def cached_module_tree_map(
+        cls, path: str = root_py_fpath(), py_dir: Optional[str] = None
+    ) -> "ModuleLoader":
+        """
+        Returns:
+            A cached version of the module tree map
+        """
+        return cls(path, py_dir)
 
     def __contains__(self, dotpath: str) -> bool:
         """
@@ -235,12 +245,6 @@ class LazyModuleTreeMap:
             print("loading dotpath = ", module_dotpath)
             if module_dotpath not in self._loaded_modules:
                 self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
-
-    @classmethod
-    @lru_cache(maxsize=1)
-    def cached_default(cls) -> "LazyModuleTreeMap":
-        """Creates a new LazyModuleTreeMap instance with the default root path"""
-        return cls(root_fpath())
 
     @staticmethod
     def _load_module_from_fpath(path: str) -> Optional[RedBaron]:

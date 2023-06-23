@@ -13,7 +13,7 @@ from redbaron import (
     RedBaron,
 )
 
-from automata.core.coding.py_coding.py_utils import DOT_SEP
+from automata.core.coding.py.py_utils import DOT_SEP
 
 logger = logging.getLogger(__name__)
 

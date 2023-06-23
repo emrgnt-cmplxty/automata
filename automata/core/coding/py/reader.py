@@ -5,20 +5,18 @@ from typing import Optional, Union
 
 from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
 
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.navigation import find_syntax_tree_node
-from automata.core.coding.py_coding.py_utils import NO_RESULT_FOUND_STR
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.navigation import find_syntax_tree_node
+from automata.core.coding.py.py_utils import NO_RESULT_FOUND_STR
 
 logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]
 
 
-class PyCodeReader:
+class PyReader:
     """Code retriever for fetching python code"""
 
-    def __init__(
-        self, module_tree_map: LazyModuleTreeMap = LazyModuleTreeMap.cached_default()
-    ) -> None:
+    def __init__(self, module_tree_map: ModuleLoader) -> None:
         self.module_tree_map = module_tree_map
 
     def get_source_code(self, module_dotpath: str, object_path: Optional[str] = None) -> str:
@@ -57,7 +55,7 @@ class PyCodeReader:
         """
         module = self.module_tree_map.fetch_module(module_dotpath)
         if module:
-            return PyCodeReader.get_docstring_from_node(find_syntax_tree_node(module, object_path))
+            return PyReader.get_docstring_from_node(find_syntax_tree_node(module, object_path))
         return NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(

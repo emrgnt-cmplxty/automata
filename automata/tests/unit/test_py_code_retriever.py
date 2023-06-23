@@ -2,22 +2,22 @@ import os
 
 import pytest
 
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.py_utils import build_repository_overview
-from automata.core.coding.py_coding.reader import PyCodeReader
+from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.py_utils import build_repository_overview
+from automata.core.coding.py.reader import PyReader
 
 
 @pytest.fixture
-def module_map():
+def module_loader():
     # get latest path
     sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     # Set the root directory to the folder containing test modules
-    return LazyModuleTreeMap(sample_dir)
+    return ModuleLoader(sample_dir)
 
 
 @pytest.fixture
-def getter(module_map):
-    return PyCodeReader(module_map)
+def getter(module_loader):
+    return PyReader(module_loader)
 
 
 def test_build_overview():
@@ -58,8 +58,7 @@ def test_get_code_module(getter):
     object_path = None
     result = getter.get_source_code_without_docstrings(module_name, object_path)
     expected_match = 'import math\n\n\ndef sample_function(name):\n    return f"Hello, {name}! Sqrt(2) = " + str(math.sqrt(2))\n\n\nclass Person:\n\n    def __init__(self, name):\n        self.name = name\n\n    def say_hello(self):\n        return f"Hello, I am {self.name}."\n\n    def run(self) -> str:\n        return "run"\n\n\ndef f(x) -> int:\n    return x + 1\n\n\nclass EmptyClass:\n    pass\n\n\nclass OuterClass:\n    class InnerClass:\n\n        def inner_method(self):\n'
-
-    assert result == expected_match
+    assert result.split("\n") == expected_match.split("\n")
 
 
 def test_get_docstring_multiline(getter):
