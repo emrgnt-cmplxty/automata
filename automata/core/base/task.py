@@ -147,7 +147,7 @@ class TaskEnvironment(ABC):
     """
 
     @abstractmethod
-    def setup(self):
+    def setup(self, task: Task):
         """
         Set up the environment.
         """
