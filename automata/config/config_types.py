@@ -138,6 +138,7 @@ class AutomataAgentConfig(BaseModel):
             self.system_template_formatter = (
                 AutomataAgentConfig.TemplateFormatter.create_default_formatter(self)
             )
+            print("self.system_template_formatter = ", self.system_template_formatter)
         if not self.system_instruction:
             self.system_instruction = self._formatted_prompt()
 

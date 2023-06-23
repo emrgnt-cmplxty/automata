@@ -31,12 +31,12 @@ def main(*args, **kwargs) -> str:
     """
     logger.info("Building toolkits...")
 
-    instructions = kwargs.get("instructions", "This is a dummy instruction, return True.")
-    tool_list = kwargs.get("tools", "context_oracle").split(",")
+    instructions = kwargs.get("instructions") or "This is a dummy instruction, return True."
+    llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")
 
     # A list of all dependencies that will be used to build the toolkits
     dependencies: Set[Any] = set()
-    for tool in tool_list:
+    for tool in llm_toolkits_list:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
             dependencies.add(dependency_name)
     kwargs = {}
@@ -46,7 +46,7 @@ def main(*args, **kwargs) -> str:
         logger.info(f"Building {dependency}...")
         kwargs[dependency] = DependencyFactory().get(dependency)
 
-    llm_toolkits = build_llm_toolkits(tool_list, **kwargs)
+    llm_toolkits = build_llm_toolkits(llm_toolkits_list, **kwargs)
     logger.info("Done building toolkits...")
 
     config_name = AgentConfigName(kwargs.get("agent_name", "automata_retriever"))

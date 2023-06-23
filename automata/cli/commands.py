@@ -105,6 +105,7 @@ def run_agent(ctx, *args, **kwargs) -> None:
 @common_options
 @agent_options
 @cli.command()
+@click.option("--fetch-issues", default="", help="Comma-separated list of issue numbers to fetch")
 @click.pass_context
 def run_agent_task(ctx, *args, **kwargs) -> None:
     """
