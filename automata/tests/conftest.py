@@ -1,5 +1,6 @@
 import os
 import random
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -7,7 +8,10 @@ import pytest
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
 from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.task.registry import AutomataTaskRegistry
+from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.base.github_manager import RepositoryManager
 from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
@@ -148,3 +152,52 @@ def automata_agent(mocker, automata_agent_config_builder):
     )
     agent.setup()
     return agent
+
+
+class MockRepositoryManager(RepositoryManager):
+    def clone_repository(self, local_path: str):
+        pass
+
+    def create_branch(self, branch_name: str):
+        pass
+
+    def checkout_branch(self, repo_local_path: str, branch_name: str):
+        pass
+
+    def stage_all_changes(self, repo_local_path: str):
+        pass
+
+    def commit_and_push_changes(self, repo_local_path: str, branch_name: str, commit_message: str):
+        pass
+
+    def create_pull_request(self, branch_name: str, title: str, body: str):
+        pass
+
+    def branch_exists(self, branch_name: str) -> bool:
+        return False
+
+
+@pytest.fixture
+def task():
+    repo_manager = MockRepositoryManager()
+    return AutomataTask(
+        repo_manager,
+        main_config_name=AgentConfigName.TEST.value,
+        generate_deterministic_id=False,
+        instructions="This is a test.",
+    )
+
+
+@pytest.fixture
+def registry(task):
+    def mock_get_tasks_by(query, params):
+        if params[0] == task.task_id:
+            return [task]
+        else:
+            return []
+
+    db = MagicMock()
+    repo_manager = MockRepositoryManager()
+    db.get_tasks_by.side_effect = mock_get_tasks_by  # Assigning the side_effect attribute
+    registry = AutomataTaskRegistry(db, repo_manager)
+    return registry
