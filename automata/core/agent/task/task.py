@@ -3,9 +3,7 @@ import logging.config
 import os
 from typing import Optional
 
-from automata.config.agent_config_builder import AutomataAgentConfigFactory
-from automata.core.agent.agent import AutomataAgent
-from automata.core.base.task import Task, TaskStatus
+from automata.core.base.task import Task
 from automata.core.utils import get_logging_config, root_py_fpath
 
 logger = logging.getLogger(__name__)
@@ -35,32 +33,6 @@ class AutomataTask(Task):
         self.result: Optional[str] = None
         self.error: Optional[str] = None
         self.path_to_root_py = kwargs.get("path_to_root_py", root_py_fpath())
-
-    def build_agent(self) -> AutomataAgent:
-        """
-        Builds the agent for the task.
-
-        Returns:
-            AutomataAgent: The agent for the task.
-        """
-        agent_config = AutomataAgentConfigFactory().create_config(**self.kwargs)
-        agent = AutomataAgent(
-            self.instructions,
-            agent_config,
-        )
-        agent.setup()
-        return agent
-
-    def validate_pending(self):
-        """
-        Validates that the task can be executed.
-
-        Raises:
-            ValueError: If the task is not in the pending state.
-
-        """
-        if self.status != TaskStatus.PENDING:
-            raise ValueError("Task must be in pending state to be executed.")
 
     def initialize_logging(self) -> None:
         """

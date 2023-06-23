@@ -8,10 +8,11 @@ import pytest
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
 from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
-from automata.core.base.github_manager import RepositoryManager
+from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.coding.py_coding.retriever import PyCodeRetriever
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
@@ -189,15 +190,22 @@ def task():
 
 
 @pytest.fixture
+def environment():
+    github_mock = MagicMock(spec=GitHubManager)
+    return AutomataTaskEnvironment(github_mock)
+
+
+@pytest.fixture
 def registry(task):
-    def mock_get_tasks_by(query, params):
+    def mock_get_tasks_by_query(query, params):
         if params[0] == task.task_id:
             return [task]
         else:
             return []
 
     db = MagicMock()
-    repo_manager = MockRepositoryManager()
-    db.get_tasks_by.side_effect = mock_get_tasks_by  # Assigning the side_effect attribute
-    registry = AutomataTaskRegistry(db, repo_manager)
+    db.get_tasks_by_query.side_effect = (
+        mock_get_tasks_by_query  # Assigning the side_effect attribute
+    )
+    registry = AutomataTaskRegistry(db)
     return registry
