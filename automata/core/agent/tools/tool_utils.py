@@ -211,6 +211,20 @@ class DependencyFactory:
         )
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
 
+    @classmethod_lru_cache()
+    def create_py_retriever(self) -> PyCodeRetriever:
+        """
+        Creates a PyCodeRetriever instance.
+        """
+        return PyCodeRetriever()
+
+    @classmethod_lru_cache()
+    def create_py_writer(self) -> PyCodeWriter:
+        """
+        Creates a PyCodeRetriever instance.
+        """
+        return PyCodeWriter(self.get("py_retriever"))
+
 
 class ToolCreationError(Exception):
     """An exception for when a tool cannot be created."""
