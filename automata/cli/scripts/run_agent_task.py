@@ -2,56 +2,40 @@ import logging
 import logging.config
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, TASK_DB_PATH
+from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.executor import (
-    AutomataExecuteBehavior,
-    TaskExecutor,
-    TestExecuteBehavior,
+    AutomataTaskExecutor,
+    IAutomataTaskExecution,
 )
 from automata.core.agent.task.registry import AutomataTaskDatabase, AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.github_manager import GitHubManager
+from automata.core.base.task import TaskStatus
 
 logger = logging.getLogger(__name__)
 
 
-def initialize_task(*args, **kwargs) -> AutomataTask:
-    """
-    Initialize a new AutomataTask with the provided kwargs.
-    """
-
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
-
-    task = AutomataTask(**kwargs)
-    task_registry.initialize_task(task)
-
-    return task
-
-
-def run(*args, **kwargs) -> None:
-    """
-    Run the provided task.
-
-    :param task_id: ID of the initialized AutomataTask.
-    """
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
-    task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH), github_manager)
-    executor = TaskExecutor(
-        TestExecuteBehavior() if kwargs.get("is_test", None) else AutomataExecuteBehavior(),
-        task_registry,
-    )
-    if not kwargs.get("task_id"):
-        raise ValueError("You must provide a task_id.")
-    task_id = kwargs.pop("task_id")
-    task = task_registry.get_task_by_id(task_id)
-    if task is None:
-        raise ValueError(f"Task with id {task_id} does not exist.")
-    executor.execute(task)
-
-
 def main(*args, **kwargs):
-    initialize_task(**kwargs)
-    # task = initialize_task(**kwargs)
-    # result = run(task_id=task.task_id)
-    # logger.info(f"Final Result = {result}")
-    # return result
+    task = AutomataTask(**kwargs)  # TaskStatus = CREATED
+
+    # Register the task with the task registry
+    task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH))
+    task_registry.register(task)  # TaskStatus = REGISTERED
+
+    # Setup task environment
+    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
+    task_env = AutomataTaskEnvironment(github_manager)
+    task_env.setup(task)  # TaskStatus = PENDING
+
+    # Create an executor and run the task
+    executor = AutomataTaskExecutor(IAutomataTaskExecution())
+    try:
+        executor.execute(task)  # TaskStatus = SUCCESS
+    except Exception as e:
+        logger.exception(f"Task failed: {e}")
+        task.error = str(e)
+        task.status = TaskStatus.FAILED
+
+    # TODO - Consider best practice for committing the task to Github
+    # TODO - Consider best practice for logging the task
+    # TODO - Consider best practice for cleaning up the task

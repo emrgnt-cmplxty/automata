@@ -91,9 +91,9 @@ class AutomataTaskExecutor:
                 logger.debug(f"Executing task {task.task_id}")
                 task.status = TaskStatus.RUNNING
                 self.execution.execute(task)
-
                 task.status = TaskStatus.SUCCESS
                 logger.info(f"Task {task.task_id} executed successfully.")
+                break
 
             except Exception as e:
                 logging.exception(f"AutomataTask failed: {e}")

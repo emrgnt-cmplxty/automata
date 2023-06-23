@@ -11,8 +11,7 @@ from ..conftest import MockRepositoryManager
 
 
 @patch("logging.config.dictConfig", return_value=None)
-def test_task_inital_state(patch, task):
-    print("task = ", task)
+def test_task_inital_state(_, task):
     assert task.status == TaskStatus.CREATED
 
 

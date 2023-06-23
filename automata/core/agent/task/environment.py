@@ -87,7 +87,6 @@ class AutomataTaskEnvironment(TaskEnvironment):
             Exception: If the checkout fails.
             Exception: If the commit fails.
         """
-        print("calling commit task..")
         logger.debug("Comitting task...")
 
         if task.status != TaskStatus.SUCCESS:
