@@ -128,6 +128,22 @@ automata run-doc-embedding-l2
 automata run-doc-embedding-l3
 ```
 
+### Run the system
+
+The following commands illustrate how to run the system with a trivial instruction. It is recommended that your initial run is something of this sort to ensure the system is working as expected.
+
+```bash
+# Run a single agent w/ trivial instruction
+automata run-agent --instructions="Return true"
+
+
+# Runs a single agent as a task 
+# (this will create a task in the task_db.sqlite3)
+# (this will also create a task in the tasks/ directory)
+# (modifications to code are performed in the tasks/ directory)
+automata run-agent-task --instructions="Return true"
+```
+
 ---
 
 ## Understanding Automata
