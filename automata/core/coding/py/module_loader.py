@@ -150,10 +150,10 @@ class PyModuleLoader(metaclass=Singleton):
           Towards this end a function decorator was also explored, but found to be insufficient.
     """
 
+    initialized = False
     py_fpath: Optional[str] = None
     root_fpath: Optional[str] = None
 
-    _initialized = False
     _dotpath_map: Optional[_DotPathMap] = None
     _loaded_modules: Dict[str, Optional[RedBaron]] = {}
 
@@ -182,13 +182,13 @@ class PyModuleLoader(metaclass=Singleton):
         """
         path_prefix = os.path.relpath(py_fpath, root_fpath)
 
-        if self._initialized:
+        if self.initialized:
             raise Exception("Module loader is already initialized!")
 
         self._dotpath_map = _DotPathMap(py_fpath, path_prefix)
         self.py_fpath = py_fpath
         self.root_fpath = root_fpath
-        self._initialized = True
+        self.initialized = True
 
     def _assert_initialized(self) -> None:
         """
@@ -197,7 +197,7 @@ class PyModuleLoader(metaclass=Singleton):
         Raises:
             Exception: If the map or python directory have not been initialized
         """
-        if not self._initialized:
+        if not self.initialized:
             raise Exception("Module loaer is not yet initialized!")
 
     def __contains__(self, dotpath: str) -> bool:

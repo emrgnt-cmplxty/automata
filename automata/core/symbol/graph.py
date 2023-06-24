@@ -534,7 +534,7 @@ class _SymbolGraphNavigator:
         from functools import partial
 
         # prepare loader_args here (replace this comment with actual code)
-        if not py_module_loader._dotpath_map:
+        if not py_module_loader.initialized:
             raise ValueError(
                 "Module loader must be initialized before pre-computing bounding boxes"
             )

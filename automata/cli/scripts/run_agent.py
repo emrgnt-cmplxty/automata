@@ -30,7 +30,6 @@ def main(*args, **kwargs) -> str:
         agent_name (str): The name of the agent
             Defaults to "automata_retriever"
     """
-    logger.info("Building toolkits...")
 
     py_module_loader.initialize()
 

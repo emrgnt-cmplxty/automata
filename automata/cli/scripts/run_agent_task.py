@@ -14,6 +14,7 @@ from automata.core.agent.tools.tool_utils import AgentToolFactory, DependencyFac
 from automata.core.base.github_manager import GitHubManager
 from automata.core.base.task import TaskStatus
 from automata.core.base.tool import ToolkitType
+from automata.core.coding.py.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,7 @@ def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> L
 
 
 def main(*args, **kwargs):
+    py_module_loader.initialize()
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
 
     # Pre-process issues if they are passsed
