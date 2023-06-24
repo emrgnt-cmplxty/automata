@@ -14,7 +14,6 @@ from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
-from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
@@ -139,19 +138,11 @@ def automata_agent_config_builder():
     return AutomataAgentConfigBuilder.from_name(config_name)
 
 
-@pytest.fixture(autouse=True)
-def module_loader():
-    """Creates a ModuleLoader object for testing"""
-    return ModuleLoader()
-
-
 @pytest.fixture
-def automata_agent(mocker, module_loader, automata_agent_config_builder):
+def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
     tool_list = ["py_reader"]
-    mock_llm_toolkits = build_llm_toolkits(
-        tool_list, module_loader=module_loader, py_reader=mocker.MagicMock(spec=PyReader)
-    )
+    mock_llm_toolkits = build_llm_toolkits(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
 
     instructions = "Test instruction."
 

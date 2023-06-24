@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.config.config_types import ConfigCategory
-from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.context.py_context.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
@@ -28,8 +28,8 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
-    module_loader = ModuleLoader()
-    module_loader.set_paths()
+    py_module_loader.set_paths()
+    print("module_loader.py_path = ", py_module_loader.py_path)
 
     logger.info("Running....")
     scip_path = os.path.join(
@@ -42,10 +42,11 @@ def main(*args, **kwargs) -> str:
     code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
     code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, OpenAIEmbedding())
 
+    # TODO - Add option for the user to modify l2 embedding path in commands.py
     embedding_path_l2 = os.path.join(
         config_fpath(),
         ConfigCategory.SYMBOL.value,
-        kwargs.get("embedding_file", "symbol_doc_embedding_l2.json"),
+        kwargs.get("symbol_doc_embedding_l2_fpath", "symbol_doc_embedding_l2.json"),
     )
     embedding_db_l2 = JSONVectorDatabase(embedding_path_l2)
 
@@ -65,9 +66,9 @@ def main(*args, **kwargs) -> str:
 
     all_defined_symbols = symbol_graph.get_all_available_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
+
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
-            print("Updating for symbol = ", symbol)
             try:
                 embedding_handler.update_embedding(symbol)
                 embedding_db_l2.save()

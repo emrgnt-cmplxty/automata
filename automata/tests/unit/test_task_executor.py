@@ -4,7 +4,7 @@ import pytest
 
 from automata.core.agent.task.executor import AutomataTaskExecutor, ITaskExecution
 from automata.core.base.task import Task, TaskStatus
-from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
 from automata.core.utils import root_py_fpath
@@ -12,11 +12,10 @@ from automata.core.utils import root_py_fpath
 
 @pytest.fixture(autouse=True)
 def module_loader():
-    module_loader = ModuleLoader()
-    module_loader.set_paths(root_py_fpath())
-    yield module_loader
-    module_loader.py_dir = None
-    module_loader._dotpath_map = None
+    py_module_loader.set_paths(root_py_fpath())
+    yield py_module_loader
+    py_module_loader.py_path = None
+    py_module_loader._dotpath_map = None
 
 
 class TestExecuteBehavior(ITaskExecution):

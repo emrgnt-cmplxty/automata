@@ -9,6 +9,7 @@ import pypandoc
 from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
 
 from automata.core.coding.directory import DirectoryManager
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.navigation import (
     find_all_function_and_class_syntax_tree_nodes,
     find_import_syntax_tree_node_by_name,
@@ -88,7 +89,7 @@ class PyWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        module_obj = self.py_reader.module_tree_map.fetch_module(module_dotpath)
+        module_obj = py_module_loader.fetch_module(module_dotpath)
         if not module_obj:
             raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
@@ -120,7 +121,7 @@ class PyWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        module_obj = self.py_reader.module_tree_map.fetch_module(module_dotpath)
+        module_obj = py_module_loader.fetch_module(module_dotpath)
         if not module_obj:
             raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
@@ -141,16 +142,13 @@ class PyWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        if module_dotpath not in self.py_reader.module_tree_map:
+        if module_dotpath not in py_module_loader:
             raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
-        print("calling _write_module_to_disk")
 
         source_code = self.py_reader.get_source_code(module_dotpath)
-        module_fpath = self.py_reader.module_tree_map.fetch_existing_module_fpath_by_dotpath(
-            module_dotpath
-        )
+        module_fpath = py_module_loader.fetch_existing_module_fpath_by_dotpath(module_dotpath)
 
         if not module_fpath:
             raise PyWriter.ModuleNotFound(
@@ -173,7 +171,7 @@ class PyWriter:
             RedBaron: The created module object
         """
         parsed = RedBaron(source_code)
-        self.py_reader.module_tree_map.put_module(module_dotpath, parsed)
+        py_module_loader.put_module(module_dotpath, parsed)
         return parsed
 
     @staticmethod

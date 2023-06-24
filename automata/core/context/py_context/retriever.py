@@ -6,7 +6,6 @@ from typing import List, Optional, Set
 import tiktoken
 from redbaron import RedBaron
 
-from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.coding.py.reader import PyReader
 from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.graph import SymbolGraph
@@ -60,7 +59,6 @@ class PyContextRetriever:
             config (PyContextRetrieverConfig): The configuration to use
         """
         self.graph = graph
-        self.module_loader = ModuleLoader()
         self.config = config
         self.indent_level = 0
         self.doc_embedding_db = doc_embedding_db

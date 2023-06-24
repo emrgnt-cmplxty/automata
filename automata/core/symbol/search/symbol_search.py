@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 import networkx as nx
 import numpy as np
 
-from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
@@ -51,7 +51,6 @@ class SymbolSearch:
         self.symbol_code_similarity = symbol_code_similarity
         symbol_code_similarity.set_available_symbols(available_symbols)
         self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
-        self.module_loader = ModuleLoader()
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """
@@ -205,7 +204,7 @@ class SymbolSearch:
             Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values
         """
         matches = {}
-        for module_path, module in self.module_loader.items():
+        for module_path, module in py_module_loader.items():
             if module:
                 lines = module.dumps().splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]

@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.tool import Tool
-from automata.core.coding.py.py_utils import NO_RESULT_FOUND_STR
+from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR
 from automata.core.coding.py.reader import PyReader
 
 logger = logging.getLogger(__name__)

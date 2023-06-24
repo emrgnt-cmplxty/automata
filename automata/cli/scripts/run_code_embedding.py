@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.config.config_types import ConfigCategory
-from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.embedding_types import OpenAIEmbedding
@@ -20,8 +20,7 @@ def main(*args, **kwargs) -> str:
     Update the symbol code embedding based on the specified SCIP index file.
     """
 
-    module_loader = ModuleLoader()
-    module_loader.set_paths()
+    py_module_loader.set_paths()
 
     scip_path = os.path.join(
         config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")

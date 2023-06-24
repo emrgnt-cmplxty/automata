@@ -46,7 +46,7 @@ Limitations
 
 The primary limitation of ``LazyModuleTreeMap`` is that it’s primarily
 designed for the Automata project and assumes a specific directory
-structure. Moreover, the default value for ‘py_dir’ is ``automata`` and
+structure. Moreover, the default value for ‘py_path’ is ``automata`` and
 requires customization for other use cases.
 
 Follow-up Questions:

@@ -5,9 +5,8 @@ from typing import Optional, Union
 
 from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
 
-from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR, py_module_loader
 from automata.core.coding.py.navigation import find_syntax_tree_node
-from automata.core.coding.py.py_utils import NO_RESULT_FOUND_STR
 
 logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]
@@ -17,7 +16,7 @@ class PyReader:
     """Code retriever for fetching python code"""
 
     def __init__(self) -> None:
-        self.module_tree_map = ModuleLoader()
+        pass
 
     def get_source_code(self, module_dotpath: str, object_path: Optional[str] = None) -> str:
         """
@@ -32,7 +31,7 @@ class PyReader:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
-        module = self.module_tree_map.fetch_module(module_dotpath)
+        module = py_module_loader.fetch_module(module_dotpath)
         if module:
             result = find_syntax_tree_node(module, object_path)
             if result:
@@ -53,7 +52,7 @@ class PyReader:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
-        module = self.module_tree_map.fetch_module(module_dotpath)
+        module = py_module_loader.fetch_module(module_dotpath)
         if module:
             return PyReader.get_docstring_from_node(find_syntax_tree_node(module, object_path))
         return NO_RESULT_FOUND_STR
@@ -93,7 +92,7 @@ class PyReader:
                     if child_node is not node:
                         _remove_docstrings(child_node)
 
-        module = self.module_tree_map.fetch_module(module_dotpath)
+        module = py_module_loader.fetch_module(module_dotpath)
 
         if module:
             module_copy = RedBaron(module.dumps())

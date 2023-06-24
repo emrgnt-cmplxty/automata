@@ -5,23 +5,40 @@ from typing import Dict, Iterable, Optional, Tuple
 from redbaron import RedBaron
 
 from automata.core.base.singleton import Singleton
-from automata.core.coding.py.py_utils import DOT_SEP, convert_fpath_to_module_dotpath
-from automata.core.utils import root_py_fpath
+from automata.core.utils import root_fpath, root_py_fpath
 
 logger = logging.getLogger(__name__)
+
+
+NO_RESULT_FOUND_STR = "No Result Found."
+DOT_SEP = "."
+
+
+def convert_fpath_to_module_dotpath(root_abs_path: str, module_path: str, prefix: str) -> str:
+    """
+    Converts a filepath to a module dotpath
+
+    Args:
+        root_abs_path: The absolute path of the root directory
+        module_path: The path of the module
+
+    Returns:
+        The dotpath of the module
+    """
+    prefix = "" if prefix == "." else f"{prefix}."
+    return prefix + (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[:-3]
 
 
 class _DotPathMap:
     """A map from module dotpaths to module filepaths"""
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, prefix: str) -> None:
         """
         Args:
             path: The absolute path to the root of the module tree
         """
-        if not os.path.isabs(path):
-            path = os.path.join(root_py_fpath(), path)
-        self._abs_path = path
+        self.prefix = prefix
+        self.path = path
         self._module_dotpath_to_fpath_map = self._build_module_dotpath_to_fpath_map()
         self._module_fpath_to_dotpath_map = {
             v: k for k, v in self._module_dotpath_to_fpath_map.items()
@@ -35,11 +52,13 @@ class _DotPathMap:
             The map from module dotpaths to module filepaths
         """
         module_dotpath_to_fpath_map = {}
-        for root, _, files in os.walk(self._abs_path):
+        for root, _, files in os.walk(self.path):
             for file in files:
                 if file.endswith(".py"):
                     module_fpath = os.path.join(root, file)
-                    module_dotpath = convert_fpath_to_module_dotpath(self._abs_path, module_fpath)
+                    module_dotpath = convert_fpath_to_module_dotpath(
+                        self.path, module_fpath, self.prefix
+                    )
                     module_dotpath_to_fpath_map[module_dotpath] = module_fpath
         return module_dotpath_to_fpath_map
 
@@ -98,14 +117,20 @@ class _DotPathMap:
 
         Args:
             module_dotpath: The dotpath of the module
+
+        Raises:
+            Exception: If the module already exists in the map
         """
-        if not self.contains_dotpath(module_dotpath):
-            module_os_rel_path = module_dotpath.replace(DOT_SEP, os.path.sep)
-            module_os_abs_path = os.path.join(self._abs_path, module_os_rel_path)
-            os.makedirs(os.path.dirname(module_os_abs_path), exist_ok=True)
-            file_path = f"{module_os_abs_path}.py"
-            self._module_dotpath_to_fpath_map[module_dotpath] = file_path
-            self._module_fpath_to_dotpath_map[file_path] = module_dotpath
+        if self.contains_dotpath(module_dotpath):
+            raise Exception(f"Module with dotpath {module_dotpath} already exists!")
+        module_os_rel_path = os.path.relpath(
+            module_dotpath.replace(DOT_SEP, os.path.sep), self.prefix
+        )
+        module_os_path = os.path.join(self.path, module_os_rel_path)
+        os.makedirs(os.path.dirname(module_os_path), exist_ok=True)
+        file_path = f"{module_os_path}.py"
+        self._module_dotpath_to_fpath_map[module_dotpath] = file_path
+        self._module_fpath_to_dotpath_map[file_path] = module_dotpath
 
     def items(self) -> Iterable[Tuple[str, str]]:
         """
@@ -115,13 +140,10 @@ class _DotPathMap:
         return self._module_dotpath_to_fpath_map.items()
 
 
-class ModuleLoader(metaclass=Singleton):
+class PyModuleLoader(metaclass=Singleton):
     """
     A Singleton with a lazy dictionary mapping dotpaths to their corresponding RedBaron FST objects.
     Loads and caches modules in memory as they are accessed
-
-    TODO: Defaulting 'py_dir' to automata for now and then introducing smarter
-           logic to infer the py_dir from the path later
 
     TODO: Is there a clean way to avoid pasting `_assert_initialized` everywhere?
     TODO: Is there a clean way to remove the type: ignore comments?
@@ -132,22 +154,40 @@ class ModuleLoader(metaclass=Singleton):
     _initialized = False
 
     def __init__(self) -> None:
-        if ModuleLoader._initialized:
+        if PyModuleLoader._initialized:
             return
         self._dotpath_map: Optional[_DotPathMap] = None
-        self.py_dir: Optional[str] = None
+        self.py_path: Optional[str] = None
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
-        ModuleLoader._initialized = True
+        PyModuleLoader._initialized = True
 
-    def set_paths(self, path: str = root_py_fpath(), py_dir: Optional[str] = None) -> None:
+    def set_paths(self, root_path: str = root_fpath(), py_path: str = root_py_fpath()) -> None:
+        """
+        Sets the paths for the module loader across the entire project
+
+
+        Args:
+            root_path: The absolute path to the root directory of the project
+            py_path: The absolute path to the root directory of the python code
+
+        Raises:
+            Exception: If the map or python directory have already been initialized
+
+        Note:
+            root_path should point to the root directory of the project, in the default case this
+            might look something like "/Users/me/Automata", root_py_path should point to the root directory
+            of the python modules, in the default case this might look something like "/Users/me/Automata/automata"
+
+        """
+        path_prefix = os.path.relpath(py_path, root_path)
+
         if self._dotpath_map is not None:
             raise Exception("Paths already set!")
-        if self.py_dir is not None:
+        if self.py_path is not None:
             raise Exception("PyDir already set!")
-        self._dotpath_map = _DotPathMap(path)
-        if not py_dir:
-            py_dir = path.split(os.pathsep)[-1]
-        self.py_dir = py_dir
+
+        self._dotpath_map = _DotPathMap(py_path, path_prefix)
+        self.py_path = py_path
 
     def _assert_initialized(self) -> None:
         """
@@ -158,7 +198,7 @@ class ModuleLoader(metaclass=Singleton):
         """
         if self._dotpath_map is None:
             raise Exception("Paths not set!")
-        if self.py_dir is None:
+        if self.py_path is None:
             raise Exception("PyDir not set!")
 
     def __contains__(self, dotpath: str) -> bool:
@@ -203,7 +243,6 @@ class ModuleLoader(metaclass=Singleton):
             Exception: If the map or python directory have not been initialized
         """
         self._assert_initialized()
-
         if not self._dotpath_map.contains_dotpath(module_dotpath):  # type: ignore
             return None
 
@@ -290,12 +329,11 @@ class ModuleLoader(metaclass=Singleton):
 
         Raises:
             Exception: If the map or python directory have not been initialized
-        FIXME: Filter on py_dir for now and then introduce smarter logic later
+        FIXME: Filter on py_path for now and then introduce smarter logic later
         """
         for module_dotpath, fpath in self._dotpath_map.items():  # type: ignore
-            if self.py_dir not in module_dotpath or "tasks" in module_dotpath:
+            if self.py_path not in module_dotpath or "tasks" in module_dotpath:
                 continue
-            print("loading dotpath = ", module_dotpath)
             if module_dotpath not in self._loaded_modules:
                 self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
 
@@ -315,3 +353,6 @@ class ModuleLoader(metaclass=Singleton):
         except Exception as e:
             logger.error(f"Failed to load module '{path}' due to: {e}")
             return None
+
+
+py_module_loader = PyModuleLoader()

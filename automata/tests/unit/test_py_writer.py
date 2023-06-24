@@ -14,7 +14,7 @@ from redbaron import (
     StringNode,
 )
 
-from automata.core.coding.py.module_loader import ModuleLoader
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.navigation import find_syntax_tree_node
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
@@ -154,14 +154,13 @@ class MockCodeGenerator:
 
 @pytest.fixture(autouse=True)
 def module_loader():
-    module_loader = ModuleLoader()
-    module_loader.set_paths(
+    py_module_loader.set_paths(
+        os.path.join(os.path.dirname(os.path.abspath(__file__))),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),
-        "sample_modules",
     )
-    yield module_loader
-    module_loader.py_dir = None
-    module_loader._dotpath_map = None
+    yield py_module_loader
+    py_module_loader.py_path = None
+    py_module_loader._dotpath_map = None
 
 
 @pytest.fixture
@@ -214,7 +213,7 @@ def test_extend_module(py_writer):
     py_writer.update_existing_module("sample_module_22", source_code_2)
 
     # Check module 2 is merged into module 1
-    module_obj = py_writer.py_reader.module_tree_map.fetch_module("sample_module_22")
+    module_obj = py_module_loader.fetch_module("sample_module_22")
     mock_generator._check_module_obj(module_obj)
     mock_generator._check_class_obj(module_obj[0])
     mock_generator._check_function_obj(module_obj[1])
@@ -228,7 +227,7 @@ def test_reduce_module(py_writer):
     )
     source_code = mock_generator.generate_code()
     py_writer.create_new_module("sample_module_2", source_code)
-    module_obj = py_writer.py_reader.module_tree_map.fetch_module("sample_module_2")
+    module_obj = py_module_loader.fetch_module("sample_module_2")
     class_obj = module_obj.find("class")
 
     function_obj = module_obj.find_all("def")[-1]
@@ -247,7 +246,7 @@ def test_create_update_write_module(py_writer):
         has_class=True, has_class_docstring=True, has_function=True, has_function_docstring=True
     )
     source_code = mock_generator.generate_code()
-    py_writer.create_new_module("sample_module_write", source_code, do_write=True)
+    py_writer.create_new_module("sample_modules.sample_module_write", source_code, do_write=True)
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     fpath = os.path.join(root_dir, "sample_module_write.py")
     assert os.path.exists(fpath)
@@ -262,7 +261,9 @@ def test_create_update_write_module(py_writer):
 
     assert source_code != source_code_2
     py_writer.update_existing_module(
-        source_code=source_code_2, module_dotpath="sample_module_write", do_write=True
+        source_code=source_code_2,
+        module_dotpath="sample_modules.sample_module_write",
+        do_write=True,
     )
 
     with open(fpath, "r") as f:
@@ -385,12 +386,12 @@ def test_write_and_retrieve_mock_code(py_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
-    py_writer._create_module_from_source_code("sample_module_2", source_code)
+    py_writer._create_module_from_source_code("sample_modules.sample_module_2", source_code)
 
-    py_writer._write_module_to_disk("sample_module_2")
+    py_writer._write_module_to_disk("sample_modules.sample_module_2")
 
     retriever = PyReader()
-    module_docstring = retriever.get_docstring("sample_module_2", None)
+    module_docstring = retriever.get_docstring("sample_modules.sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
 
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
