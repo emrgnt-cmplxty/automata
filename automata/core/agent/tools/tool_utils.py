@@ -216,7 +216,7 @@ class DependencyFactory:
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
 
     @classmethod_lru_cache()
-    def create_py_retriever(self) -> PyReader:
+    def create_py_reader(self) -> PyReader:
         """
         Creates a PyReader instance.
         """
@@ -259,14 +259,14 @@ class AgentToolFactory:
     _retriever_instance = None
 
     TOOLKIT_TYPE_TO_TOOL_CLASS = {
-        ToolkitType.PY_RETRIEVER: PyReaderTool,
+        ToolkitType.PY_READER: PyReaderTool,
         ToolkitType.PY_WRITER: PyWriterTool,
         ToolkitType.SYMBOL_SEARCH: SymbolSearchTool,
         ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
     }
 
     TOOLKIT_TYPE_TO_ARGS: Dict[ToolkitType, List[Tuple[str, Any]]] = {
-        ToolkitType.PY_RETRIEVER: [("py_reader", PyReader)],
+        ToolkitType.PY_READER: [("py_reader", PyReader)],
         ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
         ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         ToolkitType.CONTEXT_ORACLE: [
