@@ -168,7 +168,6 @@ def module_loader():
 
 @pytest.fixture
 def py_writer():
-    # sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
     retriever = PyReader()
     return PyWriter(retriever)
 
