@@ -20,7 +20,7 @@ def main(*args, **kwargs) -> str:
     Update the symbol code embedding based on the specified SCIP index file.
     """
 
-    py_module_loader.set_paths()
+    py_module_loader.initialize()
 
     scip_path = os.path.join(
         config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")

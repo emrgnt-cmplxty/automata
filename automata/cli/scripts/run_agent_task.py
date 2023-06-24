@@ -48,12 +48,12 @@ def main(*args, **kwargs):
     # Pre-process issues if they are passsed
     issue_numbers = kwargs.get("fetch_issues", "")
     issue_numbers = list(map(int, issue_numbers.split(","))) if issue_numbers else []
-
-    issue_infos = process_issues(issue_numbers, github_manager)
-    # Concatenate instructions and issue information
-    kwargs["instructions"] = kwargs.get("instructions") or DEFAULT_ISSUES_PROMPT + "\n".join(
-        issue_infos
-    )
+    if len(issue_numbers):
+        issue_infos = process_issues(issue_numbers, github_manager)
+        # Concatenate instructions and issue information
+        kwargs["instructions"] = kwargs.get("instructions") or DEFAULT_ISSUES_PROMPT + "\n".join(
+            issue_infos
+        )
 
     llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")
     # TODO - The following is a copy pasta from automata/cli/scripts/run_agent.py

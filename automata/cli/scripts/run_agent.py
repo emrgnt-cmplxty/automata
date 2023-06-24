@@ -32,7 +32,7 @@ def main(*args, **kwargs) -> str:
     """
     logger.info("Building toolkits...")
 
-    py_module_loader.set_paths()
+    py_module_loader.initialize()
 
     instructions = kwargs.get("instructions") or "This is a dummy instruction, return True."
     llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")

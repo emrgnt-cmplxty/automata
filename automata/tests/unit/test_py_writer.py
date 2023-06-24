@@ -152,15 +152,18 @@ class MockCodeGenerator:
         return "".join(random.choice(string.ascii_letters) for _ in range(length))
 
 
+# TODO - Unify module loader fixtures
 @pytest.fixture(autouse=True)
 def module_loader():
-    py_module_loader.set_paths(
+    py_module_loader.initialize(
         os.path.join(os.path.dirname(os.path.abspath(__file__))),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),
     )
     yield py_module_loader
-    py_module_loader.py_fpath = None
     py_module_loader._dotpath_map = None
+    py_module_loader._initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None
 
 
 @pytest.fixture

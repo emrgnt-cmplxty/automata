@@ -28,7 +28,7 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
-    py_module_loader.set_paths()
+    py_module_loader.initialize()
 
     logger.info("Running....")
     scip_path = os.path.join(

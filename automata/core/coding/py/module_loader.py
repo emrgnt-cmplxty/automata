@@ -150,21 +150,21 @@ class PyModuleLoader(metaclass=Singleton):
           Towards this end a function decorator was also explored, but found to be insufficient.
     """
 
+    py_fpath: Optional[str] = None
+    root_fpath: Optional[str] = None
+
     _initialized = False
+    _dotpath_map: Optional[_DotPathMap] = None
+    _loaded_modules: Dict[str, Optional[RedBaron]] = {}
 
     def __init__(self) -> None:
-        if PyModuleLoader._initialized:
-            return
-        self._dotpath_map: Optional[_DotPathMap] = None
-        self.py_fpath: Optional[str] = None
-        self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
-        PyModuleLoader._initialized = True
+        pass
 
-    def set_paths(
+    def initialize(
         self, root_fpath: str = get_root_fpath(), py_fpath: str = get_root_py_fpath()
     ) -> None:
         """
-        Sets the paths for the module loader across the entire project
+        Initializes the loader by setting paths across the entire project
 
 
         Args:
@@ -182,14 +182,13 @@ class PyModuleLoader(metaclass=Singleton):
         """
         path_prefix = os.path.relpath(py_fpath, root_fpath)
 
-        if self._dotpath_map is not None:
-            raise Exception("Paths already set!")
-        if self.py_fpath is not None:
-            raise Exception("PyDir already set!")
+        if self._initialized:
+            raise Exception("Module loader is already initialized!")
 
         self._dotpath_map = _DotPathMap(py_fpath, path_prefix)
         self.py_fpath = py_fpath
         self.root_fpath = root_fpath
+        self._initialized = True
 
     def _assert_initialized(self) -> None:
         """
@@ -198,10 +197,8 @@ class PyModuleLoader(metaclass=Singleton):
         Raises:
             Exception: If the map or python directory have not been initialized
         """
-        if self._dotpath_map is None:
-            raise Exception("Paths not set!")
-        if self.py_fpath is None:
-            raise Exception("PyDir not set!")
+        if not self._initialized:
+            raise Exception("Module loaer is not yet initialized!")
 
     def __contains__(self, dotpath: str) -> bool:
         """

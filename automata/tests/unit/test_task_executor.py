@@ -10,12 +10,15 @@ from automata.core.coding.py.writer import PyWriter
 from automata.core.utils import get_root_py_fpath
 
 
+# TODO - Unify module loader fixture
 @pytest.fixture(autouse=True)
 def module_loader():
-    py_module_loader.set_paths(get_root_py_fpath())
+    py_module_loader.initialize(get_root_py_fpath())
     yield py_module_loader
-    py_module_loader.py_fpath = None
     py_module_loader._dotpath_map = None
+    py_module_loader._initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None
 
 
 class TestExecuteBehavior(ITaskExecution):

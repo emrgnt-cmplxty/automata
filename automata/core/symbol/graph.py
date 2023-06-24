@@ -305,7 +305,7 @@ def process_symbol_bounds(
         Optional[Tuple[Symbol, BoundingBox]]: A tuple of the symbol and its bounding box
     """
     if not py_module_loader._dotpath_map:
-        py_module_loader.set_paths(*loader_args)
+        py_module_loader.initialize(*loader_args)
     try:
         fst_object = convert_to_fst_object(symbol)
         bounding_box = fst_object.absolute_bounding_box
@@ -534,8 +534,12 @@ class _SymbolGraphNavigator:
         from functools import partial
 
         # prepare loader_args here (replace this comment with actual code)
+        if not py_module_loader._dotpath_map:
+            raise ValueError(
+                "Module loader must be initialized before pre-computing bounding boxes"
+            )
         loader_args: Tuple[str, str] = (
-            py_module_loader.root_fpath,
+            py_module_loader.root_fpath or "",
             py_module_loader.py_fpath or "",
         )
         bounding_boxes = {}
