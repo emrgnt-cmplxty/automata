@@ -88,6 +88,7 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
 @common_options
 @agent_options
 @cli.command()
+@click.option("--fetch-issues", default="", help="Comma-separated list of issue numbers to fetch")
 @click.pass_context
 def run_agent(ctx, *args, **kwargs) -> None:
     """Run the agent."""
