@@ -1,29 +1,28 @@
 import logging
 from typing import List, Optional
 
-from automata.config.config_types import AgentConfigName
 from automata.core.base.tool import Tool
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
-from automata.core.coding.py_coding.writer import PyCodeWriter
+from automata.core.coding.py.writer import PyWriter
 
 from .agent_tool import AgentTool
 
 logger = logging.getLogger(__name__)
 
 
-class PyCodeWriterTool(AgentTool):
+class PyWriterTool(AgentTool):
     """
-    PyCodeWriterTool
+    PyWriterTool
     A class for interacting with the PythonWriter API, which provides functionality to modify
     the code state of a given directory of Python files.
     """
 
     def __init__(
         self,
+        py_writer: PyWriter,
         **kwargs,
     ) -> None:
         """
-        Initializes a PyCodeWriterTool object with the given inputs.
+        Initializes a PyWriterTool object with the given inputs.
 
         Args:
         - writer (PythonWriter): A PythonWriter object representing the code writer to work with.
@@ -31,7 +30,7 @@ class PyCodeWriterTool(AgentTool):
         Returns:
         - None
         """
-        self.writer: PyCodeWriter = kwargs.get("py_writer", PyCodeWriter(PyCodeRetriever()))
+        self.writer = py_writer
         self.model = kwargs.get("model", "gpt-4")
         self.verbose = kwargs.get("verbose", False)
         self.stream = kwargs.get("stream", True)
@@ -153,6 +152,7 @@ class PyCodeWriterTool(AgentTool):
         Returns:
             str: The result of the creation.
         """
+
         try:
             self.writer.create_new_module(module_dotpath, code, self.do_write)
             return "Success"

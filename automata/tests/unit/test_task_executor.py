@@ -4,10 +4,21 @@ import pytest
 
 from automata.core.agent.task.executor import AutomataTaskExecutor, ITaskExecution
 from automata.core.base.task import Task, TaskStatus
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
-from automata.core.coding.py_coding.writer import PyCodeWriter
-from automata.core.utils import root_py_fpath
+from automata.core.coding.py.module_loader import py_module_loader
+from automata.core.coding.py.reader import PyReader
+from automata.core.coding.py.writer import PyWriter
+from automata.core.utils import get_root_py_fpath
+
+
+# TODO - Unify module loader fixture
+@pytest.fixture(autouse=True)
+def module_loader():
+    py_module_loader.initialize(get_root_py_fpath())
+    yield py_module_loader
+    py_module_loader._dotpath_map = None
+    py_module_loader.initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None
 
 
 class TestExecuteBehavior(ITaskExecution):
@@ -18,9 +29,8 @@ class TestExecuteBehavior(ITaskExecution):
     def execute(self, task: Task):
         import os
 
-        module_map = LazyModuleTreeMap(root_py_fpath())
-        retriever = PyCodeRetriever(module_map)
-        writer = PyCodeWriter(retriever)
+        retriever = PyReader()
+        writer = PyWriter(retriever)
 
         # Create a new module
         writer.create_new_module(
@@ -31,11 +41,11 @@ class TestExecuteBehavior(ITaskExecution):
         task.result = "Test result"
 
         # Cleanup the new output file
-        os.remove(os.path.join(root_py_fpath(), "core", "agent", "test_agent.py"))
+        os.remove(os.path.join(get_root_py_fpath(), "core", "agent", "test_agent.py"))
 
 
 @patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_success(_, task, environment, registry):
+def test_execute_automata_task_success(_, module_loader, task, environment, registry):
     registry.register(task)
     environment.setup(task)
 
@@ -50,7 +60,7 @@ def test_execute_automata_task_success(_, task, environment, registry):
 
 
 @patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_fail(_, task, environment, registry):
+def test_execute_automata_task_fail(_, module_loader, task, environment, registry):
     registry.register(task)
     environment.setup(task)
 

@@ -41,6 +41,8 @@ exclude = '''
     | random
     | local_env
     | build
+    | scip-python
+    | tasks
   )/
 )
 '''

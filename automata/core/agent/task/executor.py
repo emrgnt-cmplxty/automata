@@ -50,7 +50,6 @@ class IAutomataTaskExecution(ITaskExecution):
         TODO - Consider explicitly passing args to the ConfigFactory
                Instead of passing kwargs to the create_config method.
         """
-        print("task.kwargs = ", task.kwargs)
         agent_config = AutomataAgentConfigFactory().create_config(**task.kwargs)
         agent = AutomataAgent(
             task.instructions,

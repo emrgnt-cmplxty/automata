@@ -26,13 +26,9 @@ def reconfigure_logging(log_level_str: str) -> None:
     logging_config = get_logging_config(log_level=log_level)
     logging.config.dictConfig(logging_config)
 
-    # Avoid spam from the aux libraries
-    requests_logger = logging.getLogger("urllib3")
-    requests_logger.setLevel(logging.INFO)
-    matplotlib_logger = logging.getLogger("matplotlib")
-    matplotlib_logger.setLevel(logging.INFO)
-    matplotlib_logger = logging.getLogger("openai")
-    matplotlib_logger.setLevel(logging.INFO)
+    # External libraries we want to quiet down
+    for library in ["urllib3", "matplotlib", "openai", "github"]:
+        logging.getLogger(library).setLevel(logging.INFO)
 
 
 @click.group()

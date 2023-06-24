@@ -3,30 +3,30 @@ from typing import List, Optional
 
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.tool import Tool
-from automata.core.coding.py_coding.py_utils import NO_RESULT_FOUND_STR
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR
+from automata.core.coding.py.reader import PyReader
 
 logger = logging.getLogger(__name__)
 
 
-class PyCodeRetrieverTool(AgentTool):
+class PyReaderTool(AgentTool):
     """
-    PyCodeRetrieverTool
+    PyReaderTool
     A class for interacting with the PythonIndexer API, which provides functionality to read
     the code state of a of local Python files.
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, py_reader: PyReader, **kwargs) -> None:
         """
-        Initializes a PyCodeRetrieverTool object with the given inputs.
+        Initializes a PyReaderTool object with the given inputs.
 
         Args:
-        - py_retriever (PyCodeRetriever): A PyCodeRetriever object which allows inspecting of local code.
+        - py_reader (PyReader): A PyReader object which allows inspecting of local code.
 
         Returns:
         - None
         """
-        self.code_retriever: PyCodeRetriever = kwargs.get("py_retriever", PyCodeRetriever())
+        self.py_reader = py_reader
         self.model = kwargs.get("model") or "gpt-4"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False
@@ -94,7 +94,7 @@ class PyCodeRetrieverTool(AgentTool):
               python path, without docstrings.
         """
         try:
-            return self.code_retriever.get_source_code_without_docstrings(module_path, object_path)
+            return self.py_reader.get_source_code_without_docstrings(module_path, object_path)
         except Exception as e:
             return "Failed to retrieve code with error - " + str(e)
 
@@ -114,7 +114,7 @@ class PyCodeRetrieverTool(AgentTool):
             - str: The docstring of the python package, module,
         """
         try:
-            result = self.code_retriever.get_docstring(module_path, object_path)
+            result = self.py_reader.get_docstring(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
@@ -135,7 +135,7 @@ class PyCodeRetrieverTool(AgentTool):
             - str: The raw code of the python package, module,
         """
         try:
-            result = self.code_retriever.get_source_code(module_path, object_path)
+            result = self.py_reader.get_source_code(module_path, object_path)
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)

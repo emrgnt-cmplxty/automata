@@ -14,10 +14,11 @@ from automata.core.agent.tools.tool_utils import AgentToolFactory, DependencyFac
 from automata.core.base.github_manager import GitHubManager
 from automata.core.base.task import TaskStatus
 from automata.core.base.tool import ToolkitType
+from automata.core.coding.py.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ISSUES_PROMPT = """Provide an explanation and code snippets (in Markdown) which address the Github issue(s) that follow. You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. Answer each question with working code snippets. The issues begin now:"""
+DEFAULT_ISSUES_PROMPT = """Provide an explanation and code snippets (in Markdown) which address the Github issue(s) that follow. You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
 
 
 def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> List[str]:
@@ -43,17 +44,18 @@ def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> L
 
 
 def main(*args, **kwargs):
+    py_module_loader.initialize()
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
 
     # Pre-process issues if they are passsed
     issue_numbers = kwargs.get("fetch_issues", "")
     issue_numbers = list(map(int, issue_numbers.split(","))) if issue_numbers else []
-
-    issue_infos = process_issues(issue_numbers, github_manager)
-    # Concatenate instructions and issue information
-    kwargs["instructions"] = kwargs.get("instructions") or DEFAULT_ISSUES_PROMPT + "\n".join(
-        issue_infos
-    )
+    if len(issue_numbers):
+        issue_infos = process_issues(issue_numbers, github_manager)
+        # Concatenate instructions and issue information
+        kwargs["instructions"] = kwargs.get("instructions") or DEFAULT_ISSUES_PROMPT + "\n".join(
+            issue_infos
+        )
 
     llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")
     # TODO - The following is a copy pasta from automata/cli/scripts/run_agent.py
@@ -69,8 +71,6 @@ def main(*args, **kwargs):
     for dependency in dependencies:
         logger.info(f"Building {dependency}...")
         kwargs[dependency] = DependencyFactory().get(dependency)
-
-    print("kwargs = ", kwargs)
 
     task = AutomataTask(**kwargs)  # TaskStatus = CREATED
     # Register the task with the task registry

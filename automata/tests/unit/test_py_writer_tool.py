@@ -4,27 +4,39 @@ import textwrap
 
 import pytest
 
-from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
+from automata.core.agent.tools.py_writer import PyWriterTool
 from automata.core.base.tool import Tool
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
-from automata.core.coding.py_coding.writer import PyCodeWriter
-from automata.core.utils import root_py_fpath
+from automata.core.coding.py.module_loader import py_module_loader
+from automata.core.coding.py.reader import PyReader
+from automata.core.coding.py.writer import PyWriter
+from automata.core.utils import get_root_py_fpath
+
+
+# TODO - Unify module loader fixture
+@pytest.fixture(autouse=True)
+def module_loader():
+    py_module_loader.initialize(
+        os.path.join(get_root_py_fpath(), "tests", "unit"),
+        os.path.join(get_root_py_fpath(), "tests", "unit", "sample_modules"),
+    )
+    yield py_module_loader
+    py_module_loader._dotpath_map = None
+    py_module_loader.initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None
 
 
 @pytest.fixture
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    path_to_here = os.path.join(root_py_fpath(), "tests", "unit")
-    module_map = LazyModuleTreeMap(path_to_here)
-    py_retriever = PyCodeRetriever(module_map)
-    py_writer = PyCodeWriter(py_retriever)
-    return PyCodeWriterTool(py_writer=py_writer)
+    py_reader = PyReader()
+    py_writer = PyWriter(py_reader)
+    return PyWriterTool(py_writer=py_writer)
 
 
 def test_init(python_writer_tool_builder):
-    assert isinstance(python_writer_tool_builder.writer, PyCodeWriter)
+    assert isinstance(python_writer_tool_builder.writer, PyWriter)
 
 
 def test_build(python_writer_tool_builder):
@@ -213,4 +225,4 @@ class PythonAgentToolBuilder:
         new_sample_text = f.read()
         assert module_str == new_sample_text
     # # Why?
-    # shutil.rmtree(os.path.join(root_fpath(), "tool_management", "tests", "sample_modules"))
+    # shutil.rmtree(os.path.join(get_root_fpath(), "tool_management", "tests", "sample_modules"))

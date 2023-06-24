@@ -152,7 +152,7 @@ system_template: >
 
     *User*
       - task_0
-      - Write the following function with imports "[PROVIDED_IMPORTS]\ndef root_py_fpath() -> str:..." to the utils file.
+      - Write the following function with imports "[PROVIDED_IMPORTS]\ndef get_root_py_fpath() -> str:..." to the utils file.
 
 
     *Assistant*
@@ -168,7 +168,7 @@ system_template: >
             - python
               ```
               [USER PROVIDES IMPORTS HERE]
-              def root_py_fpath() -> str:
+              def get_root_py_fpath() -> str:
                 script_dir = os.path.dirname(os.path.realpath(__file__))
                 data_folder = os.path.join(script_dir, "..")
                 return data_folder

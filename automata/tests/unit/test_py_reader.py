@@ -2,34 +2,30 @@ import os
 
 import pytest
 
-from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
-from automata.core.coding.py_coding.py_utils import build_repository_overview
-from automata.core.coding.py_coding.retriever import PyCodeRetriever
+from automata.core.coding.py.module_loader import py_module_loader
+from automata.core.coding.py.reader import PyReader
+
+
+@pytest.fixture(autouse=True)
+def module_loader():
+    py_module_loader.initialize(
+        os.path.join(os.path.dirname(os.path.abspath(__file__))),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),
+    )
+    yield py_module_loader
+    py_module_loader._dotpath_map = None
+    py_module_loader.initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None
 
 
 @pytest.fixture
-def module_map():
-    # get latest path
-    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    # Set the root directory to the folder containing test modules
-    return LazyModuleTreeMap(sample_dir)
-
-
-@pytest.fixture
-def getter(module_map):
-    return PyCodeRetriever(module_map)
-
-
-def test_build_overview():
-    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    result = build_repository_overview(sample_dir)
-    first_module_overview = "sample\n     - func sample_function\n     - cls Person\n       - func __init__\n       - func say_hello\n       - func run\n     - func f\n     - cls EmptyClass\n     - cls OuterClass\n       - cls InnerClass\n         - func inner_method\nsample2\n     - cls PythonAgentToolBuilder\n       - func __init__\n       - func build\n         - func python_agent_python_task"
-
-    assert first_module_overview in result
+def getter():
+    return PyReader()
 
 
 def test_get_docstring_function(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = "sample_function"
 
     result = getter.get_docstring(module_name, object_path)
@@ -38,7 +34,7 @@ def test_get_docstring_function(getter):
 
 
 def test_get_code_no_docstring_method(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = "Person.say_hello"
     result = getter.get_source_code_without_docstrings(module_name, object_path)
     expected_match = 'def say_hello(self):\n        return f"Hello, I am {self.name}."\n\n    '
@@ -46,7 +42,7 @@ def test_get_code_no_docstring_method(getter):
 
 
 def test_get_docstring_no_docstring_class(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = "Person"
     result = getter.get_docstring(module_name, object_path)
     expected_match = "This is a sample class."
@@ -54,16 +50,15 @@ def test_get_docstring_no_docstring_class(getter):
 
 
 def test_get_code_module(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = None
     result = getter.get_source_code_without_docstrings(module_name, object_path)
     expected_match = 'import math\n\n\ndef sample_function(name):\n    return f"Hello, {name}! Sqrt(2) = " + str(math.sqrt(2))\n\n\nclass Person:\n\n    def __init__(self, name):\n        self.name = name\n\n    def say_hello(self):\n        return f"Hello, I am {self.name}."\n\n    def run(self) -> str:\n        return "run"\n\n\ndef f(x) -> int:\n    return x + 1\n\n\nclass EmptyClass:\n    pass\n\n\nclass OuterClass:\n    class InnerClass:\n\n        def inner_method(self):\n'
-
-    assert result == expected_match
+    assert result.split("\n") == expected_match.split("\n")
 
 
 def test_get_docstring_multiline(getter):
-    module_name = "sample2"
+    module_name = "sample_modules.sample2"
     object_path = "PythonAgentToolBuilder.__init__"
     result = getter.get_docstring(module_name, object_path)
     expected = "\n        Initializes a PythonAgentToolBuilder with the given PythonAgent.\n\n        Args:\n            python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.\n        "
@@ -72,7 +67,7 @@ def test_get_docstring_multiline(getter):
 
 
 def test_get_code_no_docstring_no_code(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = "EmptyClass"
     result = getter.get_source_code_without_docstrings(module_name, object_path)
     expected_match = "class EmptyClass:\n    pass\n\n\n"
@@ -80,7 +75,7 @@ def test_get_code_no_docstring_no_code(getter):
 
 
 def test_get_docstring_nested_class(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = "OuterClass.InnerClass"
     result = getter.get_docstring(module_name, object_path)
     expected_match = "Inner doc strings"
@@ -88,7 +83,7 @@ def test_get_docstring_nested_class(getter):
 
 
 def test_get_docstring_nested_class_method(getter):
-    module_name = "sample"
+    module_name = "sample_modules.sample"
     object_path = "OuterClass.InnerClass.inner_method"
     result = getter.get_docstring(module_name, object_path)
     expected_match = "Inner method doc strings"
