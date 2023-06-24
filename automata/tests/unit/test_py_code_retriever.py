@@ -7,17 +7,21 @@ from automata.core.coding.py.py_utils import build_repository_overview
 from automata.core.coding.py.reader import PyReader
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def module_loader():
-    # get latest path
-    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    # Set the root directory to the folder containing test modules
-    return ModuleLoader(sample_dir)
+    module_loader = ModuleLoader()
+    module_loader.set_paths(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),
+        "sample_modules",
+    )
+    yield module_loader
+    module_loader.py_dir = None
+    module_loader._dotpath_map = None
 
 
 @pytest.fixture
-def getter(module_loader):
-    return PyReader(module_loader)
+def getter():
+    return PyReader()
 
 
 def test_build_overview():

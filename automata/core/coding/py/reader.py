@@ -16,8 +16,8 @@ FSTNode = Union[Node, RedBaron]
 class PyReader:
     """Code retriever for fetching python code"""
 
-    def __init__(self, module_tree_map: ModuleLoader) -> None:
-        self.module_tree_map = module_tree_map
+    def __init__(self) -> None:
+        self.module_tree_map = ModuleLoader()
 
     def get_source_code(self, module_dotpath: str, object_path: Optional[str] = None) -> str:
         """

@@ -152,11 +152,22 @@ class MockCodeGenerator:
         return "".join(random.choice(string.ascii_letters) for _ in range(length))
 
 
+@pytest.fixture(autouse=True)
+def module_loader():
+    module_loader = ModuleLoader()
+    module_loader.set_paths(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),
+        "sample_modules",
+    )
+    yield module_loader
+    module_loader.py_dir = None
+    module_loader._dotpath_map = None
+
+
 @pytest.fixture
 def py_writer():
-    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    module_loader = ModuleLoader(sample_dir)
-    retriever = PyReader(module_loader)
+    # sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
+    retriever = PyReader()
     return PyWriter(retriever)
 
 
@@ -378,9 +389,7 @@ def test_write_and_retrieve_mock_code(py_writer):
 
     py_writer._write_module_to_disk("sample_module_2")
 
-    sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules")
-    module_loader = ModuleLoader(sample_dir)
-    retriever = PyReader(module_loader)
+    retriever = PyReader()
     module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
 

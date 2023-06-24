@@ -51,7 +51,6 @@ class PyContextRetriever:
     def __init__(
         self,
         graph: SymbolGraph,
-        module_loader: ModuleLoader,
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
     ) -> None:
@@ -61,7 +60,7 @@ class PyContextRetriever:
             config (PyContextRetrieverConfig): The configuration to use
         """
         self.graph = graph
-        self.module_loader = module_loader
+        self.module_loader = ModuleLoader()
         self.config = config
         self.indent_level = 0
         self.doc_embedding_db = doc_embedding_db
@@ -189,7 +188,7 @@ class PyContextRetriever:
         Args:
             ast_object (RedBaron): The ast representation of the symbol
         """
-        ast_object = convert_to_fst_object(symbol, self.module_loader)
+        ast_object = convert_to_fst_object(symbol)
         is_main_symbol = self._is_main_symbol()
         methods = sorted(ast_object.find_all("DefNode"), key=lambda x: x.name)
 

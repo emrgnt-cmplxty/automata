@@ -12,13 +12,25 @@ from automata.core.coding.py.writer import PyWriter
 from automata.core.utils import root_py_fpath
 
 
+@pytest.fixture(autouse=True)
+def module_loader():
+    module_loader = ModuleLoader()
+    path_to_here = os.path.join(root_py_fpath(), "tests", "unit")
+
+    module_loader.set_paths(
+        path_to_here,
+        "unit",
+    )
+    yield module_loader
+    module_loader.py_dir = None
+    module_loader._dotpath_map = None
+
+
 @pytest.fixture
 def python_writer_tool_builder(tmpdir):
     temp_directory = tmpdir.mkdir("temp_code")
     os.chdir(temp_directory)
-    path_to_here = os.path.join(root_py_fpath(), "tests", "unit")
-    module_loader = ModuleLoader(path_to_here)
-    py_reader = PyReader(module_loader)
+    py_reader = PyReader()
     py_writer = PyWriter(py_reader)
     return PyWriterTool(py_writer=py_writer)
 

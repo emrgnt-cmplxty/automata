@@ -116,7 +116,7 @@ def symbol_graph_mock(mocker):
 
 
 @pytest.fixture
-def symbol_search(mocker, module_loader, symbol_graph_mock):
+def symbol_search(mocker, symbol_graph_mock):
     """Creates a SymbolSearch object with Mock dependencies for testing"""
     symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
     symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
@@ -130,7 +130,6 @@ def symbol_search(mocker, module_loader, symbol_graph_mock):
         symbol_similarity_mock,
         symbol_rank_config_mock,
         code_subgraph_mock,
-        module_loader,
     )
 
 
@@ -140,9 +139,13 @@ def automata_agent_config_builder():
     return AutomataAgentConfigBuilder.from_name(config_name)
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def module_loader():
-    return ModuleLoader()
+    module_loader = ModuleLoader()
+    module_loader.set_paths()
+    yield module_loader
+    module_loader.py_dir = None
+    module_loader._dotpath_map = None
 
 
 @pytest.fixture

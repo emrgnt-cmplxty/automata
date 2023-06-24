@@ -12,11 +12,10 @@ from automata.core.base.openai import OpenAIChatMessage
 
 def test_build_tool_message(automata_agent_config_builder):
     tool_list = ["py_reader", "py_writer"]
-    from automata.core.coding.py.module_loader import ModuleLoader
     from automata.core.coding.py.reader import PyReader
     from automata.core.coding.py.writer import PyWriter
 
-    retriever = PyReader(ModuleLoader())
+    retriever = PyReader()
 
     mock_llm_toolkits = build_llm_toolkits(
         tool_list, py_reader=retriever, py_writer=PyWriter(retriever)

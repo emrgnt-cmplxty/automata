@@ -27,7 +27,6 @@ class SymbolSearch:
         symbol_code_similarity: SymbolSimilarity,
         symbol_rank_config: SymbolRankConfig,
         code_subgraph: SymbolGraph.SubGraph,
-        module_loader: ModuleLoader,
     ) -> None:
         """
         Args:
@@ -52,7 +51,7 @@ class SymbolSearch:
         self.symbol_code_similarity = symbol_code_similarity
         symbol_code_similarity.set_available_symbols(available_symbols)
         self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
-        self.module_loader = module_loader
+        self.module_loader = ModuleLoader()
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """
@@ -94,7 +93,7 @@ class SymbolSearch:
         Returns:
             The raw text of the symbol or None if not found
         """
-        node = convert_to_fst_object(parse_symbol(symbol_uri), self.module_loader)
+        node = convert_to_fst_object(parse_symbol(symbol_uri))
         return str(node) if node else None
 
     def exact_search(self, pattern: str) -> ExactSearchResult:

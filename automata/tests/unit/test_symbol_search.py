@@ -12,7 +12,7 @@ def test_retrieve_source_code_by_symbol(symbols, symbol_search):
     ) as mock_method:
         result = symbol_search.retrieve_source_code_by_symbol(symbols[0].uri)
         assert result == "module1"
-    mock_method.assert_called_once_with(symbols[0], symbol_search.module_loader)
+    mock_method.assert_called_once_with(symbols[0])
 
 
 def test_symbol_references(symbols, symbol_search, symbol_graph_mock):

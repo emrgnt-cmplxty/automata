@@ -6,7 +6,9 @@ from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 
-def convert_to_fst_object(symbol: Symbol, module_loader: ModuleLoader) -> RedBaron:
+def convert_to_fst_object(
+    symbol: Symbol, module_loader: ModuleLoader = ModuleLoader()
+) -> RedBaron:
     """
     Converts a specified symbol into a red baron FST object
 

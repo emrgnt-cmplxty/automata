@@ -10,10 +10,23 @@ from automata.core.coding.py.reader import PyReader
 from automata.core.utils import root_py_fpath
 
 
+@pytest.fixture(autouse=True)
+def module_loader():
+    module_loader = ModuleLoader()
+    path_to_here = os.path.join(root_py_fpath(), "tools", "tool_management", "tests")
+
+    module_loader.set_paths(
+        path_to_here,
+        "tests",
+    )
+    yield module_loader
+    module_loader.py_dir = None
+    module_loader._dotpath_map = None
+
+
 @pytest.fixture
 def python_retriever_tool_builder():
-    path_to_here = os.path.join(root_py_fpath(), "tools", "tool_management", "tests")
-    python_code_retriever = PyReader(ModuleLoader(path_to_here))
+    python_code_retriever = PyReader()
     return PyReaderTool(py_reader=python_code_retriever)
 
 

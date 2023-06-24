@@ -145,6 +145,8 @@ class PyWriter:
             raise PyWriter.ModuleNotFound(
                 f"Module not found in module dictionary: {module_dotpath}"
             )
+        print("calling _write_module_to_disk")
+
         source_code = self.py_reader.get_source_code(module_dotpath)
         module_fpath = self.py_reader.module_tree_map.fetch_existing_module_fpath_by_dotpath(
             module_dotpath

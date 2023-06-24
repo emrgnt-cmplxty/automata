@@ -1,10 +1,10 @@
 import logging
 import os.path
-from functools import lru_cache
 from typing import Dict, Iterable, Optional, Tuple
 
 from redbaron import RedBaron
 
+from automata.core.base.singleton import Singleton
 from automata.core.coding.py.py_utils import DOT_SEP, convert_fpath_to_module_dotpath
 from automata.core.utils import root_fpath, root_py_fpath
 
@@ -53,6 +53,7 @@ class _DotPathMap:
         Returns:
             The filepath of the module
         """
+
         return self._module_dotpath_to_fpath_map[module_dotpath]
 
     def get_module_dotpath_by_fpath(self, module_fpath: str) -> str:
@@ -114,36 +115,56 @@ class _DotPathMap:
         return self._module_dotpath_to_fpath_map.items()
 
 
-class ModuleLoader:
+class ModuleLoader(Singleton):
     """
     A lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
     Loads and caches modules in memory as they are accessed
 
-    FIXME: Defaulting 'py_dir' to automata for now and then introducing smarter
+    TODO: Defaulting 'py_dir' to automata for now and then introducing smarter
            logic to infer the py_dir from the path later
+
+    TODO: Is there a clean way to avoid pasting `_assert_initialized` everywhere?
+    TODO: Is there a clean way to remove the type: ignore comments?
+          Towards this end a function decorator was also explored, but found to be insufficient.
     """
 
-    def __init__(self, path: str = root_py_fpath(), py_dir: Optional[str] = None) -> None:
-        """
-        Args:
-            path: The absolute path to the root of the module tree
-        """
-        self._dotpath_map = _DotPathMap(path)
+    _instance = None
+    _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(ModuleLoader, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self) -> None:
+        if self._initialized:
+            return
+        self._dotpath_map: Optional[_DotPathMap] = None
+        self.py_dir: Optional[str] = None
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
+        self._initialized = True
+
+    def set_paths(self, path: str = root_py_fpath(), py_dir: Optional[str] = None) -> None:
+        if self._dotpath_map is not None:
+            raise Exception("Paths already set!")
+        if self.py_dir is not None:
+            raise Exception("PyDir already set!")
+        self._dotpath_map = _DotPathMap(path)
         if not py_dir:
-            py_dir = os.path.relpath(root_py_fpath(), root_fpath())
+            py_dir = path.split(os.pathsep)[-1]
         self.py_dir = py_dir
 
-    @classmethod
-    @lru_cache(maxsize=1)
-    def cached_module_tree_map(
-        cls, path: str = root_py_fpath(), py_dir: Optional[str] = None
-    ) -> "ModuleLoader":
+    def _assert_initialized(self) -> None:
         """
-        Returns:
-            A cached version of the module tree map
+        Checks if the map and python directory have been initialized
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
-        return cls(path, py_dir)
+        if self._dotpath_map is None:
+            raise Exception("Paths not set!")
+        if self.py_dir is None:
+            raise Exception("PyDir not set!")
 
     def __contains__(self, dotpath: str) -> bool:
         """
@@ -151,14 +172,25 @@ class ModuleLoader:
 
         Args:
             dotpath: The dotpath of the module
+
+        Returns:
+            True if the map contains the module, False otherwise
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
-        return self._dotpath_map.contains_dotpath(dotpath)
+        self._assert_initialized()
+        return self._dotpath_map.contains_dotpath(dotpath)  # type: ignore
 
     def items(self) -> Iterable[Tuple[str, Optional[RedBaron]]]:
         """
         Returns:
             A dictionary containing the module dotpath to module RedBaron FST object mapping
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
+        self._assert_initialized()
         self._load_all_modules()
         return self._loaded_modules.items()
 
@@ -171,12 +203,17 @@ class ModuleLoader:
 
         Returns:
             Optional[RedBaron]: The module with the given dotpath if found, None otherwise
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
-        if not self._dotpath_map.contains_dotpath(module_dotpath):
+        self._assert_initialized()
+
+        if not self._dotpath_map.contains_dotpath(module_dotpath):  # type: ignore
             return None
 
         if module_dotpath not in self._loaded_modules:
-            module_fpath = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
+            module_fpath = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)  # type: ignore
             self._loaded_modules[module_dotpath] = self._load_module_from_fpath(module_fpath)
         return self._loaded_modules[module_dotpath]
 
@@ -189,7 +226,11 @@ class ModuleLoader:
 
         Returns:
             str: The module dotpath for the specified module object.
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
+        self._assert_initialized()
         return next(
             (
                 module_dotpath
@@ -208,10 +249,13 @@ class ModuleLoader:
 
         Returns:
             str: The module fpath for the specified module dotpath.
-        """
 
+        Raises:
+            Exception: If the map or python directory have not been initialized
+        """
+        self._assert_initialized()
         if module_dotpath in self._loaded_modules:
-            return self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)
+            return self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)  # type: ignore
         return None
 
     def get_module_dotpath_by_fpath(self, module_fpath: str) -> str:
@@ -220,8 +264,15 @@ class ModuleLoader:
 
         Args:
             module_fpath (str): The module fpath.
+
+        Returns:
+            str: The module dotpath for the specified module fpath.
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
-        return self._dotpath_map.get_module_dotpath_by_fpath(module_fpath)
+        self._assert_initialized()
+        return self._dotpath_map.get_module_dotpath_by_fpath(module_fpath)  # type: ignore
 
     def put_module(self, module_dotpath: str, module: RedBaron) -> None:
         """
@@ -230,16 +281,23 @@ class ModuleLoader:
         Args:
             module_dotpath: The dotpath of the module
             module: The module to put in the map
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
         """
+        self._assert_initialized()
         self._loaded_modules[module_dotpath] = module
-        self._dotpath_map.put_module(module_dotpath)
+        self._dotpath_map.put_module(module_dotpath)  # type: ignore
 
     def _load_all_modules(self) -> None:
-        """Loads all modules in the map
+        """
+        Loads all modules in the map
 
+        Raises:
+            Exception: If the map or python directory have not been initialized
         FIXME: Filter on py_dir for now and then introduce smarter logic later
         """
-        for module_dotpath, fpath in self._dotpath_map.items():
+        for module_dotpath, fpath in self._dotpath_map.items():  # type: ignore
             if self.py_dir not in module_dotpath or "tasks" in module_dotpath:
                 continue
             print("loading dotpath = ", module_dotpath)
