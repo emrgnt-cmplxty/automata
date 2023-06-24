@@ -47,7 +47,7 @@ system_template: >
       - actions
         - agent_query_1
           - agent_version 
-            - automata_retriever
+            - automata_reader
           - agent_instruction
             - Provide an example that correctly initializes an AutomataAgent and a PythonIndexer, including all necessary imports, docstrings, and add relevant comments.
 
@@ -115,7 +115,7 @@ system_template: >
       - actions
         - agent_query_1
           - agent_version
-            - automata_retriever
+            - automata_reader
           - agent_instruction
             - Retrieve the code for the function 'run' from AutomataAgent, including all necessary imports and docstrings.
 

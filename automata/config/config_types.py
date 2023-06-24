@@ -42,9 +42,10 @@ class AgentConfigName(Enum):
     AUTOMATA_INITIALIZER = "automata_initializer"
 
     # Production Configs
-    AUTOMATA_RETRIEVER = "automata_retriever"
-    AUTOMATA_MAIN = "automata_main"
+    AUTOMATA_READER = "automata_reader"
     AUTOMATA_WRITER = "automata_writer"
+    AUTOMATA_READER_AND_WRITER = "automata_reader_and_writer"
+    AUTOMATA_MAIN = "automata_main"
 
 
 class AutomataAgentConfig(BaseModel):
@@ -91,7 +92,7 @@ class AutomataAgentConfig(BaseModel):
                 - Replace symbol_search with symbol_rank when it is implemented on DependencyFactory
             """
             formatter = {}
-            if config.config_name == AgentConfigName.AUTOMATA_RETRIEVER:
+            if config.config_name == AgentConfigName.AUTOMATA_READER:
                 from automata.core.agent.tools.tool_utils import DependencyFactory
 
                 symbol_search = DependencyFactory().get("symbol_search")

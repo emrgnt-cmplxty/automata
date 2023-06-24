@@ -28,7 +28,7 @@ def main(*args, **kwargs) -> str:
         model (str): The model to use for the agent
             Defaults to "GPT-4"
         agent_name (str): The name of the agent
-            Defaults to "automata_retriever"
+            Defaults to "automata_reader"
     """
 
     py_module_loader.initialize()
@@ -51,7 +51,7 @@ def main(*args, **kwargs) -> str:
     llm_toolkits = build_llm_toolkits(llm_toolkits_list, **kwargs)
     logger.info("Done building toolkits...")
 
-    config_name = AgentConfigName(kwargs.get("agent_name", "automata_retriever"))
+    config_name = AgentConfigName(kwargs.get("agent_name", "automata_reader"))
     agent_config = (
         AutomataAgentConfigBuilder.from_name(config_name)
         .with_llm_toolkits(llm_toolkits)
