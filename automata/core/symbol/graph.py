@@ -9,6 +9,7 @@ from google.protobuf.json_format import MessageToDict  # type: ignore
 from tqdm import tqdm
 
 from automata.config import MAX_WORKERS
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.scip_pb2 import Index, SymbolRole  # type: ignore
 from automata.core.symbol.symbol_types import (
@@ -290,6 +291,30 @@ class GraphBuilder:
         caller_callee_manager.process()
 
 
+def process_symbol_bounds(
+    loader_args: Tuple[str, str], symbol: Symbol
+) -> Optional[Tuple[Symbol, Any]]:
+    """
+    Processes the bounding box for a given symbol.
+
+    Args:
+        loader_args (Tuple): The arguments needed to initialize the ModuleLoader
+        symbol (Symbol): The symbol to process the bounding box for
+
+    Returns:
+        Optional[Tuple[Symbol, BoundingBox]]: A tuple of the symbol and its bounding box
+    """
+    if not py_module_loader._dotpath_map:
+        py_module_loader.set_paths(*loader_args)
+    try:
+        fst_object = convert_to_fst_object(symbol)
+        bounding_box = fst_object.absolute_bounding_box
+        return symbol, bounding_box
+    except Exception as e:
+        logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
+        return None
+
+
 class _SymbolGraphNavigator:
     """
     Handles navigation of a symbol graph.
@@ -497,7 +522,7 @@ class _SymbolGraphNavigator:
 
     def _pre_compute_rankable_bounding_boxes(self) -> None:
         """
-        Pre-computes bounding boxes for all symbols in the graph
+        Pre-computes bounding boxes for all symbols in the graph.
         """
         now = time()
         # Bounding boxes are already loaded
@@ -506,37 +531,26 @@ class _SymbolGraphNavigator:
 
         logger.info("Pre-computing bounding boxes for all rankable symbols")
         filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
+        from functools import partial
 
+        # prepare loader_args here (replace this comment with actual code)
+        loader_args: Tuple[str, str] = (
+            py_module_loader.root_fpath,
+            py_module_loader.py_fpath or "",
+        )
         bounding_boxes = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            results = executor.map(_SymbolGraphNavigator._process_symbol_bounds, filtered_symbols)
+            func = partial(process_symbol_bounds, loader_args)
+            results = executor.map(func, filtered_symbols)
             for result in results:
                 if result is not None:
                     symbol, bounding_box = result
                     bounding_boxes[symbol] = bounding_box
+
         logger.info(
             f"Finished pre-computing bounding boxes for all rankable symbols in {time() - now} seconds"
         )
         self.bounding_box = bounding_boxes
-
-    @staticmethod
-    def _process_symbol_bounds(symbol: Symbol) -> Optional[Tuple[Symbol, Any]]:
-        """
-        Processes the bounding box for a given symbol
-
-        Args:
-            symbol (Symbol): The symbol to process the bounding box for
-
-        Returns:
-            Optional[Tuple[Symbol, BoundingBox]]: A tuple of the symbol and its bounding box
-        """
-        try:
-            fst_object = convert_to_fst_object(symbol)
-            bounding_box = fst_object.absolute_bounding_box
-            return symbol, bounding_box
-        except Exception as e:
-            logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
-            return None
 
 
 class SymbolGraph:

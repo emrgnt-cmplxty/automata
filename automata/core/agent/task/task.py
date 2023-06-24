@@ -3,7 +3,7 @@ import logging.config
 import os
 
 from automata.core.base.task import Task
-from automata.core.utils import get_logging_config, root_fpath, root_py_fpath
+from automata.core.utils import get_logging_config, get_root_fpath, get_root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class AutomataTask(Task):
             raise AutomataMissingInstructions()
         self.instructions = self.kwargs["instructions"]
         # Note, this  assumes the python folder is in the root folder
-        default_python_folder = os.path.relpath(root_py_fpath(), root_fpath())
+        default_python_folder = os.path.relpath(get_root_py_fpath(), get_root_fpath())
         self.path_to_root_py = kwargs.get("path_to_root_py", default_python_folder)
 
     def initialize_logging(self) -> None:

@@ -70,8 +70,6 @@ def main(*args, **kwargs):
         logger.info(f"Building {dependency}...")
         kwargs[dependency] = DependencyFactory().get(dependency)
 
-    print("kwargs = ", kwargs)
-
     task = AutomataTask(**kwargs)  # TaskStatus = CREATED
     # Register the task with the task registry
     task_registry = AutomataTaskRegistry(AutomataTaskDatabase(TASK_DB_PATH))

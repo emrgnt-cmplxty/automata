@@ -13,7 +13,7 @@ def module_loader():
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),
     )
     yield py_module_loader
-    py_module_loader.py_path = None
+    py_module_loader.py_fpath = None
     py_module_loader._dotpath_map = None
 
 

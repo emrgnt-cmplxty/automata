@@ -9,17 +9,17 @@ from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
-from automata.core.utils import root_py_fpath
+from automata.core.utils import get_root_py_fpath
 
 
 @pytest.fixture(autouse=True)
 def module_loader():
     py_module_loader.set_paths(
-        os.path.join(root_py_fpath(), "tests", "unit"),
-        os.path.join(root_py_fpath(), "tests", "unit", "sample_modules"),
+        os.path.join(get_root_py_fpath(), "tests", "unit"),
+        os.path.join(get_root_py_fpath(), "tests", "unit", "sample_modules"),
     )
     yield py_module_loader
-    py_module_loader.py_path = None
+    py_module_loader.py_fpath = None
     py_module_loader._dotpath_map = None
 
 
@@ -87,7 +87,6 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
 
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
-    print("new_sample_text = ", new_sample_text)
     assert function_def in new_sample_text
     with open(file_abs_path, "w", encoding="utf-8") as f:
         f.write(prev_text)
@@ -223,4 +222,4 @@ class PythonAgentToolBuilder:
         new_sample_text = f.read()
         assert module_str == new_sample_text
     # # Why?
-    # shutil.rmtree(os.path.join(root_fpath(), "tool_management", "tests", "sample_modules"))
+    # shutil.rmtree(os.path.join(get_root_fpath(), "tool_management", "tests", "sample_modules"))

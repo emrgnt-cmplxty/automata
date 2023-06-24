@@ -25,7 +25,6 @@ def convert_to_fst_object(symbol: Symbol) -> RedBaron:
         because module map is not picklable (because redbaron objects are not picklable)
         So the indexer would have to be created and destroyed in each process.
     """
-
     # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)
     obj = None

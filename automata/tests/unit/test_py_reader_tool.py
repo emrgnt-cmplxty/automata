@@ -7,17 +7,17 @@ from automata.core.agent.tools.py_reader import PyReaderTool
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
-from automata.core.utils import root_py_fpath
+from automata.core.utils import get_root_py_fpath
 
 
 @pytest.fixture(autouse=True)
 def module_loader():
     py_module_loader.set_paths(
-        os.path.join(root_py_fpath(), "tools", "tool_management"),
-        os.path.join(root_py_fpath(), "tools", "tool_management", "tests"),
+        os.path.join(get_root_py_fpath(), "tools", "tool_management"),
+        os.path.join(get_root_py_fpath(), "tools", "tool_management", "tests"),
     )
     yield py_module_loader
-    py_module_loader.py_path = None
+    py_module_loader.py_fpath = None
     py_module_loader._dotpath_map = None
 
 

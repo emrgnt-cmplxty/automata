@@ -5,7 +5,7 @@ from typing import Dict, Iterable, Optional, Tuple
 from redbaron import RedBaron
 
 from automata.core.base.singleton import Singleton
-from automata.core.utils import root_fpath, root_py_fpath
+from automata.core.utils import get_root_fpath, get_root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -150,25 +150,26 @@ class PyModuleLoader(metaclass=Singleton):
           Towards this end a function decorator was also explored, but found to be insufficient.
     """
 
-    _instance = None
     _initialized = False
 
     def __init__(self) -> None:
         if PyModuleLoader._initialized:
             return
         self._dotpath_map: Optional[_DotPathMap] = None
-        self.py_path: Optional[str] = None
+        self.py_fpath: Optional[str] = None
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
         PyModuleLoader._initialized = True
 
-    def set_paths(self, root_path: str = root_fpath(), py_path: str = root_py_fpath()) -> None:
+    def set_paths(
+        self, root_fpath: str = get_root_fpath(), py_fpath: str = get_root_py_fpath()
+    ) -> None:
         """
         Sets the paths for the module loader across the entire project
 
 
         Args:
             root_path: The absolute path to the root directory of the project
-            py_path: The absolute path to the root directory of the python code
+            py_fpath: The absolute path to the root directory of the python code
 
         Raises:
             Exception: If the map or python directory have already been initialized
@@ -179,15 +180,16 @@ class PyModuleLoader(metaclass=Singleton):
             of the python modules, in the default case this might look something like "/Users/me/Automata/automata"
 
         """
-        path_prefix = os.path.relpath(py_path, root_path)
+        path_prefix = os.path.relpath(py_fpath, root_fpath)
 
         if self._dotpath_map is not None:
             raise Exception("Paths already set!")
-        if self.py_path is not None:
+        if self.py_fpath is not None:
             raise Exception("PyDir already set!")
 
-        self._dotpath_map = _DotPathMap(py_path, path_prefix)
-        self.py_path = py_path
+        self._dotpath_map = _DotPathMap(py_fpath, path_prefix)
+        self.py_fpath = py_fpath
+        self.root_fpath = root_fpath
 
     def _assert_initialized(self) -> None:
         """
@@ -198,7 +200,7 @@ class PyModuleLoader(metaclass=Singleton):
         """
         if self._dotpath_map is None:
             raise Exception("Paths not set!")
-        if self.py_path is None:
+        if self.py_fpath is None:
             raise Exception("PyDir not set!")
 
     def __contains__(self, dotpath: str) -> bool:
@@ -329,10 +331,10 @@ class PyModuleLoader(metaclass=Singleton):
 
         Raises:
             Exception: If the map or python directory have not been initialized
-        FIXME: Filter on py_path for now and then introduce smarter logic later
+        FIXME: Filter on py_fpath for now and then introduce smarter logic later
         """
         for module_dotpath, fpath in self._dotpath_map.items():  # type: ignore
-            if self.py_path not in module_dotpath or "tasks" in module_dotpath:
+            if self.py_fpath not in module_dotpath or "tasks" in module_dotpath:
                 continue
             if module_dotpath not in self._loaded_modules:
                 self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)

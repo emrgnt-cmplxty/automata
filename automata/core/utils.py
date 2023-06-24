@@ -16,7 +16,7 @@ def set_openai_api_key(override_key: Optional[str] = None) -> None:
         openai.api_key = override_key or OPENAI_API_KEY
 
 
-def root_py_fpath() -> str:
+def get_root_py_fpath() -> str:
     """
     Get the path to the root of the project python code
 
@@ -28,7 +28,7 @@ def root_py_fpath() -> str:
     return os.path.join(script_dir, "..")
 
 
-def root_fpath() -> str:
+def get_root_fpath() -> str:
     """
     Returns the path to the root of the project directory.
 
@@ -36,7 +36,7 @@ def root_fpath() -> str:
         str - A fpath object in string form
 
     """
-    return os.path.join(root_py_fpath(), "..")
+    return os.path.join(get_root_py_fpath(), "..")
 
 
 def config_fpath() -> str:
@@ -47,7 +47,7 @@ def config_fpath() -> str:
         str - A fpath object in string form
 
     """
-    return os.path.join(root_py_fpath(), "config")
+    return os.path.join(get_root_py_fpath(), "config")
 
 
 def load_config(

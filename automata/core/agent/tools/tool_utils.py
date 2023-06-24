@@ -76,7 +76,7 @@ class DependencyFactory:
             doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH)
             symbol_rank_config (SymbolRankConfig())
             py_context_retriever_config (PyContextRetrieverConfig())
-            coding_project_path (root_py_fpath())
+            coding_project_path (get_root_py_fpath())
         }
         """
         self._instances: Dict[str, Any] = {}

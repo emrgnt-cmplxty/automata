@@ -14,7 +14,7 @@ from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
-from automata.core.utils import root_py_fpath
+from automata.core.utils import get_root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -215,7 +215,7 @@ class PyContextRetriever:
         """
         # Compute the file path from the symbol's path
         file_path = os.path.join(
-            root_py_fpath(), "..", str(symbol.dotpath).replace(".", os.path.sep)
+            get_root_py_fpath(), "..", str(symbol.dotpath).replace(".", os.path.sep)
         )
         while not os.path.isdir(os.path.dirname(file_path)):
             file_path = os.path.dirname(file_path)
