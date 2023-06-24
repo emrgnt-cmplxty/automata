@@ -6,7 +6,7 @@ from redbaron import RedBaron
 
 from automata.core.base.singleton import Singleton
 from automata.core.coding.py.py_utils import DOT_SEP, convert_fpath_to_module_dotpath
-from automata.core.utils import root_fpath, root_py_fpath
+from automata.core.utils import root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class _DotPathMap:
             path: The absolute path to the root of the module tree
         """
         if not os.path.isabs(path):
-            path = os.path.join(root_fpath(), path)
+            path = os.path.join(root_py_fpath(), path)
         self._abs_path = path
         self._module_dotpath_to_fpath_map = self._build_module_dotpath_to_fpath_map()
         self._module_fpath_to_dotpath_map = {
@@ -115,9 +115,9 @@ class _DotPathMap:
         return self._module_dotpath_to_fpath_map.items()
 
 
-class ModuleLoader(Singleton):
+class ModuleLoader(metaclass=Singleton):
     """
-    A lazy dictionary between module dotpaths and their corresponding RedBaron FST objects.
+    A Singleton with a lazy dictionary mapping dotpaths to their corresponding RedBaron FST objects.
     Loads and caches modules in memory as they are accessed
 
     TODO: Defaulting 'py_dir' to automata for now and then introducing smarter
@@ -131,18 +131,13 @@ class ModuleLoader(Singleton):
     _instance = None
     _initialized = False
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(ModuleLoader, cls).__new__(cls)
-        return cls._instance
-
     def __init__(self) -> None:
-        if self._initialized:
+        if ModuleLoader._initialized:
             return
         self._dotpath_map: Optional[_DotPathMap] = None
         self.py_dir: Optional[str] = None
         self._loaded_modules: Dict[str, Optional[RedBaron]] = {}
-        self._initialized = True
+        ModuleLoader._initialized = True
 
     def set_paths(self, path: str = root_py_fpath(), py_dir: Optional[str] = None) -> None:
         if self._dotpath_map is not None:

@@ -8,7 +8,7 @@ from automata.core.coding.py.reader import PyReader
 
 
 @pytest.fixture(autouse=True)
-def module_loader():
+def module_loader_local():
     module_loader = ModuleLoader()
     module_loader.set_paths(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_modules"),

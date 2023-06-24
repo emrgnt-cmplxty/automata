@@ -4,9 +4,19 @@ import pytest
 
 from automata.core.agent.task.executor import AutomataTaskExecutor, ITaskExecution
 from automata.core.base.task import Task, TaskStatus
+from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
 from automata.core.utils import root_py_fpath
+
+
+@pytest.fixture(autouse=True)
+def module_loader():
+    module_loader = ModuleLoader()
+    module_loader.set_paths(root_py_fpath())
+    yield module_loader
+    module_loader.py_dir = None
+    module_loader._dotpath_map = None
 
 
 class TestExecuteBehavior(ITaskExecution):
@@ -48,7 +58,7 @@ def test_execute_automata_task_success(_, module_loader, task, environment, regi
 
 
 @patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_fail(_, task, environment, registry):
+def test_execute_automata_task_fail(_, module_loader, task, environment, registry):
     registry.register(task)
     environment.setup(task)
 

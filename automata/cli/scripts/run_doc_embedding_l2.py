@@ -4,6 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.config.config_types import ConfigCategory
+from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.context.py_context.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
@@ -27,6 +28,9 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
+    module_loader = ModuleLoader()
+    module_loader.set_paths()
+
     logger.info("Running....")
     scip_path = os.path.join(
         config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")

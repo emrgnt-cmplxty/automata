@@ -6,9 +6,7 @@ from automata.core.coding.py.module_loader import ModuleLoader
 from automata.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 
-def convert_to_fst_object(
-    symbol: Symbol, module_loader: ModuleLoader = ModuleLoader()
-) -> RedBaron:
+def convert_to_fst_object(symbol: Symbol) -> RedBaron:
     """
     Converts a specified symbol into a red baron FST object
 
@@ -27,6 +25,7 @@ def convert_to_fst_object(
         because module map is not picklable (because redbaron objects are not picklable)
         So the indexer would have to be created and destroyed in each process.
     """
+    module_loader: ModuleLoader = ModuleLoader()
 
     # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)

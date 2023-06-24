@@ -141,11 +141,8 @@ def automata_agent_config_builder():
 
 @pytest.fixture(autouse=True)
 def module_loader():
-    module_loader = ModuleLoader()
-    module_loader.set_paths()
-    yield module_loader
-    module_loader.py_dir = None
-    module_loader._dotpath_map = None
+    """Creates a ModuleLoader object for testing"""
+    return ModuleLoader()
 
 
 @pytest.fixture

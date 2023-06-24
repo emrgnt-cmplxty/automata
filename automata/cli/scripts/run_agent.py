@@ -10,6 +10,7 @@ from automata.core.agent.tools.tool_utils import (
     build_llm_toolkits,
 )
 from automata.core.base.tool import ToolkitType
+from automata.core.coding.py.module_loader import ModuleLoader
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,9 @@ def main(*args, **kwargs) -> str:
             Defaults to "automata_retriever"
     """
     logger.info("Building toolkits...")
+
+    module_loader = ModuleLoader()
+    module_loader.set_paths()
 
     instructions = kwargs.get("instructions") or "This is a dummy instruction, return True."
     llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")
