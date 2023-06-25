@@ -6,9 +6,9 @@ from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
 from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.tool.tool_utils import (
-    AgentToolManagerFactory,
+    AgentToolFactory,
     DependencyFactory,
-    build_llm_tool_managers,
+    get_tool_builders,
 )
 from automata.core.base.github_manager import GitHubManager
 from automata.core.base.tool import ToolkitType
@@ -56,12 +56,12 @@ def main(*args, **kwargs):
         )
 
     instructions = kwargs.get("instructions") or "This is a dummy instruction, return True."
-    llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")
+    llm_toolkits_list = kwargs.get("tool_builders", "context_oracle").split(",")
 
     # A list of all dependencies that will be used to build the toolkits
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
-        for dependency_name, _ in AgentToolManagerFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
+        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
             dependencies.add(dependency_name)
 
     print("dependencies = ", dependencies)
@@ -73,14 +73,14 @@ def main(*args, **kwargs):
     #     logger.info(f"Building {dependency}...")
     #     kwargs[dependency] = DependencyFactory().get(dependency)
 
-    # llm_toolkits = build_llm_toolkits(llm_toolkits_list, **kwargs)
+    # tool_builders = build_llm_toolkits(llm_toolkits_list, **kwargs)
     # logger.info("Done building toolkits...")
     # @### leave this commented out !@!@@
 
     # config_name = AgentConfigName(kwargs.get("agent_name", "automata_reader"))
     # agent_config = (
     #     AutomataAgentConfigBuilder.from_name(config_name)
-    #     .with_llm_toolkits(llm_toolkits)
+    #     .with_llm_toolkits(tool_builders)
     #     .with_model(kwargs.get("model", "gpt-4"))
     #     .build()
     # )

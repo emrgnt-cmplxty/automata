@@ -3,12 +3,12 @@ import logging
 import os
 from typing import Any, Dict, List, Tuple
 
-from automata.config.config_types import AvailableAgentTools, ConfigCategory
+from automata.config.config_types import AvailableAgentTool, ConfigCategory
 from automata.core.agent.tool.py_reader_builder import (
     PyReaderOpenAIToolBuilder,
     PyReaderToolBuilder,
 )
-from automata.core.agent.tool.registry import AgentToolManagerRegistry
+from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.database.vector import JSONVectorDatabase
@@ -26,6 +26,7 @@ from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.utils import config_fpath
+from automata.core.base.tool import Tool
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ def classmethod_lru_cache():
     Class method LRU cache decorator.
 
     Returns:
-        decorator: A decorator that caches the return value of a class method
+        decorator: `A` decorator that caches the return value of a class method
     """
 
     def decorator(func):
@@ -245,7 +246,7 @@ class UnknownToolError(Exception):
 
     ERROR_STRING = "Unknown toolkit type: %s"
 
-    def __init__(self, tool_kit: AvailableAgentTools) -> None:
+    def __init__(self, tool_kit: AvailableAgentTool) -> None:
         super().__init__(self.ERROR_STRING % (tool_kit))
 
 
@@ -316,9 +317,9 @@ class UnknownToolError(Exception):
 #         return tool_class(**tool_kwargs)
 
 
-class AgentToolManagerFactory:
-    TOOLKIT_TYPE_TO_ARGS: Dict[AvailableAgentTools, List[Tuple[str, Any]]] = {
-        AvailableAgentTools.PY_READER: [("py_reader", PyReader)],
+class AgentToolFactory:
+    TOOLKIT_TYPE_TO_ARGS: Dict[AvailableAgentTool, List[Tuple[str, Any]]] = {
+        AvailableAgentTool.PY_READER: [("py_reader", PyReader)],
         # ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
         # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         # ToolkitType.CONTEXT_ORACLE: [
@@ -326,24 +327,16 @@ class AgentToolManagerFactory:
         #     ("symbol_doc_similarity", SymbolSimilarity),
         # ],
     }
-    ALL_MANAGERS = []
 
     @staticmethod
-    def register_tool_manager(cls):
-        AgentToolManagerFactory.ALL_MANAGERS.append(cls)
-        return cls
-
-    @staticmethod
-    def create_agent_tool_manager(tool_manager: AvailableAgentTools, **kwargs) -> AgentToolBuilder:
-        for manager in AgentToolManagerRegistry.ALL_MANAGERS:
-            if manager.can_handle(tool_manager):
-                return manager(**kwargs)
-        raise UnknownToolError(tool_manager)
+    def create_tools_from_builder(agent_tool: AvailableAgentTool, **kwargs) -> List[Tool]:
+        for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
+            if builder.can_handle(agent_tool):
+                return builder(**kwargs).build()
+        raise UnknownToolError(agent_tool)
 
 
-def build_llm_tool_managers(
-    tool_list: List[str], **kwargs
-) -> Dict[AvailableAgentTools, AgentToolBuilder]:
+def get_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
     """
     This function builds a list of toolkits from a list of toolkit names.
 
@@ -358,18 +351,16 @@ def build_llm_tool_managers(
         UnknownToolError: If a toolkit name is not recognized.
 
     """
-    tool_managers: Dict[AvailableAgentTools, AgentToolBuilder] = {}
+    tools = []
 
     for tool_name in tool_list:
         tool_name = tool_name.strip()
-        agent_tool_manager = AvailableAgentTools(tool_name)
+        agent_tool_manager = AvailableAgentTool(tool_name)
 
         if agent_tool_manager is None:
             raise UnknownToolError(agent_tool_manager)
 
         # toolkit = toolkit_builder.build_toolkit(agent_tool_manager)
-        tool_managers[agent_tool_manager] = AgentToolManagerFactory.create_agent_tool_manager(
-            agent_tool_manager, **kwargs
-        )
+        tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
 
-    return tool_managers
+    return tools

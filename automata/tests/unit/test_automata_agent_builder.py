@@ -3,14 +3,14 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.config.config_types import AgentConfigName, AutomataAgentConfig
-from automata.core.agent.tool.tool_utils import build_llm_tool_managers
+from automata.core.agent.tool.tool_utils import get_tool_builders
 
 
 def test_automata_agent_init(automata_agent):
     assert automata_agent is not None
     assert automata_agent.config.model == "gpt-4"
     assert automata_agent.config.session_id is not None
-    assert len(automata_agent.config.llm_toolkits.keys()) > 0
+    assert len(automata_agent.config.tool_builders.keys()) > 0
 
 
 def test_automata_agent_iter_step(
@@ -54,7 +54,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
     from automata.core.coding.py.reader import PyReader
     from automata.core.coding.py.writer import PyWriter
 
-    mock_llm_toolkits = build_llm_tool_managers(
+    mock_llm_toolkits = get_tool_builders(
         tool_list,
         py_reader=MagicMock(spec=PyReader),
         py_writer=MagicMock(spec=PyWriter),
@@ -70,7 +70,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
         .with_session_id("test-session-id")
         .build()
     )
-    assert config.llm_toolkits == mock_llm_toolkits
+    assert config.tool_builders == mock_llm_toolkits
     assert config.model == "gpt-3.5-turbo"
     assert config.stream is True
     assert config.verbose is True

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from automata.core.agent.agent import AutomataOpenAIAgent
 
 
-class AutomataInstance(BaseModel):
+class AutomataAgentInstance(BaseModel):
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}
@@ -43,5 +43,5 @@ class AutomataInstance(BaseModel):
     @classmethod
     def create(
         cls, config_name: AgentConfigName, description: str = "", **kwargs
-    ) -> "AutomataInstance":
+    ) -> "AutomataAgentInstance":
         return cls(config_name=config_name, description=description, kwargs=kwargs)
