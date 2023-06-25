@@ -1,11 +1,23 @@
 import json
 import logging
-from typing import Any, Dict, List, NamedTuple, Optional, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Union,
+    cast,
+)
 
 import numpy as np
 import openai
 
-from automata.core.base.database.relational import RelationalDatabase
+from automata.core.base.agent import Agent
+from automata.core.base.observer import Observer
+from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
     LLMChatMessage,
     LLMChatProvider,
@@ -120,7 +132,18 @@ class OpenAIIncorrectMessageTypeError(Exception):
 
 class OpenAIConversation(LLMConversation):
     def __init__(self):
+        self._observers = set()
         self.messages: List[OpenAIChatMessage] = []
+
+    def register_observer(self, observer: Observer):
+        self._observers.add(observer)
+
+    def unregister_observer(self, observer: Observer):
+        self._observers.discard(observer)
+
+    def notify_observers(self):
+        for observer in self._observers:
+            observer.update(self)
 
     def __len__(self) -> int:
         return len(self.messages)
@@ -141,8 +164,33 @@ class OpenAIConversation(LLMConversation):
         return self.messages[-1]
 
 
-# TODO - Specify this more precisely
-OpenAIFunction = Dict[str, Any]
+class OpenAIFunction:
+    """
+    Represents a function callable by the OpenAI agent.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        properties: Dict[str, Dict[str, str]],  # TODO - We can probably make this more specific
+        required: Optional[List[str]] = None,
+    ):
+        self.name = name
+        self.description = description
+        self.properties = properties
+        self.required = required or []
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "parameters": {
+                "type": "object",
+                "properties": self.properties,
+            },
+            "required": self.required,
+        }
 
 
 class OpenAIChatProvider(LLMChatProvider):
@@ -162,11 +210,11 @@ class OpenAIChatProvider(LLMChatProvider):
         set_openai_api_key()
 
     def get_next_assistant_message(self) -> OpenAIChatMessage:
+        print("available functions = ", [ele.to_dict() for ele in self.functions])
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
+            model=self.model,
             messages=self.conversation.get_messages_for_next_completion(),
-            # messages=messages,
-            functions=self.functions,
+            functions=[ele.to_dict() for ele in self.functions],
             function_call="auto",  # auto is default, but we'll be explicit
         )
 
@@ -185,8 +233,10 @@ class OpenAIEmbedding(EmbeddingProvider):
     def build_embedding(self, symbol_source: str) -> np.ndarray:
         """
         Get the embedding for a symbol.
+
         Args:
             symbol_source (str): The source code of the symbol
+
         Returns:
             A numpy array representing the embedding
         """
@@ -194,3 +244,53 @@ class OpenAIEmbedding(EmbeddingProvider):
         from openai.embeddings_utils import get_embedding
 
         return np.array(get_embedding(symbol_source, engine=self.engine))
+
+
+class OpenAITool(Tool):
+    def __init__(
+        self,
+        function: Callable[..., str],
+        name: str,
+        description: str,
+        properties: Dict[str, Dict[str, str]],
+        required: Optional[List[str]] = None,
+        *args: Any,
+        **kwargs: Any,
+    ):
+        super().__init__(function=function, name=name, description=description, **kwargs)
+        self.properties = properties
+        self.required = required or []
+        self.openai_function = self._build_openai_function()
+
+    def _build_openai_function(self) -> OpenAIFunction:
+        return OpenAIFunction(
+            name=self.name,
+            description=self.description,
+            properties=self.properties,
+            required=self.required,
+        )
+
+
+class OpenAIAgent(Agent):
+    def _get_termination_function(self) -> OpenAIFunction:
+        return OpenAIFunction(
+            name="call_termination",
+            description="Terminates the conversation.",
+            properties={
+                "result": {
+                    "type": "string",
+                    "description": "The final result of the conversation.",
+                }
+            },
+            required=["result"],
+        )
+
+    def _get_available_functions(self) -> Sequence[OpenAIFunction]:
+        """
+
+        Gets the available functions for the agent.
+
+        Returns:
+            Sequence[OpenAIFunction]: The available functions for the agent.
+        """
+        raise NotImplementedError
