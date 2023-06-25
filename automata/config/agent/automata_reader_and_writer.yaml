@@ -155,7 +155,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.python_tools.documentation.documentation_gpt
+            - automata.tools.python_tools.documentation.documentation_gpt
             - DocumentationGPT
             - python
               ```
@@ -197,7 +197,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.python_tools.tool_management.base_tool_manager
+            - automata.tools.python_tools.tool_management.base_tool_manager
             - BaseToolManager
             - python
               ```

@@ -6,7 +6,7 @@ import pytest
 from automata.config.agent_config_builder import build_agent_message
 from automata.config.config_types import AgentConfigName, AutomataAgentConfig
 from automata.core.agent.action import AgentAction
-from automata.core.agent.coordinator import AutomataCoordinator, AutomataInstance
+from automata.core.agent.instance import AutomataCoordinator, AutomataInstance
 
 
 @pytest.fixture
