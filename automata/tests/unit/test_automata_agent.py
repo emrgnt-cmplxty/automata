@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.core.agent.agent import AutomataAgent
-from automata.core.database.relational import AutomataAgentDatabase
+from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
 from automata.core.base.llm.openai import OpenAIChatMessage
+from automata.core.database.relational import AutomataAgentDatabase
 
 
 def test_build_tool_message(automata_agent_config_builder):
@@ -35,7 +35,7 @@ def test_build_initial_messages(automata_agent):
         "user_input_instructions": "DUMMY_INSTRUCTIONS",
     }
     initial_messages = automata_agent._build_initial_messages(formatters)
-    assert AutomataAgent.INITIALIZER_DUMMY in initial_messages[0].content
+    assert AutomataOpenAIAgent.INITIALIZER_DUMMY in initial_messages[0].content
     assert "assistant" == initial_messages[0].role
     assert "DUMMY_INSTRUCTIONS" in initial_messages[1].content
     assert "user" == initial_messages[1].role
@@ -75,7 +75,7 @@ def test_iter_step_without_api_call(mock_openai_chatcompletion_create, automata_
     # Check if the result is as expected
     assistant_message, user_message = result
     assert assistant_message.content == "The dummy_tool has been tested successfully."
-    assert user_message.content, AutomataAgent.CONTINUE_MESSAGE
+    assert user_message.content, AutomataOpenAIAgent.CONTINUE_MESSAGE
     assert len(automata_agent.messages) == 5
 
 
@@ -93,7 +93,10 @@ def test_max_iters_without_api_call(mock_openai_chatcompletion_create, automata_
         result
         == f"Result was not found before iterations exceeded configured max limit: {max_iters}. Debug summary: invalid tool name"
     )
-    assert len(automata_agent.messages) == max_iters * 2 + AutomataAgent.NUM_DEFAULT_MESSAGES + 1
+    assert (
+        len(automata_agent.messages)
+        == max_iters * 2 + AutomataOpenAIAgent.NUM_DEFAULT_MESSAGES + 1
+    )
 
 
 def mock_openai_response_with_completion_message():
@@ -225,7 +228,7 @@ def test_iter_step_with_parsed_completion_message_2(
         .build()
     )
 
-    automata_agent = AutomataAgent(instructions=instructions, config=automata_agent_config)
+    automata_agent = AutomataOpenAIAgent(instructions=instructions, config=automata_agent_config)
     automata_agent.setup()
 
     # Mock the API response
@@ -253,7 +256,7 @@ def test_iter_step_with_parsed_completion_message_main_2(
         .build()
     )
 
-    automata_agent = AutomataAgent(instructions=instructions, config=automata_agent_config)
+    automata_agent = AutomataOpenAIAgent(instructions=instructions, config=automata_agent_config)
     automata_agent.setup()
 
     # Mock the API response
