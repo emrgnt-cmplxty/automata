@@ -1,5 +1,6 @@
 import sqlite3
 from abc import ABC, abstractmethod
+
 from automata.config import CONVERSATION_DB_PATH
 
 
@@ -89,56 +90,50 @@ class SQLDatabase(RelationalDatabase):
             db_path (str, optional): The name or path of the database to connect to. Defaults to CONVERSATION_DB_PATH.
             session_id (str): The session ID of the conversation.
         """
-
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
 
-    def set_session_id(self, session_id: str) -> None:
-        """Set the session ID of the conversation."""
-        self.session_id = session_id
-
-    @abstractmethod
     def close(self):
         """Close the connection to the database."""
         if self.conn:
             self.conn.close()
 
+    def create_table(self, table_name: str, fields: dict):
+        fields_str = ", ".join([f"{k} {v}" for k, v in fields.items()])
+        self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({fields_str})")
+        self.conn.commit()
 
-# from typing import List
+    def insert(self, table_name: str, data: dict):
+        keys_str = ", ".join(data.keys())
+        values_str = ", ".join(["?" for _ in data.values()])
+        self.cursor.execute(
+            f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})", tuple(data.values())
+        )
+        self.conn.commit()
 
-# from automata.config import CONVERSATION_DB_PATH
-# from automata.core.base.llm.openai import OpenAIChatMessage
+    def select(self, table_name: str, fields: list, conditions: dict = None):
+        fields_str = ", ".join(fields)
+        query = f"SELECT {fields_str} FROM {table_name}"
+        if conditions:
+            conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
+            query += f" WHERE {conditions_str}"
+            self.cursor.execute(query, tuple(conditions.values()))
+        else:
+            self.cursor.execute(query)
+        return self.cursor.fetchall()
 
+    def update(self, table_name: str, data: dict, conditions: dict):
+        data_str = ", ".join([f"{k} = ?" for k in data])
+        conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
+        self.cursor.execute(
+            f"UPDATE {table_name} SET {data_str} WHERE {conditions_str}",
+            tuple(list(data.values()) + list(conditions.values())),
+        )
+        self.conn.commit()
 
-# class AutomataAgentDatabase:
-#     def __init__(self, session_id: str, db_path: str = CONVERSATION_DB_PATH) -> None:
-#         self.session_id = session_id
-#         self.conn = sqlite3.connect(db_path)
-#         self.cursor = self.conn.cursor()
-#         self._init_database()
-
-#     def __del__(self) -> None:
-#         """Close the connection to the agent."""
-#         if self.conn:
-#             self.conn.close()
-
-#     def put_message(self, role: str, content: str, interaction_id: int) -> OpenAIChatMessage:
-#         """
-#         Inserts the message into the appropriate session and interaction id
-#         Args:
-#             role (str The role of the message sender (e.g., "user" or "assistant").
-#             content (str The content of the message.
-
-#         Returns:
-#             OpenAIChatMessage: The saved interaction.
-#         """
-#         assert self.session_id is not None, "Session ID is not set."
-#         assert self.conn is not None, "Database connection is not set."
-#         interaction = OpenAIChatMessage(role=role, content=content)
-#         self.cursor.execute(
-#             "INSERT OR REPLACE INTO interactions (session_id, interaction_id, role, content) VALUES (?, ?, ?, ?)",
-#             (self.session_id, interaction_id, role, content),
-#         )
-#         self.conn.commit()
-
-#         return interaction
+    def delete(self, table_name: str, conditions: dict):
+        conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
+        self.cursor.execute(
+            f"DELETE FROM {table_name} WHERE {conditions_str}", tuple(conditions.values())
+        )
+        self.conn.commit()
