@@ -5,9 +5,9 @@ from unittest.mock import patch
 import pytest
 
 from automata.core.agent.agent import AutomataAgent
-from automata.core.agent.database import AutomataAgentDatabase
+from automata.core.database.relational import AutomataAgentDatabase
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
-from automata.core.base.openai import OpenAIChatMessage
+from automata.core.base.llm.openai import OpenAIChatMessage
 
 
 def test_build_tool_message(automata_agent_config_builder):

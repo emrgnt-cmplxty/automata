@@ -83,7 +83,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.python_tools.documentation.documentation_gpt
+            - automata.tools.python_tools.documentation.documentation_gpt
             - DocumentationGPT
             - python
               ```
@@ -125,7 +125,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.python_tools.tool_management.base_tool_manager
+            - automata.tools.python_tools.tool_management.base_tool_manager
             - BaseToolManager
             - python
               ```
@@ -163,7 +163,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.utils
+            - automata.tools.utils
             - None
             - python
               ```
@@ -189,7 +189,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.utils
+            - automata.tools.utils
             - None
             - python
               ```
@@ -213,7 +213,7 @@ system_template: >
           - tool_name
             - py-writer-update-module
           - tool_args
-            - tools.utils
+            - automata.tools.utils
             - None
             - python
               ```
@@ -226,5 +226,6 @@ system_template: >
 
 number_of_expected_actions: 9
 description: >
-  This agent is automata_writer, an agent which parses natural language queries to write code to the local Python repository.
+  This agent is automata_writer, an agent which parses natural language queries to write code to the local repository.
 template_format: "f-string"
+model: gpt-3.5-turbo

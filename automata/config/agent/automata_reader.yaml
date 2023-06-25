@@ -147,8 +147,9 @@ system_template: >
   Lastly, do NOT forget to follow the Thoughts->Actions --> Observations --> .. lifecycle.
 
 description: >
-  This agent is automata_reader, an agent which parses natural language queries to retrieve code from the local Python repository.
+  This agent is automata_reader, an agent which parses natural language queries to retrieve relevant code context from the local repository.
 
 number_of_expected_actions: 4
 
 template_format: "f-string"
+model: gpt-3.5-turbo

@@ -162,3 +162,4 @@ system_template: >
 description: ""
 number_of_expected_actions: 7
 template_format: "f-string"
+model: gpt-4
