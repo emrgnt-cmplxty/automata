@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from automata.core.agent.agent import AutomataOpenAIAgent
-from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.agent.tool.tool_utils import build_llm_tool_managers
 from automata.core.base.database.relational import AutomataAgentDatabase
 from automata.core.llm.providers.openai import OpenAIChatMessage
 
@@ -17,7 +17,7 @@ def test_build_tool_message(automata_agent_config_builder):
 
     retriever = PyReader()
 
-    mock_llm_toolkits = build_llm_toolkits(
+    mock_llm_toolkits = build_llm_tool_managers(
         tool_list, py_reader=retriever, py_writer=PyWriter(retriever)
     )
 

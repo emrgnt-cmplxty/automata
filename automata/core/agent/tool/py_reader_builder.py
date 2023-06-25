@@ -1,15 +1,18 @@
 import logging
 from typing import List, Optional
 
-from automata.core.agent.tools.agent_tool import AgentTool
+from automata.config.config_types import AvailableAgentTools
+from automata.core.agent.tool.registry import AgentToolManagerRegistry
+from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR
 from automata.core.coding.py.reader import PyReader
+from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 
 logger = logging.getLogger(__name__)
 
 
-class PyReaderTool(AgentTool):
+class PyReaderToolBuilder(AgentToolBuilder):
     """
     PyReaderTool
     A class for interacting with the PythonIndexer API, which provides functionality to read
@@ -139,3 +142,41 @@ class PyReaderTool(AgentTool):
             return result
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
+
+
+@AgentToolManagerRegistry.register_tool_manager
+class PyReaderOpenAIToolBuilder(PyReaderToolBuilder, OpenAIAgentToolBuilder):
+    TOOL_TYPE = AvailableAgentTools.PY_READER
+
+    def build_for_open_ai(self) -> List[OpenAITool]:
+        tools = super().build()
+
+        properties = {
+            "module_path": {
+                "type": "string",
+                "description": "The path to the module to retrieve code from.",
+            },
+            "object_path": {
+                "type": "string",
+                "description": "The path to the object to retrieve code from.",
+            },
+        }
+
+        required = ["module_path"]
+
+        openai_tools = []
+        for tool in tools:
+            openai_tool = OpenAITool(
+                function=tool.function,
+                name=tool.name,
+                description=tool.description,
+                properties=properties,
+                required=required,
+            )
+            openai_tools.append(openai_tool)
+
+        return openai_tools
+
+    @classmethod
+    def can_handle(cls, tool_manager):
+        return cls.TOOL_TYPE == tool_manager

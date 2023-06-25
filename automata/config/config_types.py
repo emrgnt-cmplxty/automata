@@ -29,6 +29,13 @@ class InstructionConfigVersion(Enum):
     AGENT_INTRODUCTION = "agent_introduction"
 
 
+class AvailableAgentTools(Enum):
+    PY_READER = "py_reader"
+    PY_WRITER = "py_writer"
+    SYMBOL_SEARCH = "symbol_search"
+    CONTEXT_ORACLE = "context_oracle"
+
+
 class AgentConfigName(Enum):
     """
     AgentConfigName: Enum of agent config names.
@@ -110,7 +117,7 @@ class AutomataAgentConfig(BaseModel):
             """
             formatter = {}
             if config.config_name == AgentConfigName.AUTOMATA_READER:
-                from automata.core.agent.tools.tool_utils import DependencyFactory
+                from automata.core.agent.tool.tool_utils import DependencyFactory
 
                 symbol_search = DependencyFactory().get("symbol_search")
                 symbol_rank = symbol_search.symbol_rank

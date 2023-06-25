@@ -1,5 +1,6 @@
 import json
 import logging
+from abc import ABC, abstractmethod
 from typing import (
     Any,
     Callable,
@@ -15,7 +16,7 @@ from typing import (
 import numpy as np
 import openai
 
-from automata.core.base.agent import Agent
+from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.observer import Observer
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
@@ -294,3 +295,23 @@ class OpenAIAgent(Agent):
             Sequence[OpenAIFunction]: The available functions for the agent.
         """
         raise NotImplementedError
+
+
+class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
+    """AgentTool is an abstract class for building tools for agents."""
+
+    def __init__(self, **kwargs) -> None:
+        pass
+
+    @abstractmethod
+    def build(self) -> List[Tool]:
+        pass
+
+    @abstractmethod
+    def build_for_open_ai(self) -> List[OpenAITool]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def can_handle(cls, tool_manager: str) -> bool:
+        pass

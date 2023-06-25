@@ -3,14 +3,15 @@ import logging
 import os
 from typing import Any, Dict, List, Tuple
 
-from automata.config.config_types import ConfigCategory
+from automata.config.config_types import AvailableAgentTools, ConfigCategory
+from automata.core.agent.tool.py_reader_builder import (
+    PyReaderOpenAIToolBuilder,
+    PyReaderToolBuilder,
+)
+from automata.core.agent.tool.registry import AgentToolManagerRegistry
 from automata.core.agent.tools.agent_tool import AgentTool
-from automata.core.agent.tools.context_oracle import ContextOracleTool
-from automata.core.agent.tools.py_reader import PyReaderTool
-from automata.core.agent.tools.py_writer import PyWriterTool
-from automata.core.agent.tools.symbol_search import SymbolSearchTool
+from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.database.vector import JSONVectorDatabase
-from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
 from automata.core.context.py.retriever import (
@@ -244,127 +245,105 @@ class UnknownToolError(Exception):
 
     ERROR_STRING = "Unknown toolkit type: %s"
 
-    def __init__(self, tool_kit: ToolkitType) -> None:
+    def __init__(self, tool_kit: AvailableAgentTools) -> None:
         super().__init__(self.ERROR_STRING % (tool_kit))
 
 
-class AgentToolFactory:
-    """
-    A class for creating tool managers.
-    TODO: It is unfortunate that we must maintain these mappings locally
-        in this class. It would be better if we could generate it dynamically
-        perhaps by using a decorator on the tool classes themselves.
-    """
+# class AgentToolManagerFactory:
+#     """
+#     A class for creating tool managers.
+#     TODO: It is unfortunate that we must maintain these mappings locally
+#         in this class. It would be better if we could generate it dynamically
+#         perhaps by using a decorator on the tool classes themselves.
+#     """
 
-    _retriever_instance = None
+#     _retriever_instance = None
 
-    TOOLKIT_TYPE_TO_TOOL_CLASS = {
-        ToolkitType.PY_READER: PyReaderTool,
-        ToolkitType.PY_WRITER: PyWriterTool,
-        ToolkitType.SYMBOL_SEARCH: SymbolSearchTool,
-        ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
+#     TOOLKIT_TYPE_TO_TOOL_CLASS = {
+#         AgentToolManagers.PY_READER: PyReaderOpenAIToolManager,
+#         # ToolkitType.PY_WRITER: PyWriterTool,
+#         # ToolkitType.SYMBOL_SEARCH: SymbolSearchTool,
+#         # ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
+#     }
+
+#     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolManagers, List[Tuple[str, Any]]] = {
+#         AgentToolManagers.PY_READER: [("py_reader", PyReader)],
+#         # ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
+#         # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
+#         # ToolkitType.CONTEXT_ORACLE: [
+#         #     ("symbol_search", SymbolSearch),
+#         #     ("symbol_doc_similarity", SymbolSimilarity),
+#         # ],
+#     }
+
+#     @staticmethod
+#     def create_agent_tool_manager(tool_manager: AgentToolManagers, **kwargs) -> AgentToolManager:
+#         """
+#         Create a tool manager for the specified toolkit type.
+
+#         Args:
+#             toolkit_type (ToolkitType): The type of toolkit to create a tool manager for.
+
+#             kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
+#               for the specified toolkit type. The possible arguments are:
+#                 py_reader - PyReader
+#                 py_writer - PyWriter
+#                 symbol_search - SymbolSearch
+#                 symbol_doc_similarity - SymbolSimilarity
+
+#         Returns:
+#             AgentTool: The tool manager for the specified toolkit type.
+
+#         Raises:
+#             ToolCreationError: If the required arguments are not provided.
+#             UnknownToolError: If the toolkit type is not recognized.
+#         """
+
+#         if tool_manager not in AgentToolManagerFactory.TOOLKIT_TYPE_TO_TOOL_CLASS:
+#             raise UnknownToolError(tool_manager)
+
+#         tool_class = AgentToolManagerFactory.TOOLKIT_TYPE_TO_TOOL_CLASS[tool_manager]
+#         args = AgentToolManagerFactory.TOOLKIT_TYPE_TO_ARGS[tool_manager]
+
+#         tool_kwargs = {}
+#         for arg_name, arg_class in args:
+#             arg_value = kwargs.get(arg_name, None)
+#             if arg_value is None or not isinstance(arg_value, arg_class):
+#                 raise ToolCreationError(arg_name, tool_class.__name__)
+#             tool_kwargs[arg_name] = arg_value
+#         print("tool_kwargs = ", tool_kwargs)
+#         print("creating tool...")
+#         return tool_class(**tool_kwargs)
+
+
+class AgentToolManagerFactory:
+    TOOLKIT_TYPE_TO_ARGS: Dict[AvailableAgentTools, List[Tuple[str, Any]]] = {
+        AvailableAgentTools.PY_READER: [("py_reader", PyReader)],
+        # ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
+        # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
+        # ToolkitType.CONTEXT_ORACLE: [
+        #     ("symbol_search", SymbolSearch),
+        #     ("symbol_doc_similarity", SymbolSimilarity),
+        # ],
     }
-
-    TOOLKIT_TYPE_TO_ARGS: Dict[ToolkitType, List[Tuple[str, Any]]] = {
-        ToolkitType.PY_READER: [("py_reader", PyReader)],
-        ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
-        ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-        ToolkitType.CONTEXT_ORACLE: [
-            ("symbol_search", SymbolSearch),
-            ("symbol_doc_similarity", SymbolSimilarity),
-        ],
-    }
+    ALL_MANAGERS = []
 
     @staticmethod
-    def create_agent_tool(toolkit_type: ToolkitType, **kwargs) -> AgentTool:
-        """
-        Create a tool manager for the specified toolkit type.
-
-        Args:
-            toolkit_type (ToolkitType): The type of toolkit to create a tool manager for.
-
-            kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
-              for the specified toolkit type. The possible arguments are:
-                py_reader - PyReader
-                py_writer - PyWriter
-                symbol_search - SymbolSearch
-                symbol_doc_similarity - SymbolSimilarity
-
-        Returns:
-            AgentTool: The tool manager for the specified toolkit type.
-
-        Raises:
-            ToolCreationError: If the required arguments are not provided.
-            UnknownToolError: If the toolkit type is not recognized.
-        """
-
-        if toolkit_type not in AgentToolFactory.TOOLKIT_TYPE_TO_TOOL_CLASS:
-            raise UnknownToolError(toolkit_type)
-
-        tool_class = AgentToolFactory.TOOLKIT_TYPE_TO_TOOL_CLASS[toolkit_type]
-        args = AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[toolkit_type]
-
-        tool_kwargs = {}
-        for arg_name, arg_class in args:
-            arg_value = kwargs.get(arg_name, None)
-            if arg_value is None or not isinstance(arg_value, arg_class):
-                raise ToolCreationError(arg_name, tool_class.__name__)
-            tool_kwargs[arg_name] = arg_value
-
-        return tool_class(**tool_kwargs)
-
-
-class ToolkitBuilder:
-    """A class for building toolkits."""
-
-    def __init__(self, **kwargs) -> None:
-        """
-        Initializes a ToolkitBuilder.
-
-        Note:
-            The kwargs should contain the required AgentTool arguments for the specified toolkit type.
-            For more information, see the AgentToolFactory.create_agent_tool method.
-        """
-
-        self._tool_management: Dict[ToolkitType, AgentTool] = {}
-        self.kwargs = kwargs
-
-    def build_toolkit(self, toolkit_type: ToolkitType) -> Toolkit:
-        """
-        Builds a toolkit of the given type.
-
-        Args:
-            toolkit_type (ToolkitType): The type of toolkit to build.
-
-        Returns:
-            Toolkit: The toolkit of the given type.
-
-        Raises:
-            UnknownToolError: If the toolkit type is not recognized.
-        """
-        agent_tool = AgentToolFactory.create_agent_tool(toolkit_type, **self.kwargs)
-
-        if not agent_tool:
-            raise UnknownToolError(toolkit_type)
-
-        tools = ToolkitBuilder.build(agent_tool)
-        return Toolkit(tools)
+    def register_tool_manager(cls):
+        AgentToolManagerFactory.ALL_MANAGERS.append(cls)
+        return cls
 
     @staticmethod
-    def build(agent_tool: AgentTool) -> List[Tool]:
-        """
-        Build tools from a tool manager.
-
-        Args:
-            agent_tool (AgentTool): The agent tool to build.
-
-        Returns:
-            List[Tool]: The list of tools built from the tool manager.
-        """
-        return agent_tool.build()
+    def create_agent_tool_manager(tool_manager: AvailableAgentTools, **kwargs) -> AgentToolBuilder:
+        for manager in AgentToolManagerRegistry.ALL_MANAGERS:
+            if manager.can_handle(tool_manager):
+                return manager(**kwargs)
+        raise UnknownToolError(tool_manager)
 
 
-def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Toolkit]:
+def build_llm_tool_managers(
+    tool_list: List[str], **kwargs
+) -> Dict[AvailableAgentTools, AgentToolBuilder]:
     """
     This function builds a list of toolkits from a list of toolkit names.
 
@@ -379,17 +358,18 @@ def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Tool
         UnknownToolError: If a toolkit name is not recognized.
 
     """
-    toolkits: Dict[ToolkitType, Toolkit] = {}
-    toolkit_builder = ToolkitBuilder(**kwargs)
+    tool_managers: Dict[AvailableAgentTools, AgentToolBuilder] = {}
 
     for tool_name in tool_list:
         tool_name = tool_name.strip()
-        toolkit_type = ToolkitType(tool_name)
+        agent_tool_manager = AvailableAgentTools(tool_name)
 
-        if toolkit_type is None:
-            raise UnknownToolError(toolkit_type)
+        if agent_tool_manager is None:
+            raise UnknownToolError(agent_tool_manager)
 
-        toolkit = toolkit_builder.build_toolkit(toolkit_type)
-        toolkits[toolkit_type] = toolkit
+        # toolkit = toolkit_builder.build_toolkit(agent_tool_manager)
+        tool_managers[agent_tool_manager] = AgentToolManagerFactory.create_agent_tool_manager(
+            agent_tool_manager, **kwargs
+        )
 
-    return toolkits
+    return tool_managers

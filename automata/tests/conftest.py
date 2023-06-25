@@ -12,7 +12,7 @@ from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.agent.tool.tool_utils import build_llm_tool_managers
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
@@ -142,18 +142,19 @@ def automata_agent_config_builder():
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
     tool_list = ["py_reader"]
-    mock_llm_toolkits = build_llm_toolkits(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
+    mock_llm_toolkits = build_llm_tool_managers(
+        tool_list, py_reader=mocker.MagicMock(spec=PyReader)
+    )
 
     instructions = "Test instruction."
 
-    agent = AutomataOpenAIAgent(
+    return AutomataOpenAIAgent(
         instructions,
         config=automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits)
         .with_stream(False)
         .with_system_template_formatter({})
         .build(),
     )
-    return agent
 
 
 class MockRepositoryManager(RepositoryManager):
