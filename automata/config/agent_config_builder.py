@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from pydantic import BaseModel, PrivateAttr
 
@@ -7,8 +7,7 @@ from automata.config.config_types import (
     AutomataAgentConfig,
     InstructionConfigVersion,
 )
-from automata.core.agent.tool.tool_utils import build_llm_tool_managers
-from automata.core.base.tool import Toolkit, ToolkitType
+from automata.core.base.tool import Tool
 
 
 class AutomataAgentConfigBuilder(BaseModel):
@@ -49,19 +48,17 @@ class AutomataAgentConfigBuilder(BaseModel):
         """
         return cls(config)
 
-    def with_llm_toolkits(
-        self, llm_toolkits: Dict[ToolkitType, Toolkit]
-    ) -> "AutomataAgentConfigBuilder":
+    def with_tools(self, tools: List[Tool]) -> "AutomataAgentConfigBuilder":
         """
         Set the low-level manipulation (LLM) toolkits for the AutomataAgent instance.
 
         Args:
-            llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary containing the LLM toolkits for the AutomataAgent.
+            tool_builders (Dict[ToolkitType, Toolkit]): A dictionary containing the LLM toolkits for the AutomataAgent.
 
         Returns:
-            AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated llm_toolkits.
+            AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated tool_builders.
         """
-        self._config.llm_toolkits = llm_toolkits
+        self._config.tools = tools
         return self
 
     def with_system_template_formatter(
@@ -264,11 +261,10 @@ class AutomataAgentConfigFactory:
         if "verbose" in kwargs:
             builder = builder.with_verbose(kwargs["verbose"])
 
-        if "with_max_iters" in kwargs:
-            builder = builder.with_max_iters(kwargs["with_max_iters"])
+        if "max_iters" in kwargs:
+            builder = builder.with_max_iters(kwargs["max_iters"])
 
-        if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
-            llm_toolkits = build_llm_tool_managers(kwargs["llm_toolkits"].split(","), **kwargs)
-            builder = builder.with_llm_toolkits(llm_toolkits)
+        if "tools" in kwargs:
+            builder = builder.with_tools(kwargs["tools"])
 
         return builder.build()

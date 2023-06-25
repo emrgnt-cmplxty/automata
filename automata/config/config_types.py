@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 import yaml
 from pydantic import BaseModel
 
-from automata.core.base.tool import Toolkit, ToolkitType
+from automata.core.base.tool import Tool
 
 
 class ConfigCategory(Enum):
@@ -29,7 +29,7 @@ class InstructionConfigVersion(Enum):
     AGENT_INTRODUCTION = "agent_introduction"
 
 
-class AvailableAgentTools(Enum):
+class AvailableAgentTool(Enum):
     PY_READER = "py_reader"
     PY_WRITER = "py_writer"
     SYMBOL_SEARCH = "symbol_search"
@@ -59,7 +59,7 @@ class AutomataAgentConfig(BaseModel):
     """
     Args:
         config_name (AgentConfigName): The config_name of the agent to use.
-        llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
+        tool_builders (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
         instructions (str): A string of instructions to execute.
         system_template (str): A string of instructions to execute.
         system_template_variables (List[str]): A list of required input variables for the instruction template.
@@ -78,7 +78,7 @@ class AutomataAgentConfig(BaseModel):
         arbitrary_types_allowed = True
 
     config_name: AgentConfigName = AgentConfigName.DEFAULT
-    llm_toolkits: Dict[ToolkitType, Toolkit] = {}
+    tools: List[Tool] = []
     instructions: str = ""
     description: str = ""
     system_template: str = ""
@@ -177,21 +177,6 @@ class AutomataAgentConfig(BaseModel):
         loaded_yaml = cls.load_automata_yaml_config(config_name)
         return AutomataAgentConfig(**loaded_yaml)
 
-    def _build_tool_message(self) -> str:
-        """
-        Builds a message containing information about all available tools.
-
-        Returns:
-            str: A formatted string containing the names and descriptions of all available tools.
-        """
-        return "Tools:\n" + "".join(
-            [
-                f"\n{tool.name}:\n{tool.description}\n"
-                for toolkit in self.llm_toolkits.values()
-                for tool in toolkit.tools
-            ]
-        )
-
     def _formatted_prompt(self) -> str:
         """
         Format system_template with the entries in the system_template_formatter.
@@ -201,11 +186,6 @@ class AutomataAgentConfig(BaseModel):
         """
         formatter_keys = set(self.system_template_formatter.keys())
         template_vars = set(self.system_template_variables)
-
-        # Check if 'tools' is in the system_template_variables but not in the formatter
-        if "tools" in template_vars and "tools" not in formatter_keys:
-            self.system_template_formatter["tools"] = self._build_tool_message()
-            formatter_keys.add("tools")
 
         # Now check if the keys in formatter and template_vars match exactly
         if formatter_keys != template_vars:

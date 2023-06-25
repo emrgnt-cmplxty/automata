@@ -16,6 +16,7 @@ from typing import (
 import numpy as np
 import openai
 
+from automata.config.config_types import AvailableAgentTool
 from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.observer import Observer
 from automata.core.base.tool import Tool
@@ -136,13 +137,13 @@ class OpenAIConversation(LLMConversation):
         self._observers = set()
         self.messages: List[OpenAIChatMessage] = []
 
-    def register_observer(self, observer: Observer):
+    def register_observer(self, observer: Observer) -> None:
         self._observers.add(observer)
 
-    def unregister_observer(self, observer: Observer):
+    def unregister_observer(self, observer: Observer) -> None:
         self._observers.discard(observer)
 
-    def notify_observers(self):
+    def notify_observers(self) -> None:
         for observer in self._observers:
             observer.update(self)
 
@@ -313,5 +314,5 @@ class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
 
     @classmethod
     @abstractmethod
-    def can_handle(cls, tool_manager: str) -> bool:
+    def can_handle(cls, tool_manager: AvailableAgentTool) -> bool:
         pass

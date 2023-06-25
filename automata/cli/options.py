@@ -50,7 +50,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which instructions to use for the agent.",
         ),
         click.option(
-            "--llm_toolkits",
+            "--tool_builders",
             default="context_oracle",
             help="Which LLM toolkits to use?",
         ),

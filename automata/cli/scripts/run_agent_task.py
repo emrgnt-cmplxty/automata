@@ -11,7 +11,7 @@ from automata.core.agent.task.executor import (
 from automata.core.agent.task.registry import AutomataTaskDatabase, AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tool.tool_utils import (
-    AgentToolManagerFactory,
+    AgentToolFactory,
     DependencyFactory,
 )
 from automata.core.base.github_manager import GitHubManager
@@ -60,14 +60,14 @@ def main(*args, **kwargs):
             issue_infos
         )
 
-    llm_toolkits_list = kwargs.get("llm_toolkits", "context_oracle").split(",")
+    llm_toolkits_list = kwargs.get("tool_builders", "context_oracle").split(",")
     # TODO - The following is a copy pasta from automata/cli/scripts/run_agent.py
     # Where should this reside to avoid redundancy?
 
     # A list of all dependencies that will be used to build the toolkits
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
-        for dependency_name, _ in AgentToolManagerFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
+        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
             dependencies.add(dependency_name)
 
     logger.info("  - Building dependencies...")
