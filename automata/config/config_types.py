@@ -81,7 +81,7 @@ class AutomataAgentConfig(BaseModel):
     stream: bool = False
     verbose: bool = False
     is_new_agent: bool = True
-    max_iters: int = 50
+    max_iterations: int = 50
     temperature: float = 0.7
     session_id: Optional[str] = None
     system_instruction: Optional[str] = None
@@ -121,9 +121,7 @@ class AutomataAgentConfig(BaseModel):
                 ]
                 formatter["symbol_rank_overview"] = "\n".join(sorted(symbol_dotpaths))
             elif config.config_name == AgentConfigName.AUTOMATA_MAIN:
-                raise NotImplementedError(
-                    "AutomataMain does not have a default template formatter."
-                )
+                pass
             elif config.config_name == AgentConfigName.AUTOMATA_WRITER:
                 raise NotImplementedError(
                     "AutomataWriter does not have a default template formatter."

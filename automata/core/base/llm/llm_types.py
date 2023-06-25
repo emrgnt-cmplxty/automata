@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Tuple
 
 from automata.core.base.database.relational import RelationalDatabase
 from automata.core.base.observer import Observer
@@ -7,6 +7,11 @@ from automata.core.base.observer import Observer
 
 class LLMCompletionResult(ABC):
     """Abstract base class for different types of LLM completion results."""
+
+    @abstractmethod
+    def get_role(self) -> Any:
+        """Returns the role of the completion result."""
+        pass
 
     @abstractmethod
     def get_content(self) -> Any:
@@ -35,6 +40,9 @@ class LLMChatMessage(ABC):
     def to_dict(self) -> Any:
         """Returns the message as a dictionary."""
         pass
+
+
+LLMIterationResult = Optional[Tuple[LLMChatMessage, Optional[LLMChatMessage]]]
 
 
 class LLMConversation(ABC):
@@ -139,9 +147,9 @@ class LLMChatProvider(ABC):
     def __init__(self):
         pass
 
-    def get_response(self) -> LLMCompletionResult:
+    def get_next_assistant_response(self) -> LLMChatMessage:
         """
-        Returns the latest response from the LLM.
+        Returns the next assistant response from the LLM.
 
         Args:
             conversation (LLMConversation): The conversation to get the response for.

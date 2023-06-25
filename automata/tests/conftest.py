@@ -153,7 +153,6 @@ def automata_agent(mocker, automata_agent_config_builder):
         .with_system_template_formatter({})
         .build(),
     )
-    agent.setup()
     return agent
 
 

@@ -6,8 +6,8 @@ from typing import List, Optional, Set
 import tiktoken
 from redbaron import RedBaron
 
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.coding.py.reader import PyReader
-from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_types import Symbol
 from automata.core.symbol.symbol_utils import (

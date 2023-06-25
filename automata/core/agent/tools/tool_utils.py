@@ -9,6 +9,7 @@ from automata.core.agent.tools.context_oracle import ContextOracleTool
 from automata.core.agent.tools.py_reader import PyReaderTool
 from automata.core.agent.tools.py_writer import PyWriterTool
 from automata.core.agent.tools.symbol_search import SymbolSearchTool
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
@@ -16,7 +17,6 @@ from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.embedding_types import OpenAIEmbedding

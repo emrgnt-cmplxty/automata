@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 
-from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.symbol.symbol_types import Symbol
 from automata.core.utils import set_openai_api_key
 

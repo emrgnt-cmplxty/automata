@@ -3,7 +3,7 @@ import os
 import pytest
 
 from automata.config.config_types import ConfigCategory
-from automata.core.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity

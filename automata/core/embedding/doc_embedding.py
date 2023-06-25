@@ -5,8 +5,8 @@ import openai
 from jinja2 import Template
 
 from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.context.py.retriever import PyContextRetriever
-from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 

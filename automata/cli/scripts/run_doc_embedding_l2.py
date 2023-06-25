@@ -4,12 +4,12 @@ import os
 from tqdm import tqdm
 
 from automata.config.config_types import ConfigCategory
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.embedding_types import OpenAIEmbedding
