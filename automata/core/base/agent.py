@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Tuple
 
-from automata.core.base.llm.llm_types import LLMCompletionResult, LLMIterationResult
+from automata.core.llm.completion import LLMCompletionResult, LLMIterationResult
 
 logger = logging.getLogger(__name__)
 

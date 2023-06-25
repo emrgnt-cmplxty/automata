@@ -2,15 +2,18 @@ import json
 import logging
 from typing import Any, Dict, List, NamedTuple, Optional, Union, cast
 
+import numpy as np
 import openai
 
 from automata.core.base.database.relational import RelationalDatabase
-from automata.core.base.llm.llm_types import (
+from automata.core.llm.completion import (
     LLMChatMessage,
     LLMChatProvider,
     LLMCompletionResult,
     LLMConversation,
 )
+from automata.core.llm.embedding import EmbeddingProvider
+from automata.core.utils import set_openai_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +159,7 @@ class OpenAIChatProvider(LLMChatProvider):
         self.stream = stream
         self.functions = functions
         self.conversation = conversation
+        set_openai_api_key()
 
     def get_next_assistant_message(self) -> OpenAIChatMessage:
         response = openai.ChatCompletion.create(
@@ -169,3 +173,24 @@ class OpenAIChatProvider(LLMChatProvider):
         return OpenAIChatMessage.from_completion_result(
             OpenAIChatCompletionResult(raw_data=response)
         )
+
+
+class OpenAIEmbedding(EmbeddingProvider):
+    """A class to provide embeddings for symbols"""
+
+    def __init__(self, engine: str = "text-embedding-ada-002") -> None:
+        self.engine = engine
+        set_openai_api_key()
+
+    def build_embedding(self, symbol_source: str) -> np.ndarray:
+        """
+        Get the embedding for a symbol.
+        Args:
+            symbol_source (str): The source code of the symbol
+        Returns:
+            A numpy array representing the embedding
+        """
+        # wait to import build_embedding to allow easy mocking of the function in tests.
+        from openai.embeddings_utils import get_embedding
+
+        return np.array(get_embedding(symbol_source, engine=self.engine))

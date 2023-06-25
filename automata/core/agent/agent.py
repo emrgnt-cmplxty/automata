@@ -3,19 +3,18 @@ from typing import Dict, Final, Sequence
 
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
 from automata.core.base.agent import Agent
-from automata.core.base.llm.llm_types import (
+from automata.core.llm.completion import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,
     LLMIterationResult,
 )
-from automata.core.base.llm.openai import (
-    OpenAIChatCompletionResult,
-    OpenAIFunction,
+from automata.core.llm.providers.openai import (
     OpenAIChatMessage,
     OpenAIChatProvider,
     OpenAIConversation,
+    OpenAIFunction,
 )
-from automata.core.utils import format_text, load_config, set_openai_api_key
+from automata.core.utils import format_text, load_config
 
 logger = logging.getLogger(__name__)
 
@@ -214,7 +213,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Raises:
             ValueError: If the config was not properly initialized.
         """
-        set_openai_api_key()
 
         self.conversation.add_message(
             OpenAIChatMessage(role="system", content=self.config.system_instruction)
