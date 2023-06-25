@@ -1,7 +1,8 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
+from automata.core.base.tool import Tool
 from automata.core.llm.completion import LLMCompletionResult, LLMIterationResult
 
 logger = logging.getLogger(__name__)
@@ -56,4 +57,15 @@ class Agent(ABC):
     @abstractmethod
     def _setup(self) -> None:
         """Sets up the agent before running."""
+        pass
+
+
+class AgentToolBuilder(ABC):
+    """AgentTool is an abstract class for building tools for agents."""
+
+    def __init__(self, **kwargs) -> None:
+        pass
+
+    @abstractmethod
+    def build(self) -> List[Tool]:
         pass

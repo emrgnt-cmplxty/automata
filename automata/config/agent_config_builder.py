@@ -7,7 +7,7 @@ from automata.config.config_types import (
     AutomataAgentConfig,
     InstructionConfigVersion,
 )
-from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.agent.tool.tool_utils import build_llm_tool_managers
 from automata.core.base.tool import Toolkit, ToolkitType
 
 
@@ -268,7 +268,7 @@ class AutomataAgentConfigFactory:
             builder = builder.with_max_iters(kwargs["with_max_iters"])
 
         if "llm_toolkits" in kwargs and kwargs["llm_toolkits"] != "":
-            llm_toolkits = build_llm_toolkits(kwargs["llm_toolkits"].split(","), **kwargs)
+            llm_toolkits = build_llm_tool_managers(kwargs["llm_toolkits"].split(","), **kwargs)
             builder = builder.with_llm_toolkits(llm_toolkits)
 
         return builder.build()

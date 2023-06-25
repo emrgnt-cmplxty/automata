@@ -10,7 +10,10 @@ from automata.core.agent.task.executor import (
 )
 from automata.core.agent.task.registry import AutomataTaskDatabase, AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tools.tool_utils import AgentToolFactory, DependencyFactory
+from automata.core.agent.tool.tool_utils import (
+    AgentToolManagerFactory,
+    DependencyFactory,
+)
 from automata.core.base.github_manager import GitHubManager
 from automata.core.base.task import TaskStatus
 from automata.core.base.tool import ToolkitType
@@ -64,7 +67,7 @@ def main(*args, **kwargs):
     # A list of all dependencies that will be used to build the toolkits
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
-        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
+        for dependency_name, _ in AgentToolManagerFactory.TOOLKIT_TYPE_TO_ARGS[ToolkitType(tool)]:
             dependencies.add(dependency_name)
 
     logger.info("  - Building dependencies...")
