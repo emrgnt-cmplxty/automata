@@ -30,11 +30,6 @@ class Tool(BaseTool):
             return await self.coroutine(tool_input)
         raise NotImplementedError("Tool does not support async")
 
-    # TODO: this is for backwards compatibility, remove in future
-    def __init__(self, name: str, function: Callable[[str], str], description: str, **kwargs: Any):
-        """Initialize tool."""
-        super(Tool, self).__init__(name=name, function=function, description=description, **kwargs)  # type: ignore
-
 
 class Toolkit:
     """A toolkit of tools."""

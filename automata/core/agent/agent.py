@@ -13,6 +13,7 @@ from automata.core.llm.providers.openai import (
     OpenAIChatProvider,
     OpenAIConversation,
     OpenAIFunction,
+    OpenAITool,
 )
 from automata.core.utils import format_text, load_config
 
@@ -63,6 +64,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
             raise StopIteration
 
         assistant_message = self.chat_provider.get_next_assistant_message()
+        print("latest assistant_message = ", assistant_message)
+        print("latest assistant_message = ", assistant_message.to_dict())
+
         self.conversation.add_message(assistant_message)
         self.iteration_count += 1
 
@@ -175,7 +179,12 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Returns:
             Sequence[OpenAIFunction]: The available functions for the agent.
         """
-        return [self._get_termination_function()]
+        available_functions = [self._get_termination_function()]
+        for tool in self.config.tools:
+            if not isinstance(tool, OpenAITool):
+                raise ValueError(f"Invalid tool type: {type(tool)}")
+            available_functions.append(tool.openai_function)
+        return available_functions
 
     def _setup(self) -> None:
         """
