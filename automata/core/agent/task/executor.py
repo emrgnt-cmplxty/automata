@@ -3,7 +3,7 @@ import logging.config
 import time
 
 from automata.config.agent_config_builder import AutomataAgentConfigFactory
-from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.task import ITaskExecution, Task, TaskStatus
 
@@ -40,7 +40,7 @@ class IAutomataTaskExecution(ITaskExecution):
             raise e
 
     @staticmethod
-    def _build_agent(task: AutomataTask) -> AutomataAgent:
+    def _build_agent(task: AutomataTask) -> AutomataOpenAIAgent:
         """
         Builds the agent for the task.
 
@@ -51,7 +51,7 @@ class IAutomataTaskExecution(ITaskExecution):
                Instead of passing kwargs to the create_config method.
         """
         agent_config = AutomataAgentConfigFactory().create_config(**task.kwargs)
-        agent = AutomataAgent(
+        agent = AutomataOpenAIAgent(
             task.instructions,
             agent_config,
         )

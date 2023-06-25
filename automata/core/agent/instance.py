@@ -6,7 +6,7 @@ from automata.config.agent_config_builder import AutomataAgentConfigFactory
 from automata.config.config_types import AgentConfigName
 
 if TYPE_CHECKING:
-    from automata.core.agent.agent import AutomataAgent
+    from automata.core.agent.agent import AutomataOpenAIAgent
 
 
 class AutomataInstance(BaseModel):
@@ -32,7 +32,7 @@ class AutomataInstance(BaseModel):
             main_config_name=self.config_name, **self.kwargs
         )
 
-        agent = AutomataAgent(instructions, config=main_config)
+        agent = AutomataOpenAIAgent(instructions, config=main_config)
         agent.setup()
         result = agent.run()
         del agent

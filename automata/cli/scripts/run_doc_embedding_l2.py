@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from automata.config.config_types import ConfigCategory
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.context.py_context.retriever import (
+from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )

@@ -70,6 +70,23 @@ class AutomataAgentConfig(BaseModel):
         SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k"]
         arbitrary_types_allowed = True
 
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
+    llm_toolkits: Dict[ToolkitType, Toolkit] = {}
+    instructions: str = ""
+    description: str = ""
+    system_template: str = ""
+    system_template_variables: List[str] = []
+    system_template_formatter: Dict[str, str] = {}
+    model: str = "gpt-4"
+    stream: bool = False
+    verbose: bool = False
+    is_new_agent: bool = True
+    max_iters: int = 50
+    temperature: float = 0.7
+    session_id: Optional[str] = None
+    system_instruction: Optional[str] = None
+    instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
+
     class TemplateFormatter:
         @staticmethod
         def create_default_formatter(
@@ -113,23 +130,6 @@ class AutomataAgentConfig(BaseModel):
                 )
 
             return formatter
-
-    config_name: AgentConfigName = AgentConfigName.DEFAULT
-    llm_toolkits: Dict[ToolkitType, Toolkit] = {}
-    instructions: str = ""
-    description: str = ""
-    system_template: str = ""
-    system_template_variables: List[str] = []
-    system_template_formatter: Dict[str, str] = {}
-    model: str = "gpt-4"
-    stream: bool = False
-    verbose: bool = False
-    is_new_agent: bool = True
-    max_iters: int = 50
-    temperature: float = 0.7
-    session_id: Optional[str] = None
-    system_instruction: Optional[str] = None
-    instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
 
     def setup(self) -> None:
         """Setup the agent."""

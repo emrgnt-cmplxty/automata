@@ -8,7 +8,7 @@ import pytest
 
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
-from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
@@ -146,7 +146,7 @@ def automata_agent(mocker, automata_agent_config_builder):
 
     instructions = "Test instruction."
 
-    agent = AutomataAgent(
+    agent = AutomataOpenAIAgent(
         instructions,
         config=automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits)
         .with_stream(False)

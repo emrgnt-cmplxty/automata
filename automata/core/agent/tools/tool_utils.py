@@ -12,7 +12,7 @@ from automata.core.agent.tools.symbol_search import SymbolSearchTool
 from automata.core.base.tool import Tool, Toolkit, ToolkitType
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
-from automata.core.context.py_context.retriever import (
+from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )

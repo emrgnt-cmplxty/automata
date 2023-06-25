@@ -4,7 +4,7 @@ from typing import Any, List, Set
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
-from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.tools.tool_utils import (
     AgentToolFactory,
     DependencyFactory,
@@ -81,6 +81,6 @@ def main(*args, **kwargs):
         .build()
     )
 
-    agent = AutomataAgent(instructions, config=agent_config)
+    agent = AutomataOpenAIAgent(instructions, config=agent_config)
     agent.setup()
     return agent.run()
