@@ -7,7 +7,6 @@ import numpy as np
 
 from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.symbol.symbol_types import Symbol
-from automata.core.utils import set_openai_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -24,27 +23,6 @@ class EmbeddingProvider(abc.ABC):
     @abc.abstractmethod
     def build_embedding(self, symbol_source: str) -> np.ndarray:
         pass
-
-
-class OpenAIEmbedding(EmbeddingProvider):
-    """A class to provide embeddings for symbols"""
-
-    def __init__(self, engine: str = "text-embedding-ada-002") -> None:
-        self.engine = engine
-        set_openai_api_key()
-
-    def build_embedding(self, symbol_source: str) -> np.ndarray:
-        """
-        Get the embedding for a symbol.
-        Args:
-            symbol_source (str): The source code of the symbol
-        Returns:
-            A numpy array representing the embedding
-        """
-        # wait to import build_embedding to allow easy mocking of the function in tests.
-        from openai.embeddings_utils import get_embedding
-
-        return np.array(get_embedding(symbol_source, engine=self.engine))
 
 
 class SymbolEmbeddingHandler(abc.ABC):

@@ -5,8 +5,8 @@ import pytest
 from automata.config.config_types import ConfigCategory
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
