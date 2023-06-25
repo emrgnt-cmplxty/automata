@@ -29,13 +29,6 @@ class InstructionConfigVersion(Enum):
     AGENT_INTRODUCTION = "agent_introduction"
 
 
-class AvailableAgentTool(Enum):
-    PY_READER = "py_reader"
-    PY_WRITER = "py_writer"
-    SYMBOL_SEARCH = "symbol_search"
-    CONTEXT_ORACLE = "context_oracle"
-
-
 class AgentConfigName(Enum):
     """
     AgentConfigName: Enum of agent config names.

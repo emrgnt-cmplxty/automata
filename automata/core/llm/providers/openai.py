@@ -16,7 +16,7 @@ from typing import (
 import numpy as np
 import openai
 
-from automata.config.config_types import AvailableAgentTool
+from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.observer import Observer
 from automata.core.base.tool import Tool
@@ -137,6 +137,9 @@ class OpenAIConversation(LLMConversation):
         self._observers = set()
         self.messages: List[OpenAIChatMessage] = []
 
+    def __len__(self) -> int:
+        return len(self.messages)
+
     def register_observer(self, observer: Observer) -> None:
         self._observers.add(observer)
 
@@ -146,9 +149,6 @@ class OpenAIConversation(LLMConversation):
     def notify_observers(self) -> None:
         for observer in self._observers:
             observer.update(self)
-
-    def __len__(self) -> int:
-        return len(self.messages)
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):
@@ -249,6 +249,10 @@ class OpenAIEmbedding(EmbeddingProvider):
 
 
 class OpenAITool(Tool):
+    properties: Dict[str, Dict[str, str]]
+    required: List[str]
+    openai_function: OpenAIFunction
+
     def __init__(
         self,
         function: Callable[..., str],
@@ -259,17 +263,19 @@ class OpenAITool(Tool):
         *args: Any,
         **kwargs: Any,
     ):
-        super().__init__(function=function, name=name, description=description, **kwargs)
-        self.properties = properties
-        self.required = required or []
-        self.openai_function = self._build_openai_function()
-
-    def _build_openai_function(self) -> OpenAIFunction:
-        return OpenAIFunction(
-            name=self.name,
-            description=self.description,
-            properties=self.properties,
-            required=self.required,
+        super().__init__(
+            function=function,
+            name=name,
+            description=description,
+            properties=properties,
+            required=required or [],
+            openai_function=OpenAIFunction(
+                name=name,
+                description=description,
+                properties=properties,
+                required=required or [],
+            ),
+            **kwargs,
         )
 
 
@@ -314,5 +320,5 @@ class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
 
     @classmethod
     @abstractmethod
-    def can_handle(cls, tool_manager: AvailableAgentTool) -> bool:
+    def can_handle(cls, tool_manager: AgentToolProviders) -> bool:
         pass

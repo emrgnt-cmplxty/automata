@@ -2,12 +2,14 @@ import functools
 import logging
 import os
 from typing import Any, Dict, List, Tuple
+from automata.core.llm.providers.available import AgentToolProviders
 
-from automata.config.config_types import AvailableAgentTool, ConfigCategory
+from automata.config.config_types import ConfigCategory
 from automata.core.agent.tool.py_reader_builder import (
     PyReaderOpenAIToolBuilder,
     PyReaderToolBuilder,
 )
+from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.agent import AgentToolBuilder
@@ -246,7 +248,7 @@ class UnknownToolError(Exception):
 
     ERROR_STRING = "Unknown toolkit type: %s"
 
-    def __init__(self, tool_kit: AvailableAgentTool) -> None:
+    def __init__(self, tool_kit: AgentToolProviders) -> None:
         super().__init__(self.ERROR_STRING % (tool_kit))
 
 
@@ -318,8 +320,8 @@ class UnknownToolError(Exception):
 
 
 class AgentToolFactory:
-    TOOLKIT_TYPE_TO_ARGS: Dict[AvailableAgentTool, List[Tuple[str, Any]]] = {
-        AvailableAgentTool.PY_READER: [("py_reader", PyReader)],
+    TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
+        AgentToolProviders.PY_READER: [("py_reader", PyReader)],
         # ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
         # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         # ToolkitType.CONTEXT_ORACLE: [
@@ -329,10 +331,14 @@ class AgentToolFactory:
     }
 
     @staticmethod
-    def create_tools_from_builder(agent_tool: AvailableAgentTool, **kwargs) -> List[Tool]:
+    def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> List[Tool]:
         for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
-                return builder(**kwargs).build()
+                if builder.PLATFORM == LLMPlatforms.OPENAI:
+                    return builder(**kwargs).build_for_open_ai()
+                else:
+                    return builder(**kwargs).build()
+
         raise UnknownToolError(agent_tool)
 
 
@@ -355,7 +361,7 @@ def get_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
 
     for tool_name in tool_list:
         tool_name = tool_name.strip()
-        agent_tool_manager = AvailableAgentTool(tool_name)
+        agent_tool_manager = AgentToolProviders(tool_name)
 
         if agent_tool_manager is None:
             raise UnknownToolError(agent_tool_manager)
