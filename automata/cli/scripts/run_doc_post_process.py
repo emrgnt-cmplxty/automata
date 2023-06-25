@@ -2,8 +2,8 @@ import logging
 import os
 
 from automata.config.config_types import ConfigCategory
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.coding.py.writer import PyDocWriter
-from automata.core.database.vector import JSONVectorDatabase
 from automata.core.utils import config_fpath, get_root_py_fpath
 
 logger = logging.getLogger(__name__)

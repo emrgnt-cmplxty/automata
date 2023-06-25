@@ -142,7 +142,7 @@ class AutomataAgentConfigBuilder(BaseModel):
             AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated max_iters value.
         """
         self._validate_type(max_iters, int, "Max iters")
-        self._config.max_iters = max_iters
+        self._config.max_iterations = max_iters
         return self
 
     def with_temperature(self, temperature: float) -> "AutomataAgentConfigBuilder":

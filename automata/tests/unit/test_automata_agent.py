@@ -6,8 +6,8 @@ import pytest
 
 from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.base.database.relational import AutomataAgentDatabase
 from automata.core.base.llm.openai import OpenAIChatMessage
-from automata.core.database.relational import AutomataAgentDatabase
 
 
 def test_build_tool_message(automata_agent_config_builder):

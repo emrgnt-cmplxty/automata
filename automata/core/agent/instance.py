@@ -33,7 +33,6 @@ class AutomataInstance(BaseModel):
         )
 
         agent = AutomataOpenAIAgent(instructions, config=main_config)
-        agent.setup()
         result = agent.run()
         del agent
         return result

@@ -51,12 +51,10 @@ class IAutomataTaskExecution(ITaskExecution):
                Instead of passing kwargs to the create_config method.
         """
         agent_config = AutomataAgentConfigFactory().create_config(**task.kwargs)
-        agent = AutomataOpenAIAgent(
+        return AutomataOpenAIAgent(
             task.instructions,
             agent_config,
         )
-        agent.setup()
-        return agent
 
 
 class AutomataTaskExecutor:

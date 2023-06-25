@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from automata.core.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import (
     EmbeddingProvider,
     SymbolCodeEmbeddingHandler,

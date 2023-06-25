@@ -1,6 +1,6 @@
 import pytest
 
-from automata.core.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.symbol.symbol_types import SymbolEmbedding
 
 
