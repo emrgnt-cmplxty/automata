@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 
 import pytest
 
-from automata.core.base.tool import InvalidTool, Tool, Toolkit, ToolkitType, tool
+from automata.core.base.tool import Tool, Toolkit, ToolkitType
 
 
 class TestTool(Tool):
@@ -18,7 +18,7 @@ def test_tool():
     return TestTool(
         name="TestTool",
         description="A test tool for testing purposes",
-        func=lambda x: "TestTool response",
+        function=lambda x: "TestTool response",
     )
 
 
@@ -41,47 +41,12 @@ async def test_tool_arun(test_tool):
     assert response == "TestTool async response"
 
 
-def test_invalid_tool():
-    invalid_tool = InvalidTool()
-    response = invalid_tool.run(("InvalidToolName",))
-    assert response == "('InvalidToolName',) is not a valid tool, try another one."
-
-
-@pytest.mark.asyncio
-async def test_invalid_tool_async():
-    invalid_tool = InvalidTool()
-    response = await invalid_tool.arun(("InvalidToolName",))
-    assert response == "InvalidToolName is not a valid tool, try another one."
-
-
-def test_tool_decorator():
-    @tool
-    def example_tool(input: str) -> str:
-        """Example tool for testing."""
-        return f"example_tool: {input}"
-
-    assert isinstance(example_tool, Tool)
-    assert example_tool.name == "example_tool"
-    assert example_tool.description.startswith("example_tool")
-
-
-def test_tool_decorator_with_name():
-    @tool("custom_tool_name")
-    def example_tool(input: str) -> str:
-        """Example tool for testing."""
-        return f"example_tool: {input}"
-
-    assert isinstance(example_tool, Tool)
-    assert example_tool.name == "custom_tool_name"
-    assert example_tool.description.startswith("custom_tool_name")
-
-
 def test_toolkit():
     tools = [
         TestTool(
             name="TestTool",
             description="A test tool for testing purposes",
-            func=lambda x: "TestTool response",
+            function=lambda x: "TestTool response",
         )
     ]
     toolkit = Toolkit(tools)

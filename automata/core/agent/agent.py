@@ -2,13 +2,13 @@ import logging
 from typing import Dict, Final, Sequence
 
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
-from automata.core.base.agent import Agent
 from automata.core.llm.completion import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,
     LLMIterationResult,
 )
 from automata.core.llm.providers.openai import (
+    OpenAIAgent,
     OpenAIChatMessage,
     OpenAIChatProvider,
     OpenAIConversation,
@@ -17,34 +17,6 @@ from automata.core.llm.providers.openai import (
 from automata.core.utils import format_text, load_config
 
 logger = logging.getLogger(__name__)
-
-
-class OpenAIAgent(Agent):
-    def _get_termination_function(self) -> OpenAIFunction:
-        return {
-            "name": "call_termination",
-            "description": "Terminates the conversation when the final result is found.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "result": {
-                        "type": "string",
-                        "description": "The final result of the conversation.",
-                    },
-                },
-                "required": ["result"],
-            },
-        }
-
-    def _get_available_functions(self) -> Sequence[OpenAIFunction]:
-        """
-
-        Gets the available functions for the agent.
-
-        Returns:
-            Sequence[OpenAIFunction]: The available functions for the agent.
-        """
-        raise NotImplementedError
 
 
 class AutomataOpenAIAgent(OpenAIAgent):
@@ -127,6 +99,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         if (
             not self.completed
             or not isinstance(last_message, OpenAIChatMessage)
+            or not last_message.function_call
             or "result" not in last_message.function_call.arguments
         ):
             raise ValueError("The agent did not produce a result.")

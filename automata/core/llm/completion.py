@@ -54,18 +54,20 @@ class LLMConversation(ABC):
         def __init__(self, message: str = "The conversation is empty.") -> None:
             super().__init__(message)
 
-    def __init__(self):
-        self._observers = set()
+    @abstractmethod
+    def register_observer(self, observer: Observer) -> None:
+        """Registers an observer to the conversation."""
+        pass
 
-    def register_observer(self, observer: Observer):
-        self._observers.add(observer)
+    @abstractmethod
+    def unregister_observer(self, observer: Observer) -> None:
+        """Unregisters a specified observer to the conversation."""
+        pass
 
-    def unregister_observer(self, observer: Observer):
-        self._observers.discard(observer)
-
+    @abstractmethod
     def notify_observers(self):
-        for observer in self._observers:
-            observer.update(self)
+        """Notifies all observers of the conversation."""
+        pass
 
     @abstractmethod
     def add_message(self, message: LLMChatMessage) -> None:

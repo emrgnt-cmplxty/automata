@@ -89,7 +89,7 @@ class SymbolSearchTool(AgentTool):
         Returns:
             Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult]: The result of the query.
         """
-        tools_dict = {tool.name: tool.func for tool in self.build()}
+        tools_dict = {tool.name: tool.function for tool in self.build()}
         return tools_dict[tool_type.value](query)
 
     # TODO - Cleanup these processors to ensure they behave well.
