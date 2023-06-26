@@ -1,12 +1,12 @@
 import logging
 from typing import List
 
-import openai
 from jinja2 import Template
 
 from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
 from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.context.py.retriever import PyContextRetriever
+from automata.core.llm.completion import LLMChatCompletionProvider, LLMChatMessage
 from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingHandler
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
@@ -19,6 +19,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         self,
         embedding_db: VectorDatabaseProvider,
         embedding_provider: EmbeddingProvider,
+        completion_provider: LLMChatCompletionProvider,
         symbol_search: SymbolSearch,
         retriever: PyContextRetriever,
     ) -> None:
@@ -35,6 +36,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         super().__init__(embedding_db, embedding_provider)
         self.symbol_search = symbol_search
         self.retriever = retriever
+        self.completion_provider = completion_provider
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
         """
@@ -89,7 +91,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         """
         abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
 
-        def get_doc(prompt: str) -> str:
+        def get_completion(prompt: str) -> str:
             """
             Get the documentation for a symbol
 
@@ -99,44 +101,13 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             Returns:
                 str: The completed documentation for the symbol
             """
-            completion = openai.ChatCompletion.create(
-                model="gpt-4-0613",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-            )
-            if not completion.choices:
-                return "Error: No completion found"
 
-            return completion.choices[0]["message"]["content"]
-
-        def get_summary(input_doc: str) -> str:
-            """
-            Get a summary for a symbol's documentation
-
-            Args:
-                prompt (str): The prompt to use to generate the documentation
-
-            Returns:
-                str: The completed documentation for the symbol
-            """
-
-            completion = openai.ChatCompletion.create(
-                model="gpt-4-0613",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": f"Condense the documentation below down to one to two concise paragraphs:\n {input_doc}\nIf there is an example, include that in full in the output.",
-                    }
-                ],
-            )
-            if not completion.choices:
-                return "Error: No completion found"
-
-            return completion.choices[0]["message"]["content"]
+            self.completion_provider.add_message(LLMChatMessage(role="user", content=prompt))
+            response = self.completion_provider.get_next_assistant_completion().content
+            self.completion_provider.reset()
+            if not response:
+                raise ValueError("No response found")
+            return response
 
         # Splice the search results on the symbol
         # with the search results biased on tests
@@ -166,8 +137,10 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             symbol_context=self.retriever.get_context_buffer(),
         )
 
-        document = get_doc(prompt)
-        summary = get_summary(document)
+        document = get_completion(prompt)
+        summary = get_completion(
+            f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
+        )
         embedding = self.embedding_provider.build_embedding(document)
 
         return SymbolDocEmbedding(

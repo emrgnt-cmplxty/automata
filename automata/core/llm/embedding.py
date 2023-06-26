@@ -11,7 +11,7 @@ from automata.core.symbol.symbol_types import Symbol
 logger = logging.getLogger(__name__)
 
 
-class NormType(Enum):
+class EmbeddingNormType(Enum):
     L1 = "l1"
     L2 = "l2"
     SOFTMAX = "softmax"

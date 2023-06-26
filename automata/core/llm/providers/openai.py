@@ -1,7 +1,7 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Set, Union
 
 import numpy as np
 import openai
@@ -10,8 +10,8 @@ from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.observer import Observer
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
+    LLMChatCompletionProvider,
     LLMChatMessage,
-    LLMChatProvider,
     LLMCompletionResult,
     LLMConversation,
 )
@@ -91,29 +91,26 @@ class FunctionCall(NamedTuple):
 class OpenAIChatCompletionResult(LLMCompletionResult):
     """A class to represent a completion result from the OpenAI API."""
 
+    function_call: Optional[Dict[str, Any]] = None
+
     def __init__(self, raw_data: Any) -> None:
-        self.raw_data = raw_data
+        raw_message = raw_data["choices"][0]["message"]
+        role = raw_message["role"]
+        content = raw_message["content"]
+        super().__init__(role=role, content=content)
+        self.function_call = (
+            raw_message["function_call"] if "function_call" in raw_message else None
+        )
 
     def __str__(self) -> str:
-        return str(self.raw_data)
-
-    def get_role(self) -> str:
-        """Get the role of the message."""
-        return self.raw_data["choices"][0]["message"]["role"]
-
-    def get_content(self) -> Optional[str]:
-        """Get the content of the message."""
-        return self.raw_data["choices"][0]["message"]["content"]
+        return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def get_function_call(self) -> Optional[FunctionCall]:
         """Get the function call of the message."""
-        raw_message = self.raw_data["choices"][0]["message"]
-        if "function_call" not in raw_message:
+        if not self.function_call:
             return None
-        elif isinstance(raw_message["function_call"], FunctionCall):
-            return raw_message["function_call"]
         else:
-            return FunctionCall.from_response_dict(raw_message["function_call"])
+            return FunctionCall.from_response_dict(self.function_call)
 
     @classmethod
     def from_args(
@@ -130,6 +127,10 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
 
 
 class OpenAIChatMessage(LLMChatMessage):
+    """A class to represent a chat processed chat message to or from OpenAI."""
+
+    function_call: Optional[FunctionCall] = None
+
     def __init__(
         self,
         role: str,
@@ -174,8 +175,8 @@ class OpenAIIncorrectMessageTypeError(Exception):
 
 
 class OpenAIConversation(LLMConversation):
-    def __init__(self):
-        self._observers = set()
+    def __init__(self) -> None:
+        self._observers: Set[Observer] = set()
         self.messages: List[OpenAIChatMessage] = []
 
     def __len__(self) -> int:
@@ -189,7 +190,7 @@ class OpenAIConversation(LLMConversation):
 
     def notify_observers(self) -> None:
         for observer in self._observers:
-            observer.update(self)
+            observer.update_database(self)
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):
@@ -201,6 +202,9 @@ class OpenAIConversation(LLMConversation):
 
     def get_latest_message(self) -> LLMChatMessage:
         return self.messages[-1]
+
+    def reset_conversation(self) -> None:
+        self.messages = []
 
 
 class OpenAIFunction:
@@ -243,16 +247,16 @@ class OpenAIFunction:
         }
 
 
-class OpenAIChatProvider(LLMChatProvider):
+class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     """A class to provide chat messages from the OpenAI API."""
 
     def __init__(
         self,
-        model: str,
-        temperature: float,
-        stream: bool,
-        functions: List[OpenAIFunction],
-        conversation: OpenAIConversation,
+        model: str = "gpt-4",
+        temperature: float = 0.7,
+        stream: bool = False,
+        functions: List[OpenAIFunction] = [],
+        conversation: OpenAIConversation = OpenAIConversation(),
     ) -> None:
         """
         Args:
@@ -269,7 +273,7 @@ class OpenAIChatProvider(LLMChatProvider):
         self.conversation = conversation
         set_openai_api_key()
 
-    def get_next_assistant_message(self) -> OpenAIChatMessage:
+    def get_next_assistant_completion(self) -> OpenAIChatMessage:
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=self.conversation.get_messages_for_next_completion(),
@@ -281,8 +285,25 @@ class OpenAIChatProvider(LLMChatProvider):
             OpenAIChatCompletionResult(raw_data=response)
         )
 
+    def add_message(self, message: LLMChatMessage) -> None:
+        """Appends a new message to the conversation.
 
-class OpenAIEmbedding(EmbeddingProvider):
+        Args:
+            message (LLMChatMessage): The message to append.
+        """
+        if not isinstance(message, OpenAIChatMessage):
+            message = OpenAIChatMessage(role=message.role, content=message.content)
+        else:
+            self.conversation.add_message(message)
+
+    def reset(self) -> None:
+        """
+        Resets the chat provider
+        """
+        self.conversation.reset_conversation()
+
+
+class OpenAIEmbeddingProvider(EmbeddingProvider):
     """A class to provide embeddings for symbols"""
 
     def __init__(self, engine: str = "text-embedding-ada-002") -> None:

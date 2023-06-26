@@ -19,7 +19,10 @@ from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.llm.providers.available import LLMPlatforms
-from automata.core.llm.providers.openai import OpenAIEmbedding
+from automata.core.llm.providers.openai import (
+    OpenAIChatCompletionProvider,
+    OpenAIEmbeddingProvider,
+)
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
@@ -78,6 +81,7 @@ class DependencyFactory:
             symbol_rank_config (SymbolRankConfig())
             py_context_retriever_config (PyContextRetrieverConfig())
             coding_project_path (get_root_py_fpath())
+            doc_completion_provider (OpenAIChatCompletionProvider())
         }
         """
         self._instances: Dict[str, Any] = {}
@@ -156,7 +160,7 @@ class DependencyFactory:
         )
         code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
 
-        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbedding())
+        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
         return SymbolSimilarity(code_embedding_handler)
 
@@ -174,12 +178,19 @@ class DependencyFactory:
         )
         doc_embedding_db = JSONVectorDatabase(doc_embedding_fpath)
 
-        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbedding())
+        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         symbol_search = self.get("symbol_search")
         py_context_retriever = self.get("py_context_retriever")
+        completion_provider = self.overrides.get(
+            "doc_completion_provider", OpenAIChatCompletionProvider()
+        )
 
         doc_embedding_handler = SymbolDocEmbeddingHandler(
-            doc_embedding_db, embedding_provider, symbol_search, py_context_retriever
+            doc_embedding_db,
+            embedding_provider,
+            completion_provider,
+            symbol_search,
+            py_context_retriever,
         )
         return SymbolSimilarity(doc_embedding_handler)
 

@@ -4,9 +4,9 @@ from typing import Dict, List, Optional, Set
 import numpy as np
 
 from automata.core.llm.embedding import (
+    EmbeddingNormType,
     EmbeddingProvider,
     EmbeddingSimilarity,
-    NormType,
     SymbolEmbeddingHandler,
 )
 from automata.core.symbol.symbol_types import Symbol
@@ -18,7 +18,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
     def __init__(
         self,
         symbol_embedding_manager: SymbolEmbeddingHandler,
-        norm_type: NormType = NormType.L2,
+        norm_type: EmbeddingNormType = EmbeddingNormType.L2,
     ) -> None:
         """
         Initialize SymbolSimilarity
@@ -153,7 +153,7 @@ class SymbolSimilarity(EmbeddingSimilarity):
         return np.dot(embeddings_norm, query_embedding_norm)
 
     @staticmethod
-    def _normalize_embeddings(embeddings: np.ndarray, norm_type: NormType) -> np.ndarray:
+    def _normalize_embeddings(embeddings: np.ndarray, norm_type: EmbeddingNormType) -> np.ndarray:
         """
         Normalize the embeddings.
         Args:
@@ -162,12 +162,12 @@ class SymbolSimilarity(EmbeddingSimilarity):
         Returns:
             The normalized embeddings
         """
-        if norm_type == NormType.L1:
+        if norm_type == EmbeddingNormType.L1:
             norm = np.sum(np.abs(embeddings), axis=1, keepdims=True)
             return embeddings / norm
-        elif norm_type == NormType.L2:
+        elif norm_type == EmbeddingNormType.L2:
             return embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
-        elif norm_type == NormType.SOFTMAX:
+        elif norm_type == EmbeddingNormType.SOFTMAX:
             e_x = np.exp(embeddings - np.max(embeddings, axis=1, keepdims=True))
             return e_x / np.sum(e_x, axis=1, keepdims=True)
         else:

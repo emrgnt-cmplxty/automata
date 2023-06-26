@@ -30,10 +30,6 @@ class PyReaderToolBuilder(AgentToolBuilder):
         - None
         """
         self.py_reader = py_reader
-        self.model = kwargs.get("model") or "gpt-4-0613"
-        self.temperature = kwargs.get("temperature") or 0.7
-        self.verbose = kwargs.get("verbose") or False
-        self.stream = kwargs.get("stream") or True
 
     def build(self) -> List[Tool]:
         """

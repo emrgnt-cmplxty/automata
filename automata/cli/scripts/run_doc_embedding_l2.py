@@ -13,7 +13,10 @@ from automata.core.context.py.retriever import (
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.llm.providers.openai import OpenAIEmbedding
+from automata.core.llm.providers.openai import (
+    OpenAIChatCompletionProvider,
+    OpenAIEmbeddingProvider,
+)
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
@@ -40,7 +43,9 @@ def main(*args, **kwargs) -> str:
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
     code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
-    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, OpenAIEmbedding())
+    code_embedding_handler = SymbolCodeEmbeddingHandler(
+        code_embedding_db, OpenAIEmbeddingProvider()
+    )
 
     # TODO - Add option for the user to modify l2 embedding path in commands.py
     embedding_path_l2 = os.path.join(
@@ -60,8 +65,13 @@ def main(*args, **kwargs) -> str:
         symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
     )
     py_context_retriever = PyContextRetriever(symbol_graph, PyContextRetrieverConfig())
+
     embedding_handler = SymbolDocEmbeddingHandler(
-        embedding_db_l2, OpenAIEmbedding(), symbol_search, py_context_retriever
+        embedding_db_l2,
+        OpenAIEmbeddingProvider(),
+        OpenAIChatCompletionProvider(),
+        symbol_search,
+        py_context_retriever,
     )
 
     all_defined_symbols = symbol_graph.get_all_available_symbols()
