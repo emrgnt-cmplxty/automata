@@ -354,7 +354,7 @@ class OpenAIAgent(Agent):
 
 
 class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
-    """AgentTool is an abstract class for building tools for agents."""
+    """OpenAIAgentToolBuilder is an abstract class for building tools for agents."""
 
     def __init__(self, **kwargs) -> None:
         pass

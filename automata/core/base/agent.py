@@ -82,7 +82,7 @@ class Agent(ABC):
 
 
 class AgentToolBuilder(ABC):
-    """AgentTool is an abstract class for building tools for agents."""
+    """AgentToolBuilder is an abstract class for building tools for agents."""
 
     TOOL_TYPE: Optional[AgentToolProviders] = None
     PLATFORM: Optional[LLMPlatforms] = None
