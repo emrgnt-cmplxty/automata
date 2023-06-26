@@ -1,6 +1,7 @@
 import sqlite3
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
+
 from automata.config import CONVERSATION_DB_PATH
 
 

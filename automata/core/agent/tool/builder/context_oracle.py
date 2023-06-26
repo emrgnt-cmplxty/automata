@@ -2,16 +2,13 @@ import logging
 import textwrap
 from typing import List
 
-from automata.core.base.tool import Tool
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.base.agent import AgentToolBuilder
-
-
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder
+from automata.core.base.tool import Tool
+from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
+from automata.core.symbol.search.symbol_search import SymbolSearch
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +51,6 @@ class ContextOracleTool(AgentToolBuilder):
                 For instance, if a query reads 'Tell me about SymbolRank', it will find the most similar document to this query from the embeddings, which in this case would be the documentation for the SymbolRank class. Then, it will use SymbolSearch to fetch some of the most relevant symbols which would be 'Symbol', 'SymbolSearch', 'SymbolGraph', etc. This results in a comprehensive context for the query.
                 """
                 ),
-                return_direct=True,
             )
         ]
 

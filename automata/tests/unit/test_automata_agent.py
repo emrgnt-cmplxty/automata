@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.core.base.error import MaxIterError
 from automata.core.agent.agent import AutomataOpenAIAgent
-from automata.core.agent.tool.tool_utils import get_available_tools
+from automata.core.agent.tool.tool_utils import build_available_tools
+from automata.core.base.error import MaxIterError
 from automata.core.llm.providers.openai import OpenAIChatMessage
 
 
@@ -17,7 +17,7 @@ def test_build_tool_message(automata_agent_config_builder):
 
     retriever = PyReader()
 
-    tools = get_available_tools(tool_list, py_reader=retriever, py_writer=PyWriter(retriever))
+    tools = build_available_tools(tool_list, py_reader=retriever, py_writer=PyWriter(retriever))
 
     config = automata_agent_config_builder.with_tools(tools).build()
 

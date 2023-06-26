@@ -48,7 +48,7 @@ def classmethod_lru_cache():
 
 
 class DependencyFactory:
-    """Creates dependencies for input Toolkit construction."""
+    """Creates dependencies for input Tool construction."""
 
     DEFAULT_SCIP_FPATH = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, "index.scip"
@@ -274,16 +274,15 @@ class AgentToolFactory:
         raise UnknownToolError(agent_tool)
 
 
-def get_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
+def build_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
     """
     This function builds a list of toolkits from a list of toolkit names.
 
     Args:
-        tool_list (List[str]): A list of toolkit names.
-          These tool names must map onto valid ToolkitType values.
+        tool_list (List[str]): A list of tool names to build.
 
     Returns:
-        Dict[ToolkitType, Toolkit]: A dictionary mapping toolkit types to toolkits.
+        List[Tool]: A list of built tools.
 
     Raises:
         UnknownToolError: If a toolkit name is not recognized.
@@ -298,7 +297,6 @@ def get_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
         if agent_tool_manager is None:
             raise UnknownToolError(agent_tool_manager)
 
-        # toolkit = toolkit_builder.build_toolkit(agent_tool_manager)
         tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
 
     return tools

@@ -1,8 +1,10 @@
 from unittest.mock import MagicMock
+
+import pytest
+
 from automata.core.agent.tool.builder.context_oracle import ContextOracleTool
 from automata.core.base.tool import Tool
 from automata.core.symbol.symbol_types import SymbolDocEmbedding
-import pytest
 
 
 @pytest.fixture
