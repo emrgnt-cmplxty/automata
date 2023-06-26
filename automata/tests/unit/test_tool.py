@@ -6,10 +6,10 @@ from automata.core.base.tool import Tool, Toolkit, ToolkitType
 
 
 class TestTool(Tool):
-    def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    def run(self, tool_input: Tuple[Optional[str], ...]) -> str:
         return "TestTool response"
 
-    async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    async def arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
         return "TestTool async response"
 
 

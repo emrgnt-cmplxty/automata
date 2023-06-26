@@ -1,7 +1,7 @@
 """Interface for tools."""
 from enum import Enum
 from inspect import signature
-from typing import Any, Awaitable, Callable, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Callable, List, Optional, Tuple, Union, Dict
 
 from automata.core.base.base_tool import BaseTool
 
@@ -20,15 +20,9 @@ class Tool(BaseTool):
     description: str = ""
     coroutine: Optional[Callable[..., Awaitable[str]]] = None
 
-    def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    def run(self, tool_input: Dict[str, str]) -> str:
         """Use the tool."""
-        return self.function(*tool_input)
-
-    async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
-        """Use the tool asynchronously."""
-        if self.coroutine:
-            return await self.coroutine(tool_input)
-        raise NotImplementedError("Tool does not support async")
+        return self.function(**tool_input)
 
 
 class Toolkit:

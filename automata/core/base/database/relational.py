@@ -1,6 +1,6 @@
 import sqlite3
 from abc import ABC, abstractmethod
-
+from typing import List, Dict
 from automata.config import CONVERSATION_DB_PATH
 
 
@@ -23,7 +23,7 @@ class RelationalDatabase(ABC):
         pass
 
     @abstractmethod
-    def create_table(self, table_name: str, fields: dict):
+    def create_table(self, table_name: str, fields: Dict):
         """
         Create a new table.
 
@@ -45,7 +45,7 @@ class RelationalDatabase(ABC):
         pass
 
     @abstractmethod
-    def select(self, table_name: str, fields: list, conditions: dict = None):
+    def select(self, table_name: str, fields: List, conditions: Dict):
         """
         Select data from a table.
 
@@ -57,7 +57,7 @@ class RelationalDatabase(ABC):
         pass
 
     @abstractmethod
-    def update(self, table_name: str, data: dict, conditions: dict):
+    def update(self, table_name: str, data: Dict, conditions: Dict):
         """
         Update data in a table.
 
@@ -69,7 +69,7 @@ class RelationalDatabase(ABC):
         pass
 
     @abstractmethod
-    def delete(self, table_name: str, conditions: dict):
+    def delete(self, table_name: str, conditions: Dict):
         """
         Delete data from a table.
 
@@ -98,12 +98,12 @@ class SQLDatabase(RelationalDatabase):
         if self.conn:
             self.conn.close()
 
-    def create_table(self, table_name: str, fields: dict):
+    def create_table(self, table_name: str, fields: Dict):
         fields_str = ", ".join([f"{k} {v}" for k, v in fields.items()])
         self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({fields_str})")
         self.conn.commit()
 
-    def insert(self, table_name: str, data: dict):
+    def insert(self, table_name: str, data: Dict):
         keys_str = ", ".join(data.keys())
         values_str = ", ".join(["?" for _ in data.values()])
         self.cursor.execute(
@@ -111,7 +111,7 @@ class SQLDatabase(RelationalDatabase):
         )
         self.conn.commit()
 
-    def select(self, table_name: str, fields: list, conditions: dict = None):
+    def select(self, table_name: str, fields: List, conditions: Dict = {}):
         fields_str = ", ".join(fields)
         query = f"SELECT {fields_str} FROM {table_name}"
         if conditions:
@@ -122,7 +122,7 @@ class SQLDatabase(RelationalDatabase):
             self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def update(self, table_name: str, data: dict, conditions: dict):
+    def update(self, table_name: str, data: Dict, conditions: Dict = {}):
         data_str = ", ".join([f"{k} = ?" for k in data])
         conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
         self.cursor.execute(
@@ -131,7 +131,7 @@ class SQLDatabase(RelationalDatabase):
         )
         self.conn.commit()
 
-    def delete(self, table_name: str, conditions: dict):
+    def delete(self, table_name: str, conditions: Dict = {}):
         conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
         self.cursor.execute(
             f"DELETE FROM {table_name} WHERE {conditions_str}", tuple(conditions.values())

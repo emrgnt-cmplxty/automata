@@ -267,9 +267,9 @@ class OpenAITool(Tool):
             function=function,
             name=name,
             description=description,
-            properties=properties,
-            required=required or [],
-            openai_function=OpenAIFunction(
+            properties=properties,  # type: ignore
+            required=required or [],  # type: ignore
+            openai_function=OpenAIFunction(  # type: ignore
                 name=name,
                 description=description,
                 properties=properties,

@@ -169,6 +169,14 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Returns:
             OpenAIChatMessage: The user's message.
         """
+        if assistant_message.function_call:
+            for tool in self.config.tools:
+                if not isinstance(tool, OpenAITool):
+                    raise ValueError(f"Invalid tool type: {type(tool)}")
+                if assistant_message.function_call.name == tool.openai_function.name:
+                    result = tool.run(assistant_message.function_call.arguments)
+                    print("execution result = ", result)
+
         return OpenAIChatMessage(role="user", content="Continue")
 
     def _get_available_functions(self) -> Sequence[OpenAIFunction]:

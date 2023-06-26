@@ -6,10 +6,10 @@ from automata.core.base.base_tool import BaseTool
 
 
 class MockTool(BaseTool):
-    def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    def run(self, tool_input: Tuple[Optional[str], ...]) -> str:
         return "MockTool response"
 
-    async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    async def arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
         return "MockTool async response"
 
 

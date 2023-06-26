@@ -204,22 +204,6 @@ class AutomataAgentConfigBuilder(BaseModel):
             raise ValueError(f"{param_name} must be a {expected_type.__name__}.")
 
 
-def build_agent_message(agent_configs: Dict[AgentConfigName, AutomataAgentConfig]) -> str:
-    """
-    Constructs a string message containing the configuration version and description
-    of all managed agent instances.
-
-    Returns:
-        str: The generated message.
-    """
-    return "".join(
-        [
-            f"\n{main_config.config_name.value}: {main_config.description}\n"
-            for main_config in agent_configs.values()
-        ]
-    )
-
-
 class AutomataAgentConfigFactory:
     @staticmethod
     def create_config(*args, **kwargs) -> AutomataAgentConfig:

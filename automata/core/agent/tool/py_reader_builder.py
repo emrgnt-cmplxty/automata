@@ -46,7 +46,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
         return [
             Tool(
                 name="py-retriever-retrieve-code",
-                function=lambda query: self._run_indexer_retrieve_code(*query),
+                function=self._run_indexer_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given python path, without docstrings."
                 f' If no match is found, then "{NO_RESULT_FOUND_STR}" is returned.\n\n'
@@ -66,14 +66,14 @@ class PyReaderToolBuilder(AgentToolBuilder):
             ),
             Tool(
                 name="py-retriever-retrieve-docstring",
-                function=lambda query: self._run_indexer_retrieve_docstring(*query),
+                function=self._run_indexer_retrieve_docstring,
                 description="Identical to py-retriever-retrieve-code, except returns the docstring instead of raw code.",
                 return_direct=True,
                 verbose=True,
             ),
             Tool(
                 name="py-retriever-retrieve-raw-code",
-                function=lambda query: self._run_indexer_retrieve_raw_code(*query),
+                function=self._run_indexer_retrieve_raw_code,
                 description="Identical to py-retriever-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
                 return_direct=True,
                 verbose=True,
@@ -118,8 +118,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
             - str: The docstring of the python package, module,
         """
         try:
-            result = self.py_reader.get_docstring(module_path, object_path)
-            return result
+            return self.py_reader.get_docstring(module_path, object_path)
         except Exception as e:
             return "Failed to retrieve docstring with error - " + str(e)
 
@@ -139,8 +138,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
             - str: The raw code of the python package, module,
         """
         try:
-            result = self.py_reader.get_source_code(module_path, object_path)
-            return result
+            return self.py_reader.get_source_code(module_path, object_path)
         except Exception as e:
             return "Failed to retrieve raw code with error - " + str(e)
 
