@@ -10,7 +10,7 @@ from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
-from automata.core.utils import config_fpath
+from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,10 @@ def main(*args, **kwargs) -> str:
     py_module_loader.initialize()
 
     scip_path = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
+        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
     )
     embedding_path = os.path.join(
-        config_fpath(),
+        get_config_fpath(),
         ConfigCategory.SYMBOL.value,
         kwargs.get("embedding_file", "symbol_code_embedding.json"),
     )

@@ -8,7 +8,7 @@ from jsonschema import ValidationError, validate
 
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.action import AutomataActionExtractor
-from automata.core.utils import config_fpath, get_logging_config
+from automata.core.utils import get_config_fpath, get_logging_config
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -90,7 +90,7 @@ def test_action_extraction(file_path) -> None:
 
 if __name__ == "__main__":
     # Find all .yaml files in the specified directory
-    yaml_files = glob.glob(os.path.join(config_fpath(), ConfigCategory.AGENT.value, "*.yaml"))
+    yaml_files = glob.glob(os.path.join(get_config_fpath(), ConfigCategory.AGENT.value, "*.yaml"))
 
     # Run validation and compatibility tests on each YAML file
     for yaml_file in yaml_files:

@@ -10,7 +10,7 @@ from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.utils import config_fpath
+from automata.core.utils import get_config_fpath
 
 
 @pytest.fixture
@@ -35,10 +35,10 @@ def symbol_search_live() -> SymbolSearch:
     Creates a non-mock SymbolGraph object to be used for testing the search
 
     """
-    scip_path = os.path.join(config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
+    scip_path = os.path.join(get_config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
 
     code_embedding_fpath = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
     code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
     code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, OpenAIEmbedding())

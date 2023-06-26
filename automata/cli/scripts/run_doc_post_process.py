@@ -4,7 +4,7 @@ import os
 from automata.config.config_types import ConfigCategory
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.coding.py.writer import PyDocWriter
-from automata.core.utils import config_fpath, get_root_py_fpath
+from automata.core.utils import get_config_fpath, get_root_py_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ def main(*args, **kwargs) -> str:
     doc_writer = PyDocWriter(get_root_py_fpath())
 
     embedding_path = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l2.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l2.json"
     )
 
     embedding_db = JSONVectorDatabase(embedding_path)
