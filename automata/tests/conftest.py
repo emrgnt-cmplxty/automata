@@ -1,13 +1,7 @@
 import os
 import random
-from unittest.mock import MagicMock
 from typing import Any, List, Set
-from automata.core.llm.providers.available import AgentToolProviders
-from automata.core.agent.tool.tool_utils import (
-    AgentToolFactory,
-    DependencyFactory,
-    get_available_tools,
-)
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -18,11 +12,16 @@ from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tool.tool_utils import get_available_tools
+from automata.core.agent.tool.tool_utils import (
+    AgentToolFactory,
+    DependencyFactory,
+    build_available_tools,
+)
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRankConfig
@@ -149,7 +148,7 @@ def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
     # tool_list = ["py_reader"]
     # mock_llm_toolkits = get_tool_builders(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
-    # tools = get_available_tools(["py_reader"], **kwargs)
+    # tools = build_available_tools(["py_reader"], **kwargs)
 
     llm_toolkits_list = ["py_reader"]
     kwargs = {}
@@ -162,7 +161,7 @@ def automata_agent(mocker, automata_agent_config_builder):
     for dependency in dependencies:
         print(f"Building {dependency}...")
         kwargs[dependency] = DependencyFactory().get(dependency)
-    tools = get_available_tools(["py_reader"], **kwargs)
+    tools = build_available_tools(["py_reader"], **kwargs)
 
     instructions = "Test instruction."
 

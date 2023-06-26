@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, PrivateAttr
 
@@ -53,7 +53,7 @@ class AutomataAgentConfigBuilder(BaseModel):
         Set the low-level manipulation (LLM) toolkits for the AutomataAgent instance.
 
         Args:
-            tool_builders (Dict[ToolkitType, Toolkit]): A dictionary containing the LLM toolkits for the AutomataAgent.
+            tool_builders (List[Tool]]): A list of tools for use by the AutomataAgent.
 
         Returns:
             AutomataAgentConfigBuilder: The current AutomataAgentConfigBuilder instance with the updated tool_builders.

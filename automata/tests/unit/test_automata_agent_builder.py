@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.config.config_types import AgentConfigName, AutomataAgentConfig
-from automata.core.agent.tool.tool_utils import get_available_tools
+from automata.core.agent.tool.tool_utils import build_available_tools
 
 
 def test_automata_agent_init(automata_agent):
@@ -49,7 +49,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
     from automata.core.coding.py.reader import PyReader
     from automata.core.coding.py.writer import PyWriter
 
-    tools = get_available_tools(
+    tools = build_available_tools(
         tool_list,
         py_reader=MagicMock(spec=PyReader),
         py_writer=MagicMock(spec=PyWriter),

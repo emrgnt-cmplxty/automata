@@ -24,9 +24,6 @@ class AutomataAgentInstance(BaseModel):
 
         Returns:
             str: The output produced by the agent.
-
-        Raises:
-            Exception: If any error occurs during agent execution.
         """
         main_config = AutomataAgentConfigFactory.create_config(
             main_config_name=self.config_name, **self.kwargs

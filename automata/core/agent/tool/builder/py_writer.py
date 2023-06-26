@@ -4,11 +4,7 @@ from typing import List, Optional
 from automata.core.base.tool import Tool
 from automata.core.coding.py.writer import PyWriter
 
-
 logger = logging.getLogger(__name__)
-from automata.core.base.agent import AgentToolBuilder
-
-
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder
 from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
@@ -69,7 +65,6 @@ class PyWriterToolBuilder(AgentToolBuilder):
                 f'     - def my_method():\n   """My Method"""\n    print("hello world")\n'
                 f"If new import statements are necessary, then introduce them at the top of the submitted input code.\n"
                 f"Provide the full code as input, as this tool has no context outside of passed arguments.\n",
-                return_direct=True,
             ),
             Tool(
                 name="py-writer-create-new-module",
@@ -81,7 +76,6 @@ class PyWriterToolBuilder(AgentToolBuilder):
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
                 f'     - import math\ndef my_method():\n   """My Method"""\n    print(math.sqrt(4))\n',
-                return_direct=True,
             ),
             Tool(
                 name="py-writer-delete-from-existing-module",
@@ -93,7 +87,6 @@ class PyWriterToolBuilder(AgentToolBuilder):
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
                 f"     - MyClass.my_method\n",
-                return_direct=True,
             ),
         ]
 

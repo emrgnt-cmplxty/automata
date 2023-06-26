@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 
 import pytest
 
-from automata.core.base.tool import Tool, Toolkit, ToolkitType
+from automata.core.base.tool import Tool
 
 
 class TestTool(Tool):
@@ -39,25 +39,3 @@ async def test_tool_arun(test_tool):
     tool_input = ("test",)
     response = await test_tool.arun(tool_input)
     assert response == "TestTool async response"
-
-
-def test_toolkit():
-    tools = [
-        TestTool(
-            name="TestTool",
-            description="A test tool for testing purposes",
-            function=lambda x: "TestTool response",
-        )
-    ]
-    toolkit = Toolkit(tools)
-    assert len(toolkit.tools) == 1
-    assert isinstance(toolkit.tools[0], TestTool)
-    assert toolkit.tools[0].name == "TestTool"
-
-
-def test_toolkit_type():
-    assert len(ToolkitType) == 4
-    assert ToolkitType.PY_READER.name == "PY_READER"
-    assert ToolkitType.PY_WRITER.name == "PY_WRITER"
-    assert ToolkitType.SYMBOL_SEARCH.name == "SYMBOL_SEARCH"
-    assert ToolkitType.CONTEXT_ORACLE.name == "CONTEXT_ORACLE"

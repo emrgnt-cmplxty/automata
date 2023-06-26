@@ -2,6 +2,7 @@ import logging
 from typing import Dict, Final, List, Sequence
 
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
+from automata.core.base.error import MaxIterError
 from automata.core.llm.completion import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,
@@ -15,7 +16,6 @@ from automata.core.llm.providers.openai import (
     OpenAITool,
 )
 from automata.core.utils import format_text, load_config
-from automata.core.base.error import MaxIterError
 
 logger = logging.getLogger(__name__)
 
