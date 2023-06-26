@@ -253,82 +253,15 @@ class UnknownToolError(Exception):
         super().__init__(self.ERROR_STRING % (tool_kit))
 
 
-# class AgentToolManagerFactory:
-#     """
-#     A class for creating tool managers.
-#     TODO: It is unfortunate that we must maintain these mappings locally
-#         in this class. It would be better if we could generate it dynamically
-#         perhaps by using a decorator on the tool classes themselves.
-#     """
-
-#     _retriever_instance = None
-
-#     TOOLKIT_TYPE_TO_TOOL_CLASS = {
-#         AgentToolManagers.PY_READER: PyReaderOpenAIToolManager,
-#         # ToolkitType.PY_WRITER: PyWriterTool,
-#         # ToolkitType.SYMBOL_SEARCH: SymbolSearchTool,
-#         # ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
-#     }
-
-#     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolManagers, List[Tuple[str, Any]]] = {
-#         AgentToolManagers.PY_READER: [("py_reader", PyReader)],
-#         # ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
-#         # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-#         # ToolkitType.CONTEXT_ORACLE: [
-#         #     ("symbol_search", SymbolSearch),
-#         #     ("symbol_doc_similarity", SymbolSimilarity),
-#         # ],
-#     }
-
-#     @staticmethod
-#     def create_agent_tool_manager(tool_manager: AgentToolManagers, **kwargs) -> AgentToolManager:
-#         """
-#         Create a tool manager for the specified toolkit type.
-
-#         Args:
-#             toolkit_type (ToolkitType): The type of toolkit to create a tool manager for.
-
-#             kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
-#               for the specified toolkit type. The possible arguments are:
-#                 py_reader - PyReader
-#                 py_writer - PyWriter
-#                 symbol_search - SymbolSearch
-#                 symbol_doc_similarity - SymbolSimilarity
-
-#         Returns:
-#             AgentTool: The tool manager for the specified toolkit type.
-
-#         Raises:
-#             ToolCreationError: If the required arguments are not provided.
-#             UnknownToolError: If the toolkit type is not recognized.
-#         """
-
-#         if tool_manager not in AgentToolManagerFactory.TOOLKIT_TYPE_TO_TOOL_CLASS:
-#             raise UnknownToolError(tool_manager)
-
-#         tool_class = AgentToolManagerFactory.TOOLKIT_TYPE_TO_TOOL_CLASS[tool_manager]
-#         args = AgentToolManagerFactory.TOOLKIT_TYPE_TO_ARGS[tool_manager]
-
-#         tool_kwargs = {}
-#         for arg_name, arg_class in args:
-#             arg_value = kwargs.get(arg_name, None)
-#             if arg_value is None or not isinstance(arg_value, arg_class):
-#                 raise ToolCreationError(arg_name, tool_class.__name__)
-#             tool_kwargs[arg_name] = arg_value
-#         print("tool_kwargs = ", tool_kwargs)
-#         print("creating tool...")
-#         return tool_class(**tool_kwargs)
-
-
 class AgentToolFactory:
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
         AgentToolProviders.PY_READER: [("py_reader", PyReader)],
         AgentToolProviders.PY_WRITER: [("py_writer", PyWriter)],
-        # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-        # ToolkitType.CONTEXT_ORACLE: [
-        #     ("symbol_search", SymbolSearch),
-        #     ("symbol_doc_similarity", SymbolSimilarity),
-        # ],
+        AgentToolProviders.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
+        AgentToolProviders.CONTEXT_ORACLE: [
+            ("symbol_search", SymbolSearch),
+            ("symbol_doc_similarity", SymbolSimilarity),
+        ],
     }
 
     @staticmethod
