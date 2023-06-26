@@ -15,8 +15,8 @@ from automata.core.llm.completion import (
 )
 from automata.core.llm.providers.openai import (
     OpenAIAgent,
+    OpenAIChatCompletionProvider,
     OpenAIChatMessage,
-    OpenAIChatProvider,
     OpenAIFunction,
     OpenAITool,
 )
@@ -59,12 +59,12 @@ class AutomataOpenAIAgent(OpenAIAgent):
             AgentError: If the agent has already completed its task or exceeded the maximum number of iterations.
 
         Returns:
-            Optional[Tuple[LLMCompletionResult, LLMCompletionResult]] Latest assistant and user messages, or None if the task is completed.
+            LLMIterationResult Latest assistant and user messages, or None if the task is completed.
         """
         if self.completed or self.iteration_count >= self.config.max_iterations:
             raise AgentStopIteration
 
-        assistant_message = self.chat_provider.get_next_assistant_message()
+        assistant_message = self.chat_provider.get_next_assistant_completion()
         self.conversation.add_message(assistant_message)
         self.iteration_count += 1
 
@@ -204,7 +204,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         ):
             self.conversation.add_message(message)
 
-        self.chat_provider = OpenAIChatProvider(
+        self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
             temperature=self.config.temperature,
             stream=self.config.stream,

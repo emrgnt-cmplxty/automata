@@ -21,6 +21,7 @@ class PyWriterToolBuilder(AgentToolBuilder):
     def __init__(
         self,
         py_writer: PyWriter,
+        do_write: bool = True,
         **kwargs,
     ) -> None:
         """
@@ -33,11 +34,7 @@ class PyWriterToolBuilder(AgentToolBuilder):
         - None
         """
         self.writer = py_writer
-        self.model = kwargs.get("model", "gpt-4-0613")
-        self.verbose = kwargs.get("verbose", False)
-        self.stream = kwargs.get("stream", True)
-        self.temperature = kwargs.get("temperature", 0.7)
-        self.do_write = kwargs.get("do_write", True)
+        self.do_write = do_write
 
     def build(self) -> List[Tool]:
         """

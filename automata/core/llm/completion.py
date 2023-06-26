@@ -1,48 +1,39 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from automata.core.base.database.relational import RelationalDatabase
+from pydantic import BaseModel
+
+from automata.core.base.database.relational import SQLDatabase
 from automata.core.base.observer import Observer
 
 
-class LLMCompletionResult(ABC):
-    """Abstract base class for different types of LLM completion results."""
+class LLMCompletionResult(BaseModel):
+    """Base class for different types of LLM completion results."""
 
-    @abstractmethod
-    def get_role(self) -> Any:
+    role: str
+    content: Optional[str] = None
+
+    def get_role(self) -> str:
         """Returns the role of the completion result."""
-        pass
+        return self.role
 
-    @abstractmethod
     def get_content(self) -> Any:
         """Returns the content of the completion result."""
-        pass
-
-    @abstractmethod
-    def get_function_call(self) -> Any:
-        """Returns any function call associated with the completion result."""
-        pass
+        return self.content
 
 
-class LLMChatMessage(ABC):
-    """Abstract base class for different types of LLM chat messages."""
+class LLMChatMessage(BaseModel):
+    """Base class for different types of LLM chat messages."""
 
-    def __init__(self, role: str, content: Optional[str] = None) -> None:
-        """
-        Args:
-            role (str): The role of the message.
-            content (Optional[str], optional): The content of the message. Defaults to None.
-        """
-        self.role = role
-        self.content = content
+    role: str
+    content: Optional[str] = None
 
-    @abstractmethod
-    def to_dict(self) -> Any:
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the message as a dictionary."""
-        pass
+        return {"role": self.role, "content": self.content}
 
 
-LLMIterationResult = Optional[Tuple[LLMChatMessage, Optional[LLMChatMessage]]]
+LLMIterationResult = Optional[Tuple[LLMChatMessage, LLMChatMessage]]
 
 
 class LLMConversation(ABC):
@@ -96,14 +87,19 @@ class LLMConversation(ABC):
         """
         pass
 
+    @abstractmethod
+    def reset_conversation(self) -> None:
+        """Resets the conversation."""
+        pass
 
-class LLMConversationDatabaseProvider(Observer, ABC):
+
+class LLMConversationDatabaseProvider(Observer, SQLDatabase, ABC):
     """Abstract base class for different types of database providers."""
 
-    def __init__(self, db: RelationalDatabase) -> None:
-        self.db = db
+    def __init__(self, session_id: str, db_path: str) -> None:
+        pass
 
-    def update(self, subject: LLMConversation):
+    def update_database(self, subject: LLMConversation) -> None:
         """
         Update the database when the conversation changes.
 
@@ -125,7 +121,7 @@ class LLMConversationDatabaseProvider(Observer, ABC):
         pass
 
     @abstractmethod
-    def get_messages(self, session_id: str) -> None:
+    def get_messages(self) -> List[LLMChatMessage]:
         """
         Get all messages of a specific agent.
 
@@ -134,26 +130,28 @@ class LLMConversationDatabaseProvider(Observer, ABC):
         """
         pass
 
-    @abstractmethod
-    def replay_messages(self, session_id: str) -> None:
-        """
-        Replay all messages of a specific agent.
 
-        Args:
-            agent_id (str): The ID of the agent.
-        """
-        pass
-
-
-class LLMChatProvider(ABC):
+class LLMChatCompletionProvider(ABC):
     def __init__(self):
         pass
 
-    def get_next_assistant_response(self) -> LLMChatMessage:
+    @abstractmethod
+    def get_next_assistant_completion(self) -> LLMChatMessage:
         """
-        Returns the next assistant response from the LLM.
+        Returns the next assistant completion from the LLM.
+        """
+        pass
 
-        Args:
-            conversation (LLMConversation): The conversation to get the response for.
+    @abstractmethod
+    def add_message(self, message: LLMChatMessage) -> None:
         """
-        raise NotImplementedError
+        Appends a new user message to the chat completion provider
+        """
+        pass
+
+    @abstractmethod
+    def reset(self) -> None:
+        """
+        Resets the chat provider
+        """
+        pass

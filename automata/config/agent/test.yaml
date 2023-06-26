@@ -6,7 +6,7 @@ system_template: >
     - return_result_0
       - The output is {tool_output_1}  ...
 
-model: "gpt-4-0613"
+model: "gpt-4"
 stream: false
 verbose: true
 max_iters: 100

@@ -27,7 +27,6 @@ class PyContextRetrieverConfig:
         spacer: str = "  ",
         max_dependencies_to_process: int = 10,
         max_related_symbols_to_process: int = 10,
-        model_name: str = "gpt-4-0613",
         max_context: int = 6_500,
     ) -> None:
         """
@@ -40,7 +39,6 @@ class PyContextRetrieverConfig:
         self.spacer = spacer
         self.max_dependencies_to_process = max_dependencies_to_process
         self.max_related_symbols_to_process = max_related_symbols_to_process
-        self.model_name = model_name
         self.max_context = max_context
 
 
@@ -62,7 +60,7 @@ class PyContextRetriever:
         self.config = config
         self.indent_level = 0
         self.doc_embedding_db = doc_embedding_db
-        self.encoding = tiktoken.encoding_for_model(self.config.model_name)
+        self.encoding = tiktoken.encoding_for_model("gpt-4")
 
         self.reset()
 
