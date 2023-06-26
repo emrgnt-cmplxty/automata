@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Dict
 
 from pydantic import BaseModel
@@ -9,7 +10,26 @@ if TYPE_CHECKING:
     from automata.core.agent.agent import AutomataOpenAIAgent
 
 
-class AutomataAgentInstance(BaseModel):
+class AgentInstance(BaseModel):
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
+    description: str = ""
+    kwargs: Dict[str, Any] = {}
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @abstractmethod
+    def run(self, instructions: str) -> str:
+        pass
+
+    @classmethod
+    def create(
+        cls, config_name: AgentConfigName, description: str = "", **kwargs
+    ) -> "AgentInstance":
+        return cls(config_name=config_name, description=description, kwargs=kwargs)
+
+
+class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}
@@ -39,9 +59,3 @@ class AutomataAgentInstance(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-
-    @classmethod
-    def create(
-        cls, config_name: AgentConfigName, description: str = "", **kwargs
-    ) -> "AutomataAgentInstance":
-        return cls(config_name=config_name, description=description, kwargs=kwargs)

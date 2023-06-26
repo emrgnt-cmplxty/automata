@@ -54,7 +54,7 @@ SR_SEARCHES_TO_HITS = {
     ],
     "database": [
         "JSONVectorDatabase",
-        "AutomataAgentDatabase",
+        "AutomataAgentConversationDatabase",
         "SymbolDatabaseProvider",
         "VectorDatabaseProvider",
     ],

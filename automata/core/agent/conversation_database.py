@@ -1,8 +1,9 @@
 from automata.config import CONVERSATION_DB_PATH
+from automata.core.agent.error import AgentDatabaseError
 from automata.core.base.database.relational import SQLDatabase
 
 
-class AutomataAgentDatabase(SQLDatabase):
+class AutomataAgentConversationDatabase(SQLDatabase):
     def __init__(self, session_id: str, db_path: str = CONVERSATION_DB_PATH) -> None:
         super().__init__()
         self.connect(db_path)
@@ -22,7 +23,8 @@ class AutomataAgentDatabase(SQLDatabase):
         )
 
     def put_message(self, role: str, content: str) -> dict:
-        assert self.session_id is not None, "Session ID is not set."
+        if self.session_id is None:
+            raise AgentDatabaseError("The database session_id has not been set.")
         interaction_id = self.get_last_interaction_id() + 1
         interaction = {
             "role": role,

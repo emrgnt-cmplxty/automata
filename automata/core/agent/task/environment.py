@@ -2,6 +2,7 @@ import logging
 import logging.config
 import os
 
+from automata.core.agent.error import AgentTaskGeneralError, AgentTaskStateError
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.github_manager import GitHubManager
 from automata.core.base.task import Task, TaskEnvironment, TaskStatus
@@ -30,11 +31,13 @@ class AutomataTaskEnvironment(TaskEnvironment):
             Exception: If the task is not status CREATED.
         """
         if task.status != TaskStatus.REGISTERED:
-            raise Exception(
+            raise AgentTaskStateError(
                 f"Cannot setup task environment because task is not in REGISTERED state. Task status = {task.status}"
             )
         if not isinstance(task, AutomataTask):
-            raise TypeError("AutomataTaskEnvironment requires an AutomataTask instance")
+            raise AgentTaskGeneralError(
+                "AutomataTaskEnvironment requires an AutomataTask instance"
+            )
 
         logger.debug(f"Setting up the task environment in directory {task.task_dir}.")
         # TODO - Consider more methods for environment initlization than git clone
@@ -93,11 +96,11 @@ class AutomataTaskEnvironment(TaskEnvironment):
         logger.debug("Comitting task...")
 
         if task.status != TaskStatus.SUCCESS:
-            raise Exception(
+            raise AgentTaskStateError(
                 "Cannot commit task to repository because the task has not been successfully executed."
             )
         if not os.path.exists(task.task_dir):
-            raise Exception(
+            raise AgentTaskGeneralError(
                 "Cannot commit task to repository because the task output directory is missing."
             )
         # Check if the branch already exists, if not create it
