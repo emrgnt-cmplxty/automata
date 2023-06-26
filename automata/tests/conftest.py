@@ -1,7 +1,13 @@
 import os
 import random
-from typing import Any
 from unittest.mock import MagicMock
+from typing import Any, List, Set
+from automata.core.llm.providers.available import AgentToolProviders
+from automata.core.agent.tool.tool_utils import (
+    AgentToolFactory,
+    DependencyFactory,
+    get_available_tools,
+)
 
 import numpy as np
 import pytest
@@ -12,7 +18,7 @@ from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tool.tool_utils import get_tool_builders
+from automata.core.agent.tool.tool_utils import get_available_tools
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
@@ -141,14 +147,28 @@ def automata_agent_config_builder():
 @pytest.fixture
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
-    tool_list = ["py_reader"]
-    mock_llm_toolkits = get_tool_builders(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
+    # tool_list = ["py_reader"]
+    # mock_llm_toolkits = get_tool_builders(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
+    # tools = get_available_tools(["py_reader"], **kwargs)
+
+    llm_toolkits_list = ["py_reader"]
+    kwargs = {}
+
+    dependencies: Set[Any] = set()
+    for tool in llm_toolkits_list:
+        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
+            dependencies.add(dependency_name)
+
+    for dependency in dependencies:
+        print(f"Building {dependency}...")
+        kwargs[dependency] = DependencyFactory().get(dependency)
+    tools = get_available_tools(["py_reader"], **kwargs)
 
     instructions = "Test instruction."
 
     return AutomataOpenAIAgent(
         instructions,
-        config=automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits)
+        config=automata_agent_config_builder.with_tools(tools)
         .with_stream(False)
         .with_system_template_formatter({})
         .build(),

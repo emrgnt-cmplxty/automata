@@ -19,6 +19,11 @@ class Agent(ABC):
     An agent is an autonomous entity that can perform actions and communicate with other agents.
     """
 
+    class MaxIterError(Exception):
+        """An exception raised when the agent exceeds the maximum number of iterations."""
+
+        pass
+
     def __init__(self, instructions: str) -> None:
         """
         Args:

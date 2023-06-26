@@ -11,11 +11,11 @@ from automata.core.llm.providers.openai import (
     OpenAIAgent,
     OpenAIChatMessage,
     OpenAIChatProvider,
-    OpenAIConversation,
     OpenAIFunction,
     OpenAITool,
 )
 from automata.core.utils import format_text, load_config
+from automata.core.base.error import MaxIterError
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,8 @@ class AutomataOpenAIAgent(OpenAIAgent):
     responses based on given instructions and manages interactions with various tools.
     """
 
-    CONTINUE_MESSAGE: Final = "Continue, and return a result JSON when finished."
-    INITIALIZER_DUMMY: Final = "automata_initializer"
-    ERROR_DUMMY_TOOL: Final = "error_reporter"
+    CONTINUE_MESSAGE: Final = "Continue.."
+    SUCCESS_PREFIX: Final = "Execution Result:\n"
 
     def __init__(self, instructions: str, config: AutomataAgentConfig) -> None:
         """
@@ -43,33 +42,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
         self.config = config
         self.iteration_count = 0
         self._setup()
-
-    @property
-    def tools(self) -> List[OpenAITool]:
-        """
-        Gets the tools for the agent.
-
-        Returns:
-            List[OpenAITool]: The tools for the agent.
-        """
-        tools = []
-        for tool in self.config.tools:
-            if not isinstance(tool, OpenAITool):
-                raise ValueError(f"Invalid tool type: {type(tool)}")
-            tools.append(tool)
-        tools.append(self._get_termination_tool())
-        return tools
-
-    @property
-    def functions(self) -> List[OpenAIFunction]:
-        """
-
-        Gets the available functions for the agent.
-
-        Returns:
-            Sequence[OpenAIFunction]: The available functions for the agent.
-        """
-        return [ele.openai_function for ele in self.tools]
 
     def __iter__(self):
         return self
@@ -100,6 +72,33 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         return (assistant_message, user_message)
 
+    @property
+    def tools(self) -> List[OpenAITool]:
+        """
+        Gets the tools for the agent.
+
+        Returns:
+            List[OpenAITool]: The tools for the agent.
+        """
+        tools = []
+        for tool in self.config.tools:
+            if not isinstance(tool, OpenAITool):
+                raise ValueError(f"Invalid tool type: {type(tool)}")
+            tools.append(tool)
+        tools.append(self._get_termination_tool())
+        return tools
+
+    @property
+    def functions(self) -> List[OpenAIFunction]:
+        """
+
+        Gets the available functions for the agent.
+
+        Returns:
+            Sequence[OpenAIFunction]: The available functions for the agent.
+        """
+        return [ele.openai_function for ele in self.tools]
+
     def run(self) -> str:
         """
         Runs the agent and iterates through the tasks until a result is produced
@@ -122,6 +121,8 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         last_message = self.conversation.get_latest_message()
         print("last_message = ", last_message)
+        if self.iteration_count >= self.config.max_iterations:
+            raise MaxIterError("The agent did not produce a result.")
         if not self.completed or not isinstance(last_message, OpenAIChatMessage):
             raise ValueError("The agent did not produce a result.")
         if not last_message.content:
@@ -154,7 +155,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
             List[OpenAIChatMessage]: A list of initial messages for the conversation.
         """
         assert "user_input_instructions" in formatters
-        formatters["initializer_dummy_tool"] = AutomataOpenAIAgent.INITIALIZER_DUMMY
 
         messages_config = load_config(
             ConfigCategory.INSTRUCTION.value, self.config.instruction_version.value
@@ -185,7 +185,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
                     print("With arguments: ", assistant_message.function_call.arguments)
                     result = tool.run(assistant_message.function_call.arguments)
                     print("execution result = ", result)
-                    return OpenAIChatMessage(role="user", content=f"Execution Result:\n{result}")
+                    return OpenAIChatMessage(
+                        role="user", content=f"{AutomataOpenAIAgent.SUCCESS_PREFIX}{result}"
+                    )
 
         return OpenAIChatMessage(role="user", content=AutomataOpenAIAgent.CONTINUE_MESSAGE)
 

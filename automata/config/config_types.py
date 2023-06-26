@@ -38,13 +38,8 @@ class AgentConfigName(Enum):
     # Helper Configs
     DEFAULT = "default"
     TEST = "test"
-    # The initializer is a dummy agent used to spoof the initial message context.
-    AUTOMATA_INITIALIZER = "automata_initializer"
 
     # Production Configs
-    AUTOMATA_READER = "automata_reader"
-    AUTOMATA_WRITER = "automata_writer"
-    AUTOMATA_READER_AND_WRITER = "automata_reader_and_writer"
     AUTOMATA_MAIN = "automata_main"
 
 
@@ -52,7 +47,7 @@ class AutomataAgentConfig(BaseModel):
     """
     Args:
         config_name (AgentConfigName): The config_name of the agent to use.
-        tool_builders (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
+        tools (List[Tool]): A list of tools available to the model.
         instructions (str): A string of instructions to execute.
         system_template (str): A string of instructions to execute.
         system_template_variables (List[str]): A list of required input variables for the instruction template.
@@ -74,18 +69,18 @@ class AutomataAgentConfig(BaseModel):
     tools: List[Tool] = []
     instructions: str = ""
     description: str = ""
-    system_template: str = ""
-    system_template_variables: List[str] = []
-    system_template_formatter: Dict[str, str] = {}
     model: str = "gpt-4"
     stream: bool = False
     verbose: bool = False
-    is_new_agent: bool = True
     max_iterations: int = 50
     temperature: float = 0.7
     session_id: Optional[str] = None
-    system_instruction: Optional[str] = None
+    # System Template
+    system_template: str = ""
+    system_template_variables: List[str] = []
+    system_template_formatter: Dict[str, str] = {}
     instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
+    system_instruction: Optional[str] = None
 
     class TemplateFormatter:
         @staticmethod
@@ -109,23 +104,12 @@ class AutomataAgentConfig(BaseModel):
                 - Replace symbol_search with symbol_rank when it is implemented on DependencyFactory
             """
             formatter = {}
-            if config.config_name == AgentConfigName.AUTOMATA_READER:
-                from automata.core.agent.tool.tool_utils import DependencyFactory
-
-                symbol_search = DependencyFactory().get("symbol_search")
-                symbol_rank = symbol_search.symbol_rank
-                ranks = symbol_rank.get_ranks()
-                symbol_dotpaths = [
-                    ".".join(symbol.dotpath.split(".")[1:])
-                    for symbol, _ in ranks[:max_default_overview_symbols]
-                ]
-                formatter["symbol_rank_overview"] = "\n".join(sorted(symbol_dotpaths))
-            elif config.config_name == AgentConfigName.AUTOMATA_MAIN:
+            if config.config_name == AgentConfigName.AUTOMATA_MAIN:
                 pass
-            elif config.config_name == AgentConfigName.AUTOMATA_WRITER:
-                raise NotImplementedError(
-                    "AutomataWriter does not have a default template formatter."
-                )
+            elif config.config_name == AgentConfigName.TEST:
+                pass
+            else:
+                raise NotImplementedError("Automata does not have a default template formatter.")
 
             return formatter
 

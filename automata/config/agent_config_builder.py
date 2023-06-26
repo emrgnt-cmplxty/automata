@@ -128,7 +128,7 @@ class AutomataAgentConfigBuilder(BaseModel):
         self._config.verbose = verbose
         return self
 
-    def with_max_iters(self, max_iters: int) -> "AutomataAgentConfigBuilder":
+    def with_max_iterations(self, max_iters: int) -> "AutomataAgentConfigBuilder":
         """
         Set the maximum number of iterations for the AutomataAgent instance.
 
@@ -246,7 +246,7 @@ class AutomataAgentConfigFactory:
             builder = builder.with_verbose(kwargs["verbose"])
 
         if "max_iters" in kwargs:
-            builder = builder.with_max_iters(kwargs["max_iters"])
+            builder = builder.with_max_iterations(kwargs["max_iters"])
 
         if "tools" in kwargs:
             builder = builder.with_tools(kwargs["tools"])
