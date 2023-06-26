@@ -4,6 +4,7 @@ from typing import Any, List, Optional, Tuple
 
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import LLMCompletionResult, LLMIterationResult
+from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +64,8 @@ class Agent(ABC):
 class AgentToolBuilder(ABC):
     """AgentTool is an abstract class for building tools for agents."""
 
-    TOOL_TYPE = None
-    PLATFORM = None
+    TOOL_TYPE: Optional[AgentToolProviders] = None
+    PLATFORM: Optional[LLMPlatforms] = None
 
     def __init__(self, **kwargs) -> None:
         pass

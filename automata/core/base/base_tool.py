@@ -21,11 +21,11 @@ class BaseTool(BaseModel):
         arbitrary_types_allowed = True
 
     @abstractmethod
-    def _run(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    def run(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Use the tool."""
 
     @abstractmethod
-    async def _arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
+    async def arun(self, tool_input: Tuple[Optional[str], ...]) -> str:
         """Use the tool asynchronously."""
 
     def __call__(self, tool_input: Tuple[Optional[str], ...]) -> str:
@@ -38,7 +38,7 @@ class BaseTool(BaseModel):
     ) -> str:
         """Run the tool."""
         try:
-            observation = self._run(tool_input)
+            observation = self.run(tool_input)
         except (Exception, KeyboardInterrupt) as e:
             raise e
         return observation
@@ -50,7 +50,7 @@ class BaseTool(BaseModel):
         """Run the tool asynchronously."""
         try:
             # We then call the tool on the tool input to get an observation
-            observation = await self._arun(tool_input)
+            observation = await self.arun(tool_input)
         except (Exception, KeyboardInterrupt) as e:
             raise e
         return observation
