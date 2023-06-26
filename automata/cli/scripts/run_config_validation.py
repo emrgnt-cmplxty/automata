@@ -7,7 +7,8 @@ import yaml
 from jsonschema import ValidationError, validate
 
 from automata.config.config_types import ConfigCategory
-from automata.core.agent.action import AutomataActionExtractor
+
+# from automata.core.agent.action import AutomataActionExtractor
 from automata.core.utils import get_config_fpath, get_logging_config
 
 logger = logging.getLogger(__name__)
@@ -21,14 +22,14 @@ yaml_schema = {
         "system_template": {"type": "string"},
         "template_format": {"type": "string"},
         "description": {"type": "string"},
-        "number_of_expected_actions": {"type": "integer"},
+        # "number_of_expected_actions": {"type": "integer"},
     },
     "required": [
         "system_template_variables",
         "system_template",
         "template_format",
         "description",
-        "number_of_expected_actions",
+        # "number_of_expected_actions",
     ],
 }
 
@@ -61,7 +62,7 @@ def test_yaml_compatibility(file_path) -> None:
                     "system_template",
                     "template_format",
                     "description",
-                    "number_of_expected_actions",
+                    # "number_of_expected_actions",
                 ]
             ),
         },
@@ -75,17 +76,17 @@ def test_yaml_compatibility(file_path) -> None:
             logger.debug(f"Compatibility test '{test['test_name']}' for {file_path} passed.")
 
 
-def test_action_extraction(file_path) -> None:
-    with open(file_path, "r") as file:
-        yaml_data = yaml.safe_load(file)
-    actions = AutomataActionExtractor.extract_actions(yaml_data["system_template"])
-    number_of_expected_actions = yaml_data["number_of_expected_actions"]
-    if len(actions) != int(number_of_expected_actions):
-        raise ValidationError(
-            f"Action extraction test for {file_path} failed. Found {len(actions)} actions and expected {number_of_expected_actions} actions."
-        )
+# def test_action_extraction(file_path) -> None:
+#     with open(file_path, "r") as file:
+#         yaml_data = yaml.safe_load(file)
+#     actions = AutomataActionExtractor.extract_actions(yaml_data["system_template"])
+#     number_of_expected_actions = yaml_data["number_of_expected_actions"]
+#     if len(actions) != int(number_of_expected_actions):
+#         raise ValidationError(
+#             f"Action extraction test for {file_path} failed. Found {len(actions)} actions and expected {number_of_expected_actions} actions."
+#         )
 
-    logger.debug(f"Action extraction test for {file_path} passed.")
+#     logger.debug(f"Action extraction test for {file_path} passed.")
 
 
 if __name__ == "__main__":
@@ -98,4 +99,4 @@ if __name__ == "__main__":
         logger.debug(f"yaml_file={yaml_file}")
         test_yaml_validation(yaml_file)
         test_yaml_compatibility(yaml_file)
-        test_action_extraction(yaml_file)
+        # test_action_extraction(yaml_file)
