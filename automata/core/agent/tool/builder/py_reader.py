@@ -30,7 +30,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
         - None
         """
         self.py_reader = py_reader
-        self.model = kwargs.get("model") or "gpt-4"
+        self.model = kwargs.get("model") or "gpt-4-0613"
         self.temperature = kwargs.get("temperature") or 0.7
         self.verbose = kwargs.get("verbose") or False
         self.stream = kwargs.get("stream") or True
@@ -169,7 +169,3 @@ class PyReaderOpenAIToolBuilder(PyReaderToolBuilder, OpenAIAgentToolBuilder):
             openai_tools.append(openai_tool)
 
         return openai_tools
-
-    @classmethod
-    def can_handle(cls, tool_manager):
-        return cls.TOOL_TYPE == tool_manager

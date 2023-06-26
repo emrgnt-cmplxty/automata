@@ -57,13 +57,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
             Optional[Tuple[LLMCompletionResult, LLMCompletionResult]] Latest assistant and user messages, or None if the task is completed.
         """
         if self.completed or self.iteration_count >= self.config.max_iterations:
-            print("raising stop iteration")
             raise StopIteration
 
         assistant_message = self.chat_provider.get_next_assistant_message()
-        print("latest assistant_message = ", assistant_message)
-        print("latest assistant_message = ", assistant_message.to_dict())
-
         self.conversation.add_message(assistant_message)
         self.iteration_count += 1
 
@@ -120,7 +116,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
                 break
 
         last_message = self.conversation.get_latest_message()
-        print("last_message = ", last_message)
         if self.iteration_count >= self.config.max_iterations:
             raise MaxIterError("The agent did not produce a result.")
         if not self.completed or not isinstance(last_message, OpenAIChatMessage):
@@ -181,10 +176,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         if assistant_message.function_call:
             for tool in self.tools:
                 if assistant_message.function_call.name == tool.openai_function.name:
-                    print("Running tool: ", tool)
-                    print("With arguments: ", assistant_message.function_call.arguments)
                     result = tool.run(assistant_message.function_call.arguments)
-                    print("execution result = ", result)
                     return OpenAIChatMessage(
                         role="user", content=f"{AutomataOpenAIAgent.SUCCESS_PREFIX}{result}"
                     )
@@ -208,8 +200,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
             self._build_initial_messages({"user_input_instructions": self.instructions})
         ):
             self.conversation.add_message(message)
-
-        print("initial Messages = ", [ele.to_dict() for ele in self.conversation.messages])
 
         self.chat_provider = OpenAIChatProvider(
             model=self.config.model,

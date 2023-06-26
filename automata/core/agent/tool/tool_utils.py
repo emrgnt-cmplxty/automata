@@ -260,10 +260,6 @@ class AgentToolFactory:
 
     @staticmethod
     def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
-        print(
-            "AutomataOpenAIAgentToolBuilderRegistry.get_all_builders() = ",
-            AutomataOpenAIAgentToolBuilderRegistry.get_all_builders(),
-        )
         for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
                 if builder.PLATFORM == LLMPlatforms.OPENAI:

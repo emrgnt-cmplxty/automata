@@ -1,14 +1,14 @@
 import logging
 from typing import List, Optional
 
-from automata.core.base.tool import Tool
-from automata.core.coding.py.writer import PyWriter
-
-logger = logging.getLogger(__name__)
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder
+from automata.core.base.tool import Tool
+from automata.core.coding.py.writer import PyWriter
 from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
+
+logger = logging.getLogger(__name__)
 
 
 class PyWriterToolBuilder(AgentToolBuilder):
@@ -33,7 +33,7 @@ class PyWriterToolBuilder(AgentToolBuilder):
         - None
         """
         self.writer = py_writer
-        self.model = kwargs.get("model", "gpt-4")
+        self.model = kwargs.get("model", "gpt-4-0613")
         self.verbose = kwargs.get("verbose", False)
         self.stream = kwargs.get("stream", True)
         self.temperature = kwargs.get("temperature", 0.7)
@@ -190,7 +190,3 @@ class PyWriterOpenAIToolBuilder(PyWriterToolBuilder, OpenAIAgentToolBuilder):
             openai_tools.append(openai_tool)
 
         return openai_tools
-
-    @classmethod
-    def can_handle(cls, tool_manager):
-        return cls.TOOL_TYPE == tool_manager

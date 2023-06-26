@@ -1,6 +1,7 @@
 name: Main
 verbose: True
 stream: True
+max_iterations: 10
 system_template_variables: []
 system_template: >
   You are Automata Master, a cutting-edge autonomous software architect developed by OpenAI, 

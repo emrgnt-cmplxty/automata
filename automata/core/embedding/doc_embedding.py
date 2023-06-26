@@ -100,7 +100,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
                 str: The completed documentation for the symbol
             """
             completion = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-4-0613",
                 messages=[
                     {
                         "role": "user",
@@ -125,7 +125,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             """
 
             completion = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-4-0613",
                 messages=[
                     {
                         "role": "user",

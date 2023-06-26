@@ -27,7 +27,7 @@ class PyContextRetrieverConfig:
         spacer: str = "  ",
         max_dependencies_to_process: int = 10,
         max_related_symbols_to_process: int = 10,
-        model_name: str = "gpt-4",
+        model_name: str = "gpt-4-0613",
         max_context: int = 6_500,
     ) -> None:
         """
