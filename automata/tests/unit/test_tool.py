@@ -25,7 +25,7 @@ def test_tool():
 def test_tool_instantiation(test_tool):
     assert test_tool.name == "TestTool"
     assert test_tool.description == "A test tool for testing purposes"
-    assert test_tool.func is not None
+    assert test_tool.function is not None
 
 
 def test_tool_run(test_tool):

@@ -31,7 +31,7 @@ def test_symbol_rank_search(symbols, symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "symbol-rank-search":
-            assert tool.func(("module.path", "symbol")) == symbols[0]
+            assert tool.function("symbol") == symbols[0]
 
 
 def test_symbol_references(symbol_search_tool_builder):
@@ -43,7 +43,7 @@ def test_symbol_references(symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "symbol-references":
-            assert tool.func(("module.path", "symbol")) == "ref:Found references"
+            assert tool.function("symbol") == "ref:Found references"
 
 
 def test_retrieve_source_code_by_symbol(symbol_search_tool_builder):
@@ -54,7 +54,7 @@ def test_retrieve_source_code_by_symbol(symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "retrieve-source-code-by-symbol":
-            assert tool.func(("module.path", "symbol")) == "Source code"
+            assert tool.function("symbol") == "Source code"
 
 
 def test_exact_search(symbol_search_tool_builder):
@@ -65,7 +65,7 @@ def test_exact_search(symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "exact-search":
-            assert tool.func(("module.path", "pattern")) == "symbol:Exact match found"
+            assert tool.function("pattern") == "symbol:Exact match found"
 
 
 def test_process_query(symbol_search_tool_builder):
@@ -76,4 +76,4 @@ def test_process_query(symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "process-query":
-            assert tool.func(("module.path", "query")) == "Processed query"
+            assert tool.function("query") == "Processed query"
