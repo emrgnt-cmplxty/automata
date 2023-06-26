@@ -1,17 +1,7 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Union,
-    cast,
-)
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Union
 
 import numpy as np
 import openai
@@ -77,14 +67,14 @@ class FunctionCall(NamedTuple):
         try:
             return json.loads(arguments)
         except json.decoder.JSONDecodeError as e:
-            result = arguments.split('{"result":')
-            if len(result) <= 1:
+            split_result = arguments.split('{"result":')
+            if len(split_result) <= 1:
                 raise ValueError("Invalid arguments for call_termination") from e
-            result = result[1].strip().replace('"}', "")
-            if result[0] != '"':
+            result_str = split_result[1].strip().replace('"}', "")
+            if result_str[0] != '"':
                 raise ValueError("Invalid format for call_termination arguments") from e
-            result = result[1:]
-            return {"result": result}
+            result_str = result_str[1:]
+            return {"result": result_str}
 
 
 class OpenAIBaseCompletionResult(LLMCompletionResult):

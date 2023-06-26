@@ -1,7 +1,7 @@
 import functools
 import logging
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
@@ -259,7 +259,7 @@ class AgentToolFactory:
     }
 
     @staticmethod
-    def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> List[Tool]:
+    def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
         print(
             "AutomataOpenAIAgentToolBuilderRegistry.get_all_builders() = ",
             AutomataOpenAIAgentToolBuilderRegistry.get_all_builders(),
@@ -288,7 +288,7 @@ def build_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
         UnknownToolError: If a toolkit name is not recognized.
 
     """
-    tools = []
+    tools: List[Tool] = []
 
     for tool_name in tool_list:
         tool_name = tool_name.strip()

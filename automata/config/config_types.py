@@ -103,7 +103,7 @@ class AutomataAgentConfig(BaseModel):
                 - Consider how we might implement dependency injection across this call stack
                 - Replace symbol_search with symbol_rank when it is implemented on DependencyFactory
             """
-            formatter = {}
+            # formatter: Dict[str, str] = {}
             if config.config_name == AgentConfigName.AUTOMATA_MAIN:
                 pass
             elif config.config_name == AgentConfigName.TEST:
@@ -111,7 +111,7 @@ class AutomataAgentConfig(BaseModel):
             else:
                 raise NotImplementedError("Automata does not have a default template formatter.")
 
-            return formatter
+            return {}
 
     def setup(self) -> None:
         """Setup the agent."""
