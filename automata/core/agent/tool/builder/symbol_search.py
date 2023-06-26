@@ -1,8 +1,11 @@
 from enum import Enum
 from typing import List, Optional, Union
 
-from automata.core.agent.tools.agent_tool import AgentTool
+from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
+from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.tool import Tool
+from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 from automata.core.symbol.search.symbol_search import (
     ExactSearchResult,
     SourceCodeResult,
@@ -23,7 +26,7 @@ class SearchTool(Enum):
     EXACT_SEARCH = "exact-search"
 
 
-class SymbolSearchTool(AgentTool):
+class SymbolSearchToolBuilder(AgentToolBuilder):
     def __init__(
         self,
         symbol_search: SymbolSearch,
@@ -62,7 +65,7 @@ class SymbolSearchTool(AgentTool):
         if tool_type in tool_funcs:
             return Tool(
                 name=tool_type.value,
-                func=tool_funcs[tool_type],
+                function=tool_funcs[tool_type],
                 description=tool_descriptions[tool_type],
             )
         raise ValueError(f"Invalid tool type: {tool_type}")
@@ -89,7 +92,7 @@ class SymbolSearchTool(AgentTool):
         Returns:
             Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult]: The result of the query.
         """
-        tools_dict = {tool.name: tool.func for tool in self.build()}
+        tools_dict = {tool.name: tool.function for tool in self.build()}
         return tools_dict[tool_type.value](query)
 
     # TODO - Cleanup these processors to ensure they behave well.
@@ -149,3 +152,31 @@ class SymbolSearchTool(AgentTool):
         return "\n".join(
             [f"{symbol}:{str(references)}" for symbol, references in query_result.items()]
         )
+
+
+@AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
+class SymbolSearchOpenAIToolBuilder(SymbolSearchToolBuilder, OpenAIAgentToolBuilder):
+    TOOL_TYPE = AgentToolProviders.SYMBOL_SEARCH
+    PLATFORM = LLMPlatforms.OPENAI
+
+    def build_for_open_ai(self) -> List[OpenAITool]:
+        tools = super().build()
+
+        # Predefined properties and required parameters
+        properties = {
+            "query": {"type": "string", "description": "The query string to search for."},
+        }
+        required = ["query"]
+
+        openai_tools = []
+        for tool in tools:
+            openai_tool = OpenAITool(
+                function=tool.function,
+                name=tool.name,
+                description=tool.description,
+                properties=properties,
+                required=required,
+            )
+            openai_tools.append(openai_tool)
+
+        return openai_tools

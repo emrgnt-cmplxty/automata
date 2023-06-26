@@ -14,15 +14,17 @@ This project is inspired by the theory that code is essentially a form of memory
 
 ## 🧠 [Read the Docs](https://automata.readthedocs.io/en/latest/)
 
+---
+
 ## Demo
 
 https://github.com/emrgnt-cmplxty/Automata/assets/68796651/9b27de2b-d3d3-422b-b21e-8b3c2c9e8dce
 
 _Note - This demo will shortly be expanded to be more autonomous. E.g. automatically fetching the GitHub issues given a user specification and automatically writing the code // creating a PR. These are minor additions to the core logic demonstrated above._
 
-## Schematic Sketch
-
 <img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/57ae3418-c01b-4b3f-a548-2f050c234b34">
+
+---
 
 ## Installation and Usage
 
@@ -134,14 +136,14 @@ The following commands illustrate how to run the system with a trivial instructi
 
 ```bash
 # Run a single agent w/ trivial instruction
-automata run-agent --instructions="Return true"
+automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
 
 # Runs a single agent as a task 
 # (this will create a task in the task_db.sqlite3)
 # (this will also create a task in the tasks/ directory)
 # (modifications to code are performed in the tasks/ directory)
-automata run-agent-task --instructions="Return true"
+automata run-agent-task --instructions="Return true" --model=gpt-3.5-turbo-0613
 ```
 
 ---

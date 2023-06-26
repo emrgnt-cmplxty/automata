@@ -31,7 +31,7 @@ DOC_EXAMPLE_1 = textwrap.dedent(
     """
     # AutomataAgentConfig
 
-    `AutomataAgentConfig` is a configuration class that helps configure, setup, and interact with an `AutomataAgent`. It contains various attributes such as `config_name`, `instruction_payload`, `llm_toolkits`, and others to provide the necessary setup and settings to be used by the agent.
+    `AutomataAgentConfig` is a configuration class that helps configure, setup, and interact with an `AutomataAgent`. It contains various attributes such as `config_name`, `instruction_payload`, `tool_builders`, and others to provide the necessary setup and settings to be used by the agent.
 
     ## Overview
 

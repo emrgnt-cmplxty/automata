@@ -1,17 +1,19 @@
 import logging
 from typing import List, Optional
 
+from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
+from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.coding.py.writer import PyWriter
-
-from .agent_tool import AgentTool
+from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 
 logger = logging.getLogger(__name__)
 
 
-class PyWriterTool(AgentTool):
+class PyWriterToolBuilder(AgentToolBuilder):
     """
-    PyWriterTool
+    PyWriterToolBuilder
     A class for interacting with the PythonWriter API, which provides functionality to modify
     the code state of a given directory of Python files.
     """
@@ -22,7 +24,7 @@ class PyWriterTool(AgentTool):
         **kwargs,
     ) -> None:
         """
-        Initializes a PyWriterTool object with the given inputs.
+        Initializes a PyWriterToolBuilder object with the given inputs.
 
         Args:
         - writer (PythonWriter): A PythonWriter object representing the code writer to work with.
@@ -31,7 +33,7 @@ class PyWriterTool(AgentTool):
         - None
         """
         self.writer = py_writer
-        self.model = kwargs.get("model", "gpt-4")
+        self.model = kwargs.get("model", "gpt-4-0613")
         self.verbose = kwargs.get("verbose", False)
         self.stream = kwargs.get("stream", True)
         self.temperature = kwargs.get("temperature", 0.7)
@@ -47,9 +49,7 @@ class PyWriterTool(AgentTool):
         return [
             Tool(
                 name="py-writer-update-module",
-                func=lambda module_object_code_tuple: self._update_existing_module(
-                    *module_object_code_tuple
-                ),
+                function=self._update_existing_module,
                 description=f"Inserts or updates the python code of a function, class, method in an existing module"
                 f" If a given object or its child object do not exist,"
                 f" then they are created automatically. If the object already exists, then the existing code is modified."
@@ -65,13 +65,10 @@ class PyWriterTool(AgentTool):
                 f'     - def my_method():\n   """My Method"""\n    print("hello world")\n'
                 f"If new import statements are necessary, then introduce them at the top of the submitted input code.\n"
                 f"Provide the full code as input, as this tool has no context outside of passed arguments.\n",
-                return_direct=True,
             ),
             Tool(
                 name="py-writer-create-new-module",
-                func=lambda module_object_code_tuple: self._create_new_module(
-                    *module_object_code_tuple
-                ),
+                function=self._create_new_module,
                 description=f"Creates a new module at the given path with the given code. For example:"
                 f" - tool_query_1\n"
                 f"   - tool_name\n"
@@ -79,13 +76,10 @@ class PyWriterTool(AgentTool):
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
                 f'     - import math\ndef my_method():\n   """My Method"""\n    print(math.sqrt(4))\n',
-                return_direct=True,
             ),
             Tool(
                 name="py-writer-delete-from-existing-module",
-                func=lambda module_object_code_tuple: self._delete_from_existing_module(
-                    *module_object_code_tuple
-                ),
+                function=self._delete_from_existing_module,
                 description=f"Deletes python objects and their code by name from existing module. For example:"
                 f" - tool_query_1\n"
                 f"   - tool_name\n"
@@ -93,7 +87,6 @@ class PyWriterTool(AgentTool):
                 f"   - tool_args\n"
                 f"     - my_folder.my_file\n"
                 f"     - MyClass.my_method\n",
-                return_direct=True,
             ),
         ]
 
@@ -141,7 +134,7 @@ class PyWriterTool(AgentTool):
         except Exception as e:
             return f"Failed to reduce the module with error - {str(e)}"
 
-    def _create_new_module(self, module_dotpath, code) -> str:
+    def _create_new_module(self, module_dotpath: str, code: str) -> str:
         """
         Creates a new module with the given code.
 
@@ -158,3 +151,42 @@ class PyWriterTool(AgentTool):
             return "Success"
         except Exception as e:
             return f"Failed to create the module with error - {str(e)}"
+
+
+@AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
+class PyWriterOpenAIToolBuilder(PyWriterToolBuilder, OpenAIAgentToolBuilder):
+    TOOL_TYPE = AgentToolProviders.PY_WRITER
+    PLATFORM = LLMPlatforms.OPENAI
+
+    def build_for_open_ai(self) -> List[OpenAITool]:
+        tools = super().build()
+
+        properties = {
+            "module_dotpath": {
+                "type": "string",
+                "description": "The path to the module to write or modify code.",
+            },
+            "object_dotpath": {
+                "type": "string",
+                "description": "The path to the object to write or modify code.",
+            },
+            "code": {
+                "type": "string",
+                "description": "The code to write or modify in the object.",
+            },
+        }
+
+        required = ["module_dotpath", "code"]
+
+        openai_tools = []
+        for tool in tools:
+            openai_tool = OpenAITool(
+                function=tool.function,
+                name=tool.name,
+                description=tool.description,
+                properties=properties,
+                required=required,
+            )
+            openai_tools.append(openai_tool)
+
+        return openai_tools

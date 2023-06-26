@@ -4,22 +4,22 @@ import os
 from tqdm import tqdm
 
 from automata.config.config_types import ConfigCategory
+from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.context.py_context.retriever import (
+from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_types import SymbolDescriptor
 from automata.core.symbol.symbol_utils import get_rankable_symbols
-from automata.core.utils import config_fpath
+from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -32,25 +32,25 @@ def main(*args, **kwargs) -> str:
 
     logger.info("Running....")
     scip_path = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
+        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
     )
 
     code_embedding_fpath = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
     code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
     code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, OpenAIEmbedding())
 
     # TODO - Add option for the user to modify l2 & l3  embedding path in commands.py
     embedding_path_l2 = os.path.join(
-        config_fpath(),
+        get_config_fpath(),
         ConfigCategory.SYMBOL.value,
         kwargs.get("symbol_doc_embedding_l2_fpath", "symbol_doc_embedding_l2.json"),
     )
     embedding_db_l2 = JSONVectorDatabase(embedding_path_l2)
 
     embedding_path_l3 = os.path.join(
-        config_fpath(),
+        get_config_fpath(),
         ConfigCategory.SYMBOL.value,
         kwargs.get("symbol_doc_embedding_l3_fpath", "symbol_doc_embedding_l3.json"),
     )

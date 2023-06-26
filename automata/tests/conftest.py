@@ -1,6 +1,6 @@
 import os
 import random
-from typing import Any
+from typing import Any, Set
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -8,15 +8,19 @@ import pytest
 
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
-from automata.core.agent.agent import AutomataAgent
+from automata.core.agent.agent import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tools.tool_utils import build_llm_toolkits
+from automata.core.agent.tool.tool_utils import (
+    AgentToolFactory,
+    DependencyFactory,
+    build_available_tools,
+)
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
-from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRankConfig
@@ -141,20 +145,31 @@ def automata_agent_config_builder():
 @pytest.fixture
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
-    tool_list = ["py_reader"]
-    mock_llm_toolkits = build_llm_toolkits(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
+    # tool_list = ["py_reader"]
+    # mock_llm_toolkits = get_tool_builders(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
+    # tools = build_available_tools(["py_reader"], **kwargs)
+
+    llm_toolkits_list = ["py_reader"]
+    kwargs = {}
+
+    dependencies: Set[Any] = set()
+    for tool in llm_toolkits_list:
+        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
+            dependencies.add(dependency_name)
+
+    for dependency in dependencies:
+        kwargs[dependency] = DependencyFactory().get(dependency)
+    tools = build_available_tools(["py_reader"], **kwargs)
 
     instructions = "Test instruction."
 
-    agent = AutomataAgent(
+    return AutomataOpenAIAgent(
         instructions,
-        config=automata_agent_config_builder.with_llm_toolkits(mock_llm_toolkits)
+        config=automata_agent_config_builder.with_tools(tools)
         .with_stream(False)
         .with_system_template_formatter({})
         .build(),
     )
-    agent.setup()
-    return agent
 
 
 class MockRepositoryManager(RepositoryManager):

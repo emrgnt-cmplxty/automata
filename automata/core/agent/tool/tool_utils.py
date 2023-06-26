@@ -1,30 +1,27 @@
 import functools
 import logging
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
 from automata.config.config_types import ConfigCategory
-from automata.core.agent.tools.agent_tool import AgentTool
-from automata.core.agent.tools.context_oracle import ContextOracleTool
-from automata.core.agent.tools.py_reader import PyReaderTool
-from automata.core.agent.tools.py_writer import PyWriterTool
-from automata.core.agent.tools.symbol_search import SymbolSearchTool
-from automata.core.base.tool import Tool, Toolkit, ToolkitType
+from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
+from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.tool import Tool
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
-from automata.core.context.py_context.retriever import (
+from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.embedding.embedding_types import OpenAIEmbedding
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.utils import config_fpath
+from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +31,7 @@ def classmethod_lru_cache():
     Class method LRU cache decorator.
 
     Returns:
-        decorator: A decorator that caches the return value of a class method
+        decorator: `A` decorator that caches the return value of a class method
     """
 
     def decorator(func):
@@ -51,16 +48,18 @@ def classmethod_lru_cache():
 
 
 class DependencyFactory:
-    """Creates dependencies for input Toolkit construction."""
+    """Creates dependencies for input Tool construction."""
 
-    DEFAULT_SCIP_FPATH = os.path.join(config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
+    DEFAULT_SCIP_FPATH = os.path.join(
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "index.scip"
+    )
 
     DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
 
     DEFAULT_DOC_EMBEDDING_FPATH = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
     )
 
     # Used to cache the symbol subgraph across multiple instances
@@ -216,7 +215,7 @@ class DependencyFactory:
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
 
     @classmethod_lru_cache()
-    def create_py_retriever(self) -> PyReader:
+    def create_py_reader(self) -> PyReader:
         """
         Creates a PyReader instance.
         """
@@ -244,152 +243,56 @@ class UnknownToolError(Exception):
 
     ERROR_STRING = "Unknown toolkit type: %s"
 
-    def __init__(self, tool_kit: ToolkitType) -> None:
+    def __init__(self, tool_kit: AgentToolProviders) -> None:
         super().__init__(self.ERROR_STRING % (tool_kit))
 
 
 class AgentToolFactory:
-    """
-    A class for creating tool managers.
-    TODO: It is unfortunate that we must maintain these mappings locally
-        in this class. It would be better if we could generate it dynamically
-        perhaps by using a decorator on the tool classes themselves.
-    """
-
-    _retriever_instance = None
-
-    TOOLKIT_TYPE_TO_TOOL_CLASS = {
-        ToolkitType.PY_RETRIEVER: PyReaderTool,
-        ToolkitType.PY_WRITER: PyWriterTool,
-        ToolkitType.SYMBOL_SEARCH: SymbolSearchTool,
-        ToolkitType.CONTEXT_ORACLE: ContextOracleTool,
-    }
-
-    TOOLKIT_TYPE_TO_ARGS: Dict[ToolkitType, List[Tuple[str, Any]]] = {
-        ToolkitType.PY_RETRIEVER: [("py_reader", PyReader)],
-        ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
-        ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-        ToolkitType.CONTEXT_ORACLE: [
+    TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
+        AgentToolProviders.PY_READER: [("py_reader", PyReader)],
+        AgentToolProviders.PY_WRITER: [("py_writer", PyWriter)],
+        AgentToolProviders.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
+        AgentToolProviders.CONTEXT_ORACLE: [
             ("symbol_search", SymbolSearch),
             ("symbol_doc_similarity", SymbolSimilarity),
         ],
     }
 
     @staticmethod
-    def create_agent_tool(toolkit_type: ToolkitType, **kwargs) -> AgentTool:
-        """
-        Create a tool manager for the specified toolkit type.
+    def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
+        for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
+            if builder.can_handle(agent_tool):
+                if builder.PLATFORM == LLMPlatforms.OPENAI:
+                    return builder(**kwargs).build_for_open_ai()
+                else:
+                    return builder(**kwargs).build()
 
-        Args:
-            toolkit_type (ToolkitType): The type of toolkit to create a tool manager for.
-
-            kwargs (Additional Args): Additional arguments, which should contain the required AgentTool arguments
-              for the specified toolkit type. The possible arguments are:
-                py_reader - PyReader
-                py_writer - PyWriter
-                symbol_search - SymbolSearch
-                symbol_doc_similarity - SymbolSimilarity
-
-        Returns:
-            AgentTool: The tool manager for the specified toolkit type.
-
-        Raises:
-            ToolCreationError: If the required arguments are not provided.
-            UnknownToolError: If the toolkit type is not recognized.
-        """
-
-        if toolkit_type not in AgentToolFactory.TOOLKIT_TYPE_TO_TOOL_CLASS:
-            raise UnknownToolError(toolkit_type)
-
-        tool_class = AgentToolFactory.TOOLKIT_TYPE_TO_TOOL_CLASS[toolkit_type]
-        args = AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[toolkit_type]
-
-        tool_kwargs = {}
-        for arg_name, arg_class in args:
-            arg_value = kwargs.get(arg_name, None)
-            if arg_value is None or not isinstance(arg_value, arg_class):
-                raise ToolCreationError(arg_name, tool_class.__name__)
-            tool_kwargs[arg_name] = arg_value
-
-        return tool_class(**tool_kwargs)
+        raise UnknownToolError(agent_tool)
 
 
-class ToolkitBuilder:
-    """A class for building toolkits."""
-
-    def __init__(self, **kwargs) -> None:
-        """
-        Initializes a ToolkitBuilder.
-
-        Note:
-            The kwargs should contain the required AgentTool arguments for the specified toolkit type.
-            For more information, see the AgentToolFactory.create_agent_tool method.
-        """
-
-        self._tool_management: Dict[ToolkitType, AgentTool] = {}
-        self.kwargs = kwargs
-
-    def build_toolkit(self, toolkit_type: ToolkitType) -> Toolkit:
-        """
-        Builds a toolkit of the given type.
-
-        Args:
-            toolkit_type (ToolkitType): The type of toolkit to build.
-
-        Returns:
-            Toolkit: The toolkit of the given type.
-
-        Raises:
-            UnknownToolError: If the toolkit type is not recognized.
-        """
-        agent_tool = AgentToolFactory.create_agent_tool(toolkit_type, **self.kwargs)
-
-        if not agent_tool:
-            raise UnknownToolError(toolkit_type)
-
-        tools = ToolkitBuilder.build(agent_tool)
-        return Toolkit(tools)
-
-    @staticmethod
-    def build(agent_tool: AgentTool) -> List[Tool]:
-        """
-        Build tools from a tool manager.
-
-        Args:
-            agent_tool (AgentTool): The agent tool to build.
-
-        Returns:
-            List[Tool]: The list of tools built from the tool manager.
-        """
-        return agent_tool.build()
-
-
-def build_llm_toolkits(tool_list: List[str], **kwargs) -> Dict[ToolkitType, Toolkit]:
+def build_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
     """
     This function builds a list of toolkits from a list of toolkit names.
 
     Args:
-        tool_list (List[str]): A list of toolkit names.
-          These tool names must map onto valid ToolkitType values.
+        tool_list (List[str]): A list of tool names to build.
 
     Returns:
-        Dict[ToolkitType, Toolkit]: A dictionary mapping toolkit types to toolkits.
+        List[Tool]: A list of built tools.
 
     Raises:
         UnknownToolError: If a toolkit name is not recognized.
 
     """
-    toolkits: Dict[ToolkitType, Toolkit] = {}
-    toolkit_builder = ToolkitBuilder(**kwargs)
+    tools: List[Tool] = []
 
     for tool_name in tool_list:
         tool_name = tool_name.strip()
-        toolkit_type = ToolkitType(tool_name)
+        agent_tool_manager = AgentToolProviders(tool_name)
 
-        if toolkit_type is None:
-            raise UnknownToolError(toolkit_type)
+        if agent_tool_manager is None:
+            raise UnknownToolError(agent_tool_manager)
 
-        toolkit = toolkit_builder.build_toolkit(toolkit_type)
-        toolkits[toolkit_type] = toolkit
+        tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
 
-    return toolkits
+    return tools

@@ -4,7 +4,7 @@ import textwrap
 
 import pytest
 
-from automata.core.agent.tools.py_writer import PyWriterTool
+from automata.core.agent.tool.builder.py_writer import PyWriterToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
@@ -32,7 +32,7 @@ def python_writer_tool_builder(tmpdir):
     os.chdir(temp_directory)
     py_reader = PyReader()
     py_writer = PyWriter(py_reader)
-    return PyWriterTool(py_writer=py_writer)
+    return PyWriterToolBuilder(py_writer=py_writer)
 
 
 def test_init(python_writer_tool_builder):
@@ -59,7 +59,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
-    create_module_tool.func((file_py_path, function_def))
+    create_module_tool.function(file_py_path, code=function_def)
 
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
@@ -86,7 +86,7 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.func((file_py_path, None, function_def))
+    code_writer.function(file_py_path, None, code=function_def)
 
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
@@ -117,7 +117,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
-    code_writer.func((file_py_path, None, function_def))
+    code_writer.function(file_py_path, None, code=function_def)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -189,7 +189,7 @@ class PythonAgentToolBuilder:
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.func((file_py_path, "PythonAgentToolBuilder", class_str))
+    code_writer.function((file_py_path, "PythonAgentToolBuilder", class_str))
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
 
@@ -220,7 +220,7 @@ class PythonAgentToolBuilder:
     )
     tools = python_writer_tool_builder.build()
     code_writer = tools[0]
-    code_writer.func(("sample_modules.python_agent_tool_builder", None, module_str))
+    code_writer.function(("sample_modules.python_agent_tool_builder", None, module_str))
     with open("./sample_modules/python_agent_tool_builder.py", "r", encoding="utf-8") as f:
         new_sample_text = f.read()
         assert module_str == new_sample_text

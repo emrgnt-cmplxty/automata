@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 import yaml
 from pydantic import BaseModel
 
-from automata.core.base.tool import Toolkit, ToolkitType
+from automata.core.base.tool import Tool
 
 
 class ConfigCategory(Enum):
@@ -38,20 +38,16 @@ class AgentConfigName(Enum):
     # Helper Configs
     DEFAULT = "default"
     TEST = "test"
-    # The initializer is a dummy agent used to spoof the initial message context.
-    AUTOMATA_INITIALIZER = "automata_initializer"
 
     # Production Configs
-    AUTOMATA_RETRIEVER = "automata_retriever"
     AUTOMATA_MAIN = "automata_main"
-    AUTOMATA_WRITER = "automata_writer"
 
 
 class AutomataAgentConfig(BaseModel):
     """
     Args:
         config_name (AgentConfigName): The config_name of the agent to use.
-        llm_toolkits (Dict[ToolkitType, Toolkit]): A dictionary of toolkits to use.
+        tools (List[Tool]): A list of tools available to the model.
         instructions (str): A string of instructions to execute.
         system_template (str): A string of instructions to execute.
         system_template_variables (List[str]): A list of required input variables for the instruction template.
@@ -66,8 +62,31 @@ class AutomataAgentConfig(BaseModel):
     """
 
     class Config:
-        SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k"]
+        SUPPORTED_MODELS = [
+            "gpt-4",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-16k",
+            "gpt-3.5-turbo-0613",
+            "gpt-4-0613",
+        ]
         arbitrary_types_allowed = True
+
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
+    tools: List[Tool] = []
+    instructions: str = ""
+    description: str = ""
+    model: str = "gpt-4-0613"
+    stream: bool = False
+    verbose: bool = False
+    max_iterations: int = 50
+    temperature: float = 0.7
+    session_id: Optional[str] = None
+    # System Template
+    system_template: str = ""
+    system_template_variables: List[str] = []
+    system_template_formatter: Dict[str, str] = {}
+    instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
+    system_instruction: Optional[str] = None
 
     class TemplateFormatter:
         @staticmethod
@@ -90,45 +109,15 @@ class AutomataAgentConfig(BaseModel):
                 - Consider how we might implement dependency injection across this call stack
                 - Replace symbol_search with symbol_rank when it is implemented on DependencyFactory
             """
-            formatter = {}
-            if config.config_name == AgentConfigName.AUTOMATA_RETRIEVER:
-                from automata.core.agent.tools.tool_utils import DependencyFactory
+            # formatter: Dict[str, str] = {}
+            if config.config_name == AgentConfigName.AUTOMATA_MAIN:
+                pass
+            elif config.config_name == AgentConfigName.TEST:
+                pass
+            else:
+                raise NotImplementedError("Automata does not have a default template formatter.")
 
-                symbol_search = DependencyFactory().get("symbol_search")
-                symbol_rank = symbol_search.symbol_rank
-                ranks = symbol_rank.get_ranks()
-                symbol_dotpaths = [
-                    ".".join(symbol.dotpath.split(".")[1:])
-                    for symbol, _ in ranks[:max_default_overview_symbols]
-                ]
-                formatter["symbol_rank_overview"] = "\n".join(sorted(symbol_dotpaths))
-            elif config.config_name == AgentConfigName.AUTOMATA_MAIN:
-                raise NotImplementedError(
-                    "AutomataMain does not have a default template formatter."
-                )
-            elif config.config_name == AgentConfigName.AUTOMATA_WRITER:
-                raise NotImplementedError(
-                    "AutomataWriter does not have a default template formatter."
-                )
-
-            return formatter
-
-    config_name: AgentConfigName = AgentConfigName.DEFAULT
-    llm_toolkits: Dict[ToolkitType, Toolkit] = {}
-    instructions: str = ""
-    description: str = ""
-    system_template: str = ""
-    system_template_variables: List[str] = []
-    system_template_formatter: Dict[str, str] = {}
-    model: str = "gpt-4"
-    stream: bool = False
-    verbose: bool = False
-    is_new_agent: bool = True
-    max_iters: int = 50
-    temperature: float = 0.7
-    session_id: Optional[str] = None
-    system_instruction: Optional[str] = None
-    instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
+            return {}
 
     def setup(self) -> None:
         """Setup the agent."""
@@ -171,21 +160,6 @@ class AutomataAgentConfig(BaseModel):
         loaded_yaml = cls.load_automata_yaml_config(config_name)
         return AutomataAgentConfig(**loaded_yaml)
 
-    def _build_tool_message(self) -> str:
-        """
-        Builds a message containing information about all available tools.
-
-        Returns:
-            str: A formatted string containing the names and descriptions of all available tools.
-        """
-        return "Tools:\n" + "".join(
-            [
-                f"\n{tool.name}:\n{tool.description}\n"
-                for toolkit in self.llm_toolkits.values()
-                for tool in toolkit.tools
-            ]
-        )
-
     def _formatted_prompt(self) -> str:
         """
         Format system_template with the entries in the system_template_formatter.
@@ -195,11 +169,6 @@ class AutomataAgentConfig(BaseModel):
         """
         formatter_keys = set(self.system_template_formatter.keys())
         template_vars = set(self.system_template_variables)
-
-        # Check if 'tools' is in the system_template_variables but not in the formatter
-        if "tools" in template_vars and "tools" not in formatter_keys:
-            self.system_template_formatter["tools"] = self._build_tool_message()
-            formatter_keys.add("tools")
 
         # Now check if the keys in formatter and template_vars match exactly
         if formatter_keys != template_vars:

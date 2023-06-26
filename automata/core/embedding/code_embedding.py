@@ -1,9 +1,8 @@
 import logging
 
-from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.base.database.vector import VectorDatabaseProvider
+from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingHandler
 from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
-
-from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 

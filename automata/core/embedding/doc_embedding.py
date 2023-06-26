@@ -5,12 +5,11 @@ import openai
 from jinja2 import Template
 
 from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
-from automata.core.context.py_context.retriever import PyContextRetriever
-from automata.core.database.vector import VectorDatabaseProvider
+from automata.core.base.database.vector import VectorDatabaseProvider
+from automata.core.context.py.retriever import PyContextRetriever
+from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingHandler
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
-
-from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +100,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
                 str: The completed documentation for the symbol
             """
             completion = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-4-0613",
                 messages=[
                     {
                         "role": "user",
@@ -126,7 +125,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             """
 
             completion = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-4-0613",
                 messages=[
                     {
                         "role": "user",

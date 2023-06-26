@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tools.py_reader import PyReaderTool
+from automata.core.agent.tool.builder.py_reader import PyReaderToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
@@ -26,7 +26,7 @@ def module_loader():
 @pytest.fixture
 def python_retriever_tool_builder():
     python_code_retriever = PyReader()
-    return PyReaderTool(py_reader=python_code_retriever)
+    return PyReaderToolBuilder(py_reader=python_code_retriever)
 
 
 def test_init(python_retriever_tool_builder):
@@ -49,5 +49,5 @@ def test_tool_execution(python_retriever_tool_builder):
     )
 
     tools = python_retriever_tool_builder.build()
-    assert tools[0].func(("module.path", "func")) == "Sample code"
-    assert tools[1].func(("module.path", "func")) == "Sample docstring"
+    assert tools[0].function(("module.path", "func")) == "Sample code"
+    assert tools[1].function(("module.path", "func")) == "Sample docstring"

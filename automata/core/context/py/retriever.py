@@ -6,8 +6,8 @@ from typing import List, Optional, Set
 import tiktoken
 from redbaron import RedBaron
 
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.coding.py.reader import PyReader
-from automata.core.database.vector import VectorDatabaseProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_types import Symbol
 from automata.core.symbol.symbol_utils import (
@@ -27,7 +27,7 @@ class PyContextRetrieverConfig:
         spacer: str = "  ",
         max_dependencies_to_process: int = 10,
         max_related_symbols_to_process: int = 10,
-        model_name: str = "gpt-4",
+        model_name: str = "gpt-4-0613",
         max_context: int = 6_500,
     ) -> None:
         """
