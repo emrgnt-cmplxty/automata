@@ -16,7 +16,6 @@ from automata.core.llm.completion import (
     LLMConversation,
 )
 from automata.core.llm.embedding import EmbeddingProvider
-from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.utils import set_openai_api_key
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,6 @@ class FunctionCall(NamedTuple):
 
     @classmethod
     def from_response_dict(cls, response_dict) -> "FunctionCall":
-        print("response dict arguments = ", response_dict["arguments"])
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
@@ -358,6 +356,5 @@ class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
         pass
 
     @classmethod
-    @abstractmethod
-    def can_handle(cls, tool_manager: AgentToolProviders) -> bool:
-        pass
+    def can_handle(cls, tool_manager):
+        return cls.TOOL_TYPE == tool_manager

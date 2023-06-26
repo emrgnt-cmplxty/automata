@@ -62,14 +62,20 @@ class AutomataAgentConfig(BaseModel):
     """
 
     class Config:
-        SUPPORTED_MODELS = ["gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-0613"]
+        SUPPORTED_MODELS = [
+            "gpt-4",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-16k",
+            "gpt-3.5-turbo-0613",
+            "gpt-4-0613",
+        ]
         arbitrary_types_allowed = True
 
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     tools: List[Tool] = []
     instructions: str = ""
     description: str = ""
-    model: str = "gpt-4"
+    model: str = "gpt-4-0613"
     stream: bool = False
     verbose: bool = False
     max_iterations: int = 50

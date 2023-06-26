@@ -8,7 +8,7 @@ from automata.core.agent.tool.tool_utils import build_available_tools
 
 def test_automata_agent_init(automata_agent):
     assert automata_agent is not None
-    assert automata_agent.config.model == "gpt-4"
+    assert automata_agent.config.model == "gpt-4-0613"
     assert automata_agent.config.session_id is not None
     assert len(automata_agent.config.tools) > 0
     assert len(automata_agent.conversation) == 3
@@ -17,7 +17,7 @@ def test_automata_agent_init(automata_agent):
 def test_builder_default_config(automata_agent_config_builder):
     config = automata_agent_config_builder.build()
 
-    assert config.model == "gpt-4"
+    assert config.model == "gpt-4-0613"
     assert config.stream is False
     assert config.verbose is True
     assert config.max_iterations == 50

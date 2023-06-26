@@ -136,14 +136,14 @@ The following commands illustrate how to run the system with a trivial instructi
 
 ```bash
 # Run a single agent w/ trivial instruction
-automata run-agent --instructions="Return true"
+automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
 
 # Runs a single agent as a task 
 # (this will create a task in the task_db.sqlite3)
 # (this will also create a task in the tasks/ directory)
 # (modifications to code are performed in the tasks/ directory)
-automata run-agent-task --instructions="Return true"
+automata run-agent-task --instructions="Return true" --model=gpt-3.5-turbo-0613
 ```
 
 ---

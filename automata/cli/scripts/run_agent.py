@@ -64,24 +64,24 @@ def main(*args, **kwargs):
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
             dependencies.add(dependency_name)
 
-    print("dependencies = ", dependencies)
-    kwargs = {}
+    tool_dependencies = {}
 
     logger.info("  - Building dependencies...")
     for dependency in dependencies:
         logger.info(f"Building {dependency}...")
-        kwargs[dependency] = DependencyFactory().get(dependency)
+        tool_dependencies[dependency] = DependencyFactory().get(dependency)
 
-    tools = build_available_tools(llm_toolkits_list, **kwargs)
+    tools = build_available_tools(llm_toolkits_list, **tool_dependencies)
     logger.info("Done building toolkits...")
-
-    config_name = AgentConfigName(kwargs.get("agent_name", "automata_reader"))
+    config_name = AgentConfigName(kwargs.get("agent_name", "automata_main"))
     agent_config = (
         AutomataAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)
-        .with_model(kwargs.get("model", "gpt-4"))
+        .with_model(kwargs.get("model", "gpt-4-0613"))
         .build()
     )
 
     agent = AutomataOpenAIAgent(instructions, config=agent_config)
-    return agent.run()
+    result = agent.run()
+    print("Final result = ", result)
+    return result

@@ -56,7 +56,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option(
             "--model",
-            default="gpt-4",
+            default="gpt-4-0613",
             help="Which model to use?",
         ),
         click.option(

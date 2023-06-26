@@ -1,6 +1,6 @@
 import os
 import random
-from typing import Any, List, Set
+from typing import Any, Set
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -18,7 +18,6 @@ from automata.core.agent.tool.tool_utils import (
     build_available_tools,
 )
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
-from automata.core.coding.py.reader import PyReader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
 from automata.core.llm.providers.available import AgentToolProviders
@@ -159,7 +158,6 @@ def automata_agent(mocker, automata_agent_config_builder):
             dependencies.add(dependency_name)
 
     for dependency in dependencies:
-        print(f"Building {dependency}...")
         kwargs[dependency] = DependencyFactory().get(dependency)
     tools = build_available_tools(["py_reader"], **kwargs)
 
