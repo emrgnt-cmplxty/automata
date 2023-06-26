@@ -2,19 +2,11 @@ import logging
 import logging.config
 import os
 
+from automata.core.agent.error import AgentTaskInstructions
 from automata.core.base.task import Task
 from automata.core.utils import get_logging_config, get_root_fpath, get_root_py_fpath
 
 logger = logging.getLogger(__name__)
-
-
-class AutomataMissingInstructions(Exception):
-    """
-    Exception raised when no instructions are provided for the task.
-    """
-
-    def __init__(self):
-        super().__init__("No instructions provided for the task.")
 
 
 class AutomataTask(Task):
@@ -37,7 +29,7 @@ class AutomataTask(Task):
         self.args = args
         self.kwargs = kwargs
         if "instructions" not in self.kwargs or self.kwargs["instructions"] == "":
-            raise AutomataMissingInstructions()
+            raise AgentTaskInstructions("Task instructions cannot be empty.")
         self.instructions = self.kwargs["instructions"]
         # Note, this  assumes the python folder is in the root folder
         default_python_folder = os.path.relpath(get_root_py_fpath(), get_root_fpath())

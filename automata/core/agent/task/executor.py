@@ -4,6 +4,7 @@ import time
 
 from automata.config.agent_config_builder import AutomataAgentConfigFactory
 from automata.core.agent.agent import AutomataOpenAIAgent
+from automata.core.agent.error import AgentTaskGeneralError, AgentTaskStateError
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.task import ITaskExecution, Task, TaskStatus
 
@@ -24,7 +25,9 @@ class IAutomataTaskExecution(ITaskExecution):
             Exception: If the task fails on execution
         """
         if not isinstance(task, AutomataTask):
-            raise TypeError("AutomataTaskEnvironment requires an AutomataTask instance")
+            raise AgentTaskGeneralError(
+                "AutomataTaskEnvironment requires an AutomataTask instance"
+            )
 
         task.status = TaskStatus.RUNNING
         try:
@@ -84,7 +87,7 @@ class AutomataTaskExecutor:
             Exception: If the task fails and the maximum number of retries is reached.
         """
         if task.status != TaskStatus.PENDING:
-            raise Exception(
+            raise AgentTaskStateError(
                 f"Cannot execute task because task is not in PENDING state. Task status = {task.status}"
             )
         for attempt in range(task.max_retries):

@@ -1,15 +1,7 @@
 """Interface for tools."""
-from enum import Enum
-from inspect import signature
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
+from typing import Awaitable, Callable, Dict, Optional
 
 from pydantic import BaseModel, Extra
-
-
-class ToolNotFoundError(Exception):
-    def __init__(self, tool_name) -> None:
-        self.tool_name = tool_name
-        super().__init__(f"Error: Tool '{tool_name}' not found.")
 
 
 class Tool(BaseModel):

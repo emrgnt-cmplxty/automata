@@ -1,25 +1,9 @@
-import textwrap
-import uuid
 from unittest.mock import patch
 
 import pytest
 
 from automata.core.agent.agent import AutomataOpenAIAgent
-from automata.core.agent.tool.tool_utils import build_available_tools
-from automata.core.base.error import MaxIterError
-from automata.core.llm.providers.openai import OpenAIChatMessage
-
-
-def test_build_tool_message(automata_agent_config_builder):
-    tool_list = ["py_reader", "py_writer"]
-    from automata.core.coding.py.reader import PyReader
-    from automata.core.coding.py.writer import PyWriter
-
-    retriever = PyReader()
-
-    tools = build_available_tools(tool_list, py_reader=retriever, py_writer=PyWriter(retriever))
-
-    config = automata_agent_config_builder.with_tools(tools).build()
+from automata.core.agent.error import AgentMaxIterError
 
 
 def test_build_initial_messages(automata_agent):
@@ -64,7 +48,7 @@ def test_run_with_no_completion(mock_openai_chatcompletion_create, automata_agen
         "choices": [{"message": {"content": "...", "role": "assistant"}}]
     }
 
-    with pytest.raises(MaxIterError):
+    with pytest.raises(AgentMaxIterError):
         automata_agent.run()
 
     assert automata_agent.iteration_count == max_iterations

@@ -1,10 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional
 
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
-    LLMCompletionResult,
     LLMConversationDatabaseProvider,
     LLMIterationResult,
 )
@@ -18,11 +17,6 @@ class Agent(ABC):
     An abstract class for implementing a agent.
     An agent is an autonomous entity that can perform actions and communicate with other agents.
     """
-
-    class MaxIterError(Exception):
-        """An exception raised when the agent exceeds the maximum number of iterations."""
-
-        pass
 
     def __init__(self, instructions: str) -> None:
         """
@@ -58,8 +52,7 @@ class Agent(ABC):
         The task is complete when iter_step returns None.
 
         Raises:
-            ValueError: If the agent has already completed its task.
-            MaxIterError: If the agent exceeds the maximum number of iterations.
+            AgentError: If the agent has already completed its task or exceeds the maximum number of iterations.
 
         Note: The agent must be setup before running.
         """

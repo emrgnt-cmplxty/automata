@@ -4,6 +4,7 @@ import os
 from typing import Any, Dict, List, Sequence, Tuple
 
 from automata.config.config_types import ConfigCategory
+from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.base.tool import Tool
@@ -92,7 +93,7 @@ class DependencyFactory:
             The dependency instance
 
         Raises:
-            ValueError: If the dependency is not found
+            AgentGeneralError: If the dependency is not found
 
         Notes:
             Dependencies correspond to the method names of the DependencyFactory class.
@@ -109,7 +110,7 @@ class DependencyFactory:
             logger.info(f"Creating dependency {dependency}")
             instance = creation_method()
         else:
-            raise ValueError(f"Dependency {dependency} not found.")
+            raise AgentGeneralError(f"Dependency {dependency} not found.")
 
         self._instances[dependency] = instance
 
@@ -229,24 +230,6 @@ class DependencyFactory:
         return PyWriter(self.get("py_reader"))
 
 
-class ToolCreationError(Exception):
-    """An exception for when a tool cannot be created."""
-
-    ERROR_STRING = "Must provide a valid %s to construct a %s."
-
-    def __init__(self, arg_type: str, class_name: str) -> None:
-        super().__init__(self.ERROR_STRING % (arg_type, class_name))
-
-
-class UnknownToolError(Exception):
-    """An exception for when an unknown toolkit type is provided."""
-
-    ERROR_STRING = "Unknown toolkit type: %s"
-
-    def __init__(self, tool_kit: AgentToolProviders) -> None:
-        super().__init__(self.ERROR_STRING % (tool_kit))
-
-
 class AgentToolFactory:
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
         AgentToolProviders.PY_READER: [("py_reader", PyReader)],
@@ -267,7 +250,7 @@ class AgentToolFactory:
                 else:
                     return builder(**kwargs).build()
 
-        raise UnknownToolError(agent_tool)
+        raise UnknownToolError(agent_tool.value)
 
 
 def build_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:

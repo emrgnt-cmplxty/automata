@@ -2,7 +2,12 @@ import logging
 from typing import Dict, Final, List, Sequence
 
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
-from automata.core.base.error import MaxIterError
+from automata.core.agent.error import (
+    AgentDatabaseError,
+    AgentMaxIterError,
+    AgentResultError,
+    AgentStopIteration,
+)
 from automata.core.llm.completion import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,
@@ -51,13 +56,13 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Executes a single iteration of the task and returns the latest assistant and user messages.
 
         Raises:
-            ValueError: If the agent has already completed its task.
+            AgentError: If the agent has already completed its task or exceeded the maximum number of iterations.
 
         Returns:
             Optional[Tuple[LLMCompletionResult, LLMCompletionResult]] Latest assistant and user messages, or None if the task is completed.
         """
         if self.completed or self.iteration_count >= self.config.max_iterations:
-            raise StopIteration
+            raise AgentStopIteration
 
         assistant_message = self.chat_provider.get_next_assistant_message()
         self.conversation.add_message(assistant_message)
@@ -106,22 +111,22 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Notes:
             The agent must be setup before running.
 
-            This implementation calls next() on self until a StopIteration exception is raised,
+            This implementation calls next() on self until a AgentStopIteration exception is raised,
             at which point it will break out of the loop and return the final result.
         """
         while True:
             try:
                 next(self)
-            except StopIteration:
+            except AgentStopIteration:
                 break
 
         last_message = self.conversation.get_latest_message()
         if self.iteration_count >= self.config.max_iterations:
-            raise MaxIterError("The agent did not produce a result.")
+            raise AgentMaxIterError("The agent exceeded the maximum number of iterations.")
         if not self.completed or not isinstance(last_message, OpenAIChatMessage):
-            raise ValueError("The agent did not produce a result.")
+            raise AgentResultError("The agent did not produce a result.")
         if not last_message.content:
-            raise ValueError("The agent produced an empty result.")
+            raise AgentResultError("The agent produced an empty result.")
         return last_message.content
 
     def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
@@ -133,9 +138,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         """
         if not isinstance(provider, LLMConversationDatabaseProvider):
-            raise ValueError(f"Invalid database provider type: {type(provider)}")
+            raise AgentDatabaseError(f"Invalid database provider type: {type(provider)}")
         if self.database_provider:
-            raise ValueError("The database provider has already been set.")
+            raise AgentDatabaseError("The database provider has already been set.")
         self.database_provider = provider
         self.conversation.register_observer(provider)
 
@@ -190,7 +195,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Note: This should be called before running the agent.
 
         Raises:
-            ValueError: If the config was not properly initialized.
+            AgentError: If the agent fails to initialize.
         """
 
         self.conversation.add_message(

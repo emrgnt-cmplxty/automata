@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Union
 
+from automata.core.agent.error import UnknownToolError
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.tool import Tool
@@ -68,7 +69,7 @@ class SymbolSearchToolBuilder(AgentToolBuilder):
                 function=tool_funcs[tool_type],
                 description=tool_descriptions[tool_type],
             )
-        raise ValueError(f"Invalid tool type: {tool_type}")
+        raise UnknownToolError(f"Invalid tool type: {tool_type}")
 
     def build(self) -> List[Tool]:
         """
