@@ -2,18 +2,17 @@ import functools
 import logging
 import os
 from typing import Any, Dict, List, Tuple
-from automata.core.llm.providers.available import AgentToolProviders
 
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.tool.py_reader_builder import (
     PyReaderOpenAIToolBuilder,
     PyReaderToolBuilder,
 )
-from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.agent.tools.agent_tool import AgentTool
 from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.tool import Tool
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
 from automata.core.context.py.retriever import (
@@ -23,12 +22,12 @@ from automata.core.context.py.retriever import (
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.utils import config_fpath
-from automata.core.base.tool import Tool
+from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
 
@@ -57,14 +56,16 @@ def classmethod_lru_cache():
 class DependencyFactory:
     """Creates dependencies for input Toolkit construction."""
 
-    DEFAULT_SCIP_FPATH = os.path.join(config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
+    DEFAULT_SCIP_FPATH = os.path.join(
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "index.scip"
+    )
 
     DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
 
     DEFAULT_DOC_EMBEDDING_FPATH = os.path.join(
-        config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
     )
 
     # Used to cache the symbol subgraph across multiple instances

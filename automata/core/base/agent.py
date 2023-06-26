@@ -3,7 +3,11 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Tuple
 
 from automata.core.base.tool import Tool
-from automata.core.llm.completion import LLMCompletionResult, LLMIterationResult
+from automata.core.llm.completion import (
+    LLMCompletionResult,
+    LLMConversationDatabaseProvider,
+    LLMIterationResult,
+)
 from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 
 logger = logging.getLogger(__name__)
@@ -23,6 +27,7 @@ class Agent(ABC):
         """
         self.instructions = instructions
         self.completed = False
+        self.database_provider: Optional[LLMConversationDatabaseProvider] = None
 
     @abstractmethod
     def __iter__(self):
@@ -52,6 +57,16 @@ class Agent(ABC):
             MaxIterError: If the agent exceeds the maximum number of iterations.
 
         Note: The agent must be setup before running.
+        """
+        pass
+
+    @abstractmethod
+    def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
+        """
+        Sets the database provider for the agent.
+
+        Args:
+            provider (LLMConversationDatabaseProvider): The database provider.
         """
         pass
 

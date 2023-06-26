@@ -1,14 +1,13 @@
 import logging
 from typing import List, Optional
 
-from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR
 from automata.core.coding.py.reader import PyReader
+from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
-
 
 logger = logging.getLogger(__name__)
 
@@ -61,22 +60,16 @@ class PyReaderToolBuilder(AgentToolBuilder):
                 f"  - tool_args\n    - my_directory.my_file\n    - my_function\n\n"
                 f"Lastly, if the function is defined in a class, MyClass, then the correct tool input is:\n"
                 f"  - tool_args\n    - my_directory.my_file\n    - MyClass.my_function\n\n",
-                return_direct=True,
-                verbose=True,
             ),
             Tool(
                 name="py-retriever-retrieve-docstring",
                 function=self._run_indexer_retrieve_docstring,
                 description="Identical to py-retriever-retrieve-code, except returns the docstring instead of raw code.",
-                return_direct=True,
-                verbose=True,
             ),
             Tool(
                 name="py-retriever-retrieve-raw-code",
                 function=self._run_indexer_retrieve_raw_code,
                 description="Identical to py-retriever-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
-                return_direct=True,
-                verbose=True,
             ),
         ]
 
@@ -100,7 +93,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
         try:
             return self.py_reader.get_source_code_without_docstrings(module_path, object_path)
         except Exception as e:
-            return "Failed to retrieve code with error - " + str(e)
+            return f"Failed to retrieve code with error - {str(e)}"
 
     def _run_indexer_retrieve_docstring(
         self, module_path: str, object_path: Optional[str] = None
@@ -120,7 +113,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
         try:
             return self.py_reader.get_docstring(module_path, object_path)
         except Exception as e:
-            return "Failed to retrieve docstring with error - " + str(e)
+            return f"Failed to retrieve docstring with error - {str(e)}"
 
     def _run_indexer_retrieve_raw_code(
         self, module_path: str, object_path: Optional[str] = None
@@ -140,7 +133,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
         try:
             return self.py_reader.get_source_code(module_path, object_path)
         except Exception as e:
-            return "Failed to retrieve raw code with error - " + str(e)
+            return f"Failed to retrieve raw code with error - {str(e)}"
 
 
 @AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager

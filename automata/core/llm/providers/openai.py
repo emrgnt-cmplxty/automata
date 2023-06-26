@@ -16,7 +16,6 @@ from typing import (
 import numpy as np
 import openai
 
-from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.observer import Observer
 from automata.core.base.tool import Tool
@@ -27,6 +26,7 @@ from automata.core.llm.completion import (
     LLMConversation,
 )
 from automata.core.llm.embedding import EmbeddingProvider
+from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.utils import set_openai_api_key
 
 logger = logging.getLogger(__name__)
@@ -44,10 +44,47 @@ class FunctionCall(NamedTuple):
 
     @classmethod
     def from_response_dict(cls, response_dict) -> "FunctionCall":
+        print("response dict arguments = ", response_dict["arguments"])
+        if (
+            response_dict["name"] == "call_termination"
+            and '"result":' in response_dict["arguments"]
+        ):
+            return cls(
+                name=response_dict["name"],
+                arguments=FunctionCall.handle_termination(response_dict["arguments"]),
+            )
         return cls(
             name=response_dict["name"],
             arguments=json.loads(response_dict["arguments"]),
         )
+
+    @staticmethod
+    def handle_termination(arguments: str) -> Dict[str, str]:
+        """
+        Handle the termination of the conversation.
+
+        Args:
+            arguments (str): The arguments for the function call.
+
+        Returns:
+            Dict[str, str]: The arguments for the function call.
+
+        FIXME - This is a hacky solution to the problem of parsing Markdown
+        with JSON. It needs to be made more robust and generalizable.
+        Further, we need to be sure that this is adequate to solve all
+        possible problems we might face due to adopting a Markdown return format.
+        """
+        try:
+            return json.loads(arguments)
+        except json.decoder.JSONDecodeError as e:
+            result = arguments.split('{"result":')
+            if len(result) <= 1:
+                raise ValueError("Invalid arguments for call_termination") from e
+            result = result[1].strip().replace('"}', "")
+            if result[0] != '"':
+                raise ValueError("Invalid format for call_termination arguments") from e
+            result = result[1:]
+            return {"result": result}
 
 
 class OpenAIBaseCompletionResult(LLMCompletionResult):
@@ -103,6 +140,9 @@ class OpenAIChatMessage(LLMChatMessage):
         super().__init__(role=role, content=content)
         self.function_call = function_call
 
+    def __str__(self) -> str:
+        return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
+
     def to_dict(self) -> Dict[str, Any]:
         if self.function_call is None:
             return {"role": self.role, "content": self.content}
@@ -154,10 +194,6 @@ class OpenAIConversation(LLMConversation):
         if not isinstance(message, OpenAIChatMessage):
             raise OpenAIIncorrectMessageTypeError(message)
         self.messages.append(message)
-
-    def add_messages(self, messages: List[LLMChatMessage]) -> None:
-        for message in messages:
-            self.add_message(message)
 
     def get_messages_for_next_completion(self) -> List[Dict[str, Any]]:
         return [message.to_dict() for message in self.messages]
@@ -212,7 +248,6 @@ class OpenAIChatProvider(LLMChatProvider):
         set_openai_api_key()
 
     def get_next_assistant_message(self) -> OpenAIChatMessage:
-        print("available functions = ", [ele.to_dict() for ele in self.functions])
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=self.conversation.get_messages_for_next_completion(),
@@ -280,8 +315,21 @@ class OpenAITool(Tool):
 
 
 class OpenAIAgent(Agent):
-    def _get_termination_function(self) -> OpenAIFunction:
-        return OpenAIFunction(
+    """
+    An agent that can interact with the OpenAI API.
+    """
+
+    def __init__(self, instructions: str) -> None:
+        super().__init__(instructions=instructions)
+        self.conversation = OpenAIConversation()
+        self.completed = False
+
+    def _get_termination_tool(self) -> OpenAITool:
+        def terminate(result: str):
+            self.completed = True
+            return result
+
+        return OpenAITool(
             name="call_termination",
             description="Terminates the conversation.",
             properties={
@@ -291,6 +339,7 @@ class OpenAIAgent(Agent):
                 }
             },
             required=["result"],
+            function=terminate,
         )
 
     def _get_available_functions(self) -> Sequence[OpenAIFunction]:

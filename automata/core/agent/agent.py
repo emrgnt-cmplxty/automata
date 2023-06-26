@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Final, Sequence
+from typing import Dict, Final, List, Sequence
 
 from automata.config.config_types import AutomataAgentConfig, ConfigCategory
 from automata.core.llm.completion import (
@@ -28,7 +28,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
     """
 
     CONTINUE_MESSAGE: Final = "Continue, and return a result JSON when finished."
-    NUM_DEFAULT_MESSAGES: Final = 3  # Prompt + Assistant Initialization + User Task
     INITIALIZER_DUMMY: Final = "automata_initializer"
     ERROR_DUMMY_TOOL: Final = "error_reporter"
 
@@ -42,9 +41,35 @@ class AutomataOpenAIAgent(OpenAIAgent):
         """
         super().__init__(instructions)
         self.config = config
-        self.conversation = OpenAIConversation()
         self.iteration_count = 0
         self._setup()
+
+    @property
+    def tools(self) -> List[OpenAITool]:
+        """
+        Gets the tools for the agent.
+
+        Returns:
+            List[OpenAITool]: The tools for the agent.
+        """
+        tools = []
+        for tool in self.config.tools:
+            if not isinstance(tool, OpenAITool):
+                raise ValueError(f"Invalid tool type: {type(tool)}")
+            tools.append(tool)
+        tools.append(self._get_termination_tool())
+        return tools
+
+    @property
+    def functions(self) -> List[OpenAIFunction]:
+        """
+
+        Gets the available functions for the agent.
+
+        Returns:
+            Sequence[OpenAIFunction]: The available functions for the agent.
+        """
+        return [ele.openai_function for ele in self.tools]
 
     def __iter__(self):
         return self
@@ -69,10 +94,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         self.conversation.add_message(assistant_message)
         self.iteration_count += 1
-
-        if self._is_finished(assistant_message):
-            self.completed = True
-            return (assistant_message, None)
 
         user_message = self._get_next_user_response(assistant_message)
         self.conversation.add_message(user_message)
@@ -100,14 +121,12 @@ class AutomataOpenAIAgent(OpenAIAgent):
                 break
 
         last_message = self.conversation.get_latest_message()
-        if (
-            not self.completed
-            or not isinstance(last_message, OpenAIChatMessage)
-            or not last_message.function_call
-            or "result" not in last_message.function_call.arguments
-        ):
+        print("last_message = ", last_message)
+        if not self.completed or not isinstance(last_message, OpenAIChatMessage):
             raise ValueError("The agent did not produce a result.")
-        return last_message.function_call.arguments["result"]
+        if not last_message.content:
+            raise ValueError("The agent produced an empty result.")
+        return last_message.content
 
     def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
         """
@@ -117,6 +136,10 @@ class AutomataOpenAIAgent(OpenAIAgent):
             provider (LLMConversationDatabaseProvider): The database provider to use.
 
         """
+        if not isinstance(provider, LLMConversationDatabaseProvider):
+            raise ValueError(f"Invalid database provider type: {type(provider)}")
+        if self.database_provider:
+            raise ValueError("The database provider has already been set.")
         self.database_provider = provider
         self.conversation.register_observer(provider)
 
@@ -145,20 +168,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         return input_messages
 
-    def _is_finished(self, assistant_message: OpenAIChatMessage) -> bool:
-        """
-        Checks if the task is complete based on the assistant's message.
-
-        Args:
-            assistant_message (OpenAIChatMessage): The assistant's message.
-
-        Returns:
-            bool: True if the task is complete, False otherwise.
-        """
-        if assistant_message.function_call:
-            return assistant_message.function_call.name == "call_termination"
-        return False
-
     def _get_next_user_response(self, assistant_message: OpenAIChatMessage) -> OpenAIChatMessage:
         """
         Generates a user message based on the assistant's message.
@@ -170,29 +179,15 @@ class AutomataOpenAIAgent(OpenAIAgent):
             OpenAIChatMessage: The user's message.
         """
         if assistant_message.function_call:
-            for tool in self.config.tools:
-                if not isinstance(tool, OpenAITool):
-                    raise ValueError(f"Invalid tool type: {type(tool)}")
+            for tool in self.tools:
                 if assistant_message.function_call.name == tool.openai_function.name:
+                    print("Running tool: ", tool)
+                    print("With arguments: ", assistant_message.function_call.arguments)
                     result = tool.run(assistant_message.function_call.arguments)
                     print("execution result = ", result)
+                    return OpenAIChatMessage(role="user", content=f"Execution Result:\n{result}")
 
-        return OpenAIChatMessage(role="user", content="Continue")
-
-    def _get_available_functions(self) -> Sequence[OpenAIFunction]:
-        """
-
-        Gets the available functions for the agent.
-
-        Returns:
-            Sequence[OpenAIFunction]: The available functions for the agent.
-        """
-        available_functions = [self._get_termination_function()]
-        for tool in self.config.tools:
-            if not isinstance(tool, OpenAITool):
-                raise ValueError(f"Invalid tool type: {type(tool)}")
-            available_functions.append(tool.openai_function)
-        return available_functions
+        return OpenAIChatMessage(role="user", content=AutomataOpenAIAgent.CONTINUE_MESSAGE)
 
     def _setup(self) -> None:
         """
@@ -207,17 +202,19 @@ class AutomataOpenAIAgent(OpenAIAgent):
         self.conversation.add_message(
             OpenAIChatMessage(role="system", content=self.config.system_instruction)
         )
+        for message in list(
+            self._build_initial_messages({"user_input_instructions": self.instructions})
+        ):
+            self.conversation.add_message(message)
 
-        self.conversation.add_messages(
-            list(self._build_initial_messages({"user_input_instructions": self.instructions}))
-        )
+        print("initial Messages = ", [ele.to_dict() for ele in self.conversation.messages])
 
         self.chat_provider = OpenAIChatProvider(
             model=self.config.model,
             temperature=self.config.temperature,
             stream=self.config.stream,
             conversation=self.conversation,
-            functions=list(self._get_available_functions()),
+            functions=self.functions,
         )
 
         logger.debug(f"Initializing with System Instruction:{self.config.system_instruction}\n\n")

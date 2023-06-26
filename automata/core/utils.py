@@ -39,7 +39,7 @@ def get_root_fpath() -> str:
     return os.path.join(get_root_py_fpath(), "..")
 
 
-def config_fpath() -> str:
+def get_config_fpath() -> str:
     """
     Get the path to the project config directory
 
@@ -66,7 +66,7 @@ def load_config(
         Any: The content of the YAML file as a Python object
     """
     with open(
-        os.path.join(config_fpath(), config_name, f"{file_name}.{config_type}"),
+        os.path.join(get_config_fpath(), config_name, f"{file_name}.{config_type}"),
         "r",
     ) as file:
         if config_type == "yaml":
