@@ -22,6 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 class FunctionCall(NamedTuple):
+    """
+    A function call to be made by the OpenAI agent
+    """
+
     name: str
     arguments: Dict[str, str]
 
@@ -32,7 +36,16 @@ class FunctionCall(NamedTuple):
         }
 
     @classmethod
-    def from_response_dict(cls, response_dict) -> "FunctionCall":
+    def from_response_dict(cls, response_dict: Dict[str, str]) -> "FunctionCall":
+        """
+        Return a FunctionCall from a response dictionary.
+
+        Args:
+            response_dict (Dict[str, str]): The response dictionary.
+
+        Returns:
+            FunctionCall: The FunctionCall.
+        """
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
@@ -58,9 +71,9 @@ class FunctionCall(NamedTuple):
             Dict[str, str]: The arguments for the function call.
 
         FIXME - This is a hacky solution to the problem of parsing Markdown
-        with JSON. It needs to be made more robust and generalizable.
-        Further, we need to be sure that this is adequate to solve all
-        possible problems we might face due to adopting a Markdown return format.
+            with JSON. It needs to be made more robust and generalizable.
+            Further, we need to be sure that this is adequate to solve all
+            possible problems we might face due to adopting a Markdown return format.
         """
         try:
             return json.loads(arguments)
@@ -75,28 +88,25 @@ class FunctionCall(NamedTuple):
             return {"result": result_str}
 
 
-class OpenAIBaseCompletionResult(LLMCompletionResult):
+class OpenAIChatCompletionResult(LLMCompletionResult):
+    """A class to represent a completion result from the OpenAI API."""
+
     def __init__(self, raw_data: Any) -> None:
         self.raw_data = raw_data
 
-    def get_role(self) -> Optional[str]:
-        raise NotImplementedError
+    def __str__(self) -> str:
+        return str(self.raw_data)
 
-    def get_content(self) -> Optional[str]:
-        raise NotImplementedError
-
-    def get_function_call(self) -> Optional[FunctionCall]:
-        raise NotImplementedError
-
-
-class OpenAIChatCompletionResult(OpenAIBaseCompletionResult):
     def get_role(self) -> str:
+        """Get the role of the message."""
         return self.raw_data["choices"][0]["message"]["role"]
 
     def get_content(self) -> Optional[str]:
+        """Get the content of the message."""
         return self.raw_data["choices"][0]["message"]["content"]
 
     def get_function_call(self) -> Optional[FunctionCall]:
+        """Get the function call of the message."""
         raw_message = self.raw_data["choices"][0]["message"]
         if "function_call" not in raw_message:
             return None
@@ -109,6 +119,7 @@ class OpenAIChatCompletionResult(OpenAIBaseCompletionResult):
     def from_args(
         cls, role: str, content: str, function_call: Optional[FunctionCall] = None
     ) -> "OpenAIChatCompletionResult":
+        """Get an OpenAIChatCompletionResult from arguments."""
         return cls(
             raw_data={
                 "choices": [
@@ -129,9 +140,11 @@ class OpenAIChatMessage(LLMChatMessage):
         self.function_call = function_call
 
     def __str__(self) -> str:
+        """Get a string representation of the message."""
         return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def to_dict(self) -> Dict[str, Any]:
+        """Get a dictionary representation of the message."""
         if self.function_call is None:
             return {"role": self.role, "content": self.content}
 
@@ -191,9 +204,7 @@ class OpenAIConversation(LLMConversation):
 
 
 class OpenAIFunction:
-    """
-    Represents a function callable by the OpenAI agent.
-    """
+    """Represents a function callable by the OpenAI agent."""
 
     def __init__(
         self,
@@ -202,12 +213,25 @@ class OpenAIFunction:
         properties: Dict[str, Dict[str, str]],  # TODO - We can probably make this more specific
         required: Optional[List[str]] = None,
     ):
+        """
+        Args:
+            name (str): The name of the function.
+            description (str): The description of the function.
+            properties (Dict[str, Dict[str, str]]): The properties of the function.
+            required (Optional[List[str]]): The required properties of the function.
+        """
         self.name = name
         self.description = description
         self.properties = properties
         self.required = required or []
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Get a dictionary representation of the function.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the function.
+        """
         return {
             "name": self.name,
             "description": self.description,
@@ -220,6 +244,8 @@ class OpenAIFunction:
 
 
 class OpenAIChatProvider(LLMChatProvider):
+    """A class to provide chat messages from the OpenAI API."""
+
     def __init__(
         self,
         model: str,
@@ -228,6 +254,14 @@ class OpenAIChatProvider(LLMChatProvider):
         functions: List[OpenAIFunction],
         conversation: OpenAIConversation,
     ) -> None:
+        """
+        Args:
+            model (str): The model to use for the chat.
+            temperature (float): The temperature to use for the chat.
+            stream (bool): Whether to stream the chat.
+            functions (List[OpenAIFunction]): The functions callable by the agent.
+            conversation (OpenAIConversation): The conversation to use for the chat.
+        """
         self.model = model
         self.temperature = temperature
         self.stream = stream
@@ -313,6 +347,11 @@ class OpenAIAgent(Agent):
         self.completed = False
 
     def _get_termination_tool(self) -> OpenAITool:
+        """
+        Returns:
+            OpenAITool: The tool used to terminate an ongoing conversation
+        """
+
         def terminate(result: str):
             self.completed = True
             return result
@@ -332,9 +371,6 @@ class OpenAIAgent(Agent):
 
     def _get_available_functions(self) -> Sequence[OpenAIFunction]:
         """
-
-        Gets the available functions for the agent.
-
         Returns:
             Sequence[OpenAIFunction]: The available functions for the agent.
         """
@@ -343,13 +379,6 @@ class OpenAIAgent(Agent):
 
 class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
     """OpenAIAgentToolBuilder is an abstract class for building tools for agents."""
-
-    def __init__(self, **kwargs) -> None:
-        pass
-
-    @abstractmethod
-    def build(self) -> List[Tool]:
-        pass
 
     @abstractmethod
     def build_for_open_ai(self) -> List[OpenAITool]:

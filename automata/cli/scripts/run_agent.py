@@ -4,15 +4,15 @@ from typing import Any, List, Set
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
-from automata.core.agent.agent import AutomataOpenAIAgent
+from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.tool.tool_utils import (
     AgentToolFactory,
     DependencyFactory,
     build_available_tools,
 )
+from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.llm.providers.available import AgentToolProviders
 
 logger = logging.getLogger(__name__)
 

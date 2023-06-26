@@ -3,7 +3,7 @@ import logging.config
 import time
 
 from automata.config.agent_config_builder import AutomataAgentConfigFactory
-from automata.core.agent.agent import AutomataOpenAIAgent
+from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.error import AgentTaskGeneralError, AgentTaskStateError
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.task import ITaskExecution, Task, TaskStatus

@@ -138,12 +138,15 @@ The following commands illustrate how to run the system with a trivial instructi
 # Run a single agent w/ trivial instruction
 automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
+# Run a single agent w/ a non-trivial instruction
+automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent." --model=gpt-3.5-turbo-16k
 
 # Runs a single agent as a task 
 # (this will create a task in the task_db.sqlite3)
 # (this will also create a task in the tasks/ directory)
 # (modifications to code are performed in the tasks/ directory)
-automata run-agent-task --instructions="Return true" --model=gpt-3.5-turbo-0613
+# TODO - Revive this functionality
+# automata run-agent-task --instructions="Return true" --model=gpt-3.5-turbo-0613
 ```
 
 ---

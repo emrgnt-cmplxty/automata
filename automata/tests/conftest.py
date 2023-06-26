@@ -8,7 +8,7 @@ import pytest
 
 from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
-from automata.core.agent.agent import AutomataOpenAIAgent
+from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
@@ -17,10 +17,10 @@ from automata.core.agent.tool.tool_utils import (
     DependencyFactory,
     build_available_tools,
 )
+from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.llm.providers.available import AgentToolProviders
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRankConfig

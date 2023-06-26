@@ -1,13 +1,17 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
+from pydantic import BaseModel
+
+from automata.config.config_types import AgentConfigName
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
     LLMConversationDatabaseProvider,
     LLMIterationResult,
 )
-from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.available import LLMPlatforms
 
 logger = logging.getLogger(__name__)
 
@@ -74,15 +78,40 @@ class Agent(ABC):
         pass
 
 
+class AgentToolProviders(Enum):
+    PY_READER = "py_reader"
+    PY_WRITER = "py_writer"
+    SYMBOL_SEARCH = "symbol_search"
+    CONTEXT_ORACLE = "context_oracle"
+
+
 class AgentToolBuilder(ABC):
     """AgentToolBuilder is an abstract class for building tools for agents."""
 
     TOOL_TYPE: Optional[AgentToolProviders] = None
     PLATFORM: Optional[LLMPlatforms] = None
 
-    def __init__(self, **kwargs) -> None:
-        pass
-
     @abstractmethod
     def build(self) -> List[Tool]:
         pass
+
+
+class AgentInstance(BaseModel):
+    """An abstract class for implementing an agent instance."""
+
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
+    description: str = ""
+    kwargs: Dict[str, Any] = {}
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @abstractmethod
+    def run(self, instructions: str) -> str:
+        pass
+
+    @classmethod
+    def create(
+        cls, config_name: AgentConfigName, description: str = "", **kwargs
+    ) -> "AgentInstance":
+        return cls(config_name=config_name, description=description, kwargs=kwargs)
