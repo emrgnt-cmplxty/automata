@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.core.agent.agent import AutomataOpenAIAgent
+from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.error import AgentMaxIterError
 
 

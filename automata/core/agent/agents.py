@@ -76,8 +76,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
     @property
     def tools(self) -> List[OpenAITool]:
         """
-        Gets the tools for the agent.
-
         Returns:
             List[OpenAITool]: The tools for the agent.
         """
@@ -92,11 +90,8 @@ class AutomataOpenAIAgent(OpenAIAgent):
     @property
     def functions(self) -> List[OpenAIFunction]:
         """
-
-        Gets the available functions for the agent.
-
         Returns:
-            Sequence[OpenAIFunction]: The available functions for the agent.
+            List[OpenAIFunction]: The available functions for the agent.
         """
         return [ele.openai_function for ele in self.tools]
 
@@ -113,6 +108,10 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
             This implementation calls next() on self until a AgentStopIteration exception is raised,
             at which point it will break out of the loop and return the final result.
+
+        Raises:
+            AgentMaxIterError: If the agent exceeds the maximum number of iterations.
+            AgentResultError: If the agent does not produce a result.
         """
         while True:
             try:
@@ -190,14 +189,13 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
     def _setup(self) -> None:
         """
-        Sets up the agent by initializing the database and loading the config.
+        Sets up the agent by initializing the conversation and chat provider.
 
         Note: This should be called before running the agent.
 
         Raises:
             AgentError: If the agent fails to initialize.
         """
-
         self.conversation.add_message(
             OpenAIChatMessage(role="system", content=self.config.system_instruction)
         )

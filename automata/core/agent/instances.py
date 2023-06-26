@@ -1,35 +1,18 @@
-from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Dict
 
 from pydantic import BaseModel
 
 from automata.config.agent_config_builder import AutomataAgentConfigFactory
 from automata.config.config_types import AgentConfigName
+from automata.core.base.agent import AgentInstance
 
 if TYPE_CHECKING:
-    from automata.core.agent.agent import AutomataOpenAIAgent
-
-
-class AgentInstance(BaseModel):
-    config_name: AgentConfigName = AgentConfigName.DEFAULT
-    description: str = ""
-    kwargs: Dict[str, Any] = {}
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    @abstractmethod
-    def run(self, instructions: str) -> str:
-        pass
-
-    @classmethod
-    def create(
-        cls, config_name: AgentConfigName, description: str = "", **kwargs
-    ) -> "AgentInstance":
-        return cls(config_name=config_name, description=description, kwargs=kwargs)
+    from automata.core.agent.agents import AutomataOpenAIAgent
 
 
 class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
+    """An instance of an Automata OpenAI agent."""
+
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}

@@ -15,12 +15,12 @@ system_template: >
   Example  - 
 
   User:
-    Fetch the source code for automata.core.llm.providers.available import AgentToolProviders
+    Fetch the source code for automata.core.base.agent import AgentToolProviders
 
   Agent:
     {
       'name': 'py-retriever-retrieve-code', 
-      'arguments': '{"module_path": "automata.core.llm.providers.available", "object_path": "AgentToolProviders"}'
+      'arguments': '{"module_path": "automata.core.base.agent", "object_path": "AgentToolProviders"}'
     }
 
   User:

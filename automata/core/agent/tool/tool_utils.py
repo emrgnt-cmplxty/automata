@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Sequence, Tuple
 from automata.config.config_types import ConfigCategory
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
+from automata.core.base.agent import AgentToolProviders
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.base.tool import Tool
 from automata.core.coding.py.reader import PyReader
@@ -17,7 +18,7 @@ from automata.core.context.py.retriever import (
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig

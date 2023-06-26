@@ -3,10 +3,10 @@ import textwrap
 from typing import List
 
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
-from automata.core.base.agent import AgentToolBuilder
+from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 from automata.core.symbol.search.symbol_search import SymbolSearch
 
@@ -43,7 +43,7 @@ class ContextOracleTool(AgentToolBuilder):
         return [
             Tool(
                 name="context-oracle",
-                function=lambda context: self._context_generator(*context),
+                function=self._context_generator,
                 description=textwrap.dedent(
                     """
                 This tool combines SymbolSearch and SymbolSimilarity to create contexts. Given a query, it uses SymbolSimilarity calculate the similarity between each symbol's documentation and the query returns the most similar document. Then, it leverages SymbolSearch to combine Semantic Search with PageRank to find the most relevant symbols to the query. The overview documentation of these symbols is then concated to the result of the SymbolSimilarity query to create a context.

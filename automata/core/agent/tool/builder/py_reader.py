@@ -2,11 +2,11 @@ import logging
 from typing import List, Optional
 
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
-from automata.core.base.agent import AgentToolBuilder
+from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR
 from automata.core.coding.py.reader import PyReader
-from automata.core.llm.providers.available import AgentToolProviders, LLMPlatforms
+from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 
 logger = logging.getLogger(__name__)
