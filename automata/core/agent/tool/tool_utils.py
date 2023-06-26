@@ -4,7 +4,7 @@ import os
 from typing import Any, Dict, List, Tuple
 
 from automata.config.config_types import ConfigCategory
-from automata.core.agent.tool.py_reader_builder import (
+from automata.core.agent.tool.builder.py_reader import (
     PyReaderOpenAIToolBuilder,
     PyReaderToolBuilder,
 )
@@ -323,7 +323,7 @@ class UnknownToolError(Exception):
 class AgentToolFactory:
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
         AgentToolProviders.PY_READER: [("py_reader", PyReader)],
-        # ToolkitType.PY_WRITER: [("py_writer", PyWriter)],
+        AgentToolProviders.PY_WRITER: [("py_writer", PyWriter)],
         # ToolkitType.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         # ToolkitType.CONTEXT_ORACLE: [
         #     ("symbol_search", SymbolSearch),
@@ -333,6 +333,10 @@ class AgentToolFactory:
 
     @staticmethod
     def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> List[Tool]:
+        print(
+            "AutomataOpenAIAgentToolBuilderRegistry.get_all_builders() = ",
+            AutomataOpenAIAgentToolBuilderRegistry.get_all_builders(),
+        )
         for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
                 if builder.PLATFORM == LLMPlatforms.OPENAI:

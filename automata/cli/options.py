@@ -61,7 +61,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option(
             "--main_config_name",
-            default="automata_reader",
+            default="automata_main",
             help="Which agent to use for this task?",
         ),
     ]
