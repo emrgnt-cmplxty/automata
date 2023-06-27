@@ -31,11 +31,11 @@ class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        main_config = AutomataOpenAIAgentConfigBuilder.create_from_args(
-            main_config_name=self.config_name, **self.kwargs
+        config = AutomataOpenAIAgentConfigBuilder.create_from_args(
+            config_to_load=self.config_name, **self.kwargs
         )
 
-        agent = AutomataOpenAIAgent(instructions, config=main_config)
+        agent = AutomataOpenAIAgent(instructions, config=config)
         result = agent.run()
         del agent
         return result

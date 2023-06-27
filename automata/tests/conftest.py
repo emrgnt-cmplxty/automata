@@ -203,7 +203,7 @@ def task():
     repo_manager = MockRepositoryManager()
     return AutomataTask(
         repo_manager,
-        main_config_name=AgentConfigName.TEST.value,
+        config_to_load=AgentConfigName.TEST.value,
         generate_deterministic_id=False,
         instructions="This is a test.",
     )

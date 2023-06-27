@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional
+from typing import Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel, PrivateAttr
+
+from automata.core.base.tool import Tool
 
 
 class ConfigCategory(Enum):
@@ -40,6 +42,17 @@ class AgentConfigName(Enum):
 
 
 class AgentConfig(ABC, BaseModel):
+    config_name: AgentConfigName = AgentConfigName.DEFAULT
+    tools: List[Tool] = []
+    instructions: str = ""
+    description: str = ""
+    model: str = ""
+    stream: bool = False
+    verbose: bool = False
+    max_iterations: int = 50
+    temperature: float = 0.7
+    session_id: Optional[str] = None
+
     class Config:
         arbitrary_types_allowed = True
 
@@ -54,24 +67,61 @@ class AgentConfig(ABC, BaseModel):
         pass
 
 
-class AgentConfigBuilder(BaseModel):
-    _config: AgentConfig = PrivateAttr()
+T = TypeVar("T", bound="AgentConfig")
 
-    def __init__(self, config: Optional[AgentConfig] = None) -> None:
+
+class AgentConfigBuilder(Generic[T]):
+    _config: T = PrivateAttr()
+
+    def __init__(self, config: Optional[T] = None) -> None:
         self._config = config or self.create_config()
 
-    @staticmethod
-    def create_config(config_name: Optional[AgentConfigName] = None) -> AgentConfig:
-        """Create the specific configuration object"""
-        raise NotImplementedError
-
-    def build(self) -> AgentConfig:
+    def build(self) -> T:
         """Build and return an Agent instance with the current configuration."""
         self._config.setup()
         return self._config
 
+    @staticmethod
+    def create_config(config_name: Optional[AgentConfigName] = None) -> T:
+        """Create the specific configuration object"""
+        raise NotImplementedError
+
+    @abstractmethod
+    def with_model(self, model: str) -> "AgentConfigBuilder":
+        pass
+
+    def with_tools(self, tools: List[Tool]) -> "AgentConfigBuilder":
+        self._config.tools = tools
+        return self
+
+    def with_stream(self, stream: bool) -> "AgentConfigBuilder":
+        self._validate_type(stream, bool, "Stream")
+        self._config.stream = stream
+        return self
+
+    def with_verbose(self, verbose: bool) -> "AgentConfigBuilder":
+        self._validate_type(verbose, bool, "Verbose")
+        self._config.verbose = verbose
+        return self
+
+    def with_max_iterations(self, max_iters: int) -> "AgentConfigBuilder":
+        self._validate_type(max_iters, int, "Max iters")
+        self._config.max_iterations = max_iters
+        return self
+
+    def with_temperature(self, temperature: float) -> "AgentConfigBuilder":
+        self._validate_type(temperature, float, "Temperature")
+        self._config.temperature = temperature
+        return self
+
+    def with_session_id(self, session_id: Optional[str]) -> "AgentConfigBuilder":
+        if session_id:
+            self._validate_type(session_id, str, "Session Id")
+        self._config.session_id = session_id
+        return self
+
     @classmethod
-    def from_config(cls, config: AgentConfig) -> "AgentConfigBuilder":
+    def from_config(cls, config: T) -> "AgentConfigBuilder":
         """Create an AgentConfigBuilder instance using the provided configuration object."""
         return cls(config)
 

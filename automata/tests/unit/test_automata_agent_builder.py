@@ -105,5 +105,5 @@ def test_config_loading_different_versions():
     for config_name in AgentConfigName:
         if config_name == AgentConfigName.DEFAULT:
             continue
-        main_config = AutomataOpenAIAgentConfig.load(config_name)
-        assert isinstance(main_config, AutomataOpenAIAgentConfig)
+        config = AutomataOpenAIAgentConfig.load(config_name)
+        assert isinstance(config, AutomataOpenAIAgentConfig)

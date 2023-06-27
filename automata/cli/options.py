@@ -60,7 +60,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which model to use?",
         ),
         click.option(
-            "--main_config_name",
+            "--config_to_load",
             default="automata_main",
             help="Which agent to use for this task?",
         ),
