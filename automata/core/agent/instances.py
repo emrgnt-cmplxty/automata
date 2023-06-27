@@ -11,22 +11,25 @@ if TYPE_CHECKING:
 
 
 class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
-    """An instance of an Automata OpenAI agent."""
+    """
+    An instance of an Automata OpenAI agent.
+
+    This class stores the instructions and configuration for an agent
+    So that it can be run multiple times without having to reinitialize
+    the agent each time.
+    """
 
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     description: str = ""
     kwargs: Dict[str, Any] = {}
 
+    class Config:
+        arbitrary_types_allowed = True
+
     def run(self, instructions: str) -> str:
         """
-        Executes the specified instructions on an agent built from this instance's configuration
-        and returns the result.
-
-        Args:
-            instructions (str): The instructions to be executed by the agent.
-
-        Returns:
-            str: The output produced by the agent.
+        Executes the specified instructions on an agent built
+        from this instance's configuration and returns the result.
 
         Raises:
             Exception: If any error occurs during agent execution.
@@ -39,6 +42,3 @@ class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
         result = agent.run()
         del agent
         return result
-
-    class Config:
-        arbitrary_types_allowed = True

@@ -99,20 +99,19 @@ class AutomataOpenAIAgent(OpenAIAgent):
     def run(self) -> str:
         """
         Runs the agent and iterates through the tasks until a result is produced
-          or the max iterations are exceeded.
+        or the max iterations are exceeded.
+
+        The agent must be setup before running.
+        This implementation calls next() on self until a AgentStopIteration exception is raised,
+        at which point it will break out of the loop and return the final result.
 
         Returns:
-            str: The final result or an error message if the result wasn't found in time.
-
-        Notes:
-            The agent must be setup before running.
-
-            This implementation calls next() on self until a AgentStopIteration exception is raised,
-            at which point it will break out of the loop and return the final result.
+            str: The final agent output or an error message if the result wasn't found before an exception.
 
         Raises:
-            AgentMaxIterError: If the agent exceeds the maximum number of iterations.
-            AgentResultError: If the agent does not produce a result.
+            AgentError:
+                If the agent exceeds the maximum number of iterations.
+                If the agent does not produce a result.
         """
         while True:
             try:
@@ -130,13 +129,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
         return last_message.content
 
     def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
-        """
-        Sets the database provider for the agent.
-
-        Args:
-            provider (LLMConversationDatabaseProvider): The database provider to use.
-
-        """
         if not isinstance(provider, LLMConversationDatabaseProvider):
             raise AgentDatabaseError(f"Invalid database provider type: {type(provider)}")
         if self.database_provider:
@@ -144,17 +136,15 @@ class AutomataOpenAIAgent(OpenAIAgent):
         self.database_provider = provider
         self.conversation.register_observer(provider)
 
-    def _build_initial_messages(self, formatters: Dict[str, str]) -> Sequence[LLMChatMessage]:
+    def _build_initial_messages(
+        self, instruction_formatter: Dict[str, str]
+    ) -> Sequence[LLMChatMessage]:
         """
         Builds the initial messages for the agent's conversation.
-
-        Args:
-            formatters (Dict[str, str]): A dictionary of formatters used to format the messages.
-
-        Returns:
-            List[OpenAIChatMessage]: A list of initial messages for the conversation.
+        The messages are built from the initial messages in the instruction config.
+        All messages are formatted using the given instruction_formatter.
         """
-        assert "user_input_instructions" in formatters
+        assert "user_input_instructions" in instruction_formatter
 
         messages_config = load_config(
             ConfigCategory.INSTRUCTION.value, self.config.instruction_version.value
@@ -163,7 +153,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_text(formatters, message["content"])
+            input_message = format_text(instruction_formatter, message["content"])
             input_messages.append(OpenAIChatMessage(role=message["role"], content=input_message))
 
         return input_messages
@@ -171,12 +161,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
     def _get_next_user_response(self, assistant_message: OpenAIChatMessage) -> OpenAIChatMessage:
         """
         Generates a user message based on the assistant's message.
-
-        Args:
-            assistant_message (OpenAIChatMessage): The assistant's message.
-
-        Returns:
-            OpenAIChatMessage: The user's message.
+        This is done by checking if the assistant's message contains a function call.
+        If it does, then the corresponding tool is run and the result is returned.
+        Otherwise, the user is prompted to continue the conversation.
         """
         if assistant_message.function_call:
             for tool in self.tools:

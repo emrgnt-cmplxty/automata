@@ -4,7 +4,7 @@ import pytest
 
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
-from automata.core.agent.tool.tool_utils import build_available_tools
+from automata.core.agent.tool.tool_utils import AgentToolFactory
 
 
 def test_automata_agent_init(automata_agent):
@@ -50,7 +50,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
     from automata.core.coding.py.reader import PyReader
     from automata.core.coding.py.writer import PyWriter
 
-    tools = build_available_tools(
+    tools = AgentToolFactory.build_tools(
         tool_list,
         py_reader=MagicMock(spec=PyReader),
         py_writer=MagicMock(spec=PyWriter),

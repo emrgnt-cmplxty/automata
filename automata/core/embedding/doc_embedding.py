@@ -3,7 +3,7 @@ from typing import List
 
 from jinja2 import Template
 
-from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
+from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.context.py.retriever import PyContextRetriever
 from automata.core.llm.completion import LLMChatCompletionProvider, LLMChatMessage

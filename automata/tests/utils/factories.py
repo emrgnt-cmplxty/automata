@@ -5,7 +5,7 @@ import pytest
 from automata.config.base import ConfigCategory
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
@@ -47,7 +47,7 @@ def symbol_search_live() -> SymbolSearch:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    symbol_code_similarity = SymbolSimilarity(code_embedding_handler)
+    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler)
 
     symbol_rank_config = SymbolRankConfig()
     symbol_graph_subgraph = symbol_graph.get_rankable_symbol_subgraph()

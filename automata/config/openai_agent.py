@@ -32,25 +32,10 @@ class AutomataOpenAIAgentConfig(AgentConfig):
 
     class TemplateFormatter:
         @staticmethod
-        def create_default_formatter(
-            config: "AutomataOpenAIAgentConfig", max_default_overview_symbols: int = 100
-        ) -> Dict[str, str]:
+        def create_default_formatter(config: "AutomataOpenAIAgentConfig") -> Dict[str, str]:
             """
-            Create a default template formatter. The template formatter is used to format entries
-            in the loaded agent template. These entries are denoted as {variable_name} in the template.
-
-            Args:
-                config (AutomataAgentConfig): The AutomataAgentConfig to use.
-
-            Returns:
-                Dict[str, str]: The default template formatter.
-
-            Raises:
-                NotImplementedError: If the config_name is not supported.
-
             TODO:
-                - Consider how we might implement dependency injection across this call stack
-                - Replace symbol_search with symbol_rank when it is implemented on DependencyFactory
+                - Re-implement this method after the new instruction configs are finalized.
             """
             formatter: Dict[str, str] = {}
             if config.config_name == AgentConfigName.AUTOMATA_MAIN:
@@ -83,11 +68,15 @@ class AutomataOpenAIAgentConfig(AgentConfig):
         return AutomataOpenAIAgentConfig(**loaded_yaml)
 
     @staticmethod
-    def get_provider() -> LLMProvider:
+    def get_llm_provider() -> LLMProvider:
         """Get the provider for the agent."""
         return LLMProvider.OPENAI
 
     def _formatted_instruction(self) -> str:
+        """
+        Formats the system template with the system template formatter
+        to produce the system instruction.
+        """
         formatter_keys = set(self.system_template_formatter.keys())
         template_vars = set(self.system_template_variables)
 
@@ -131,9 +120,6 @@ class AutomataOpenAIAgentConfigBuilder(AgentConfigBuilder):
         """
         Set the template formatter for the AutomataAgent instance and validate if it is supported.
 
-        Args:
-            model (str): A string containing the model name for the AutomataAgent.
-
         Raises:
             ValueError: If the provided model is not found in the list of supported models.
         """
@@ -152,16 +138,7 @@ class AutomataOpenAIAgentConfigBuilder(AgentConfigBuilder):
 
     @staticmethod
     def create_from_args(*args, **kwargs) -> AutomataOpenAIAgentConfig:
-        """
-        Creates an AutomataAgentConfig instance from the provided arguments.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            AutomataAgentConfig: An AutomataAgentConfig instance.
-        """
+        """Creates an AutomataAgentConfig instance from the provided arguments."""
 
         config_to_load = kwargs.get("config_to_load", None)
         config = kwargs.get("config", None)

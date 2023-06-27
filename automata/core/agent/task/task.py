@@ -16,10 +16,6 @@ class AutomataTask(Task):
 
     def __init__(self, *args, **kwargs):
         """
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
         Keyword Args:
             instructions (str): The instructions for the task.
             path_to_root_py (str): The path to the root python folder.
@@ -50,15 +46,6 @@ class AutomataTask(Task):
         logging.debug("Logging initialized.")
 
     def get_logs(self) -> str:
-        """
-        Gets the logs for the task.
-
-        Returns:
-            str: The logs for the task.
-
-        Raises:
-            FileNotFoundError: If the log file for the task does not exist.
-        """
         log_dir = self._get_log_dir()
         log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
 

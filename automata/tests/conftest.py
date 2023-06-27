@@ -12,15 +12,11 @@ from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tool.tool_utils import (
-    AgentToolFactory,
-    DependencyFactory,
-    build_available_tools,
-)
+from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
 from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRankConfig
@@ -121,7 +117,7 @@ def symbol_graph_mock(mocker):
 @pytest.fixture
 def symbol_search(mocker, symbol_graph_mock):
     """Creates a SymbolSearch object with Mock dependencies for testing"""
-    symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarity)
+    symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarityCalculator)
     symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
     symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
     code_subgraph_mock = mocker.MagicMock(spec=SymbolGraph.SubGraph)
@@ -159,7 +155,7 @@ def automata_agent(mocker, automata_agent_config_builder):
 
     for dependency in dependencies:
         kwargs[dependency] = DependencyFactory().get(dependency)
-    tools = build_available_tools(["py_reader"], **kwargs)
+    tools = AgentToolFactory.build_tools(["py_reader"], **kwargs)
 
     instructions = "Test instruction."
 

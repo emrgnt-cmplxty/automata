@@ -22,11 +22,6 @@ class Agent(ABC):
     """
 
     def __init__(self, instructions: str) -> None:
-        """
-        Args:
-            instructions (str): The instructions to be executed by the agent.
-            config (Any): The configuration for the agent.
-        """
         self.instructions = instructions
         self.completed = False
         self.database_provider: Optional[LLMConversationDatabaseProvider] = None
@@ -52,32 +47,30 @@ class Agent(ABC):
     def run(self) -> str:
         """
         Runs the agent until it completes its task.
-        The task is complete when iter_step returns None.
+        The task is complete when next returns None.
 
         Raises:
             AgentError: If the agent has already completed its task or exceeds the maximum number of iterations.
-
-        Note: The agent must be setup before running.
         """
         pass
 
     @abstractmethod
     def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
-        """
-        Sets the database provider for the agent.
-
-        Args:
-            provider (LLMConversationDatabaseProvider): The database provider.
-        """
         pass
 
     @abstractmethod
     def _setup(self) -> None:
-        """Sets up the agent before running."""
         pass
 
 
 class AgentToolProviders(Enum):
+    """
+    An enum for the different types of agent tools.
+
+    Each tool type corresponds to a different type of agent tool.
+    The associated builders are located in automata/core/agent/builder/*
+    """
+
     PY_READER = "py_reader"
     PY_WRITER = "py_writer"
     SYMBOL_SEARCH = "symbol_search"
@@ -85,7 +78,12 @@ class AgentToolProviders(Enum):
 
 
 class AgentToolBuilder(ABC):
-    """AgentToolBuilder is an abstract class for building tools for agents."""
+    """
+
+    AgentToolBuilder is an abstract class for building tools for agents.
+
+    Each builder builds the tools associated with a specific AgentToolProviders.
+    """
 
     TOOL_TYPE: Optional[AgentToolProviders] = None
     PLATFORM: Optional[LLMProvider] = None

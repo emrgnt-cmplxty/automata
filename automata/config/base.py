@@ -75,8 +75,8 @@ class AgentConfig(ABC, BaseModel):
 
     @staticmethod
     @abstractmethod
-    def get_provider() -> LLMProvider:
-        """Get the provider for the agent."""
+    def get_llm_provider() -> LLMProvider:
+        """Get the LLM provider for the agent."""
         pass
 
     @classmethod
@@ -85,7 +85,7 @@ class AgentConfig(ABC, BaseModel):
         config_abs_path = os.path.join(
             file_dir_path,
             ConfigCategory.AGENT.value,
-            cls.get_provider().value,
+            cls.get_llm_provider().value,
             f"{config_name.value}.yaml",
         )
 

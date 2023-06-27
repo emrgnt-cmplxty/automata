@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tool.builder.context_oracle import ContextOracleTool
+from automata.core.agent.tool.builder.context_oracle import ContextOracleToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.symbol.symbol_types import SymbolDocEmbedding
 
@@ -11,7 +11,7 @@ from automata.core.symbol.symbol_types import SymbolDocEmbedding
 def context_oracle_tool_builder():
     symbol_search_mock = MagicMock()
     symbol_doc_similarity_mock = MagicMock()
-    return ContextOracleTool(
+    return ContextOracleToolBuilder(
         symbol_search=symbol_search_mock, symbol_doc_similarity=symbol_doc_similarity_mock
     )
 
@@ -29,7 +29,7 @@ def test_build(context_oracle_tool_builder):
 
 
 def test_context_generator(context_oracle_tool_builder):
-    context_oracle_tool_builder.symbol_doc_similarity.get_query_similarity_dict = MagicMock(
+    context_oracle_tool_builder.symbol_doc_similarity.calculate_query_similarity_dict = MagicMock(
         return_value={"doc1": 0.9, "doc2": 0.8}
     )
     context_oracle_tool_builder.symbol_doc_similarity.embedding_handler.get_embedding = MagicMock(
