@@ -1,7 +1,9 @@
+import os
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Generic, List, Optional, TypeVar
+from typing import Dict, Generic, List, Optional, TypeVar
 
+import yaml
 from pydantic import BaseModel, PrivateAttr
 
 from automata.core.base.tool import Tool
@@ -41,6 +43,10 @@ class AgentConfigName(Enum):
     AUTOMATA_MAIN = "automata_main"
 
 
+class LLMProvider(Enum):
+    OPENAI = "openai"
+
+
 class AgentConfig(ABC, BaseModel):
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     tools: List[Tool] = []
@@ -55,6 +61,7 @@ class AgentConfig(ABC, BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        provider = LLMProvider.OPENAI
 
     @abstractmethod
     def setup(self) -> None:
@@ -65,6 +72,27 @@ class AgentConfig(ABC, BaseModel):
     def load(cls, config_name: AgentConfigName) -> "AgentConfig":
         """Loads the config for the agent."""
         pass
+
+    @staticmethod
+    @abstractmethod
+    def get_provider() -> LLMProvider:
+        """Get the provider for the agent."""
+        pass
+
+    @classmethod
+    def _load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
+        file_dir_path = os.path.dirname(os.path.abspath(__file__))
+        config_abs_path = os.path.join(
+            file_dir_path,
+            ConfigCategory.AGENT.value,
+            cls.get_provider().value,
+            f"{config_name.value}.yaml",
+        )
+
+        with open(config_abs_path, "r") as file:
+            loaded_yaml = yaml.safe_load(file)
+        loaded_yaml["config_name"] = config_name
+        return loaded_yaml
 
 
 T = TypeVar("T", bound="AgentConfig")

@@ -1,7 +1,7 @@
 import logging
 import os
 
-from automata.config.config_types import ConfigCategory
+from automata.config.base import ConfigCategory
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.coding.py.writer import PyDocWriter
 from automata.core.utils import get_config_fpath, get_root_py_fpath

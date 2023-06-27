@@ -2,11 +2,11 @@ import logging
 import textwrap
 from typing import List
 
+from automata.config.base import LLMProvider
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 from automata.core.symbol.search.symbol_search import SymbolSearch
 
@@ -98,7 +98,7 @@ class ContextOracleTool(AgentToolBuilder):
 @AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
 class ContextOracleOpenAIToolBuilder(ContextOracleTool, OpenAIAgentToolBuilder):
     TOOL_TYPE = AgentToolProviders.CONTEXT_ORACLE
-    PLATFORM = LLMPlatforms.OPENAI
+    PLATFORM = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

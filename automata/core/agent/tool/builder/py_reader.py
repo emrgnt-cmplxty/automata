@@ -1,12 +1,12 @@
 import logging
 from typing import List, Optional
 
+from automata.config.base import LLMProvider
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import NO_RESULT_FOUND_STR
 from automata.core.coding.py.reader import PyReader
-from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 
 logger = logging.getLogger(__name__)
@@ -135,7 +135,7 @@ class PyReaderToolBuilder(AgentToolBuilder):
 @AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
 class PyReaderOpenAIToolBuilder(PyReaderToolBuilder, OpenAIAgentToolBuilder):
     TOOL_TYPE = AgentToolProviders.PY_READER
-    PLATFORM = LLMPlatforms.OPENAI
+    PLATFORM = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

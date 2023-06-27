@@ -3,7 +3,7 @@ from unittest.mock import PropertyMock, patch
 
 import pytest
 
-from automata.config.config_types import AgentConfigName
+from automata.config.base import AgentConfigName
 from automata.core.agent.task.task import AutomataTask
 from automata.core.base.task import TaskStatus
 

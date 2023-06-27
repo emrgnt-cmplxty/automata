@@ -5,13 +5,12 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from automata.config.config_types import AgentConfigName
+from automata.config.base import AgentConfigName, LLMProvider
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
     LLMConversationDatabaseProvider,
     LLMIterationResult,
 )
-from automata.core.llm.providers.available import LLMPlatforms
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +88,7 @@ class AgentToolBuilder(ABC):
     """AgentToolBuilder is an abstract class for building tools for agents."""
 
     TOOL_TYPE: Optional[AgentToolProviders] = None
-    PLATFORM: Optional[LLMPlatforms] = None
+    PLATFORM: Optional[LLMProvider] = None
 
     @abstractmethod
     def build(self) -> List[Tool]:

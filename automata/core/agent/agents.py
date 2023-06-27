@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Final, List, Sequence
 
-from automata.config.config_types import ConfigCategory
+from automata.config.base import ConfigCategory
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
 from automata.core.agent.error import (
     AgentDatabaseError,

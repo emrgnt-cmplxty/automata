@@ -3,7 +3,7 @@ import logging
 import os
 from typing import Any, Dict, List, Sequence, Tuple
 
-from automata.config.config_types import ConfigCategory
+from automata.config.base import ConfigCategory, LLMProvider
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolProviders
@@ -18,7 +18,6 @@ from automata.core.context.py.retriever import (
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarity
-from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
@@ -257,7 +256,7 @@ class AgentToolFactory:
     def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
         for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
-                if builder.PLATFORM == LLMPlatforms.OPENAI:
+                if builder.PLATFORM == LLMProvider.OPENAI:
                     return builder(**kwargs).build_for_open_ai()
                 else:
                     return builder(**kwargs).build()

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from pydantic import BaseModel
 
-from automata.config.config_types import AgentConfigName
+from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.base.agent import AgentInstance
 

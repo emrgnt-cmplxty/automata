@@ -1,11 +1,11 @@
 from enum import Enum
 from typing import List, Optional, Union
 
+from automata.config.base import LLMProvider
 from automata.core.agent.error import UnknownToolError
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
-from automata.core.llm.providers.available import LLMPlatforms
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 from automata.core.symbol.search.symbol_search import (
     ExactSearchResult,
@@ -158,7 +158,7 @@ class SymbolSearchToolBuilder(AgentToolBuilder):
 @AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
 class SymbolSearchOpenAIToolBuilder(SymbolSearchToolBuilder, OpenAIAgentToolBuilder):
     TOOL_TYPE = AgentToolProviders.SYMBOL_SEARCH
-    PLATFORM = LLMPlatforms.OPENAI
+    PLATFORM = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()
