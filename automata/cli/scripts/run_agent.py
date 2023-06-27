@@ -2,8 +2,8 @@ import logging
 from typing import Any, List, Set
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
-from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
+from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.tool.tool_utils import (
     AgentToolFactory,
@@ -75,7 +75,7 @@ def main(*args, **kwargs):
     logger.info("Done building toolkits...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata_main"))
     agent_config = (
-        AutomataAgentConfigBuilder.from_name(config_name)
+        AutomataOpenAIAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)
         .with_model(kwargs.get("model", "gpt-4-0613"))
         .build()

@@ -274,13 +274,19 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         set_openai_api_key()
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
-        response = openai.ChatCompletion.create(
-            model=self.model,
-            messages=self.conversation.get_messages_for_next_completion(),
-            functions=[ele.to_dict() for ele in self.functions],
-            function_call="auto",  # auto is default, but we'll be explicit
-        )
-
+        functions = [ele.to_dict() for ele in self.functions]
+        if functions:
+            response = openai.ChatCompletion.create(
+                model=self.model,
+                messages=self.conversation.get_messages_for_next_completion(),
+                functions=functions,
+                function_call="auto",  # auto is default, but we'll be explicit
+            )
+        else:
+            response = openai.ChatCompletion.create(
+                model=self.model,
+                messages=self.conversation.get_messages_for_next_completion(),
+            )
         return OpenAIChatMessage.from_completion_result(
             OpenAIChatCompletionResult(raw_data=response)
         )
@@ -292,7 +298,9 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             message (LLMChatMessage): The message to append.
         """
         if not isinstance(message, OpenAIChatMessage):
-            message = OpenAIChatMessage(role=message.role, content=message.content)
+            self.conversation.add_message(
+                OpenAIChatMessage(role=message.role, content=message.content)
+            )
         else:
             self.conversation.add_message(message)
 

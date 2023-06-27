@@ -55,7 +55,7 @@ def test_deterministic_task_id(automata_agent_config_builder):
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        main_config=automata_agent_config_builder,
+        config=automata_agent_config_builder,
         helper_agent_names="test",
         instructions="test1",
     )
@@ -65,7 +65,7 @@ def test_deterministic_task_id(automata_agent_config_builder):
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        main_config=automata_agent_config_builder,
+        config=automata_agent_config_builder,
         helper_agent_names="test",
         instructions="test1",
     )
@@ -75,7 +75,7 @@ def test_deterministic_task_id(automata_agent_config_builder):
         test2="arg3",
         priority=5,
         generate_deterministic_id=True,
-        main_config=automata_agent_config_builder,
+        config=automata_agent_config_builder,
         helper_agent_names="test",
         instructions="test1",
     )
@@ -85,7 +85,7 @@ def test_deterministic_task_id(automata_agent_config_builder):
         test2="arg2",
         priority=5,
         generate_deterministic_id=False,
-        main_config=automata_agent_config_builder,
+        config=automata_agent_config_builder,
         helper_agent_names="test",
         instructions="test1",
     )
@@ -103,7 +103,7 @@ def test_deterministic_vs_non_deterministic_task_id():
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        main_config_name=AgentConfigName.TEST.value,
+        config_to_load=AgentConfigName.TEST.value,
         instructions="test1",
     )
 
@@ -113,7 +113,7 @@ def test_deterministic_vs_non_deterministic_task_id():
         test2="arg2",
         priority=5,
         generate_deterministic_id=False,
-        main_config_name=AgentConfigName.TEST.value,
+        config_to_load=AgentConfigName.TEST.value,
         instructions="test1",
     )
     assert task_1.task_id != task_2.task_id

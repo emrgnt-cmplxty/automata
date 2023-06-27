@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from pydantic import BaseModel
 
-from automata.config.agent_config_builder import AutomataAgentConfigFactory
 from automata.config.config_types import AgentConfigName
+from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.base.agent import AgentInstance
 
 if TYPE_CHECKING:
@@ -31,11 +31,11 @@ class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        main_config = AutomataAgentConfigFactory.create_config(
-            main_config_name=self.config_name, **self.kwargs
+        config = AutomataOpenAIAgentConfigBuilder.create_from_args(
+            config_to_load=self.config_name, **self.kwargs
         )
 
-        agent = AutomataOpenAIAgent(instructions, config=main_config)
+        agent = AutomataOpenAIAgent(instructions, config=config)
         result = agent.run()
         del agent
         return result

@@ -69,7 +69,7 @@ def main(*args, **kwargs) -> str:
     embedding_handler = SymbolDocEmbeddingHandler(
         embedding_db_l2,
         OpenAIEmbeddingProvider(),
-        OpenAIChatCompletionProvider(),
+        OpenAIChatCompletionProvider(model=kwargs.get("model", "gpt-4")),
         symbol_search,
         py_context_retriever,
     )

@@ -2,7 +2,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.config.config_types import AgentConfigName, AutomataAgentConfig
+from automata.config.config_types import AgentConfigName
+from automata.config.openai_agent import AutomataOpenAIAgentConfig
 from automata.core.agent.tool.tool_utils import build_available_tools
 
 
@@ -77,7 +78,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
 def test_builder_creates_proper_instance(automata_agent_config_builder):
     config = automata_agent_config_builder.build()
 
-    assert isinstance(config, AutomataAgentConfig)
+    assert isinstance(config, AutomataOpenAIAgentConfig)
 
 
 def test_builder_invalid_input_types(automata_agent_config_builder):
@@ -104,5 +105,5 @@ def test_config_loading_different_versions():
     for config_name in AgentConfigName:
         if config_name == AgentConfigName.DEFAULT:
             continue
-        main_config = AutomataAgentConfig.load(config_name)
-        assert isinstance(main_config, AutomataAgentConfig)
+        config = AutomataOpenAIAgentConfig.load(config_name)
+        assert isinstance(config, AutomataOpenAIAgentConfig)
