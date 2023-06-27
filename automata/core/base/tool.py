@@ -20,7 +20,4 @@ class Tool(BaseModel):
 
     def run(self, tool_input: Dict[str, str]) -> str:
         """Use the tool."""
-        print("Running tool name:", self.name)
-
-        print("Running tool with input:", tool_input)
         return self.function(**tool_input)

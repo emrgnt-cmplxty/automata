@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-from automata.config.agent_config_builder import AutomataAgentConfigBuilder
 from automata.config.config_types import AgentConfigName
+from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
@@ -139,7 +139,7 @@ def symbol_search(mocker, symbol_graph_mock):
 @pytest.fixture
 def automata_agent_config_builder():
     config_name = AgentConfigName.TEST
-    return AutomataAgentConfigBuilder.from_name(config_name)
+    return AutomataOpenAIAgentConfigBuilder.from_name(config_name)
 
 
 @pytest.fixture

@@ -2,7 +2,7 @@ import logging
 import logging.config
 import time
 
-from automata.config.agent_config_builder import AutomataAgentConfigFactory
+from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.error import AgentTaskGeneralError, AgentTaskStateError
 from automata.core.agent.task.task import AutomataTask
@@ -53,7 +53,7 @@ class IAutomataTaskExecution(ITaskExecution):
         TODO - Consider explicitly passing args to the ConfigFactory
                Instead of passing kwargs to the create_config method.
         """
-        agent_config = AutomataAgentConfigFactory().create_config(**task.kwargs)
+        agent_config = AutomataOpenAIAgentConfigBuilder.create_from_args(**task.kwargs)
         return AutomataOpenAIAgent(
             task.instructions,
             agent_config,
