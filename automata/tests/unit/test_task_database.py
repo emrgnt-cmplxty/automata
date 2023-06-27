@@ -62,7 +62,6 @@ def test_database_lifecycle(db, task):
     # Test that the task doesn't exist yet
     assert not db.contains(task)
     tasks = db.get_tasks_by_query(["status"], [str(task.status.value)])
-    print("tasks = ", tasks)
 
     # Test insertion of a task
     db.insert_task(task)
@@ -72,7 +71,6 @@ def test_database_lifecycle(db, task):
     task.status = TaskStatus.SUCCESS
     db.update_task(task)
     tasks = db.get_tasks_by_query(["status"], [str(task.status.value)])
-    print("tasks = ", tasks)
     assert len(tasks) == 1
     assert tasks[0].status == task.status
 

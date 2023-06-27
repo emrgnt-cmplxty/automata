@@ -1,7 +1,8 @@
 import logging
 from typing import Dict, Final, List, Sequence
 
-from automata.config.config_types import AutomataAgentConfig, ConfigCategory
+from automata.config.config_types import ConfigCategory
+from automata.config.openai_agent import AutomataOpenAIAgentConfig
 from automata.core.agent.error import (
     AgentDatabaseError,
     AgentMaxIterError,
@@ -35,7 +36,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
     CONTINUE_MESSAGE: Final = "Continue.."
     SUCCESS_PREFIX: Final = "Execution Result:\n"
 
-    def __init__(self, instructions: str, config: AutomataAgentConfig) -> None:
+    def __init__(self, instructions: str, config: AutomataOpenAIAgentConfig) -> None:
         """
         Initializes an AutomataAgent.
 
