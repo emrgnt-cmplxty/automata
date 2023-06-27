@@ -37,15 +37,6 @@ class FunctionCall(NamedTuple):
 
     @classmethod
     def from_response_dict(cls, response_dict: Dict[str, str]) -> "FunctionCall":
-        """
-        Return a FunctionCall from a response dictionary.
-
-        Args:
-            response_dict (Dict[str, str]): The response dictionary.
-
-        Returns:
-            FunctionCall: The FunctionCall.
-        """
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
@@ -62,15 +53,9 @@ class FunctionCall(NamedTuple):
     @staticmethod
     def handle_termination(arguments: str) -> Dict[str, str]:
         """
-        Handle the termination of the conversation.
+        Handle the termination message from the conversation.
 
-        Args:
-            arguments (str): The arguments for the function call.
-
-        Returns:
-            Dict[str, str]: The arguments for the function call.
-
-        FIXME - This is a hacky solution to the problem of parsing Markdown
+        Note/FIXME - This is a hacky solution to the problem of parsing Markdown
             with JSON. It needs to be made more robust and generalizable.
             Further, we need to be sure that this is adequate to solve all
             possible problems we might face due to adopting a Markdown return format.
@@ -106,7 +91,6 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
         return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def get_function_call(self) -> Optional[FunctionCall]:
-        """Get the function call of the message."""
         if not self.function_call:
             return None
         else:
@@ -116,7 +100,6 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
     def from_args(
         cls, role: str, content: str, function_call: Optional[FunctionCall] = None
     ) -> "OpenAIChatCompletionResult":
-        """Get an OpenAIChatCompletionResult from arguments."""
         return cls(
             raw_data={
                 "choices": [
@@ -127,7 +110,7 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
 
 
 class OpenAIChatMessage(LLMChatMessage):
-    """A class to represent a chat processed chat message to or from OpenAI."""
+    """A class to represent a processed chat message TO or FROM the OpenAI LLM Chat API."""
 
     function_call: Optional[FunctionCall] = None
 
@@ -141,11 +124,9 @@ class OpenAIChatMessage(LLMChatMessage):
         self.function_call = function_call
 
     def __str__(self) -> str:
-        """Get a string representation of the message."""
         return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def to_dict(self) -> Dict[str, Any]:
-        """Get a dictionary representation of the message."""
         if self.function_call is None:
             return {"role": self.role, "content": self.content}
 
@@ -159,7 +140,6 @@ class OpenAIChatMessage(LLMChatMessage):
     def from_completion_result(
         cls, completion_result: OpenAIChatCompletionResult
     ) -> "OpenAIChatMessage":
-        """Get an OpenAIChatMessage from an OpenAIChatCompletionResult."""
         return cls(
             role=completion_result.get_role(),
             content=completion_result.get_content(),
@@ -217,25 +197,12 @@ class OpenAIFunction:
         properties: Dict[str, Dict[str, str]],  # TODO - We can probably make this more specific
         required: Optional[List[str]] = None,
     ):
-        """
-        Args:
-            name (str): The name of the function.
-            description (str): The description of the function.
-            properties (Dict[str, Dict[str, str]]): The properties of the function.
-            required (Optional[List[str]]): The required properties of the function.
-        """
         self.name = name
         self.description = description
         self.properties = properties
         self.required = required or []
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Get a dictionary representation of the function.
-
-        Returns:
-            Dict[str, Any]: A dictionary representation of the function.
-        """
         return {
             "name": self.name,
             "description": self.description,
@@ -258,14 +225,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         functions: List[OpenAIFunction] = [],
         conversation: OpenAIConversation = OpenAIConversation(),
     ) -> None:
-        """
-        Args:
-            model (str): The model to use for the chat.
-            temperature (float): The temperature to use for the chat.
-            stream (bool): Whether to stream the chat.
-            functions (List[OpenAIFunction]): The functions callable by the agent.
-            conversation (OpenAIConversation): The conversation to use for the chat.
-        """
         self.model = model
         self.temperature = temperature
         self.stream = stream
@@ -292,11 +251,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         )
 
     def add_message(self, message: LLMChatMessage) -> None:
-        """Appends a new message to the conversation.
-
-        Args:
-            message (LLMChatMessage): The message to append.
-        """
         if not isinstance(message, OpenAIChatMessage):
             self.conversation.add_message(
                 OpenAIChatMessage(role=message.role, content=message.content)
@@ -305,36 +259,27 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             self.conversation.add_message(message)
 
     def reset(self) -> None:
-        """
-        Resets the chat provider
-        """
         self.conversation.reset_conversation()
 
 
 class OpenAIEmbeddingProvider(EmbeddingProvider):
-    """A class to provide embeddings for symbols"""
+    """A class to provide embeddings from the OpenAI API."""
 
     def __init__(self, engine: str = "text-embedding-ada-002") -> None:
         self.engine = engine
         set_openai_api_key()
 
-    def build_embedding(self, symbol_source: str) -> np.ndarray:
-        """
-        Get the embedding for a symbol.
-
-        Args:
-            symbol_source (str): The source code of the symbol
-
-        Returns:
-            A numpy array representing the embedding
-        """
+    def build_embedding(self, source: str) -> np.ndarray:
+        """Gets an embedding for the given source text."""
         # wait to import build_embedding to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
-        return np.array(get_embedding(symbol_source, engine=self.engine))
+        return np.array(get_embedding(source, engine=self.engine))
 
 
 class OpenAITool(Tool):
+    """A tool that can be used by the OpenAI agent."""
+
     properties: Dict[str, Dict[str, str]]
     required: List[str]
     openai_function: OpenAIFunction
@@ -366,9 +311,7 @@ class OpenAITool(Tool):
 
 
 class OpenAIAgent(Agent):
-    """
-    An agent that can interact with the OpenAI API.
-    """
+    """An agent that is powered by the OpenAI API."""
 
     def __init__(self, instructions: str) -> None:
         super().__init__(instructions=instructions)
@@ -376,10 +319,7 @@ class OpenAIAgent(Agent):
         self.completed = False
 
     def _get_termination_tool(self) -> OpenAITool:
-        """
-        Returns:
-            OpenAITool: The tool used to terminate an ongoing conversation
-        """
+        """Gets the tool responsible for terminating the OpenAI agent."""
 
         def terminate(result: str):
             self.completed = True
@@ -399,10 +339,7 @@ class OpenAIAgent(Agent):
         )
 
     def _get_available_functions(self) -> Sequence[OpenAIFunction]:
-        """
-        Returns:
-            Sequence[OpenAIFunction]: The available functions for the agent.
-        """
+        """Gets the available functions for the agent."""
         raise NotImplementedError
 
 
@@ -411,6 +348,9 @@ class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
 
     @abstractmethod
     def build_for_open_ai(self) -> List[OpenAITool]:
+        """Builds an OpenAITool to be used by the associated agent.
+        TODO - Automate as much of this as possible, and modularize
+        """
         pass
 
     @classmethod

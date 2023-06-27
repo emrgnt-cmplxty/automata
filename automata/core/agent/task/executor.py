@@ -18,8 +18,9 @@ class IAutomataTaskExecution(ITaskExecution):
 
     def execute(self, task: Task) -> None:
         """
-        Executes the task by creawting and running an AutomataAgent
-        Incremetns the task's retry count if the task fails.
+        Executes the task by creating and running an AutomataAgent.
+        Eachtime the execution fails, the task's retry count is incremented.
+        After the maximum number of retries is reached, the task is marked as failed.
 
         Raises:
             Exception: If the task fails on execution
@@ -45,11 +46,8 @@ class IAutomataTaskExecution(ITaskExecution):
     @staticmethod
     def _build_agent(task: AutomataTask) -> AutomataOpenAIAgent:
         """
-        Builds the agent for the task.
-
-        Returns:
-            AutomataAgent: The agent for the task.
-
+        Uses the task's arguments to build an AutomataAgent from
+        the AutomataOpenAIAgentConfigBuilder.
         TODO - Consider explicitly passing args to the ConfigFactory
                Instead of passing kwargs to the create_config method.
         """
@@ -61,15 +59,9 @@ class IAutomataTaskExecution(ITaskExecution):
 
 
 class AutomataTaskExecutor:
-    """
-    Class for executing tasks using different behaviors.
-    """
+    """Uses the ITaskExecution behavior to execute a task."""
 
     def __init__(self, execution: ITaskExecution) -> None:
-        """
-        Args:
-            execution (ITaskExecution): The behavior to use for executing the task.
-        """
         self.execution = execution
 
     def execute(self, task: AutomataTask) -> None:
@@ -79,12 +71,9 @@ class AutomataTaskExecutor:
         This method will retry the task if it fails,
         until the maximum number of retries is reached.
 
-        Args:
-            task (AutomataTask): The task to execute.
-
-        Raises:
-            Exception: If the task is not status PENDING.
-            Exception: If the task fails and the maximum number of retries is reached.
+        Raises Exception:
+            If the task is not status PENDING.
+            If the task fails and the maximum number of retries is reached.
         """
         if task.status != TaskStatus.PENDING:
             raise AgentTaskStateError(
@@ -113,13 +102,4 @@ class AutomataTaskExecutor:
 
     @staticmethod
     def _exponential_backoff(attempt_number: int) -> int:
-        """
-        Waits for a specified amount of time before retrying the task
-
-        Args:
-            attempt_number (int): The number of the current attempt.
-
-        Returns:
-            int: The amount of time to wait before retrying the task.
-        """
         return 2**attempt_number  # Exponential backoff in seconds

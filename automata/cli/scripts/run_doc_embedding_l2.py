@@ -12,7 +12,7 @@ from automata.core.context.py.retriever import (
 )
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
@@ -57,7 +57,7 @@ def main(*args, **kwargs) -> str:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    symbol_code_similarity = SymbolSimilarity(code_embedding_handler)
+    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler)
 
     symbol_rank_config = SymbolRankConfig()
     symbol_graph_subgraph = symbol_graph.get_rankable_symbol_subgraph()

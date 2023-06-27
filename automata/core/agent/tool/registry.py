@@ -15,6 +15,10 @@ class AutomataOpenAIAgentToolBuilderRegistry:
 
     @staticmethod
     def get_all_builders() -> List[Type[OpenAIAgentToolBuilder]]:
+        """
+        Get all the registered tool builders.
+        Initializes the builder registry if it has not been initialized yet.
+        """
         # Ensure that the registry is initialized
         if not AutomataOpenAIAgentToolBuilderRegistry._is_initialized:
             AutomataOpenAIAgentToolBuilderRegistry.initialize()
@@ -22,6 +26,10 @@ class AutomataOpenAIAgentToolBuilderRegistry:
 
     @staticmethod
     def initialize():
+        """
+        Initializes the registry builders by calling an import on the modules in the builder package.
+        This triggers the registration of the builders through the register_tool_manager decorator.
+        """
         # Check if the registry has already been initialized
         if AutomataOpenAIAgentToolBuilderRegistry._is_initialized:
             return

@@ -5,11 +5,7 @@ from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.agents import AutomataOpenAIAgent
-from automata.core.agent.tool.tool_utils import (
-    AgentToolFactory,
-    DependencyFactory,
-    build_available_tools,
-)
+from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
 from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager
 from automata.core.coding.py.module_loader import py_module_loader
@@ -71,7 +67,7 @@ def main(*args, **kwargs):
         logger.info(f"Building {dependency}...")
         tool_dependencies[dependency] = DependencyFactory().get(dependency)
 
-    tools = build_available_tools(llm_toolkits_list, **tool_dependencies)
+    tools = AgentToolFactory.build_tools(llm_toolkits_list, **tool_dependencies)
     logger.info("Done building toolkits...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata_main"))
     agent_config = (

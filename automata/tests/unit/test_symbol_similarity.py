@@ -7,7 +7,7 @@ from automata.core.embedding.code_embedding import (
     EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
 )
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.symbol.symbol_types import SymbolCodeEmbedding
 
 
@@ -39,19 +39,19 @@ def test_get_nearest_symbols_for_query(
     mock_provider = MagicMock(EmbeddingProvider)
     cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_provider=mock_provider)
 
-    symbol_similarity = SymbolSimilarity(cem)
+    symbol_similarity = SymbolSimilarityCalculator(cem)
 
     # Test with query_text that is most similar to symbol1
     cem.embedding_provider.build_embedding.return_value = np.array([1, 0, 0, 0])
-    result = symbol_similarity.get_nearest_entries_for_query("symbol1", k=1)
-    assert list(result.keys()) == [symbol1]
+    result = symbol_similarity.calculate_query_similarity_dict("symbol1")
+    assert list(result.keys())[np.argmax(list(result.values()))] == symbol1
 
-    # Test with query_text that is most similar to symbol2
+    # # Test with query_text that is most similar to symbol2
     cem.embedding_provider.build_embedding.return_value = np.array([0, 1, 0, 0])
-    result = symbol_similarity.get_nearest_entries_for_query("symbol2", k=1)
-    assert list(result.keys()) == [symbol2]
+    result = symbol_similarity.calculate_query_similarity_dict("symbol1")
+    assert list(result.keys())[np.argmax(list(result.values()))] == symbol2
 
-    # Test with query_text that is most similar to symbol3
+    # # Test with query_text that is most similar to symbol3
     cem.embedding_provider.build_embedding.return_value = np.array([0, 0, 1, 0])
-    result = symbol_similarity.get_nearest_entries_for_query("symbol3", k=1)
-    assert list(result.keys()) == [symbol3]
+    result = symbol_similarity.calculate_query_similarity_dict("symbol3")
+    assert list(result.keys())[np.argmax(list(result.values()))] == symbol3

@@ -14,30 +14,16 @@ logger = logging.getLogger(__name__)
 
 class PyReaderToolBuilder(AgentToolBuilder):
     """
-    PyReaderToolBuilder
-    A class for interacting with the PythonIndexer API, which provides functionality to read
-    the code state of a of local Python files.
+    A class for interacting with the PythonIndexer API,
+    which provides functionality to retrieve python code.
     """
 
     def __init__(self, py_reader: PyReader, **kwargs) -> None:
-        """
-        Initializes a PyReaderToolBuilder object with the given inputs.
-
-        Args:
-        - py_reader (PyReader): A PyReader object which allows inspecting of local code.
-
-        Returns:
-        - None
-        """
         self.py_reader = py_reader
 
     def build(self) -> List[Tool]:
-        """
-        Builds the tools associated with the python code retriever.
+        """Builds tools associated with directly retrieving python code."""
 
-        Returns:
-            List[Tool]: The list of built tools.
-        """
         return [
             Tool(
                 name="py-retriever-retrieve-code",
@@ -46,16 +32,12 @@ class PyReaderToolBuilder(AgentToolBuilder):
                 f" or method at the given python path, without docstrings."
                 f' If no match is found, then "{NO_RESULT_FOUND_STR}" is returned.\n\n'
                 f'For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory,'
-                f"Then the correct tool input for the parser follows:\n"
-                f"  - tool_args\n"
-                f"    - my_file\n"
-                f"    - None\n"
-                f"    - my_function\n\n"
-                f"Suppose instead the file is located in a subdirectory called my_directory,"
-                f" then the correct tool input for the parser is:\n"
-                f"  - tool_args\n    - my_directory.my_file\n    - my_function\n\n"
+                f"then the correct tool input is:\n"
+                f'arguments: {{"module_path": "my_file", "object_path": "my_file"}}'
+                f"Suppose instead the file is located in a subdirectory called my_directory:\n"
+                f'arguments: {{"module_path": "my_directory.my_file", "object_path": "my_function"}}'
                 f"Lastly, if the function is defined in a class, MyClass, then the correct tool input is:\n"
-                f"  - tool_args\n    - my_directory.my_file\n    - MyClass.my_function\n\n",
+                f'arguments: {{"module_path": "my_file", "object_path": "MyClass.my_function"}}',
             ),
             Tool(
                 name="py-retriever-retrieve-docstring",
@@ -73,18 +55,9 @@ class PyReaderToolBuilder(AgentToolBuilder):
         self, module_path: str, object_path: Optional[str] = None
     ) -> str:
         """
-        PythonIndexer retrieves the code of the python package,
-         module, standalone function, class, or method at the given
-         python path, without docstrings.
-
-        Args:
-            - module_path (str): The path to the module to retrieve code from.
-            - object_path (Optional[str]): The path to the object to retrieve code from.
-
-        Returns:
-            - str: The code of the python package, module,
-              standalone function, class, or method at the given
-              python path, without docstrings.
+        Retrieves the code of the python package, module,
+        standalone function, class, or method at the given
+        python path, without docstrings.
         """
         try:
             return self.py_reader.get_source_code_without_docstrings(module_path, object_path)
@@ -95,16 +68,9 @@ class PyReaderToolBuilder(AgentToolBuilder):
         self, module_path: str, object_path: Optional[str] = None
     ) -> str:
         """
-        PythonIndexer retrieves the docstring of the python package,
-         module, standalone function, class, or method at the given
-         python path, without docstrings.
-
-         Args:
-            - module_path (str): The path to the module to retrieve code from.
-            - object_path (Optional[str]): The path to the object to retrieve code from.
-
-        Returns:
-            - str: The docstring of the python package, module,
+        Retrieves the docstrings python package, module,
+        standalone function, class, or method at the given
+        python path, without docstrings.
         """
         try:
             return self.py_reader.get_docstring(module_path, object_path)
@@ -115,16 +81,9 @@ class PyReaderToolBuilder(AgentToolBuilder):
         self, module_path: str, object_path: Optional[str] = None
     ) -> str:
         """
-        PythonIndexer retrieves the raw code of the python package,
-         module, standalone function, class, or method at the given
-         python path, with docstrings.
-
-        Args:
-            - module_path (str): The path to the module to retrieve code from.
-            - object_path (Optional[str]): The path to the object to retrieve code from.
-
-        Returns:
-            - str: The raw code of the python package, module,
+        Retrieves the raw code of the python package,
+        module, standalone function, class, or method at the given
+        python path, with docstrings.
         """
         try:
             return self.py_reader.get_source_code(module_path, object_path)

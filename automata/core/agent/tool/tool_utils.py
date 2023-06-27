@@ -17,7 +17,7 @@ from automata.core.context.py.retriever import (
 )
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
@@ -31,12 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def classmethod_lru_cache():
-    """
-    Class method LRU cache decorator.
-
-    Returns:
-        decorator: `A` decorator that caches the return value of a class method
-    """
+    """Class method LRU cache decorator which caches the return value of a class method."""
 
     def decorator(func):
         @functools.wraps(func)
@@ -90,17 +85,12 @@ class DependencyFactory:
         """
         Gets a dependency by name.
 
-        Args:
-            dependency: The name of the dependency to get
-
-        Returns:
-            The dependency instance
-
         Raises:
             AgentGeneralError: If the dependency is not found
 
         Notes:
             Dependencies correspond to the method names of the DependencyFactory class.
+            E.g. symbol_graph corresponds to `create_symbol_graph`.
         """
         if dependency in self.overrides:
             return self.overrides[dependency]
@@ -123,9 +113,7 @@ class DependencyFactory:
     @classmethod_lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:
         """
-        Creates a SymbolGraph instance.
-
-        Keyword Args:
+        Associated Keyword Args:
             symbol_graph_path (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
         return SymbolGraph(
@@ -135,9 +123,7 @@ class DependencyFactory:
     @classmethod_lru_cache()
     def create_subgraph(self) -> SymbolGraph.SubGraph:
         """
-        Creates a SymbolGraph.SubGraph instance.
-
-        Keyword Args:
+        Associated Keyword Args:
             flow_rank ("bidirectional")
         """
         symbol_graph = self.get("symbol_graph")
@@ -146,11 +132,9 @@ class DependencyFactory:
         )
 
     @classmethod_lru_cache()
-    def create_symbol_code_similarity(self) -> SymbolSimilarity:
+    def create_symbol_code_similarity(self) -> SymbolSimilarityCalculator:
         """
-        Creates a SymbolSimilarity instance for symbol code similarity.
-
-        Keyword Args:
+        Associated Keyword Args:
             code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
             embedding_provider (OpenAIEmbedding())
         """
@@ -161,14 +145,12 @@ class DependencyFactory:
 
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
-        return SymbolSimilarity(code_embedding_handler)
+        return SymbolSimilarityCalculator(code_embedding_handler)
 
     @classmethod_lru_cache()
-    def create_symbol_doc_similarity(self) -> SymbolSimilarity:
+    def create_symbol_doc_similarity(self) -> SymbolSimilarityCalculator:
         """
-        Creates a SymbolSimilarity instance for symbol doc similarity.
-
-        Keyword Args:
+        Associated Keyword Args:
             doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH)
             embedding_provider (OpenAIEmbedding())
         """
@@ -191,14 +173,12 @@ class DependencyFactory:
             symbol_search,
             py_context_retriever,
         )
-        return SymbolSimilarity(doc_embedding_handler)
+        return SymbolSimilarityCalculator(doc_embedding_handler)
 
     @classmethod_lru_cache()
     def create_symbol_search(self) -> SymbolSearch:
         """
-        Creates a SymbolSearch instance.
-
-        Keyword Args:
+        Associated Keyword Args:
             symbol_rank_config (SymbolRankConfig())
         """
         symbol_graph = self.get("symbol_graph")
@@ -215,9 +195,7 @@ class DependencyFactory:
     @classmethod_lru_cache()
     def create_py_context_retriever(self) -> PyContextRetriever:
         """
-        Creates a PyContextRetriever instance.
-
-        Keyword Args:
+        Associated Keyword Args:
             py_context_retriever_config (PyContextRetrieverConfig())
         """
         symbol_graph = self.get("symbol_graph")
@@ -228,32 +206,29 @@ class DependencyFactory:
 
     @classmethod_lru_cache()
     def create_py_reader(self) -> PyReader:
-        """
-        Creates a PyReader instance.
-        """
         return PyReader()
 
     @classmethod_lru_cache()
     def create_py_writer(self) -> PyWriter:
-        """
-        Creates a PyReader instance.
-        """
         return PyWriter(self.get("py_reader"))
 
 
 class AgentToolFactory:
+    """The AgentToolFactory class is responsible for creating tools from a given agent tool name."""
+
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
         AgentToolProviders.PY_READER: [("py_reader", PyReader)],
         AgentToolProviders.PY_WRITER: [("py_writer", PyWriter)],
         AgentToolProviders.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         AgentToolProviders.CONTEXT_ORACLE: [
             ("symbol_search", SymbolSearch),
-            ("symbol_doc_similarity", SymbolSimilarity),
+            ("symbol_doc_similarity", SymbolSimilarityCalculator),
         ],
     }
 
     @staticmethod
     def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
+        """Uses the Builder Registry to create tools from a given agent tool name."""
         for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
                 if builder.PLATFORM == LLMProvider.OPENAI:
@@ -263,30 +238,18 @@ class AgentToolFactory:
 
         raise UnknownToolError(agent_tool.value)
 
+    @staticmethod
+    def build_tools(tool_list: List[str], **kwargs) -> List[Tool]:
+        """Given a list of tools this method builds the tools and returns them."""
+        tools: List[Tool] = []
 
-def build_available_tools(tool_list: List[str], **kwargs) -> List[Tool]:
-    """
-    This function builds a list of toolkits from a list of toolkit names.
+        for tool_name in tool_list:
+            tool_name = tool_name.strip()
+            agent_tool_manager = AgentToolProviders(tool_name)
 
-    Args:
-        tool_list (List[str]): A list of tool names to build.
+            if agent_tool_manager is None:
+                raise UnknownToolError(agent_tool_manager)
 
-    Returns:
-        List[Tool]: A list of built tools.
+            tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
 
-    Raises:
-        UnknownToolError: If a toolkit name is not recognized.
-
-    """
-    tools: List[Tool] = []
-
-    for tool_name in tool_list:
-        tool_name = tool_name.strip()
-        agent_tool_manager = AgentToolProviders(tool_name)
-
-        if agent_tool_manager is None:
-            raise UnknownToolError(agent_tool_manager)
-
-        tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
-
-    return tools
+        return tools

@@ -50,6 +50,7 @@ class PyContextRetriever:
         graph: SymbolGraph,
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
+        encoding_provider: tiktoken.Encoding = tiktoken.encoding_for_model("gpt-4"),
     ) -> None:
         """
         Args:
@@ -60,7 +61,7 @@ class PyContextRetriever:
         self.config = config
         self.indent_level = 0
         self.doc_embedding_db = doc_embedding_db
-        self.encoding = tiktoken.encoding_for_model("gpt-4")
+        self.encoding_provider = encoding_provider
 
         self.reset()
 
@@ -294,7 +295,7 @@ class PyContextRetriever:
         Returns:
             bool: True if we are below the context limit, False otherwise
         """
-        return len(self.encoding.encode(self.context)) < self.config.max_context
+        return len(self.encoding_provider.encode(self.context)) < self.config.max_context
 
     @staticmethod
     def _is_private_method(ast_object: RedBaron) -> bool:

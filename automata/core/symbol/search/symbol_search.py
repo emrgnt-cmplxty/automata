@@ -5,7 +5,7 @@ import networkx as nx
 import numpy as np
 
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig
@@ -24,7 +24,7 @@ class SymbolSearch:
     def __init__(
         self,
         symbol_graph: SymbolGraph,
-        symbol_code_similarity: SymbolSimilarity,
+        symbol_code_similarity: SymbolSimilarityCalculator,
         symbol_rank_config: SymbolRankConfig,
         code_subgraph: SymbolGraph.SubGraph,
     ) -> None:
@@ -62,7 +62,7 @@ class SymbolSearch:
         Returns:
             A list of tuples of the form (symbol_uri, rank)
         """
-        query_vec = self.symbol_code_similarity.get_query_similarity_dict(query)
+        query_vec = self.symbol_code_similarity.calculate_query_similarity_dict(query)
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )

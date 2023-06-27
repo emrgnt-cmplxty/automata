@@ -6,44 +6,30 @@ from automata.config.base import LLMProvider
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
-from automata.core.embedding.symbol_similarity import SymbolSimilarity
+from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
 from automata.core.symbol.search.symbol_search import SymbolSearch
 
 logger = logging.getLogger(__name__)
 
 
-class ContextOracleTool(AgentToolBuilder):
-    """
-    ContextOracleTool is responsible for managing context oracle tools.
-    """
+class ContextOracleToolBuilder(AgentToolBuilder):
+    """The ContextOracleTools provides a tool that combines SymbolSearch and SymbolSimilarity to create contexts."""
 
     def __init__(
         self,
         symbol_search: SymbolSearch,
-        symbol_doc_similarity: SymbolSimilarity,
+        symbol_doc_similarity: SymbolSimilarityCalculator,
     ) -> None:
-        """
-        Initializes ContextOracleTool with given SymbolSearch, SymbolSimilarity.
-
-        Args:
-            symbol_search (SymbolSearch): The symbol search object.
-            symbol_doc_similarity (SymbolSimilarity): The symbol doc similarity object.
-        """
         self.symbol_search = symbol_search
         self.symbol_doc_similarity = symbol_doc_similarity
 
     def build(self) -> List[Tool]:
-        """
-        Builds the tools associated with the context oracle.
-
-        Returns:
-            List[Tool]: The list of built tools.
-        """
+        """Builds the tools associated with the context oracle."""
         return [
             Tool(
                 name="context-oracle",
-                function=self._context_generator,
+                function=self._get_context,
                 description=textwrap.dedent(
                     """
                 This tool combines SymbolSearch and SymbolSimilarity to create contexts. Given a query, it uses SymbolSimilarity calculate the similarity between each symbol's documentation and the query returns the most similar document. Then, it leverages SymbolSearch to combine Semantic Search with PageRank to find the most relevant symbols to the query. The overview documentation of these symbols is then concated to the result of the SymbolSimilarity query to create a context.
@@ -54,17 +40,15 @@ class ContextOracleTool(AgentToolBuilder):
             )
         ]
 
-    def _context_generator(self, query: str, max_related_symbols=5) -> str:
+    def _get_context(self, query: str, max_related_symbols=5) -> str:
         """
-        The generate the context corresponding to a query.
+        Retrieves the context corresponding to a given query.
 
-        Args:
-            query (str): The query string.
-
-        Returns:
-            str: The processed result.
+        The function constructs the context by concatenating the source code and documentation of the most semantically
+        similar symbol to the query with the documentation summary of the most highly
+        ranked symbols. The ranking of symbols is based on their semantic similarity to the query.
         """
-        doc_output = self.symbol_doc_similarity.get_query_similarity_dict(query)
+        doc_output = self.symbol_doc_similarity.calculate_query_similarity_dict(query)
         most_similar_doc_embedding = self.symbol_doc_similarity.embedding_handler.get_embedding(
             sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
         )
@@ -91,12 +75,12 @@ class ContextOracleTool(AgentToolBuilder):
                     e,
                 )
                 continue
-        logger.debug(f"ContextOracleTool is returning this result: {result}")
+        logger.debug(f"ContextOracleToolBuilder is returning this result: {result}")
         return result
 
 
 @AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
-class ContextOracleOpenAIToolBuilder(ContextOracleTool, OpenAIAgentToolBuilder):
+class ContextOracleOpenAIToolBuilder(ContextOracleToolBuilder, OpenAIAgentToolBuilder):
     TOOL_TYPE = AgentToolProviders.CONTEXT_ORACLE
     PLATFORM = LLMProvider.OPENAI
 

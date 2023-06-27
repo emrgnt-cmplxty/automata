@@ -16,9 +16,6 @@ logger = logging.getLogger(__name__)
 class AutomataTaskDatabase(SQLDatabase):
     """The database creates a local store for all tasks."""
 
-    # TODO - Implement custom errors and implement more robust handling
-    # around database creation and connection
-
     TABLE_NAME = "tasks"
     TABLE_FIELDS = {
         "id": "TEXT PRIMARY KEY",
@@ -28,20 +25,10 @@ class AutomataTaskDatabase(SQLDatabase):
     }
 
     def __init__(self, db_path: str = TASK_DB_PATH):
-        """
-        Args:
-            db_path (str): The path to the database file.
-        """
         self.connect(db_path)
         self.create_table(self.TABLE_NAME, self.TABLE_FIELDS)
 
     def insert_task(self, task: AutomataTask) -> None:
-        """
-        Inserts a task into the database.
-
-        Args:
-            task (AutomataTask): The task to insert.
-        """
         task_id = task.task_id
         task_json = jsonpickle.encode(task)
         instructions = task.instructions
@@ -57,12 +44,6 @@ class AutomataTaskDatabase(SQLDatabase):
         )
 
     def update_task(self, task: AutomataTask) -> None:
-        """
-        Updates a task in the database.
-
-        Args:
-            task (AutomataTask): The task to update.
-        """
         task_json = jsonpickle.encode(task)
         instructions = task.instructions
         status = task.status.value
@@ -73,15 +54,7 @@ class AutomataTaskDatabase(SQLDatabase):
         )
 
     def get_tasks_by_query(self, query: str, params: Tuple = ()) -> List[AutomataTask]:
-        """
-        Gets the tasks by the specified query.
-
-        This works by getting the json for each task and then decoding it.
-
-        Args:
-            query (str): The query to use for getting the tasks.
-            params (Tuple): The parameters to use for the query.
-        """
+        """Gets the list of tasks by applying the specified query."""
         rows = self.select(self.TABLE_NAME, ["json"], conditions=dict(zip(query, params)))
         tasks = []
         for row in rows:
@@ -95,12 +68,7 @@ class AutomataTaskDatabase(SQLDatabase):
         return tasks
 
     def contains(self, task: AutomataTask) -> bool:
-        """
-        Checks if a task exists in the database.
-
-        Args:
-            task (AutomataTask): The task to check for existence.
-        """
+        """Checks if a task exists in the database."""
         result = self.select(self.TABLE_NAME, ["id"], conditions={"id": str(task.task_id)})
         return len(result) > 0
 
@@ -109,21 +77,14 @@ class AutomataTaskRegistry:
     """The registry manages storing and retrieving tasks."""
 
     def __init__(self, db: AutomataTaskDatabase) -> None:
-        """
-        Args:
-            db (AutomataTaskDatabase): The database to use for storing tasks.
-        """
         self.db = db
 
     def register(self, task: AutomataTask) -> None:
         """
-        Initializes a task by adding it to the registry,
-        the task must have already been set up.
-        setting the observer, and setting the status to pending.
+        Initializes a task by adding it to the registry and setting its status to REGISTERED.
 
         Raises:
-            Exception: If the task is not status REGISTERED.
-
+            Exception: If the task is not status CREATED.
         """
         if task.status != TaskStatus.CREATED:
             raise AgentTaskStateError(
@@ -151,14 +112,6 @@ class AutomataTaskRegistry:
 
     def fetch_task_by_id(self, task_id: str) -> Optional[AutomataTask]:
         """
-        Fetches a task by its id.
-
-        Args:
-            task_id (str): The id of the task to fetch.
-
-        Returns:
-            Optional[AutomataTask]: The task if it exists, otherwise None.
-
         Raises:
             Exception: If multiple tasks are found with the same id.
         """
@@ -174,12 +127,6 @@ class AutomataTaskRegistry:
         return task
 
     def get_all_tasks(self) -> List[AutomataTask]:
-        """
-        Gets all tasks in the registry.
-
-        Returns:
-            List[AutomataTask]: The list of tasks.
-        """
         results = self.db.get_tasks_by_query(query="SELECT json FROM tasks")
         for result in results:
             result.observer = self.update_task

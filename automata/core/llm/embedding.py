@@ -58,15 +58,27 @@ class SymbolEmbeddingHandler(abc.ABC):
         return self.embedding_db.get_all_symbols()
 
 
-class EmbeddingSimilarity(abc.ABC):
+class EmbeddingSimilarityCalculator(abc.ABC):
     @abc.abstractmethod
-    def get_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
+    def calculate_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
         """An abstract method to get the similarity between a query and all symbols"""
         pass
 
     @abc.abstractmethod
-    def get_nearest_entries_for_query(
-        self, query_text: str, k_nearest: int
-    ) -> Dict[Symbol, float]:
-        """An abstract method to get the k nearest symbols to a query"""
+    def _calculate_embedding_similarity(self, embedding_array: np.ndarray) -> np.ndarray:
         pass
+
+    @staticmethod
+    def _normalize_embeddings(
+        embeddings_array: np.ndarray, norm_type: EmbeddingNormType
+    ) -> np.ndarray:
+        if norm_type == EmbeddingNormType.L1:
+            norm = np.sum(np.abs(embeddings_array), axis=1, keepdims=True)
+            return embeddings_array / norm
+        elif norm_type == EmbeddingNormType.L2:
+            return embeddings_array / np.linalg.norm(embeddings_array, axis=1, keepdims=True)
+        elif norm_type == EmbeddingNormType.SOFTMAX:
+            e_x = np.exp(embeddings_array - np.max(embeddings_array, axis=1, keepdims=True))
+            return e_x / np.sum(e_x, axis=1, keepdims=True)
+        else:
+            raise ValueError(f"Invalid normalization type {norm_type}")

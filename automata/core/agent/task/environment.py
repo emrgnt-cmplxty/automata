@@ -11,21 +11,15 @@ logger = logging.getLogger(__name__)
 
 
 class AutomataTaskEnvironment(TaskEnvironment):
-    """
-    This is a concrete implementation of the AbstractEnvironment.
-    """
+    """This is a concrete implementation of the Abstract TaskEnvironment for Automata agents."""
 
     def __init__(self, github_manager: GitHubManager) -> None:
-        """
-        Args:
-            github_manager (GitHubManager): The GitHubManager to use for interacting with the remote repository.
-        """
         self.github_manager = github_manager
 
     def setup(self, task: Task) -> None:
         """
         Set up the environment by cloning the repository into the task directory.
-        Sets the task status to REGISTERED.
+        Further, set the task status to PENDING.
 
         Raises:
             Exception: If the task is not status CREATED.
@@ -47,25 +41,15 @@ class AutomataTaskEnvironment(TaskEnvironment):
         logger.info(f"Task {task.task_id} environment setup successfully.")
 
     def teardown(self) -> None:
-        """
-        Tear down the environment.
-        """
         # TODO - Implement teardown environment
         raise NotImplementedError
 
     def validate(self) -> None:
-        """
-        Validate the environment.
-        """
         # TODO - Implement validate environment
         raise NotImplementedError
 
     def reset(self) -> None:
-        """
-        Reset the environment to its initial state.
-        """
         # TODO - Implement reset environment which clears the state
-        # and erases the task directory, and re-runs setup
         raise NotImplementedError
 
     def commit_task(
@@ -79,19 +63,12 @@ class AutomataTaskEnvironment(TaskEnvironment):
         """
         Commits the task to the remote repository.
 
-        Args:
-            task (AutomataTask): The task to commit.
-            commit_message (str): The commit message to use.
-            pull_title (str): The title of the pull request.
-            pull_body (str): The body of the pull request.
-            pull_branch_name (str, optional): The name of the branch to create. Defaults to "feature/test".
-
-        Raises:
-            Exception: If the task is not status SUCCESS.
-            Exception: If the task output directory is missing.
-            Exception: If the branch already exists.
-            Exception: If the checkout fails.
-            Exception: If the commit fails.
+        Raises AgentTaskException:
+            If the task is not status SUCCESS.
+            If the task output directory is missing.
+            If the branch already exists.
+            If the checkout fails.
+            If the commit fails.
         """
         logger.debug("Comitting task...")
 
