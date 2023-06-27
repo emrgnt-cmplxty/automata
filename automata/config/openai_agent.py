@@ -1,16 +1,14 @@
-import os
 import uuid
 from typing import Dict, List, Optional
 
-import yaml
 from pydantic import PrivateAttr
 
-from automata.config.config_types import (
+from automata.config.base import (
     AgentConfig,
     AgentConfigBuilder,
     AgentConfigName,
-    ConfigCategory,
     InstructionConfigVersion,
+    LLMProvider,
 )
 
 
@@ -84,6 +82,11 @@ class AutomataOpenAIAgentConfig(AgentConfig):
         loaded_yaml = cls._load_automata_yaml_config(config_name)
         return AutomataOpenAIAgentConfig(**loaded_yaml)
 
+    @staticmethod
+    def get_provider() -> LLMProvider:
+        """Get the provider for the agent."""
+        return LLMProvider.OPENAI
+
     def _formatted_instruction(self) -> str:
         formatter_keys = set(self.system_template_formatter.keys())
         template_vars = set(self.system_template_variables)
@@ -100,18 +103,6 @@ class AutomataOpenAIAgentConfig(AgentConfig):
             formatted_instruction = formatted_instruction.replace("{" + variable + "}", value)
 
         return formatted_instruction
-
-    @classmethod
-    def _load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
-        file_dir_path = os.path.dirname(os.path.abspath(__file__))
-        config_abs_path = os.path.join(
-            file_dir_path, ConfigCategory.AGENT.value, f"{config_name.value}.yaml"
-        )
-
-        with open(config_abs_path, "r") as file:
-            loaded_yaml = yaml.safe_load(file)
-        loaded_yaml["config_name"] = config_name
-        return loaded_yaml
 
 
 class AutomataOpenAIAgentConfigBuilder(AgentConfigBuilder):

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.config.config_types import AgentConfigName
+from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
 from automata.core.agent.tool.tool_utils import build_available_tools
 
