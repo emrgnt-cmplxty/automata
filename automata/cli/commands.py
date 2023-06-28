@@ -11,11 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 def reconfigure_logging(log_level_str: str) -> None:
-    """
-    Configure the logging settings.
-
-    :param verbose: Boolean, if True, set log level to DEBUG, else set to INFO.
-    """
     log_level = logging.DEBUG
 
     if log_level_str == "INFO":

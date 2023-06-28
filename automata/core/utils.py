@@ -17,36 +17,18 @@ def set_openai_api_key(override_key: Optional[str] = None) -> None:
 
 
 def get_root_py_fpath() -> str:
-    """
-    Get the path to the root of the project python code
-
-    Returns:
-        str - A fpath object in string form
-
-    """
+    """Get the path to the root of the Automata python code directory."""
     script_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(script_dir, "..")
 
 
 def get_root_fpath() -> str:
-    """
-    Returns the path to the root of the project directory.
-
-    Returns:
-        str - A fpath object in string form
-
-    """
+    """Get the path to the root of the Automata directory."""
     return os.path.join(get_root_py_fpath(), "..")
 
 
 def get_config_fpath() -> str:
-    """
-    Get the path to the project config directory
-
-    Returns:
-        str - A fpath object in string form
-
-    """
+    """Get the path to the root of the Automata config directory."""
     return os.path.join(get_root_py_fpath(), "config")
 
 
@@ -56,15 +38,7 @@ def load_config(
     config_type: str = "yaml",
     custom_decoder: Any = None,
 ) -> Any:
-    """
-    Loads a config file from the config directory
-
-    Args:
-        file_path (str): The path to the YAML file
-
-    Returns:
-        Any: The content of the YAML file as a Python object
-    """
+    """Loads a config file from the config directory"""
     with open(
         os.path.join(get_config_fpath(), config_name, f"{file_name}.{config_type}"),
         "r",

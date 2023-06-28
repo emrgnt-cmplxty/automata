@@ -1,77 +1,73 @@
 SymbolSearch
 ============
 
-``SymbolSearch`` is a class that searches for symbols in a SymbolGraph.
-It provides methods for exact search, symbol rank search, source code
-retrieval by symbol, and processing NLP-formatted queries. The class
-contains several static methods for filtering graphs, finding pattern
-matches in modules, shifted z-score calculations, and transforming
-dictionary values.
+``SymbolSearch`` is a class that searches for symbols in a
+``SymbolGraph``. It provides various search methods such as
+``exact_search``, ``symbol_rank_search``, and ``symbol_references``. The
+search results include paths to files containing the pattern and
+corresponding line numbers.
 
-``SymbolSearch`` uses other classes such as ``SymbolGraph``,
-``SymbolSimilarity``, ``SymbolRankConfig``, and ``SymbolRank`` for the
-purpose of searching and ranking symbols based on the provided search
-query.
+Overview
+--------
+
+``SymbolSearch`` is initialized with a ``SymbolGraph``,
+``SymbolSimilarity`` object with a code embedding handler, and optional
+``SymbolRankConfig`` object. The class provides methods for searching
+for symbols with different types of queries such as exact search or
+ranked search based on the query and returns a list of matching symbols.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.test_symbol_search_tool.test_exact_search``
--  ``automata.tests.unit.test_symbol_search.test_exact_search``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol.search.rank.SymbolRank``
+-  ``automata.core.symbol.search.rank.SymbolRankConfig``
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
--  ``automata.core.agent.tools.symbol_search.SearchTool``
--  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.agent.tools.symbol_search.SymbolSearchTool``
--  ``automata.core.agent.tools.tool_utils.DependencyFactory.create_symbol_search``
--  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
 
 Example
 -------
 
 The following example demonstrates how to create an instance of
-``SymbolSearch`` and then perform an exact search:
+``SymbolSearch`` and perform an exact search:
 
 .. code:: python
 
    from automata.core.symbol.graph import SymbolGraph
-   from automata.core.symbol.search.symbol_search import SymbolSearch
    from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol.search.symbol_search import SymbolSearch, ExactSearchResult
    from automata.core.symbol.search.rank import SymbolRankConfig
-   from automata.core.symbol.graph import SymbolGraph
 
-   symbol_graph = SymbolGraph()
-   symbol_code_similarity = SymbolSimilarity()
-   symbol_rank_config = SymbolRankConfig()
-   code_subgraph = SymbolGraph.SubGraph()
+   # Create instances of SymbolGraph and SymbolSimilarity
+   symbol_graph = SymbolGraph(...)
+   symbol_similarity = SymbolSimilarity(...)
 
-   symbol_search = SymbolSearch(symbol_graph=symbol_graph,
-                               symbol_code_similarity=symbol_code_similarity,
-                               symbol_rank_config=symbol_rank_config,
-                               code_subgraph=code_subgraph)
+   # Initialize SymbolSearch with the required parameters
+   symbol_search = SymbolSearch(symbol_graph, symbol_similarity, SymbolRankConfig())
 
-   result = symbol_search.exact_search("some_pattern")
+   # Perform an exact search with a pattern
+   result = symbol_search.exact_search("pattern")
+   assert isinstance(result, ExactSearchResult)
 
 Limitations
 -----------
 
-The primary limitation of ``SymbolSearch`` lies in the fact that it
-relies on other classes like ``SymbolGraph`` and ``SymbolSimilarity`` to
-function properly. If these classes change, it’s likely that the
-behavior of ``SymbolSearch`` would also be affected.
+``SymbolSearch`` has some limitations:
 
-The current implementation also assumes a specific directory structure
-for storing symbol graphs and corresponding data. Any changes to this
-structure would require updates to the ``SymbolSearch`` class as well.
-
-When creating a subgraph using ``SymbolGraph.SubGraph()``, one must
-ensure that this subgraph is part of the parent ``SymbolGraph`` object.
-Failure to do so would result in a ValueError.
+1. It assumes that the code graph has been filtered to only contain
+   nodes that are in the available symbols set before creating a
+   ``SymbolSearch`` object.
+2. The ``symbol_graph`` and ``code_subgraph`` objects must be set up
+   correctly and have the correct relationship with each other for the
+   search to work effectively.
+3. The class relies on a fixed set of search types for query processing.
+   Custom search types can not be easily added without modifying the
+   code.
 
 Follow-up Questions:
 --------------------
 
--  Are there any alternatives to the current implementation of symbol
-   search based on the ``SymbolGraph`` and ``SymbolSimilarity`` classes?
--  How can custom directory structures be accommodated in the
+-  How can we easily implement custom search types in the
    ``SymbolSearch`` class?
+-  How can we remove the reliance on ``SymbolRank`` by accepting a
+   completed instance?

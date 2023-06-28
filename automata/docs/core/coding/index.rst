@@ -11,6 +11,7 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
+   py/index
    py_coding/index
    directory
    directory_manager

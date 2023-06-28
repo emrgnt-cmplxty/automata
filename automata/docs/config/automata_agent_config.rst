@@ -3,9 +3,9 @@ AutomataAgentConfig
 
 ``AutomataAgentConfig`` is a configuration class that helps configure,
 setup, and interact with an ``AutomataAgent``. It contains various
-attributes such as ``config_name``, ``instruction_payload``,
-``llm_toolkits``, and others to provide the necessary setup and settings
-to be used by the agent.
+attributes such as ``config_name``, ``tools``, ``instructions``,
+``model``, and others to provide the necessary setup and settings to be
+used by the agent.
 
 Overview
 --------
@@ -23,9 +23,8 @@ Related Symbols
 ---------------
 
 -  ``config.config_types.AgentConfigName``
--  ``automata.core.agent.agent.AutomataAgent``
+-  ``automata.core.agent.agents.AutomataOpenAIAgent``
 -  ``config.agent_config_builder.AutomataAgentConfigBuilder``
--  ``automata.core.agent.coordinator.AutomataInstance``
 
 Example
 -------

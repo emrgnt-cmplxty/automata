@@ -1,71 +1,64 @@
 TestTool
 ========
 
-``TestTool`` is a class derived from the ``Tool`` base class. It’s a
-simple tool implementation that allows synchronous and asynchronous
-execution of a provided function or coroutine and returns a specific
-output in the form of a string. This class is mainly used for testing
-purposes.
+``TestTool`` is a simple testing tool that inherits from the ``Tool``
+class. It is designed for testing purposes within the automata
+framework. Its primary function is to return a predefined string when
+executed. ``TestTool`` serves as an example of how to create and use
+custom tools within the framework.
 
 Overview
 --------
 
-As a subclass of ``Tool``, ``TestTool`` provides an implementation for
-the ``_run`` and ``_arun`` methods, making it easy to execute
-synchronous and asynchronous functions respectively. This class is
-useful for creating simple tests using the test_tool_run function.
+``TestTool`` is a subclass of ``Tool`` that takes a function as input
+and returns a predefined string. The class is intended for testing
+purposes and demonstrates how to create and use custom tools within the
+Automata framework. The ``TestTool`` class has a single method named
+``run``, which takes a dictionary as input and returns a string. It also
+provides an example of how to use the tool with related symbols like
+``pytest.fixture`` and test functions.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.base.tool.Tool``
+-  ``automata.tests.unit.test_tool.test_tool``
 -  ``automata.tests.unit.test_tool.test_tool_run``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
--  ``automata.tests.unit.test_tool.test_toolkit``
 
 Example
 -------
 
-The following code demonstrates the creation of a ``TestTool`` instance
-and how to execute its synchronous and asynchronous methods.
+The following example demonstrates how to create an instance of
+``TestTool``, run the tool with provided input, and obtain the
+response):
 
 .. code:: python
 
    from automata.tests.unit.test_tool import TestTool
-
+   tool_input = {"test": "test"}
    test_tool = TestTool(
        name="TestTool",
        description="A test tool for testing purposes",
-       func=lambda x: "TestTool response",
+       function=lambda x: "TestTool response",
    )
 
-   tool_input = ("test",)
-
-   # Synchronous execution
    response = test_tool.run(tool_input)
    print(response)  # Output: "TestTool response"
-
-   # Asynchronous execution
-   import asyncio
-
-   async def test_async():
-       async_response = await test_tool.arun(tool_input)
-       print(async_response)
-
-   asyncio.run(test_async())  # Output: "TestTool async response"
 
 Limitations
 -----------
 
-As it is mainly used for testing purposes, ``TestTool`` is not intended
-for actual use in production environments or comprehensive applications.
-Its functions are primarily for verifying that the underlying
-functionalities of the ``Tool`` class and related objects are
-implemented correctly, and largely serve as a utility for these specific
-testing needs.
+The primary limitation of ``TestTool`` is that it is intended for
+testing purposes only and does not provide any real-world functionality
+or use case. Its purpose is to serve as an example of how to create and
+use custom tools within the Automata framework.
 
 Follow-up Questions:
 --------------------
 
--  Are there any other use cases for the ``TestTool`` class beyond
-   testing purposes?
+-  How can we create more advanced tools that interact with external
+   services or process complex data?
+
+-  What are the best practices for designing and implementing custom
+   tools within the Automata framework?

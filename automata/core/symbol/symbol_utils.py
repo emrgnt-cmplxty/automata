@@ -8,22 +8,10 @@ from automata.core.symbol.symbol_types import Symbol, SymbolDescriptor
 
 def convert_to_fst_object(symbol: Symbol) -> RedBaron:
     """
-    Converts a specified symbol into a red baron FST object
-
-    Args:
-        symbol (str): The symbol which corresponds to a module, class, or method.
-        module_loader ModuleLoader: The module tree mapping to use. If None, the default
-
-    Returns:ModuleLoader
-        Union[ClassNode, DefNode]: The RedBaron FST object for the class or method, or None if not found
+    Converts a specified symbol into it's corresponding RedBaron FST object
 
     Raises:
         ValueError: If the symbol is not found
-
-    Note:
-        The optional argument is to allow us to run this function in mulitprocessing in the future,
-        because module map is not picklable (because redbaron objects are not picklable)
-        So the indexer would have to be created and destroyed in each process.
     """
     # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)
@@ -65,18 +53,10 @@ def get_rankable_symbols(
     filter_strings=(
         "setup",
         "stdlib",
-    ),  # TODO - Revisit what strings we should filter on.
+    ),  # TODO - Revisit filtering logic
     accepted_kinds=(SymbolDescriptor.PyKind.Method, SymbolDescriptor.PyKind.Class),
 ) -> List[Symbol]:
-    """
-    Filter out symbols that are not relevant for the embedding map.
-
-    Args:
-        symbols: List of symbols to filter
-
-    Returns:
-        List of filtered symbols
-    """
+    """Get a list of Symbols which are supported by SymbolRank."""
     filtered_symbols = []
 
     for symbol in symbols:

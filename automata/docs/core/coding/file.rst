@@ -1,54 +1,62 @@
 File
 ====
 
-``File`` represents a file in a tree structure used in the
-``automata.core.coding.directory`` module. This class is used to store
-information about the name and parent node of a file within the file
-tree. It inherits from the ``Node`` base class.
+``File`` is a class representing a file in a hierarchical tree structure
+and inherits from the ``Node`` base class. Its primary purpose is to
+store information about a file’s ``name`` and ``parent``, where the
+parent is another instance of a ``Node`` or a subclass.
 
 Overview
 --------
 
-``File`` provides a convenient way to store and manage information about
-a file in the file tree. It provides a simple interface to set the name
-and parent node of a file, which is required for constructing a
-hierarchical tree representation of a file.
+``File`` is a concrete implementation of the ``Node`` abstract base
+class, tailored to represent files in the file tree hierarchy. It
+includes two attributes: ``name`` and ``parent``, where the ``name``
+represents the name of the file, and the ``parent`` represents the
+parent ``Node`` instance. The class is mostly used in constructing file
+trees and interacting with file tree data structures.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.coding.directory.Node``
+-  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
+-  ``automata.tests.unit.test_database_vector.test_save``
 -  ``automata.core.symbol.symbol_types.SymbolFile``
+-  ``automata.tests.unit.test_database_vector.test_init_vector``
+-  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_database_vector.test_load``
+-  ``automata.core.symbol.symbol_types.SymbolFile.__eq__``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.core.database.vector.JSONVectorDatabase``
 -  ``automata.core.symbol.symbol_types.SymbolReference``
+-  ``automata.tests.unit.test_task_environment.TestURL``
 
 Usage Example
 -------------
 
-The following example demonstrates how to create an instance of a
-``File`` object:
+The following example demonstrates how to create an instance of the
+``File`` class with a specific name and parent node.
 
 .. code:: python
 
-   from automata.core.coding.directory import File
-   from automata.core.coding.directory import Node
+   from automata.core.coding.directory import File, Node
 
-   file_name = "example.txt"
-   parent = Node("parent")
-   file = File(file_name, parent)
-   print(file.name)  # Output: example.txt
-   print(file.parent.name)  # Output: parent
+   parent_node = Node("ParentNode")
+   file_instance = File("File1", parent_node)
 
 Limitations
 -----------
 
-The primary limitation of the ``File`` class is that it represents only
-a single file in the tree and does not handle the hierarchical data
-structure of the file tree on its own. Additional logic is required to
-build and manage a complete file tree using the ``File`` class.
+The ``File`` class is a simplistic representation of a file in a tree
+structure and mainly serves to store and access information about a
+file’s name and parent properties. It does not include more advanced
+features related to file handling and manipulation and cannot be used
+for more complex file operations.
 
 Follow-up Questions:
 --------------------
 
--  Are there any ways to improve the ``File`` class to better handle
-   hierarchical file tree structures?
+-  Are there any methods or attributes that should be added to the
+   ``File`` class to make it more robust or useful?
+-  Is there a need for more interaction with the underlying file system
+   for the ``File`` class instances?

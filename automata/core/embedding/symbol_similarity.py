@@ -33,12 +33,7 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
 
     @property
     def ordered_embeddings(self) -> np.ndarray:
-        """
-        Get the embeddings in the correct order
-
-        Returns:
-            A numpy array containing the ordered embeddings
-        """
+        """Returns the embeddings in the correct order."""
         return np.array(
             [
                 self.embedding_handler.get_embedding(symbol).vector
@@ -75,9 +70,7 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
         }
 
     def _calculate_embedding_similarity(self, embedding_array: np.ndarray) -> np.ndarray:
-        """
-        Calculate the similarity score between the embedding with all symbol embeddings
-        """
+        """Calculate the similarity score between the embedding with all symbol embeddings"""
         # Normalize the embeddings and the query embedding
         embeddings_norm = self._normalize_embeddings(self.ordered_embeddings, self.norm_type)
         normed_embedding = self._normalize_embeddings(

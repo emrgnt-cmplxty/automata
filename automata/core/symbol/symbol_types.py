@@ -10,9 +10,7 @@ from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto  # type:
 
 
 class SymbolDescriptor:
-    """
-    Wraps the descriptor component of the URI into a python object
-    """
+    """A class to represent the description component of a Symbol URI."""
 
     ScipSuffix = DescriptorProto
 
@@ -104,7 +102,7 @@ class SymbolDescriptor:
 
 @dataclass
 class SymbolPackage:
-    """Wraps the package component of the URI"""
+    """A class to represent the package component of a Symbol URI."""
 
     manager: str
     name: str
@@ -121,9 +119,10 @@ class SymbolPackage:
 @dataclass
 class Symbol:
     """
-    Symbol is similar to a URI, it identifies a class, method, or a local variable. SymbolInformation contains rich metadata about symbols such as the docstring.
+    A class which contains associated logic for a Symbol.
 
-    Symbol has a standardized string representation, which can be used interchangeably with Symbol. The syntax for Symbol is the following:
+    A Symbol specifies a python class, method, or a local variable.
+    A Symbol has a standardized string representation called a URI. The syntax for Symbol is the following:
 
     # (<x>)+ stands for one or more repetitions of <x>
     <symbol>               ::= <scheme> ' ' <package> ' ' (<descriptor>)+ | 'local ' <local-id>
@@ -167,15 +166,12 @@ class Symbol:
     descriptors: Tuple[SymbolDescriptor, ...]
 
     def __repr__(self) -> str:
-        """Converts back into URI string"""
         return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
 
     def __hash__(self) -> int:
-        """Hashes the URI string"""
         return hash(self.uri)
 
     def __eq__(self, other) -> bool:
-        """Compares the URI string"""
         if isinstance(other, Symbol):
             return self.uri == other.uri
         elif isinstance(other, str):
@@ -183,11 +179,11 @@ class Symbol:
         return False
 
     def symbol_kind_by_suffix(self) -> SymbolDescriptor.PyKind:
-        """Converts the suffix of the URI into a PyKind"""
+        """Converts the suffix of the URI into a PyKind."""
         return SymbolDescriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
-        """Converts the suffix of the URI into a DescriptorProto"""
+        """Converts the suffix of the URI into a DescriptorProto."""
         if self.uri.startswith("local"):
             return SymbolDescriptor.ScipSuffix.Local
         if self.uri.endswith("/"):
@@ -208,48 +204,43 @@ class Symbol:
             raise ValueError(f"Invalid descriptor suffix: {self.uri}")
 
     def parent(self) -> "Symbol":
-        """Returns the parent symbol of the current symbol"""
+        """Returns the parent symbol of the current symbol."""
         parent_descriptors = list(self.descriptors)[:-1]
         return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
 
     @property
     def dotpath(self) -> str:
-        """Returns the dotpath of the symbol"""
+        """Returns the dotpath of the symbol."""
         return ".".join([ele.name for ele in self.descriptors])
 
     @property
     def module_name(self) -> str:
-        """Returns the module name of the symbol"""
+        """Returns the module name of the symbol."""
         return self.descriptors[0].name
 
     @staticmethod
     def is_local(symbol: "Symbol") -> bool:
-        """Returns True if the symbol is local"""
+        """Returns True if the symbol is local."""
         return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
 
     @staticmethod
     def is_meta(symbol: "Symbol") -> bool:
-        """Returns True if the symbol is meta"""
+        """Returns True if the symbol is meta."""
         return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Meta
 
     @staticmethod
     def is_parameter(symbol: "Symbol") -> bool:
-        """Returns True if the symbol is parameter"""
+        """Returns True if the symbol is parameter."""
         return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
 
     @staticmethod
     def is_protobuf(symbol: "Symbol") -> bool:
-        """Returns True if the symbol is a protobuf symbol"""
+        """Returns True if the symbol is a protobuf symbol."""
         return symbol.module_name.endswith("pb2")
 
     @classmethod
     def from_string(cls, symbol_str: str) -> "Symbol":
-        """
-        Creates a Symbol instance from a string representation
-
-        :param symbol_str: The string representation of the Symbol
-        :return: A Symbol instance
-        """
+        """Creates a Symbol instance from a string representation."""
         # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
         # Parse the symbol_str to extract the uri, scheme, package_str, and descriptors_str
         match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
@@ -312,14 +303,14 @@ class SymbolEmbedding(abc.ABC):
 
 
 class SymbolCodeEmbedding(SymbolEmbedding):
-    """Embedding for symbol code"""
+    """A concrete class for symbol code embeddings"""
 
     def __init__(self, symbol: Symbol, source_code: str, vector: np.ndarray):
         super().__init__(symbol, source_code, vector)
 
 
 class SymbolDocEmbedding(SymbolEmbedding):
-    """Embedding for symbol documents"""
+    """A concrete class for symbol document embeddings"""
 
     def __init__(
         self,

@@ -55,7 +55,7 @@ class SymbolEmbeddingHandler(abc.ABC):
         Returns:
             List[Symbol]: List of all the symbols in the database
         """
-        return self.embedding_db.get_all_symbols()
+        return self.embedding_db.get_all_entries()
 
 
 class EmbeddingSimilarityCalculator(abc.ABC):
@@ -66,6 +66,7 @@ class EmbeddingSimilarityCalculator(abc.ABC):
 
     @abc.abstractmethod
     def _calculate_embedding_similarity(self, embedding_array: np.ndarray) -> np.ndarray:
+        """An abstract method to calculate the similarity between the embedding array target embeddings."""
         pass
 
     @staticmethod

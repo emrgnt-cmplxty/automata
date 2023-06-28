@@ -1,70 +1,79 @@
 SymbolSimilarity
 ================
 
-``SymbolSimilarity`` is a class used to compute symbolic similarity
-between source code elements in a given codebase, such as classes,
-methods, or local variables. This is achieved using an embedding
-provider that creates vector representations for source code elements,
-allowing the calculation of similarities using a specified norm type
-(e.g., L2 norm).
+``SymbolSimilarity`` is a class that calculates the similarity between
+symbols using their embeddings. The similarity calculations can be used
+to find the most similar symbols to a given query text or to calculate
+the similarity scores for all symbols in a database.
 
-The class utilizes a ``SymbolEmbeddingHandler`` object, which is
-responsible for managing the embeddings associated with symbols. It
-provides methods for calculating similarities, finding the nearest
-symbols to a given query, and setting the available symbols for
-similarity calculation.
+Overview
+--------
+
+``SymbolSimilarity`` is built using a ``SymbolEmbeddingHandler``
+instance to manage symbol embeddings and an ``EmbeddingProvider`` to
+generate embeddings for query texts. It is capable of computing
+similarity scores using different norm types (specified by the optional
+``norm_type`` parameter).
+
+Two main methods are provided: ``get_nearest_entries_for_query`` and
+``get_query_similarity_dict``. These methods can be used to find the
+most similar symbols to a given query text, and to calculate the
+similarity scores for all symbols in the database, respectively.
 
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
+-  ``automata.core.llm.embedding.SymbolEmbeddingHandler``
+-  ``automata.core.llm.embedding.EmbeddingProvider``
+-  ``automata.core.llm.embedding.EmbeddingNormType``
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.embedding.embedding_types.EmbeddingProvider``
--  ``automata.core.embedding.embedding_types.NormType``
--  ``automata.core.embedding.embedding_types.EmbeddingSimilarity``
 
 Example
 -------
 
-The following example demonstrates how to create a ``SymbolSimilarity``
-object using a mocked ``SymbolEmbeddingHandler`` and ``NormType`` L2.
+The following example demonstrates how to create an instance of
+``SymbolSimilarity`` and use it to find the most similar symbols to a
+given query text.
 
 .. code:: python
 
    import numpy as np
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
-   from automata.core.embedding.embedding_types import SymbolEmbeddingHandler, NormType
-   from unittest.mock import MagicMock
+   from automata.core.llm.embedding import (
+       SymbolEmbeddingHandler,
+       EmbeddingProvider,
+       EmbeddingNormType,
+       SymbolSimilarity,
+   )
+   from automata.core.symbol.symbol_types import Symbol
 
-   # Mock a SymbolEmbeddingHandler instance
-   mock_handler = MagicMock(SymbolEmbeddingHandler)
+   # Create a mock SymbolEmbeddingHandler and EmbeddingProvider
+   symbol_embedding_handler = SymbolEmbeddingHandler(...)
+   embedding_provider = EmbeddingProvider(...)
 
-   # Create an instance of SymbolSimilarity
-   symbol_similarity = SymbolSimilarity(symbol_embedding_manager=mock_handler, norm_type=NormType.L2)
+   # Instantiate SymbolSimilarity
+   symbol_similarity = SymbolSimilarity(
+       symbol_embedding_manager=symbol_embedding_handler,
+       norm_type=EmbeddingNormType.L2,
+   )
 
-   # Calculate the similarity between a given query text and the available code symbols
-   query = "this is a sample query text"
-   result = symbol_similarity.get_query_similarity_dict(query_text=query)
-
-   # Should return a dictionary mapping each symbol's uri to its similarity score with the query
+   # Find the k most similar symbols to a query text
+   query_text = "example query text"
+   k = 5
+   similar_symbols = symbol_similarity.get_nearest_entries_for_query(query_text, k=k)
 
 Limitations
 -----------
 
-``SymbolSimilarity`` assumes that the embeddings created by the provided
-``EmbeddingProvider`` are of good quality and accurately represent the
-code elements. The quality of the similarity results will depend on the
-quality of the embeddings themselves.
-
-Additionally, when calculating the similarity, ``SymbolSimilarity`` only
-considers supported symbols in the given ``SymbolEmbeddingHandler``.
-This means that if a symbol is not supported by the handler, it will not
-be included in the calculation.
+``SymbolSimilarity`` relies on the ``SymbolEmbeddingHandler`` and
+``EmbeddingProvider`` being properly set up with the correct embeddings
+and data. If the embeddings used by these classes are of low quality or
+not appropriate for the compared symbols, the similarity calculation may
+not provide useful results. Additionally, the class assumes that the
+embeddings are dense vectors using ``numpy`` arrays, and might not work
+with other types of embeddings.
 
 Follow-up Questions:
 --------------------
 
--  Is there any method for adjusting the similarity algorithm to improve
-   the quality of results?
--  What are the limitations of the norm types (e.g., L2 norm) used for
-   similarity calculation, and is there any other preferred norm type?
+-  How can we improve the quality of the embeddings used by
+   ``SymbolSimilarity`` to ensure better similarity calculations?

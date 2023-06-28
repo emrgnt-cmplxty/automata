@@ -1,54 +1,64 @@
 SymbolCodeEmbedding
 ===================
 
-``SymbolCodeEmbedding`` is a class that represents the embeddings for
-symbol code. It is used to store and manage the embedding vectors for
-symbols, which can be used for symbol similarity search, code retrieval,
-and other tasks. The class extends the abstract base class
-``SymbolEmbedding`` and provides an additional ``source_code`` attribute
-to store the associated source code.
+``SymbolCodeEmbedding`` is a class that represents an embedding of a
+symbol code. It is used in various operations related to symbol
+embeddings, such as retrieving and updating embeddings from databases
+and providers. The section below provides a brief overview, related
+symbols, usage examples, and some discussion around limitations.
 
 Overview
 --------
 
-``SymbolCodeEmbedding`` is mainly used for creating, storing, and
-managing the code embeddings for symbols. The class provides methods to
-initialize an instance with a symbol, its source code, and a NumPy array
-representing its vector. It is widely used in various modules such as
-symbol similarity search, embedding handler, and vector database
-management.
+``SymbolCodeEmbedding`` is mainly used for representing the embedded
+code of a ``Symbol`` object in the context of the automata framework. It
+inherites from the ``SymbolEmbedding`` class and provides a convenient
+and accessible way to store and manage symbol code embeddings.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
--  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
 
-Example
--------
+Usage Example
+-------------
 
-The following is an example demonstrating how to create an instance of
-``SymbolCodeEmbedding`` using a ``Symbol``, its source code, and a NumPy
-array for embedding:
+The following example demonstrates the creation of a
+``SymbolCodeEmbedding`` for a given symbol, source code, and its
+embedded vector.
 
 .. code:: python
 
    import numpy as np
-   from automata.core.symbol.symbol_types import SymbolCodeEmbedding
-   from automata.core.symbol.parser import parse_symbol
+   from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
 
-   symbol = parse_symbol("scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__().")
-   source_code = "def __init__(self, message): super().__init__(message)"
+   symbol = Symbol.from_string("some_symbol")  # The desired Symbol object
+   source_code = "def function_example():\n    pass"
    vector = np.array([0.1, 0.2, 0.3])
 
    embedding = SymbolCodeEmbedding(symbol, source_code, vector)
 
+Note that this example assumes that the ``Symbol`` object already
+exists. For more information about working with ``Symbol`` objects,
+consult the ``automata.core.symbol.symbol_types.Symbol`` class
+documentation.
+
 Limitations
 -----------
 
-As ``SymbolCodeEmbedding`` mainly focuses on code embeddings, it does
-not include information about other types of embeddings such as
-documentation or contextual information. For handling other types of
-embeddings, consider using the related class ``SymbolDocEmbedding``.
+``SymbolCodeEmbedding``, by design, only represents a single symbol’s
+code embedding and does not provide any utilities to manipulate or
+analyze embeddings themselves. Other components like
+``SymbolCodeEmbeddingHandler`` and ``SymbolSimilarity`` are responsible
+for handling the manipulation and evaluation of embeddings.
+
+Follow-up Questions:
+--------------------
+
+-  What is the process to extract or update embeddings for a given
+   symbol?
+-  Are there any specific constraints for the provided vector
+   representation in ``SymbolCodeEmbedding``?

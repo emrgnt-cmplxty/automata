@@ -3,11 +3,7 @@ from typing import Any
 
 
 class Singleton(abc.ABCMeta, type):
-    """
-    Singleton metaclass for ensuring only one instance of a class.
-    """
-
-    # _instances: Dict[Any, Any] = {}
+    """Singleton metaclass for ensuring only one instance of a class."""
 
     _instance: Any = None
 

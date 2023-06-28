@@ -21,11 +21,11 @@ class TaskStatus(Enum):
 
 class Task:
     """
-    A generic task object used by the task executor.
+    A generic `Task` object used by the `TaskExecutor`.
 
-    The task object is responsible for storing the task id, priority, and max retries. It also
-    provides a method to generate a deterministic task id based on the hash of the hashable kwargs.
-
+    A `Task` is responsible for storing the task id, priority, and max retries.
+    It receives kwargs that are passed to the task function when the task is executed.
+    It also exposes a method to generate a deterministic task id based on the hash of the hashable kwargs.
     """
 
     TASK_LOG_NAME = "task_TASK_ID.log"
@@ -77,13 +77,10 @@ class Task:
     @status.setter
     def status(self, new_status: TaskStatus) -> None:
         """
-        Sets the status of the task.
+        Sets the status of the `Task`.
 
         If the new status is RETRYING, the retry count is incremented
         and the task status is set to FAILED if the retry count exceeds the max retries.
-
-        Args:
-            new_status (TaskStatus): The new status of the task.
         """
         if new_status == TaskStatus.RETRYING:
             self.retry_count += 1
@@ -102,9 +99,6 @@ class Task:
 
         Keyword Args:
             kwargs (dict): The keyword arguments passed to the task.
-
-        Returns:
-            uuid.UUID: The deterministic task id.
         """
         # Generate the hash of the hashable kwargs
         hashable_items = sorted([item for item in kwargs.items() if isinstance(item[1], Hashable)])
@@ -116,20 +110,13 @@ class Task:
     def _get_task_dir(self, base_dir: str) -> str:
         """
         Gets the output directory for the task.
-        Use of the task id as the directory name ensures that the task directory is unique.
-
-        Returns:
-            str: The unique directory name for the task.
+        Use of the task_id as the directory name ensures that the task directory is unique.
         """
         return os.path.join(base_dir, f"task_{self.task_id}")
 
     def _get_log_dir(self) -> str:
         """
-        Gets the output directory where task logs are saved
-
-        Returns:
-            str: The directory where task logs are saved.
-        """
+        Gets the output directory where task logs are saved."""
         return os.path.join(self.task_dir, Task.TASK_LOG_REL_DIR)
 
 
@@ -144,34 +131,24 @@ class ITaskExecution(ABC):
 
 
 class TaskEnvironment(ABC):
-    """
-    This is the abstract base class for an environment.
-    """
+    """This is the abstract base class for an environment."""
 
     @abstractmethod
     def setup(self, task: Task):
-        """
-        Set up the environment.
-        """
+        """Set up the environment."""
         pass
 
     @abstractmethod
     def teardown(self):
-        """
-        Tear down the environment.
-        """
+        """Tear down the environment."""
         pass
 
     @abstractmethod
     def validate(self):
-        """
-        Validate the environment.
-        """
+        """Validate the environment."""
         pass
 
     @abstractmethod
     def reset(self):
-        """
-        Reset the environment to its initial state.
-        """
+        """Reset the environment to its initial state."""
         pass

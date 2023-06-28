@@ -1,78 +1,60 @@
 SymbolGraph
 ===========
 
-``SymbolGraph`` is a class used to represent and manipulate a directed
-multi-graph of symbols from an index protobuf file. It provides methods
-for retrieving available symbols, analyzing dependencies and
-relationships between symbols, and extracting information about files
-and references to symbols. The main components of the ``SymbolGraph``
-include the ``GraphBuilder``, ``SubGraph``, and the
-``_SymbolGraphNavigator``.
+``SymbolGraph`` is a class that represents a directed graph of symbols
+and their relationships. It provides methods to extract information
+about the symbols, such as their dependencies, callers, and callees. The
+class also includes methods to retrieve symbol-related subgraphs and the
+associated metadata about symbols.
 
 Overview
 --------
 
-``SymbolGraph`` is designed to assist in the following tasks:
-
--  Retrieve all available symbols and files in the graph
--  Analyze potential callers and callees of a given symbol
--  Extract symbol dependencies and relationships
--  Navigate and manipulate the graph in a flexible way
-
-The ``SymbolGraph`` class is primarily used with related symbols such as
-``Symbol``, ``SymbolDescriptor``, ``SymbolFile``, and
-``SymbolReference``.
+``SymbolGraph`` is primarily used to represent and analyze the
+relationships between symbols in a codebase. The class is initialized
+with an index protobuf file path and offers several methods to retrieve
+various types of information about the symbols. It uses an internal
+graph structure, with the ``networkx`` library, to map the relationships
+between symbols and their references.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``: Represents a class,
-   method, or local variable in the graph.
--  ``automata.core.symbol.symbol_types.SymbolDescriptor``: Describes the
-   metadata and attributes of a symbol.
--  ``automata.core.symbol.symbol_types.SymbolFile``: Represents a file
-   that contains symbols.
--  ``automata.core.symbol.symbol_types.SymbolReference``: Represents a
-   reference to a symbol in a file.
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.scip_pb2.Index``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.graph.GraphBuilder``
+-  ``automata.core.symbol.graph._SymbolGraphNavigator``
+-  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_graph``
+-  ``automata.core.symbol.search.symbol_search.SymbolSearch``
 
 Example
 -------
 
 The following is an example demonstrating how to create an instance of
-``SymbolGraph`` and retrieve the available symbols and files in the
-graph:
+``SymbolGraph`` using an index protobuf file path.
 
 .. code:: python
 
    from automata.core.symbol.graph import SymbolGraph
 
-   # Assuming the path to a valid index protobuf file
-   index_path = "path/to/index.protobuf"
+   index_path = "path/to/index/protobuf/file"
    symbol_graph = SymbolGraph(index_path)
-
-   # Get all available symbols and files in the graph
-   symbols = symbol_graph.get_all_available_symbols()
-   files = symbol_graph.get_all_files()
-
-   print(f"Number of symbols: {len(symbols)}")
-   print(f"Number of files: {len(files)}")
 
 Limitations
 -----------
 
-The primary limitations of the ``SymbolGraph`` include:
+One limitation of ``SymbolGraph`` is that it depends on the existence
+and format of an index protobuf file. The index file must be correctly
+formatted and include valid relationships between symbols for
+``SymbolGraph`` to work correctly. Additionally, the library makes some
+assumptions about the structure of the index file, which may not
+necessarily apply to custom data.
 
--  The ``SymbolGraph`` relies heavily on the quality and structure of
-   the index protobuf file. If the input file is malformed or structured
-   differently, the graph will not work as intended.
--  The ``SymbolGraph`` assumes a specific directory structure and naming
-   convention for the protobuf file, which may limit its usability with
-   customized format.
+Follow-up Questions
+-------------------
 
-Follow-up Questions:
---------------------
-
--  Are there any alternative ways to represent and manipulate symbol
-   graphs?
--  How robust and efficient is the current implementation of the
-   ``SymbolGraph`` in handling large and complex graphs?
+-  How can we use SymbolGraph with custom or non-standard index protobuf
+   files to build relationships between symbols in different code bases?
+-  What is the expected format and structure of the index protobuf file
+   that SymbolGraph requires for initialization?

@@ -1,58 +1,61 @@
 SymbolFile
 ==========
 
-``SymbolFile`` is a class that represents a file that contains a symbol.
-It is used to store information about the file path where a symbol is
-located. This class provides equality and hashing methods for instances
-of the class to be used in data structures like sets or as keys in
-dictionaries.
+``SymbolFile`` is a class that represents a file that contains a symbol
+in Automata. The class is used in various parts of the Automata codebase
+to store and compare file paths containing symbols. The class provides
+two methods, ``__eq__()`` and ``__hash__()``, to compare instances of
+the class and generate hash values.
 
 Related Symbols
 ---------------
 
+-  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
 -  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
+-  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.core.symbol.symbol_types.SymbolReference``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.database.vector.JSONVectorDatabase``
 -  ``automata.tests.unit.test_database_vector.test_add_symbol``
+-  ``automata.tests.unit.test_database_vector.test_add_symbols``
+-  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.tests.unit.test_database_vector.test_lookup_symbol_fail``
+-  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
 -------
 
-The following example demonstrates how to create and use instances of
-``SymbolFile``:
+The following example demonstrates how to create an instance of
+``SymbolFile`` and compare it with a string.
 
 .. code:: python
 
-   from automata.core.database.vector import JSONVectorDatabase
+   from automata.core.symbol.symbol_types import SymbolFile
 
-   vector_db = JSONVectorDatabase("vector_database.json")
-   file_1 = SymbolFile("file_1.txt")
-   file_2 = SymbolFile("file_2.txt")
+   file_path = "path/to/symbol_file.txt"
+   symbol_file = SymbolFile(file_path)
 
-   vector_db.add_file(file_1)
-   vector_db.add_file(file_2)
+   # Comparing with another SymbolFile instance
+   another_symbol_file = SymbolFile("another/path/to/symbol_file.txt")
 
-   all_files = vector_db.get_all_files()
-
-   for file in all_files:
-       print(file.path)
-
-This example adds two ``SymbolFile`` instances, one for each file, to a
-``JSONVectorDatabase`` instance. It then retrieves a list of all files
-and prints their paths.
+   if symbol_file == another_symbol_file:
+       print("Symbol files are equal")
+   else:
+       print("Symbol files are not equal")
 
 Limitations
 -----------
 
-The primary limitation of ``SymbolFile`` is that it only stores the file
-path where a symbol is located. It does not store any additional
-information about the symbol or the file contents. This means that
-``SymbolFile`` is only useful when working with other modules that can
-provide more context, like ``SymbolGraph`` and ``JSONVectorDatabase``.
+The primary limitation of ``SymbolFile`` is that it assumes that the
+given file path containing the symbol is valid and exists. It does not
+provide any file validation or error handling mechanisms to check for
+the existence or validity of specified files. Furthermore, the class
+does not provide any additional functionality except for comparison and
+hashing.
 
 Follow-up Questions:
 --------------------
 
--  Is there any plan to extend the functionality of ``SymbolFile`` to
-   store additional information about the file or its contents?
+-  Should ``SymbolFile`` include a method for file validation or error
+   handling?
+-  Are there any other features that should be added to the
+   ``SymbolFile`` class?

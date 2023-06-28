@@ -5,11 +5,9 @@ from pydantic import BaseModel, Extra
 
 
 class Tool(BaseModel):
-    """Tool that takes in function or coroutine directly."""
+    """`Tool` exposes a function or coroutine directly."""
 
     class Config:
-        """Configuration for this pydantic object."""
-
         extra = Extra.forbid
         arbitrary_types_allowed = True
 
@@ -19,5 +17,4 @@ class Tool(BaseModel):
     coroutine: Optional[Callable[..., Awaitable[str]]] = None
 
     def run(self, tool_input: Dict[str, str]) -> str:
-        """Use the tool."""
         return self.function(**tool_input)

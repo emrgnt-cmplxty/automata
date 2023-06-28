@@ -48,7 +48,6 @@ class AutomataOpenAIAgentConfig(AgentConfig):
             return formatter
 
     def setup(self) -> None:
-        """Setup the agent."""
         if not self.session_id:
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:

@@ -10,12 +10,7 @@ class RelationalDatabase(ABC):
 
     @abstractmethod
     def connect(self, db_path: str):
-        """
-        Establish a connection to the database.
-
-        Args:
-            db_path (str): The name or path of the database to connect to.
-        """
+        """Establish a connection to the database."""
         pass
 
     @abstractmethod
@@ -25,59 +20,27 @@ class RelationalDatabase(ABC):
 
     @abstractmethod
     def create_table(self, table_name: str, fields: Dict):
-        """
-        Create a new table.
-
-        Args:
-            table_name (str): Name of the table.
-            fields (dict): Dictionary where the key is the field name and the value is the data type.
-        """
+        """Create a new table."""
         pass
 
     @abstractmethod
     def insert(self, table_name: str, data: dict):
-        """
-        Insert data into a table.
-
-        Args:
-            table_name (str): Name of the table.
-            data (dict): Dictionary where the key is the field name and the value is the data value.
-        """
+        """Insert data into a table."""
         pass
 
     @abstractmethod
     def select(self, table_name: str, fields: List, conditions: Dict):
-        """
-        Select data from a table.
-
-        Args:
-            table_name (str): Name of the table.
-            fields (list): List of fields to retrieve.
-            conditions (dict, optional): Dictionary where the key is the field name and the value is the condition value.
-        """
+        """Select data from a table."""
         pass
 
     @abstractmethod
-    def update(self, table_name: str, data: Dict, conditions: Dict):
-        """
-        Update data in a table.
-
-        Args:
-            table_name (str): Name of the table.
-            data (dict): Dictionary where the key is the field name and the value is the new data value.
-            conditions (dict): Dictionary where the key is the field name and the value is the condition value.
-        """
+    def update_database(self, table_name: str, data: Dict, conditions: Dict):
+        """Update data in a table."""
         pass
 
     @abstractmethod
     def delete(self, table_name: str, conditions: Dict):
-        """
-        Delete data from a table.
-
-        Args:
-            table_name (str): Name of the table.
-            conditions (dict): Dictionary where the key is the field name and the value is the condition value.
-        """
+        """Delete data from a table."""
         pass
 
 
@@ -85,17 +48,10 @@ class SQLDatabase(RelationalDatabase):
     """Concrete class to provide a SQL database."""
 
     def connect(self, db_path: str = CONVERSATION_DB_PATH) -> None:
-        """
-        Establish a connection to the database.
-        Args:
-            db_path (str, optional): The name or path of the database to connect to. Defaults to CONVERSATION_DB_PATH.
-            session_id (str): The session ID of the conversation.
-        """
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
 
     def close(self):
-        """Close the connection to the database."""
         if self.conn:
             self.conn.close()
 
@@ -123,7 +79,7 @@ class SQLDatabase(RelationalDatabase):
             self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def update(self, table_name: str, data: Dict, conditions: Dict = {}):
+    def update_database(self, table_name: str, data: Dict, conditions: Dict = {}):
         data_str = ", ".join([f"{k} = ?" for k in data])
         conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
         self.cursor.execute(

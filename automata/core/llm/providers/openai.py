@@ -170,7 +170,7 @@ class OpenAIConversation(LLMConversation):
 
     def notify_observers(self) -> None:
         for observer in self._observers:
-            observer.update_database(self)
+            observer.update(self)
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):

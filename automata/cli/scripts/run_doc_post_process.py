@@ -21,7 +21,7 @@ def main(*args, **kwargs) -> str:
 
     embedding_db = JSONVectorDatabase(embedding_path)
 
-    symbols = embedding_db.get_all_symbols()
+    symbols = embedding_db.get_all_entries()
 
     docs = {symbol: embedding_db.get(symbol) for symbol in symbols}
 

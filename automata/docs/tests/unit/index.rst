@@ -15,7 +15,9 @@ how to :ref:`installation` the project.
    mock_automata_instance
    mock_code_generator
    mock_tool
+   test_execute_behavior
    test_tool
+   test_url
 
 
 Summary of content

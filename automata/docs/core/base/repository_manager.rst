@@ -1,110 +1,62 @@
 RepositoryManager
 =================
 
-``RepositoryManager`` is an abstract class serving as an interface for
-working with remote code repositories, such as Git and GitHub. It
-provides a set of abstract methods to perform common actions, such as
-checking if a branch exists, checking out a branch, cloning a
-repository, committing and pushing changes, creating a branch, and
-creating a pull request. You can implement this abstract class to work
-with a specific code repository host and APIs.
-
-``RepositoryManager`` includes the following methods:
-
-.. code:: python
-
-   @abstractmethod
-   def branch_exists(self, branch_name: str) -> bool:
-       pass
-
-   @abstractmethod
-   def checkout_branch(self, repo_local_path: str, branch_name: str):
-       pass
-
-   @abstractmethod
-   def clone_repository(self, local_path: str):
-       pass
-
-   @abstractmethod
-   def commit_and_push_changes(self, repo_local_path: str, branch_name: str, commit_message: str):
-       pass
-
-   @abstractmethod
-   def create_branch(self, branch_name: str):
-       pass
-
-   @abstractmethod
-   def create_pull_request(self, branch_name: str, title: str, body: str):
-       pass
-
-   @abstractmethod
-   def stage_all_changes(self, repo_local_path: str):
-       pass
+``RepositoryManager`` is an abstract base class that defines interface
+methods for managing repositories. It provides a set of abstract methods
+such as ``clone_repository``, ``create_branch``, ``checkout_branch``,
+``commit_and_push_changes``, and others that are implemented by
+subclasses like ``GitHubManager``.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.base.github_manager.GitHubManager``
--  ``git.Repo``
--  ``github.Github``
--  ``github.PullRequest.PullRequest``
+-  ``automata.core.agent.task.environment.AutomataTaskEnvironment``
+-  ``config.automata_agent_config.AutomataAgentConfig``
+-  ``automata.core.agent.agent.AutomataAgent``
 
-Example
--------
-
-The following example demonstrates how to implement the
-``RepositoryManager`` abstract class to work with a GitHub repository:
+Usage Example
+-------------
 
 .. code:: python
 
-   from automata.core.base.github_manager import RepositoryManager
-   from git import Repo
-   from github import Github, PullRequest
+   from automata.core.base.github_manager import GitHubManager
 
-   class GitHubManager(RepositoryManager):
-       def __init__(self, access_token: str, remote_name: str, primary_branch: str = "main"):
-           self.access_token = access_token
-           self.client = Github(access_token)
-           self.remote_name = remote_name
-           self.repo = self.client.get_repo(self.remote_name)
-           self.primary_branch = primary_branch
+   access_token = "your_github_access_token"
+   remote_name = "your/remote_repository"
+   primary_branch = "main"
 
-       def branch_exists(self, branch_name: str) -> bool:
-           # Implement the branch_exists method here
+   github_manager = GitHubManager(access_token, remote_name, primary_branch)
 
-       def checkout_branch(self, repo_local_path: str, branch_name: str):
-           # Implement the checkout_branch method here
+Methods
+-------
 
-       def clone_repository(self, local_path: str):
-           # Implement the clone_repository method here
-
-       def commit_and_push_changes(self, repo_local_path: str, branch_name: str, commit_message: str):
-           # Implement the commit_and_push_changes method here
-
-       def create_branch(self, branch_name: str):
-           # Implement the create_branch method here
-
-       def create_pull_request(self, branch_name: str, title: str, body: str):
-           # Implement the create_pull_request method here
-
-       def stage_all_changes(self, repo_local_path: str):
-           # Implement the stage_all_changes method here
+-  ``branch_exists``: Checks if a branch with a given name exists in the
+   repository.
+-  ``checkout_branch``: Switches to a given branch in the repository.
+-  ``clone_repository``: Clones the remote repository to a specified
+   local path.
+-  ``commit_and_push_changes``: Commits and pushes changes made to a
+   branch in the repository.
+-  ``create_branch``: Creates a new branch with a given name in the
+   repository.
+-  ``create_pull_request``: Creates a pull request from a specified
+   branch.
+-  ``fetch_issue``: Fetches an issue in the repository by issue number.
+-  ``stage_all_changes``: Stages all changes made to the repository.
 
 Limitations
 -----------
 
--  The base ``RepositoryManager`` class only provides an interface and
-   no actual functionality unless implemented for a specific repository
-   host.
--  Each implementation of the ``RepositoryManager`` depends on the
-   assumptions and limitations of the specific Git APIs used. For
-   example, while using the GitHub API and PyGitHub, the rate limits,
-   authentication mechanisms, and availability of endpoints may impact
-   the functionality of the implementation.
+The primary limitation of ``RepositoryManager`` is that it is an
+abstract base class and cannot directly interact with repositories. It
+needs to be subclassed, and the abstract methods need to be implemented
+for specific repository services like GitHub or GitLab.
 
 Follow-up Questions:
 --------------------
 
--  How can we create a unified interface that supports different
-   repository hosts (e.g., GitLab, Bitbucket) alongside GitHub without
-   making separate classes or implementations for each?
+-  How are the underlying git and GitHub operations managed with the
+   ``RepositoryManager`` abstract methods?
+-  Are there other related symbols that need to be included in the
+   documentation?

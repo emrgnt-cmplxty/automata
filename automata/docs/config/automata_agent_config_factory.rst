@@ -1,56 +1,59 @@
 AutomataAgentConfigFactory
 ==========================
 
-``AutomataAgentConfigFactory`` is a factory class that provides a simple
-and convenient way to create ``AutomataAgentConfig`` instances based on
-the provided arguments. It allows users to create agent configurations
-with custom settings and handles any conflicting or missing arguments.
+``AutomataAgentConfigFactory`` is a factory class that provides a way to
+create an ``AutomataAgentConfig`` instance from the provided arguments.
+It contains a single static method ``create_config(*args, **kwargs)``
+that creates an instance of ``AutomataAgentConfig`` using the provided
+arguments.
 
 Overview
 --------
 
-``AutomataAgentConfigFactory`` utilizes the ``create_config`` method to
-create an instance of the ``AutomataAgentConfig``. This method takes in
-various arguments that are used to create an ``AutomataAgentConfig`` and
-offers the flexibility to override or change the default settings as
-needed. The class also checks for any conflicts or missing mandatory
-arguments during the creation process.
+The class is useful for creating customized instances of
+``AutomataAgentConfig`` based on user-defined settings. It ensures that
+the created config instances are validated and set up correctly. The
+``create_config`` method takes various arguments and keyword arguments
+to construct and define an ``AutomataAgentConfig`` instance, then
+returns it.
 
 Related Symbols
 ---------------
 
--  ``config.automata_agent_config.AutomataAgentConfig``
--  ``config.automata_agent_config_utils.AutomataAgentConfigBuilder``
--  ``core.agent.agent.AutomataAgent``
--  ``config.config_enums.AgentConfigName``
+-  ``automata.tests.conftest.automata_agent_config_builder``
+-  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
+-  ``automata.config.config_types.AgentConfigName``
+-  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
+-  ``automata.config.config_types.AutomataAgentConfig``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
+-  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.tests.conftest.automata_agent``
 
 Example
 -------
 
-The following example demonstrates how to create an
-``AutomataAgentConfig`` using the ``AutomataAgentConfigFactory``.
+Here is an example demonstrating how to create an
+``AutomataAgentConfig`` instance using ``AutomataAgentConfigFactory``.
 
 .. code:: python
 
-   from automata.core.agent.agent import AutomataAgentConfig
-   from automata.config.agent_config_builder import AutomataAgentConfigFactory, AgentConfigName
+   from automata.config.agent_config_builder import AutomataAgentConfigFactory
+   from automata.config.config_types import AgentConfigName
 
-   instructions = "Execute the following query: SELECT * FROM users;"
    config_name = AgentConfigName.AUTOMATA_MAIN
-   config = AutomataAgentConfigFactory.create_config(main_config_name=config_name)
+   automata_agent_config = AutomataAgentConfigFactory.create_config(main_config_name=config_name, model="gpt-4", verbose=True)
 
 Limitations
 -----------
 
-``AutomataAgentConfigFactory`` relies on predefined configurations from
-the ``AutomataAgentConfig`` and ``AutomataAgentConfigBuilder`` classes.
-The user should have knowledge of these configurations and their default
-values before using the factory method. Additionally, the factory method
-may raise exceptions for any conflicting or missing mandatory arguments,
-which the user must handle.
+The primary limitation of the ``AutomataAgentConfigFactory`` is that its
+functionality is quite specific to the use case of creating an
+``AutomataAgentConfig`` instance. It is not a general-purpose factory
+class that can be used for other purposes.
 
 Follow-up Questions:
 --------------------
 
--  Can the factory method implementation be improved to provide better
-   error handling and be more user-friendly?
+-  How can we extend the functionality of ``AutomataAgentConfigFactory``
+   to support more types of agent configurations?

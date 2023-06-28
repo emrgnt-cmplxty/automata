@@ -1,65 +1,63 @@
 SymbolDocEmbedding
 ==================
 
-``SymbolDocEmbedding`` is a class representing the embedding vector
-associated with a symbol’s document. This class extends the
-``SymbolEmbedding`` abstract base class and includes additional metadata
-attributes such as the source code, summary, and contextual information
+``SymbolDocEmbedding`` is a class that represents an embedding for
+symbol documents. It extends the abstract base class ``SymbolEmbedding``
+and contains additional metadata like source code, summary, and context
 of the symbol.
 
 Overview
 --------
 
-The primary purpose of ``SymbolDocEmbedding`` is to store the document
-embedding of a symbol along with any additional information that may be
-useful for retrieval or other processing tasks. This class is mainly
-useful within the ``SymbolDocEmbeddingHandler``, which manages the
-creation, updating, and retrieval of document embeddings for symbols.
+The ``SymbolDocEmbedding`` class is responsible for storing the
+information about embeddings for symbol documents. It holds the source
+code, summary, and context of a symbol, which can be used in various
+applications like searching symbols, getting completions, updating
+embeddings, and more. It is mainly utilized by
+``SymbolDocEmbeddingHandler`` for managing and manipulating symbol
+document embeddings.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 -  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.scip_pb2.Descriptor``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.core.symbol.symbol_types.SymbolCodeEmbedding``
 -  ``automata.core.symbol.symbol_types.SymbolEmbedding``
 
 Example
 -------
 
-The following example shows how to instantiate a ``SymbolDocEmbedding``
-object with sample data:
+The following example demonstrates how to create a
+``SymbolDocEmbedding`` instance.
 
 .. code:: python
 
    import numpy as np
-   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
+   from automata.core.symbol.parser import parse_symbol
+   from automata.core.symbol.symbol_types import SymbolDocEmbedding
 
-   symbol = Symbol.from_string("sample.symbol")
-   document = "This is a sample document."
-   vector = np.random.rand(300)
+   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   symbol = parse_symbol(symbol_str)
+   document = "This is a sample document for the symbol."
+   vector = np.array([0.1, 0.3, 0.5, 0.7, 0.9])
 
-   symbol_doc_embedding = SymbolDocEmbedding(
-       symbol=symbol,
-       document=document,
-       vector=vector,
-       source_code="def sample_function():\n    pass",
-       summary="A sample function that does nothing.",
-       context="This sample function is part of a larger module of functions."
-   )
+   embedding = SymbolDocEmbedding(symbol, document, vector)
 
 Limitations
 -----------
 
-``SymbolDocEmbedding`` is primarily a data storage class and does not
-contain functionality for processing or manipulation of embeddings. The
-actual creation and management of document embeddings is handled by the
-``SymbolDocEmbeddingHandler``. Additionally, ``SymbolDocEmbedding``
-assumes that the symbol and document correspond correctly, and it does
-not perform validation checks to ensure consistency.
+The primary limitation of ``SymbolDocEmbedding`` is that it only
+contains information specifically catered to symbol documents, making it
+unsuitable for interacting with other types of embeddings. Additionally,
+the class heavily relies on the ``parse_symbol`` function and the
+``Symbol`` class for correct symbol representation.
 
 Follow-up Questions:
 --------------------
 
--  Are there cases where ``SymbolDocEmbedding`` objects might contain
-   incorrect or inconsistent data, and how can we minimize such issues?
+-  How can ``SymbolDocEmbedding`` be extended to handle different types
+   of embeddings more flexibly?
+-  How can we improve the interaction between ``SymbolDocEmbedding`` and
+   its related symbols?

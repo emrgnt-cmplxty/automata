@@ -1,88 +1,70 @@
 SymbolDescriptor
 ================
 
-``SymbolDescriptor`` is a wrapper class for the descriptor component of
-the URI in the ``automata.core.symbol.symbol_types`` module. The purpose
-of this class is to wrap a descriptor into a Python object to make it
-more convenient to work with.
+``SymbolDescriptor`` is a class that wraps the descriptor component of
+the URI into a Python object. It provides utility methods to convert
+SCIP (Symbol Common Intermediate Protocol) to Python suffixes, determine
+if a given name is a simple identifier, and unparse the descriptor back
+into a URI string.
 
 Overview
 --------
 
-``SymbolDescriptor`` contains three attributes: ``name``, ``suffix``,
-and ``disambiguator``, representing the name of the symbol, the suffix
-used for symbol kind identification, and an optional disambiguator
-string to differentiate between symbols with the same name. It also
-provides static methods for converting between SCIP and Python suffixes,
-escaping names, and unparsing the descriptor back into a URI string.
-
-Methods
--------
-
--  ``__init__(self, name: str, suffix: DescriptorProto, disambiguator: Optional[str] = None) -> None``
--  ``__repr__(self) -> str``
--  ``convert_scip_to_python_suffix(descriptor_suffix: DescriptorProto) -> PyKind``
--  ``get_escaped_name(name) -> str``
--  ``is_simple_identifier(name) -> bool``
--  ``unparse(self) -> str``
+``SymbolDescriptor`` is mainly used in conjunction with ``Symbol`` to
+identify symbols like classes, methods, or local variables. The class
+stores the name, suffix, and an optional disambiguator for the
+descriptor.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.search.symbol_parser.parse_symbol``
--  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.parser._SymbolParser.parse_descriptor``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 
-Example Usage
--------------
+Example
+-------
 
-In this example, we create an instance of ``SymbolDescriptor`` and
-demonstrate how to access its attributes and methods:
+The following example demonstrates how to create an instance of
+``SymbolDescriptor``.
 
 .. code:: python
 
    from automata.core.symbol.symbol_types import SymbolDescriptor
    from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
-   name = "example_symbol"
-   suffix = DescriptorProto.LOCAL
-   descriptor = SymbolDescriptor(name, suffix)
+   name = "automata.core.agent.agent_enums.ActionIndicator"
+   suffix = DescriptorProto.Type
+   disambiguator = None
 
-   #print descriptor attributes
-   print(descriptor.name)         # Output: example_symbol
-   print(descriptor.suffix)       # Output: LOCAL
-   print(descriptor.disambiguator)  # Output: None
+   descriptor = SymbolDescriptor(name, suffix, disambiguator)
 
-   #print the representation of the descriptor
-   print(descriptor)               # Output: Descriptor(example_symbol, LOCAL)
+Usage
+-----
 
-   #convert SCIP suffix to Python suffix
-   python_suffix = SymbolDescriptor.convert_scip_to_python_suffix(suffix)
-   print(python_suffix)           # Output: PyKind.Local
+Here’s an example to unparse a ``SymbolDescriptor`` instance back into a
+URI string:
 
-   #get escaped name of the symbol
-   escaped_name = SymbolDescriptor.get_escaped_name(name)
-   print(escaped_name)            # Output: example_symbol
+.. code:: python
 
-   #check if the name is a simple identifier
-   is_simple = SymbolDescriptor.is_simple_identifier(name)
-   print(is_simple)               # Output: True
-
-   #unparse the descriptor back into URI string
-   uri_string = descriptor.unparse()
-   print(uri_string)              # Output: example_symbol
+   unparsed_descriptor = descriptor.unparse()
+   # Returns: "`automata.core.agent.agent_enums.ActionIndicator`#"
 
 Limitations
 -----------
 
-The main limitation of the ``SymbolDescriptor`` class is the assumption
-that the descriptor is always in the SCIP protocol format. If a non-SCIP
-format is used, the class would need to be modified accordingly.
+-  The primary limitation of ``SymbolDescriptor`` is its reliance on
+   SCIP protocols for conversion. It assumes that the notation for
+   descriptor components will not change in the future, which may not
+   always be the case.
+
+-  SymbolDescriptor has a fixed set of descriptor suffix options. If new
+   descriptor types are introduced, this class might need to be updated
+   to accommodate those changes.
 
 Follow-up Questions:
 --------------------
 
--  Are there any known cases where the descriptor component of the URI
-   is not in the SCIP format, and would this affect the
-   ``SymbolDescriptor`` class?
+-  Is there a better way to handle possible updates to the SCIP protocol
+   or descriptor types, rather than simply updating the class with each
+   change?
