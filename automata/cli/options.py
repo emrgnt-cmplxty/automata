@@ -51,8 +51,8 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option(
             "--tool_builders",
-            default="context_oracle",
-            help="Which LLM toolkits to use?",
+            default="py_reader,context_oracle",
+            help="Which LLM tools to use?",
         ),
         click.option(
             "--model",

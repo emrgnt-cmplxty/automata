@@ -334,15 +334,17 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         content = response["content"]
 
         function_call = response["function_call"]
-        if function_call:
-            if not isinstance(function_call, dict):
-                raise ValueError("Expected function_call to be a dict")
-            # check is of type Dict[str, str]
-            for key, val in function_call.items():
+        if not isinstance(function_call, dict):
+            raise ValueError("Expected function_call to be a dict")
+
+        if function_call["name"] and function_call["arguments"] and content:
+            # TODO - Can we ever receive content and a function call?
+            raise ValueError("Expected either content or function_call to be defined")
+
+        if function_call["name"] and function_call["arguments"]:
+            for key in function_call:
                 if not isinstance(key, str):
                     raise ValueError(f"Expected {key} to be a string")
-                if not isinstance(val, str):
-                    raise ValueError(f"Expected value at {key} to be a string")
 
             return OpenAIChatMessage(
                 role=role,
