@@ -11,71 +11,51 @@ logger = logging.getLogger(__name__)
 
 
 class VectorDatabaseProvider:
-    """
-    Abstract base class for different types of vector database providers.
-    """
+    """An abstract base class for different types of vector database providers."""
 
     @abc.abstractmethod
     def save(self) -> Any:
-        """
-        Abstract method to save data.
-        """
+        """Abstract method to save data."""
         pass
 
     @abc.abstractmethod
     def load(self) -> Any:
-        """
-        Abstract method to load data.
-        """
+        """Abstract method to load data."""
         pass
 
     @abc.abstractmethod
     def add(self, embedding: SymbolEmbedding) -> Any:
-        """
-        Abstract method to add an embedding to the database.
-        """
+        """Abstract method to add an embedding to the database."""
         pass
 
     @abc.abstractmethod
     def update_database(self, embedding: SymbolEmbedding) -> Any:
-        """
-        Abstract method to update an existing embedding.
-        """
+        """Abstract method to update an existing embedding."""
         pass
 
     @abc.abstractmethod
     def discard(self, symbol: Symbol) -> Any:
-        """
-        Abstract method to discard a specific embedding.
-        """
+        """Abstract method to discard a specific embedding."""
         pass
 
     @abc.abstractmethod
     def get(self, symbol: Symbol) -> Any:
-        """
-        Abstract method to get a specific embedding.
-        """
+        """Abstract method to get a specific embedding."""
         pass
 
     @abc.abstractmethod
     def clear(self) -> Any:
-        """
-        Abstract method to clear all embeddings.
-        """
+        """Abstract method to clear all embeddings."""
         pass
 
     @abc.abstractmethod
     def contains(self, symbol: Symbol) -> bool:
-        """
-        Abstract method to check if a specific embedding is present.
-        """
+        """Abstract method to check if a specific embedding is present."""
         pass
 
     @abc.abstractmethod
     def get_all_entries(self) -> List[Symbol]:
-        """
-        Abstract method to calculate the similarity between the given vector and vectors in the database.
-        """
+        """Abstract method to calculate the similarity between the given vector and vectors in the database."""
         pass
 
 
@@ -89,13 +69,13 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         self.load()
 
     def save(self):
-        """Saves the vector database to the JSON file"""
+        """Saves the vector database to the JSON file."""
         with open(self.file_path, "w") as file:
             encoded_data = jsonpickle.encode(self.data)
             file.write(encoded_data)
 
     def load(self):
-        """Loads the vector database from the JSON file"""
+        """Loads the vector database from the JSON file."""
         try:
             with open(self.file_path, "r") as file:
                 self.data = jsonpickle.decode(file.read())
