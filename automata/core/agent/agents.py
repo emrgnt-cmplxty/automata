@@ -35,7 +35,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
     """
 
     CONTINUE_MESSAGE: Final = "Continue.."
-    SUCCESS_PREFIX: Final = "Execution Result:\n"
+    EXECUTION_PREFIX: Final = "Execution Result:\n\n"
     _initialized = False
 
     def __init__(self, instructions: str, config: AutomataOpenAIAgentConfig) -> None:
@@ -186,7 +186,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
                 if assistant_message.function_call.name == tool.openai_function.name:
                     result = tool.run(assistant_message.function_call.arguments)
                     return OpenAIChatMessage(
-                        role="user", content=f"{AutomataOpenAIAgent.SUCCESS_PREFIX}{result}"
+                        role="user", content=f"{AutomataOpenAIAgent.EXECUTION_PREFIX}{result}"
                     )
 
         return OpenAIChatMessage(role="user", content=AutomataOpenAIAgent.CONTINUE_MESSAGE)

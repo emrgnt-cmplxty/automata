@@ -20,6 +20,7 @@ class ContextOracleToolBuilder(AgentToolBuilder):
         self,
         symbol_search: SymbolSearch,
         symbol_doc_similarity: SymbolSimilarityCalculator,
+        **kwargs,
     ) -> None:
         self.symbol_search = symbol_search
         self.symbol_doc_similarity = symbol_doc_similarity
@@ -52,6 +53,7 @@ class ContextOracleToolBuilder(AgentToolBuilder):
         most_similar_doc_embedding = self.symbol_doc_similarity.embedding_handler.get_embedding(
             sorted(doc_output.items(), key=lambda x: -x[1])[0][0]
         )
+        print("The most similar doc embedding = ", most_similar_doc_embedding)
         rank_output = self.symbol_search.symbol_rank_search(query)
 
         result = most_similar_doc_embedding.source_code
