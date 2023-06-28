@@ -41,7 +41,7 @@ def test_init(python_writer_tool_builder):
 
 def test_build(python_writer_tool_builder):
     tools = python_writer_tool_builder.build()
-    assert len(tools) == 3
+    assert len(tools) == 2
     for tool in tools:
         assert isinstance(tool, Tool)
 
@@ -86,7 +86,7 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.function(file_py_path, None, code=function_def)
+    code_writer.function(file_py_path, code=function_def)
 
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
@@ -117,7 +117,7 @@ def test_extend_module_with_documented_new_function(python_writer_tool_builder):
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
 
-    code_writer.function(file_py_path, None, code=function_def)
+    code_writer.function(file_py_path, code=function_def)
 
     new_sample_text = None
     with open(file_abs_path, "r", encoding="utf-8") as f:

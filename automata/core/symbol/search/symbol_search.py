@@ -123,11 +123,11 @@ class SymbolSearch:
 
     @staticmethod
     def shifted_z_score_powered(
-        values: Union[List[float], np.ndarray], power: int = 3
+        values: Union[List[float], np.ndarray], power: int = 4
     ) -> np.ndarray:
         """
-        Shifts the values to be positive, calculates the z-score,
-        and raises the values to the specified power.
+        Calculates the z-score, shifts them to be positive,
+        and then raises the values to the specified power.
 
         This method is used to transform similarity scores into a quantity that
         is more suitable for ranking. Empirically, we found that raising the values

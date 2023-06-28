@@ -12,7 +12,7 @@ def test_automata_agent_init(automata_agent):
     assert automata_agent.config.model == "gpt-4"
     assert automata_agent.config.session_id is not None
     assert len(automata_agent.config.tools) > 0
-    assert len(automata_agent.conversation) == 3
+    assert len(automata_agent.conversation) == 5
 
 
 def test_builder_default_config(automata_agent_config_builder):

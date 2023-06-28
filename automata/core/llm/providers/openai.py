@@ -273,6 +273,9 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             )
         else:
             self.conversation.add_message(message)
+        logger.debug(
+            f"Approximately {self.get_approximate_tokens_consumed()} tokens were after adding the latest message."
+        )
 
     @staticmethod
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:

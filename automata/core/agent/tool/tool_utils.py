@@ -221,8 +221,8 @@ class AgentToolFactory:
         AgentToolProviders.PY_WRITER: [("py_writer", PyWriter)],
         AgentToolProviders.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         AgentToolProviders.CONTEXT_ORACLE: [
-            ("symbol_search", SymbolSearch),
             ("symbol_doc_similarity", SymbolSimilarityCalculator),
+            ("symbol_code_similarity", SymbolSimilarityCalculator),
         ],
     }
 

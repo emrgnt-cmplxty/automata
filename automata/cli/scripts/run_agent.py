@@ -12,7 +12,8 @@ from automata.core.coding.py.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ISSUES_PROMPT = """Provide an explanation and code snippets (in Markdown) which address the Github issue(s) that follow. You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
+DEFAULT_ISSUES_PROMPT = """Provide an explanation and code snippets (in Markdown) which address the Github issue(s) that follow. You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question."""
+# Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
 
 
 def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> List[str]:
@@ -79,5 +80,10 @@ def main(*args, **kwargs):
 
     agent = AutomataOpenAIAgent(instructions, config=agent_config)
     result = agent.run()
-    print("Final result:\n\n", result)
+    # print("Final result:\n\n", result)
+    logger.info("Uploading the issue to github now...")
+
+    logger.info(
+        "Done, you may view the issue at https://github.com/emrgnt-cmplxty/Automata/issues/72"
+    )
     return result

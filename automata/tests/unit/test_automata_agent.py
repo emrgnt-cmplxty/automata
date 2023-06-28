@@ -36,7 +36,7 @@ def test_iter_step_without_api_call(mock_openai_chatcompletion_create, automata_
     assistant_message, user_message = result
     assert assistant_message.content == "The dummy_tool has been tested successfully."
     assert user_message.content, AutomataOpenAIAgent.CONTINUE_MESSAGE
-    assert len(automata_agent.conversation) == 5
+    assert automata_agent.iteration_count == 1
 
 
 @patch("openai.ChatCompletion.create")
