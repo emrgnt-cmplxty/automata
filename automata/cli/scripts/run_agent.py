@@ -52,11 +52,11 @@ def main(*args, **kwargs):
         )
 
     instructions = kwargs.get("instructions") or "This is a dummy instruction, return True."
-    llm_toolkits_list = kwargs.get("tool_builders", "context_oracle").split(",")
+    llm_tools_list = kwargs.get("tool_builders", "context_oracle").split(",")
 
-    # A list of all dependencies that will be used to build the toolkits
+    # A list of all dependencies that will be used to build the tools
     dependencies: Set[Any] = set()
-    for tool in llm_toolkits_list:
+    for tool in llm_tools_list:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
             dependencies.add(dependency_name)
 
@@ -67,8 +67,8 @@ def main(*args, **kwargs):
         logger.info(f"Building {dependency}...")
         tool_dependencies[dependency] = DependencyFactory().get(dependency)
 
-    tools = AgentToolFactory.build_tools(llm_toolkits_list, **tool_dependencies)
-    logger.info("Done building toolkits...")
+    tools = AgentToolFactory.build_tools(llm_tools_list, **tool_dependencies)
+    logger.info("Done building tools...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata_main"))
     agent_config = (
         AutomataOpenAIAgentConfigBuilder.from_name(config_name)

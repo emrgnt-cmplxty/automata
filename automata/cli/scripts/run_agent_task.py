@@ -57,13 +57,13 @@ def main(*args, **kwargs):
             issue_infos
         )
 
-    llm_toolkits_list = kwargs.get("tool_builders", "context_oracle").split(",")
+    llm_tools_list = kwargs.get("tool_builders", "context_oracle").split(",")
     # TODO - The following is a copy pasta from automata/cli/scripts/run_agent.py
     # Where should this reside to avoid redundancy?
 
-    # A list of all dependencies that will be used to build the toolkits
+    # A list of all dependencies that will be used to build the tools
     dependencies: Set[Any] = set()
-    for tool in llm_toolkits_list:
+    for tool in llm_tools_list:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
             dependencies.add(dependency_name)
 

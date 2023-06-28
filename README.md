@@ -157,6 +157,100 @@ Automata works by combining Large Language Models, such as GPT-4, with a vector 
 
 Automata employs downstream tooling to execute advanced coding tasks, continually building its expertise and autonomy. This self-coding approach mirrors an autonomous craftsman's work, where tools and techniques are consistently refined based on feedback and accumulated experience.
 
+### Example - Running your own agent
+
+Sometimes the best way to understand a complicated system is to start by understanding a basic example. The following example illustrates how to run your own Automata agent. The agent will be initialized with a trivial instruction, and will then attempt to write code to fulfill the instruction. The agent will then return the result of its attempt.
+
+```python
+
+import logging
+from typing import Any, Set
+
+from automata.config.base import AgentConfigName
+from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.core.agent.agents import AutomataOpenAIAgent
+from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
+from automata.core.base.agent import AgentToolProviders
+from automata.core.base.github_manager import GitHubManager
+from automata.core.coding.py.module_loader import py_module_loader
+
+logger = logging.getLogger(__name__)
+
+# Initialize the module loader
+py_module_loader.initialize()
+
+
+# Construct the set of all dependencies that will be used to build the tools
+tool_list = ["context_oracle"]
+dependencies: Set[Any] = set()
+tool_dependencies = {}
+
+for tool in tool_list:
+    for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
+        if dependency_name not in dependencies:
+            dependencies.add(dependency_name)
+            logger.info(f"  - Building Dependency {dependency_name}...")
+            tool_dependencies[dependency_name] = DependencyFactory().get(dependency_name)
+
+# Build the tools
+tools = AgentToolFactory.build_tools(tool_list, **tool_dependencies)
+
+# Build the agent config
+config_name = AgentConfigName("automata_main")
+
+agent_config = (
+    AutomataOpenAIAgentConfigBuilder.from_name(config_name)
+    .with_tools(tools)
+    .with_model("gpt-4")
+    .build()
+)
+
+# Initialize the agent
+instructions = "Explain how embeddings are used by the codebase"
+agent = AutomataOpenAIAgent(instructions, config=agent_config)
+
+# Run the agent
+result = agent.run()
+```
+
+<details>
+<summary>Click to see the output</summary>
+
+Embeddings in this codebase are represented by classes such as `SymbolCodeEmbedding` and `SymbolDocEmbedding`. These classes store information about a symbol and its respective embeddings which are vectors representing the symbol in high-dimensional space.
+
+Examples of these classes are:
+`SymbolCodeEmbedding` a class used for storing embeddings related to the code of a symbol.
+`SymbolDocEmbedding` a class used for storing embeddings related to the documentation of a symbol.
+
+Code example for creating an instance of 'SymbolCodeEmbedding':
+```python
+import numpy as np
+from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+from automata.core.symbol.parser import parse_symbol
+
+symbol_str = 'scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#'
+symbol = parse_symbol(symbol_str)
+source_code = 'symbol_source'
+vector = np.array([1, 0, 0, 0])
+
+embedding = SymbolCodeEmbedding(symbol=symbol, source_code=source_code, vector=vector)
+```
+
+Code example for creating an instance of 'SymbolDocEmbedding':
+```python
+from automata.core.symbol.symbol_types import SymbolDocEmbedding
+from automata.core.symbol.parser import parse_symbol
+import numpy as np
+
+symbol = parse_symbol('your_symbol_here')
+document = 'A document string containing information about the symbol.'
+vector = np.random.rand(10)
+
+symbol_doc_embedding = SymbolDocEmbedding(symbol, document, vector)
+```
+
+</details>
+
 ## SymbolRank
 
 We have developed SymbolRank for Automata, a semantic code analyzer for software corpora. Leveraging language models and graph theory, SymbolRank assesses and ranks symbols such as classes and methods based on their semantic context and structural relationships within the software. The algorithm starts by embedding a global context using a concrete implementation of the SymbolEmbeddingHandler class, which applies OpenAI's API to generate vector representations of each symbol in the source code. These embeddings capture the semantic essence of the symbols, providing a basis for the subsequent stages of the process.
