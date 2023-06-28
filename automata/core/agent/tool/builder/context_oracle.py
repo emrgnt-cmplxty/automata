@@ -31,11 +31,7 @@ class ContextOracleToolBuilder(AgentToolBuilder):
                 name="context-oracle",
                 function=self._get_context,
                 description=textwrap.dedent(
-                    """
-                This tool combines SymbolSearch and SymbolSimilarity to create contexts. Given a query, it uses SymbolSimilarity calculate the similarity between each symbol's documentation and the query returns the most similar document. Then, it leverages SymbolSearch to combine Semantic Search with PageRank to find the most relevant symbols to the query. The overview documentation of these symbols is then concated to the result of the SymbolSimilarity query to create a context.
-
-                For instance, if a query reads 'Tell me about SymbolRank', it will find the most similar document to this query from the embeddings, which in this case would be the documentation for the SymbolRank class. Then, it will use SymbolSearch to fetch some of the most relevant symbols which would be 'Symbol', 'SymbolSearch', 'SymbolGraph', etc. This results in a comprehensive context for the query.
-                """
+                    """This tool utilizes the SymbolSimilarityCalculator and SymbolSearch to provide context for a given query by computing semantic similarity between the query and all available symbols' documentation and code. The symbol with the highest combined similarity score is identified, with its source code and documentation summary forming the primary context. Additionally, if enabled, the documentation summaries of related symbols (those next most similar to the query) are included."""
                 ),
             )
         ]
