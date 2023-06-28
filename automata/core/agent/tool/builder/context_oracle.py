@@ -75,7 +75,6 @@ class ContextOracleToolBuilder(AgentToolBuilder):
                     e,
                 )
                 continue
-        logger.debug(f"ContextOracleToolBuilder is returning this result: {result}")
         return result
 
 
