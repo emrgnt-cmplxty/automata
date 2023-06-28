@@ -13,6 +13,8 @@ from automata.config.base import (
 
 
 class AutomataOpenAIAgentConfig(AgentConfig):
+    """A class to hold the configuration for the Automata OpenAI Agent."""
+
     class Config:
         SUPPORTED_MODELS = [
             "gpt-4",

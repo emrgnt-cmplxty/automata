@@ -21,7 +21,7 @@ class EmbeddingProvider(abc.ABC):
     """A class to provide embeddings for symbols"""
 
     @abc.abstractmethod
-    def build_embedding(self, symbol_source: str) -> np.ndarray:
+    def build_embedding_array(self, symbol_source: str) -> np.ndarray:
         pass
 
 
@@ -44,17 +44,11 @@ class SymbolEmbeddingHandler(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update_embedding(self, symbol: Symbol) -> None:
-        """An abstract method to update the embedding for a symbol"""
+    def process_embedding(self, symbol: Symbol) -> None:
+        """An abstract method to process the embedding for a symbol"""
         pass
 
     def get_all_supported_symbols(self) -> List[Symbol]:
-        """
-        Get all the symbols in the database.
-
-        Returns:
-            List[Symbol]: List of all the symbols in the database
-        """
         return self.embedding_db.get_all_entries()
 
 

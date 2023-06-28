@@ -21,7 +21,7 @@ def test_update_embeddings(
 
     # Mock EmbeddingProvider methods
     mock_provider = Mock(EmbeddingProvider)
-    mock_provider.build_embedding.return_value = mock_embedding
+    mock_provider.build_embedding_array.return_value = mock_embedding
 
     # Mock JSONVectorDatabase methods
     mock_db = MagicMock(JSONVectorDatabase)
@@ -39,7 +39,7 @@ def test_update_embeddings(
     # Update embeddings for half of the symbols
     symbols_to_update = mock_symbols[: len(mock_symbols) // 2]
     for symbol in symbols_to_update:
-        cem.update_embedding(symbol)
+        cem.process_embedding(symbol)
 
     # Verify the results
     for symbol in symbols_to_update:
@@ -53,7 +53,7 @@ def test_get_embedding(
 ):
     # Mock EmbeddingProvider methods
     mock_provider = Mock(EmbeddingProvider)
-    mock_provider.build_embedding.return_value = mock_embedding
+    mock_provider.build_embedding_array.return_value = mock_embedding
 
     # Mock JSONVectorDatabase methods
     mock_db = MagicMock(JSONVectorDatabase)
@@ -72,7 +72,7 @@ def test_get_embedding(
 
 
 def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
-    # Test exception in build_embedding function
+    # Test exception in build_embedding_array function
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
@@ -80,7 +80,7 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
 
     # Mock EmbeddingProvider methods
     mock_provider = Mock(EmbeddingProvider)
-    mock_provider.build_embedding.return_value = [1, 2, 3]
+    mock_provider.build_embedding_array.return_value = [1, 2, 3]
 
     # Mock JSONVectorDatabase methods
     mock_db = MagicMock(JSONVectorDatabase)
@@ -91,13 +91,13 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
     cem = SymbolCodeEmbeddingHandler(embedding_provider=mock_provider, embedding_db=mock_db)
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
-    cem.update_embedding(mock_simple_method_symbols[0])
+    cem.process_embedding(mock_simple_method_symbols[0])
 
     assert len(cem.embedding_db.data) == 1  # Expect empty embedding map because of exception
 
 
 def test_update_embedding(monkeypatch, mock_simple_method_symbols):
-    # Test exception in build_embedding function
+    # Test exception in build_embedding_array function
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
@@ -105,7 +105,7 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
 
     # Mock EmbeddingProvider methods
     mock_provider = Mock(EmbeddingProvider)
-    mock_provider.build_embedding.return_value = [1, 2, 3]
+    mock_provider.build_embedding_array.return_value = [1, 2, 3]
 
     # Mock JSONVectorDatabase methods
     mock_db = MagicMock(JSONVectorDatabase)
@@ -118,24 +118,24 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     cem = SymbolCodeEmbeddingHandler(embedding_provider=mock_provider, embedding_db=mock_db)
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
-    cem.update_embedding(mock_simple_method_symbols[0])
+    cem.process_embedding(mock_simple_method_symbols[0])
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "xx",
     )
-    cem.embedding_provider.build_embedding.return_value = [1, 2, 3, 4]
+    cem.embedding_provider.build_embedding_array.return_value = [1, 2, 3, 4]
     cem.embedding_db.contains = lambda x: True
     cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]
     cem.embedding_db.get = lambda x: cem.embedding_db.data[0]
 
-    cem.update_embedding(mock_simple_method_symbols[0])
+    cem.process_embedding(mock_simple_method_symbols[0])
     embedding = cem.embedding_db.data[0].vector
     assert len(cem.embedding_db.data) == 1  # Expect empty embedding map because of exception
     assert embedding == [1, 2, 3, 4]
 
 
 def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
-    # Test exception in build_embedding function
+    # Test exception in build_embedding_array function
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
@@ -143,7 +143,7 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
 
     # Mock EmbeddingProvider methods
     mock_provider = Mock(EmbeddingProvider)
-    mock_provider.build_embedding.side_effect = Exception("Test exception")
+    mock_provider.build_embedding_array.side_effect = Exception("Test exception")
 
     # Mock JSONVectorDatabase methods
     mock_db = MagicMock(JSONVectorDatabase)
@@ -155,7 +155,7 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
     try:
-        cem.update_embedding(mock_simple_method_symbols[0])
+        cem.process_embedding(mock_simple_method_symbols[0])
     except Exception:
         pass
 

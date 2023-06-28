@@ -29,13 +29,6 @@ class PyContextRetrieverConfig:
         max_related_symbols_to_process: int = 10,
         max_context: int = 6_500,
     ) -> None:
-        """
-        Args:
-            spacer (str): The string to use for indentation
-            max_dependency_print_depth (int): The maximum depth to print dependencies
-            max_recursion_depth (int): The maximum depth to recurse into dependencies
-            max_related_symbols_to_process (int): The number of nearest symbols to print
-        """
         self.spacer = spacer
         self.max_dependencies_to_process = max_dependencies_to_process
         self.max_related_symbols_to_process = max_related_symbols_to_process
@@ -52,11 +45,6 @@ class PyContextRetriever:
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
         encoding_provider: tiktoken.Encoding = tiktoken.encoding_for_model("gpt-4"),
     ) -> None:
-        """
-        Args:
-            graph (SymbolGraph): The symbol graph to use
-            config (PyContextRetrieverConfig): The configuration to use
-        """
         self.graph = graph
         self.config = config
         self.indent_level = 0
@@ -67,37 +55,20 @@ class PyContextRetriever:
 
     @contextmanager
     def IndentManager(self):
-        """A context manager to manage the indentation level"""
         self.indent_level += 1
         yield
         self.indent_level -= 1
 
     def process_message(self, message: str):
-        """
-        Process a message by appending indentation and adding it to the message
-
-        Args:
-            message (str): The message to process
-        """
-
         def indent() -> str:
             return self.config.spacer * self.indent_level
 
         self.context += "\n".join([f"{indent()}{ele}" for ele in message.split("\n")]) + "\n"
 
     def get_context_buffer(self) -> str:
-        """
-        Get the context buffer
-
-        Returns:
-            str: The context buffer
-        """
         return self.context
 
     def reset(self) -> None:
-        """
-        Reset the retriever to its initial state
-        """
         self.context = ""
         self.obs_symbols: Set[Symbol] = set([])
         self.global_level = 0
@@ -108,13 +79,12 @@ class PyContextRetriever:
         related_symbols: List[Symbol] = [],
     ) -> None:  # sourcery skip: extract-method
         """
-        Process the context of a symbol
-        Theh output is stored into the local message buffer
+        Process the context of a specified `Symbol`.
 
-        Args:
-            symbol (Symbol): The symbol to process
-            ranked_symbols (List[Symbol]): The list ranked symbols to use
-                with the nearest symbol processor
+        This works by first processing the main printout for the symbol, which includes the symbol's
+        documentation, docstring, and methods. Then, if the symbol is the main symbol, we process
+        the context for the symbol's related symbols and dependencies.
+
         """
         with self.IndentManager():
             self.process_headline(symbol)
@@ -166,12 +136,6 @@ class PyContextRetriever:
         self.obs_symbols.add(symbol)
 
     def process_headline(self, symbol: Symbol) -> None:
-        """
-        Process the headline of a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-        """
         # Print the headline
         if self._is_main_symbol():
             self.process_message(f"Building context for primary symbol - {symbol.dotpath} -\n")
@@ -179,12 +143,7 @@ class PyContextRetriever:
             self.process_message(f"{symbol.dotpath}\n")
 
     def process_ast(self, symbol: Symbol) -> None:
-        """
-        Process the variables of a symbol
-
-        Args:
-            ast_object (RedBaron): The ast representation of the symbol
-        """
+        """Process the entire context for an AST object."""
         ast_object = convert_to_fst_object(symbol)
         is_main_symbol = self._is_main_symbol()
         methods = sorted(ast_object.find_all("DefNode"), key=lambda x: x.name)
@@ -206,12 +165,7 @@ class PyContextRetriever:
                     self.process_method(method, is_main_symbol)
 
     def process_imports(self, symbol: Symbol) -> None:
-        """
-        Process the imports of a symbol
-
-        Args:
-            symbol (Symbol): The symbol to process
-        """
+        """Appends the import statements for a symbol to the context buffer."""
         # Compute the file path from the symbol's path
         file_path = os.path.join(
             get_root_py_fpath(), "..", str(symbol.dotpath).replace(".", os.path.sep)
@@ -234,12 +188,6 @@ class PyContextRetriever:
                 self.process_message("")  # Add an empty line for separation
 
     def process_docstring(self, ast_object: RedBaron) -> None:
-        """
-        Process the docstring of a symbol
-
-        Args:
-            ast_object (RedBaron): The ast representation of the symbol
-        """
         docstring = PyContextRetriever._get_docstring(ast_object)
 
         if docstring:
@@ -249,6 +197,10 @@ class PyContextRetriever:
                 self.process_message("")  # Add an empty line for separation
 
     def process_documentation(self, symbol: Symbol, is_main_symbol: bool) -> None:
+        """
+        Process the documentation of a symbol, providing a summary or the entire source code
+        depending on whether the symbol is the main symbol or not.
+        """
         if self.doc_embedding_db is not None and self.doc_embedding_db.contains(symbol):
             if is_main_symbol:
                 document = self.doc_embedding_db.get(symbol).embedding_source
@@ -260,10 +212,8 @@ class PyContextRetriever:
 
     def process_method(self, method: RedBaron, is_main_symbol: bool) -> None:
         """
-        Processes a specified method
-
-        Args:
-            method (RedBaron): The ast representation of the method
+        Processes a specified method by printing its name, arguments, and return type.
+        If we are processing the main symbol, we also print the method's code.
         """
         if PyContextRetriever._is_private_method(method):
             return
@@ -279,65 +229,22 @@ class PyContextRetriever:
                 self.process_message(f"{method_definition} -> {return_annotation}\n")
 
     def _is_main_symbol(self) -> bool:
-        """
-        Check if this is the main symbol call
-
-        Returns:
-            bool: True if this is the main symbol call, False otherwise
-
-        """
         return self.indent_level == 1
 
     def _below_context_limit(self) -> bool:
-        """
-        Check if we are below the context limit
-
-        Returns:
-            bool: True if we are below the context limit, False otherwise
-        """
         return len(self.encoding_provider.encode(self.context)) < self.config.max_context
 
     @staticmethod
     def _is_private_method(ast_object: RedBaron) -> bool:
-        """
-        Check if the ast object is private
-
-        Args:
-            ast_object (RedBaron): The RedBaron object to check
-
-        Returns:
-            bool: True if the method is private, False otherwise
-        """
         return ast_object.name[0] == "_" and ast_object.name[1] != "_"
 
     @staticmethod
-    def _get_docstring(ast_object) -> str:
-        """
-        Get the docstring an ast object
-
-        Args:
-            ast_object (RedBaron): The RedBaron object to get the docstring from
-
-        Returns:
-            str: Newline separated docstring
-        """
-
+    def _get_docstring(ast_object: RedBaron) -> str:
         raw_doctring = PyReader.get_docstring_from_node(ast_object).split("\n")
         return "\n".join([ele.strip() for ele in raw_doctring]).strip()
 
     @staticmethod
     def _pass_symbol_filter(primary_symbol: Symbol, secondary_symbol: Symbol) -> bool:
-        """
-        Check if the symbol passes the filter on package and dotpath
-
-        Args:
-            primary_symbol (Symbol): The primary symbol
-            secondary_symbol (Symbol): The secondary symbol
-
-        Returns:
-            bool: True if the symbol passes the filter, False otherwise
-        """
-
         primary_symbol_dotpath = primary_symbol.dotpath
         primary_package = primary_symbol_dotpath.split(".")[0]
 

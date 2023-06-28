@@ -1,13 +1,12 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Set, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Union
 
 import numpy as np
 import openai
 
 from automata.core.base.agent import Agent, AgentToolBuilder
-from automata.core.base.observer import Observer
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
     LLMChatCompletionProvider,
@@ -22,9 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class FunctionCall(NamedTuple):
-    """
-    A function call to be made by the OpenAI agent
-    """
+    """A class representing function call to be made by the OpenAI agent."""
 
     name: str
     arguments: Dict[str, str]
@@ -155,22 +152,14 @@ class OpenAIIncorrectMessageTypeError(Exception):
 
 
 class OpenAIConversation(LLMConversation):
+    """A class to represent a conversation with the OpenAI API."""
+
     def __init__(self) -> None:
-        self._observers: Set[Observer] = set()
+        super().__init__()
         self.messages: List[OpenAIChatMessage] = []
 
     def __len__(self) -> int:
         return len(self.messages)
-
-    def register_observer(self, observer: Observer) -> None:
-        self._observers.add(observer)
-
-    def unregister_observer(self, observer: Observer) -> None:
-        self._observers.discard(observer)
-
-    def notify_observers(self) -> None:
-        for observer in self._observers:
-            observer.update(self)
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):
@@ -188,7 +177,7 @@ class OpenAIConversation(LLMConversation):
 
 
 class OpenAIFunction:
-    """Represents a function callable by the OpenAI agent."""
+    """A class to represent a function callable by the OpenAI agent."""
 
     def __init__(
         self,
@@ -261,6 +250,19 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     def reset(self) -> None:
         self.conversation.reset_conversation()
 
+    def standalone_call(self, prompt: str) -> str:
+        """Return the completion message based on the provided prompt."""
+        if self.conversation.messages:
+            raise ValueError(
+                "The conversation is not empty. Please call reset() before calling standalone_call()."
+            )
+        self.add_message(LLMChatMessage(role="user", content=prompt))
+        response = self.get_next_assistant_completion().content
+        self.reset()
+        if not response:
+            raise ValueError("No response found")
+        return response
+
 
 class OpenAIEmbeddingProvider(EmbeddingProvider):
     """A class to provide embeddings from the OpenAI API."""
@@ -269,16 +271,16 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
         self.engine = engine
         set_openai_api_key()
 
-    def build_embedding(self, source: str) -> np.ndarray:
+    def build_embedding_array(self, source: str) -> np.ndarray:
         """Gets an embedding for the given source text."""
-        # wait to import build_embedding to allow easy mocking of the function in tests.
+        # wait to import build_embedding_array to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
         return np.array(get_embedding(source, engine=self.engine))
 
 
 class OpenAITool(Tool):
-    """A tool that can be used by the OpenAI agent."""
+    """A class representing a tool that can be used by the OpenAI agent."""
 
     properties: Dict[str, Dict[str, str]]
     required: List[str]

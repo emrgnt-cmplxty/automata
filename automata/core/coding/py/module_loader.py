@@ -115,10 +115,6 @@ class PyModuleLoader(metaclass=Singleton):
         """
         Initializes the loader by setting paths across the entire project
 
-        Args:
-            root_path: The absolute path to the root directory of the project
-            py_fpath: The absolute path to the root directory of the python code
-
         Raises:
             Exception: If the map or python directory have already been initialized
 
@@ -152,12 +148,6 @@ class PyModuleLoader(metaclass=Singleton):
         """
         Checks if the map contains a module with the given dotpath
 
-        Args:
-            dotpath: The dotpath of the module
-
-        Returns:
-            True if the map contains the module, False otherwise
-
         Raises:
             Exception: If the map or python directory have not been initialized
         """
@@ -167,10 +157,10 @@ class PyModuleLoader(metaclass=Singleton):
     def items(self) -> Iterable[Tuple[str, Optional[RedBaron]]]:
         """
         Returns:
-            A dictionary containing the module dotpath to module RedBaron FST object mapping
+            A dictionary containing the module dotpath to module RedBaron FST object mapping.
 
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         self._load_all_modules()
@@ -178,13 +168,7 @@ class PyModuleLoader(metaclass=Singleton):
 
     def fetch_module(self, module_dotpath: str) -> Optional[RedBaron]:
         """
-        Gets the module with the given dotpath
-
-        Args:
-            module_dotpath: The dotpath of the module
-
-        Returns:
-            Optional[RedBaron]: The module with the given dotpath if found, None otherwise
+        Gets the module with the given dotpath.
 
         Raises:
             Exception: If the map or python directory have not been initialized

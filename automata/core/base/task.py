@@ -121,9 +121,7 @@ class Task:
 
 
 class ITaskExecution(ABC):
-    """
-    Interface for task execution behaviors.
-    """
+    """Interface for task execution behaviors."""
 
     @abstractmethod
     def execute(self, task: Task):
@@ -131,7 +129,7 @@ class ITaskExecution(ABC):
 
 
 class TaskEnvironment(ABC):
-    """This is the abstract base class for an environment."""
+    """An abstract base class for implementing a task environment."""
 
     @abstractmethod
     def setup(self, task: Task):
