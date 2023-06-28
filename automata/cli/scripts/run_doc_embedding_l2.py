@@ -60,7 +60,7 @@ def main(*args, **kwargs) -> str:
     symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler)
 
     symbol_rank_config = SymbolRankConfig()
-    symbol_graph_subgraph = symbol_graph.get_rankable_symbol_subgraph()
+    symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()
     symbol_search = SymbolSearch(
         symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
     )

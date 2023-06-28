@@ -15,16 +15,7 @@ DOT_SEP = "."
 
 
 def convert_fpath_to_module_dotpath(root_abs_path: str, module_path: str, prefix: str) -> str:
-    """
-    Converts a filepath to a module dotpath
-
-    Args:
-        root_abs_path: The absolute path of the root directory
-        module_path: The path of the module
-
-    Returns:
-        The dotpath of the module
-    """
+    """Converts a filepath to a module dotpath"""
     prefix = "" if prefix == "." else f"{prefix}."
     return prefix + (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[:-3]
 
@@ -36,6 +27,7 @@ class _DotPathMap:
         """
         Args:
             path: The absolute path to the root of the module tree
+            prefix: The prefix to add to the dotpath of each module
         """
         self.prefix = prefix
         self.path = path
@@ -45,12 +37,7 @@ class _DotPathMap:
         }
 
     def _build_module_dotpath_to_fpath_map(self) -> Dict[str, str]:
-        """
-        Builds a map from module dotpaths to module filepaths
-
-        Returns:
-            The map from module dotpaths to module filepaths
-        """
+        """Builds a map from module dotpaths to module filepaths"""
         module_dotpath_to_fpath_map = {}
         for root, _, files in os.walk(self.path):
             for file in files:
@@ -63,60 +50,22 @@ class _DotPathMap:
         return module_dotpath_to_fpath_map
 
     def get_module_fpath_by_dotpath(self, module_dotpath: str) -> str:
-        """
-        Gets the filepath of a module given its dotpath
-
-        Args:
-            module_dotpath: The dotpath of the module
-
-        Returns:
-            The filepath of the module
-        """
-
+        """Gets the filepath of a module given its dotpath"""
         return self._module_dotpath_to_fpath_map[module_dotpath]
 
     def get_module_dotpath_by_fpath(self, module_fpath: str) -> str:
-        """
-        Gets the dotpath of a module given its filepath
-
-        Args:
-            module_fpath: The filepath of the module
-
-        Returns:
-            The dotpath of the module
-        """
+        """Gets the dotpath of a module given its filepath"""
         return self._module_fpath_to_dotpath_map[module_fpath]
 
     def contains_dotpath(self, module_dotpath: str) -> bool:
-        """
-        Checks if the map contains a module with the given dotpath
-
-        Args:
-            module_dotpath: The dotpath of the module
-
-        Returns:
-            True if the map contains the module, False otherwise
-        """
         return module_dotpath in self._module_dotpath_to_fpath_map
 
     def contains_fpath(self, module_fpath: str) -> bool:
-        """
-        Checks if the map contains a module with the given filepath
-
-        Args:
-            module_fpath: The filepath of the module
-
-        Returns:
-            True if the map contains the module, False otherwise
-        """
         return module_fpath in self._module_fpath_to_dotpath_map
 
     def put_module(self, module_dotpath: str) -> None:
         """
-        Puts a module with the given dotpath in the map
-
-        Args:
-            module_dotpath: The dotpath of the module
+        Puts a module with the given dotpath in the local store
 
         Raises:
             Exception: If the module already exists in the map
@@ -166,7 +115,6 @@ class PyModuleLoader(metaclass=Singleton):
         """
         Initializes the loader by setting paths across the entire project
 
-
         Args:
             root_path: The absolute path to the root directory of the project
             py_fpath: The absolute path to the root directory of the python code
@@ -198,7 +146,7 @@ class PyModuleLoader(metaclass=Singleton):
             Exception: If the map or python directory have not been initialized
         """
         if not self.initialized:
-            raise Exception("Module loaer is not yet initialized!")
+            raise Exception("Module loader is not yet initialized!")
 
     def __contains__(self, dotpath: str) -> bool:
         """

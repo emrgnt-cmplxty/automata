@@ -1,31 +1,78 @@
 import abc
 import logging
 import logging.config
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import jsonpickle
-import numpy as np
 
-from automata.core.base.database.provider import SymbolDatabaseProvider
 from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
 
 logger = logging.getLogger(__name__)
 
 
-class VectorDatabaseProvider(SymbolDatabaseProvider):
+class VectorDatabaseProvider:
     """
     Abstract base class for different types of vector database providers.
     """
 
     @abc.abstractmethod
-    def calculate_similarity(self, embedding_vec: np.ndarray) -> Dict[Symbol, float]:
+    def save(self) -> Any:
         """
-        Abstract method to calculate the similarity between the given vector and vectors in the database.
+        Abstract method to save data.
         """
         pass
 
     @abc.abstractmethod
-    def get_all_symbols(self) -> List[Symbol]:
+    def load(self) -> Any:
+        """
+        Abstract method to load data.
+        """
+        pass
+
+    @abc.abstractmethod
+    def add(self, embedding: SymbolEmbedding) -> Any:
+        """
+        Abstract method to add an embedding to the database.
+        """
+        pass
+
+    @abc.abstractmethod
+    def update_database(self, embedding: SymbolEmbedding) -> Any:
+        """
+        Abstract method to update an existing embedding.
+        """
+        pass
+
+    @abc.abstractmethod
+    def discard(self, symbol: Symbol) -> Any:
+        """
+        Abstract method to discard a specific embedding.
+        """
+        pass
+
+    @abc.abstractmethod
+    def get(self, symbol: Symbol) -> Any:
+        """
+        Abstract method to get a specific embedding.
+        """
+        pass
+
+    @abc.abstractmethod
+    def clear(self) -> Any:
+        """
+        Abstract method to clear all embeddings.
+        """
+        pass
+
+    @abc.abstractmethod
+    def contains(self, symbol: Symbol) -> bool:
+        """
+        Abstract method to check if a specific embedding is present.
+        """
+        pass
+
+    @abc.abstractmethod
+    def get_all_entries(self) -> List[Symbol]:
         """
         Abstract method to calculate the similarity between the given vector and vectors in the database.
         """
@@ -73,7 +120,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         self.data.append(embedding)
         self.index[embedding.symbol.dotpath] = len(self.data) - 1
 
-    def update(self, embedding: SymbolEmbedding):
+    def update_database(self, embedding: SymbolEmbedding):
         """
         Updates an embedding in the database
 
@@ -136,14 +183,7 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         self.data = []
         self.index = {}
 
-    def calculate_similarity(self, embedding_vec: np.ndarray) -> Dict[Symbol, float]:
-        # Implement the logic to calculate similarity between the given embedding and vectors in the data.
-        # This will depend on how the data is structured and the specific similarity measure to be used (e.g., cosine similarity).
-        # Here, just returning the data as a placeholder.
-        # return self.data
-        raise NotImplementedError
-
-    def get_all_symbols(self) -> List[Symbol]:
+    def get_all_entries(self) -> List[Symbol]:
         """
         Gets all symbols in the database
 

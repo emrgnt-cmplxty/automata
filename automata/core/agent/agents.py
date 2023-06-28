@@ -5,6 +5,7 @@ from automata.config.base import ConfigCategory
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
 from automata.core.agent.error import (
     AgentDatabaseError,
+    AgentGeneralError,
     AgentMaxIterError,
     AgentResultError,
     AgentStopIteration,
@@ -35,6 +36,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
     CONTINUE_MESSAGE: Final = "Continue.."
     SUCCESS_PREFIX: Final = "Execution Result:\n"
+    _initialized = False
 
     def __init__(self, instructions: str, config: AutomataOpenAIAgentConfig) -> None:
         """
@@ -113,6 +115,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
                 If the agent exceeds the maximum number of iterations.
                 If the agent does not produce a result.
         """
+        if not self._initialized:
+            raise AgentGeneralError("The agent has not been initialized.")
+
         while True:
             try:
                 next(self)
@@ -177,7 +182,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
     def _setup(self) -> None:
         """
-        Sets up the agent by initializing the conversation and chat provider.
+        Setup the agent by initializing the conversation and chat provider.
 
         Note: This should be called before running the agent.
 
@@ -199,6 +204,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
             conversation=self.conversation,
             functions=self.functions,
         )
+        self._initialized = True
 
         logger.debug(f"Initializing with System Instruction:{self.config.system_instruction}\n\n")
         logger.debug(f"{('-' * 60)}\nSession ID: {self.config.session_id}\n{'-'* 60}\n\n")

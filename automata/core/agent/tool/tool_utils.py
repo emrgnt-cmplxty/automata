@@ -127,7 +127,7 @@ class DependencyFactory:
             flow_rank ("bidirectional")
         """
         symbol_graph = self.get("symbol_graph")
-        return symbol_graph.get_rankable_symbol_subgraph(
+        return symbol_graph.get_rankable_symbol_dependency_subgraph(
             self.overrides.get("flow_rank", "bidirectional")
         )
 

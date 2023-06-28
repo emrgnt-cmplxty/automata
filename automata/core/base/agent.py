@@ -38,8 +38,8 @@ class Agent(ABC):
         a new 'asisstant' message, and parsing the reply from the 'user'.
 
         Returns:
-            Optional[Tuple[LLMCompletionResult, LLMCompletionResult]]:
-                The latest assistant and user messages, or None if the task is completed.
+            LLMIterationResult:
+            The latest assistant and user messages, or None if the task is completed.
         """
         pass
 

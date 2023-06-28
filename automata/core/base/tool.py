@@ -5,11 +5,9 @@ from pydantic import BaseModel, Extra
 
 
 class Tool(BaseModel):
-    """Tool that takes in function or coroutine directly."""
+    """`Tool` exposes a function or coroutine directly."""
 
     class Config:
-        """Configuration for this pydantic object."""
-
         extra = Extra.forbid
         arbitrary_types_allowed = True
 

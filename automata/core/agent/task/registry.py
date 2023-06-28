@@ -47,7 +47,7 @@ class AutomataTaskDatabase(SQLDatabase):
         task_json = jsonpickle.encode(task)
         instructions = task.instructions
         status = task.status.value
-        self.update(
+        self.update_database(
             self.TABLE_NAME,
             {"json": task_json, "instructions": instructions, "status": status},
             {"id": str(task.task_id)},

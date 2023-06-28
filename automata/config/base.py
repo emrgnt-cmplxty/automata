@@ -12,6 +12,7 @@ from automata.core.base.tool import Tool
 class ConfigCategory(Enum):
     """
     A class to represent the different categories of configuration options
+    Corresponds folders in automata/configs/*
     """
 
     AGENT = "agent"
@@ -23,7 +24,7 @@ class ConfigCategory(Enum):
 class InstructionConfigVersion(Enum):
     """
     InstructionConfigVersion: Enum of instruction versions.
-    Corresponds to the name of the yaml file in automata/configs/instruction_configs.
+    Corresponds files in automata/configs/instruction_configs/*.yaml
     """
 
     AGENT_INTRODUCTION = "agent_introduction"
@@ -32,7 +33,7 @@ class InstructionConfigVersion(Enum):
 class AgentConfigName(Enum):
     """
     AgentConfigName: Enum of agent config names.
-    Corresponds to the name of the yaml file in automata/config/agent/
+    Corresponds files in automata/config/agent/*.yaml
     """
 
     # Helper Configs
@@ -65,7 +66,6 @@ class AgentConfig(ABC, BaseModel):
 
     @abstractmethod
     def setup(self) -> None:
-        """Setup the agent."""
         pass
 
     @abstractmethod
@@ -111,7 +111,7 @@ class AgentConfigBuilder(Generic[T]):
 
     @staticmethod
     def create_config(config_name: Optional[AgentConfigName] = None) -> T:
-        """Create the specific configuration object"""
+        """Create the specific configuration object."""
         raise NotImplementedError
 
     @abstractmethod

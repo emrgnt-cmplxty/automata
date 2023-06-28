@@ -99,7 +99,7 @@ class LLMConversationDatabaseProvider(Observer, SQLDatabase, ABC):
     def __init__(self, session_id: str, db_path: str) -> None:
         pass
 
-    def update_database(self, subject: LLMConversation) -> None:
+    def update(self, subject: LLMConversation) -> None:
         """
         Update the database when the conversation changes.
 
