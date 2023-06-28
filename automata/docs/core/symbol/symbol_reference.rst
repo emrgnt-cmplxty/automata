@@ -1,60 +1,62 @@
 SymbolReference
 ===============
 
-``SymbolReference`` is a class that represents a reference to a symbol
-in a file. It stores information about the symbol, its location in the
-file (line and column number), and provides methods to compare and hash
-instances of the class. ``SymbolReference`` is commonly used in symbol
-search and retrieval, and is closely related to the ``Symbol`` class.
+``SymbolReference`` is a class representing a reference to a symbol in a
+file. It provides equality and hashing functions that allow easy
+comparison and storage of symbol references. This class is used in
+various contexts, such as symbol searching, symbol embedding, and
+retrieving source code by symbol.
 
 Overview
 --------
 
-A ``SymbolReference`` is created using a ``Symbol`` object and the
-location (line and column number) of the reference in a file. It is used
-in various parts of the system to identify where a particular symbol is
-being used or referenced. It provides a robust way to track symbol
-references and can be used in combination with other tools and methods
-to perform code analysis, search, and navigation.
+``SymbolReference`` is mainly used to reference a symbol in a file and
+is utilized in various applications, such as searching for symbol
+references or storing them in databases. By providing equality and
+hashing methods, ``SymbolReference`` allows for simple handling and
+comparison of symbol reference objects, even across different files.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.tests.unit.test_symbol_search.test_symbol_references``
--  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
 -  ``automata.core.symbol.graph._SymbolGraphNavigator._get_symbol_references_in_scope``
+-  ``automata.tests.unit.test_symbol_search.tool.test_symbol_references``
+-  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
+-  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
+-  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
 
 Example
 -------
 
-Given an instance of a ``Symbol``, you can create a ``SymbolReference``
-by providing the line number and column number of the symbol reference
-in the file.
-
 .. code:: python
 
    from automata.core.symbol.symbol_types import Symbol, SymbolReference
-   from automata.core.symbol.parser import parse_symbol
 
-   # Parse a symbol from its string representation
-   symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
-   symbol = parse_symbol(symbol_str)
+   # Create two Symbol objects
+   symbol_1 = Symbol.from_string("scip-python python automata 0.1.0 AutomataNamespace/ClassName#")
+   symbol_2 = Symbol.from_string("scip-python python automata 0.2.0 AutomataNamespace/ClassName#")
 
-   # Create a SymbolReference with the symbol and its location in the file
-   line_number = 42
-   column_number = 12
-   symbol_reference = SymbolReference(symbol, line_number, column_number)
+   # Create two SymbolReference objects with the created Symbol objects
+   symbol_reference_1 = SymbolReference(symbol=symbol_1, line_number=10, column_number=5)
+   symbol_reference_2 = SymbolReference(symbol=symbol_2, line_number=10, column_number=5)
+
+   # Evaluate the equality of the SymbolReference objects
+   assert symbol_reference_1 != symbol_reference_2
 
 Limitations
 -----------
 
-``SymbolReference`` could cause hash collisions if the same symbol is
-referenced in different files at the same location. However, such cases
-are expected to be rare, and the impact of these occasional collisions
-should not be significant.
+Although ``SymbolReference`` provides an efficient way to compare symbol
+references, its hashing method can potentially generate collisions if
+the same symbol is referenced in different files at the same location.
+This might affect performance when storing symbol references in large
+collections, such as dictionaries or sets. However, this does not
+significantly impact the overall functionality or usability of the
+class.
 
 Follow-up Questions:
 --------------------
 
--  Are there better ways to handle potential hash collisions?
+-  Are there any other known use cases for ``SymbolReference`` apart
+   from those in the related symbols?

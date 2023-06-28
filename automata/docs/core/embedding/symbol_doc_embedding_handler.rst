@@ -1,87 +1,86 @@
 SymbolDocEmbeddingHandler
 =========================
 
-``SymbolDocEmbeddingHandler`` is a class that helps create and manage
-documentation embeddings for symbols in a Python project. It is
-responsible for building symbol documentation embeddings, getting
-existing symbol embeddings, generating summaries, and updating
-embeddings when necessary.
+``SymbolDocEmbeddingHandler`` is a class designed to manage and store
+embeddings for the documentation of any given symbol in the code. It
+extends the ``EmbeddingProvider`` and ``SymbolEmbeddingHandler``
+classes, allowing for easy integration with other parts of the Automata
+system. The class provides functionality for building, updating, and
+retrieving embeddings for symbol documentation, as well as fetching
+completed documentations through a completion provider.
 
 Overview
 --------
 
-``SymbolDocEmbeddingHandler`` handles the process of creating and
-updating symbol documentation embeddings for a Python project. It
-leverages the ``EmbeddingProvider`` to build new embeddings and
-``VectorDatabaseProvider`` to store and retrieve existing embeddings.
-Additionally, it uses ``SymbolSearch`` to find related symbols for
-generating relevant documentation and ``PyContextRetriever`` to retrieve
-the context of the primary symbol.
+The primary responsibilities of the ``SymbolDocEmbeddingHandler`` class
+include:
+
+-  Building documentation embeddings based on the symbol’s source code
+   and other related contextual information
+-  Updating existing documentation embeddings or rolling them forward
+   when necessary
+-  Retrieving the documentation embeddings of a symbol
+-  Fetching completed documentation via the
+   ``LLMChatCompletionProvider``
+
+Additionally, the ``SymbolDocEmbeddingHandler`` class utilizes various
+other Automata components to perform its functions.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.base.database.vector.VectorDatabaseProvider``
+-  ``automata.core.llm.embedding.EmbeddingProvider``
+-  ``automata.core.llm.embedding.SymbolEmbeddingHandler``
 -  ``automata.core.symbol.symbol_types.Symbol``
 -  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
--  ``automata.core.embedding.embedding_types.EmbeddingProvider``
--  ``automata.core.database.vector.VectorDatabaseProvider``
--  ``automata.core.symbol.search.SymbolSearch``
--  ``automata.core.context.py_context.retriever.PyContextRetriever``
 
 Example
 -------
 
-The following example demonstrates how to create and manage
-documentation embeddings for symbols. Please replace ``Mock`` objects
-with the actual implementations, if possible.
+The following example demonstrates the usage of
+``SymbolDocEmbeddingHandler`` to build and update documentation
+embeddings.
 
 .. code:: python
 
-   import logging
-   import openai
-   from typing import List
-   from jinja2 import Template
-   from automata.config.prompt.docs import DEFAULT_DOC_GENERATION_PROMPT
-   from automata.core.context.py_context.retriever import PyContextRetriever
-   from automata.core.database.vector import VectorDatabaseProvider
+   from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
+   from automata.core.llm.completion import LLMChatCompletionProvider
    from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
-   from .embedding_types import EmbeddingProvider, SymbolEmbeddingHandler
-   from automata.core.symbol.symbol_utils import convert_to_fst_object  # For mocking purposes
+   from automata.core.context.py.retriever import PyContextRetriever
 
-   # Initialize necessary objects
-   embedding_db = VectorDatabaseProvider()
-   embedding_provider = EmbeddingProvider()
+   symbol = ...
+   embedding_db = ...
+   embedding_provider = ...
+   completion_provider = LLMChatCompletionProvider()
    symbol_search = SymbolSearch()
    retriever = PyContextRetriever()
 
-   # Create a SymbolDocEmbeddingHandler instance
-   symbol_doc_embedding_handler = SymbolDocEmbeddingHandler(
+   # Initialize the SymbolDocEmbeddingHandler
+   handler = SymbolDocEmbeddingHandler(
        embedding_db=embedding_db,
        embedding_provider=embedding_provider,
+       completion_provider=completion_provider,
        symbol_search=symbol_search,
        retriever=retriever
    )
 
-   # Define a sample Symbol and its source code
-   symbol = Symbol.from_string("local module.class_name.method")
-   source_code = "def method(self):\n    pass"
+   # update or build the documentation embedding for a given symbol
+   handler.update_embedding(symbol)
 
-   # Build a new SymbolDocEmbedding
-   new_embedding = symbol_doc_embedding_handler.build_symbol_doc_embedding(source_code, symbol)
+   # Retrieve the documentation embedding
+   doc_embedding = handler.get_embedding(symbol)
 
 Limitations
 -----------
 
-Currently, the logic around updating documentation in
-``SymbolDocEmbeddingHandler`` is limited. An improved updating logic
-requires understanding when dependencies have changed or interacted to
-warrant updating an embedding, which is a non-trivial challenge.
+A notable limitation of the ``SymbolDocEmbeddingHandler`` is its
+dependency on the Automata components and how they interact. Specific
+logic may be required to update the embedding and associated
+documentation, which might be non-trivial depending on the dependencies.
 
 Follow-up Questions:
 --------------------
 
--  How can we implement improved logic for updating documentation
-   embeddings in the ``SymbolDocEmbeddingHandler``?
--  Are there additional features that can be added to the
-   ``SymbolDocEmbeddingHandler`` to enhance its functionality?
+-  What could be the sample examples for the symbol documentation that
+   ``SymbolDocEmbeddingHandler`` can handle?

@@ -1,46 +1,72 @@
 Tool
 ====
 
-``Tool`` is a class that allows users to define a tool or skill for an
-LLM by taking in a function or coroutine directly. It inherits from the
-``BaseTool`` class and provides an easy interface to create a custom
-tool with minimal boilerplate.
+``Tool`` is a base class that defines a tool to perform a specific
+function or coroutine. Tools can be used as building blocks in larger
+applications or libraries. Tools are created by inheriting the ``Tool``
+base class and implementing its methods, primarily the ``run`` method.
+
+Overview
+--------
+
+``Tool`` is designed to make it easy to create standalone tools that can
+be reused and combined in various ways. It provides a structure for
+defining a tool and standardizes how tools should be used. The primary
+purpose of a tool is to perform a specific function, which can be either
+synchronous or asynchronous. This is done by implementing the ``run``
+method, which takes a dictionary of input parameters and returns the
+output of the tool’s operation as a string.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.base_tool.BaseTool``
+-  ``automata.tests.unit.test_tool.test_tool``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.tests.unit.test_base_tool.MockTool``
--  ``automata.core.agent.agent_enums.ToolField``
+-  ``automata.tests.unit.test_tool.test_tool_run``
+-  ``automata.core.llm.providers.openai.OpenAITool``
+-  ``automata.tests.unit.test_tool.test_tool_instantiation``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolBuilder.can_handle``
+-  ``automata.tests.unit.test_tool.TestTool.run``
+-  ``automata.core.base.agent.AgentToolBuilder.build``
+-  ``automata.tests.unit.test_symbol_search_tool.test_build``
+-  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-the ``Tool`` class using a simple function for demonstration purposes:
+Here’s an example demonstrating the creation of a custom ``Tool``
+subclass, called ``TestTool``.
 
 .. code:: python
 
    from automata.core.base.tool import Tool
+   from typing import Dict
 
-   def example_function(input: str) -> str:
-       return f"Processed: {input}"
+   class TestTool(Tool):
+       def run(self, tool_input: Dict[str, str]) -> str:
+           return "TestTool response"
 
-   tool = Tool(name="ExampleTool", func=example_function, description="Example tool for demonstration.")
+   test_tool = TestTool(
+       name="TestTool",
+       description="A test tool for testing purposes",
+       function=lambda x: "TestTool response",
+   )
+
+   tool_input = {"test": "test"}
+   response = test_tool.run(tool_input)
+   assert response == "TestTool response"
 
 Limitations
 -----------
 
-The ``Tool`` class creates a custom tool by taking a function or
-coroutine directly, which might not be suited for more complex tools or
-skills that require state management or more intricate interactions with
-other components of the system. For more complex use cases, consider
-subclassing ``BaseTool`` and implementing ``_run`` and ``_arun`` methods
-instead.
+The ``Tool`` class assumes that the primary method of interaction with
+the tool is through its ``run`` method. This might not be ideal for all
+use cases, especially where the requirements are significantly more
+complex than simply calling a function with a dictionary of input
+parameters.
 
-Follow-up Questions
--------------------
+Follow-up Questions:
+--------------------
 
--  How can we make the Tool class more suitable for more complex tools
-   or skills?
+-  How can we enhance the ``Tool`` class to support more complex
+   workflows or additional features?

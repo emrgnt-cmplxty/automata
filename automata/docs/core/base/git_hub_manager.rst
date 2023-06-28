@@ -1,73 +1,70 @@
 GitHubManager
 =============
 
-``GitHubManager`` is a utility class that helps manage GitHub
-repositories and perform common GitHub-related tasks such as branch
-management, cloning repositories, committing and pushing changes,
-creating pull requests, and more. It uses the GitHub Python API to
-interact with repositories and execute required operations.
+``GitHubManager`` is a utility class that provides an interface for
+interacting with GitHub repositories. It includes functions to clone a
+repository, create and checkout a branch, stage, commit, and push
+changes, and create issues and pull requests.
+
+Overview
+--------
+
+``GitHubManager`` makes it easy to interact with GitHub repositories
+using a simple and intuitive API. It abstracts the underlying GitHub API
+and Git operations into easy-to-understand methods.
 
 Related Symbols
 ---------------
 
--  ``abc.ABC``
--  ``typing.List``
--  ``git.Git``
--  ``git.Repo``
--  ``github.Github``
--  ``github.PullRequest``
+-  ``automata.tests.conftest.MockRepositoryManager``
+-  ``automata.core.base.github_manager.RepositoryManager``
+-  ``automata.core.agent.task.environment.AutomataTaskEnvironment``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``GitHubManager`` and use its basic features.
+The following example demonstrates how to use the ``GitHubManager`` to
+clone a repository, create a branch, add changes, commit and push
+changes, and create a pull request.
 
 .. code:: python
 
    from automata.core.base.github_manager import GitHubManager
 
-   access_token = "your_access_token"
-   remote_name = "your_remote_name"
-   primary_branch = "main"
+   access_token = "your-github-access-token"
+   remote_name = "your-remote-repo"
+   local_path = "your/local/path"
 
-   manager = GitHubManager(access_token, remote_name, primary_branch)
+   github_manager = GitHubManager(access_token, remote_name)
 
-   # Check if a branch exists
-   branch_name = "feature-branch"
-   branch_exists = manager.branch_exists(branch_name)
+   # Clone the repository locally
+   github_manager.clone_repository(local_path)
 
-   # Create a new branch if it doesn't exist
-   if not branch_exists:
-       manager.create_branch(branch_name)
-
-   # Clone the repository to a local path
-   local_path = "/path/to/clone"
-   manager.clone_repository(local_path)
+   # Create a new branch
+   branch_name = "feature/my-feature"
+   github_manager.create_branch(branch_name)
 
    # Checkout the branch
-   manager.checkout_branch(local_path, branch_name)
+   github_manager.checkout_branch(local_path, branch_name)
 
-   # Stage all changes, commit, and push
-   commit_message = "Update feature-branch"
-   manager.stage_all_changes(local_path)
-   manager.commit_and_push_changes(local_path, branch_name, commit_message)
+   # Stage and commit changes
+   github_manager.stage_all_changes(local_path)
+   commit_message = "Add a new feature"
+   github_manager.commit_and_push_changes(local_path, branch_name, commit_message)
 
    # Create a pull request
-   pull_request_title = "Feature branch PR"
-   pull_request_body = "This is a pull request for the feature branch."
-   pull_request = manager.create_pull_request(branch_name, pull_request_title, pull_request_body)
+   title = "Add my feature"
+   body = "This pull request adds a new feature."
+   pull_request = github_manager.create_pull_request(branch_name, title, body)
 
 Limitations
 -----------
 
-``GitHubManager`` relies on the ``github`` and ``git`` libraries to
-perform its operations. Ensure that these libraries are installed and
-properly set up before using ``GitHubManager``. It also assumes that you
-have the necessary permissions to execute operations on the specified
-repository and requires a valid access token for authentication.
+The primary limitation of ``GitHubManager`` is its reliance on the
+provided access token for authentication. A user must have a valid
+access token for interacting with the remote repository.
 
 Follow-up Questions:
 --------------------
 
-None.
+-  How can we improve the authentication methods for ``GitHubManager``?

@@ -21,6 +21,7 @@ how to :ref:`installation` the project.
    symbol_doc_embedding_handler
    symbol_embedding_handler
    symbol_similarity
+   symbol_similarity_calculator
 
 
 Summary of content

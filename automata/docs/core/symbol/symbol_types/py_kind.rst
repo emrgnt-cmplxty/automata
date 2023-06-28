@@ -1,72 +1,71 @@
 SymbolDescriptor
 ================
 
-``SymbolDescriptor`` is a class that wraps the descriptor component of
-the URI into a Python object. The descriptor is an important part of the
-``Symbol`` class, which is used to identify classes, methods, or local
-variables in the Automata system. ``SymbolDescriptor`` provides a
-convenient interface for working with descriptors and includes closely
-related symbols such as ``Symbol`` and ``DescriptorProto``.
+``SymbolDescriptor`` is a class that wraps the descriptor component of a
+URI (Uniform Resource Identifier) into a Python object. It can be used
+to represent descriptors for various types of elements, such as
+namespaces, types, terms, methods, type parameters, parameters,
+metadata, and macros. The class provides methods to parse and unparse
+these descriptors, as well as handle escaped identifiers and suffix
+conversion.
 
 Overview
 --------
 
-``SymbolDescriptor`` is a simple class that represents the various types
-of descriptors found in the ``Symbol`` class. It contains methods for
-parsing and unparsing descriptors, converting descriptor suffixes, and
-other utility functions for working with descriptors. The class also
-provides an implementation for the string representation of descriptors.
+``SymbolDescriptor`` is primarily used in the context of
+``automata.core.symbol.symbol_types.Symbol``, a class that represents a
+standardized string representation for various programming elements such
+as packages, classes, methods, and more. By utilizing
+``SymbolDescriptor``, it is possible to parse and store specific
+descriptor information, which can be further used for symbol searching,
+retrieval, or reference.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.parser._SymbolParser``
+-  ``automata.core.symbol.symbol_types.SymbolDescriptor.PyKind``
 -  ``automata.core.symbol.scip_pb2.Descriptor``
--  ``automata.core.symbol.parser.parse_symbol``
--  ``automata.core.symbol.parser._SymbolParser.parse_descriptor``
--  ``automata.core.symbol.parser._SymbolParser.parse_descriptors``
 
-Example
--------
+Examples
+--------
 
-The following example demonstrates how to create an instance of
-``SymbolDescriptor``:
+Below are some examples using the ``SymbolDescriptor`` class:
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import SymbolDescriptor, DescriptorProto
+   from automata.core.symbol.symbol_types import SymbolDescriptor
+   from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
-   name = "example_method"
-   suffix = DescriptorProto.METHOD
-   disambiguator = "example_disambiguator"
+   # Create a SymbolDescriptor object for a Python method
+   descriptor = SymbolDescriptor(
+       name="__init__",
+       suffix=DescriptorProto.METHOD,
+       disambiguator=None
+   )
 
-   descriptor = SymbolDescriptor(name, suffix, disambiguator)
+   # Convert DescriptorProto suffix to PyKind
+   python_suffix = SymbolDescriptor.convert_scip_to_python_suffix(DescriptorProto.METHOD)
 
-   print(descriptor)  # Output: "example_method(example_disambiguator)."
+   # Unescaping a name with special characters
+   name = "`My`Escaped``Name`"
+   unescaped_name = SymbolDescriptor.get_escaped_name(name)
 
 Limitations
 -----------
 
-The primary limitation of ``SymbolDescriptor`` is that it assumes a
-specific syntax and format for the descriptor component of the
-``Symbol``. It may not work correctly if the input does not follow the
-expected structure. Additionally, some of the utility methods assume
-knowledge of descriptor suffixes, and their behavior may not be accurate
-if new suffix types are introduced.
+``SymbolDescriptor`` is focused on handling descriptors in the context
+of the Symbol representation. It does not provide specific handling or
+information for the symbols or programming elements it represents.
+Additionally, the class assumes the usage of the provided descriptor
+format, which may not cover all possible situations or programming
+languages.
 
 Follow-up Questions:
 --------------------
 
--  How can the ``SymbolDescriptor`` class be extended to support new
-   types of descriptors?
--  Can the limitations of this class be improved through refactoring or
-   design changes?
-
-Footnotes
----------
-
-1. Note that in some tests, the ``SymbolDescriptor`` objects’ behavior
-   is mocked for simplicity. If you encounter a reference to a “Mock”
-   object in test files from your context, do your best to replace these
-   with the actual underlying object or note this in a footnote. Mock
-   objects are used in testing to simplify working with complex objects.
+-  Could ``SymbolDescriptor`` be extended to handle additional
+   programming languages or descriptor formats more easily?
+-  Are there any other limitations specific to ``SymbolDescriptor`` that
+   should be considered?

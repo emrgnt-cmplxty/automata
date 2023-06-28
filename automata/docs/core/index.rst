@@ -17,6 +17,7 @@ how to :ref:`installation` the project.
    context/index
    database/index
    embedding/index
+   llm/index
    symbol/index
    handler_dict
    logging_config

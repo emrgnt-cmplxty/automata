@@ -1,70 +1,55 @@
-SymbolGraph
-===========
+``SymbolGraph.SubGraph``
+========================
 
-``SymbolGraph`` is a class that represents the symbol graph of code,
-providing utility methods and functionalities for analyzing and
-interacting with the graph. The graph stores symbols such as classes,
-methods, or local variables as nodes, and relationships between symbols
-as edges. The ``SymbolGraph`` is useful for various code analysis tasks
-like understanding callers of a function, dependencies between symbols,
-and more.
+``SymbolGraph.SubGraph`` is a class representing a subgraph of the
+symbol graph generated from the symbols available in the index protobuf
+file. It enables easier navigation and analysis of the symbol graph by
+providing methods to access the subgraph’s elements, their properties,
+and the relationships between them.
 
 Overview
 --------
 
-``SymbolGraph`` is built from an index protobuf file, and it supports
-various operations related to symbol analysis, such as getting all
-available symbols, retrieving potential callees or callers, getting a
-subgraph of rankable symbols, and more. It also contains nested classes
-like ``SubGraph``, which represents a subgraph of ``SymbolGraph``.
+``SymbolGraph.SubGraph`` provides methods to analyze and navigate the
+symbol graph, such as retrieving the symbols, relationships between the
+symbols, and their properties. Additionally, it offers methods to
+compute the symbol ranks and filter the subgraph based on rank and path.
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.graph.GraphBuilder``
--  ``automata.core.symbol.graph.SymbolGraph.SubGraph``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata.tests.utils.factories.symbol_graph_static_test``
--  ``automata.tests.conftest.symbol_graph_mock``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.scip_pb2.Index``
+-  ``automata.core.symbol.symbol_utils.get_rankable_symbols``
+-  ``automata.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
 
 Example
 -------
 
-This example demonstrates how to create a ``SymbolGraph`` instance,
-retrieve all symbols and files, and get a subgraph of rankable symbols.
-
-*Note:* Make sure to replace ``index_path`` with the path to a valid
-index protobuf file on your system.
+The following example demonstrates how to create a ``SymbolGraph``
+instance and retrieve a rankable symbol subgraph.
 
 .. code:: python
 
    from automata.core.symbol.graph import SymbolGraph
 
-   index_path = "path/to/your/index.scip"
+   index_path = "/path/to/index.protobuf"  # Replace with the path to your own index.protobuf file
    symbol_graph = SymbolGraph(index_path)
-
-   # Get all available symbols and files
-   all_symbols = symbol_graph.get_all_available_symbols()
-   all_files = symbol_graph.get_all_files()
-
-   # Get a subgraph of rankable symbols
-   subgraph = symbol_graph.get_rankable_symbol_subgraph()
+   rankable_subgraph = symbol_graph.get_rankable_symbol_subgraph()
 
 Limitations
 -----------
 
-The ``SymbolGraph`` relies on an index protobuf file to populate the
-graph. Creation and updates of this file are not part of the
-``SymbolGraph`` class, which means any changes in the code require
-rebuilding the index file before being reflected in the graph. Moreover,
-loading a large graph might consume a significant amount of memory and
-processing time.
+The performance and accuracy of the ``SymbolGraph.SubGraph`` depend on
+the quality of the index protobuf file provided as input. If the index
+file is outdated or inaccurate, the resulting subgraph and subsequent
+analysis may be affected.
 
 Follow-up Questions:
 --------------------
 
--  What is the process of updating the index protobuf file for a
-   project?
--  Can the ``SymbolGraph`` be easily extended to support additional
-   types of symbols or relationships?
--  Are there any strategies to handle large graphs more efficiently?
+-  How efficient is the current algorithm for computing the symbol ranks
+   in a subgraph, and can it be improved?
+-  Are there any other use-cases where the subgraph analysis can be
+   applied, other than finding the relationships between symbols?

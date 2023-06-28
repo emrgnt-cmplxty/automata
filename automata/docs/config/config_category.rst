@@ -1,46 +1,55 @@
 ConfigCategory
 ==============
 
-``ConfigCategory`` is an enumeration class that represents the different
-categories of configuration options. It is used as a way to organize and
-manage various configuration settings.
+``ConfigCategory`` is an enumeration class representing the different
+categories of configuration options. This class is used for organizing
+the various configuration options and settings within the program.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata.core.agent.coordinator.AutomataInstance.Config``
--  ``automata.tests.unit.test_py_code_retriever.test_build_overview``
+-  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
+-  ``automata.tests.unit.test_task_environment.TestURL``
+-  ``automata.core.base.agent.AgentInstance.Config``
 -  ``automata.config.config_types.AutomataAgentConfig.Config``
--  ``automata.tests.unit.test_py_writer.test_extend_module``
--  ``automata.config.config_types.AgentConfigName``
--  ``automata.tests.unit.test_py_writer.MockCodeGenerator.generate_code``
--  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
-
-Overview
---------
-
-The ``ConfigCategory`` class is an enumeration mainly used to manage
-configuration files for the Automata project. The enumeration values
-correspond to specific configuration settings. It can be used for
-organizing and loading configurations within related symbols.
+-  ``automata.core.base.tool.Tool.Config``
 
 Example
 -------
 
-Here is an example of using ``ConfigCategory``:
+Here’s an example of how ConfigCategory can be used:
 
 .. code:: python
 
    from automata.config.config_types import ConfigCategory
 
+   # Access the agent configuration category
    agent_category = ConfigCategory.AGENT
-   print(agent_category.value)  # Output: "agent"
+
+   # Access the prompt configuration category
+   prompt_category = ConfigCategory.PROMPT
+
+   # Access the symbol configuration category
+   symbol_category = ConfigCategory.SYMBOL
+
+   # Access the instruction configuration category
+   instruction_category = ConfigCategory.INSTRUCTION
+
+Discussion
+----------
+
+``ConfigCategory`` provides a simple enumeration class to manage and
+organize the different configuration categories. By organizing your
+configuration options into categories, you can easily manage and access
+various configuration settings within your program.
+
+Limitations
+-----------
+
+There are no known limitations of the ``ConfigCategory`` class itself.
 
 Follow-up Questions:
 --------------------
 
--  What other categories are needed for configuration options in the
-   project?
+-  Are there specific use cases where adding new categories in
+   ``ConfigCategory`` can impact the existing configurations?

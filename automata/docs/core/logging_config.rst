@@ -1,78 +1,73 @@
 LoggingConfig
 =============
 
-``LoggingConfig`` is a class representing the logging configuration in a
-dictionary format. It is a TypedDict that provides fields such as
-version, disable_existing_loggers, formatters, handlers, and root. This
-configuration helps manage various logging behaviors and settings used
-throughout the project.
-
-Overview
---------
-
-``LoggingConfig`` class provides a way to define the structure and type
-information for the dictionary representing the logging configuration.
-The primary purpose of this class is to provide a schema for the logging
-configuration and enable type checking and validation of the
-configuration settings. ``LoggingConfig`` works in conjunction with
-other logging utilities, such as the ``get_logging_config`` function, to
-create the final logging configuration used by the application.
+``LoggingConfig`` is a configuration class inheriting from ``TypedDict``
+that represents the logging configuration. It consists of various
+attributes such as ``version``, ``disable_existing_loggers``,
+``formatters``, ``handlers``, and ``root`` to configure logging for the
+application. The class is mainly used in the ``get_logging_config``
+function, which returns the logging configuration.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.utils.get_logging_config``
--  ``automata.core.utils.HandlerDict``
 -  ``automata.core.utils.RootDict``
+-  ``automata.core.utils.HandlerDict``
 
 Example
 -------
 
 The following is an example demonstrating how to create an instance of
-``LoggingConfig``.
+``LoggingConfig`` and use it with the ``get_logging_config`` function.
 
 .. code:: python
 
-   from automata.core.utils import LoggingConfig
+   from automata.core.utils import LoggingConfig, get_logging_config
 
-   logging_config: LoggingConfig = {
-       "version": 1,
-       "disable_existing_loggers": False,
-       "formatters": {
-           "simple": {
-               "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-           }
+   logging_config = LoggingConfig(
+       version=1,
+       disable_existing_loggers=False,
+       formatters={
+           "detailed": {
+               "class": "logging.Formatter",
+               "format": "%(asctime)s %(name)-15s %(levelname)-8s %(message)s",
+           },
+           "brief": {
+               "class": "logging.Formatter",
+               "format": "%(name)-15s: %(levelname)-8s %(message)s",
+           },
        },
-       "handlers": {
+       handlers={
            "console": {
                "class": "logging.StreamHandler",
-               "level": "DEBUG",
-               "formatter": "simple",
+               "formatter": "brief",
+               "level": "INFO",
                "stream": "ext://sys.stdout",
-           }
+           },
+           "file": {
+               "class": "logging.FileHandler",
+               "formatter": "detailed",
+               "level": "DEBUG",
+               "filename": "logfile.log",
+           },
        },
-       "root": {
-           "level": "DEBUG",
-           "handlers": [
-               "console"
-           ]
-       }
-   }
+       root={"handlers": ["console", "file"], "level": "DEBUG"},
+   )
+
+   config = get_logging_config(logging_config)
 
 Limitations
 -----------
 
-``LoggingConfig`` is only a schema that defines the structure of the
-logging configuration dictionary. It does not provide any functionality
-on its own and relies on external utilities like ``get_logging_config``
-to create the actual logging configuration. Furthermore,
-``LoggingConfig`` only includes type information for the dictionary
-fields and does not perform any validation of the actual values. This
-means that the dictionary must be validated separately to ensure correct
-logging behavior.
+Since ``LoggingConfig`` is a TypedDict, it does not enforce the
+attributes’ types at runtime, which means incorrect typing might not
+raise an error during runtime. To avoid this, it is recommended to use
+type-checking tools like ``mypy`` to identify type errors before the
+code is executed.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  How can we enforce validation of the logging configuration values
-   within the ``LoggingConfig`` class?
+-  Should we add more examples using other attributes and methods from
+   the related symbols mentioned above?
