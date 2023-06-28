@@ -5,6 +5,8 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Un
 
 import numpy as np
 import openai
+import tiktoken
+from termcolor import colored
 
 from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.tool import Tool
@@ -223,29 +225,30 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
         functions = [ele.to_dict() for ele in self.functions]
+        logger.debug(
+            f"Approximately {self.get_approximate_tokens_consumed()} tokens were consumed prior to completion generation."
+        )
         if functions:
             response = openai.ChatCompletion.create(
                 model=self.model,
                 messages=self.conversation.get_messages_for_next_completion(),
                 functions=functions,
                 function_call="auto",  # auto is default, but we'll be explicit
+                stream=self.stream,
             )
         else:
             response = openai.ChatCompletion.create(
                 model=self.model,
                 messages=self.conversation.get_messages_for_next_completion(),
+                stream=self.stream,
             )
+        if self.stream:
+            response = OpenAIChatCompletionProvider._stream_message(response_summary=response)
+            return response
+
         return OpenAIChatMessage.from_completion_result(
             OpenAIChatCompletionResult(raw_data=response)
         )
-
-    def add_message(self, message: LLMChatMessage) -> None:
-        if not isinstance(message, OpenAIChatMessage):
-            self.conversation.add_message(
-                OpenAIChatMessage(role=message.role, content=message.content)
-            )
-        else:
-            self.conversation.add_message(message)
 
     def reset(self) -> None:
         self.conversation.reset_conversation()
@@ -262,6 +265,110 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         if not response:
             raise ValueError("No response found")
         return response
+
+    def add_message(self, message: LLMChatMessage) -> None:
+        if not isinstance(message, OpenAIChatMessage):
+            self.conversation.add_message(
+                OpenAIChatMessage(role=message.role, content=message.content)
+            )
+        else:
+            self.conversation.add_message(message)
+
+    @staticmethod
+    def _stream_message(response_summary: Any) -> OpenAIChatMessage:
+        """Streams the response message from the agent."""
+        response = {
+            "content": None,
+            "role": "assistant",
+            "function_call": {
+                "name": None,
+                "arguments": "",
+            },
+        }
+        latest_accumulation = ""
+        stream_separator = " "
+
+        def process_delta(delta, response):
+            nonlocal latest_accumulation
+            if "content" in delta:
+                delta_content = delta["content"]
+                if delta_content:
+                    if response["content"] is None:
+                        response["content"] = delta_content
+                    else:
+                        response["content"] += delta_content
+                    latest_accumulation += delta_content
+
+            if "function_call" in delta:
+                delta_function_call = delta["function_call"]
+                if delta_function_call:
+                    if "name" in delta_function_call:
+                        response["function_call"]["name"] = delta_function_call["name"]
+                        latest_accumulation += (
+                            f'Function Call:\n{delta_function_call["name"]}\n\nArguments:\n'
+                        )
+
+                    if "arguments" in delta_function_call:
+                        response["function_call"]["arguments"] += delta_function_call["arguments"]
+                        latest_accumulation += delta_function_call["arguments"]
+
+            if stream_separator in latest_accumulation:
+                words = latest_accumulation.split(stream_separator)
+                for word in words[:-1]:
+                    print(colored(str(word), "green"), end=" ", flush=True)
+                latest_accumulation = words[-1]
+
+        for chunk in response_summary:
+            delta = chunk["choices"][0]["delta"]
+            process_delta(delta, response)
+
+        if latest_accumulation != "":
+            print(colored(f"{latest_accumulation}\n\n", "green"), end=" ", flush=True)
+        else:
+            print(colored("\n\n", "green"), end=" ", flush=True)
+
+        if not isinstance(response["role"], str):
+            raise ValueError("Expected role to be a string")
+
+        if not isinstance(response["content"], str):
+            raise ValueError("Expected content to be a string")
+
+        function_call = response["function_call"]
+        if function_call:
+            if not isinstance(function_call, dict):
+                raise ValueError("Expected function_call to be a dict")
+            for key, val in function_call.items():
+                if not isinstance(key, str):
+                    raise ValueError(f"Expected {key} to be a string")
+                if not isinstance(val, str):
+                    raise ValueError(f"Expected {val} to be a string")
+
+        return OpenAIChatMessage(
+            role=response["role"],
+            content=response["content"],
+            function_call=FunctionCall.from_response_dict(response["function_call"])  # type: ignore
+            if function_call
+            else None,
+        )
+
+    def get_approximate_tokens_consumed(self) -> int:
+        """
+        A method for approximating the total tokens consumed by the chat instance.
+
+        Note:
+            This method can be made handling chat messages and functions identically to OpenAI.
+        """
+        encoding = tiktoken.encoding_for_model(self.model)
+        return len(
+            encoding.encode(
+                "\n".join(
+                    [
+                        json.dumps(ele)
+                        for ele in self.conversation.get_messages_for_next_completion()
+                    ]
+                )
+            )
+        )
 
 
 class OpenAIEmbeddingProvider(EmbeddingProvider):

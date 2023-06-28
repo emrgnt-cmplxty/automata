@@ -63,16 +63,27 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         Returns:
             LLMIterationResult Latest assistant and user messages, or None if the task is completed.
+
+        TODO:
+            - Add support for multiple assistants.
+            - Can we cleanup the logging?
         """
         if self.completed or self.iteration_count >= self.config.max_iterations:
             raise AgentStopIteration
 
+        logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
         self.conversation.add_message(assistant_message)
-        self.iteration_count += 1
+        if not self.config.stream:
+            logger.debug(f"{assistant_message}\n")
+        logging.debug(f"\n{('-' * 120)}")
 
         user_message = self._get_next_user_response(assistant_message)
         self.conversation.add_message(user_message)
+        logger.debug(f"Latest User Message -- \n{user_message}\n")
+        logging.debug(f"\n{('-' * 120)}")
+
+        self.iteration_count += 1
 
         return (assistant_message, user_message)
 
@@ -184,7 +195,8 @@ class AutomataOpenAIAgent(OpenAIAgent):
         """
         Setup the agent by initializing the conversation and chat provider.
 
-        Note: This should be called before running the agent.
+        Note:
+            This should be called before running the agent.
 
         Raises:
             AgentError: If the agent fails to initialize.
@@ -195,7 +207,9 @@ class AutomataOpenAIAgent(OpenAIAgent):
         for message in list(
             self._build_initial_messages({"user_input_instructions": self.instructions})
         ):
+            logger.debug(f"Adding the following initial mesasge to the conversation {message}")
             self.conversation.add_message(message)
+            logging.debug(f"\n{('-' * 120)}")
 
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
@@ -206,5 +220,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         )
         self._initialized = True
 
-        logger.debug(f"Initializing with System Instruction:{self.config.system_instruction}\n\n")
-        logger.debug(f"{('-' * 60)}\nSession ID: {self.config.session_id}\n{'-'* 60}\n\n")
+        logger.debug(
+            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
+        )
+        logger.debug(f"\n{('-' * 60)}\nSession ID: {self.config.session_id}\n{'-'* 60}\n\n")

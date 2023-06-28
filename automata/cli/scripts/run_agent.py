@@ -79,5 +79,5 @@ def main(*args, **kwargs):
 
     agent = AutomataOpenAIAgent(instructions, config=agent_config)
     result = agent.run()
-    print("Final result = ", result)
+    print("Final result:\n\n", result)
     return result
