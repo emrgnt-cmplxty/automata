@@ -6,6 +6,8 @@ from github import Github, Issue, PullRequest
 
 
 class RepositoryManager(ABC):
+    """An abstract class for managing repositories"""
+
     @abstractmethod
     def clone_repository(self, local_path: str) -> None:
         pass

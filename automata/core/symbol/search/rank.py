@@ -18,11 +18,6 @@ class SymbolRankConfig(BaseModel):
     @staticmethod
     def validate_config(config) -> None:
         """
-        Validate configuration parameters.
-
-        Args:
-            config (SymbolRankConfig): Configuration parameters.
-
         Raises:
             ValueError: If alpha is not in (0, 1), or tolerance is not in (1e-4, 1e-8).
         """
@@ -37,11 +32,6 @@ class SymbolRank:
     """Computes the PageRank algorithm on symbols in a graph"""
 
     def __init__(self, graph: nx.DiGraph, config: SymbolRankConfig) -> None:
-        """
-        Args:
-            graph (nx.DiGraph): A directed graph
-            config (Optional[SymbolRankConfig]): SymbolRank configuration
-        """
         if not config:
             config = SymbolRankConfig()
         self.graph = graph
@@ -56,16 +46,29 @@ class SymbolRank:
     ) -> List[Tuple[Symbol, float]]:
         # sourcery skip: inline-immediately-returned-variable, use-dict-items
         """
-        Calculate the SymbolRanks of each node in the graph
+        Calculate the SymbolRanks of each node in the graph.
 
-        Args:
-            query_to_symbol_similarity (Optional[Dict[Symbol, float]]):
-                query_to_symbol_similarity dictionary
-            initial_weights (Optional[Dict[Symbol, float]]): Initial weights dictionary
-            dangling (Optional[Dict[Symbol, float]]): List of dangling nodes
+        SymbolRank is a semantic code analyzer for software corpora. Leveraging language models
+        and graph theory, SymbolRank assesses and ranks symbols such as classes and methods based
+        on their semantic context and structural relationships within the software. The algorithm
+        starts by embedding a global context using a concrete implementation of the
+        SymbolEmbeddingHandler class, which applies a provider to generate vector representations
+        of each symbol in the source code.
 
-        Returns:
-            (Dict[str, float]): A dictionary mapping each node to its SymbolRank
+        These embeddings capture the semantic essence of the symbols, providing a basis for the
+        subsequent stages of the process. Simultaneously, the software corpus is used to construct
+        a SymbolGraph. Each symbol in the corpus becomes a node in this graph, with dependencies
+        between symbols forming the edges. The graph provides a comprehensive map of structural
+        information in the codebase, offering methods to understand symbol dependencies,
+        relationships, callers, and callees, and the ability to produce a rankable subgraph of
+        symbols.
+
+        The SymbolRank class then uses a prepared similarity dictionary for a given query and
+        the SymbolGraph. The algorithm subsequently executes an iterative computation akin to
+        Google's PageRank, but considers both the symbols' similarity scores to the query and
+        their  connectivity within the graph. This amalgamation of natural language processing,
+        information retrieval, and graph theory methods results in a ranking of code symbols,
+        significantly aiding tasks like code understanding, navigation, recommendation, and search.
         """
         stochastic_graph = self._prepare_graph()
         node_count = stochastic_graph.number_of_nodes()
@@ -106,17 +109,14 @@ class SymbolRank:
     def _prepare_graph(self) -> nx.DiGraph:
         """
         Prepare the graph for the SymbolRank algorithm. If the graph is not directed,
-        convert it to a directed graph. Create a stochastic graph from the given graph
-
-        Returns:
-            stochastic_graph (nx.DiGraph): A NetworkX stochastic DiGraph
+        convert it to a directed graph, then create a stochastic graph from the directed graph.
         """
         if not self.graph.is_directed():
-            direct_graph = self.graph.to_directed()
+            directed_graph = self.graph.to_directed()
         else:
-            direct_graph = self.graph
+            directed_graph = self.graph
 
-        stochastic_graph = nx.stochastic_graph(direct_graph, weight=self.config.weight_key)
+        stochastic_graph = nx.stochastic_graph(directed_graph, weight=self.config.weight_key)
         return stochastic_graph
 
     def _prepare_initial_ranks(
@@ -125,14 +125,8 @@ class SymbolRank:
         initial_weights: Optional[Dict[Symbol, float]],
     ) -> Dict[Symbol, float]:
         """
-        Prepare initial rank values for each node in the graph
-
-        Args:
-            stochastic_graph (nx.DiGraph): A NetworkX DiGraph.
-            initial_weights (Optional[Dict[Symbol, float]]): Initial weight for each node
-
-        Returns:
-            (Dict[Symbol, float]): A dictionary mapping each node to its initial rank
+        Prepare initial rank values for each node in the graph.
+        If initial weights are not provided, set the initial rank value for each node to 1/n.
         """
 
         node_count = stochastic_graph.number_of_nodes()
@@ -148,22 +142,17 @@ class SymbolRank:
         query_to_symbol_similarity: Optional[Dict[Symbol, float]],
     ) -> Dict[Symbol, float]:
         """
-        Prepare the symbol similarity matrix
+        Prepare the similarity input dictionary for the SymbolRank algorithm.
 
-        Note - The term "personalization" is used in the context of the PageRank algorithm
-            to refer to a mechanism that allows the modification of the rank computation
-            based on some user-defined preferences. In this instance, symbol similarity is
-            an implementation of personalization that allows the modification of the rank
-            computation based on symbol source-code similarity
+        Raises:
+            NetworkXError: If the query_to_symbol_similarity dictionary does not have a value for every node
 
-        Args:
-            node_count (int): Number of nodes in the graph
-            stochastic_graph (nx.DiGraph): A NetworkX DiGraph
-            query_to_symbol_similarity (Optional[Dict[Symbol, float]]): Similarity between the query
-                and each node
+        Note - Similarity is the same as "personalization" in the context of the original PageRank algorithm
+            Personalization modifies the rank computation based on user-defined preferences.
 
-        Returns:
-            (Dict[Symbol, float]): A dictionary mapping each node to its symbol similarity
+            In this instance, symbol similarity is an implementation of personalization that allows
+            the modification of the rank computation based on symbol source-code similarity
+
         """
         if query_to_symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
@@ -180,16 +169,6 @@ class SymbolRank:
         dangling: Optional[Dict[Symbol, float]],
         query_to_symbol_similarity: Dict[Symbol, float],
     ) -> Dict[Symbol, float]:
-        """
-        Prepare the weights for dangling nodes
-
-        Args:
-            dangling (list): List of dangling nodes.
-            query_to_symbol_similarity (Dict[str, float]): query_to_symbol_similarity dictionary
-
-        Returns:
-            (Dict[str, float]): A dictionary mapping each node to its weight
-        """
         if dangling is None:
             return query_to_symbol_similarity
         missing = set(self.graph) - set(dangling)
@@ -201,15 +180,6 @@ class SymbolRank:
         return {k: v / s for k, v in dangling.items()}
 
     def _get_dangling_nodes(self, stochastic_graph: nx.DiGraph) -> List[Hashable]:
-        """
-        Identify dangling nodes in the graph
-
-        Args:
-            stochastic_graph (nx.DiGraph): A NetworkX DiGraph
-
-        Returns:
-            (list): List of dangling nodes
-        """
         return [
             node
             for node in stochastic_graph

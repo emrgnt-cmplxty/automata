@@ -80,7 +80,7 @@ def main(*args, **kwargs) -> str:
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             try:
-                embedding_handler.update_embedding(symbol)
+                embedding_handler.process_embedding(symbol)
                 embedding_db_l2.save()
             except Exception as e:
                 logger.error(f"Failed to update embedding for symbol {symbol}: {e}")

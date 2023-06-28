@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 
 
 class GraphProcessor(ABC):
+    """Abstract base class for processing edges in the `MultiDiGraph`."""
+
     @abstractmethod
     def process(self) -> None:
         """Adds new edges of the specified type to the graph."""
@@ -149,7 +151,7 @@ class _ReferenceProcessor(GraphProcessor):
         }
 
 
-class _CallerCalleeManager:
+class _CallerCalleeProcessor(GraphProcessor):
     """Adds edges to the `MultiDiGraph` for caller-callee relationships between `Symbol` nodes."""
 
     def __init__(self, graph: nx.MultiDiGraph, document: Any) -> None:
@@ -159,9 +161,12 @@ class _CallerCalleeManager:
 
     def process(self) -> None:
         """
-        Processes the caller-callee relationships in the local graph.
+        Adds edges in the local `MultiDiGraph` for caller-callee between `Symbol` nodes.
 
-        Note - This is an expensive operation and should be used sparingly.
+        One symbol is a caller of another symbol if it performs a call to that symbol.
+        E.g. `foo()` is a caller of `bar()` in `foo(bar())`.
+
+        Note - Construction is an expensive operation and should be used sparingly.
         """
         for symbol in self.document.symbols:
             try:
@@ -270,7 +275,7 @@ class GraphBuilder:
         occurrence_manager.process()
 
     def _process_caller_callee_relationships(self, document: Any) -> None:
-        caller_callee_manager = _CallerCalleeManager(self._graph, document)
+        caller_callee_manager = _CallerCalleeProcessor(self._graph, document)
         caller_callee_manager.process()
 
 

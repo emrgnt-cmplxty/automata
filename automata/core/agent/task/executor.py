@@ -57,7 +57,7 @@ class IAutomataTaskExecution(ITaskExecution):
 
 
 class AutomataTaskExecutor:
-    """Uses the ITaskExecution behavior to execute a task."""
+    """A class for using ITaskExecution behavior to execute a task."""
 
     def __init__(self, execution: ITaskExecution) -> None:
         self.execution = execution

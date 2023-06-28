@@ -53,10 +53,15 @@ def get_rankable_symbols(
     filter_strings=(
         "setup",
         "stdlib",
-    ),  # TODO - Revisit filtering logic
+    ),
     accepted_kinds=(SymbolDescriptor.PyKind.Method, SymbolDescriptor.PyKind.Class),
 ) -> List[Symbol]:
-    """Get a list of Symbols which are supported by SymbolRank."""
+    """
+    Get a list of Symbols which are supported by SymbolRank.
+
+
+    TODO - Revisit filtering logic
+    """
     filtered_symbols = []
 
     for symbol in symbols:

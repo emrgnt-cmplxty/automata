@@ -6,7 +6,7 @@ from jinja2 import Template
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.context.py.retriever import PyContextRetriever
-from automata.core.llm.completion import LLMChatCompletionProvider, LLMChatMessage
+from automata.core.llm.completion import LLMChatCompletionProvider
 from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingHandler
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
@@ -15,6 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
+    """
+    Handles a database and provider for `Symbol` documentation embeddings.
+    TODO: Add more robust logic for documentation updates.
+    """
+
     def __init__(
         self,
         embedding_db: VectorDatabaseProvider,
@@ -23,44 +28,21 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         symbol_search: SymbolSearch,
         retriever: PyContextRetriever,
     ) -> None:
-        """
-        A constructor for SymbolDocEmbeddingHandler
-
-        Args:
-            embedding_db (VectorDatabaseProvider): The database to store the embeddings in
-            embedding_provider (EmbeddingProvider): The provider to get the embeddings from
-            code_embedding_handler (SymbolCodeEmbeddingHandler): The code embedding handler
-
-        TODO: Add more logic around documentation updating
-        """
         super().__init__(embedding_db, embedding_provider)
         self.symbol_search = symbol_search
         self.retriever = retriever
         self.completion_provider = completion_provider
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
-        """
-        Get the embedding of a symbol.
-        Args:
-            symbol (Symbol): Symbol to get the embedding for
-        Returns:
-            SymbolDocEmbedding: The embedding of the symbol documentation
-        """
         return self.embedding_db.get(symbol)
 
-    def update_embedding(self, symbol: Symbol) -> None:
+    def process_embedding(self, symbol: Symbol) -> None:
         """
-        Concrete method to update the embedding for a symbol.
-
-        Args:
-            symbols_to_update (List[Symbol]): List of symbols to update
+        Processes the embedding for a `Symbol` by calling either `update_existing_embedding`
+        or `build_symbol_doc_embedding`, depending on whether the symbol is already in the database.
 
         Raises:
-            ValueError: If the symbol has no source code
-
-        NOTE: This method always updates the embedding and associated documentation
-            We should add some logic to check if the documentation needs updating
-            This is non-trivial because of how dependencies interact
+            ValueError: If the symbol has no source code for the symbol.
         """
         from automata.core.symbol.symbol_utils import (  # imported late for mocking
             convert_to_fst_object,
@@ -80,54 +62,81 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
 
     def build_symbol_doc_embedding(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
         """
-        Build the embedding for a symbol's documentation
 
-        Args:
-            source_code (str): The source code of the symbol
-            symbol (Symbol): The symbol to build the embedding for
+        Build the embedding for a symbol's documentation.
 
-        Returns:
-            SymbolDocEmbedding: The embedding for the symbol's documentation
+        Example Document Output:
+        ===========
+
+        AgentConfig
+        ===========
+
+        ``AgentConfig`` is an abstract base class that provides a template for
+        configurations related to agents. It contains abstract methods like
+        ``setup()`` and ``load()`` that need to be implemented by subclasses.
+        This class also handles the configuration of arbitrary types during the
+        initialization.
+
+        Overview
+        --------
+
+        ``AgentConfig`` is designed for ensuring configurability of agents.
+        Subclasses need to provide implementations for the ``setup()`` and
+        ``load()`` methods in order to properly define the behavior during the
+        agent setup and configuration loading processes. This class follows the
+        BaseModel design, making it easy to extend and customize according to
+        specific agent requirements.
+
+        Related Symbols
+        ---------------
+
+        -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
+        -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
+        -  ``automata.tests.unit.test_task_environment.TestURL``
+        -  ``automata.core.base.agent.AgentInstance.Config``
+
+        Example
+        -------
+
+        The following example demonstrates how to create a custom agent
+        configuration by extending the ``AgentConfig`` class:
+
+        .. code:: python
+
+        from config.config_types import AgentConfig
+
+        class CustomAgentConfig(AgentConfig):
+
+            def setup(self):
+                # Define your custom agent setup process
+                pass
+
+            @classmethod
+            def load(cls, config_name: AgentConfigName) -> "CustomAgentConfig":
+                # Load the config for your custom agent
+                pass
+
+        Limitations
+        -----------
+
+        ``AgentConfig`` itself is an abstract class and cannot directly be
+        instantiated. It must be subclassed, and its methods need to be
+        implemented by the extending class according to the specific agent
+        requirements. Additionally, the current implementation allows for
+        arbitrary types, which may lead to code that is not type-safe.
+
+        Follow-up Questions:
+        --------------------
+
+        -  How can we ensure type safety while maintaining the flexibility and
+        customizability provided by ``AgentConfig``?
+
+
+
         """
         abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
 
-        def get_completion(prompt: str) -> str:
-            """
-            Get the documentation for a symbol
-
-            Args:
-                prompt (str): The prompt to use to generate the documentation
-
-            Returns:
-                str: The completed documentation for the symbol
-            """
-
-            self.completion_provider.add_message(LLMChatMessage(role="user", content=prompt))
-            response = self.completion_provider.get_next_assistant_completion().content
-            self.completion_provider.reset()
-            if not response:
-                raise ValueError("No response found")
-            return response
-
-        # Splice the search results on the symbol
-        # with the search results biased on tests
-        # this is to get bias towards specific examples for the documentation
-        search_results = self.symbol_search.symbol_rank_search(f"{abbreviated_selected_symbol}")
-        search_results_with_tests = [ele for ele in search_results if "test" in ele[0].uri]
-        search_results_without_tests = [ele for ele in search_results if "test" not in ele[0].uri]
-        search_list: List[Symbol] = []
-        for i in range(max(len(search_results_with_tests), len(search_results_without_tests))):
-            set_list = set(search_list)
-            if (
-                i < len(search_results_with_tests) - 1
-                and search_results_with_tests[i] not in set_list
-            ):
-                search_list.append(search_results_with_tests[i][0])
-            if (
-                i < len(search_results_without_tests) - 1
-                and search_results_without_tests[i] not in set_list
-            ):
-                search_list.append(search_results_without_tests[i][0])
+        search_list = self.generate_search_list(abbreviated_selected_symbol)
 
         self.retriever.reset()
         self.retriever.process_symbol(symbol, search_list)
@@ -137,11 +146,11 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             symbol_context=self.retriever.get_context_buffer(),
         )
 
-        document = get_completion(prompt)
-        summary = get_completion(
+        document = self.completion_provider.standalone_call(prompt)
+        summary = self.completion_provider.standalone_call(
             f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
         )
-        embedding = self.embedding_provider.build_embedding(document)
+        embedding = self.embedding_provider.build_embedding_array(document)
 
         return SymbolDocEmbedding(
             symbol,
@@ -152,26 +161,40 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             context=prompt,
         )
 
+    def generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
+        """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
+        search_results = self.symbol_search.symbol_rank_search(f"{abbreviated_selected_symbol}")
+        search_results_with_tests = [ele for ele in search_results if "test" in ele[0].uri]
+        search_results_without_tests = [ele for ele in search_results if "test" not in ele[0].uri]
+        search_list: List[Symbol] = []
+        for i in range(max(len(search_results_with_tests), len(search_results_without_tests))):
+            set_list = set(search_list)
+            if i < len(search_results_with_tests) and search_results_with_tests[i] not in set_list:
+                search_list.append(search_results_with_tests[i][0])
+            if (
+                i < len(search_results_without_tests)
+                and search_results_without_tests[i] not in set_list
+            ):
+                search_list.append(search_results_without_tests[i][0])
+        return search_list
+
     def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         """
         Check if the embedding for a symbol needs to be updated.
         This is done by comparing the source code of the symbol to the source code
 
-        Args:
-            source_code (str): The source code of the symbol
-            symbol (Symbol): The symbol to update
+
+        FIXME - We need to add logic similar to what we have
+            in the code embedding handler to update documentation
+            when a sufficient threshold has been breached
+            the following is a representative snippet -
+            if existing_embedding.embedding_source != source_code:
+            logger.debug("Building a new embedding for %s", symbol)
+            self.embedding_db.discard(symbol)
+            symbol_embedding = self.build_embedding_array(source_code, symbol)
+            self.embedding_db.add(symbol_embedding)
         """
         existing_embedding = self.embedding_db.get(symbol)
-        # FIXME - We need to add logic similar to what we have
-        # in the code embedding handler to update documentation
-        # when a sufficient threshold has been breached
-        # the following is a representative snippet -
-        # if existing_embedding.embedding_source != source_code:
-        # logger.debug("Building a new embedding for %s", symbol)
-        # self.embedding_db.discard(symbol)
-        # symbol_embedding = self.build_embedding(source_code, symbol)
-        # self.embedding_db.add(symbol_embedding)
-
         # For now, we will just automatically roll the existing documentation forward
         if existing_embedding.symbol != symbol or existing_embedding.source_code != source_code:
             logger.debug(

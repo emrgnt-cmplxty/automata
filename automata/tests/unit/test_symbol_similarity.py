@@ -42,16 +42,16 @@ def test_get_nearest_symbols_for_query(
     symbol_similarity = SymbolSimilarityCalculator(cem)
 
     # Test with query_text that is most similar to symbol1
-    cem.embedding_provider.build_embedding.return_value = np.array([1, 0, 0, 0])
+    cem.embedding_provider.build_embedding_array.return_value = np.array([1, 0, 0, 0])
     result = symbol_similarity.calculate_query_similarity_dict("symbol1")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol1
 
     # # Test with query_text that is most similar to symbol2
-    cem.embedding_provider.build_embedding.return_value = np.array([0, 1, 0, 0])
+    cem.embedding_provider.build_embedding_array.return_value = np.array([0, 1, 0, 0])
     result = symbol_similarity.calculate_query_similarity_dict("symbol1")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol2
 
     # # Test with query_text that is most similar to symbol3
-    cem.embedding_provider.build_embedding.return_value = np.array([0, 0, 1, 0])
+    cem.embedding_provider.build_embedding_array.return_value = np.array([0, 0, 1, 0])
     result = symbol_similarity.calculate_query_similarity_dict("symbol3")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol3

@@ -6,7 +6,7 @@ from automata.core.llm.completion import LLMChatMessage, LLMConversationDatabase
 
 
 class AutomataAgentConversationDatabase(LLMConversationDatabaseProvider):
-    """Conversation database for an Automata agent."""
+    """A conversation database for an Automata agent."""
 
     def __init__(self, session_id: str, db_path: str = CONVERSATION_DB_PATH) -> None:
         self.connect(db_path)

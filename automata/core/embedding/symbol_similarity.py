@@ -58,7 +58,7 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
         Similarity is calculated between the dot product
         of the query embedding and the symbol embeddings.
         """
-        query_embedding_array = self.embedding_provider.build_embedding(query_text)
+        query_embedding_array = self.embedding_provider.build_embedding_array(query_text)
 
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(query_embedding_array)

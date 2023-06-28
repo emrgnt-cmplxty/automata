@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from pydantic import BaseModel
 
@@ -14,11 +14,9 @@ class LLMCompletionResult(BaseModel):
     content: Optional[str] = None
 
     def get_role(self) -> str:
-        """Returns the role of the completion result."""
         return self.role
 
     def get_content(self) -> Any:
-        """Returns the content of the completion result."""
         return self.content
 
 
@@ -29,7 +27,6 @@ class LLMChatMessage(BaseModel):
     content: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the message as a dictionary."""
         return {"role": self.role, "content": self.content}
 
 
@@ -45,113 +42,83 @@ class LLMConversation(ABC):
         def __init__(self, message: str = "The conversation is empty.") -> None:
             super().__init__(message)
 
-    @abstractmethod
+    def __init__(self) -> None:
+        self._observers: Set[Observer] = set()
+
     def register_observer(self, observer: Observer) -> None:
-        """Registers an observer to the conversation."""
-        pass
+        self._observers.add(observer)
 
-    @abstractmethod
     def unregister_observer(self, observer: Observer) -> None:
-        """Unregisters a specified observer to the conversation."""
-        pass
+        self._observers.discard(observer)
+
+    def notify_observers(self) -> None:
+        for observer in self._observers:
+            observer.update(self)
 
     @abstractmethod
-    def notify_observers(self):
-        """Notifies all observers of the conversation."""
-        pass
-
-    @abstractmethod
-    def add_message(self, message: LLMChatMessage) -> None:
-        """
-        Adds a new message to the conversation.
-
-        Args:
-            payload (Any): The message payload.
-        """
+    def __len__(self) -> int:
+        """Abstract method to get the length of the conversation."""
         pass
 
     @abstractmethod
     def get_messages_for_next_completion(self) -> Any:
-        """Returns the messages to be used for the next completion."""
+        """Abstract method to get the messages to be used for the next completion."""
         pass
 
     @abstractmethod
     def get_latest_message(self) -> LLMChatMessage:
-        """Get the last chat message in the conversation.
-
-        Returns:
-            LLMChatMessage: The last chat message in the conversation.
-
-        Raises:
-            LLMConversation.LLMEmptyConversationError: If the conversation is empty.
-        """
+        """Abstract method to get the last chat message in the conversation."""
         pass
 
     @abstractmethod
     def reset_conversation(self) -> None:
-        """Resets the conversation."""
+        """Abstract method to reset the conversation."""
         pass
 
 
 class LLMConversationDatabaseProvider(Observer, SQLDatabase, ABC):
     """Abstract base class for different types of database providers."""
 
-    def __init__(self, session_id: str, db_path: str) -> None:
-        pass
-
     def update(self, subject: LLMConversation) -> None:
-        """
-        Update the database when the conversation changes.
-
-        Args:
-            subject (LLMConversation): The conversation that changed.
-        """
+        """Concrete `Observer` method to update the database when the conversation changes."""
         if isinstance(subject, LLMConversation):
             self.save_message(subject.get_latest_message())
 
     @abstractmethod
     def save_message(self, message: LLMChatMessage) -> None:
-        """
-        Save a message to the database.
-
-        Args:
-            message (str): The message to save.
-            agent_id (str): The ID of the agent.
-        """
+        """An abstract method to save a message to the database."""
         pass
 
     @abstractmethod
     def get_messages(self) -> List[LLMChatMessage]:
-        """
-        Get all messages of a specific agent.
-
-        Args:
-            agent_id (str): The ID of the agent.
-        """
+        """An abstract method to get all messages with the original session id."""
         pass
 
 
 class LLMChatCompletionProvider(ABC):
-    def __init__(self):
-        pass
+    """Abstract base class for different types of LLM chat completion providers."""
 
     @abstractmethod
     def get_next_assistant_completion(self) -> LLMChatMessage:
-        """
-        Returns the next assistant completion from the LLM.
-        """
+        """Abstract method to returns the next assistant completion from the LLM."""
         pass
 
     @abstractmethod
     def add_message(self, message: LLMChatMessage) -> None:
-        """
-        Appends a new user message to the chat completion provider
-        """
+        """Abstract method to add a new message to the provider's buffer."""
         pass
 
     @abstractmethod
     def reset(self) -> None:
+        """Abstract method to reset the chat provider's buffer."""
+        pass
+
+    @abstractmethod
+    def standalone_call(self, prompt: str) -> str:
         """
-        Resets the chat provider
+        Abstract method to treat the provider as a single completion LLM.
+
+        Raises:
+            Exception: If the chat provider buffer is not empty.
         """
         pass

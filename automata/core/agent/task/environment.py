@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class AutomataTaskEnvironment(TaskEnvironment):
-    """This is a concrete implementation of the Abstract TaskEnvironment for Automata agents."""
+    """A concrete implementation of the Abstract TaskEnvironment for Automata agents."""
 
     def __init__(self, github_manager: GitHubManager) -> None:
         self.github_manager = github_manager

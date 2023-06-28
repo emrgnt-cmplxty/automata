@@ -19,7 +19,7 @@ ExactSearchResult = Dict[str, List[int]]
 
 
 class SymbolSearch:
-    """Searches for symbols in a SymbolGraph"""
+    """A class which exposes various search methods for symbols."""
 
     def __init__(
         self,
@@ -29,13 +29,9 @@ class SymbolSearch:
         code_subgraph: SymbolGraph.SubGraph,
     ) -> None:
         """
-        Args:
-            symbol_graph (SymbolGraph): A SymbolGraph
-            symbol_code_similarity (SymbolSimilarity): A SymbolSimilarity object with a code embedding handler
-            symbol_rank_config (Optional[SymbolRankConfig]): A SymbolRankConfig object
-            code_subgraph: A subgraph of the SymbolGraph
-
-            TODO - We should modify SymbolSearch to receive a completed instance of SymbolRank.
+        Raises:
+            ValueError: If the code_subgraph is not a subgraph of the symbol_graph
+        TODO - We should modify SymbolSearch to receive a completed instance of SymbolRank.
         """
 
         if code_subgraph.parent != symbol_graph:
@@ -53,15 +49,7 @@ class SymbolSearch:
         self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
-        """
-        Fetches the list of the SymbolRank similar symbols ordered by rank
-
-        Args:
-            query (str): The query to search for
-
-        Returns:
-            A list of tuples of the form (symbol_uri, rank)
-        """
+        """Fetches the list of the SymbolRank similar symbols ordered by rank."""
         query_vec = self.symbol_code_similarity.calculate_query_similarity_dict(query)
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
@@ -70,54 +58,29 @@ class SymbolSearch:
 
     def symbol_references(self, symbol_uri: str) -> SymbolReferencesResult:
         """
-        Gets the list a symbol-based search
+        Finds all references to a module, class, method, or standalone function.
 
-        Args:
-            symbol_uri (str): The symbol to search for
-
-        Returns:
-            A dict of paths to files that contain the
-                symbol and corresponding line numbers
+        TODO - Add parsing upstream or here to parse references
         """
-        # TODO - Add parsing upstream or here to parse references
         return self.symbol_graph.get_references_to_symbol(parse_symbol(symbol_uri))
 
     def retrieve_source_code_by_symbol(self, symbol_uri: str) -> SourceCodeResult:
-        """
-        Finds the raw text of a module, class, method, or standalone function
-
-        Args:
-            symbol_uri (str): The symbol to retrieve
-
-        Returns:
-            The raw text of the symbol or None if not found
-        """
+        """Finds the raw text of a module, class, method, or standalone function."""
         node = convert_to_fst_object(parse_symbol(symbol_uri))
         return str(node) if node else None
 
     def exact_search(self, pattern: str) -> ExactSearchResult:
-        """
-        Performs a exact search across the indexed codebase
-
-        Args:
-            pattern (str): The pattern to search for
-
-        Returns:
-            A dict of paths to files that contain the pattern and corresponding line numbers
-        """
+        """Performs a exact search across the indexed codebase."""
         return self._find_pattern_in_modules(pattern)
 
     def process_query(
         self, query: str
     ) -> Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult,]:
         """
-        Processes an NLP-formatted query and return the results of the appropriate search
+        Processes an NLP-formatted query and returns the results of the appropriate downstream search.
 
-        Args:
-            query: The query to process
-
-        Returns:
-            The results of the search
+        Raises:
+            ValueError: If the query is not formatted correctly
         """
         parts = query.split()
         if len(parts) < 2:
@@ -139,15 +102,20 @@ class SymbolSearch:
         else:
             raise ValueError(f"Unknown search type: {search_type}")
 
+    def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
+        """Finds exact line matches for a given pattern string in all modules."""
+        matches = {}
+        for module_path, module in py_module_loader.items():
+            if module:
+                lines = module.dumps().splitlines()
+                line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
+                if line_numbers:
+                    matches[module_path] = line_numbers
+        return matches
+
     @staticmethod
     def filter_graph(graph: nx.DiGraph, available_symbols: Set[Symbol]) -> None:
-        """
-        Filters a graph to only contain nodes that are in the available_symbols set
-
-        Args:
-            graph: The graph to filter
-            available_symbols: The set of symbols to keep
-        """
+        """Filters a graph to only contain nodes that are in the available_symbols set."""
         graph_nodes = deepcopy(graph.nodes())
         for symbol in graph_nodes:
             if symbol not in available_symbols:
@@ -158,14 +126,15 @@ class SymbolSearch:
         values: Union[List[float], np.ndarray], power: int = 3
     ) -> np.ndarray:
         """
-        Compute z-score of a list of values
+        Shifts the values to be positive, calculates the z-score,
+        and raises the values to the specified power.
 
-        Args:
-            values: List of values to compute z-score for
-
-        Returns:
-            List of z-scores
+        This method is used to transform similarity scores into a quantity that
+        is more suitable for ranking. Empirically, we found that raising the values
+        to the third power results in a good balance between influence from symbol
+        similarity and importance (e.g. the connectivity or references to a symbol).
         """
+
         if not isinstance(values, np.ndarray):
             values = np.array(values)
 
@@ -178,36 +147,8 @@ class SymbolSearch:
     def transform_dict_values(
         dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]
     ) -> Dict[Any, float]:
-        """
-        Apply a function to each value in a dictionary and return a new dictionary
-
-        Args:
-            dictionary: Dictionary to transform
-            func: Function to apply to each value
-
-        Returns:
-            Dictionary with transformed values
-        """
+        """Apply a function to each value in a dictionary and return a new dictionary."""
         # Apply the function to the accumulated values
         transformed_values = func([dictionary[key] for key in dictionary])
 
         return {key: transformed_values[i] for i, key in enumerate(dictionary)}
-
-    def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
-        """
-        Finds exact line matches for a given pattern string in all modules
-
-        Args:
-            pattern (str): The pattern string to search for
-
-        Returns:
-            Dict[str, List[int]]: A dictionary with module paths as keys and a list of line numbers as values
-        """
-        matches = {}
-        for module_path, module in py_module_loader.items():
-            if module:
-                lines = module.dumps().splitlines()
-                line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
-                if line_numbers:
-                    matches[module_path] = line_numbers
-        return matches
