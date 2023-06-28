@@ -19,6 +19,7 @@ system_template: >
     Fetch the source code for automata.core.base.agent import AgentToolProviders
 
   Assistant:
+  function_call:
     {
       'name': 'py-retriever-retrieve-code', 
       'arguments': '{"module_path": "automata.core.base.agent", "object_path": "AgentToolProviders"}'
@@ -52,6 +53,7 @@ system_template: >
     Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent.
 
   Assistant:
+  function_call:
     {
       'name': 'context_oracle', 
       'arguments': '{"query": "Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent."}'
@@ -68,6 +70,7 @@ system_template: >
     ...
 
     Assistant:
+    function_call:
     {
       'name': 'call_termination', 
       'arguments': '{"result": "The `AutomataOpenAIAgent` is an autonomous agent designed to execute instructions and report the results back to the main system. It communicates with the OpenAI API to generate responses based on given instructions and manages interactions with various tools.\n\nTo initialize an instance of `AutomataOpenAIAgent`, you can use the following example:\n\n..."}'

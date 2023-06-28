@@ -278,8 +278,8 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:
         """Streams the response message from the agent."""
         response = {
-            "content": None,
             "role": "assistant",
+            "content": None,
             "function_call": {
                 "name": None,
                 "arguments": "",
@@ -327,29 +327,37 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         else:
             print(colored("\n\n", "green"), end=" ", flush=True)
 
-        if not isinstance(response["role"], str):
+        role = response["role"]
+        if not isinstance(role, str):
             raise ValueError("Expected role to be a string")
 
-        if not isinstance(response["content"], str):
-            raise ValueError("Expected content to be a string")
+        content = response["content"]
 
         function_call = response["function_call"]
         if function_call:
             if not isinstance(function_call, dict):
                 raise ValueError("Expected function_call to be a dict")
+            # check is of type Dict[str, str]
             for key, val in function_call.items():
                 if not isinstance(key, str):
                     raise ValueError(f"Expected {key} to be a string")
                 if not isinstance(val, str):
-                    raise ValueError(f"Expected {val} to be a string")
+                    raise ValueError(f"Expected value at {key} to be a string")
 
-        return OpenAIChatMessage(
-            role=response["role"],
-            content=response["content"],
-            function_call=FunctionCall.from_response_dict(response["function_call"])  # type: ignore
-            if function_call
-            else None,
-        )
+            return OpenAIChatMessage(
+                role=role,
+                function_call=FunctionCall.from_response_dict(function_call),  # type: ignore
+            )
+        elif content:
+            if not isinstance(content, str):
+                raise ValueError("Expected content to be a string")
+
+            return OpenAIChatMessage(
+                role=role,
+                content=content,
+            )
+        else:
+            raise ValueError("Expected either content or function_call to be defined")
 
     def get_approximate_tokens_consumed(self) -> int:
         """
