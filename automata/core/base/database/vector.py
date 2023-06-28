@@ -80,15 +80,9 @@ class VectorDatabaseProvider:
 
 
 class JSONVectorDatabase(VectorDatabaseProvider):
-    """
-    Concrete class to provide a vector database that saves into a JSON file.
-    """
+    """Concrete class to provide a vector database that saves into a JSON file."""
 
     def __init__(self, file_path: str):
-        """
-        Args:
-            file_path: The path to the JSON file to save the vector database to
-        """
         self.file_path = file_path
         self.data: List[SymbolEmbedding] = []
         self.index: Dict[str, int] = {}
@@ -111,39 +105,15 @@ class JSONVectorDatabase(VectorDatabaseProvider):
             logger.info(f"Creating new vector embedding db at {self.file_path}")
 
     def add(self, embedding: SymbolEmbedding):
-        """
-        Adds a new vector to the database
-
-        Args:
-            embedding: The vector to add
-        """
         self.data.append(embedding)
         self.index[embedding.symbol.dotpath] = len(self.data) - 1
 
     def update_database(self, embedding: SymbolEmbedding):
-        """
-        Updates an embedding in the database
-
-        Args:
-            embedding: The vector to update
-
-        Raises:
-            KeyError: If the symbol is not in the database
-        """
         if embedding.symbol not in self.index:
             raise KeyError(f"Symbol {embedding.symbol} not in database")
         self.data[self.index[embedding.symbol.dotpath]] = embedding
 
     def discard(self, symbol: Symbol):
-        """
-        Discards a vector from the database
-
-        Args:
-            symbol: The symbol to discard
-
-        Raises:
-            KeyError: If the symbol is not in the database
-        """
         if symbol.dotpath not in self.index:
             raise KeyError(f"Symbol {symbol} not in database")
         index = self.index[symbol.dotpath]
@@ -153,42 +123,17 @@ class JSONVectorDatabase(VectorDatabaseProvider):
         self.index = {embedding.symbol.dotpath: i for i, embedding in enumerate(self.data)}
 
     def contains(self, symbol: Symbol) -> bool:
-        """
-        Checks if the database contains a vector for the given symbol
-
-        Args:
-            symbol: The symbol to check
-
-        Returns:
-            True if the database contains a vector for the given symbol, False otherwise
-        """
         return symbol.dotpath in self.index
 
     def get(self, symbol: Symbol) -> SymbolEmbedding:
-        """
-        Gets the vector for the given symbol
-
-        Args:
-            symbol: The symbol to get the vector for
-
-        Raises:
-            KeyError: If the symbol is not in the database
-        """
         if symbol.dotpath not in self.index:
             raise KeyError(f"Symbol {symbol} not in database")
         return self.data[self.index[symbol.dotpath]]
 
     def clear(self):
-        """Removes all vectors from the database"""
         self.data = []
         self.index = {}
 
     def get_all_entries(self) -> List[Symbol]:
-        """
-        Gets all symbols in the database
-
-        Returns:
-            A list of all symbols in the database
-        """
         symbol_list = [embedding.symbol for embedding in self.data]
         return sorted(symbol_list, key=lambda x: str(x.dotpath))

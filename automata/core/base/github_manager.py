@@ -45,12 +45,6 @@ class GitHubManager:
     """The GitHub manager provides an interface for interacting with GitHub repositories"""
 
     def __init__(self, access_token: str, remote_name: str, primary_branch: str = "main") -> None:
-        """
-        Args:
-            access_token: The GitHub access token
-            remote_name: The name of the remote repository
-            primary_branch: The name of the primary branch
-        """
         self.access_token = access_token
         self.client = Github(access_token)
         self.remote_name = remote_name

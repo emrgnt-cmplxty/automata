@@ -131,34 +131,24 @@ class ITaskExecution(ABC):
 
 
 class TaskEnvironment(ABC):
-    """
-    This is the abstract base class for an environment.
-    """
+    """This is the abstract base class for an environment."""
 
     @abstractmethod
     def setup(self, task: Task):
-        """
-        Set up the environment.
-        """
+        """Set up the environment."""
         pass
 
     @abstractmethod
     def teardown(self):
-        """
-        Tear down the environment.
-        """
+        """Tear down the environment."""
         pass
 
     @abstractmethod
     def validate(self):
-        """
-        Validate the environment.
-        """
+        """Validate the environment."""
         pass
 
     @abstractmethod
     def reset(self):
-        """
-        Reset the environment to its initial state.
-        """
+        """Reset the environment to its initial state."""
         pass

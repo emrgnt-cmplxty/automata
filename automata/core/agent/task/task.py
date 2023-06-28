@@ -10,9 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class AutomataTask(Task):
-    """
-    A task that is to be executed by the TaskExecutor.
-    """
+    """A task that is to be executed by the TaskExecutor."""
 
     def __init__(self, *args, **kwargs):
         """
@@ -20,7 +18,6 @@ class AutomataTask(Task):
             instructions (str): The instructions for the task.
             path_to_root_py (str): The path to the root python folder.
         """
-
         super().__init__(*args, **kwargs)
         self.args = args
         self.kwargs = kwargs

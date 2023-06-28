@@ -17,5 +17,4 @@ class Tool(BaseModel):
     coroutine: Optional[Callable[..., Awaitable[str]]] = None
 
     def run(self, tool_input: Dict[str, str]) -> str:
-        """Use the tool."""
         return self.function(**tool_input)

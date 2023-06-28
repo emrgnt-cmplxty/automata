@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class IAutomataTaskExecution(ITaskExecution):
-    """
-    Class for executing general tasks.
-    """
+    """Class for executing general tasks."""
 
     def execute(self, task: Task) -> None:
         """
