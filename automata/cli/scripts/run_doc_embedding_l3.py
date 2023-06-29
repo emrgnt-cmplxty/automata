@@ -35,7 +35,7 @@ def main(*args, **kwargs) -> str:
 
     logger.info("Running....")
     scip_path = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
+        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index-file", "index.scip")
     )
 
     code_embedding_fpath = os.path.join(

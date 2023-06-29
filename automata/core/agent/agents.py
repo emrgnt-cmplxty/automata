@@ -212,6 +212,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Raises:
             AgentError: If the agent fails to initialize.
         """
+        logger.debug(f"Setting up agent with tools = {self.config.tools}")
         self.conversation.add_message(
             OpenAIChatMessage(role="system", content=self.config.system_instruction)
         )

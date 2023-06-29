@@ -23,12 +23,12 @@ def main(*args, **kwargs) -> str:
     py_module_loader.initialize()
 
     scip_path = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index_file", "index.scip")
+        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index-file", "index.scip")
     )
     embedding_path = os.path.join(
         get_config_fpath(),
         ConfigCategory.SYMBOL.value,
-        kwargs.get("embedding_file", "symbol_code_embedding.json"),
+        kwargs.get("embedding-file", "symbol_code_embedding.json"),
     )
 
     symbol_graph = SymbolGraph(scip_path)

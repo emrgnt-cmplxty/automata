@@ -35,7 +35,7 @@ class AutomataOpenAIAgentConfig(AgentConfig):
     class TemplateFormatter:
         @staticmethod
         def create_default_formatter(
-            config: "AutomataOpenAIAgentConfig", max_default_overview_symbols: int = 100
+            config: "AutomataOpenAIAgentConfig", max_default_overview_symbols: int = 25
         ) -> Dict[str, str]:
             """
             TODO:

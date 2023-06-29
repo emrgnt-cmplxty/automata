@@ -127,3 +127,8 @@ def format_text(format_variables: Dict[str, str], input_text: str) -> str:
     for arg in format_variables:
         input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
     return input_text
+
+
+def convert_kebab_to_snake(s: str) -> str:
+    """Convert a kebab-case string to snake_case."""
+    return s.replace("-", "_")

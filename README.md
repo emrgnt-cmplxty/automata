@@ -164,14 +164,9 @@ Sometimes the best way to understand a complicated system is to start by underst
 ```python
 
 import logging
-from typing import Any, Set
-
-from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.agents import AutomataOpenAIAgent
 from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
-from automata.core.base.agent import AgentToolProviders
-from automata.core.base.github_manager import GitHubManager
 from automata.core.coding.py.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
@@ -181,35 +176,23 @@ py_module_loader.initialize()
 
 
 # Construct the set of all dependencies that will be used to build the tools
-tool_list = ["context_oracle"]
-dependencies: Set[Any] = set()
-tool_dependencies = {}
-
-for tool in tool_list:
-    for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
-        if dependency_name not in dependencies:
-            dependencies.add(dependency_name)
-            logger.info(f"  - Building Dependency {dependency_name}...")
-            tool_dependencies[dependency_name] = DependencyFactory().get(dependency_name)
+toolkit_list = ["context-oracle"]
+tool_dependencies = DependencyFactory().build_dependencies_for_tools(toolkit_list)
 
 # Build the tools
-tools = AgentToolFactory.build_tools(tool_list, **tool_dependencies)
+tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
 
 # Build the agent config
-config_name = AgentConfigName("automata_main")
-
 agent_config = (
-    AutomataOpenAIAgentConfigBuilder.from_name(config_name)
+    AutomataOpenAIAgentConfigBuilder.from_name("automata-main")
     .with_tools(tools)
     .with_model("gpt-4")
     .build()
 )
 
-# Initialize the agent
+# Initialize and run the agent
 instructions = "Explain how embeddings are used by the codebase"
 agent = AutomataOpenAIAgent(instructions, config=agent_config)
-
-# Run the agent
 result = agent.run()
 ```
 

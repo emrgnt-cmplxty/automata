@@ -39,7 +39,7 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
     from automata.cli.scripts.run_code_embedding import main
 
-    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Calling run_code_embedding")
     main(**kwargs)
 
@@ -51,7 +51,7 @@ def run_doc_embedding_l2(ctx, *args, **kwargs) -> None:
     """Run the document embedding Level-2 pipeline."""
     from automata.cli.scripts.run_doc_embedding_l2 import main
 
-    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l2")
     main(**kwargs)
 
@@ -63,7 +63,7 @@ def run_doc_embedding_l3(ctx, *args, **kwargs) -> None:
     """Run the document embedding Level-3 pipeline."""
     from automata.cli.scripts.run_doc_embedding_l3 import main
 
-    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Calling run_doc_embedding_l3")
     main(**kwargs)
 
@@ -75,7 +75,7 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
     """Run the document post-processor."""
     from automata.cli.scripts.run_doc_post_process import main
 
-    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running doc post-process")
     main(**kwargs)
 
@@ -89,7 +89,7 @@ def run_agent(ctx, *args, **kwargs) -> None:
     """Run the agent."""
     from automata.cli.scripts.run_agent import main
 
-    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running agent")
     main(**kwargs)
 
@@ -110,6 +110,6 @@ def run_agent_task(ctx, *args, **kwargs) -> None:
     """
     from automata.cli.scripts.run_agent_task import main
 
-    reconfigure_logging(kwargs.get("log_level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running the task")
     main(**kwargs)

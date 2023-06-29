@@ -1,7 +1,7 @@
 import functools
 import logging
 import os
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Set, Tuple
 
 from automata.config.base import ConfigCategory, LLMProvider
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
@@ -62,7 +62,7 @@ class DependencyFactory:
     )
 
     # Used to cache the symbol subgraph across multiple instances
-    _class_cache: Dict[str, Any] = {}
+    _class_cache: Dict[Tuple[str, ...], Any] = {}
 
     def __init__(self, **kwargs) -> None:
         """
@@ -84,13 +84,18 @@ class DependencyFactory:
     def get(self, dependency: str) -> Any:
         """
         Gets a dependency by name.
+        The dependency argument corresponds to the names of the creation methods of the DependencyFactory class
+        without the 'create_' prefix. For example, to get a SymbolGraph instance you'd call `get('symbol_graph')`.
+
+        Args:
+            dependency (str): The name of the dependency to be retrieved.
+
+        Returns:
+            The instance of the requested dependency.
 
         Raises:
-            AgentGeneralError: If the dependency is not found
+            AgentGeneralError: If the dependency is not found.
 
-        Notes:
-            Dependencies correspond to the method names of the DependencyFactory class.
-            E.g. symbol_graph corresponds to `create_symbol_graph`.
         """
         if dependency in self.overrides:
             return self.overrides[dependency]
@@ -109,6 +114,29 @@ class DependencyFactory:
         self._instances[dependency] = instance
 
         return instance
+
+    def build_dependencies_for_tools(self, toolkit_list: List[str]) -> Dict[str, Any]:
+        """Builds and returns a dictionary of all dependencies required by the given list of tools."""
+        # Identify all unique dependencies
+        dependencies: Set[str] = set()
+        for tool_name in toolkit_list:
+            tool_name = tool_name.strip()
+            agent_tool = AgentToolProviders(tool_name)
+
+            if agent_tool is None:
+                raise UnknownToolError(agent_tool)
+
+            for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[agent_tool]:
+                dependencies.add(dependency_name)
+
+        # Build dependencies
+        tool_dependencies = {}
+        logger.info(f"Building dependencies for toolkit_list {toolkit_list}...")
+        for dependency in dependencies:
+            logger.info(f"Building {dependency}...")
+            tool_dependencies[dependency] = self.get(dependency)
+
+        return tool_dependencies
 
     @classmethod_lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:
@@ -239,11 +267,11 @@ class AgentToolFactory:
         raise UnknownToolError(agent_tool.value)
 
     @staticmethod
-    def build_tools(tool_list: List[str], **kwargs) -> List[Tool]:
+    def build_tools(toolkit_list: List[str], **kwargs) -> List[Tool]:
         """Given a list of tools this method builds the tools and returns them."""
         tools: List[Tool] = []
 
-        for tool_name in tool_list:
+        for tool_name in toolkit_list:
             tool_name = tool_name.strip()
             agent_tool_manager = AgentToolProviders(tool_name)
 

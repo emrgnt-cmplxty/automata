@@ -13,18 +13,18 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
     """
     options = [
         click.option(
-            "--log_level",
+            "--log-level",
             type=str,
             default="DEBUG",
             help="Execute script in verbose mode?",
         ),
         click.option(
-            "--index_file",
+            "--index-file",
             default="index.scip",
             help="Which index file to use for the embedding modifications.",
         ),
         click.option(
-            "--embedding_file",
+            "--embedding-file",
             default="symbol_code_embedding.json",
             help="Which embedding file to save to.",
         ),
@@ -50,8 +50,8 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which instructions to use for the agent.",
         ),
         click.option(
-            "--tool_builders",
-            default="py_reader,context_oracle",
+            "--toolkit-list",
+            default="py-reader,context-oracle",
             help="Which LLM tools to use?",
         ),
         click.option(
@@ -60,8 +60,8 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which model to use?",
         ),
         click.option(
-            "--config_to_load",
-            default="automata_main",
+            "--config-to-load",
+            default="automata-main",
             help="Which agent to use for this task?",
         ),
     ]
