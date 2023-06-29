@@ -22,7 +22,7 @@ Related Symbols
 -  ``automata.core.symbol.graph._RelationshipManager``
 -  ``automata.core.symbol.graph._OccurrenceManager``
 -  ``automata.core.symbol.graph._CallerCalleeManager``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.graph.SymbolGraph``
 
 Example

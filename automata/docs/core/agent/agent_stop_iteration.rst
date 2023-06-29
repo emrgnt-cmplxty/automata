@@ -13,21 +13,21 @@ Related Symbols
 -  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``
 -  ``automata.core.agent.error.AgentMaxIterError``
 -  ``automata.core.base.agent.Agent.__iter__``
--  ``automata.core.agent.agents.AutomataOpenAIAgent.__iter__``
--  ``automata.core.agent.agents.AutomataOpenAIAgent.run``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent.__iter__``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent.run``
 
 Example
 -------
 
 The following example demonstrates how to catch an
-``AgentStopIteration`` exception while using an ``AutomataOpenAIAgent``.
+``AgentStopIteration`` exception while using an ``OpenAIAutomataAgent``.
 
 .. code:: python
 
-   from automata.core.agent.agents import AutomataOpenAIAgent
+   from automata.core.agent.providers import OpenAIAutomataAgent
    from automata.core.agent.error import AgentStopIteration
 
-   agent = AutomataOpenAIAgent()
+   agent = OpenAIAutomataAgent()
 
    try:
        while True:
@@ -45,4 +45,4 @@ Follow-up Questions:
 --------------------
 
 -  Are there any alternative ways of implementing a stop iteration for
-   agents other than raising an exception?
+   providers other than raising an exception?

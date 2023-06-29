@@ -25,7 +25,7 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
 -  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.symbol.base.SymbolDocEmbedding``
 
 Example
 -------
@@ -37,7 +37,7 @@ structure:
 .. code:: python
 
    from automata.core.coding.py_coding.writer import PyDocWriter
-   from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
+   from automata.core.symbol.base import Symbol, SymbolDocEmbedding
 
    # Assuming you have the documentation info in the following variables:
    # - docs: a dictionary containing the {Symbol: SymbolDocEmbedding} pairs

@@ -3,7 +3,7 @@ from typing import List
 from redbaron import RedBaron
 
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.symbol.symbol_types import Symbol, SymbolDescriptor
+from automata.core.symbol.base import Symbol, SymbolDescriptor
 
 
 def convert_to_fst_object(symbol: Symbol) -> RedBaron:

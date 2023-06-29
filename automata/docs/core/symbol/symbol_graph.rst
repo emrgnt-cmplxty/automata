@@ -22,7 +22,7 @@ Related Symbols
 
 -  ``automata.core.symbol.parser.parse_symbol``
 -  ``automata.core.symbol.scip_pb2.Index``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.graph.GraphBuilder``
 -  ``automata.core.symbol.graph._SymbolGraphNavigator``
 -  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_graph``

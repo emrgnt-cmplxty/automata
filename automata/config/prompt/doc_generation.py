@@ -132,7 +132,7 @@ TREE_STRUCTURE = textwrap.dedent(
         │   │   ├── __init__.py
         │   │   ├── rank.py
         │   │   └── symbol_search.py
-        │   ├── symbol_types.py
+        │   ├── base.py
         │   └── symbol_utils.py
         └── utils.py
 

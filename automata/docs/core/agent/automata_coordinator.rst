@@ -14,7 +14,7 @@ Overview
 providing methods to add and remove instances, select and run an agent
 based on a given action. Once instantiated, the coordinator can be used
 to run agent actions using the given agent instances, providing a
-centralized way to manage multiple agents. The class offers convenient
+centralized way to manage multiple providers. The class offers convenient
 utility methods and closely integrates with the ``AutomataAgent``.
 
 Related Symbols

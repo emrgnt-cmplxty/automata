@@ -2,35 +2,35 @@ AgentResultError
 ================
 
 ``AgentResultError`` is an exception raised when an
-``AutomataOpenAIAgent`` fails to produce a result. This error is raised
-by the ``run()`` method of the ``AutomataOpenAIAgent`` when the agent
+``OpenAIAutomataAgent`` fails to produce a result. This error is raised
+by the ``run()`` method of the ``OpenAIAutomataAgent`` when the agent
 doesn’t produce a result within the specified maximum number of
 iterations.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.agent.error.AgentTaskInstructions``
 -  ``automata.core.agent.error.AgentMaxIterError``
 
 Example
 -------
 
-The following example illustrates how the ``AutomataOpenAIAgent`` can
+The following example illustrates how the ``OpenAIAutomataAgent`` can
 raise an ``AgentResultError`` when a specific result is not received in
 the conversation within the maximum number of iterations.
 
 .. code:: python
 
-   from automata.core.agent.agents import AutomataOpenAIAgent
+   from automata.core.agent.providers import OpenAIAutomataAgent
    from automata.core.agent.config import AutomataAgentConfig
    from automata.core.agent.error import AgentResultError
 
    instructions = "Please find the result for this task."
    config = AutomataAgentConfig.load("your_config_name")
 
-   agent = AutomataOpenAIAgent(instructions, config)
+   agent = OpenAIAutomataAgent(instructions, config)
    agent.config.max_iterations = 3
 
    try:

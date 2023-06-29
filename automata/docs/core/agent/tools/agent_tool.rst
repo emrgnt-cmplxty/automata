@@ -1,7 +1,7 @@
 AgentTool
 =========
 
-``AgentTool`` is an abstract class for building tools for agents. This
+``AgentTool`` is an abstract class for building tools for providers. This
 class provides a structure for creating custom tools to be used in an
 agent’s toolkit. Being an abstract class, it contains an abstract method
 ``build`` that needs to be implemented by any concrete class that

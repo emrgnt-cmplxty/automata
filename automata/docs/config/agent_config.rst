@@ -2,7 +2,7 @@ AgentConfig
 ===========
 
 ``AgentConfig`` is an abstract base class that provides a template for
-configurations related to agents. It contains abstract methods like
+configurations related to providers. It contains abstract methods like
 ``setup()`` and ``load()`` that need to be implemented by subclasses.
 This class also handles the configuration of arbitrary types during the
 initialization.
@@ -10,7 +10,7 @@ initialization.
 Overview
 --------
 
-``AgentConfig`` is designed for ensuring configurability of agents.
+``AgentConfig`` is designed for ensuring configurability of providers.
 Subclasses need to provide implementations for the ``setup()`` and
 ``load()`` methods in order to properly define the behavior during the
 agent setup and configuration loading processes. This class follows the

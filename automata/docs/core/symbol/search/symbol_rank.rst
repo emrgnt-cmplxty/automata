@@ -23,7 +23,7 @@ Related Symbols
 
 -  ``networkx.DiGraph``
 -  ``automata.core.symbol.search.rank.SymbolRankConfig``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.search.symbol_parser.parse_symbol``
 
 Example
@@ -37,7 +37,7 @@ importance of symbols in a directed graph.
    import networkx as nx
    from automata.core.symbol.search.rank import SymbolRank
    from automata.core.symbol.search.rank import SymbolRankConfig
-   from automata.core.symbol.symbol_types import Symbol
+   from automata.core.symbol.base import Symbol
 
    # create a directed graph
    G = nx.DiGraph()

@@ -2,10 +2,10 @@ Agent
 =====
 
 ``Agent`` is an abstract base class representing an autonomous entity
-that can perform actions and communicate with other agents in the
+that can perform actions and communicate with other providers in the
 context of Automata. Derived classes from ``Agent`` should implement the
 ``iter_step``, ``run`` and ``set_coordinator`` abstract methods.
-``Agent`` provides the basic structure for different types of agents
+``Agent`` provides the basic structure for different types of providers
 that can be used in the Automata system.
 
 Overview
@@ -17,7 +17,7 @@ agent should be able to perform actions by implementing the
 ``iter_step`` and ``run`` methods. Additionally, the agent should be
 able to interact with an ``AutomataCoordinator`` by implementing the
 ``set_coordinator`` method. This will allow them to be managed and
-communicate with other agents within the same coordinator.
+communicate with other providers within the same coordinator.
 
 Related Symbols
 ---------------
@@ -63,7 +63,7 @@ and interaction with the ``AutomataCoordinator``.
 Follow-up Questions:
 --------------------
 
--  How can the derived class interact with other agents in the Automata
+-  How can the derived class interact with other providers in the Automata
    system?
 -  What additional methods or attributes should be added to the
    ``Agent`` abstract base class to support a wider range of agent

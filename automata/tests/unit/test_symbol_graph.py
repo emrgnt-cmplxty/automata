@@ -1,4 +1,4 @@
-from automata.core.symbol.symbol_types import Symbol, SymbolFile
+from automata.core.symbol.base import Symbol, SymbolFile
 from automata.tests.utils.factories import symbol_graph_static_test  # noqa: F401
 
 

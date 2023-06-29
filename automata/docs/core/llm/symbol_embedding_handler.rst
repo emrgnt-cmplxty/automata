@@ -23,7 +23,7 @@ Related Symbols
 
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 
 Example
@@ -36,7 +36,7 @@ specific symbol.
 .. code:: python
 
    from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-   from automata.core.symbol.symbol_types import Symbol
+   from automata.core.symbol.base import Symbol
    from automata.core.base.database.vector import JSONVectorDatabase
    from automata.core.embedding.embedding_provider import EmbeddingProvider
 

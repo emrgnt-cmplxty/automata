@@ -18,7 +18,7 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
 -  ``automata.core.database.vector.JSONVectorDatabase.calculate_similarity``
 -  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.base.SymbolEmbedding``
 
 Example
 -------

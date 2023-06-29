@@ -17,7 +17,7 @@ functionality for agent instances in the system.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance``
 -  ``automata.core.base.agent.Agent``
 -  ``automata.core.base.tool.Tool``
@@ -52,7 +52,7 @@ Limitations
 As an abstract class, ``AgentInstance`` cannot be used directly.
 Instead, it should be subclassed by specific agent implementations that
 provide their own implementation of the ``run`` method. This enables
-different agents to run with various configurations and setups as
+different providers to run with various configurations and setups as
 needed.
 
 Follow-up Questions:

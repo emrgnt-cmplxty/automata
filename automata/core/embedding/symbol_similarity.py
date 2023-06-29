@@ -9,7 +9,7 @@ from automata.core.llm.embedding import (
     EmbeddingSimilarityCalculator,
     SymbolEmbeddingHandler,
 )
-from automata.core.symbol.symbol_types import Symbol
+from automata.core.symbol.base import Symbol
 
 logger = logging.getLogger(__name__)
 
@@ -30,16 +30,7 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
         self.index_to_symbol = dict(enumerate(supported_symbols))
         self.symbol_to_index = {symbol: i for i, symbol in enumerate(supported_symbols)}
         self.available_symbols: Optional[Set[Symbol]] = None
-
-    @property
-    def ordered_embeddings(self) -> np.ndarray:
-        """Returns the embeddings in the correct order."""
-        return np.array(
-            [
-                self.embedding_handler.get_embedding(symbol).vector
-                for symbol in self.index_to_symbol.values()
-            ]
-        )
+        self.ordered_embeddings = self._calculate_ordered_embeddings()
 
     def set_available_symbols(self, available_symbols: Set[Symbol]) -> None:
         """Set the available symbols to use for similarity calculation."""
@@ -78,3 +69,12 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
         )[0]
 
         return np.dot(embeddings_norm, normed_embedding)
+
+    def _calculate_ordered_embeddings(self) -> np.ndarray:
+        """Returns the embeddings in the correct order."""
+        return np.array(
+            [
+                self.embedding_handler.get_embedding(symbol).vector
+                for symbol in self.index_to_symbol.values()
+            ]
+        )

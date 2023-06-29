@@ -30,7 +30,7 @@ Related Symbols
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
 -  ``automata.core.symbol.symbol_utils.get_rankable_symbols``
 
@@ -44,7 +44,7 @@ retrieve the context of a symbol from a given Python project:
 
    from automata.core.symbol.graph import SymbolGraph
    from automata.core.context.py.retriever import PyContextRetriever, PyContextRetrieverConfig
-   from automata.core.symbol.symbol_types import Symbol
+   from automata.core.symbol.base import Symbol
 
    # Load a SymbolGraph for the Python project
    symbol_graph = SymbolGraph(index_path="path/to/index_proto")

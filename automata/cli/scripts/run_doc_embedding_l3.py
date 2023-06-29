@@ -17,10 +17,10 @@ from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
 )
+from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.symbol.symbol_types import SymbolDescriptor
 from automata.core.symbol.symbol_utils import get_rankable_symbols
 from automata.core.utils import get_config_fpath
 

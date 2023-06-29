@@ -27,7 +27,7 @@ Related Symbols
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.config.config_types.AutomataAgentConfig``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.conftest.automata_agent``
 
 Example

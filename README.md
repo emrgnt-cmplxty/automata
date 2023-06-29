@@ -167,7 +167,7 @@ Sometimes the best way to understand a complicated system is to start by underst
 
 import logging
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
-from automata.core.agent.agents import AutomataOpenAIAgent
+from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
 from automata.core.coding.py.module_loader import py_module_loader
 
@@ -194,7 +194,7 @@ agent_config = (
 
 # Initialize and run the agent
 instructions = "Explain how embeddings are used by the codebase"
-agent = AutomataOpenAIAgent(instructions, config=agent_config)
+agent = OpenAIAutomataAgent(instructions, config=agent_config)
 result = agent.run()
 ```
 
@@ -210,7 +210,7 @@ Examples of these classes are:
 Code example for creating an instance of 'SymbolCodeEmbedding':
 ```python
 import numpy as np
-from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+from automata.core.symbol.base import SymbolCodeEmbedding
 from automata.core.symbol.parser import parse_symbol
 
 symbol_str = 'scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#'
@@ -223,7 +223,7 @@ embedding = SymbolCodeEmbedding(symbol=symbol, source_code=source_code, vector=v
 
 Code example for creating an instance of 'SymbolDocEmbedding':
 ```python
-from automata.core.symbol.symbol_types import SymbolDocEmbedding
+from automata.core.symbol.base import SymbolDocEmbedding
 from automata.core.symbol.parser import parse_symbol
 import numpy as np
 
@@ -246,7 +246,7 @@ The SymbolRank class then uses a prepared similarity dictionary for a given quer
 
 ## Hierarchical Operation
 
-Automata operates in a hierarchical structure, where agents at lower levels specialize in specific tasks like generating code snippets or analyzing a document segment. In contrast, higher-level agents supervise lower-level operations, assemble their outputs into a coherent whole, and strategically decide on the project's direction. This system, inspired by human cognition and organization theories, facilitates the emergence of complex behavior from the collaboration of simpler, specialized subsystems.
+Automata operates in a hierarchical structure, where providers at lower levels specialize in specific tasks like generating code snippets or analyzing a document segment. In contrast, higher-level providers supervise lower-level operations, assemble their outputs into a coherent whole, and strategically decide on the project's direction. This system, inspired by human cognition and organization theories, facilitates the emergence of complex behavior from the collaboration of simpler, specialized subsystems.
 
 Automata's design accommodates extensibility, enabling seamless integration with various APIs and libraries to enhance its capabilities. Additionally, it can leverage external data sources and real-time feedback from its interactions to constantly update its knowledge and skills.
 

@@ -10,6 +10,8 @@ from automata.config.base import (
     InstructionConfigVersion,
     LLMProvider,
 )
+from automata.core.agent.tool.tool_utils import dependency_factory
+from automata.core.symbol.search.rank import SymbolRank
 
 
 class AutomataOpenAIAgentConfig(AgentConfig):
@@ -35,7 +37,9 @@ class AutomataOpenAIAgentConfig(AgentConfig):
     class TemplateFormatter:
         @staticmethod
         def create_default_formatter(
-            config: "AutomataOpenAIAgentConfig", max_default_overview_symbols: int = 25
+            config: "AutomataOpenAIAgentConfig",
+            symbol_rank: SymbolRank,
+            max_default_overview_symbols: int = 100,
         ) -> Dict[str, str]:
             """
             TODO:
@@ -43,19 +47,12 @@ class AutomataOpenAIAgentConfig(AgentConfig):
             """
             formatter: Dict[str, str] = {}
             if config.config_name == AgentConfigName.AUTOMATA_MAIN:
-                from automata.core.agent.tool.tool_utils import DependencyFactory
-
-                symbol_search = DependencyFactory().get("symbol_search")
-                symbol_rank = symbol_search.symbol_rank
-                ranks = symbol_rank.get_ranks()
-                symbol_dotpaths = [
-                    ".".join(symbol.dotpath.split(".")[1:])
-                    for symbol, _ in ranks[:max_default_overview_symbols]
-                ]
-                formatter["symbol_rank_overview"] = "\n".join(sorted(symbol_dotpaths))
-            elif config.config_name == AgentConfigName.TEST:
-                pass
-            else:
+                top_symbols = symbol_rank.get_top_symbols(max_default_overview_symbols)
+                formatter["symbol_rank_overview"] = "\n".join(
+                    f"[{rank:.3f}] {symbol}"
+                    for symbol, rank in sorted(top_symbols, key=lambda x: x[1], reverse=True)
+                )
+            elif config.config_name != AgentConfigName.TEST:
                 raise NotImplementedError("Automata does not have a default template formatter.")
 
             return formatter
@@ -65,7 +62,9 @@ class AutomataOpenAIAgentConfig(AgentConfig):
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:
             self.system_template_formatter = (
-                AutomataOpenAIAgentConfig.TemplateFormatter.create_default_formatter(self)
+                AutomataOpenAIAgentConfig.TemplateFormatter.create_default_formatter(
+                    self, dependency_factory.get("symbol_rank")
+                )
             )
         if not self.system_instruction:
             self.system_instruction = self._formatted_instruction()

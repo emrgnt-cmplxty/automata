@@ -1,13 +1,16 @@
 import abc
-from typing import Any
+from typing import Any, Dict
 
 
 class Singleton(abc.ABCMeta, type):
-    """An abstract metaclass for ensuring only one instance of a class."""
+    """
+    Singleton metaclass for ensuring only one instance of a class.
+    """
 
-    _instance: Any = None
+    _instances: Dict[str, Any] = {}
 
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Singleton, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
+    def __call__(cls, *args, **kwargs):
+        """Call method for the singleton metaclass."""
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]

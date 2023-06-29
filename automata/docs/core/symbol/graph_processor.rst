@@ -27,7 +27,7 @@ Import Statements:
    from automata.core.coding.py.module_loader import py_module_loader
    from automata.core.symbol.parser import parse_symbol
    from automata.core.symbol.scip_pb2 import Index, SymbolRole
-   from automata.core.symbol.symbol_types import (
+   from automata.core.symbol.base import (
        Symbol,
        SymbolDescriptor,
        SymbolFile,
@@ -69,7 +69,7 @@ Builds a ``SymbolGraph`` from a corresponding Index. This class is
 responsible for constructing the SymbolGraph object used by the
 ``GraphProcessor``.
 
-``automata.core.symbol.symbol_types.Symbol``
+``automata.core.symbol.base.Symbol``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A class which contains associated logic for a Symbol. This class

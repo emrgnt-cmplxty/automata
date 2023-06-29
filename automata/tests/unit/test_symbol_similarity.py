@@ -8,7 +8,7 @@ from automata.core.embedding.code_embedding import (
     SymbolCodeEmbeddingHandler,
 )
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
-from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+from automata.core.symbol.base import SymbolCodeEmbedding
 
 
 def test_get_nearest_symbols_for_query(

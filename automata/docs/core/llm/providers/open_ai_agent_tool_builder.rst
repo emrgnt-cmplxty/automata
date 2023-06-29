@@ -2,8 +2,8 @@ OpenAIAgentToolBuilder
 ======================
 
 ``OpenAIAgentToolBuilder`` is an abstract class for building tools for
-agents. It provides a base class for creating ``AgentToolBuilder``
-implementations that work with agents that use OpenAI APIs (e.g.,
+providers. It provides a base class for creating ``AgentToolBuilder``
+implementations that work with providers that use OpenAI APIs (e.g.,
 GPT-3).
 
 Overview
@@ -73,4 +73,4 @@ Follow-up Questions:
 
 -  What other abstract methods or properties could be included in
    ``OpenAIAgentToolBuilder`` to simplify building custom
-   ``AgentToolBuilder`` implementations for OpenAI agents?
+   ``AgentToolBuilder`` implementations for OpenAI providers?

@@ -23,7 +23,7 @@ Related Symbols
 ---------------
 
 -  ``config.config_types.AgentConfigName``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``config.agent_config_builder.AutomataAgentConfigBuilder``
 
 Example

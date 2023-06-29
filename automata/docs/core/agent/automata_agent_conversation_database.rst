@@ -2,7 +2,7 @@ AutomataAgentConversationDatabase
 =================================
 
 ``AutomataAgentConversationDatabase`` is a class that provides a
-database for managing the conversations of Automata agents. It allows
+database for managing the conversations of Automata providers. It allows
 for storing, retrieving, and managing messages in a conversation, with
 the ability to access all messages for a specific session. The class
 also supports metadata interactions and database access to various
@@ -12,8 +12,8 @@ Overview
 --------
 
 ``AutomataAgentConversationDatabase`` is an essential component for
-utilizing Automata agents, as it allows storing and managing
-conversation histories for each session. Using this class, agents can
+utilizing Automata providers, as it allows storing and managing
+conversation histories for each session. Using this class, providers can
 effectively reference conversation histories to provide responses in a
 multi-turn interaction context. The class offers methods for saving and
 retrieving messages from a session, along with metadata interactions to
@@ -22,7 +22,7 @@ handle session management.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.llm.completion.LLMChatMessage``
 -  ``automata.core.llm.completion.LLMConversationDatabaseProvider``
 -  ``automata.core.base.database.relational.SQLDatabase``

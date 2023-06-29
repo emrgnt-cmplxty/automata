@@ -5,7 +5,7 @@ from automata.core.embedding.code_embedding import (
     EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
 )
-from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+from automata.core.symbol.base import SymbolCodeEmbedding
 
 
 def test_update_embeddings(

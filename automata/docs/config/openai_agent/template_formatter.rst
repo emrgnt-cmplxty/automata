@@ -2,7 +2,7 @@ AutomataOpenAIAgentConfig
 =========================
 
 ``AutomataOpenAIAgentConfig`` is a configuration class that helps
-configure, setup, and interact with an ``AutomataOpenAIAgent``. It
+configure, setup, and interact with an ``OpenAIAutomataAgent``. It
 contains various attributes such as ``config_name``, ``instructions``,
 ``tools``, and others to provide the necessary setup and settings to be
 used by the agent. It also contains an inner class ``TemplateFormatter``
@@ -25,7 +25,7 @@ Related Symbols
 ---------------
 
 -  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder``
 -  ``automata.tests.conftest.automata_agent_config_builder``
 

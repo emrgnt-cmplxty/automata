@@ -14,7 +14,7 @@ Overview
 ``AgentConfig.Config`` serves as an essential and integral part of the
 ``AgentConfig`` class, providing default settings that are required when
 working with OpenAI’s Language Models. The nested configuration class
-sets the provider for the agents and allows the usage of arbitrary types
+sets the provider for the providers and allows the usage of arbitrary types
 within the agent configuration.
 
 Related Symbols

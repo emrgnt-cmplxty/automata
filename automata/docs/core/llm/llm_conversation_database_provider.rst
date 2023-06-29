@@ -15,7 +15,7 @@ messages for an agent by implementing the required abstract methods in
 its subclasses. It also allows observing conversation changes and
 updating the database accordingly. The class is closely related to the
 ``AutomataAgentConversationDatabase`` implementation, which is a
-specific implementation for Automata agents.
+specific implementation for Automata providers.
 
 Related Symbols
 ---------------
@@ -56,7 +56,7 @@ be used directly. It must be subclassed with the implementation of its
 abstract methods for a specific database type. Furthermore, it does not
 provide reasoning or decision-making capabilities and should be used
 solely as a means to store and manage conversation messages for the
-agents.
+providers.
 
 Follow-up Questions:
 --------------------

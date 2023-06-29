@@ -22,7 +22,7 @@ Related Symbols
 -  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 -  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 
 Example
 -------

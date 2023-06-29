@@ -25,7 +25,7 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.f``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 -  ``automata.tests.unit.test_py_writer.MockCodeGenerator._check_function_obj``
--  ``automata.core.agent.agents.AutomataOpenAIAgent.functions``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent.functions``
 -  ``automata.tests.unit.test_py_writer.test_create_function_source_function``
 -  ``automata.core.llm.providers.openai.OpenAIAgent._get_available_functions``
 -  ``automata.tests.unit.test_py_writer_tool.test_bootstrap_module_with_new_function``

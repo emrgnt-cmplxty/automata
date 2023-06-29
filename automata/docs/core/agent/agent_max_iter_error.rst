@@ -7,7 +7,7 @@ maximum number of iterations while performing a task.
 Overview
 --------
 
-This error is raised to indicate that the ``AutomataOpenAIAgent`` has
+This error is raised to indicate that the ``OpenAIAutomataAgent`` has
 reached its maximum number of iterations before producing an expected
 result. It is typically encountered during the ``run()`` method
 execution of the agent. The error is a subclass of
@@ -17,25 +17,25 @@ Related Symbols
 ---------------
 
 -  ``automata.core.agent.error.AgentIterationError``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder.with_max_iterations``
 
 Example
 -------
 
 The following example demonstrates how to handle ``AgentMaxIterError``
-during the execution of an ``AutomataOpenAIAgent`` instance.
+during the execution of an ``OpenAIAutomataAgent`` instance.
 
 .. code:: python
 
-   from automata.core.agent.agents import AutomataOpenAIAgent
+   from automata.core.agent.providers import OpenAIAutomataAgent
    from automata.core.agent.error import AgentMaxIterError
 
    instructions = "Find the answer to the equation: x + 2 = 5"
    config = AutomataAgentConfig.load(AgentConfigName.AUTOMATA_MAIN)
    config.max_iterations = 5
 
-   agent = AutomataOpenAIAgent(instructions, config)
+   agent = OpenAIAutomataAgent(instructions, config)
 
    try:
        result = agent.run()

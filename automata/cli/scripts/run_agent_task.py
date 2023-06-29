@@ -10,7 +10,7 @@ from automata.core.agent.task.executor import (
 )
 from automata.core.agent.task.registry import AutomataTaskDatabase, AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
+from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
 from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager
 from automata.core.base.task import TaskStatus
@@ -70,7 +70,7 @@ def main(*args, **kwargs):
     logger.info("  - Building dependencies...")
     for dependency in dependencies:
         logger.info(f"Building {dependency}...")
-        kwargs[dependency] = DependencyFactory().get(dependency)
+        kwargs[dependency] = dependency_factory.get(dependency)
 
     task = AutomataTask(**kwargs)  # TaskStatus = CREATED
     # Register the task with the task registry

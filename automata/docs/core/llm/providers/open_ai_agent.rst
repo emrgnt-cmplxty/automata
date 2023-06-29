@@ -49,7 +49,7 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.llm.providers.openai.OpenAIConversation``
 
 Example

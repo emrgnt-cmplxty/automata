@@ -1,7 +1,7 @@
 import pytest
 
 from automata.core.base.database.vector import JSONVectorDatabase
-from automata.core.symbol.symbol_types import SymbolCodeEmbedding
+from automata.core.symbol.base import SymbolCodeEmbedding
 
 
 def test_init_vector(temp_output_filename):

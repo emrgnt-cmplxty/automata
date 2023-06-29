@@ -1,7 +1,7 @@
-AutomataOpenAIAgent
+OpenAIAutomataAgent
 ===================
 
-``AutomataOpenAIAgent`` is an autonomous agent designed to execute
+``OpenAIAutomataAgent`` is an autonomous agent designed to execute
 instructions and report the results back to the main system. It
 communicates with the OpenAI API to generate responses based on given
 instructions and manages interactions with various tools.
@@ -9,7 +9,7 @@ instructions and manages interactions with various tools.
 Overview
 --------
 
-An instance of ``AutomataOpenAIAgent`` is initialized with a set of
+An instance of ``OpenAIAutomataAgent`` is initialized with a set of
 instructions and an optional configuration. The agent can then be used
 to perform multiple iterations of tasks until a final result is produced
 or the maximum number of iterations is reached. During execution, it
@@ -34,19 +34,19 @@ Example
 -------
 
 Below is an example on how to create an instance of
-``AutomataOpenAIAgent``:
+``OpenAIAutomataAgent``:
 
 .. code:: python
 
    from automata.config.config_enums import AgentConfigName
-   from automata.core.agent.agents import AutomataOpenAIAgent
+   from automata.core.agent.providers import OpenAIAutomataAgent
    from automata.config.automata_agent_config_utils import AutomataAgentConfigBuilder
 
    config_name = AgentConfigName.AUTOMATA_MAIN
    config_builder = AutomataAgentConfigBuilder.from_name(config_name)
 
    instructions = "Calculate the square of 5."
-   agent = AutomataOpenAIAgent(instructions, config=config_builder.build())
+   agent = OpenAIAutomataAgent(instructions, config=config_builder.build())
 
    result = agent.run()
    print(result)  # Output: "The square of 5 is 25."
@@ -54,7 +54,7 @@ Below is an example on how to create an instance of
 Limitations
 -----------
 
--  The ``AutomataOpenAIAgent`` class relies on the OpenAI API for
+-  The ``OpenAIAutomataAgent`` class relies on the OpenAI API for
    generating responses. If the OpenAI API is unavailable or if there
    are issues with the API key, the agent will not be able to function.
 -  The agent’s execution is limited by the number of iterations
@@ -68,4 +68,4 @@ Follow-up Questions:
 --------------------
 
 -  How can we ensure more accurate and consistent results when using an
-   ``AutomataOpenAIAgent``?
+   ``OpenAIAutomataAgent``?

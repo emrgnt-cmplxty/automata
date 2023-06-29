@@ -23,8 +23,8 @@ such as ``SymbolCodeEmbedding`` and ``SymbolDocEmbedding``.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.SymbolCodeEmbedding``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.symbol.base.SymbolCodeEmbedding``
+-  ``automata.core.symbol.base.SymbolDocEmbedding``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 
 Usage Example
@@ -36,7 +36,7 @@ as well as a precomputed embedding array.
 .. code:: python
 
    import numpy as np
-   from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
+   from automata.core.symbol.base import Symbol, SymbolCodeEmbedding
 
    symbol = Symbol(
        scheme="scip-python",

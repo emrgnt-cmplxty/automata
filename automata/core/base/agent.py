@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Agent(ABC):
     """
     An abstract class for implementing a agent.
-    An agent is an autonomous entity that can perform actions and communicate with other agents.
+    An agent is an autonomous entity that can perform actions and communicate with other providers.
     """
 
     def __init__(self, instructions: str) -> None:
@@ -80,7 +80,7 @@ class AgentToolProviders(Enum):
 class AgentToolBuilder(ABC):
     """
 
-    AgentToolBuilder is an abstract class for building tools for agents.
+    AgentToolBuilder is an abstract class for building tools for providers.
 
     Each builder builds the tools associated with a specific AgentToolProviders.
     """

@@ -18,7 +18,7 @@ descriptor.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.parser.parse_symbol``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 
@@ -30,7 +30,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import SymbolDescriptor
+   from automata.core.symbol.base import SymbolDescriptor
    from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
 
    name = "automata.core.agent.agent_enums.ActionIndicator"
