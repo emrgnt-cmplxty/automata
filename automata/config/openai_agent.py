@@ -34,14 +34,25 @@ class AutomataOpenAIAgentConfig(AgentConfig):
 
     class TemplateFormatter:
         @staticmethod
-        def create_default_formatter(config: "AutomataOpenAIAgentConfig") -> Dict[str, str]:
+        def create_default_formatter(
+            config: "AutomataOpenAIAgentConfig", max_default_overview_symbols: int = 25
+        ) -> Dict[str, str]:
             """
             TODO:
                 - Re-implement this method after the new instruction configs are finalized.
             """
             formatter: Dict[str, str] = {}
             if config.config_name == AgentConfigName.AUTOMATA_MAIN:
-                pass
+                from automata.core.agent.tool.tool_utils import DependencyFactory
+
+                symbol_search = DependencyFactory().get("symbol_search")
+                symbol_rank = symbol_search.symbol_rank
+                ranks = symbol_rank.get_ranks()
+                symbol_dotpaths = [
+                    ".".join(symbol.dotpath.split(".")[1:])
+                    for symbol, _ in ranks[:max_default_overview_symbols]
+                ]
+                formatter["symbol_rank_overview"] = "\n".join(sorted(symbol_dotpaths))
             elif config.config_name == AgentConfigName.TEST:
                 pass
             else:

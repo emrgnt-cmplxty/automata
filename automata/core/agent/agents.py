@@ -16,6 +16,7 @@ from automata.core.llm.completion import (
     LLMIterationResult,
 )
 from automata.core.llm.providers.openai import (
+    FunctionCall,
     OpenAIAgent,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
@@ -39,13 +40,6 @@ class AutomataOpenAIAgent(OpenAIAgent):
     _initialized = False
 
     def __init__(self, instructions: str, config: AutomataOpenAIAgentConfig) -> None:
-        """
-        Initializes an AutomataAgent.
-
-        Args:
-            instructions (str): The instructions to be executed by the agent.
-            config (AutomataAgentConfig): The configuration for the agent. Defaults to None.
-        """
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
@@ -73,14 +67,14 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
-        self.conversation.add_message(assistant_message)
+        self.chat_provider.add_message(assistant_message)
         if not self.config.stream:
             logger.debug(f"{assistant_message}\n")
         logging.debug(f"\n{('-' * 120)}")
 
         user_message = self._get_next_user_response(assistant_message)
-        self.conversation.add_message(user_message)
         logger.debug(f"Latest User Message -- \n{user_message}\n")
+        self.chat_provider.add_message(user_message)
         logging.debug(f"\n{('-' * 120)}")
 
         self.iteration_count += 1
@@ -159,6 +153,8 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Builds the initial messages for the agent's conversation.
         The messages are built from the initial messages in the instruction config.
         All messages are formatted using the given instruction_formatter.
+
+        TODO - Consider moving this logic to the conversation provider
         """
         assert "user_input_instructions" in instruction_formatter
 
@@ -169,8 +165,23 @@ class AutomataOpenAIAgent(OpenAIAgent):
 
         input_messages = []
         for message in initial_messages:
-            input_message = format_text(instruction_formatter, message["content"])
-            input_messages.append(OpenAIChatMessage(role=message["role"], content=input_message))
+            input_message = (
+                format_text(instruction_formatter, message["content"])
+                if "content" in message
+                else None
+            )
+            function_call = message.get("function_call")
+            input_messages.append(
+                OpenAIChatMessage(
+                    role=message["role"],
+                    content=input_message,
+                    function_call=FunctionCall(
+                        name=function_call["name"], arguments=function_call["arguments"]
+                    )
+                    if function_call
+                    else None,
+                )
+            )
 
         return input_messages
 
@@ -201,6 +212,7 @@ class AutomataOpenAIAgent(OpenAIAgent):
         Raises:
             AgentError: If the agent fails to initialize.
         """
+        logger.debug(f"Setting up agent with tools = {self.config.tools}")
         self.conversation.add_message(
             OpenAIChatMessage(role="system", content=self.config.system_instruction)
         )

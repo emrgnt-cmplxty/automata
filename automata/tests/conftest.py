@@ -141,11 +141,11 @@ def automata_agent_config_builder():
 @pytest.fixture
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
-    # tool_list = ["py_reader"]
-    # mock_llm_toolkits = get_tool_builders(tool_list, py_reader=mocker.MagicMock(spec=PyReader))
+    # toolkit_list = ["py_reader"]
+    # mock_llm_toolkits = get_tool_builders(toolkit_list, py_reader=mocker.MagicMock(spec=PyReader))
     # tools = build_available_tools(["py_reader"], **kwargs)
 
-    llm_toolkits_list = ["py_reader"]
+    llm_toolkits_list = ["py-reader"]
     kwargs = {}
 
     dependencies: Set[Any] = set()
@@ -155,7 +155,7 @@ def automata_agent(mocker, automata_agent_config_builder):
 
     for dependency in dependencies:
         kwargs[dependency] = DependencyFactory().get(dependency)
-    tools = AgentToolFactory.build_tools(["py_reader"], **kwargs)
+    tools = AgentToolFactory.build_tools(["py-reader"], **kwargs)
 
     instructions = "Test instruction."
 

@@ -57,7 +57,7 @@ def main(*args, **kwargs):
             issue_infos
         )
 
-    llm_tools_list = kwargs.get("tool_builders", "context_oracle").split(",")
+    llm_tools_list = kwargs.get("tool_builders", "context-oracle").split(",")
     # TODO - The following is a copy pasta from automata/cli/scripts/run_agent.py
     # Where should this reside to avoid redundancy?
 

@@ -273,6 +273,9 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             )
         else:
             self.conversation.add_message(message)
+        logger.debug(
+            f"Approximately {self.get_approximate_tokens_consumed()} tokens were after adding the latest message."
+        )
 
     @staticmethod
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:
@@ -331,35 +334,21 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         if not isinstance(role, str):
             raise ValueError("Expected role to be a string")
 
-        content = response["content"]
-
         function_call = response["function_call"]
         if not isinstance(function_call, dict):
             raise ValueError("Expected function_call to be a dict")
 
-        if function_call["name"] and function_call["arguments"] and content:
-            # TODO - Can we ever receive content and a function call?
-            raise ValueError("Expected either content or function_call to be defined")
+        content = response["content"]
+        if content and not isinstance(content, str):
+            raise ValueError("Expected content to be a string")
 
-        if function_call["name"] and function_call["arguments"]:
-            for key in function_call:
-                if not isinstance(key, str):
-                    raise ValueError(f"Expected {key} to be a string")
-
-            return OpenAIChatMessage(
-                role=role,
-                function_call=FunctionCall.from_response_dict(function_call),  # type: ignore
-            )
-        elif content:
-            if not isinstance(content, str):
-                raise ValueError("Expected content to be a string")
-
-            return OpenAIChatMessage(
-                role=role,
-                content=content,
-            )
-        else:
-            raise ValueError("Expected either content or function_call to be defined")
+        return OpenAIChatMessage(
+            role=role,
+            content=content,  # type: ignore
+            function_call=FunctionCall.from_response_dict(function_call)  # type: ignore
+            if function_call["name"] is not None
+            else None,
+        )
 
     def get_approximate_tokens_consumed(self) -> int:
         """

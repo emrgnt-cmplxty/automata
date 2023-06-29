@@ -1,12 +1,13 @@
 import os
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Dict, Generic, List, Optional, TypeVar
+from typing import Dict, Generic, List, Optional, TypeVar, Union
 
 import yaml
 from pydantic import BaseModel, PrivateAttr
 
 from automata.core.base.tool import Tool
+from automata.core.utils import convert_kebab_to_snake
 
 
 class ConfigCategory(Enum):
@@ -41,7 +42,7 @@ class AgentConfigName(Enum):
     TEST = "test"
 
     # Production Configs
-    AUTOMATA_MAIN = "automata_main"
+    AUTOMATA_MAIN = "automata-main"
 
 
 class LLMProvider(Enum):
@@ -82,15 +83,29 @@ class AgentConfig(ABC, BaseModel):
     @classmethod
     def _load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
+        # convert kebab to snake case to support file naming convention
+        config_file_name = convert_kebab_to_snake(config_name.value)
         config_abs_path = os.path.join(
             file_dir_path,
             ConfigCategory.AGENT.value,
             cls.get_llm_provider().value,
-            f"{config_name.value}.yaml",
+            f"{config_file_name}.yaml",
         )
 
+        if not os.path.isfile(config_abs_path):
+            raise FileNotFoundError(f"Config file not found: {config_abs_path}")
+
         with open(config_abs_path, "r") as file:
-            loaded_yaml = yaml.safe_load(file)
+            try:
+                loaded_yaml = yaml.safe_load(file)
+            except yaml.YAMLError as e:
+                raise ValueError(f"Invalid YAML file: {config_abs_path}") from e
+
+        if "config_name" in loaded_yaml:
+            raise ValueError(
+                "config_name already specified in YAML. Please remove this from the YAML file."
+            )
+
         loaded_yaml["config_name"] = config_name
         return loaded_yaml
 
@@ -154,8 +169,14 @@ class AgentConfigBuilder(Generic[T]):
         return cls(config)
 
     @classmethod
-    def from_name(cls, config_name: AgentConfigName) -> "AgentConfigBuilder":
+    def from_name(cls, config_name: Union[str, AgentConfigName]) -> "AgentConfigBuilder":
         """Create an AgentConfigBuilder instance using the provided configuration object name."""
+        if isinstance(config_name, str):
+            try:
+                config_name = AgentConfigName(config_name)
+            except ValueError as e:
+                raise ValueError(f"Invalid AgentConfigName value: {config_name}") from e
+
         return cls(cls.create_config(config_name))
 
     @staticmethod

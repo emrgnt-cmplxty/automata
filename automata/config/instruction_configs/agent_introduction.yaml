@@ -6,3 +6,9 @@ initial_messages:
     content: Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
   - role: "user"
     content: Please carry out the following instruction {user_input_instructions}
+  - role: "assistant"
+    function_call:
+      name: "initializer"
+      arguments: "{}"
+  - role: "user"
+    content: Continue...

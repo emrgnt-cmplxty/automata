@@ -12,7 +12,7 @@ def test_automata_agent_init(automata_agent):
     assert automata_agent.config.model == "gpt-4"
     assert automata_agent.config.session_id is not None
     assert len(automata_agent.config.tools) > 0
-    assert len(automata_agent.conversation) == 3
+    assert len(automata_agent.conversation) == 5
 
 
 def test_builder_default_config(automata_agent_config_builder):
@@ -46,12 +46,12 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
 
 
 def test_builder_accepts_all_fields(automata_agent_config_builder):
-    tool_list = ["py_reader", "py_writer"]
+    toolkit_list = ["py-reader", "py-writer"]
     from automata.core.coding.py.reader import PyReader
     from automata.core.coding.py.writer import PyWriter
 
     tools = AgentToolFactory.build_tools(
-        tool_list,
+        toolkit_list,
         py_reader=MagicMock(spec=PyReader),
         py_writer=MagicMock(spec=PyWriter),
     )

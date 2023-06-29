@@ -38,7 +38,7 @@ class PyWriterToolBuilder(AgentToolBuilder):
                 f" If the object already exists, then the existing code is modified. For example,"
                 f' to implement a method "my_method" of "MyClass" in the module "my_file.py" which exists in "my_folder",'
                 f" the correct tool input follows:\n"
-                f'{{"arguments": ["my_folder.my_file", "MyClass", "def my_method():\\n   \\"My Method\\"\\"\\n    print(\\"hello world\\")\\n"]}}'
+                f'{{"arguments": ["my_folder.my_file.MyClass", "def my_method():\\n   \\"My Method\\"\\"\\n    print(\\"hello world\\")\\n"]}}'
                 f" If new import statements are necessary, then introduce them at the top of the submitted input code."
                 f" Provide the full code as input, as this tool has no context outside of passed arguments.\n",
             ),
@@ -48,19 +48,13 @@ class PyWriterToolBuilder(AgentToolBuilder):
                 description=f"Creates a new module at the given path with the given code. For example,"
                 f'{{"arguments": ["my_folder.my_file", "import math\\ndef my_method():\\n   \\"My Method\\"\\"\\n    print(math.sqrt(4))\\n"]}}',
             ),
-            Tool(
-                name="py-writer-delete-from-existing-module",
-                function=self._delete_from_existing_module,
-                description=f"Deletes python objects and their code by name from existing module. For example,"
-                f'{{"arguments": ["my_folder.my_file", "MyClass.my_method"]}}',
-            ),
         ]
 
     def _update_existing_module(
         self,
         module_dotpath: str,
-        disambiguator: Optional[str],
         code: str,
+        disambiguator: Optional[str] = None,
     ) -> str:
         """Updates an existing module with the given code."""
         try:
@@ -68,18 +62,6 @@ class PyWriterToolBuilder(AgentToolBuilder):
             return "Success"
         except Exception as e:
             return f"Failed to update the module with error - {str(e)}"
-
-    def _delete_from_existing_module(
-        self,
-        module_dotpath: str,
-        object_dotpath: str,
-    ) -> str:
-        """Deletes an object from an existing module."""
-        try:
-            self.writer.delete_from_existing__module(module_dotpath, object_dotpath, self.do_write)
-            return "Success"
-        except Exception as e:
-            return f"Failed to reduce the module with error - {str(e)}"
 
     def _create_new_module(self, module_dotpath: str, code: str) -> str:
         """Creates a new module with the given code."""
@@ -104,10 +86,10 @@ class PyWriterOpenAIToolBuilder(PyWriterToolBuilder, OpenAIAgentToolBuilder):
                 "type": "string",
                 "description": "The path to the module to write or modify code.",
             },
-            "object_dotpath": {
-                "type": "string",
-                "description": "The path to the object to write or modify code.",
-            },
+            # "object_dotpath": {
+            #     "type": "string",
+            #     "description": "The path to the object to write or modify code.",
+            # },
             "code": {
                 "type": "string",
                 "description": "The code to write or modify in the object.",
