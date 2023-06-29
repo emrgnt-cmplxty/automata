@@ -10,7 +10,7 @@ numpy array representing the symbol’s embedding.
 This class is closely related to
 ``automata.tests.conftest.mock_embedding``,
 ``automata.tests.unit.test_symbol_embedding.test_get_embedding``, and
-``automata.core.symbol.symbol_types.SymbolEmbedding``.
+``automata.core.symbol.base.SymbolEmbedding``.
 
 Overview
 --------
@@ -25,7 +25,7 @@ Related Symbols
 
 -  ``automata.tests.conftest.mock_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.base.SymbolEmbedding``
 -  ``automata.core.embedding.embedding_types.EmbeddingProvider``
 
 Usage Example

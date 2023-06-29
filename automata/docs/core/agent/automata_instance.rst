@@ -2,7 +2,7 @@ AutomataInstance
 ================
 
 ``AutomataInstance`` is a class representing an agent instance with a
-specific configuration. It allows a user to create and run agents based
+specific configuration. It allows a user to create and run providers based
 on the given configuration name. Each ``AutomataInstance`` has a
 ``config_name`` and a ``description``.
 
@@ -11,7 +11,7 @@ Overview
 
 ``AutomataInstance`` provides a way to create agent instances with
 specified configurations and run instructions on that agent. It
-facilitates the creation and management of agents for various tasks in
+facilitates the creation and management of providers for various tasks in
 the application. The class offers a convenient way to create and run an
 agent with the desired configurations, interacting with the
 ``AutomataAgentConfigFactory``, and ``AutomataAgent``.

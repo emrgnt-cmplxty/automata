@@ -20,7 +20,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.task.Task``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.agent.task.task.AutomataTask``
 -  ``automata.core.agent.error.AgentTaskGeneralError``
 -  ``automata.core.agent.task.executor.AutomataTaskExecutor``

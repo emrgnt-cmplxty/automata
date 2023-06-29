@@ -1,4 +1,5 @@
 import logging
+from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Sequence
 
 from automata.config.base import ConfigCategory
@@ -10,6 +11,7 @@ from automata.core.agent.error import (
     AgentResultError,
     AgentStopIteration,
 )
+from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.llm.completion import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,
@@ -17,9 +19,9 @@ from automata.core.llm.completion import (
 )
 from automata.core.llm.providers.openai import (
     FunctionCall,
-    OpenAIAgent,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
+    OpenAIConversation,
     OpenAIFunction,
     OpenAITool,
 )
@@ -28,9 +30,9 @@ from automata.core.utils import format_text, load_config
 logger = logging.getLogger(__name__)
 
 
-class AutomataOpenAIAgent(OpenAIAgent):
+class OpenAIAutomataAgent(Agent):
     """
-    AutomataOpenAIAgent is an autonomous agent designed to execute instructions and report
+    OpenAIAutomataAgent is an autonomous agent designed to execute instructions and report
     the results back to the main system. It communicates with the OpenAI API to generate
     responses based on given instructions and manages interactions with various tools.
     """
@@ -43,6 +45,8 @@ class AutomataOpenAIAgent(OpenAIAgent):
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
+        self.conversation = OpenAIConversation()
+        self.completed = False
         self._setup()
 
     def __iter__(self):
@@ -197,10 +201,10 @@ class AutomataOpenAIAgent(OpenAIAgent):
                 if assistant_message.function_call.name == tool.openai_function.name:
                     result = tool.run(assistant_message.function_call.arguments)
                     return OpenAIChatMessage(
-                        role="user", content=f"{AutomataOpenAIAgent.EXECUTION_PREFIX}{result}"
+                        role="user", content=f"{OpenAIAutomataAgent.EXECUTION_PREFIX}{result}"
                     )
 
-        return OpenAIChatMessage(role="user", content=AutomataOpenAIAgent.CONTINUE_MESSAGE)
+        return OpenAIChatMessage(role="user", content=OpenAIAutomataAgent.CONTINUE_MESSAGE)
 
     def _setup(self) -> None:
         """
@@ -236,3 +240,38 @@ class AutomataOpenAIAgent(OpenAIAgent):
             f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
         )
         logger.debug(f"\n{('-' * 60)}\nSession ID: {self.config.session_id}\n{'-'* 60}\n\n")
+
+    def _get_termination_tool(self) -> OpenAITool:
+        """Gets the tool responsible for terminating the OpenAI agent."""
+
+        def terminate(result: str):
+            self.completed = True
+            return result
+
+        return OpenAITool(
+            name="call_termination",
+            description="Terminates the conversation.",
+            properties={
+                "result": {
+                    "type": "string",
+                    "description": "The final result of the conversation.",
+                }
+            },
+            required=["result"],
+            function=terminate,
+        )
+
+
+class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
+    """OpenAIAgentToolBuilder is an abstract class for building tools for providers."""
+
+    @abstractmethod
+    def build_for_open_ai(self) -> List[OpenAITool]:
+        """Builds an OpenAITool to be used by the associated agent.
+        TODO - Automate as much of this as possible, and modularize
+        """
+        pass
+
+    @classmethod
+    def can_handle(cls, tool_manager):
+        return cls.TOOL_TYPE == tool_manager

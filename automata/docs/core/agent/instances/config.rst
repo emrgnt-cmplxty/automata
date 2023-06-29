@@ -11,17 +11,17 @@ Overview
 --------
 
 The ``AutomataOpenAIAgentInstance`` class is a specialized
-implementation of the ``AutomataOpenAIAgent`` for interacting with
-OpenAI API. It is built on top of the ``AutomataOpenAIAgent`` class and
+implementation of the ``OpenAIAutomataAgent`` for interacting with
+OpenAI API. It is built on top of the ``OpenAIAutomataAgent`` class and
 provides a simple interface to run the agent with given instructions. It
-inherits methods and properties from the ``AutomataOpenAIAgent`` class
+inherits methods and properties from the ``OpenAIAutomataAgent`` class
 and adapts them for the specific use case of running an instance of the
 agent.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.core.llm.providers.openai.OpenAIAgent``

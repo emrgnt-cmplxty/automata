@@ -2,7 +2,7 @@ AgentToolFactory
 ================
 
 ``AgentToolFactory`` is a factory class that creates tool instances for
-different types of agents using builders. It uses a static method,
+different types of providers using builders. It uses a static method,
 ``create_tools_from_builder``, to generate tools based on the agent tool
 enumerator and builder registry.
 

@@ -21,8 +21,8 @@ Related Symbols
 
 -  ``automata.core.database.provider.SymbolDatabaseProvider``
 -  ``automata.core.database.vector.JSONVectorDatabase``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol.base.SymbolEmbedding``
 -  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 
@@ -37,7 +37,7 @@ base class.
 
    from automata.core.database.vector import VectorDatabaseProvider
    from typing import Dict, List
-   from automata.core.symbol.symbol_types import Symbol, SymbolEmbedding
+   from automata.core.symbol.base import Symbol, SymbolEmbedding
 
    class CustomVectorDatabaseProvider(VectorDatabaseProvider):
        def calculate_similarity(self, embedding: SymbolEmbedding) -> Dict[Symbol, float]:

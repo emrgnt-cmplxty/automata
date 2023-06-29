@@ -7,10 +7,10 @@ from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.base.agent import AgentInstance
 
 if TYPE_CHECKING:
-    from automata.core.agent.agents import AutomataOpenAIAgent
+    from automata.core.agent.providers import OpenAIAutomataAgent
 
 
-class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
+class OpenAIAutomataAgentInstance(AgentInstance, BaseModel):
     """
     An instance of an Automata OpenAI agent.
 
@@ -38,7 +38,7 @@ class AutomataOpenAIAgentInstance(AgentInstance, BaseModel):
             config_to_load=self.config_name, **self.kwargs
         )
 
-        agent = AutomataOpenAIAgent(instructions, config=config)
+        agent = OpenAIAutomataAgent(instructions, config=config)
         result = agent.run()
         del agent
         return result

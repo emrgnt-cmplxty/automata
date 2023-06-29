@@ -1,7 +1,7 @@
 import pkgutil
 from typing import List, Set, Type
 
-from automata.core.llm.providers.openai import OpenAIAgentToolBuilder
+from automata.core.agent.providers import OpenAIAgentToolBuilder
 
 
 class AutomataOpenAIAgentToolBuilderRegistry:

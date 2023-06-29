@@ -13,9 +13,9 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``
 -  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
 -  ``automata.tests.conftest.mock_embedding``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.base.SymbolEmbedding``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
--  ``automata.core.symbol.symbol_types.SymbolCodeEmbedding``
+-  ``automata.core.symbol.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embedding``
 
 Example
@@ -26,7 +26,7 @@ The following example demonstrates how to use ``EmbeddingNormType`` with
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import SymbolEmbedding
+   from automata.core.symbol.base import SymbolEmbedding
    from automata.core.embedding.symbol_similarity import SymbolSimilarity
 
    # Create an instance of SymbolSimilarity class with L2 normalization

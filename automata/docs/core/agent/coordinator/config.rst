@@ -2,11 +2,11 @@ AutomataInstance
 ================
 
 ``AutomataInstance`` is a base class for creating specific instances of
-Automata agents. It serves as a foundation to define specific Automata
-agents with different configurations, descriptions, and behaviors.
-Instances of Automata agents can then be managed by the
+Automata providers. It serves as a foundation to define specific Automata
+providers with different configurations, descriptions, and behaviors.
+Instances of Automata providers can then be managed by the
 ``AutomataCoordinator`` to execute instructions and coordinate the work
-of the agents.
+of the providers.
 
 Overview
 --------
@@ -64,7 +64,7 @@ Limitations
 -----------
 
 ``AutomataInstance`` serves as a base class for instances of Automata
-agents and does not include any specific implementation for performing
+providers and does not include any specific implementation for performing
 tasks. You need to create a subclass of ``AutomataInstance`` and define
 the ``run()`` method on it to execute instructions. Moreover, the class
 relies on ``AgentConfigName`` for configuration settings, which can only

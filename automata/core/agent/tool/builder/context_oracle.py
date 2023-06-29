@@ -3,11 +3,12 @@ import textwrap
 from typing import List
 
 from automata.config.base import LLMProvider
+from automata.core.agent.providers import OpenAIAgentToolBuilder
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
-from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
+from automata.core.llm.providers.openai import OpenAITool
 
 logger = logging.getLogger(__name__)
 
@@ -43,20 +44,22 @@ class ContextOracleToolBuilder(AgentToolBuilder):
         The function constructs the context by concatenating the source code and documentation of the most semantically
         similar symbol to the query with the documentation summary of the most highly
         ranked symbols. The ranking of symbols is based on their semantic similarity to the query.
+        Precisely, this ranking is the max similarity between the query string and the source code string.
+        This metric was chosen because the document embedding is incomplete, but often gives strong positive
+        results when populated for the relevant query. Thus, selecting the maximum will factor in documentation
+        when populated.
         """
         doc_search_results = self.symbol_doc_similarity.calculate_query_similarity_dict(query)
         code_search_results = self.symbol_code_similarity.calculate_query_similarity_dict(query)
-
-        combined_results = {}
-
-        for key in list(set(list(doc_search_results) + list(code_search_results))):
-            combined_results[key] = doc_search_results.get(key, 0) + code_search_results.get(
-                key, 0
-            )
+        combined_results = {
+            key: max(doc_search_results.get(key, 0), code_search_results.get(key, 0))
+            for key in set(doc_search_results).union(code_search_results)
+        }
 
         most_similar_symbols = [
             ele[0] for ele in sorted(combined_results.items(), key=lambda x: -x[1])
         ]
+
         most_similar_symbol = most_similar_symbols[0]
 
         most_similar_embedding = self.symbol_code_similarity.embedding_handler.get_embedding(

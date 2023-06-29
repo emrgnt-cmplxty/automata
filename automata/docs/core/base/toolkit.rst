@@ -3,7 +3,7 @@ Toolkit
 
 ``Toolkit`` is a container class that holds a set of tools. Tools are
 essentially functions or coroutines that perform specific tasks, used by
-agents for various purposes. ``Toolkit`` keeps such tools organized and
+providers for various purposes. ``Toolkit`` keeps such tools organized and
 simplifies their usage by providing methods for representing the toolkit
 and handling its tools.
 

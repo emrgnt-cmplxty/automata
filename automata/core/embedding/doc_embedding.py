@@ -8,8 +8,8 @@ from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.context.py.retriever import PyContextRetriever
 from automata.core.llm.completion import LLMChatCompletionProvider
 from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingHandler
+from automata.core.symbol.base import Symbol, SymbolDocEmbedding
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         ===========
 
         ``AgentConfig`` is an abstract base class that provides a template for
-        configurations related to agents. It contains abstract methods like
+        configurations related to providers. It contains abstract methods like
         ``setup()`` and ``load()`` that need to be implemented by subclasses.
         This class also handles the configuration of arbitrary types during the
         initialization.
@@ -80,7 +80,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         Overview
         --------
 
-        ``AgentConfig`` is designed for ensuring configurability of agents.
+        ``AgentConfig`` is designed for ensuring configurability of providers.
         Subclasses need to provide implementations for the ``setup()`` and
         ``load()`` methods in order to properly define the behavior during the
         agent setup and configuration loading processes. This class follows the
@@ -90,7 +90,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         Related Symbols
         ---------------
 
-        -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
+        -  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``
         -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
         -  ``automata.tests.unit.test_task_environment.TestURL``
         -  ``automata.core.base.agent.AgentInstance.Config``

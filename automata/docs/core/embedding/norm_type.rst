@@ -31,7 +31,7 @@ Here’s an example demonstrating how to create an instance of
 
    from automata.core.embedding.symbol_similarity import SymbolSimilarity
    from automata.core.embedding.embedding_types import NormType
-   from automata.core.symbol.symbol_types import SymbolEmbeddingHandler
+   from automata.core.symbol.base import SymbolEmbeddingHandler
 
    symbol_embedding_manager = SymbolEmbeddingHandler()
    norm_type = NormType.L1

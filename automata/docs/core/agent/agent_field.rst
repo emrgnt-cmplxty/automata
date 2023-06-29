@@ -3,7 +3,7 @@ AgentField
 
 ``AgentField`` is an enumeration class representing the fields of an
 agent in the Automata ecosystem. It is primarily used to work with and
-organize the information required to initialize and manage agents.
+organize the information required to initialize and manage providers.
 
 Overview
 --------

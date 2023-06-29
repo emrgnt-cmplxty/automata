@@ -19,19 +19,19 @@ comparison of symbol reference objects, even across different files.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.graph._SymbolGraphNavigator._get_symbol_references_in_scope``
 -  ``automata.tests.unit.test_symbol_search.tool.test_symbol_references``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.symbol.base.SymbolDocEmbedding``
 
 Example
 -------
 
 .. code:: python
 
-   from automata.core.symbol.symbol_types import Symbol, SymbolReference
+   from automata.core.symbol.base import Symbol, SymbolReference
 
    # Create two Symbol objects
    symbol_1 = Symbol.from_string("scip-python python automata 0.1.0 AutomataNamespace/ClassName#")

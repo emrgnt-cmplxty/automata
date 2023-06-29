@@ -8,11 +8,11 @@ import pytest
 
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
-from automata.core.agent.agents import AutomataOpenAIAgent
+from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
+from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
 from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
@@ -135,15 +135,20 @@ def symbol_search(mocker, symbol_graph_mock):
 @pytest.fixture
 def automata_agent_config_builder():
     config_name = AgentConfigName.TEST
+    # We must mock the get method on the dependency factory at this location
+    # Otherwise, the dependency factory will attempt to actually instantiate the dependencies
+    import unittest.mock
+
+    from automata.core.agent.tool.tool_utils import dependency_factory
+
+    dependency_factory.get = unittest.mock.MagicMock(return_value=None)
+
     return AutomataOpenAIAgentConfigBuilder.from_name(config_name)
 
 
 @pytest.fixture
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
-    # toolkit_list = ["py_reader"]
-    # mock_llm_toolkits = get_tool_builders(toolkit_list, py_reader=mocker.MagicMock(spec=PyReader))
-    # tools = build_available_tools(["py_reader"], **kwargs)
 
     llm_toolkits_list = ["py-reader"]
     kwargs = {}
@@ -154,12 +159,12 @@ def automata_agent(mocker, automata_agent_config_builder):
             dependencies.add(dependency_name)
 
     for dependency in dependencies:
-        kwargs[dependency] = DependencyFactory().get(dependency)
+        kwargs[dependency] = dependency_factory.get(dependency)
     tools = AgentToolFactory.build_tools(["py-reader"], **kwargs)
 
     instructions = "Test instruction."
 
-    return AutomataOpenAIAgent(
+    return OpenAIAutomataAgent(
         instructions,
         config=automata_agent_config_builder.with_tools(tools)
         .with_stream(False)

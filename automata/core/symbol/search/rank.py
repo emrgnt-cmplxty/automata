@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from pydantic import BaseModel
 
-from automata.core.symbol.symbol_types import Symbol
+from automata.core.symbol.base import Symbol
 
 
 class SymbolRankConfig(BaseModel):
@@ -105,6 +105,19 @@ class SymbolRank:
             "SymbolRank: power iteration failed to converge in %d iterations."
             % self.config.max_iterations
         )
+
+    def get_top_symbols(self, n: int) -> List[Tuple[str, float]]:
+        """
+        Get the top N symbols according to their ranks.
+
+        Args:
+            n: The number of top symbols to retrieve.
+
+        Returns:
+            A list of tuples each containing the dotpath of a symbol and its rank.
+        """
+        ranks = self.get_ranks()
+        return [(".".join(symbol.dotpath.split(".")[1:]), rank) for symbol, rank in ranks[:n]]
 
     def _prepare_graph(self) -> nx.DiGraph:
         """

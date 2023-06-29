@@ -18,9 +18,9 @@ and accessible way to store and manage symbol code embeddings.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol.base.SymbolEmbedding``
+-  ``automata.core.symbol.base.SymbolDocEmbedding``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 
 Usage Example
@@ -33,7 +33,7 @@ embedded vector.
 .. code:: python
 
    import numpy as np
-   from automata.core.symbol.symbol_types import Symbol, SymbolCodeEmbedding
+   from automata.core.symbol.base import Symbol, SymbolCodeEmbedding
 
    symbol = Symbol.from_string("some_symbol")  # The desired Symbol object
    source_code = "def function_example():\n    pass"
@@ -43,7 +43,7 @@ embedded vector.
 
 Note that this example assumes that the ``Symbol`` object already
 exists. For more information about working with ``Symbol`` objects,
-consult the ``automata.core.symbol.symbol_types.Symbol`` class
+consult the ``automata.core.symbol.base.Symbol`` class
 documentation.
 
 Limitations

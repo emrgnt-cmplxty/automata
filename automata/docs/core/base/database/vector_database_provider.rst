@@ -25,8 +25,8 @@ Related Symbols
 -  ``automata.core.base.database.vector.JSONVectorDatabase``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.base.database.provider.SymbolDatabaseProvider``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.symbol_types.SymbolEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol.base.SymbolEmbedding``
 
 Example
 -------

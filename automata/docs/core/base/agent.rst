@@ -3,7 +3,7 @@ Agent
 
 ``Agent`` is an abstract class for implementing an agent. An agent is an
 autonomous entity that can perform actions and communicate with other
-agents. This class provides a basic structure for creating agents and
+providers. This class provides a basic structure for creating providers and
 must be subclassed to create a custom agent implementation.
 
 Overview
@@ -16,13 +16,13 @@ method called ``set_database_provider`` to set the agent’s conversation
 database provider.
 
 Agents interact with an environment, perform actions, and communicate
-with other agents. You can create a custom agent by subclassing the
+with other providers. You can create a custom agent by subclassing the
 ``Agent`` class and implementing its methods.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.core.llm.completion.LLMConversationDatabaseProvider``
 -  ``automata.core.llm.providers.openai.OpenAIAgent``

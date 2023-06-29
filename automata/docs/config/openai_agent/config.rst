@@ -2,7 +2,7 @@ AutomataOpenAIAgentConfig
 =========================
 
 ``AutomataOpenAIAgentConfig`` is a configuration class that helps
-configure, setup, and interact with an ``AutomataOpenAIAgent``. It
+configure, setup, and interact with an ``OpenAIAutomataAgent``. It
 contains various attributes such as ``SUPPORTED_MODELS``,
 ``arbitrary_types_allowed``, and others to provide the necessary setup
 and settings to be used by the agent.
@@ -20,7 +20,7 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``

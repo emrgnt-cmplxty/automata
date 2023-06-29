@@ -1,14 +1,12 @@
 import json
 import logging
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 
 import numpy as np
 import openai
 import tiktoken
 from termcolor import colored
 
-from automata.core.base.agent import Agent, AgentToolBuilder
 from automata.core.base.tool import Tool
 from automata.core.llm.completion import (
     LLMChatCompletionProvider,
@@ -416,51 +414,3 @@ class OpenAITool(Tool):
             ),
             **kwargs,
         )
-
-
-class OpenAIAgent(Agent):
-    """An agent that is powered by the OpenAI API."""
-
-    def __init__(self, instructions: str) -> None:
-        super().__init__(instructions=instructions)
-        self.conversation = OpenAIConversation()
-        self.completed = False
-
-    def _get_termination_tool(self) -> OpenAITool:
-        """Gets the tool responsible for terminating the OpenAI agent."""
-
-        def terminate(result: str):
-            self.completed = True
-            return result
-
-        return OpenAITool(
-            name="call_termination",
-            description="Terminates the conversation.",
-            properties={
-                "result": {
-                    "type": "string",
-                    "description": "The final result of the conversation.",
-                }
-            },
-            required=["result"],
-            function=terminate,
-        )
-
-    def _get_available_functions(self) -> Sequence[OpenAIFunction]:
-        """Gets the available functions for the agent."""
-        raise NotImplementedError
-
-
-class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
-    """OpenAIAgentToolBuilder is an abstract class for building tools for agents."""
-
-    @abstractmethod
-    def build_for_open_ai(self) -> List[OpenAITool]:
-        """Builds an OpenAITool to be used by the associated agent.
-        TODO - Automate as much of this as possible, and modularize
-        """
-        pass
-
-    @classmethod
-    def can_handle(cls, tool_manager):
-        return cls.TOOL_TYPE == tool_manager

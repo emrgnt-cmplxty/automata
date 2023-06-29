@@ -17,10 +17,10 @@ from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
 )
+from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.symbol.symbol_types import SymbolDescriptor
 from automata.core.symbol.symbol_utils import get_rankable_symbols
 from automata.core.utils import get_config_fpath
 
@@ -91,6 +91,12 @@ def main(*args, **kwargs) -> str:
                 embedding_db_l3.save()
             except Exception as e:
                 logger.error(f"Error updating embedding for {symbol.dotpath}: {e}")
+
+    for symbol in embedding_handler.get_all_supported_symbols():
+        if symbol not in filtered_symbols:
+            logger.info(f"Discarding stale symbol {symbol}...")
+            embedding_db_l3.discard(symbol)
+    embedding_db_l3.save()
 
     logger.info("Complete.")
     return "Success"

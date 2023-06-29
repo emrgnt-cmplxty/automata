@@ -6,10 +6,10 @@ import numpy as np
 
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
+from automata.core.symbol.base import Symbol, SymbolReference
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig
-from automata.core.symbol.symbol_types import Symbol, SymbolReference
 from automata.core.symbol.symbol_utils import convert_to_fst_object
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]

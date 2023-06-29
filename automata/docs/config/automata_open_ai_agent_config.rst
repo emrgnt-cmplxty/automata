@@ -2,7 +2,7 @@ AutomataOpenAIAgentConfig
 =========================
 
 ``AutomataOpenAIAgentConfig`` is a configuration class that helps in
-setting up and interacting with an ``AutomataOpenAIAgent``. It contains
+setting up and interacting with an ``OpenAIAutomataAgent``. It contains
 attributes such as ``config_name``, ``tools``, ``instructions``, and
 others to provide the necessary setup and settings to be used by the
 agent.
@@ -23,7 +23,7 @@ Related Symbols
 ---------------
 
 -  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
@@ -59,4 +59,4 @@ Follow-up Questions:
 -  How can we include custom configuration files for loading into the
    ``AutomataOpenAIAgentConfig`` class?
 -  What are the applications of ``AutomataOpenAIAgentConfig`` when
-   working with ``AutomataOpenAIAgent`` in a real-world scenario?
+   working with ``OpenAIAutomataAgent`` in a real-world scenario?

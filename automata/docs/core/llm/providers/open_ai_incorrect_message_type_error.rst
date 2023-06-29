@@ -19,7 +19,7 @@ Related Symbols
 
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.core.llm.providers.openai.OpenAIConversation``
--  ``automata.core.agent.agents.AutomataOpenAIAgent``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 
 Example
 -------

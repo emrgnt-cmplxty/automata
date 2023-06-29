@@ -32,8 +32,8 @@ Related Symbols
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.llm.embedding.EmbeddingProvider``
 -  ``automata.core.llm.embedding.SymbolEmbeddingHandler``
--  ``automata.core.symbol.symbol_types.Symbol``
--  ``automata.core.symbol.symbol_types.SymbolDocEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol.base.SymbolDocEmbedding``
 
 Example
 -------

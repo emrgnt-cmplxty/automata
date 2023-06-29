@@ -17,7 +17,7 @@ from automata.core.coding.py.navigation import (
     find_syntax_tree_node,
 )
 from automata.core.coding.py.reader import PyReader
-from automata.core.symbol.symbol_types import Symbol, SymbolDocEmbedding
+from automata.core.symbol.base import Symbol, SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
 
@@ -436,7 +436,7 @@ class PyDocWriter:
         return f"""{os.path.basename(directory)}
 {"=" * len(os.path.basename(directory))}
 
-**Automata** is a Python library for autonomous agents.
+**Automata** is a Python library for autonomous providers.
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.

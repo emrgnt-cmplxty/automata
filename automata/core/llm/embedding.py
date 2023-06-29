@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 import numpy as np
 
 from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.core.symbol.symbol_types import Symbol
+from automata.core.symbol.base import Symbol
 
 logger = logging.getLogger(__name__)
 

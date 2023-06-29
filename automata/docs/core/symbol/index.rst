@@ -1,7 +1,7 @@
 symbol
 ======
 
-**Automata** is a Python library for autonomous agents.
+**Automata** is a Python library for autonomous providers.
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
@@ -13,7 +13,7 @@ how to :ref:`installation` the project.
 
    graph/index
    search/index
-   symbol_types/index
+   base/index
    graph_builder
    graph_processor
    symbol

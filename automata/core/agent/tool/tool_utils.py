@@ -1,13 +1,13 @@
-import functools
 import logging
 import os
+from functools import lru_cache
 from typing import Any, Dict, List, Sequence, Set, Tuple
 
 from automata.config.base import ConfigCategory, LLMProvider
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
-from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolProviders
 from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.singleton import Singleton
 from automata.core.base.tool import Tool
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
@@ -23,30 +23,14 @@ from automata.core.llm.providers.openai import (
     OpenAIEmbeddingProvider,
 )
 from automata.core.symbol.graph import SymbolGraph
-from automata.core.symbol.search.rank import SymbolRankConfig
+from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
 
 
-def classmethod_lru_cache():
-    """Class method LRU cache decorator which caches the return value of a class method."""
-
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(self, *args, **kwargs):
-            cache_key = (func.__name__,) + args + tuple(sorted(kwargs.items()))
-            if cache_key not in self._class_cache:
-                self._class_cache[cache_key] = func(self, *args, **kwargs)
-            return self._class_cache[cache_key]
-
-        return wrapper
-
-    return decorator
-
-
-class DependencyFactory:
+class DependencyFactory(metaclass=Singleton):
     """Creates dependencies for input Tool construction."""
 
     DEFAULT_SCIP_FPATH = os.path.join(
@@ -138,7 +122,7 @@ class DependencyFactory:
 
         return tool_dependencies
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:
         """
         Associated Keyword Args:
@@ -148,7 +132,7 @@ class DependencyFactory:
             self.overrides.get("symbol_graph_path", DependencyFactory.DEFAULT_SCIP_FPATH)
         )
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_subgraph(self) -> SymbolGraph.SubGraph:
         """
         Associated Keyword Args:
@@ -159,7 +143,7 @@ class DependencyFactory:
             self.overrides.get("flow_rank", "bidirectional")
         )
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_symbol_code_similarity(self) -> SymbolSimilarityCalculator:
         """
         Associated Keyword Args:
@@ -175,7 +159,7 @@ class DependencyFactory:
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
         return SymbolSimilarityCalculator(code_embedding_handler)
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_symbol_doc_similarity(self) -> SymbolSimilarityCalculator:
         """
         Associated Keyword Args:
@@ -203,7 +187,18 @@ class DependencyFactory:
         )
         return SymbolSimilarityCalculator(doc_embedding_handler)
 
-    @classmethod_lru_cache()
+    @lru_cache()
+    def create_symbol_rank(self) -> SymbolRank:
+        """
+        Associated Keyword Args:
+            symbol_rank_config (SymbolRankConfig())
+        """
+        subgraph = self.get("subgraph")
+        return SymbolRank(
+            subgraph.graph, self.overrides.get("symbol_rank_config", SymbolRankConfig())
+        )
+
+    @lru_cache()
     def create_symbol_search(self) -> SymbolSearch:
         """
         Associated Keyword Args:
@@ -220,7 +215,7 @@ class DependencyFactory:
             symbol_graph_subgraph,
         )
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_py_context_retriever(self) -> PyContextRetriever:
         """
         Associated Keyword Args:
@@ -232,11 +227,11 @@ class DependencyFactory:
         )
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_py_reader(self) -> PyReader:
         return PyReader()
 
-    @classmethod_lru_cache()
+    @lru_cache()
     def create_py_writer(self) -> PyWriter:
         return PyWriter(self.get("py_reader"))
 
@@ -257,6 +252,10 @@ class AgentToolFactory:
     @staticmethod
     def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
         """Uses the Builder Registry to create tools from a given agent tool name."""
+        from automata.core.agent.tool.registry import (  # import here for easy mocking
+            AutomataOpenAIAgentToolBuilderRegistry,
+        )
+
         for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
                 if builder.PLATFORM == LLMProvider.OPENAI:
@@ -281,3 +280,6 @@ class AgentToolFactory:
             tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
 
         return tools
+
+
+dependency_factory = DependencyFactory()

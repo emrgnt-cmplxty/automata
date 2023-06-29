@@ -116,9 +116,12 @@ class LLMChatCompletionProvider(ABC):
     @abstractmethod
     def standalone_call(self, prompt: str) -> str:
         """
-        Abstract method to treat the provider as a single completion LLM.
+        This abstract function enables the utilization of the provider as a unique output LLM.
+        For instance, the function exists to permit the user to engage the ChatProvider
+        as a sole output supplier, as opposed to a chat provider.
 
-        Raises:
-            Exception: If the chat provider buffer is not empty.
+
+        Throws:
+            Exception: If the chat provider's buffer is not devoid of content.
         """
         pass

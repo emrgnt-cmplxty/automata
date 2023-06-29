@@ -3,10 +3,11 @@ from typing import List, Optional, Union
 
 from automata.config.base import LLMProvider
 from automata.core.agent.error import UnknownToolError
+from automata.core.agent.providers import OpenAIAgentToolBuilder
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
-from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
+from automata.core.llm.providers.openai import OpenAITool
 from automata.core.symbol.search.symbol_search import (
     ExactSearchResult,
     SourceCodeResult,

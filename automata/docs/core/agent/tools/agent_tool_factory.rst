@@ -2,7 +2,7 @@ AgentToolFactory
 ================
 
 ``AgentToolFactory`` is a class for creating tool managers to be
-utilized by agents in their tasks. This factory class generates specific
+utilized by providers in their tasks. This factory class generates specific
 tool managers based on the toolkit type and ensures that all the
 required arguments are correctly provided to construct the desired agent
 tool.
