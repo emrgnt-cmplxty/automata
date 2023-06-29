@@ -159,7 +159,11 @@ Sometimes the best way to understand a complicated system is to start by underst
 import logging
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
+<<<<<<< HEAD
 from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
+=======
+from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
+>>>>>>> 8d9b696 (rename files for style clarity)
 from automata.core.coding.py.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
