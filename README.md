@@ -22,8 +22,6 @@ This project is inspired by the theory that code is essentially a form of memory
 https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7
 
 
-_Note - This demo will shortly be expanded to be more autonomous. E.g. automatically fetching the GitHub issues given a user specification and automatically writing the code // creating a PR. These are minor additions to the core logic demonstrated above._
-
 <img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/57ae3418-c01b-4b3f-a548-2f050c234b34">
 
 ---
@@ -142,13 +140,6 @@ automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
 # Run a single agent w/ a non-trivial instruction
 automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent." --model=gpt-3.5-turbo-16k
-
-# Runs a single agent as a task 
-# (this will create a task in the task_db.sqlite3)
-# (this will also create a task in the tasks/ directory)
-# (modifications to code are performed in the tasks/ directory)
-# TODO - Revive this functionality
-# automata run-agent-task --instructions="Return true" --model=gpt-3.5-turbo-0613
 ```
 
 ---
@@ -168,18 +159,17 @@ Sometimes the best way to understand a complicated system is to start by underst
 import logging
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.agent.tool.tool_utils import AgentToolFactory, DependencyFactory
+from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
 from automata.core.coding.py.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
-# Initialize the module loader
+# Initialize the module loader to the local directory
 py_module_loader.initialize()
-
 
 # Construct the set of all dependencies that will be used to build the tools
 toolkit_list = ["context-oracle"]
-tool_dependencies = DependencyFactory().build_dependencies_for_tools(toolkit_list)
+tool_dependencies = dependency_factory.build_dependencies_for_tools(toolkit_list)
 
 # Build the tools
 tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)

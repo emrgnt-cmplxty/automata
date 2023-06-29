@@ -44,7 +44,7 @@ def main(*args, **kwargs):
     github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
 
     # Pre-process issues if they are passsed
-    issue_numbers = kwargs.get("fetch-issues", "")
+    issue_numbers = kwargs.get("fetch_issues", "")
     issue_numbers = list(map(int, issue_numbers.split(","))) if issue_numbers else []
     if len(issue_numbers):
         issue_infos = process_issues(issue_numbers, github_manager)
@@ -55,12 +55,12 @@ def main(*args, **kwargs):
         )
 
     instructions = kwargs.get("instructions") or "This is a dummy instruction, return True."
-    toolkit_list = kwargs.get("toolkit-list", "context-oracle").split(",")
+    toolkit_list = kwargs.get("toolkit_list", "context-oracle").split(",")
 
     tool_dependencies = dependency_factory.build_dependencies_for_tools(toolkit_list)
     tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
     logger.info("Done building tools...")
-    config_name = AgentConfigName(kwargs.get("agent-name", "automata-main"))
+    config_name = AgentConfigName(kwargs.get("agent_name", "automata-main"))
     agent_config = (
         AutomataOpenAIAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)

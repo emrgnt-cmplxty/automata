@@ -44,21 +44,32 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
             if not self.available_symbols or symbol in self.available_symbols
         ]
 
-    def calculate_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
+    def calculate_query_similarity_dict(
+        self, query_text: str, return_sorted: bool = True
+    ) -> Dict[Symbol, float]:
         """
         Similarity is calculated between the dot product
         of the query embedding and the symbol embeddings.
+        Return result is sorted in descending order by default.
         """
         query_embedding_array = self.embedding_provider.build_embedding_array(query_text)
 
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(query_embedding_array)
 
-        return {
+        similarity_dict = {
             self.index_to_symbol[i]: similarity_scores[i]
             for i in range(len(self.index_to_symbol))
             if (not self.available_symbols) or self.index_to_symbol[i] in self.available_symbols
         }
+
+        if return_sorted:
+            # Sort the dictionary by values in descending order
+            similarity_dict = dict(
+                sorted(similarity_dict.items(), key=lambda item: item[1], reverse=True)
+            )
+
+        return similarity_dict
 
     def _calculate_embedding_similarity(self, embedding_array: np.ndarray) -> np.ndarray:
         """Calculate the similarity score between the embedding with all symbol embeddings"""

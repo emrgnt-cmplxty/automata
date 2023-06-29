@@ -84,5 +84,12 @@ def main(*args, **kwargs) -> str:
                 embedding_db_l2.save()
             except Exception as e:
                 logger.error(f"Failed to update embedding for symbol {symbol}: {e}")
+
+    for symbol in embedding_handler.get_all_supported_symbols():
+        if symbol not in filtered_symbols:
+            logger.info(f"Discarding stale symbol {symbol}...")
+            embedding_db_l2.discard(symbol)
+    embedding_db_l2.save()
+
     logger.info("Complete.")
     return "Success"

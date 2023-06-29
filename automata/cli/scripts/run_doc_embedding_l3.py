@@ -92,5 +92,11 @@ def main(*args, **kwargs) -> str:
             except Exception as e:
                 logger.error(f"Error updating embedding for {symbol.dotpath}: {e}")
 
+    for symbol in embedding_handler.get_all_supported_symbols():
+        if symbol not in filtered_symbols:
+            logger.info(f"Discarding stale symbol {symbol}...")
+            embedding_db_l3.discard(symbol)
+    embedding_db_l3.save()
+
     logger.info("Complete.")
     return "Success"
