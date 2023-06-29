@@ -18,7 +18,9 @@ This project is inspired by the theory that code is essentially a form of memory
 
 ## Demo
 
-https://github.com/emrgnt-cmplxty/Automata/assets/68796651/9b27de2b-d3d3-422b-b21e-8b3c2c9e8dce
+
+https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7
+
 
 _Note - This demo will shortly be expanded to be more autonomous. E.g. automatically fetching the GitHub issues given a user specification and automatically writing the code // creating a PR. These are minor additions to the core logic demonstrated above._
 
