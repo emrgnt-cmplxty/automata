@@ -7,8 +7,8 @@ from automata.core.agent.providers import OpenAIAgentToolBuilder
 from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
 from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
 from automata.core.base.tool import Tool
-from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import OpenAITool
+from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 
 logger = logging.getLogger(__name__)
 

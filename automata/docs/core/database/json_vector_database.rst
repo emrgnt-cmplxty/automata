@@ -15,7 +15,7 @@ Related Symbols
 -  ``VectorDatabaseProvider``
 -  ``Symbol``
 -  ``SymbolEmbedding``
--  ``automata.core.symbol.base.SymbolEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding``
 
 Example
 -------

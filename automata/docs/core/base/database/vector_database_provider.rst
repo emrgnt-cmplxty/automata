@@ -23,10 +23,10 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.base.database.provider.SymbolDatabaseProvider``
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.base.SymbolEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding``
 
 Example
 -------

@@ -44,7 +44,7 @@ Usage Example
    from ann_embed.synthetic_provider import SyntheticProvider
    from automata.core.symbol.base import Symbol
    from numpy import random
-   from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
+   from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 
 
    # Mock symbols and their embeddings

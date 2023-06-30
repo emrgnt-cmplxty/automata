@@ -26,7 +26,7 @@ Related Symbols
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.llm.embedding.EmbeddingProvider``
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.base.SymbolCodeEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
 
 Example

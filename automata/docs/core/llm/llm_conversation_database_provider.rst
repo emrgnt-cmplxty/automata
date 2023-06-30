@@ -14,7 +14,7 @@ Overview
 messages for an agent by implementing the required abstract methods in
 its subclasses. It also allows observing conversation changes and
 updating the database accordingly. The class is closely related to the
-``AutomataAgentConversationDatabase`` implementation, which is a
+``AgentConversationDatabase`` implementation, which is a
 specific implementation for Automata providers.
 
 Related Symbols
@@ -22,7 +22,7 @@ Related Symbols
 
 -  ``automata.core.base.database.relational.SQLDatabase``
 -  ``automata.core.llm.completion.LLMChatMessage``
--  ``automata.core.agent.conversation_database.AutomataAgentConversationDatabase``
+-  ``automata.core.memory_store.agent_conversations.AgentConversationDatabase``
 -  ``automata.core.llm.completion.LLMConversation``
 
 Example

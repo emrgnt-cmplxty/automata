@@ -22,7 +22,7 @@ Related Symbols
 -  ``JSONEmbeddingVectorDatabase`` inherits from
    ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.base.SymbolEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding``
 
 Example
 -------

@@ -23,7 +23,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.agent.AgentToolBuilder``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.llm.providers.available.LLMPlatforms``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolBuilder``
 -  ``automata.core.agent.tool.builder.context_oracle.ContextOracleTool``
@@ -36,7 +36,7 @@ Example
 
    from automata.core.agent.tool.builder.context_oracle import ContextOracleOpenAIToolBuilder
    from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol_embedding.similarity import SymbolSimilarity
 
    symbol_search = SymbolSearch()
    symbol_doc_similarity = SymbolSimilarity()

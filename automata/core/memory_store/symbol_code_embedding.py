@@ -1,28 +1,12 @@
 import logging
 
 from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.core.llm.embedding import (
-    EmbeddingProvider,
-    SymbolEmbeddingBuilder,
-    SymbolEmbeddingHandler,
-)
-from automata.core.symbol.base import Symbol, SymbolCodeEmbedding
+from automata.core.llm.embedding import SymbolEmbeddingHandler
+from automata.core.symbol.base import Symbol
+from automata.core.symbol_embedding.base import SymbolCodeEmbedding
+from automata.core.symbol_embedding.embedding_builders import SymbolCodeEmbeddingBuilder
 
 logger = logging.getLogger(__name__)
-
-
-class SymbolCodeEmbeddingBuilder(SymbolEmbeddingBuilder):
-    """Builds `Symbol` source code embeddings."""
-
-    def __init__(
-        self,
-        embedding_provider: EmbeddingProvider,
-    ) -> None:
-        self.embedding_provider = embedding_provider
-
-    def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
-        embedding_vector = self.embedding_provider.build_embedding_array(source_code)
-        return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
 
 class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):

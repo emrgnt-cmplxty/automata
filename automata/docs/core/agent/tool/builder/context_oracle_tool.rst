@@ -16,7 +16,7 @@ provides a list of tools associated with the context oracle.
 
 Key related symbols include: -
 ``automata.core.symbol.search.symbol_search.SymbolSearch`` -
-``automata.core.embedding.symbol_similarity.SymbolSimilarity`` -
+``automata.core.symbol_embedding.similarity.SymbolSimilarity`` -
 ``automata.core.base.tool.Tool`` -
 ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolBuilder``
 - ``automata.core.base.agent.AgentToolBuilder`` -
@@ -32,7 +32,7 @@ The following example demonstrates how to create an instance of
 .. code:: python
 
    from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol_embedding.similarity import SymbolSimilarity
    from automata.core.agent.tool.builder.context_oracle import ContextOracleTool
 
    symbol_search = SymbolSearch(...)  # Set up the SymbolSearch object

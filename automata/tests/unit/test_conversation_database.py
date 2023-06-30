@@ -2,14 +2,14 @@ import os
 
 import pytest
 
-from automata.core.agent.conversation_database import AutomataAgentConversationDatabase
 from automata.core.llm.completion import LLMChatMessage
+from automata.core.memory_store.agent_conversations import AgentConversationDatabase
 
 
 @pytest.fixture(scope="module", autouse=True)
 def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
-    db = AutomataAgentConversationDatabase("session1", str(db_file))
+    db = AgentConversationDatabase("session1", str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):

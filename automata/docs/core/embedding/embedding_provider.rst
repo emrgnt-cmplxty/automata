@@ -19,9 +19,9 @@ returns a numpy ndarray.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.embedding_types.OpenAIEmbedding``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.memory_store.embedding_types.OpenAIEmbedding``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 
 Example
 -------
@@ -33,7 +33,7 @@ class that inherits from ``EmbeddingProvider`` and implement the
 .. code:: python
 
    import numpy as np
-   from automata.core.embedding.embedding_types import EmbeddingProvider
+   from automata.core.memory_store.embedding_types import EmbeddingProvider
 
    class MyEmbeddingProvider(EmbeddingProvider):
 

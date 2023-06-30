@@ -28,7 +28,7 @@ Related Symbols
 -  ``automata.tests.unit.test_database_vector.test_delete_symbol``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.tests.unit.test_database_vector.test_add_symbol``

@@ -13,7 +13,7 @@ Related Symbols
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
 
 Methods

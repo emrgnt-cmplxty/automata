@@ -17,7 +17,8 @@ from automata.core.coding.py.navigation import (
     find_syntax_tree_node,
 )
 from automata.core.coding.py.reader import PyReader
-from automata.core.symbol.base import Symbol, SymbolDocEmbedding
+from automata.core.symbol.base import Symbol
+from automata.core.symbol_embedding.base import SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
 

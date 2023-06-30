@@ -18,8 +18,8 @@ can lead to more accurate similarity results.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity.__init__``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity.__init__``
 
 Example
 -------
@@ -29,8 +29,8 @@ Here’s an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
-   from automata.core.embedding.embedding_types import NormType
+   from automata.core.symbol_embedding.similarity import SymbolSimilarity
+   from automata.core.memory_store.embedding_types import NormType
    from automata.core.symbol.base import SymbolEmbeddingHandler
 
    symbol_embedding_manager = SymbolEmbeddingHandler()

@@ -5,7 +5,7 @@ from automata.core.agent.error import AgentDatabaseError
 from automata.core.llm.completion import LLMChatMessage, LLMConversationDatabaseProvider
 
 
-class AutomataAgentConversationDatabase(LLMConversationDatabaseProvider):
+class AgentConversationDatabase(LLMConversationDatabaseProvider):
     """A conversation database for an Automata agent."""
 
     def __init__(self, session_id: str, db_path: str = CONVERSATION_DB_PATH) -> None:

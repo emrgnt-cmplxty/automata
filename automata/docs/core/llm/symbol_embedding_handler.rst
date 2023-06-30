@@ -21,8 +21,8 @@ available symbols in the embedding database.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 
@@ -35,10 +35,10 @@ specific symbol.
 
 .. code:: python
 
-   from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+   from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
    from automata.core.symbol.base import Symbol
    from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-   from automata.core.embedding.embedding_provider import EmbeddingProvider
+   from automata.core.memory_store.embedding_provider import EmbeddingProvider
 
    # Create instances for the database and embedding provider
    embedding_db = JSONEmbeddingVectorDatabase(database_filename)

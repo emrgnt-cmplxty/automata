@@ -5,7 +5,7 @@ from typing import Any, Dict, Generic, List, TypeVar, cast
 
 import jsonpickle
 
-from automata.core.symbol.base import SymbolEmbedding
+from automata.core.symbol_embedding.base import SymbolEmbedding
 
 logger = logging.getLogger(__name__)
 
