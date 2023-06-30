@@ -1,6 +1,6 @@
 # Automata: The Future is Self-Written
 
-![Banner](./automata_banner.png)
+![Banner](https://github.com/emrgnt-cmplxty/Automata/assets/68796651/61fe3c33-9b7a-4c1b-9726-a77140476b83)
 
 [![codecov](https://codecov.io/github/emrgnt-cmplxty/Automata/branch/main/graph/badge.svg?token=ZNE7RDUJQD)](https://codecov.io/github/emrgnt-cmplxty/Automata)
 [![Documentation Status](https://readthedocs.org/projects/automata/badge/?version=latest)](https://automata.readthedocs.io/en/latest/?badge=latest)
@@ -13,8 +13,6 @@
 This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them. More information follows below.
 
 ---
-
-## 🧠 [Read the Docs](https://automata.readthedocs.io/en/latest/)
 
 ## Demo
 
@@ -29,6 +27,8 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 ---
 
 ## Installation and Usage
+
+### 🧠 [Stuck? Try the Docs](https://automata.readthedocs.io/en/latest/)
 
 ### Initial Setup
 
@@ -94,7 +94,7 @@ Automata works by combining Large Language Models, such as GPT-4, with a vector 
 
 Automata employs downstream tooling to execute advanced coding tasks, continually building its expertise and autonomy. This self-coding approach mirrors an autonomous craftsman's work, where tools and techniques are consistently refined based on feedback and accumulated experience.
 
-### Example - Running your own agent
+### Example - Building your own agent
 
 Sometimes the best way to understand a complicated system is to start by understanding a basic example. The following example illustrates how to run your own Automata agent. The agent will be initialized with a trivial instruction, and will then attempt to write code to fulfill the instruction. The agent will then return the result of its attempt.
 
