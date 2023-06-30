@@ -19,12 +19,12 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
 
     def __init__(
         self,
-        symbol_embedding_manager: SymbolEmbeddingHandler,
+        symbol_embedding_handler: SymbolEmbeddingHandler,
         embedding_provider: EmbeddingProvider,
         norm_type: EmbeddingNormType = EmbeddingNormType.L2,
     ) -> None:
         """Initializes SymbolSimilarity by building the associated symbol mappings."""
-        self.embedding_handler: SymbolEmbeddingHandler = symbol_embedding_manager
+        self.embedding_handler: SymbolEmbeddingHandler = symbol_embedding_handler
         self.embedding_provider: EmbeddingProvider = embedding_provider
         self.norm_type = norm_type
         supported_symbols = self.embedding_handler.get_all_supported_symbols()
@@ -54,10 +54,10 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
         Return result is sorted in descending order by default.
         """
         query_embedding_array = self.embedding_provider.build_embedding_array(query_text)
-
+        print("query_embedding_array = ", query_embedding_array)
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(query_embedding_array)
-
+        print("similarity_scores = ", similarity_scores)
         similarity_dict = {
             self.index_to_symbol[i]: similarity_scores[i]
             for i in range(len(self.index_to_symbol))
