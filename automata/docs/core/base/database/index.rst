@@ -11,6 +11,7 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
+   json_embedding_vector_database
    json_vector_database
    relational_database
    sql_database

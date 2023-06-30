@@ -3,8 +3,8 @@ Agent
 
 ``Agent`` is an abstract class for implementing an agent. An agent is an
 autonomous entity that can perform actions and communicate with other
-providers. This class provides a basic structure for creating providers and
-must be subclassed to create a custom agent implementation.
+providers. This class provides a basic structure for creating providers
+and must be subclassed to create a custom agent implementation.
 
 Overview
 --------

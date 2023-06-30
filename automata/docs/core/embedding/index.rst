@@ -17,7 +17,9 @@ how to :ref:`installation` the project.
    embeddings_provider
    norm_type
    open_ai_embedding
+   symbol_code_embedding_builder
    symbol_code_embedding_handler
+   symbol_doc_embedding_builder
    symbol_doc_embedding_handler
    symbol_embedding_handler
    symbol_similarity

@@ -1,58 +1,57 @@
 InstructionConfigVersion
 ========================
 
-``InstructionConfigVersion`` is an enumeration that represents different
-versions of instruction configurations. This enumeration is used to
-differentiate between the various instruction configurations provided in
-the ``automata/configs/instruction_configs`` directory and is stored as
-a field within the ``AutomataAgentConfig`` class.
+``InstructionConfigVersion`` is an enumerated class that represents the
+various versions of instruction sets available for use in the
+``AutomataOpenAIAgentConfig`` class. It corresponds to the name of the
+YAML file in the ``automata/configs/instruction_configs`` directory.
 
 Overview
 --------
 
-The ``InstructionConfigVersion`` enumeration provides a simple way to
-define and access the names of different instruction configurations for
-an ``AutomataAgent``. It corresponds to the names of YAML files in the
-``automata/configs/instruction_configs`` directory.
+This enumeration helps to identify the specific instruction version to
+be used in an ``AutomataOpenAIAgentConfig`` instance. The different
+versions of instructions can be managed through these enumerated values,
+allowing a user to switch between different sets of agent instructions
+easily.
 
 Related Symbols
 ---------------
 
--  ``config.config_types.AutomataAgentConfig``
--  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder``
+-  ``automata.config.openai_agent.AutomataOpenAIAgentConfig``
+-  ``automata.config.base.InstructionConfigVersion``
+-  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
+-  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
+-  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder.with_instruction_version``
 
-Examples
---------
+Example
+-------
 
-Here is an example demonstrating how to use ``InstructionConfigVersion``
-as part of building an ``AutomataAgentConfig``.
+The following is an example demonstrating how to use the
+``InstructionConfigVersion`` enumeration when building an
+``AutomataOpenAIAgentConfig`` instance:
 
 .. code:: python
 
-   from automata.config.agent_config_builder import AutomataAgentConfigBuilder
-   from automata.config.config_types import InstructionConfigVersion
+   from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+   from automata.config.base import InstructionConfigVersion
 
+   config_builder = AutomataOpenAIAgentConfigBuilder()
    config = (
-       AutomataAgentConfigBuilder()
-       .with_instruction_version(InstructionConfigVersion.AGENT_INTRODUCTION.value)
+       config_builder.with_instruction_version(InstructionConfigVersion.AGENT_INTRODUCTION)
        .build()
    )
-
-   print(config.instruction_version)
 
 Limitations
 -----------
 
-The primary limitation of ``InstructionConfigVersion`` is that it relies
-on predefined enumeration values and assumes a specific directory
-structure for the instruction configurations. Adding new instruction
-configuration versions requires updating the enumeration and maintaining
-the directory structure.
+The primary limitation of ``InstructionConfigVersion`` is that it
+assumes a predefined set of available instruction configurations found
+in the ``automata/configs/instruction_configs`` directory. It may be
+less flexible for including custom or user-defined instruction sets.
 
 Follow-up Questions:
 --------------------
 
--  Are there plans to expand the instruction configuration versions with
-   custom values?
--  What is the process for adding new instruction configuration versions
-   to the enumeration and directory structure?
+-  How can we extend ``InstructionConfigVersion`` to support custom
+   instruction configurations?

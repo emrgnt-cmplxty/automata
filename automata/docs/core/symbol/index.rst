@@ -11,9 +11,10 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
+   base/index
    graph/index
    search/index
-   base/index
+   symbol_types/index
    graph_builder
    graph_processor
    symbol

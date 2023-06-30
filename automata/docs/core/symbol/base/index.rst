@@ -1,5 +1,5 @@
-symbol_types
-============
+base
+====
 
 **Automata** is a Python library for autonomous providers.
 

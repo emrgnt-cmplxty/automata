@@ -70,7 +70,7 @@ responsible for constructing the SymbolGraph object used by the
 ``GraphProcessor``.
 
 ``automata.core.symbol.base.Symbol``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A class which contains associated logic for a Symbol. This class
 constructs and represents individual symbols that form part of the

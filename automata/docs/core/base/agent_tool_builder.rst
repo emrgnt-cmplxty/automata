@@ -1,11 +1,11 @@
 AgentToolBuilder
 ================
 
-``AgentToolBuilder`` is an abstract class for building tools for providers.
-Tools are essential components as they define the functionality and
-behavior of an agent. The ``AgentToolBuilder`` class provides a standard
-interface for creating tools. This class should be inherited by classes
-implementing specific tool creation logic.
+``AgentToolBuilder`` is an abstract class for building tools for
+providers. Tools are essential components as they define the
+functionality and behavior of an agent. The ``AgentToolBuilder`` class
+provides a standard interface for creating tools. This class should be
+inherited by classes implementing specific tool creation logic.
 
 Overview
 --------
