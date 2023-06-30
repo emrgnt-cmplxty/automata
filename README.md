@@ -20,7 +20,11 @@ This project is inspired by the theory that code is essentially a form of memory
 
 https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7
 
-<img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/57ae3418-c01b-4b3f-a548-2f050c234b34">
+## Rough Schematic
+
+<p align="center">
+    <img width="971" alt="Rough_Schematic_06_30_23_" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/f73f37ac-6335-4066-b9bc-79f9a2652cc1">
+</p>
 
 ---
 
@@ -166,29 +170,27 @@ symbol_doc_embedding = SymbolDocEmbedding(symbol, document, vector)
 
 </details>
 
-## SymbolRank
+## Contribution guidelines
 
-We have developed SymbolRank for Automata, a semantic code analyzer for software corpora. Leveraging language models and graph theory, SymbolRank assesses and ranks symbols such as classes and methods based on their semantic context and structural relationships within the software. The algorithm starts by embedding a global context using a concrete implementation of the SymbolEmbeddingHandler class, which applies OpenAI's API to generate vector representations of each symbol in the source code. These embeddings capture the semantic essence of the symbols, providing a basis for the subsequent stages of the process.
+**If you want to contribute to TensorFlow, be sure to review the
+[contribution guidelines](CONTRIBUTING.md). This project adheres to Automata's
+[code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
+uphold this code.**
 
-Simultaneously, the software corpus is used to construct a SymbolGraph. Each symbol in the corpus becomes a node in this graph, with dependencies between symbols forming the edges. The graph provides a comprehensive map of structural information in the codebase, offering methods to understand symbol dependencies, relationships, callers, and callees, and the ability to produce a rankable subgraph of symbols.
+**We use [GitHub issues](https://github.com/emrgnt-cmplxty/automata/issues) for
+tracking requests and bugs, please see
+[Automata Discussions](https://github.com/emrgnt-cmplxty/Automata/discussions/) for general questions and
+discussion, and please direct specific questions.**
 
-The SymbolRank class then uses a prepared similarity dictionary for a given query and the SymbolGraph. The algorithm subsequently executes an iterative computation akin to Google's PageRank, but considers both the symbols' similarity scores to the query and their connectivity within the graph. This amalgamation of natural language processing, information retrieval, and graph theory methods results in a ranking of code symbols, significantly aiding tasks like code understanding, navigation, recommendation, and search.
+The Automata project strives to abide by generally accepted best practices in
+open-source software development.
 
-## Hierarchical Operation
-
-Automata operates in a hierarchical structure, where providers at lower levels specialize in specific tasks like generating code snippets or analyzing a document segment. In contrast, higher-level providers supervise lower-level operations, assemble their outputs into a coherent whole, and strategically decide on the project's direction. This system, inspired by human cognition and organization theories, facilitates the emergence of complex behavior from the collaboration of simpler, specialized subsystems.
-
-Automata's design accommodates extensibility, enabling seamless integration with various APIs and libraries to enhance its capabilities. Additionally, it can leverage external data sources and real-time feedback from its interactions to constantly update its knowledge and skills.
 
 ## Future
 
-The ultimate goal of the Automata system is to achieve a level of proficiency where it can independently design, write, test, and refine complex software systems. This includes the ability to understand and navigate large codebases, reason about software architecture, optimize performance, and even invent new algorithms or data structures when necessary.
+The ultimate goal of the Automata project is to achieve a level of proficiency where it can independently design, write, test, and refine complex software systems. This includes the ability to understand and navigate large codebases, reason about software architecture, optimize performance, and even invent new algorithms or data structures when necessary.
 
 While the complete realization of this goal is likely to be a complex and long-term endeavor, each incremental step towards it not only has the potential to dramatically increase the productivity of human programmers, but also to shed light on fundamental questions in AI and computer science.
-
-## Inspiration and Future Endeavors
-
-Automata was born from the amalgamation of inspiring projects like [Auto-GPT](https://github.com/Significant-Gravitas/Auto-GPT), [BabyAGI](https://github.com/yoheinakajima/babyagi), [AgentGPT](https://github.com/reworkd/AgentGPT), and [GPT-Engineer](https://github.com/AntonOsika/gpt-engineer) and is designed to inspire many more. We're eager to see what you're building and how we can learn and evolve together in this uncharted AI territory.
 
 ## License
 
