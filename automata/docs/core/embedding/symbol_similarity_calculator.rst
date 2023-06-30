@@ -26,23 +26,23 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_search_tool.test_exact_search``
 -  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_doc_similarity``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.tests.conftest.symbol_search``
--  ``automata.core.llm.embedding.EmbeddingSimilarityCalculator``
+-  ``automata.core.llm.core.EmbeddingSimilarityCalculator``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata.core.llm.embedding import (
+   from automata.core.llm.core import (
        EmbeddingNormType,
        EmbeddingProvider,
        SymbolEmbeddingHandler,
    )
    from typing import Dict, List, Optional, Set
    from ann_embed.synthetic_provider import SyntheticProvider
-   from automata.core.symbol.base import Symbol
+   from automata.core.base.symbol import Symbol
    from numpy import random
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 

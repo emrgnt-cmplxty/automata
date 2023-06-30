@@ -10,15 +10,15 @@ from google.protobuf.json_format import MessageToDict  # type: ignore
 from tqdm import tqdm
 
 from automata.config import MAX_WORKERS
-from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.symbol.base import (
+from automata.core.base.scip_pb2 import Index, SymbolRole  # type: ignore
+from automata.core.base.symbol import (
     Symbol,
     SymbolDescriptor,
     SymbolFile,
     SymbolReference,
 )
+from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.symbol.parser import parse_symbol
-from automata.core.symbol.scip_pb2 import Index, SymbolRole  # type: ignore
 from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,

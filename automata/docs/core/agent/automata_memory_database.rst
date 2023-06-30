@@ -9,7 +9,7 @@ allowing users to get and put messages for a specific session.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.core.agent.agent.AutomataAgent``
 -  ``config.config_types.AgentConfigName``
 -  ``automata.core.database.vector.JSONEmbeddingVectorDatabase``

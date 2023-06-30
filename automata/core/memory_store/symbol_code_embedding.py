@@ -1,10 +1,12 @@
 import logging
 
-from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.core.llm.embedding import SymbolEmbeddingHandler
-from automata.core.symbol.base import Symbol
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding
-from automata.core.symbol_embedding.embedding_builders import SymbolCodeEmbeddingBuilder
+from automata.core.base.symbol import Symbol
+from automata.core.base.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolEmbeddingHandler,
+)
+from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
 
     def __init__(
         self,
-        embedding_db: VectorDatabaseProvider,
+        embedding_db: JSONSymbolEmbeddingVectorDatabase,
         embedding_builder: SymbolCodeEmbeddingBuilder,
     ) -> None:
         super().__init__(embedding_db, embedding_builder)

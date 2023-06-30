@@ -8,6 +8,8 @@ import numpy as np
 import pypandoc
 from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
 
+from automata.core.base.symbol import Symbol
+from automata.core.base.symbol_embedding import SymbolDocEmbedding
 from automata.core.coding.directory import DirectoryManager
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.navigation import (
@@ -17,8 +19,6 @@ from automata.core.coding.py.navigation import (
     find_syntax_tree_node,
 )
 from automata.core.coding.py.reader import PyReader
-from automata.core.symbol.base import Symbol
-from automata.core.symbol_embedding.base import SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
 

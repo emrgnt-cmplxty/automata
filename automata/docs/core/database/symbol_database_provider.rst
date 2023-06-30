@@ -12,7 +12,7 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_search.test_process_queries``
 -  ``automata.core.database.vector.VectorDatabaseProvider``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol_embedding.base.SymbolEmbedding``
+-  ``automata.core.base.symbol_embedding.SymbolEmbedding``
 
 Example
 -------
@@ -34,7 +34,7 @@ implementing the required methods:
 
    import abc
    from typing import Any
-   from automata.core.symbol.base import Symbol, SymbolEmbedding
+   from automata.core.base.symbol import Symbol, SymbolEmbedding
    from automata.core.database.provider import SymbolDatabaseProvider
 
    class CustomSymbolDatabaseProvider(SymbolDatabaseProvider):

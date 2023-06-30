@@ -30,7 +30,7 @@ Related Symbols
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingBuilder``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.core.base.symbol_embedding.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingBuilder.build``
 
@@ -44,7 +44,7 @@ concrete class (``SymbolCodeEmbeddingBuilder``) that extends
 .. code:: python
 
    from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingBuilder
-   from automata.core.llm.embedding import EmbeddingProvider
+   from automata.core.llm.core import EmbeddingProvider
 
    # Create an instance of EmbeddingProvider
    embedding_provider = EmbeddingProvider() 

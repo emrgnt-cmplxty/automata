@@ -4,7 +4,8 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
+from automata.core.base.symbol import SymbolDescriptor
+from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.context.py.retriever import (
     PyContextRetriever,
@@ -16,12 +17,11 @@ from automata.core.llm.providers.openai import (
 )
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_utils import get_rankable_symbols
-from automata.core.symbol_embedding.embedding_builders import (
+from automata.core.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,
 )
@@ -45,7 +45,7 @@ def main(*args, **kwargs) -> str:
     code_embedding_fpath = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
-    code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
+    code_embedding_db = JSONSymbolEmbeddingVectorDatabase(code_embedding_fpath)
     embedding_provider = OpenAIEmbeddingProvider()
     embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
     code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
@@ -56,7 +56,7 @@ def main(*args, **kwargs) -> str:
         ConfigCategory.SYMBOL.value,
         kwargs.get("symbol_doc_embedding_l2_fpath", "symbol_doc_embedding_l2.json"),
     )
-    embedding_db_l2 = JSONEmbeddingVectorDatabase(embedding_path_l2)
+    embedding_db_l2 = JSONSymbolEmbeddingVectorDatabase(embedding_path_l2)
 
     embedding_path_l3 = os.path.join(
         get_config_fpath(),
@@ -66,7 +66,7 @@ def main(*args, **kwargs) -> str:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    embedding_db_l3 = JSONEmbeddingVectorDatabase(embedding_path_l3)
+    embedding_db_l3 = JSONSymbolEmbeddingVectorDatabase(embedding_path_l3)
 
     symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler, embedding_provider)
 

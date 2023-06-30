@@ -53,7 +53,7 @@ SR_SEARCHES_TO_HITS = {
         "run_agent",
     ],
     "database": [
-        "JSONEmbeddingVectorDatabase",
+        "JSONSymbolEmbeddingVectorDatabase",
         "AgentConversationDatabase",
         "SymbolDatabaseProvider",
         "VectorDatabaseProvider",

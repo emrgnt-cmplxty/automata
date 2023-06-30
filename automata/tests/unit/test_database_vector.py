@@ -1,22 +1,24 @@
 import pytest
 
-from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding
+from automata.core.base.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+)
 
 
 def test_init_vector(temp_output_filename):
-    JSONEmbeddingVectorDatabase(temp_output_filename)
+    JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
 
 
 def test_add_symbol(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     symbol = symbols[0]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", [1, 2, 3])
     vector_db.add(embedded_symbol)
 
 
 def test_delete_symbol(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     symbol = symbols[0]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", [1, 2, 3])
     vector_db.add(embedded_symbol)
@@ -24,7 +26,7 @@ def test_delete_symbol(temp_output_filename, symbols):
 
 
 def test_add_symbols(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedded_symbol_0 = SymbolCodeEmbedding(symbols[0], "x", [1, 2, 3])
     vector_db.add(embedded_symbol_0)
     embedded_symbol_1 = SymbolCodeEmbedding(symbols[1], "y", [1, 2, 3, 4])
@@ -32,7 +34,7 @@ def test_add_symbols(temp_output_filename, symbols):
 
 
 def test_lookup_symbol(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedded_symbol_0 = SymbolCodeEmbedding(symbols[0], "x", [1, 2, 3])
     vector_db.add(embedded_symbol_0)
     embedded_symbol_1 = SymbolCodeEmbedding(symbols[1], "y", [1, 2, 3, 4])
@@ -42,7 +44,7 @@ def test_lookup_symbol(temp_output_filename, symbols):
 
 
 def test_lookup_symbol_fail(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedded_symbol_0 = SymbolCodeEmbedding(symbols[0], "x", [1, 2, 3])
     vector_db.add(embedded_symbol_0)
     embedded_symbol_1 = SymbolCodeEmbedding(symbols[1], "y", [1, 2, 3, 4])
@@ -55,7 +57,7 @@ def test_lookup_symbol_fail(temp_output_filename, symbols):
 
 
 def test_save(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedded_symbol_0 = SymbolCodeEmbedding(symbols[0], "x", [1, 2, 3])
     vector_db.add(embedded_symbol_0)
     embedded_symbol_1 = SymbolCodeEmbedding(symbols[1], "y", [1, 2, 3, 4])
@@ -64,14 +66,14 @@ def test_save(temp_output_filename, symbols):
 
 
 def test_load(temp_output_filename, symbols):
-    vector_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedded_symbol_0 = SymbolCodeEmbedding(symbols[0], "x", [1, 2, 3])
     vector_db.add(embedded_symbol_0)
     embedded_symbol_1 = SymbolCodeEmbedding(symbols[1], "y", [1, 2, 3, 4])
     vector_db.add(embedded_symbol_1)
     vector_db.save()
 
-    vector_db_2 = JSONEmbeddingVectorDatabase(temp_output_filename)
+    vector_db_2 = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
 
     embedded_symbol_0 = vector_db_2.get(symbols[0].dotpath)
     embedded_symbol_1 = vector_db_2.get(symbols[1].dotpath)

@@ -1,7 +1,6 @@
 from typing import List
 
 from automata.config import CONVERSATION_DB_PATH
-from automata.core.agent.error import AgentDatabaseError
 from automata.core.llm.completion import LLMChatMessage, LLMConversationDatabaseProvider
 
 
@@ -32,7 +31,7 @@ class AgentConversationDatabase(LLMConversationDatabaseProvider):
     def save_message(self, message: LLMChatMessage) -> None:
         """TODO - Think about how to handle function calls, e.g. OpenAIChatMessage, and other chat message providers"""
         if self.session_id is None:
-            raise AgentDatabaseError("The database session_id has not been set.")
+            raise ValueError("The database session_id has not been set.")
         interaction_id = self.last_interaction_id + 1
         interaction = {
             "role": message.role,

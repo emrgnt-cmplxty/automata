@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.core.utils.HandlerDict``
 -  ``automata.core.coding.py.module_loader.PyModuleLoader``
 -  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 
 Example
 -------

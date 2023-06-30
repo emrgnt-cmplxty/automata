@@ -11,10 +11,10 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.symbol.base.SymbolReference``
+-  ``automata.core.base.symbol.SymbolReference``
 -  ``automata.tests.unit.test_database_vector.test_add_symbol``
 -  ``automata.tests.unit.test_database_vector.test_add_symbols``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
@@ -29,7 +29,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.base import SymbolFile
+   from automata.core.base.symbol import SymbolFile
 
    file_path = "path/to/symbol_file.txt"
    symbol_file = SymbolFile(file_path)

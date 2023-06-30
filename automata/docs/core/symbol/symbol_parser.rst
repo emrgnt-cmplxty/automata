@@ -16,10 +16,10 @@ descriptor suffixes.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.core.symbol.parser.parse_symbol``
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.base.SymbolDescriptor``
+-  ``automata.core.base.symbol.SymbolDescriptor``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.context.py_context.retriever.PyContextRetriever``
 

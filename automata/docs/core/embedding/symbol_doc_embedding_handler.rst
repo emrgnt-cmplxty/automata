@@ -30,10 +30,10 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.llm.embedding.EmbeddingProvider``
--  ``automata.core.llm.embedding.SymbolEmbeddingHandler``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
+-  ``automata.core.llm.core.EmbeddingProvider``
+-  ``automata.core.llm.core.SymbolEmbeddingHandler``
+-  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.base.symbol_embedding.SymbolDocEmbedding``
 
 Example
 -------
