@@ -37,11 +37,11 @@ specific symbol.
 
    from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
    from automata.core.symbol.base import Symbol
-   from automata.core.base.database.vector import JSONVectorDatabase
+   from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
    from automata.core.embedding.embedding_provider import EmbeddingProvider
 
    # Create instances for the database and embedding provider
-   embedding_db = JSONVectorDatabase(database_filename)
+   embedding_db = JSONEmbeddingVectorDatabase(database_filename)
    embedding_provider = EmbeddingProvider()
 
    # Create a SymbolCodeEmbeddingHandler instance

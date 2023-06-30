@@ -2,7 +2,7 @@ import logging
 import os
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.coding.py.writer import PyDocWriter
 from automata.core.utils import get_config_fpath, get_root_py_fpath
 
@@ -19,11 +19,11 @@ def main(*args, **kwargs) -> str:
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l2.json"
     )
 
-    embedding_db = JSONVectorDatabase(embedding_path)
+    embedding_db = JSONEmbeddingVectorDatabase(embedding_path)
 
-    symbols = embedding_db.get_all_entries()
+    symbols = [embedding.symbol for embedding in embedding_db.get_all_entries()]
 
-    docs = {symbol: embedding_db.get(symbol) for symbol in symbols}
+    docs = {symbol: embedding_db.get(symbol.dotpath) for symbol in symbols}
 
     doc_writer.write_documentation(docs, symbols, os.path.join(get_root_py_fpath(), "docs"))  # type: ignore
     return "Success"

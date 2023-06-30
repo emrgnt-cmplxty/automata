@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Sequence, Set, Tuple
 from automata.config.base import ConfigCategory, LLMProvider
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.base.agent import AgentToolProviders
-from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.base.singleton import Singleton
 from automata.core.base.tool import Tool
 from automata.core.coding.py.reader import PyReader
@@ -16,7 +16,10 @@ from automata.core.context.py.retriever import (
     PyContextRetrieverConfig,
 )
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
+from automata.core.embedding.doc_embedding import (
+    SymbolDocEmbeddingBuilder,
+    SymbolDocEmbeddingHandler,
+)
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
@@ -153,11 +156,11 @@ class DependencyFactory(metaclass=Singleton):
         code_embedding_fpath = self.overrides.get(
             "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
         )
-        code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
+        code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
 
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
-        return SymbolSimilarityCalculator(code_embedding_handler)
+        return SymbolSimilarityCalculator(code_embedding_handler, embedding_provider)
 
     @lru_cache()
     def create_symbol_doc_similarity(self) -> SymbolSimilarityCalculator:
@@ -169,7 +172,7 @@ class DependencyFactory(metaclass=Singleton):
         doc_embedding_fpath = self.overrides.get(
             "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
         )
-        doc_embedding_db = JSONVectorDatabase(doc_embedding_fpath)
+        doc_embedding_db = JSONEmbeddingVectorDatabase(doc_embedding_fpath)
 
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         symbol_search = self.get("symbol_search")
@@ -178,14 +181,13 @@ class DependencyFactory(metaclass=Singleton):
             "doc_completion_provider", OpenAIChatCompletionProvider()
         )
 
-        doc_embedding_handler = SymbolDocEmbeddingHandler(
-            doc_embedding_db,
-            embedding_provider,
-            completion_provider,
-            symbol_search,
-            py_context_retriever,
+        symbol_doc_embedding_builder = SymbolDocEmbeddingBuilder(
+            embedding_provider, completion_provider, symbol_search, py_context_retriever
         )
-        return SymbolSimilarityCalculator(doc_embedding_handler)
+        doc_embedding_handler = SymbolDocEmbeddingHandler(
+            doc_embedding_db, symbol_doc_embedding_builder
+        )
+        return SymbolSimilarityCalculator(doc_embedding_handler, embedding_provider)
 
     @lru_cache()
     def create_symbol_rank(self) -> SymbolRank:

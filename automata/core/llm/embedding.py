@@ -25,6 +25,28 @@ class EmbeddingProvider(abc.ABC):
         pass
 
 
+class SymbolEmbeddingBuilder(abc.ABC):
+    """An abstract class to build embeddings for symbols"""
+
+    @abc.abstractmethod
+    def __init__(self, embedding_provider: EmbeddingProvider) -> None:
+        """An abstract constructor for SymbolEmbeddingBuilder"""
+        self.embedding_provider = embedding_provider
+
+    @abc.abstractmethod
+    def build(self, source_text: str, symbol: Symbol) -> Any:
+        """An abstract method to build the embedding for a symbol"""
+        pass
+
+    def fetch_embedding_context(self, symbol: Symbol) -> str:
+        """For a code embedding the context is the source code itself."""
+        from automata.core.symbol.symbol_utils import (  # imported late for mocking
+            convert_to_fst_object,
+        )
+
+        return str(convert_to_fst_object(symbol))
+
+
 class SymbolEmbeddingHandler(abc.ABC):
     """An abstract class to handle the embedding of symbols"""
 
@@ -32,11 +54,11 @@ class SymbolEmbeddingHandler(abc.ABC):
     def __init__(
         self,
         embedding_db: VectorDatabaseProvider,
-        embedding_provider: EmbeddingProvider,
+        embedding_builder: SymbolEmbeddingBuilder,
     ) -> None:
         """An abstract constructor for SymbolEmbeddingHandler"""
         self.embedding_db = embedding_db
-        self.embedding_provider = embedding_provider
+        self.embedding_builder = embedding_builder
 
     @abc.abstractmethod
     def get_embedding(self, symbol: Symbol) -> Any:
@@ -49,7 +71,7 @@ class SymbolEmbeddingHandler(abc.ABC):
         pass
 
     def get_all_supported_symbols(self) -> List[Symbol]:
-        return self.embedding_db.get_all_entries()
+        return [embedding.symbol for embedding in self.embedding_db.get_all_entries()]
 
 
 class EmbeddingSimilarityCalculator(abc.ABC):

@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.tests.utils.factories.symbol_search_live``
--  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.tests.unit.test_symbol_search.test_process_queries``
 -  ``automata.core.database.vector.VectorDatabaseProvider``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``

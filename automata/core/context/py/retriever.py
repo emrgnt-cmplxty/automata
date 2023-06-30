@@ -201,11 +201,11 @@ class PyContextRetriever:
         Process the documentation of a symbol, providing a summary or the entire source code
         depending on whether the symbol is the main symbol or not.
         """
-        if self.doc_embedding_db is not None and self.doc_embedding_db.contains(symbol):
+        if self.doc_embedding_db is not None and self.doc_embedding_db.contains(symbol.dotpath):
             if is_main_symbol:
-                document = self.doc_embedding_db.get(symbol).embedding_source
+                document = self.doc_embedding_db.get(symbol.dotpath).embedding_source
             else:
-                document = self.doc_embedding_db.get(symbol).summary
+                document = self.doc_embedding_db.get(symbol.dotpath).summary
             with self.IndentManager():
                 self.process_message(document)
                 self.process_message("")  # Add an empty line for separation

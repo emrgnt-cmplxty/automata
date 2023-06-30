@@ -4,9 +4,12 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.code_embedding import (
+    SymbolCodeEmbeddingBuilder,
+    SymbolCodeEmbeddingHandler,
+)
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
@@ -36,8 +39,10 @@ def main(*args, **kwargs) -> str:
     all_defined_symbols = symbol_graph.get_all_available_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
-    embedding_db = JSONVectorDatabase(embedding_path)
-    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, OpenAIEmbeddingProvider())
+    embedding_db = JSONEmbeddingVectorDatabase(embedding_path)
+    embedding_provider = OpenAIEmbeddingProvider()
+    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, embedding_builder)
 
     for symbol in tqdm(filtered_symbols):
         try:
@@ -49,7 +54,7 @@ def main(*args, **kwargs) -> str:
     for symbol in embedding_handler.get_all_supported_symbols():
         if symbol not in filtered_symbols:
             logger.info(f"Discarding stale symbol {symbol}...")
-            embedding_db.discard(symbol)
+            embedding_db.discard(symbol.dotpath)
     embedding_db.save()
 
     return "Success"

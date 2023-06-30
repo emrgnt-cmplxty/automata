@@ -1,7 +1,7 @@
-JSONVectorDatabase
+JSONEmbeddingVectorDatabase
 ==================
 
-``JSONVectorDatabase`` is a concrete class providing a vector database
+``JSONEmbeddingVectorDatabase`` is a concrete class providing a vector database
 that saves into a JSON file. It offers a set of methods for adding,
 retrieving, and discarding vectors associated with symbols. Also, it
 provides the calculation of similarity between vectors and manages these
@@ -10,7 +10,7 @@ vectors in a JSON file.
 Overview
 --------
 
-``JSONVectorDatabase`` allows users to store and manage the embedding
+``JSONEmbeddingVectorDatabase`` allows users to store and manage the embedding
 vectors in a JSON file format. It provides methods for adding new
 vectors, updating existing vectors, deleting vectors, checking if a
 symbol exists in the database, and calculating the similarity between a
@@ -19,7 +19,7 @@ given embedding vector and the vectors in the database.
 Related Symbols
 ---------------
 
--  ``JSONVectorDatabase`` inherits from
+-  ``JSONEmbeddingVectorDatabase`` inherits from
    ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.base.SymbolEmbedding``
@@ -28,16 +28,16 @@ Example
 -------
 
 The following example demonstrates how to create an instance of
-``JSONVectorDatabase`` and perform basic operations like adding and
+``JSONEmbeddingVectorDatabase`` and perform basic operations like adding and
 retrieving vectors associated with symbols.
 
 .. code:: python
 
-   from automata.core.base.database.vector import JSONVectorDatabase
+   from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
    from automata.core.symbol.base import Symbol, SymbolEmbedding
 
    file_path = "path/to/json/database.json"
-   vector_db = JSONVectorDatabase(file_path)
+   vector_db = JSONEmbeddingVectorDatabase(file_path)
 
    # Add a SymbolEmbedding to the database
    symbol = Symbol.from_string("example.Symbol#")
@@ -54,7 +54,7 @@ retrieving vectors associated with symbols.
 Limitations
 -----------
 
-The primary limitation of ``JSONVectorDatabase`` is that it currently
+The primary limitation of ``JSONEmbeddingVectorDatabase`` is that it currently
 provides a placeholder for the ``calculate_similarity`` method but does
 not implement any specific logic for calculating similarity between
 vectors. Users are required to implement this functionality themselves
@@ -64,6 +64,6 @@ Follow-up Questions:
 --------------------
 
 -  What similarity measure should be implemented or recommended for use
-   with the ``JSONVectorDatabase`` class?
+   with the ``JSONEmbeddingVectorDatabase`` class?
 -  Are there any performance considerations when dealing with large
    embedding databases stored in a JSON file?
