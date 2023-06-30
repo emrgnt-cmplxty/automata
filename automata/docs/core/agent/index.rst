@@ -39,6 +39,9 @@ how to :ref:`installation` the project.
    automata_memory_database
    automata_open_ai_agent
    automata_open_ai_agent_instance
+   open_ai_agent_tool_builder
+   open_ai_automata_agent
+   open_ai_automata_agent_instance
    result_action
    result_field
    tool_action

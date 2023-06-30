@@ -43,8 +43,7 @@ embedded vector.
 
 Note that this example assumes that the ``Symbol`` object already
 exists. For more information about working with ``Symbol`` objects,
-consult the ``automata.core.symbol.base.Symbol`` class
-documentation.
+consult the ``automata.core.symbol.base.Symbol`` class documentation.
 
 Limitations
 -----------

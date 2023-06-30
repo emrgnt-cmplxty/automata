@@ -1,62 +1,117 @@
-AgentConfig
-===========
+``AgentConfig`` Class
+=====================
 
-``AgentConfig`` is an abstract base class that provides a template for
-configurations related to providers. It contains abstract methods like
-``setup()`` and ``load()`` that need to be implemented by subclasses.
-This class also handles the configuration of arbitrary types during the
-initialization.
+The ``AgentConfig`` class is a base abstraction for creating specific
+configurations to be used by agent instances. It includes necessary
+parameters such as instructions to be executed by the agent, a list of
+tools used, a model name, and various boolean flags for stream and
+verbose logging status.
 
-Overview
---------
+In addition, it holds the max iterations and temperature settings for
+the agent’s operation. It also has an optional session id attribute.
 
-``AgentConfig`` is designed for ensuring configurability of providers.
-Subclasses need to provide implementations for the ``setup()`` and
-``load()`` methods in order to properly define the behavior during the
-agent setup and configuration loading processes. This class follows the
-BaseModel design, making it easy to extend and customize according to
-specific agent requirements.
+This class is an abstract base class (ABC), and it includes abstract
+methods, requiring subclasses to provide concrete implementations of
+these methods.
 
-Related Symbols
----------------
+Attributes
+----------
 
--  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
--  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.core.base.agent.AgentInstance.Config``
+-  ``config_name``: Defines the name of the configuration.
+-  ``tools``: Sets a list of Tools to be used by the agent.
+-  ``instructions``: A string set by the user to handle instructions for
+   the agent.
+-  ``description``: A string to hold any necessary description.
+-  ``model``: Defines the model to be used by the agent.
+-  ``stream``: Boolean variable to define whether to use stream
+   functionality.
+-  ``verbose``: Boolean variable to define whether verbose logging
+   should be used.
+-  ``max_iterations``: Sets the maximum iterations count for the agent
+   operations.
+-  ``temperature``: Sets the temperature scalar for the agent
+   operations.
+-  ``session_id``: (Optional) Defines the session id for the agent.
+
+Methods
+-------
+
+setup
+~~~~~
+
+A method that subclasses must implement. Its purpose is to be defined by
+the subclasses.
+
+load
+~~~~
+
+A method that subclasses must implement. It should load the agent
+configuration based on the provided name.
+
+get_llm_provider
+~~~~~~~~~~~~~~~~
+
+A static method that subclasses must implement. The method should return
+the provider for the agent.
+
+\_load_automata_yaml_config
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This method is responsible for loading YAML configuration for the agent.
+It opens a YAML file, processes its content, and loads them into an
+agent configuration instance. If ``config_name`` appears in the loaded
+YAML, it raises an Exception. Once the loading completes, it adds
+``config_name`` to the loaded YAML and returns it.
+
+Inherited Classes
+-----------------
+
+The ``AutomataOpenAIAgentConfig`` is a concrete class that inherits from
+``AgentConfig``. This class specifies ``OPENAI`` as the ``LLMProvider``
+and allows the use of different models. It further enriches the
+configuration by defining the system template, system template
+variables, system template formatter, instruction version, and system
+instruction.
 
 Example
 -------
 
-The following example demonstrates how to create a custom agent
-configuration by extending the ``AgentConfig`` class:
+Creating a derived class ``AutomataOpenAIAgentConfig`` and using the
+``load`` method:
 
 .. code:: python
 
-   from config.config_types import AgentConfig
-
-   class CustomAgentConfig(AgentConfig):
-
-       def setup(self):
-           # Define your custom agent setup process
-           pass
-
-       @classmethod
-       def load(cls, config_name: AgentConfigName) -> "CustomAgentConfig":
-           # Load the config for your custom agent
-           pass
+       from automata.config.openai_agent import AutomataOpenAIAgentConfig
+       from automata.config.base import AgentConfigName
+       
+       config = AutomataOpenAIAgentConfig.load(AgentConfigName.DEFAULT)
+       assert isinstance(config, AutomataOpenAIAgentConfig)
 
 Limitations
 -----------
 
-``AgentConfig`` itself is an abstract class and cannot directly be
-instantiated. It must be subclassed, and its methods need to be
-implemented by the extending class according to the specific agent
-requirements. Additionally, the current implementation allows for
-arbitrary types, which may lead to code that is not type-safe.
+The class ``AgentConfig`` is an abstract base class and cannot be
+directly used to create an object. It must be subclassed, and each
+subclass must provide implementations for the abstract methods.
+
+A derived class can load YAML configurations from a specific file
+location, and this could raise file operation related exceptions. For
+instance, if the configuration file is not found or if the YAML file is
+not in the correct format, corresponding exceptions will be raised.
+
+When a ``config_name`` is found in the loaded_yaml, the
+``_load_automata_yaml_config`` method throws an error stating:
+“config_name already specified in YAML. Please remove this from the YAML
+file.” This could be a limitation when the user does not have much
+control over the yaml content or if the yaml modification would conflict
+with other requirements.
 
 Follow-up Questions:
 --------------------
 
--  How can we ensure type safety while maintaining the flexibility and
-   customizability provided by ``AgentConfig``?
+-  How to manage the file operation exceptions when loading yaml
+   configuration?
+-  Can we modify ``_load_automata_yaml_config`` to allow ``config_name``
+   in yaml or provide a mechanism to overwrite it?
+-  What to do when we need to set up an ``AgentConfig`` with varying
+   attributes not defined in existing classes?

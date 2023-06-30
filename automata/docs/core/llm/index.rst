@@ -22,6 +22,7 @@ how to :ref:`installation` the project.
    llm_completion_result
    llm_conversation
    llm_conversation_database_provider
+   symbol_embedding_builder
    symbol_embedding_handler
 
 

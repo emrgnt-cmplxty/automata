@@ -14,9 +14,10 @@ Overview
 ``ContextOracleOpenAIToolBuilder`` enables the conversion of the context
 oracle tools to OpenAI tools by adding predefined properties and
 required parameters. By doing this, the tools can be easily used by
-OpenAI providers and can be integrated using the Automata agent framework.
-This tool builder uses ``SymbolSearch`` and ``SymbolSimilarity`` objects
-to manage related symbols and their context.
+OpenAI providers and can be integrated using the Automata agent
+framework. This tool builder uses ``SymbolSearch`` and
+``SymbolSimilarity`` objects to manage related symbols and their
+context.
 
 Related Symbols
 ---------------
