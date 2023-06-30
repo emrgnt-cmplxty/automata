@@ -20,7 +20,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.database.provider.SymbolDatabaseProvider``
--  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.base.SymbolEmbedding``
 -  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``

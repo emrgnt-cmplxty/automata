@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
@@ -36,7 +36,7 @@ def main(*args, **kwargs) -> str:
     all_defined_symbols = symbol_graph.get_all_available_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
-    embedding_db = JSONVectorDatabase(embedding_path)
+    embedding_db = JSONEmbeddingVectorDatabase(embedding_path)
     embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, OpenAIEmbeddingProvider())
 
     for symbol in tqdm(filtered_symbols):

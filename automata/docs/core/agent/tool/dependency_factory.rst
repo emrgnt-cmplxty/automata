@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.core.agent.tool.tool_utils.classmethod_lru_cache``
 -  ``automata.core.coding.py.reader.PyReader``
 -  ``automata.core.coding.py.writer.PyWriter``
--  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
 -  ``automata.core.context.py.retriever.PyContextRetrieverConfig``

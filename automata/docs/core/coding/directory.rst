@@ -32,7 +32,7 @@ Related Symbols
 
 -  ``automata.core.coding.directory.File``
 -  ``automata.core.coding.directory.Node``
--  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 
 Example
 -------

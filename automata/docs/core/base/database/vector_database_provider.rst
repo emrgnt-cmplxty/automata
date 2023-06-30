@@ -6,7 +6,7 @@ of vector database providers. These database providers are designed to
 store and manage ``SymbolEmbedding`` instances, which represent the
 embeddings of symbols within a given context. This class provides the
 structure and common functionality for specific implementations of
-vector database providers, such as ``JSONVectorDatabase``.
+vector database providers, such as ``JSONEmbeddingVectorDatabase``.
 
 Overview
 --------
@@ -22,7 +22,7 @@ in the database.
 Related Symbols
 ---------------
 
--  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.base.database.provider.SymbolDatabaseProvider``
 -  ``automata.core.symbol.base.Symbol``
@@ -69,7 +69,7 @@ Follow-up Questions:
 --------------------
 
 -  Are there any existing implementations of ``VectorDatabaseProvider``
-   other than ``JSONVectorDatabase``?
+   other than ``JSONEmbeddingVectorDatabase``?
 -  How can the process of adding, updating, or removing
    ``SymbolEmbedding`` instances be optimized or customized for
    different application requirements?

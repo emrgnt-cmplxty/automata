@@ -1,10 +1,10 @@
-JSONVectorDatabase
+JSONEmbeddingVectorDatabase
 ==================
 
-``JSONVectorDatabase`` is a concrete class that provides a vector
+``JSONEmbeddingVectorDatabase`` is a concrete class that provides a vector
 database that saves into a JSON file. It inherits from
 ``VectorDatabaseProvider``, an abstract base class for different types
-of vector database providers. The main purpose of ``JSONVectorDatabase``
+of vector database providers. The main purpose of ``JSONEmbeddingVectorDatabase``
 is to store and manage symbol embeddings in a JSON file, allowing for
 adding, updating, and discarding symbol embeddings, among other
 functionalities.
@@ -21,17 +21,17 @@ Example
 -------
 
 The following is an example demonstrating how to create an instance of
-``JSONVectorDatabase``, add symbol embeddings, and save them to a JSON
+``JSONEmbeddingVectorDatabase``, add symbol embeddings, and save them to a JSON
 file.
 
 .. code:: python
 
-   from automata.core.database.vector import JSONVectorDatabase
+   from automata.core.database.vector import JSONEmbeddingVectorDatabase
    from automata.core.symbol.base import Symbol, SymbolEmbedding
 
-   # Create an instance of JSONVectorDatabase with a JSON file path
+   # Create an instance of JSONEmbeddingVectorDatabase with a JSON file path
    file_path = "path/to/json_file.json"
-   vector_db = JSONVectorDatabase(file_path)
+   vector_db = JSONEmbeddingVectorDatabase(file_path)
 
    # Create Symbol objects
    symbol1 = Symbol.from_string("example.symbol1")
@@ -51,7 +51,7 @@ file.
 Limitations
 -----------
 
-The main limitation of ``JSONVectorDatabase`` is its reliance on a
+The main limitation of ``JSONEmbeddingVectorDatabase`` is its reliance on a
 single JSON file to store the vector database. This can lead to file
 size and processing speed limitations, especially when working with
 large databases. Additionally, the similarity calculation method is not
@@ -62,6 +62,6 @@ Follow-up Questions:
 --------------------
 
 -  Are there any performance optimizations that can be made in
-   JSONVectorDatabase?
+   JSONEmbeddingVectorDatabase?
 -  What is the best way to implement the similarity calculation in a
    generic manner?

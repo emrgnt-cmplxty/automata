@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.tests.unit.test_database_vector.test_save``
 -  ``automata.core.symbol.base.SymbolFile``
 -  ``automata.tests.unit.test_database_vector.test_init_vector``
--  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.tests.unit.test_database_vector.test_load``
 -  ``automata.core.symbol.base.SymbolFile.__eq__``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``

@@ -12,7 +12,7 @@ Related Symbols
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.agent.agent.AutomataAgent``
 -  ``config.config_types.AgentConfigName``
--  ``automata.core.database.vector.JSONVectorDatabase``
+-  ``automata.core.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.config.config_types.AutomataAgentConfig``
 -  ``automata.core.coding.py_coding.writer.PyCodeWriter``
 -  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``

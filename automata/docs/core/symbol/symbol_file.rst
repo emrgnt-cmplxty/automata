@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.core.symbol.base.SymbolReference``
 -  ``automata.tests.unit.test_database_vector.test_add_symbol``
 -  ``automata.tests.unit.test_database_vector.test_add_symbols``
--  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol_fail``
 -  ``automata.core.symbol.graph.SymbolGraph``
 
