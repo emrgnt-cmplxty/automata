@@ -4,15 +4,15 @@ import pytest
 
 from automata.config.base import ConfigCategory
 from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.embedding.code_embedding import (
+from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
+from automata.core.memory_store.symbol_code_embedding import (
     SymbolCodeEmbeddingBuilder,
     SymbolCodeEmbeddingHandler,
 )
-from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
-from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
+from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 from automata.core.utils import get_config_fpath
 
 

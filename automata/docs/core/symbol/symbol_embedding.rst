@@ -25,7 +25,7 @@ Related Symbols
 
 -  ``automata.core.symbol.base.SymbolCodeEmbedding``
 -  ``automata.core.symbol.base.SymbolDocEmbedding``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 
 Usage Example
 -------------

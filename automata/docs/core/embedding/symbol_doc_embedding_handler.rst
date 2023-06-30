@@ -44,7 +44,7 @@ embeddings.
 
 .. code:: python
 
-   from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
+   from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
    from automata.core.llm.completion import LLMChatCompletionProvider
    from automata.core.symbol.search.symbol_search import SymbolSearch
    from automata.core.context.py.retriever import PyContextRetriever
@@ -69,7 +69,7 @@ embeddings.
    handler.update_embedding(symbol)
 
    # Retrieve the documentation embedding
-   doc_embedding = handler.get_embedding(symbol)
+   symbol_doc_embedding = handler.get_embedding(symbol)
 
 Limitations
 -----------

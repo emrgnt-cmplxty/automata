@@ -12,7 +12,7 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.core.database.vector.VectorDatabaseProvider.calculate_similarity``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
@@ -28,7 +28,7 @@ The following is an example demonstrating how to subclass
 
 .. code:: python
 
-   from automata.core.embedding.embedding_types import EmbeddingSimilarity
+   from automata.core.memory_store.embedding_types import EmbeddingSimilarity
 
    class MyEmbeddingSimilarity(EmbeddingSimilarity):
 

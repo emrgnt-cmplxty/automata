@@ -218,7 +218,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.temperature = temperature
         self.stream = stream
         self.functions = functions
-        self.conversation = conversation
+        self.agent_conversations = conversation
         set_openai_api_key()
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
@@ -229,7 +229,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         if functions:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=self.conversation.get_messages_for_next_completion(),
+                messages=self.agent_conversations.get_messages_for_next_completion(),
                 functions=functions,
                 function_call="auto",  # auto is default, but we'll be explicit
                 stream=self.stream,
@@ -237,7 +237,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         else:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=self.conversation.get_messages_for_next_completion(),
+                messages=self.agent_conversations.get_messages_for_next_completion(),
                 stream=self.stream,
             )
         if self.stream:
@@ -249,11 +249,11 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         )
 
     def reset(self) -> None:
-        self.conversation.reset_conversation()
+        self.agent_conversations.reset_conversation()
 
     def standalone_call(self, prompt: str) -> str:
         """Return the completion message based on the provided prompt."""
-        if self.conversation.messages:
+        if self.agent_conversations.messages:
             raise ValueError(
                 "The conversation is not empty. Please call reset() before calling standalone_call()."
             )
@@ -266,11 +266,11 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):
-            self.conversation.add_message(
+            self.agent_conversations.add_message(
                 OpenAIChatMessage(role=message.role, content=message.content)
             )
         else:
-            self.conversation.add_message(message)
+            self.agent_conversations.add_message(message)
         logger.debug(
             f"Approximately {self.get_approximate_tokens_consumed()} tokens were after adding the latest message."
         )
@@ -361,7 +361,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                 "\n".join(
                     [
                         json.dumps(ele)
-                        for ele in self.conversation.get_messages_for_next_completion()
+                        for ele in self.agent_conversations.get_messages_for_next_completion()
                     ]
                 )
             )

@@ -23,8 +23,8 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding_exception``
 -  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embedding``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.core.llm.embedding.SymbolEmbeddingHandler.__init__``
 
 Example

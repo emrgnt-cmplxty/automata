@@ -20,7 +20,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.symbol.search.rank.SymbolRank``
 -  ``automata.core.symbol.search.rank.SymbolRankConfig``
 -  ``automata.core.symbol.base.Symbol``
@@ -34,7 +34,7 @@ The following example demonstrates how to create an instance of
 .. code:: python
 
    from automata.core.symbol.graph import SymbolGraph
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol_embedding.similarity import SymbolSimilarity
    from automata.core.symbol.search.symbol_search import SymbolSearch, ExactSearchResult
    from automata.core.symbol.search.rank import SymbolRankConfig
 

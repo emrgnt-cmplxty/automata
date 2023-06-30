@@ -23,8 +23,8 @@ Related Symbols
 -  ``automata.core.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.base.SymbolEmbedding``
--  ``automata.core.embedding.embedding_types.SymbolEmbeddingHandler``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.embedding_types.SymbolEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 
 Example
 -------

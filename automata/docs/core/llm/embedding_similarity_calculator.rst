@@ -21,7 +21,7 @@ Related Symbols
 
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarityCalculator``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarityCalculator``
 -  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_code_similarity``
 
 Example

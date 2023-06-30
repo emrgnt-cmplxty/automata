@@ -3,13 +3,13 @@ from unittest.mock import MagicMock
 import numpy as np
 
 from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.embedding.code_embedding import (
+from automata.core.memory_store.symbol_code_embedding import (
     EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
     SymbolEmbeddingBuilder,
 )
-from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.symbol.base import SymbolCodeEmbedding
+from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 
 
 def test_get_nearest_symbols_for_query(

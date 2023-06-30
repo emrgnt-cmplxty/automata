@@ -42,7 +42,7 @@ The following example demonstrates the usage of
    from automata.core.agent.tools.tool_utils import AgentToolFactory
    from automata.core.base.tool import ToolkitType
    from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol_embedding.similarity import SymbolSimilarity
    from automata.core.symbol.graph import SymbolGraph
    from automata.tests.unit.test_base_tool import mock_tool
 

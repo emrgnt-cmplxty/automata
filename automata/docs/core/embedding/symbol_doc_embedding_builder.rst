@@ -34,7 +34,7 @@ Here we will walk through an example of how to use the
 
 .. code:: python
 
-   from automata.core.embedding.doc_embedding import SymbolDocEmbeddingBuilder
+   from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingBuilder
    from automata.core.llm.embedding import EmbeddingProvider
    from automata.core.llm.completion import LLMChatCompletionProvider
    from automata.core.context.py.retriever import PyContextRetriever

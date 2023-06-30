@@ -23,7 +23,7 @@ Related Symbols
 
 -  ``automata.core.agent.tools.agent_tool.AgentTool``
 -  ``automata.core.base.tool.Tool``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.symbol.search.symbol_search.SymbolSearch``
 
 Example
@@ -32,7 +32,7 @@ Example
 .. code:: python
 
    from automata.core.agent.tools.context_oracle import ContextOracleTool
-   from automata.core.embedding.symbol_similarity import SymbolSimilarity
+   from automata.core.symbol_embedding.similarity import SymbolSimilarity
    from automata.core.symbol.search.symbol_search import SymbolSearch
 
    symbol_search = SymbolSearch()

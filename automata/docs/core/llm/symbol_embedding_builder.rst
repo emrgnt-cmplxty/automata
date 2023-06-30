@@ -24,15 +24,15 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingBuilder``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingBuilder``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding_exception``
 -  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingBuilder``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingBuilder``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
 -  ``automata.core.symbol.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingBuilder.build``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingBuilder.build``
 
 Example
 -------
@@ -43,7 +43,7 @@ concrete class (``SymbolCodeEmbeddingBuilder``) that extends
 
 .. code:: python
 
-   from automata.core.embedding.code_embedding import SymbolCodeEmbeddingBuilder
+   from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingBuilder
    from automata.core.llm.embedding import EmbeddingProvider
 
    # Create an instance of EmbeddingProvider

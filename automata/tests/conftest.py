@@ -15,12 +15,12 @@ from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
 from automata.core.base.agent import AgentToolProviders
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
+from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
+from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 
 
 @pytest.fixture

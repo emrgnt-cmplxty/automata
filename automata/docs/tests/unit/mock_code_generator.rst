@@ -25,7 +25,7 @@ Related Symbols
 
 -  ``automata.core.coding.py.reader.PyReader``
 -  ``automata.core.coding.py.writer.PyWriter``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.base.tool.Tool``
 -  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolBuilder``
 

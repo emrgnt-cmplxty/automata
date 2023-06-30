@@ -27,7 +27,7 @@ encountered and handled when setting up the database provider for an
 
    from automata.core.agent.providers import OpenAIAutomataAgent
    from automata.core.agent.error import AgentDatabaseError
-   from automata.conversation_database.SimpleSQLiteConversationDatabase import SimpleSQLiteConversationDatabase
+   from automata.agent_conversations.SimpleSQLiteConversationDatabase import SimpleSQLiteConversationDatabase
 
    try:
        agent = OpenAIAutomataAgent("Instructions to the agent")

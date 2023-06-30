@@ -31,7 +31,7 @@ Import Statements
    from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
    from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
    from automata.core.base.tool import Tool
-   from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
+   from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
    from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
    from automata.core.symbol.search.symbol_search import SymbolSearch
 
@@ -55,7 +55,7 @@ Below is an example demonstrating how to create an instance of
 
    from automata.core.agent.tool.builder.context_oracle import ContextOracleToolBuilder
    from automata.core.symbol.search.symbol_search import SymbolSearch # Replace MagicMock in example
-   from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator # Replace MagicMock in example
+   from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator # Replace MagicMock in example
 
    symbol_search = SymbolSearch() # Mocked in example, replace with appropriate parameters
    symbol_doc_similarity = SymbolSimilarityCalculator() # Mocked in example, replace with appropriate parameters

@@ -120,8 +120,8 @@ TREE_STRUCTURE = textwrap.dedent(
         │   └── vector.py
         ├── embedding
         │   ├── __init__.py
-        │   ├── code_embedding.py
-        │   ├── doc_embedding.py
+        │   ├── symbol_code_embedding.py
+        │   ├── symbol_doc_embedding.py
         │   ├── embedding_types.py
         │   └── symbol_similarity.py
         ├── symbol

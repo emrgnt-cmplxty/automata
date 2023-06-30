@@ -20,7 +20,7 @@ document embeddings.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.core.symbol.scip_pb2.Descriptor``
 -  ``automata.core.symbol.parser.parse_symbol``
 -  ``automata.core.symbol.base.SymbolCodeEmbedding``

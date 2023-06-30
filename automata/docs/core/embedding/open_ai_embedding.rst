@@ -26,7 +26,7 @@ Related Symbols
 -  ``automata.tests.conftest.mock_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.core.symbol.base.SymbolEmbedding``
--  ``automata.core.embedding.embedding_types.EmbeddingProvider``
+-  ``automata.core.memory_store.embedding_types.EmbeddingProvider``
 
 Usage Example
 -------------
@@ -36,7 +36,7 @@ symbol source code:
 
 .. code:: python
 
-   from automata.core.embedding.embedding_types import OpenAIEmbedding
+   from automata.core.memory_store.embedding_types import OpenAIEmbedding
 
    engine = "text-embedding-ada-002"
    openai_embedding = OpenAIEmbedding(engine=engine)

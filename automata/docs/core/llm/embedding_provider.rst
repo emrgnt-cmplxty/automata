@@ -10,8 +10,8 @@ Related Symbols
 ---------------
 
 -  ``automata.core.llm.providers.openai.OpenAIEmbeddingProvider``
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.tests.unit.test_symbol_embedding``
 
 Example

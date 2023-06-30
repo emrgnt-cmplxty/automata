@@ -19,7 +19,7 @@ Related Symbols
 -  ``automata.core.coding.py.writer.PyWriter``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.embedding.symbol_similarity.SymbolSimilarity``
+-  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.context.py.retriever.PyContextRetrieverConfig``
 -  ``automata.core.agent.error.AgentGeneralError``
 

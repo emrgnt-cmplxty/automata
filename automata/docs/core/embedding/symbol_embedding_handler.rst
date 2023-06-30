@@ -3,7 +3,7 @@ SymbolEmbeddingHandler
 
 ``SymbolEmbeddingHandler`` is an abstract class that serves as the base
 for handling embeddings of various types of symbols. It forms the
-foundation for handling symbol embeddings in the automata.core.embedding
+foundation for handling symbol embeddings in the automata.core.memory_store
 module.
 
 Overview
@@ -18,8 +18,8 @@ specialized embedding handling for specific types of symbols.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.embedding.doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.core.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.base.Symbol``
 
@@ -32,8 +32,8 @@ The following code snippet demonstrates the usage of
 .. code:: python
 
    from automata.core.database.vector import JSONEmbeddingVectorDatabase
-   from automata.core.embedding.embedding_types import EmbeddingProvider
-   from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+   from automata.core.memory_store.embedding_types import EmbeddingProvider
+   from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
    from automata.core.symbol.base import Symbol
 
    # Define the embedding database and embedding provider
