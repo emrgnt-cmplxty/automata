@@ -85,6 +85,7 @@ def main(*args, **kwargs) -> str:
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             try:
+                logger.info(f"Attempting update for symbol {symbol}...")
                 embedding_handler.process_embedding(symbol)
                 embedding_db_l2.save()
             except Exception as e:
@@ -93,7 +94,7 @@ def main(*args, **kwargs) -> str:
     for symbol in embedding_handler.get_all_supported_symbols():
         if symbol not in filtered_symbols:
             logger.info(f"Discarding stale symbol {symbol}...")
-            embedding_db_l2.discard(symbol)
+            embedding_db_l2.discard(symbol.dotpath)
     embedding_db_l2.save()
 
     logger.info("Complete.")

@@ -54,10 +54,8 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
         Return result is sorted in descending order by default.
         """
         query_embedding_array = self.embedding_provider.build_embedding_array(query_text)
-        print("query_embedding_array = ", query_embedding_array)
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(query_embedding_array)
-        print("similarity_scores = ", similarity_scores)
         similarity_dict = {
             self.index_to_symbol[i]: similarity_scores[i]
             for i in range(len(self.index_to_symbol))

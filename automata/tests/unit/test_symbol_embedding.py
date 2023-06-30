@@ -4,7 +4,6 @@ import numpy as np
 
 from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.embedding.code_embedding import (
-    EmbeddingProvider,
     SymbolCodeEmbeddingHandler,
     SymbolEmbeddingBuilder,
 )
@@ -134,7 +133,6 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     cem.embedding_db.get = lambda x: cem.embedding_db.data[0]
 
     cem.process_embedding(mock_simple_method_symbols[0])
-    print("cem.embedding_db.data = ", cem.embedding_db.data[0])
     embedding = cem.embedding_db.data[0].vector
     assert len(cem.embedding_db.data) == 1  # Expect empty embedding map because of exception
     assert list(embedding) == [1, 2, 3, 4]

@@ -101,7 +101,7 @@ def main(*args, **kwargs) -> str:
     for symbol in embedding_handler.get_all_supported_symbols():
         if symbol not in filtered_symbols:
             logger.info(f"Discarding stale symbol {symbol}...")
-            embedding_db_l3.discard(symbol)
+            embedding_db_l3.discard(symbol.dotpath)
     embedding_db_l3.save()
 
     logger.info("Complete.")

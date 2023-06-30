@@ -54,7 +54,7 @@ def main(*args, **kwargs) -> str:
     for symbol in embedding_handler.get_all_supported_symbols():
         if symbol not in filtered_symbols:
             logger.info(f"Discarding stale symbol {symbol}...")
-            embedding_db.discard(symbol)
+            embedding_db.discard(symbol.dotpath)
     embedding_db.save()
 
     return "Success"
