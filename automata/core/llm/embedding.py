@@ -38,10 +38,13 @@ class SymbolEmbeddingBuilder(abc.ABC):
         """An abstract method to build the embedding for a symbol"""
         pass
 
-    @abc.abstractmethod
     def fetch_embedding_context(self, symbol: Symbol) -> str:
-        """An abstract method to fetch the embedding context for a symbol"""
-        pass
+        """For a code embedding the context is the source code itself."""
+        from automata.core.symbol.symbol_utils import (  # imported late for mocking
+            convert_to_fst_object,
+        )
+
+        return str(convert_to_fst_object(symbol))
 
 
 class SymbolEmbeddingHandler(abc.ABC):

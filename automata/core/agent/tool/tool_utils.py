@@ -16,7 +16,10 @@ from automata.core.context.py.retriever import (
     PyContextRetrieverConfig,
 )
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
+from automata.core.embedding.doc_embedding import (
+    SymbolDocEmbeddingBuilder,
+    SymbolDocEmbeddingHandler,
+)
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
@@ -178,12 +181,11 @@ class DependencyFactory(metaclass=Singleton):
             "doc_completion_provider", OpenAIChatCompletionProvider()
         )
 
+        symbol_doc_embedding_builder = SymbolDocEmbeddingBuilder(
+            embedding_provider, completion_provider, symbol_search, py_context_retriever
+        )
         doc_embedding_handler = SymbolDocEmbeddingHandler(
-            doc_embedding_db,
-            embedding_provider,
-            completion_provider,
-            symbol_search,
-            py_context_retriever,
+            doc_embedding_db, symbol_doc_embedding_builder
         )
         return SymbolSimilarityCalculator(doc_embedding_handler, embedding_provider)
 

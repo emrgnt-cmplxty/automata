@@ -4,7 +4,10 @@ import pytest
 
 from automata.config.base import ConfigCategory
 from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.code_embedding import (
+    SymbolCodeEmbeddingBuilder,
+    SymbolCodeEmbeddingHandler,
+)
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.symbol.graph import SymbolGraph
@@ -41,13 +44,13 @@ def symbol_search_live() -> SymbolSearch:
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
     code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
-    code_embedding_handler = SymbolCodeEmbeddingHandler(
-        code_embedding_db, OpenAIEmbeddingProvider()
-    )
+    embedding_provider = OpenAIEmbeddingProvider()
+    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
 
     symbol_graph = SymbolGraph(scip_path)
 
-    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler)
+    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler, embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
     symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()

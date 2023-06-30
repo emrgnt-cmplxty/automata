@@ -10,8 +10,14 @@ from automata.core.context.py.retriever import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.embedding.doc_embedding import SymbolDocEmbeddingHandler
+from automata.core.embedding.code_embedding import (
+    SymbolCodeEmbeddingBuilder,
+    SymbolCodeEmbeddingHandler,
+)
+from automata.core.embedding.doc_embedding import (
+    SymbolDocEmbeddingBuilder,
+    SymbolDocEmbeddingHandler,
+)
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
@@ -44,7 +50,8 @@ def main(*args, **kwargs) -> str:
     )
     code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
     embedding_provider = OpenAIEmbeddingProvider()
-    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
+    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
 
     # TODO - Add option for the user to modify l2 embedding path in commands.py
     embedding_path_l2 = os.path.join(
@@ -64,14 +71,13 @@ def main(*args, **kwargs) -> str:
         symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
     )
     py_context_retriever = PyContextRetriever(symbol_graph, PyContextRetrieverConfig())
+    chat_provider = OpenAIChatCompletionProvider(model=kwargs.get("model", "gpt-4"))
 
-    embedding_handler = SymbolDocEmbeddingHandler(
-        embedding_db_l2,
-        OpenAIEmbeddingProvider(),
-        OpenAIChatCompletionProvider(model=kwargs.get("model", "gpt-4")),
-        symbol_search,
-        py_context_retriever,
+    symbol_doc_embedding_builder = SymbolDocEmbeddingBuilder(
+        embedding_provider, chat_provider, symbol_search, py_context_retriever
     )
+
+    embedding_handler = SymbolDocEmbeddingHandler(embedding_db_l2, symbol_doc_embedding_builder)
 
     all_defined_symbols = symbol_graph.get_all_available_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)

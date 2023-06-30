@@ -7,60 +7,31 @@ from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.context.py.retriever import PyContextRetriever
 from automata.core.llm.completion import LLMChatCompletionProvider
-from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingHandler
+from automata.core.llm.embedding import (
+    EmbeddingProvider,
+    SymbolEmbeddingBuilder,
+    SymbolEmbeddingHandler,
+)
 from automata.core.symbol.base import Symbol, SymbolDocEmbedding
 from automata.core.symbol.search.symbol_search import SymbolSearch
 
 logger = logging.getLogger(__name__)
 
 
-class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
-    """
-    Handles a database and provider for `Symbol` documentation embeddings.
-    TODO: Add more robust logic for documentation updates.
-    """
-
+class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
     def __init__(
         self,
-        embedding_db: VectorDatabaseProvider,
         embedding_provider: EmbeddingProvider,
         completion_provider: LLMChatCompletionProvider,
         symbol_search: SymbolSearch,
         retriever: PyContextRetriever,
     ) -> None:
-        super().__init__(embedding_db, embedding_provider)
+        super().__init__(embedding_provider)
         self.symbol_search = symbol_search
         self.retriever = retriever
         self.completion_provider = completion_provider
 
-    def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
-        return self.embedding_db.get(symbol)
-
-    def process_embedding(self, symbol: Symbol) -> None:
-        """
-        Processes the embedding for a `Symbol` by calling either `update_existing_embedding`
-        or `build_symbol_doc_embedding`, depending on whether the symbol is already in the database.
-
-        Raises:
-            ValueError: If the symbol has no source code for the symbol.
-        """
-        from automata.core.symbol.symbol_utils import (  # imported late for mocking
-            convert_to_fst_object,
-        )
-
-        source_code = str(convert_to_fst_object(symbol))
-
-        if not source_code:
-            raise ValueError(f"Symbol {symbol} has no source code")
-
-        if self.embedding_db.contains(symbol):
-            self.update_existing_embedding(source_code, symbol)
-            return
-
-        symbol_embedding = self.build_symbol_doc_embedding(source_code, symbol)
-        self.embedding_db.add(symbol_embedding)
-
-    def build_symbol_doc_embedding(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
+    def build(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
         """
 
         Build the embedding for a symbol's documentation.
@@ -130,14 +101,9 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
 
         -  How can we ensure type safety while maintaining the flexibility and
         customizability provided by ``AgentConfig``?
-
-
-
         """
         abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-
         search_list = self.generate_search_list(abbreviated_selected_symbol)
-
         self.retriever.reset()
         self.retriever.process_symbol(symbol, search_list)
 
@@ -178,24 +144,35 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
                 search_list.append(search_results_without_tests[i][0])
         return search_list
 
-    def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
-        """
-        Check if the embedding for a symbol needs to be updated.
-        This is done by comparing the source code of the symbol to the source code
 
+class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
+    """A class to handle the embedding of symbols"""
 
-        FIXME - We need to add logic similar to what we have
-            in the code embedding handler to update documentation
-            when a sufficient threshold has been breached
-            the following is a representative snippet -
-            if existing_embedding.embedding_source != source_code:
-            logger.debug("Building a new embedding for %s", symbol)
-            self.embedding_db.discard(symbol)
-            symbol_embedding = self.build_embedding_array(source_code, symbol)
+    def __init__(
+        self,
+        embedding_db: VectorDatabaseProvider,
+        embedding_builder: SymbolDocEmbeddingBuilder,
+    ) -> None:
+        self.embedding_db = embedding_db
+        self.embedding_builder = embedding_builder
+
+    def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
+        return self.embedding_db.get(symbol)
+
+    def process_embedding(self, symbol: Symbol) -> None:
+        source_code = self.embedding_builder.fetch_embedding_context(symbol)
+
+        if not source_code:
+            raise ValueError(f"Symbol {symbol} has no source code")
+
+        if self.embedding_db.contains(symbol):
+            self.update_existing_embedding(source_code, symbol)
+        else:
+            symbol_embedding = self.embedding_builder.build(source_code, symbol)
             self.embedding_db.add(symbol_embedding)
-        """
+
+    def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         existing_embedding = self.embedding_db.get(symbol)
-        # For now, we will just automatically roll the existing documentation forward
         if existing_embedding.symbol != symbol or existing_embedding.source_code != source_code:
             logger.debug(
                 f"Rolling forward the embedding for {existing_embedding.symbol} to {symbol}"

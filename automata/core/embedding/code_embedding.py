@@ -24,14 +24,6 @@ class SymbolCodeEmbeddingBuilder(SymbolEmbeddingBuilder):
         embedding_vector = self.embedding_provider.build_embedding_array(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
-    def fetch_embedding_context(self, symbol: Symbol) -> str:
-        """For a code embedding the context is the source code itself."""
-        from automata.core.symbol.symbol_utils import (  # imported late for mocking
-            convert_to_fst_object,
-        )
-
-        return str(convert_to_fst_object(symbol))
-
 
 class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
     """Handles a database for `Symbol` source code embeddings."""

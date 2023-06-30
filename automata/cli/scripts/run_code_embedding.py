@@ -6,7 +6,10 @@ from tqdm import tqdm
 from automata.config.base import ConfigCategory
 from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.embedding.code_embedding import (
+    SymbolCodeEmbeddingBuilder,
+    SymbolCodeEmbeddingHandler,
+)
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
@@ -37,7 +40,9 @@ def main(*args, **kwargs) -> str:
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
     embedding_db = JSONEmbeddingVectorDatabase(embedding_path)
-    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, OpenAIEmbeddingProvider())
+    embedding_provider = OpenAIEmbeddingProvider()
+    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+    embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, embedding_builder)
 
     for symbol in tqdm(filtered_symbols):
         try:
