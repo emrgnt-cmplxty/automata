@@ -12,15 +12,13 @@
 
 This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them. More information follows below.
 
-## 🧠 [Read the Docs](https://automata.readthedocs.io/en/latest/)
-
 ---
+
+## 🧠 [Read the Docs](https://automata.readthedocs.io/en/latest/)
 
 ## Demo
 
-
 https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7
-
 
 <img width="1059" alt="Automata_Rough_Schematic_06_22_23" src="https://github.com/emrgnt-cmplxty/Automata/assets/68796651/57ae3418-c01b-4b3f-a548-2f050c234b34">
 
@@ -33,83 +31,27 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 Follow these steps to setup the Automata environment
 
 ```bash
-## NOTE - the code below is contained in setup.sh.example
+# Copy the env and setup files
+cp .setup.sh.example setup.sh && cp .env.example .env
 
-# Clone the repository
-git clone git@github.com:emrgnt-cmplxty/Automata.git
-cd Automata
+# Allow for execution  
+chmod 755 setup.sh
 
-# Create the local environment
-python3 -m venv local_env
-source local_env/bin/activate
+# Update the setup and env files with your local paths
+vim setup.sh
+vim .env
 
-# Install the project in editable mode
-pip3 install -e .
-
-# Setup pre-commit hooks
-pre-commit install
-
-# Set up .env
-cp .env.example .env
-OPEN_API_KEY=your_openai_api_key_here
-GITHUB_API_KEY=your_github_api_key
-CONVERSATION_DB_PATH="$PWD/conversation_db.sqlite3"
-TASK_DB_PATH="$PWD/task_db.sqlite3"
-TASKS_OUTPUT_PATH="$PWD/tasks"
-REPOSITORY_NAME="emrgnt-cmplxty/Automata"
-sed -i "s|your_openai_api_key|$OPEN_API_KEY|" .env
-sed -i "s|your_github_api_key|$GITHUB_API_KEY|" .env
-sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" .env
-sed -i "s|your_task_db_path|$TASK_DB_PATH|" .env
-sed -i "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" .env
-sed -i "s|your_repository_name|$REPOSITORY_NAME|" .env
-# Additional Notes -
-# Default Max Workers is 8, manually change the .env to update this quantity.
-# For MAC users, the example should read as follows -
-## sed -i '' "s|your_openai_api_key|$OPEN_API_KEY|" .env
-
-# Fetch the submodules
-git submodule update --init --recursive
-
-### NOTE - You must install git-lfs, if you have not done so already
-
-### For Ubuntu, run the following:
-##  sudo apt-get install git-lfs
-### For Mac, run the following:
-##  brew install git-lfs
-###
-### Then, initialize by running the following:
-##  git lfs install
-##  git lfs pull
+# Run the setup script
+./setup.sh
 ```
 
 ### Indexing
 
-[SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates all dependencies. New indices are generated and uploaded periodically for the Automata Interpreter codebase, but developers must be generate them manually if necessary for their local development. If you encounter issues, we recommending referring to the [instructions here](https://github.com/sourcegraph/scip-python).
+[SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates symbols by dependencies across the codebase. New indices are generated and uploaded periodically for the Automata codebase, but programmers must be generate them manually if necessary for their local development. If you encounter issues, we recommend referring to the [instructions here](https://github.com/sourcegraph/scip-python).
 
 ```bash
-# Activate the local repository
-source local_env/bin/activate
-
-# Install scip-python locally
-cd scip-python
-npm install
-
-# Build the tool
-cd packages/pyright-scip
-npm run build
-
-# Return to working dir
-cd ../../../
-
-# Generate the local index
-node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
-
-# Copy into the default index location
-mv index_from_fork.scip automata/config/symbol/index.scip
-
-
-### Alternatively, you mean run ./regenerate_index after changing local permissions and completing the above install.
+# Install dependencies and run indexing on the local codebase
+./install_indexing.sh && ./regenerate_index.sh
 ```
 
 ### Build the embeddings + docs
@@ -122,11 +64,9 @@ automata run-code-embedding
 
 # "L1" docs are the docstrings written into the code
 # "L2" docs are generated from the L1 docs + symbol context
-# Build/refresh and embed the L2 docs
 automata run-doc-embedding-l2
 
 # "L3" docs are generated from the L2 docs + symbol context
-# Build/refresh and embed the L3 docs
 automata run-doc-embedding-l3
 ```
 
