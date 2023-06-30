@@ -3,7 +3,7 @@ import os
 import pytest
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.embedding.code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.embedding.symbol_similarity import SymbolSimilarityCalculator
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
@@ -40,7 +40,7 @@ def symbol_search_live() -> SymbolSearch:
     code_embedding_fpath = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
-    code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
+    code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
     code_embedding_handler = SymbolCodeEmbeddingHandler(
         code_embedding_db, OpenAIEmbeddingProvider()
     )

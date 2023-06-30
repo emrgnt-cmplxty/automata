@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONVectorDatabase
+from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.context.py.retriever import (
     PyContextRetriever,
@@ -41,10 +41,9 @@ def main(*args, **kwargs) -> str:
     code_embedding_fpath = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
-    code_embedding_db = JSONVectorDatabase(code_embedding_fpath)
-    code_embedding_handler = SymbolCodeEmbeddingHandler(
-        code_embedding_db, OpenAIEmbeddingProvider()
-    )
+    code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
+    embedding_provider = OpenAIEmbeddingProvider()
+    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
 
     # TODO - Add option for the user to modify l2 & l3  embedding path in commands.py
     embedding_path_l2 = os.path.join(
@@ -52,7 +51,7 @@ def main(*args, **kwargs) -> str:
         ConfigCategory.SYMBOL.value,
         kwargs.get("symbol_doc_embedding_l2_fpath", "symbol_doc_embedding_l2.json"),
     )
-    embedding_db_l2 = JSONVectorDatabase(embedding_path_l2)
+    embedding_db_l2 = JSONEmbeddingVectorDatabase(embedding_path_l2)
 
     embedding_path_l3 = os.path.join(
         get_config_fpath(),
@@ -62,9 +61,9 @@ def main(*args, **kwargs) -> str:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    embedding_db_l3 = JSONVectorDatabase(embedding_path_l3)
+    embedding_db_l3 = JSONEmbeddingVectorDatabase(embedding_path_l3)
 
-    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler)
+    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler, embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
     symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()

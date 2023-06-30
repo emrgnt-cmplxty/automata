@@ -20,11 +20,12 @@ class SymbolSimilarityCalculator(EmbeddingSimilarityCalculator):
     def __init__(
         self,
         symbol_embedding_manager: SymbolEmbeddingHandler,
+        embedding_provider: EmbeddingProvider,
         norm_type: EmbeddingNormType = EmbeddingNormType.L2,
     ) -> None:
         """Initializes SymbolSimilarity by building the associated symbol mappings."""
         self.embedding_handler: SymbolEmbeddingHandler = symbol_embedding_manager
-        self.embedding_provider: EmbeddingProvider = symbol_embedding_manager.embedding_provider
+        self.embedding_provider: EmbeddingProvider = embedding_provider
         self.norm_type = norm_type
         supported_symbols = self.embedding_handler.get_all_supported_symbols()
         self.index_to_symbol = dict(enumerate(supported_symbols))
