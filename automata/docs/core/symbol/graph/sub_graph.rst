@@ -19,8 +19,8 @@ Related Symbols
 ---------------
 
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.scip_pb2.Index``
+-  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.base.scip_pb2.Index``
 -  ``automata.core.symbol.symbol_utils.get_rankable_symbols``
 -  ``automata.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
 

@@ -23,7 +23,7 @@ to provide embeddings for symbols using the ``numpy`` library:
 .. code:: python
 
    import numpy as np
-   from automata.core.llm.embedding import EmbeddingProvider
+   from automata.core.llm.core import EmbeddingProvider
 
    class CustomEmbeddingProvider(EmbeddingProvider):
        def build_embedding(self, symbol_source: str) -> np.ndarray:

@@ -22,13 +22,13 @@ Related Symbols
 -  ``automata.core.coding.directory.Node``
 -  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
 -  ``automata.tests.unit.test_database_vector.test_save``
--  ``automata.core.symbol.base.SymbolFile``
+-  ``automata.core.base.symbol.SymbolFile``
 -  ``automata.tests.unit.test_database_vector.test_init_vector``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.tests.unit.test_database_vector.test_load``
--  ``automata.core.symbol.base.SymbolFile.__eq__``
+-  ``automata.core.base.symbol.SymbolFile.__eq__``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.core.symbol.base.SymbolReference``
+-  ``automata.core.base.symbol.SymbolReference``
 -  ``automata.tests.unit.test_task_environment.TestURL``
 
 Usage Example

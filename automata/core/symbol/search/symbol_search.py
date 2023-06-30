@@ -4,8 +4,8 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 import networkx as nx
 import numpy as np
 
+from automata.core.base.symbol import Symbol, SymbolReference
 from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.symbol.base import Symbol, SymbolReference
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig

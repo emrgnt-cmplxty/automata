@@ -15,7 +15,7 @@ Related Symbols
 -  ``VectorDatabaseProvider``
 -  ``Symbol``
 -  ``SymbolEmbedding``
--  ``automata.core.symbol_embedding.base.SymbolEmbedding``
+-  ``automata.core.base.symbol_embedding.SymbolEmbedding``
 
 Example
 -------
@@ -27,7 +27,7 @@ file.
 .. code:: python
 
    from automata.core.database.vector import JSONEmbeddingVectorDatabase
-   from automata.core.symbol.base import Symbol, SymbolEmbedding
+   from automata.core.base.symbol import Symbol, SymbolEmbedding
 
    # Create an instance of JSONEmbeddingVectorDatabase with a JSON file path
    file_path = "path/to/json_file.json"

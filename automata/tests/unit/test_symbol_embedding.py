@@ -2,10 +2,12 @@ from unittest.mock import MagicMock, Mock
 
 import numpy as np
 
-from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.llm.embedding import SymbolEmbeddingBuilder
+from automata.core.base.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolEmbeddingBuilder,
+)
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding
 
 
 def test_update_embeddings(
@@ -23,8 +25,8 @@ def test_update_embeddings(
     mock_provider = Mock(SymbolEmbeddingBuilder)
     # mock_provider.build_embedding_array.return_value = mock_embedding
 
-    # Mock JSONEmbeddingVectorDatabase methods
-    mock_db = MagicMock(JSONEmbeddingVectorDatabase)
+    # Mock JSONSymbolEmbeddingVectorDatabase methods
+    mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
     mock_db.get.return_value = SymbolCodeEmbedding(
         mock_simple_method_symbols[0], mock_embedding, "symbol_source"
     )
@@ -55,8 +57,8 @@ def test_get_embedding(
     mock_provider = Mock(SymbolEmbeddingBuilder)
     # mock_provider.build_embedding_array.return_value = mock_embedding
 
-    # Mock JSONEmbeddingVectorDatabase methods
-    mock_db = MagicMock(JSONEmbeddingVectorDatabase)
+    # Mock JSONSymbolEmbeddingVectorDatabase methods
+    mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
     mock_db.get.return_value = SymbolCodeEmbedding(
         mock_simple_method_symbols[0], "symbol_source", mock_embedding
     )
@@ -82,8 +84,8 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
     mock_provider = Mock(SymbolEmbeddingBuilder)
     # mock_provider.build_embedding_array.return_value = [1, 2, 3]
 
-    # Mock JSONEmbeddingVectorDatabase methods
-    mock_db = MagicMock(JSONEmbeddingVectorDatabase)
+    # Mock JSONSymbolEmbeddingVectorDatabase methods
+    mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
@@ -106,8 +108,8 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     # Mock EmbeddingProvider methods
     mock_provider = Mock(SymbolEmbeddingBuilder)
 
-    # Mock JSONEmbeddingVectorDatabase methods
-    mock_db = MagicMock(JSONEmbeddingVectorDatabase)
+    # Mock JSONSymbolEmbeddingVectorDatabase methods
+    mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
@@ -147,8 +149,8 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
     mock_provider = Mock(SymbolEmbeddingBuilder)
     mock_provider.build.side_effect = Exception("Test exception")
 
-    # Mock JSONEmbeddingVectorDatabase methods
-    mock_db = MagicMock(JSONEmbeddingVectorDatabase)
+    # Mock JSONSymbolEmbeddingVectorDatabase methods
+    mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)

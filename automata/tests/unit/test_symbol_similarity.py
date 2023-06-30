@@ -2,10 +2,13 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingBuilder
+from automata.core.base.embedding import EmbeddingProvider
+from automata.core.base.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolEmbeddingBuilder,
+)
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding
 from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 
 
@@ -27,8 +30,8 @@ def test_get_nearest_symbols_for_query(
         symbol=symbol3, vector=np.array([0, 0, 1, 0]), source_code="symbol3"
     )
 
-    # Mock JSONEmbeddingVectorDatabase methods
-    embedding_db = JSONEmbeddingVectorDatabase(temp_output_filename)
+    # Mock JSONSymbolEmbeddingVectorDatabase methods
+    embedding_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedding_db.add(embedding1)
     embedding_db.add(embedding2)
     embedding_db.add(embedding3)

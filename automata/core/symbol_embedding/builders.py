@@ -3,22 +3,20 @@ from typing import List
 from jinja2 import Template
 
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
+from automata.core.base.embedding import EmbeddingProvider
+from automata.core.base.symbol import Symbol
+from automata.core.base.symbol_embedding import (
+    SymbolCodeEmbedding,
+    SymbolDocEmbedding,
+    SymbolEmbeddingBuilder,
+)
 from automata.core.context.py.retriever import PyContextRetriever
 from automata.core.llm.completion import LLMChatCompletionProvider
-from automata.core.llm.embedding import EmbeddingProvider, SymbolEmbeddingBuilder
-from automata.core.symbol.base import Symbol
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 
 
 class SymbolCodeEmbeddingBuilder(SymbolEmbeddingBuilder):
     """Builds `Symbol` source code embeddings."""
-
-    def __init__(
-        self,
-        embedding_provider: EmbeddingProvider,
-    ) -> None:
-        self.embedding_provider = embedding_provider
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
         embedding_vector = self.embedding_provider.build_embedding_array(source_code)

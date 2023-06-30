@@ -13,7 +13,7 @@ Overview
 --------
 
 ``SymbolDescriptor`` is primarily used in the context of
-``automata.core.symbol.base.Symbol``, a class that represents a
+``automata.core.base.symbol.Symbol``, a class that represents a
 standardized string representation for various programming elements such
 as packages, classes, methods, and more. By utilizing
 ``SymbolDescriptor``, it is possible to parse and store specific
@@ -23,10 +23,10 @@ retrieval, or reference.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.core.symbol.parser._SymbolParser``
--  ``automata.core.symbol.base.SymbolDescriptor.PyKind``
--  ``automata.core.symbol.scip_pb2.Descriptor``
+-  ``automata.core.base.symbol.SymbolDescriptor.PyKind``
+-  ``automata.core.base.scip_pb2.Descriptor``
 
 Examples
 --------
@@ -35,8 +35,8 @@ Below are some examples using the ``SymbolDescriptor`` class:
 
 .. code:: python
 
-   from automata.core.symbol.base import SymbolDescriptor
-   from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
+   from automata.core.base.symbol import SymbolDescriptor
+   from automata.core.base.scip_pb2 import Descriptor as DescriptorProto
 
    # Create a SymbolDescriptor object for a Python method
    descriptor = SymbolDescriptor(

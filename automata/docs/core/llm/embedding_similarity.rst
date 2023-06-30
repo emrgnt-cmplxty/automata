@@ -12,7 +12,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
 
@@ -36,7 +36,7 @@ for both methods:
 
 .. code:: python
 
-   from automata.core.llm.embedding import EmbeddingSimilarity
+   from automata.core.llm.core import EmbeddingSimilarity
 
    class DummySimilarity(EmbeddingSimilarity):
        def get_nearest_entries_for_query(self, query_text: str, k_nearest: int) -> Dict[Symbol, float]:

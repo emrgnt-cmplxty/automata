@@ -21,8 +21,8 @@ Related Symbols
 ---------------
 
 -  ``automata.core.symbol.parser.parse_symbol``
--  ``automata.core.symbol.scip_pb2.Index``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.scip_pb2.Index``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.core.symbol.graph.GraphBuilder``
 -  ``automata.core.symbol.graph._SymbolGraphNavigator``
 -  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_graph``

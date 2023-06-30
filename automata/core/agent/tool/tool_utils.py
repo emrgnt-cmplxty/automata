@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Sequence, Set, Tuple
 from automata.config.base import ConfigCategory, LLMProvider
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.base.agent import AgentToolProviders
-from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
 from automata.core.base.singleton import Singleton
+from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
 from automata.core.base.tool import Tool
 from automata.core.coding.py.reader import PyReader
 from automata.core.coding.py.writer import PyWriter
@@ -24,7 +24,7 @@ from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHa
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.search.rank import SymbolRank, SymbolRankConfig
 from automata.core.symbol.search.symbol_search import SymbolSearch
-from automata.core.symbol_embedding.embedding_builders import SymbolDocEmbeddingBuilder
+from automata.core.symbol_embedding.builders import SymbolDocEmbeddingBuilder
 from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 from automata.core.utils import get_config_fpath
 
@@ -154,7 +154,7 @@ class DependencyFactory(metaclass=Singleton):
         code_embedding_fpath = self.overrides.get(
             "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
         )
-        code_embedding_db = JSONEmbeddingVectorDatabase(code_embedding_fpath)
+        code_embedding_db = JSONSymbolEmbeddingVectorDatabase(code_embedding_fpath)
 
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_provider)
@@ -170,7 +170,7 @@ class DependencyFactory(metaclass=Singleton):
         doc_embedding_fpath = self.overrides.get(
             "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
         )
-        doc_embedding_db = JSONEmbeddingVectorDatabase(doc_embedding_fpath)
+        doc_embedding_db = JSONSymbolEmbeddingVectorDatabase(doc_embedding_fpath)
 
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         symbol_search = self.get("symbol_search")
