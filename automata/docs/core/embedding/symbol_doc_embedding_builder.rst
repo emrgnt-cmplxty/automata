@@ -23,7 +23,8 @@ Import Statements
        SymbolEmbeddingBuilder,
        SymbolEmbeddingHandler,
    )
-   from automata.core.symbol.base import Symbol, SymbolDocEmbedding
+   from automata.core.symbol.base import Symbol
+   from automata.core.symbol_embedding.base import SymbolDocEmbedding
    from automata.core.symbol.search.symbol_search import SymbolSearch
 
 Example

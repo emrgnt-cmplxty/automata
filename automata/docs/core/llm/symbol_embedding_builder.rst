@@ -30,7 +30,7 @@ Related Symbols
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingBuilder``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_update_embeddings``
--  ``automata.core.symbol.base.SymbolCodeEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingBuilder.build``
 

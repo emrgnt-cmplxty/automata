@@ -33,7 +33,7 @@ Related Symbols
 -  ``automata.core.llm.embedding.EmbeddingProvider``
 -  ``automata.core.llm.embedding.SymbolEmbeddingHandler``
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.base.SymbolDocEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 
 Example
 -------

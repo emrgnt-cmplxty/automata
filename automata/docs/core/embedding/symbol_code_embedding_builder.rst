@@ -21,7 +21,7 @@ Related Symbols
 
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.tests.unit.test_database_vector.test_add_symbols``
--  ``automata.core.symbol.base.SymbolCodeEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingBuilder``
 -  ``automata.core.llm.embedding.SymbolEmbeddingBuilder``
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``

@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_search.test_process_queries``
 -  ``automata.core.database.vector.VectorDatabaseProvider``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol.base.SymbolEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding``
 
 Example
 -------

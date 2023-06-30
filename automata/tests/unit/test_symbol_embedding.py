@@ -3,11 +3,9 @@ from unittest.mock import MagicMock, Mock
 import numpy as np
 
 from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-from automata.core.memory_store.symbol_code_embedding import (
-    SymbolCodeEmbeddingHandler,
-    SymbolEmbeddingBuilder,
-)
-from automata.core.symbol.base import SymbolCodeEmbedding
+from automata.core.llm.embedding import SymbolEmbeddingBuilder
+from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.symbol_embedding.base import SymbolCodeEmbedding
 
 
 def test_update_embeddings(

@@ -25,7 +25,7 @@ Related Symbols
 -  ``automata.core.coding.py.reader.PyReader``
 -  ``automata.core.coding.directory.DirectoryManager``
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.base.SymbolDocEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 -  ``type: ignore``
 
 Example

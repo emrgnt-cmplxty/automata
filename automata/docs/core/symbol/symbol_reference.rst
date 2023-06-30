@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.tests.unit.test_symbol_search.tool.test_symbol_references``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol.base.SymbolDocEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 
 Example
 -------

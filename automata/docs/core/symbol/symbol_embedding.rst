@@ -23,8 +23,8 @@ such as ``SymbolCodeEmbedding`` and ``SymbolDocEmbedding``.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.SymbolCodeEmbedding``
--  ``automata.core.symbol.base.SymbolDocEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 
 Usage Example
