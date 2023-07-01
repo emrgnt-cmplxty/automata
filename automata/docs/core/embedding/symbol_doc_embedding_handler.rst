@@ -45,7 +45,7 @@ embeddings.
 .. code:: python
 
    from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-   from automata.core.llm.completion import LLMChatCompletionProvider
+   from automata.core.llm.foundation import LLMChatCompletionProvider
    from automata.core.symbol.search.symbol_search import SymbolSearch
    from automata.core.context.py.retriever import PyContextRetriever
 

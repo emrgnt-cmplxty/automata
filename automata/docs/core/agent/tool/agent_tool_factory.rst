@@ -13,11 +13,11 @@ tools for various agent types and their respective providers.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolBuilderRegistry``
--  ``automata.core.base.agent.AgentToolProviders``
+-  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolkitRegistry``
+-  ``automata.core.base.agent.AgentToolkitNames``
 -  ``automata.core.base.tool.Tool``
 -  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolBuilder``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
 -  ``automata.core.symbol.search.symbol_search.SymbolSearch``
 -  ``automata.core.agent.error.UnknownToolError``
 
@@ -30,10 +30,10 @@ The following example demonstrates how to create tools using the
 .. code:: python
 
    from automata.core.agent.tool.tool_utils import AgentToolFactory
-   from automata.core.base.agent import AgentToolProviders
+   from automata.core.base.agent import AgentToolkitNames
 
-   # Choose any supported AgentToolProviders instance
-   agent_tool = AgentToolProviders.CHAT_COMPLETION
+   # Choose any supported AgentToolkitNames instance
+   agent_tool = AgentToolkitNames.CHAT_COMPLETION
    # Create tools
    created_tools = AgentToolFactory.create_tools_from_builder(agent_tool)
 
@@ -41,7 +41,7 @@ Overview
 --------
 
 ``AgentToolFactory`` checks the tool builders available in
-``AutomataOpenAIAgentToolBuilderRegistry`` and determines which builder
+``AutomataOpenAIAgentToolkitRegistry`` and determines which builder
 can handle the given agent tool instance. It returns created tools
 depending on the platform the tool is built for. If the tool builder
 can’t handle the agent tool, it raises an ``UnknownToolError``.
@@ -53,7 +53,7 @@ The current implementation of ``AgentToolFactory`` assumes all supported
 platforms are part of the ``LLMPlatforms`` enumeration. If new platforms
 are introduced in the future, it is necessary to update the
 implementation accordingly. Moreover, it depends on the
-``AutomataOpenAIAgentToolBuilderRegistry``, and adding or updating
+``AutomataOpenAIAgentToolkitRegistry``, and adding or updating
 builders should be done in this registry.
 
 Follow-up Questions:
@@ -63,4 +63,4 @@ Follow-up Questions:
    platforms without making major changes?
 -  How can we extend this design to include more default tool builders
    without registering them explicitly in the
-   ``AutomataOpenAIAgentToolBuilderRegistry``?
+   ``AutomataOpenAIAgentToolkitRegistry``?

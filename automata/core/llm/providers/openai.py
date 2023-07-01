@@ -9,7 +9,7 @@ from termcolor import colored
 
 from automata.core.base.embedding import EmbeddingProvider
 from automata.core.base.tool import Tool
-from automata.core.llm.completion import (
+from automata.core.llm.foundation import (
     LLMChatCompletionProvider,
     LLMChatMessage,
     LLMCompletionResult,

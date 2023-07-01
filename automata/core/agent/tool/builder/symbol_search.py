@@ -3,9 +3,9 @@ from typing import List, Optional, Union
 
 from automata.config.base import LLMProvider
 from automata.core.agent.error import UnknownToolError
-from automata.core.agent.providers import OpenAIAgentToolBuilder
-from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
-from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
+from automata.core.agent.providers import OpenAIAgentToolkit
+from automata.core.agent.tool.registry import AutomataOpenAIAgentToolkitRegistry
+from automata.core.base.agent import AgentToolkit, AgentToolkitNames
 from automata.core.base.tool import Tool
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.symbol.search.symbol_search import (
@@ -28,7 +28,7 @@ class SearchTool(Enum):
     EXACT_SEARCH = "exact-search"
 
 
-class SymbolSearchToolBuilder(AgentToolBuilder):
+class SymbolSearchToolkit(AgentToolkit):
     """A class for interacting with the SymbolSearch API,
     which provides functionality to search an indexed python codebase."""
 
@@ -95,9 +95,9 @@ class SymbolSearchToolBuilder(AgentToolBuilder):
         )
 
 
-@AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
-class SymbolSearchOpenAIToolBuilder(SymbolSearchToolBuilder, OpenAIAgentToolBuilder):
-    TOOL_TYPE = AgentToolProviders.SYMBOL_SEARCH
+@AutomataOpenAIAgentToolkitRegistry.register_tool_manager
+class SymbolSearchOpenAIToolkit(SymbolSearchToolkit, OpenAIAgentToolkit):
+    TOOL_TYPE = AgentToolkitNames.SYMBOL_SEARCH
     PLATFORM = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:

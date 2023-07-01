@@ -23,7 +23,7 @@ Related Symbols
 -  ``automata.tests.unit.test_task_database.db``
 -  ``automata.tests.unit.test_conversation_database.db``
 -  ``automata.core.agent.task.registry.AutomataTaskDatabase``
--  ``automata.core.llm.completion.LLMConversationDatabaseProvider``
+-  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
 
 Example
 -------

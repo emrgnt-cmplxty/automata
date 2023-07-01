@@ -10,11 +10,11 @@ completion.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.completion.LLMEmptyConversationError``
--  ``automata.core.llm.completion.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMEmptyConversationError``
+-  ``automata.core.llm.foundation.LLMChatMessage``
 -  ``automata.core.llm.providers.openai.OpenAIConversation``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
 -  ``automata.tests.unit.test_conversation_database``
 
 Overview
@@ -33,7 +33,7 @@ that extends ``LLMConversation``:
 
 .. code:: python
 
-   from automata.core.llm.completion import LLMConversation, LLMChatMessage
+   from automata.core.llm.foundation import LLMConversation, LLMChatMessage
 
    class MyCustomConversation(LLMConversation):
        def __init__(self):

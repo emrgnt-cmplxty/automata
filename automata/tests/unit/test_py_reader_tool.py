@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tool.builder.py_reader import PyReaderToolBuilder
+from automata.core.agent.tool.builder.py_reader import PyReaderToolkit
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
@@ -26,7 +26,7 @@ def module_loader():
 @pytest.fixture
 def python_retriever_tool_builder():
     python_code_retriever = PyReader()
-    return PyReaderToolBuilder(py_reader=python_code_retriever)
+    return PyReaderToolkit(py_reader=python_code_retriever)
 
 
 def test_init(python_retriever_tool_builder):

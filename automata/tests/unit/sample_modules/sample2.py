@@ -5,12 +5,12 @@ from tools.python_tools.python_agent import PythonAgent
 from automata.core.base.tool import Tool
 
 
-class PythonAgentToolBuilder:
+class PythonAgentToolkit:
     """A class for building tools to interact with PythonAgent."""
 
     def __init__(self, python_agent: PythonAgent):
         """
-        Initializes a PythonAgentToolBuilder with the given PythonAgent.
+        Initializes a PythonAgentToolkit with the given PythonAgent.
 
         Args:
             python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.

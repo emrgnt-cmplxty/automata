@@ -10,7 +10,7 @@ respective completion provider classes.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
 -  ``automata.config.base.AgentConfig``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfig``
 
@@ -33,7 +33,7 @@ create the desired LLMChatCompletionProvider for an application.
 
    from automata.config.base import LLMProvider
    from automata.config.openai_agent import AutomataOpenAIAgentConfig
-   from automata.core.llm.completion import LLMChatCompletionProvider
+   from automata.core.llm.foundation import LLMChatCompletionProvider
 
    # Get the LLMProvider from the agent configuration
    config = AutomataOpenAIAgentConfig()

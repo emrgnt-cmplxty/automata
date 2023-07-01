@@ -4,7 +4,7 @@ import textwrap
 
 import pytest
 
-from automata.core.agent.tool.builder.py_writer import PyWriterToolBuilder
+from automata.core.agent.tool.builder.py_writer import PyWriterToolkit
 from automata.core.base.tool import Tool
 from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.coding.py.reader import PyReader
@@ -32,7 +32,7 @@ def python_writer_tool_builder(tmpdir):
     os.chdir(temp_directory)
     py_reader = PyReader()
     py_writer = PyWriter(py_reader)
-    return PyWriterToolBuilder(py_writer=py_writer)
+    return PyWriterToolkit(py_writer=py_writer)
 
 
 def test_init(python_writer_tool_builder):
@@ -141,12 +141,12 @@ from automata.core.base.tool import Tool
 from automata.tools.python_tools.python_agent import PythonAgent
 
 
-class PythonAgentToolBuilder:
+class PythonAgentToolkit:
     """A class for building tools to interact with PythonAgent."""
 
     def __init__(self, python_agent: PythonAgent):
         """
-        Initializes a PythonAgentToolBuilder with the given PythonAgent.
+        Initializes a PythonAgentToolkit with the given PythonAgent.
 
         Args:
             python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.
@@ -189,7 +189,7 @@ class PythonAgentToolBuilder:
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    code_writer.function((file_py_path, "PythonAgentToolBuilder", class_str))
+    code_writer.function((file_py_path, "PythonAgentToolkit", class_str))
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
 
@@ -209,7 +209,7 @@ from automata.buffer import PassThroughBuffer
 from automata.tools.tool import Tool
 from automata.tools.python_tools.python_agent import PythonAgent
 
-class PythonAgentToolBuilder:
+class PythonAgentToolkit:
 
     def __init__(self, python_agent: PythonAgen):
         self.python_agent = python_agent

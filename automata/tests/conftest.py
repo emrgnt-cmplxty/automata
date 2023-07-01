@@ -13,7 +13,7 @@ from automata.core.agent.task.environment import AutomataTaskEnvironment
 from automata.core.agent.task.registry import AutomataTaskRegistry
 from automata.core.agent.task.task import AutomataTask
 from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
-from automata.core.base.agent import AgentToolProviders
+from automata.core.base.agent import AgentToolkitNames
 from automata.core.base.github_manager import GitHubManager, RepositoryManager
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.symbol.graph import SymbolGraph
@@ -155,7 +155,7 @@ def automata_agent(mocker, automata_agent_config_builder):
 
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
-        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolProviders(tool)]:
+        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolkitNames(tool)]:
             dependencies.add(dependency_name)
 
     for dependency in dependencies:

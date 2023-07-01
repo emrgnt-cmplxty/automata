@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from automata.core.llm.completion import LLMChatMessage
+from automata.core.llm.foundation import LLMChatMessage
 from automata.core.memory_store.agent_conversation_database import (
     AgentConversationDatabase,
 )

@@ -18,7 +18,7 @@ specialized completion result classes if needed.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.completion.LLMCompletionResult``
+-  ``automata.core.llm.foundation.LLMCompletionResult``
 -  ``automata.core.llm.providers.openai.FunctionCall``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``

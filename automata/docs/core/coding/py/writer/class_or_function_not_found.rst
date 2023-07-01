@@ -22,8 +22,8 @@ Related Symbols
 
 -  ``automata.core.coding.py.reader.PyReader``
 -  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_py_writer``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterToolBuilder``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolBuilder``
+-  ``automata.core.agent.tool.builder.py_writer.PyWriterToolkit``
+-  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
 
 Example
 -------

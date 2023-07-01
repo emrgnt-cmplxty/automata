@@ -11,7 +11,7 @@ from automata.core.base.symbol_embedding import (
     SymbolEmbeddingBuilder,
 )
 from automata.core.context.py.retriever import PyContextRetriever
-from automata.core.llm.completion import LLMChatCompletionProvider
+from automata.core.llm.foundation import LLMChatCompletionProvider
 from automata.core.symbol.search.symbol_search import SymbolSearch
 
 

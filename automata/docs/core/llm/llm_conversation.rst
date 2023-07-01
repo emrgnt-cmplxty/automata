@@ -19,9 +19,9 @@ customizable way of working with LLM conversations.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.completion.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMChatMessage``
 -  ``automata.core.llm.providers.openai.OpenAIConversation``
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.core.base.observer.Observer``
 -  ``automata.core.base.database.relational.SQLDatabase``
@@ -35,7 +35,7 @@ conversation class (e.g., ``CustomLLMConversation``) which extends
 
 .. code:: python
 
-   from automata.core.llm.completion import LLMConversation, LLMChatMessage
+   from automata.core.llm.foundation import LLMConversation, LLMChatMessage
 
    class CustomLLMConversation(LLMConversation):
        def __init__(self):

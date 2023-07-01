@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.tests.unit.test_tool.TestTool``
 -  ``automata.core.base.tool.Tool.run``
 -  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolBuilder.can_handle``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkit.can_handle``
 
 Example
 -------

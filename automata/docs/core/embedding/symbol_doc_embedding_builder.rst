@@ -17,7 +17,7 @@ Import Statements
    from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
    from automata.core.base.database.vector import VectorDatabaseProvider
    from automata.core.context.py.retriever import PyContextRetriever
-   from automata.core.llm.completion import LLMChatCompletionProvider
+   from automata.core.llm.foundation import LLMChatCompletionProvider
    from automata.core.llm.core import (
        EmbeddingProvider,
        SymbolEmbeddingBuilder,
@@ -37,7 +37,7 @@ Here we will walk through an example of how to use the
 
    from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingBuilder
    from automata.core.llm.core import EmbeddingProvider
-   from automata.core.llm.completion import LLMChatCompletionProvider
+   from automata.core.llm.foundation import LLMChatCompletionProvider
    from automata.core.context.py.retriever import PyContextRetriever
    from automata.core.symbol.search.symbol_search import SymbolSearch
    from automata.core.base.symbol import Symbol

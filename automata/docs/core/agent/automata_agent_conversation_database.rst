@@ -23,8 +23,8 @@ Related Symbols
 ---------------
 
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.core.llm.completion.LLMChatMessage``
--  ``automata.core.llm.completion.LLMConversationDatabaseProvider``
+-  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
 -  ``automata.core.base.database.relational.SQLDatabase``
 
 Example
@@ -37,7 +37,7 @@ messages.
 .. code:: python
 
    from automata.core.memory_store.agent_conversations import AgentConversationDatabase
-   from automata.core.llm.completion import LLMChatMessage
+   from automata.core.llm.foundation import LLMChatMessage
 
    # Create a new AgentConversationDatabase instance
    db = AgentConversationDatabase(session_id="my_session")
