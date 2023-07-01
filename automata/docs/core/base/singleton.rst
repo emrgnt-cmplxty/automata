@@ -16,7 +16,7 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
 -  ``automata.core.llm.completion.LLMChatCompletionProvider.__init__``
 -  ``automata.tests.conftest.MockRepositoryManager``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.tests.unit.test_py_reader.getter``
 -  ``automata.core.coding.py.module_loader.PyModuleLoader.__init__``
 

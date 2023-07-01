@@ -12,7 +12,7 @@ Related Symbols
 -  ``automata.core.coding.directory.DirectoryManager``
 -  ``automata.core.coding.py_coding.navigation.find_all_function_and_class_syntax_tree_nodes``
 -  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
 -  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
 -  ``automata.core.coding.py_coding.writer.PyDocWriter``

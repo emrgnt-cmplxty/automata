@@ -35,7 +35,7 @@ The following is an example demonstrating usage of the
 .. code:: python
 
    from automata.core.base.database.vector import JSONVectorDatabase
-   from automata.core.symbol.base import SymbolEmbedding
+   from automata.core.base.symbol import SymbolEmbedding
 
    # Creating an instance of JSONVectorDatabase
    vector_db = JSONVectorDatabase("path_to_json_file.json")

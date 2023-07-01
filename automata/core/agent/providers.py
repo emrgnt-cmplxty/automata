@@ -45,7 +45,7 @@ class OpenAIAutomataAgent(Agent):
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
-        self.agent_conversations = OpenAIConversation()
+        self.agent_conversation_database = OpenAIConversation()
         self.completed = False
         self._setup()
 
@@ -133,7 +133,7 @@ class OpenAIAutomataAgent(Agent):
             except AgentStopIteration:
                 break
 
-        last_message = self.agent_conversations.get_latest_message()
+        last_message = self.agent_conversation_database.get_latest_message()
         if self.iteration_count >= self.config.max_iterations:
             raise AgentMaxIterError("The agent exceeded the maximum number of iterations.")
         if not self.completed or not isinstance(last_message, OpenAIChatMessage):
@@ -148,7 +148,7 @@ class OpenAIAutomataAgent(Agent):
         if self.database_provider:
             raise AgentDatabaseError("The database provider has already been set.")
         self.database_provider = provider
-        self.agent_conversations.register_observer(provider)
+        self.agent_conversation_database.register_observer(provider)
 
     def _build_initial_messages(
         self, instruction_formatter: Dict[str, str]
@@ -217,21 +217,21 @@ class OpenAIAutomataAgent(Agent):
             AgentError: If the agent fails to initialize.
         """
         logger.debug(f"Setting up agent with tools = {self.config.tools}")
-        self.agent_conversations.add_message(
+        self.agent_conversation_database.add_message(
             OpenAIChatMessage(role="system", content=self.config.system_instruction)
         )
         for message in list(
             self._build_initial_messages({"user_input_instructions": self.instructions})
         ):
             logger.debug(f"Adding the following initial mesasge to the conversation {message}")
-            self.agent_conversations.add_message(message)
+            self.agent_conversation_database.add_message(message)
             logging.debug(f"\n{('-' * 120)}")
 
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
             temperature=self.config.temperature,
             stream=self.config.stream,
-            conversation=self.agent_conversations,
+            conversation=self.agent_conversation_database,
             functions=self.functions,
         )
         self._initialized = True

@@ -2,7 +2,7 @@ import logging
 import os
 
 from automata.config.base import ConfigCategory
-from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
+from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
 from automata.core.coding.py.writer import PyDocWriter
 from automata.core.utils import get_config_fpath, get_root_py_fpath
 
@@ -19,7 +19,7 @@ def main(*args, **kwargs) -> str:
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l2.json"
     )
 
-    embedding_db = JSONEmbeddingVectorDatabase(embedding_path)
+    embedding_db = JSONSymbolEmbeddingVectorDatabase(embedding_path)
 
     symbols = [embedding.symbol for embedding in embedding_db.get_all_entries()]
 

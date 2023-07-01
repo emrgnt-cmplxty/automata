@@ -144,7 +144,7 @@ Examples of these classes are:
 Code example for creating an instance of 'SymbolCodeEmbedding':
 ```python
 import numpy as np
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding
+from automata.core.base.symbol_embedding import SymbolCodeEmbedding
 from automata.core.symbol.parser import parse_symbol
 
 symbol_str = 'scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#'
@@ -157,7 +157,7 @@ embedding = SymbolCodeEmbedding(symbol=symbol, source_code=source_code, vector=v
 
 Code example for creating an instance of 'SymbolDocEmbedding':
 ```python
-from automata.core.symbol.base import SymbolDocEmbedding
+from automata.core.base.symbol_embedding import SymbolDocEmbedding
 from automata.core.symbol.parser import parse_symbol
 import numpy as np
 

@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.tests.unit.test_tool.test_tool_run``
 -  ``automata.core.agent.task.task.AutomataTask``
 -  ``automata.tests.unit.test_tool.test_tool``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 -  ``automata.tests.unit.test_tool.TestTool``
 -  ``automata.core.coding.py.reader.PyReader``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``

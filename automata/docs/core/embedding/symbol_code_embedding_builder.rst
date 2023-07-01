@@ -21,9 +21,9 @@ Related Symbols
 
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.tests.unit.test_database_vector.test_add_symbols``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.core.base.symbol_embedding.SymbolCodeEmbedding``
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingBuilder``
--  ``automata.core.llm.embedding.SymbolEmbeddingBuilder``
+-  ``automata.core.llm.core.SymbolEmbeddingBuilder``
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 
 Example
@@ -35,8 +35,8 @@ Below is an example demonstrating the use of the
 .. code:: python
 
    from automata.core.base.database.vector import VectorDatabaseProvider
-   from automata.core.llm.embedding import EmbeddingProvider, SymbolCodeEmbeddingBuilder
-   from automata.core.symbol.base import Symbol, SymbolCodeEmbedding
+   from automata.core.llm.core import EmbeddingProvider, SymbolCodeEmbeddingBuilder
+   from automata.core.base.symbol import Symbol, SymbolCodeEmbedding
 
    # create an instance of an embedding provider.
    embed_provider = EmbeddingProvider()

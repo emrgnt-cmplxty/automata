@@ -21,10 +21,10 @@ Related Symbols
 ---------------
 
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.core.symbol.scip_pb2.Descriptor``
+-  ``automata.core.base.scip_pb2.Descriptor``
 -  ``automata.core.symbol.parser.parse_symbol``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
--  ``automata.core.symbol_embedding.base.SymbolEmbedding``
+-  ``automata.core.base.symbol_embedding.SymbolCodeEmbedding``
+-  ``automata.core.base.symbol_embedding.SymbolEmbedding``
 
 Example
 -------
@@ -36,7 +36,7 @@ The following example demonstrates how to create a
 
    import numpy as np
    from automata.core.symbol.parser import parse_symbol
-   from automata.core.symbol.base import SymbolDocEmbedding
+   from automata.core.base.symbol import SymbolDocEmbedding
 
    symbol_str = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
    symbol = parse_symbol(symbol_str)

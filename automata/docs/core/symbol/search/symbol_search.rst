@@ -23,7 +23,7 @@ Related Symbols
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.symbol.search.rank.SymbolRank``
 -  ``automata.core.symbol.search.rank.SymbolRankConfig``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.base.symbol.Symbol``
 
 Example
 -------

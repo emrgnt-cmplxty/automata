@@ -23,10 +23,10 @@ similarity scores for all symbols in the database, respectively.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.embedding.SymbolEmbeddingHandler``
--  ``automata.core.llm.embedding.EmbeddingProvider``
--  ``automata.core.llm.embedding.EmbeddingNormType``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.llm.core.SymbolEmbeddingHandler``
+-  ``automata.core.llm.core.EmbeddingProvider``
+-  ``automata.core.llm.core.EmbeddingNormType``
+-  ``automata.core.base.symbol.Symbol``
 
 Example
 -------
@@ -38,13 +38,13 @@ given query text.
 .. code:: python
 
    import numpy as np
-   from automata.core.llm.embedding import (
+   from automata.core.llm.core import (
        SymbolEmbeddingHandler,
        EmbeddingProvider,
        EmbeddingNormType,
        SymbolSimilarity,
    )
-   from automata.core.symbol.base import Symbol
+   from automata.core.base.symbol import Symbol
 
    # Create a mock SymbolEmbeddingHandler and EmbeddingProvider
    symbol_embedding_handler = SymbolEmbeddingHandler(...)
