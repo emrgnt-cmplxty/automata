@@ -24,7 +24,7 @@ Related Symbols
 
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.core.llm.completion.LLMConversationDatabaseProvider``
+-  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
 -  ``automata.core.llm.providers.openai.OpenAIAgent``
 
 Example Usage
@@ -38,7 +38,7 @@ iteration and has a limited number of total steps.
 
    import logging
    from automata.core.base.agent import Agent
-   from automata.core.llm.completion import LLMIterationResult
+   from automata.core.llm.foundation import LLMIterationResult
 
    class CustomAgent(Agent):
        def __init__(self, instructions: str, max_steps: int = 10) -> None:

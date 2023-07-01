@@ -59,9 +59,9 @@ def test_get_code_module(getter):
 
 def test_get_docstring_multiline(getter):
     module_name = "sample_modules.sample2"
-    object_path = "PythonAgentToolBuilder.__init__"
+    object_path = "PythonAgentToolkit.__init__"
     result = getter.get_docstring(module_name, object_path)
-    expected = "\n        Initializes a PythonAgentToolBuilder with the given PythonAgent.\n\n        Args:\n            python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.\n        "
+    expected = "\n        Initializes a PythonAgentToolkit with the given PythonAgent.\n\n        Args:\n            python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.\n        "
 
     assert result == expected
 

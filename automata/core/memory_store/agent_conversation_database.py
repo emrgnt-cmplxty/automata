@@ -1,7 +1,7 @@
 from typing import List
 
 from automata.config import CONVERSATION_DB_PATH
-from automata.core.llm.completion import LLMChatMessage, LLMConversationDatabaseProvider
+from automata.core.llm.foundation import LLMChatMessage, LLMConversationDatabaseProvider
 
 
 class AgentConversationDatabase(LLMConversationDatabaseProvider):

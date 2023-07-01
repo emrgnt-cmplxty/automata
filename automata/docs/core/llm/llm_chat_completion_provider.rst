@@ -16,8 +16,8 @@ Related Symbols
 ---------------
 
 -  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.core.llm.completion.LLMChatMessage``
--  ``automata.core.llm.completion.LLMConversation``
+-  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMConversation``
 
 Example
 -------
@@ -28,7 +28,7 @@ completion provider called ``MyChatCompletionProvider``:
 
 .. code:: python
 
-   from automata.core.llm.completion import LLMChatCompletionProvider, LLMChatMessage
+   from automata.core.llm.foundation import LLMChatCompletionProvider, LLMChatMessage
 
    class MyChatCompletionProvider(LLMChatCompletionProvider):
 

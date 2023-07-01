@@ -23,7 +23,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.core.llm.completion.LLMConversation``
+-  ``automata.core.llm.foundation.LLMConversation``
 -  ``automata.core.base.observer.Observer``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 

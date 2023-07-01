@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tool.builder.context_oracle import ContextOracleToolBuilder
+from automata.core.agent.tool.builder.context_oracle import ContextOracleToolkit
 from automata.core.base.tool import Tool
 
 
@@ -10,7 +10,7 @@ from automata.core.base.tool import Tool
 def context_oracle_tool_builder():
     symbol_doc_similarity_mock = MagicMock()
     symbol_code_similarity_mock = MagicMock()
-    return ContextOracleToolBuilder(
+    return ContextOracleToolkit(
         symbol_doc_similarity=symbol_doc_similarity_mock,
         symbol_code_similarity=symbol_code_similarity_mock,
     )

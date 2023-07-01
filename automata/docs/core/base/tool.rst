@@ -25,9 +25,9 @@ Related Symbols
 -  ``automata.tests.unit.test_tool.test_tool_run``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolBuilder.can_handle``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkit.can_handle``
 -  ``automata.tests.unit.test_tool.TestTool.run``
--  ``automata.core.base.agent.AgentToolBuilder.build``
+-  ``automata.core.base.agent.AgentToolkit.build``
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
 -  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
 

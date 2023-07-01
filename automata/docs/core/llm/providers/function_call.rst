@@ -19,7 +19,7 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.sample_function``
 -  ``automata.core.base.task.TaskStatus``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.llm.completion.LLMChatCompletionProvider.__init__``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider.__init__``
 -  ``automata.tests.unit.sample_modules.sample.f``
 
 Example

@@ -5,7 +5,7 @@ PyWriter
 Abstract Syntax Tree (AST) nodes. As a code writer, it provides
 functionality to create, update, and delete Python modules and their
 contents. PyWriter is closely related to the ``PyReader`` class and used
-in the ``PyWriterToolBuilder`` class to modify the code state of a given
+in the ``PyWriterToolkit`` class to modify the code state of a given
 directory of Python files.
 
 Overview
@@ -22,7 +22,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterToolBuilder``
+-  ``automata.core.agent.tool.builder.py_writer.PyWriterToolkit``
 -  ``automata.core.coding.directory.DirectoryManager``
 -  ``automata.core.coding.py.module_loader.py_module_loader``
 -  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_py_writer``

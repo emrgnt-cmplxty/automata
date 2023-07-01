@@ -1,18 +1,18 @@
-AgentToolBuilder
+AgentToolkit
 ================
 
-``AgentToolBuilder`` is an abstract class for building tools for
+``AgentToolkit`` is an abstract class for building tools for
 providers. Tools are essential components as they define the
-functionality and behavior of an agent. The ``AgentToolBuilder`` class
+functionality and behavior of an agent. The ``AgentToolkit`` class
 provides a standard interface for creating tools. This class should be
 inherited by classes implementing specific tool creation logic.
 
 Overview
 --------
 
-The primary method in the ``AgentToolBuilder`` class is ``build()``.
+The primary method in the ``AgentToolkit`` class is ``build()``.
 This method returns a list of ``Tool`` objects. To implement a custom
-tool builder, inherit from the ``AgentToolBuilder`` class and override
+tool builder, inherit from the ``AgentToolkit`` class and override
 the ``build`` method to define the tool creation logic.
 
 Related Symbols
@@ -20,21 +20,21 @@ Related Symbols
 
 -  ``automata.core.base.tool.Tool``
 -  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolBuilder``
--  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolBuilder``
+-  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolkit``
 
 Example
 -------
 
 The following example demonstrates how to create a custom tool builder
-that inherits the ``AgentToolBuilder`` class.
+that inherits the ``AgentToolkit`` class.
 
 .. code:: python
 
-   from automata.core.base.agent import AgentToolBuilder
+   from automata.core.base.agent import AgentToolkit
    from automata.core.base.tool import Tool
 
-   class CustomToolBuilder(AgentToolBuilder):
+   class CustomToolkit(AgentToolkit):
        def build(self) -> List[Tool]:
            # Implement tool creation logic here
            tools = []
@@ -43,7 +43,7 @@ that inherits the ``AgentToolBuilder`` class.
 Limitations
 -----------
 
-As ``AgentToolBuilder`` is an abstract base class, it does not contain
+As ``AgentToolkit`` is an abstract base class, it does not contain
 any implementation details for tool building. To leverage this class,
 you must create a concrete subclass that implements the ``build``
 method.

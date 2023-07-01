@@ -14,7 +14,7 @@ Import Statements
 
    import openai
    from automata.core.base.agent import Agent
-   from automata.core.llm.completion import (
+   from automata.core.llm.foundation import (
        LLMChatCompletionProvider,
        LLMChatMessage,
        LLMCompletionResult,
@@ -62,7 +62,7 @@ task.
 .. code:: python
 
    from automata.core.base.agent import Agent
-   from automata.core.llm.completion import (
+   from automata.core.llm.foundation import (
        LLMChatCompletionProvider,
        LLMChatMessage,
        LLMCompletionResult,

@@ -10,10 +10,10 @@ Related Symbols
 ---------------
 
 -  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
--  ``automata.core.llm.completion.LLMConversation.get_latest_message``
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
 -  ``automata.tests.unit.test_conversation_database.test_put_message_increments_interaction_id``
--  ``automata.core.llm.completion.LLMConversation``
+-  ``automata.core.llm.foundation.LLMConversation``
 -  ``automata.tests.unit.test_conversation_database.test_get_messages_returns_all_messages_for_session``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.tests.unit.test_conversation_database.test_multiple_put_message_increments_interaction_id``
@@ -27,7 +27,7 @@ Here is an example of creating an ``LLMChatMessage`` instance:
 
 .. code:: python
 
-   from automata.core.llm.completion import LLMChatMessage
+   from automata.core.llm.foundation import LLMChatMessage
 
    role = "user"
    content = "Hello, how are you?"

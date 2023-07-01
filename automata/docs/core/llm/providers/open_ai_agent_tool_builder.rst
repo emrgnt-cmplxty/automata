@@ -1,15 +1,15 @@
-OpenAIAgentToolBuilder
+OpenAIAgentToolkit
 ======================
 
-``OpenAIAgentToolBuilder`` is an abstract class for building tools for
-providers. It provides a base class for creating ``AgentToolBuilder``
+``OpenAIAgentToolkit`` is an abstract class for building tools for
+providers. It provides a base class for creating ``AgentToolkit``
 implementations that work with providers that use OpenAI APIs (e.g.,
 GPT-3).
 
 Overview
 --------
 
-``OpenAIAgentToolBuilder`` inherits from ``AgentToolBuilder`` and
+``OpenAIAgentToolkit`` inherits from ``AgentToolkit`` and
 introduces an abstract method ``build_for_open_ai`` which needs to be
 implemented by any concrete subclasses. This method should return a list
 of ``OpenAITool`` instances, which are specialized versions of the
@@ -18,24 +18,24 @@ of ``OpenAITool`` instances, which are specialized versions of the
 Related Symbols
 ---------------
 
--  ``automata.core.base.agent.AgentToolBuilder``
+-  ``automata.core.base.agent.AgentToolkit``
 -  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolBuilder``
--  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchOpenAIToolBuilder``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolBuilder``
--  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolBuilder``
+-  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchOpenAIToolkit``
+-  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolkit``
 
 Example
 -------
 
 The following example demonstrates how to create a custom
-``OpenAIAgentToolBuilder`` implementation.
+``OpenAIAgentToolkit`` implementation.
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIAgentToolBuilder, OpenAITool
+   from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAITool
 
-   class MyOpenAIToolBuilder(OpenAIAgentToolBuilder):
+   class MyOpenAIToolkit(OpenAIAgentToolkit):
        TOOL_TYPE = "custom_tool"
 
        def build_for_open_ai(self) -> List[OpenAITool]:
@@ -63,7 +63,7 @@ The following example demonstrates how to create a custom
 Limitations
 -----------
 
-``OpenAIAgentToolBuilder`` is an abstract class and cannot be used
+``OpenAIAgentToolkit`` is an abstract class and cannot be used
 directly. It must be subclassed with implementations provided for the
 ``build_for_open_ai`` method. Another limitation is the reliance on the
 specific OpenAI APIs or tools.
@@ -72,5 +72,5 @@ Follow-up Questions:
 --------------------
 
 -  What other abstract methods or properties could be included in
-   ``OpenAIAgentToolBuilder`` to simplify building custom
-   ``AgentToolBuilder`` implementations for OpenAI providers?
+   ``OpenAIAgentToolkit`` to simplify building custom
+   ``AgentToolkit`` implementations for OpenAI providers?

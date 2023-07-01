@@ -21,7 +21,7 @@ Related Symbols
 
 -  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
 -  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult``
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
 
 Example
 -------
@@ -31,7 +31,7 @@ The following example demonstrates how to subclass
 
 .. code:: python
 
-   from automata.core.llm.completion import LLMCompletionResult
+   from automata.core.llm.foundation import LLMCompletionResult
 
    class CustomCompletionResult(LLMCompletionResult):
        def __init__(self, role: str, content: str, custom_data: Any):

@@ -3,9 +3,9 @@ import textwrap
 from typing import List
 
 from automata.config.base import LLMProvider
-from automata.core.agent.providers import OpenAIAgentToolBuilder
-from automata.core.agent.tool.registry import AutomataOpenAIAgentToolBuilderRegistry
-from automata.core.base.agent import AgentToolBuilder, AgentToolProviders
+from automata.core.agent.providers import OpenAIAgentToolkit
+from automata.core.agent.tool.registry import AutomataOpenAIAgentToolkitRegistry
+from automata.core.base.agent import AgentToolkit, AgentToolkitNames
 from automata.core.base.tool import Tool
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
@@ -13,8 +13,8 @@ from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 logger = logging.getLogger(__name__)
 
 
-class ContextOracleToolBuilder(AgentToolBuilder):
-    """The ContextOracleTools provides a tool that combines SymbolSearch and SymbolSimilarity to create contexts."""
+class ContextOracleToolkit(AgentToolkit):
+    """The ContextOracleToolkit provides tools which translate NLP queries to relevant context."""
 
     def __init__(
         self,
@@ -104,9 +104,9 @@ class ContextOracleToolBuilder(AgentToolBuilder):
         return result
 
 
-@AutomataOpenAIAgentToolBuilderRegistry.register_tool_manager
-class ContextOracleOpenAIToolBuilder(ContextOracleToolBuilder, OpenAIAgentToolBuilder):
-    TOOL_TYPE = AgentToolProviders.CONTEXT_ORACLE
+@AutomataOpenAIAgentToolkitRegistry.register_tool_manager
+class ContextOracleOpenAIToolkit(ContextOracleToolkit, OpenAIAgentToolkit):
+    TOOL_TYPE = AgentToolkitNames.CONTEXT_ORACLE
     PLATFORM = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:

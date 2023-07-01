@@ -11,8 +11,8 @@ from automata.core.agent.error import (
     AgentResultError,
     AgentStopIteration,
 )
-from automata.core.base.agent import Agent, AgentToolBuilder
-from automata.core.llm.completion import (
+from automata.core.base.agent import Agent, AgentToolkit
+from automata.core.llm.foundation import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,
     LLMIterationResult,
@@ -262,8 +262,8 @@ class OpenAIAutomataAgent(Agent):
         )
 
 
-class OpenAIAgentToolBuilder(AgentToolBuilder, ABC):
-    """OpenAIAgentToolBuilder is an abstract class for building tools for providers."""
+class OpenAIAgentToolkit(AgentToolkit, ABC):
+    """OpenAIAgentToolkit is an abstract class for building tools for providers."""
 
     @abstractmethod
     def build_for_open_ai(self) -> List[OpenAITool]:

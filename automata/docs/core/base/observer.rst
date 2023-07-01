@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.tests.conftest.MockRepositoryManager``
 -  ``automata.core.llm.providers.openai.OpenAIConversation.unregister_observer``
 -  ``automata.tests.unit.test_py_reader.getter``
--  ``automata.core.llm.completion.LLMConversation.register_observer``
+-  ``automata.core.llm.foundation.LLMConversation.register_observer``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.core.llm.providers.openai.OpenAIConversation``
 -  ``automata.tests.unit.test_py_writer.py_writer``

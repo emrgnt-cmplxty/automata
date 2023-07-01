@@ -1,24 +1,24 @@
-OpenAIAgentToolBuilder
+OpenAIAgentToolkit
 ======================
 
 Overview
 --------
 
-``OpenAIAgentToolBuilder`` is an abstract class for creating tools for
+``OpenAIAgentToolkit`` is an abstract class for creating tools for
 use with OpenAI providers. Tools are constructs designed to execute
 tasks during a conversation, or within an iteration of an AI model.
-``OpenAIAgentToolBuilder`` provides a framework for defining such tools
+``OpenAIAgentToolkit`` provides a framework for defining such tools
 to enable interaction with OpenAI-based agents effectively.
 
 This abstract class defines two core methods: ``build_for_open_ai`` and
 ``can_handle``. The ``build_for_open_ai`` method is an abstract method
 and, therefore, must be implemented by any class that inherits from
-``OpenAIAgentToolBuilder``. This method as designed to return a list of
+``OpenAIAgentToolkit``. This method as designed to return a list of
 ``OpenAITool`` objects. The ``can_handle`` method is a class-level
 method used to check if a given ``tool_manager`` matches the tool type
 associated with a particular builder.
 
-``OpenAIAgentToolBuilder`` is used in the context of the Automata
+``OpenAIAgentToolkit`` is used in the context of the Automata
 project, an undertaking that integrates OpenAI’s GPT-3 model with
 additional tools and logic to create a more interactive, and rich AI
 experience.
@@ -27,15 +27,15 @@ Related Symbols
 ---------------
 
 Several classes and methods interact or have a tied relationship with
-``OpenAIAgentToolBuilder``. Some of them include:
+``OpenAIAgentToolkit``. Some of them include:
 
--  ``PythonAgentToolBuilder``: A concrete implementation of a builder
+-  ``PythonAgentToolkit``: A concrete implementation of a builder
    class for generating tools to interact with PythonAgent.
 
--  ``ContextOracleOpenAIToolBuilder``,
-   ``SymbolSearchOpenAIToolBuilder``, ``PyWriterOpenAIToolBuilder``,
-   ``PyReaderOpenAIToolBuilder``: These are potential classes that may
-   inherit from ``OpenAIAgentToolBuilder``, defining their custom
+-  ``ContextOracleOpenAIToolkit``,
+   ``SymbolSearchOpenAIToolkit``, ``PyWriterOpenAIToolkit``,
+   ``PyReaderOpenAIToolkit``: These are potential classes that may
+   inherit from ``OpenAIAgentToolkit``, defining their custom
    toolsets and targets for interaction.
 
 -  ``test_builder_creates_proper_instance``,
@@ -50,13 +50,13 @@ Several classes and methods interact or have a tied relationship with
 Example
 -------
 
-Given the abstract nature of ``OpenAIAgentToolBuilder``, it doesn’t have
-direct usage. However, a child class like ``PythonAgentToolBuilder``
+Given the abstract nature of ``OpenAIAgentToolkit``, it doesn’t have
+direct usage. However, a child class like ``PythonAgentToolkit``
 provides an example of how such a builder class might be used:
 
 .. code:: python
 
-   class PythonAgentToolBuilder:
+   class PythonAgentToolkit:
        def __init__(self, python_agent: PythonAgent):
            self.python_agent = python_agent
 
@@ -74,14 +74,14 @@ provides an example of how such a builder class might be used:
            ]
            return tools
 
-In this example, ``PythonAgentToolBuilder`` initializes with a specific
+In this example, ``PythonAgentToolkit`` initializes with a specific
 ``PythonAgent``, and the ``build`` method constructs a specific ``Tool``
 list.
 
 Limitations
 -----------
 
-Being an abstract class, ``OpenAIAgentToolBuilder`` is not directly
+Being an abstract class, ``OpenAIAgentToolkit`` is not directly
 usable and requires concrete classes to provide meaningful
 implementations of ``build_for_open_ai``. This could lead to
 inconsistency in implementations of its methods.
@@ -98,5 +98,5 @@ Follow-up Questions:
 
 Please note: This documentation is constructed on the basis of available
 context and might not completely represent the functional scope of
-``OpenAIAgentToolBuilder``. Some areas might require additional
+``OpenAIAgentToolkit``. Some areas might require additional
 clarification or input from the code developers for complete accuracy.

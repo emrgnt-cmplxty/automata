@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.conftest.automata_agent_config_builder``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance``
--  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolBuilder.python_agent_python_task``
+-  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit.python_agent_python_task``
 -  ``automata.core.base.agent.Agent``
 
 Example

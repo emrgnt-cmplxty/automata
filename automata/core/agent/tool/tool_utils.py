@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Sequence, Set, Tuple
 
 from automata.config.base import ConfigCategory, LLMProvider
 from automata.core.agent.error import AgentGeneralError, UnknownToolError
-from automata.core.base.agent import AgentToolProviders
+from automata.core.base.agent import AgentToolkitNames
 from automata.core.base.singleton import Singleton
 from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
 from automata.core.base.tool import Tool
@@ -106,7 +106,7 @@ class DependencyFactory(metaclass=Singleton):
         dependencies: Set[str] = set()
         for tool_name in toolkit_list:
             tool_name = tool_name.strip()
-            agent_tool = AgentToolProviders(tool_name)
+            agent_tool = AgentToolkitNames(tool_name)
 
             if agent_tool is None:
                 raise UnknownToolError(agent_tool)
@@ -239,24 +239,24 @@ class DependencyFactory(metaclass=Singleton):
 class AgentToolFactory:
     """The AgentToolFactory class is responsible for creating tools from a given agent tool name."""
 
-    TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolProviders, List[Tuple[str, Any]]] = {
-        AgentToolProviders.PY_READER: [("py_reader", PyReader)],
-        AgentToolProviders.PY_WRITER: [("py_writer", PyWriter)],
-        AgentToolProviders.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-        AgentToolProviders.CONTEXT_ORACLE: [
+    TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolkitNames, List[Tuple[str, Any]]] = {
+        AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
+        AgentToolkitNames.PY_WRITER: [("py_writer", PyWriter)],
+        AgentToolkitNames.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
+        AgentToolkitNames.CONTEXT_ORACLE: [
             ("symbol_doc_similarity", SymbolSimilarityCalculator),
             ("symbol_code_similarity", SymbolSimilarityCalculator),
         ],
     }
 
     @staticmethod
-    def create_tools_from_builder(agent_tool: AgentToolProviders, **kwargs) -> Sequence[Tool]:
+    def create_tools_from_builder(agent_tool: AgentToolkitNames, **kwargs) -> Sequence[Tool]:
         """Uses the Builder Registry to create tools from a given agent tool name."""
         from automata.core.agent.tool.registry import (  # import here for easy mocking
-            AutomataOpenAIAgentToolBuilderRegistry,
+            AutomataOpenAIAgentToolkitRegistry,
         )
 
-        for builder in AutomataOpenAIAgentToolBuilderRegistry.get_all_builders():
+        for builder in AutomataOpenAIAgentToolkitRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
                 if builder.PLATFORM == LLMProvider.OPENAI:
                     return builder(**kwargs).build_for_open_ai()
@@ -272,7 +272,7 @@ class AgentToolFactory:
 
         for tool_name in toolkit_list:
             tool_name = tool_name.strip()
-            agent_tool_manager = AgentToolProviders(tool_name)
+            agent_tool_manager = AgentToolkitNames(tool_name)
 
             if agent_tool_manager is None:
                 raise UnknownToolError(agent_tool_manager)

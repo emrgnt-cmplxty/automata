@@ -17,7 +17,7 @@ the available platforms.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
 -  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
 
 Example

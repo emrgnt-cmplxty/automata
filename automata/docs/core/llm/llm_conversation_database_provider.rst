@@ -21,9 +21,9 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.relational.SQLDatabase``
--  ``automata.core.llm.completion.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMChatMessage``
 -  ``automata.core.memory_store.agent_conversations.AgentConversationDatabase``
--  ``automata.core.llm.completion.LLMConversation``
+-  ``automata.core.llm.foundation.LLMConversation``
 
 Example
 -------
@@ -33,7 +33,7 @@ The following example demonstrates an example subclass of
 
 .. code:: python
 
-   from automata.core.llm.completion import LLMConversationDatabaseProvider, LLMChatMessage
+   from automata.core.llm.foundation import LLMConversationDatabaseProvider, LLMChatMessage
    from automata.core.base.database.relational import SQLDatabase
 
    class CustomDatabaseProvider(LLMConversationDatabaseProvider, SQLDatabase):

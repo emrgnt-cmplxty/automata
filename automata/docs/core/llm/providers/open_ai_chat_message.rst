@@ -20,9 +20,9 @@ Related Symbols
 
 -  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult``
 -  ``automata.core.llm.providers.openai.FunctionCall``
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
--  ``automata.core.llm.completion.LLMChatMessage``
--  ``automata.core.llm.completion.LLMCompletionResult``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMCompletionResult``
 
 Example
 -------

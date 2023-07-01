@@ -30,7 +30,7 @@ incorrect message type is passed.
 .. code:: python
 
    from automata.core.llm.providers.openai import OpenAIConversation, OpenAIIncorrectMessageTypeError
-   from automata.core.llm.completion import LLMChatMessage
+   from automata.core.llm.foundation import LLMChatMessage
 
    # Create a conversation and a non-OpenAIChatMessage message
    conversation = OpenAIConversation()

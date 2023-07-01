@@ -20,10 +20,10 @@ and components.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.completion.LLMChatCompletionProvider``
--  ``automata.core.llm.completion.LLMChatMessage``
--  ``automata.core.llm.completion.LLMCompletionResult``
--  ``automata.core.llm.completion.LLMConversation``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMCompletionResult``
+-  ``automata.core.llm.foundation.LLMConversation``
 -  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.core.llm.providers.openai.OpenAIConversation``

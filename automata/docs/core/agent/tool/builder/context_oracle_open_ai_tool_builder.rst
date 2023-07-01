@@ -1,9 +1,9 @@
-ContextOracleOpenAIToolBuilder
+ContextOracleOpenAIToolkit
 ==============================
 
-``ContextOracleOpenAIToolBuilder`` is responsible for managing and
+``ContextOracleOpenAIToolkit`` is responsible for managing and
 building context oracle tools for OpenAI. It inherits from
-``OpenAIAgentToolBuilder`` and provides a method to create OpenAI
+``OpenAIAgentToolkit`` and provides a method to create OpenAI
 compatible tools for use in the Automata agent. The context oracle tools
 help in searching and ranking related symbols based on the given query
 string.
@@ -11,7 +11,7 @@ string.
 Overview
 --------
 
-``ContextOracleOpenAIToolBuilder`` enables the conversion of the context
+``ContextOracleOpenAIToolkit`` enables the conversion of the context
 oracle tools to OpenAI tools by adding predefined properties and
 required parameters. By doing this, the tools can be easily used by
 OpenAI providers and can be integrated using the Automata agent
@@ -22,26 +22,26 @@ context.
 Related Symbols
 ---------------
 
--  ``automata.core.base.agent.AgentToolBuilder``
+-  ``automata.core.base.agent.AgentToolkit``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.llm.providers.available.LLMPlatforms``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolBuilder``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
 -  ``automata.core.agent.tool.builder.context_oracle.ContextOracleTool``
--  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolBuilderRegistry``
+-  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolkitRegistry``
 
 Example
 -------
 
 .. code:: python
 
-   from automata.core.agent.tool.builder.context_oracle import ContextOracleOpenAIToolBuilder
+   from automata.core.agent.tool.builder.context_oracle import ContextOracleOpenAIToolkit
    from automata.core.symbol.search.symbol_search import SymbolSearch
    from automata.core.symbol_embedding.similarity import SymbolSimilarity
 
    symbol_search = SymbolSearch()
    symbol_doc_similarity = SymbolSimilarity()
 
-   context_oracle_openai_tool_builder = ContextOracleOpenAIToolBuilder(
+   context_oracle_openai_tool_builder = ContextOracleOpenAIToolkit(
        symbol_search=symbol_search,
        symbol_doc_similarity=symbol_doc_similarity
    )
@@ -55,9 +55,9 @@ Example
 Limitations
 -----------
 
-``ContextOracleOpenAIToolBuilder`` has a limitation in terms of its
-dependency on the inherited OpenAIAgentToolBuilder class. It relies on
-OpenAIAgentToolBuilder to create tools that are compatible with OpenAI
+``ContextOracleOpenAIToolkit`` has a limitation in terms of its
+dependency on the inherited OpenAIAgentToolkit class. It relies on
+OpenAIAgentToolkit to create tools that are compatible with OpenAI
 providers. Additionally, the properties and required parameters are
 predefined during the conversion process, preventing any customization
 of those values.

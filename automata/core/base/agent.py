@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from automata.config.base import AgentConfigName, LLMProvider
 from automata.core.base.tool import Tool
-from automata.core.llm.completion import (
+from automata.core.llm.foundation import (
     LLMConversationDatabaseProvider,
     LLMIterationResult,
 )
@@ -63,7 +63,7 @@ class Agent(ABC):
         pass
 
 
-class AgentToolProviders(Enum):
+class AgentToolkitNames(Enum):
     """
     An enum for the different types of agent tools.
 
@@ -77,15 +77,15 @@ class AgentToolProviders(Enum):
     CONTEXT_ORACLE = "context-oracle"
 
 
-class AgentToolBuilder(ABC):
+class AgentToolkit(ABC):
     """
 
-    AgentToolBuilder is an abstract class for building tools for providers.
+    AgentToolkit is an abstract class for building tools for providers.
 
-    Each builder builds the tools associated with a specific AgentToolProviders.
+    Each builder builds the tools associated with a specific AgentToolkitNames.
     """
 
-    TOOL_TYPE: Optional[AgentToolProviders] = None
+    TOOL_TYPE: Optional[AgentToolkitNames] = None
     PLATFORM: Optional[LLMProvider] = None
 
     @abstractmethod
