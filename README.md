@@ -172,7 +172,7 @@ symbol_doc_embedding = SymbolDocEmbedding(symbol, document, vector)
 
 ## Contribution guidelines
 
-**If you want to contribute to TensorFlow, be sure to review the
+**If you want to contribute to Automata, be sure to review the
 [contribution guidelines](CONTRIBUTING.md). This project adheres to Automata's
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
