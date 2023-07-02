@@ -24,24 +24,24 @@ Import Statements
 
    import logging
    from typing import List, Optional
-   from automata.core.agent.tool.registry import AutomataOpenAIAgentToolkitRegistry
-   from automata.core.base.agent import AgentToolkit, AgentToolkitNames
-   from automata.core.base.tool import Tool
-   from automata.core.coding.py.writer import PyWriter
+   from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
+   from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
+   from automata.core.tools.tool import Tool
+   from automata.core.code_handling.py.writer import PyWriter
    from automata.core.llm.providers.available import LLMPlatforms
    from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAITool
 
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.writer.PyWriter``
--  ``automata.core.base.agent.AgentToolkit``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.code_handling.py.writer.PyWriter``
+-  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_py_writer_tool.test_init``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
 -  ``automata.tests.unit.test_py_writer_tool.python_writer_tool_builder``
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
--  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolkit``
+-  ``automata.core.tools.builders.py_reader.PyReaderOpenAIToolkit``
 -  ``automata.tests.unit.test_py_writer_tool.test_build``
 
 Example

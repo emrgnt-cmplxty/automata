@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.core.base.database.relational.RelationalDatabase``
 -  ``automata.tests.unit.test_task_database.db``
 -  ``automata.tests.unit.test_conversation_database.db``
--  ``automata.core.agent.task.registry.AutomataTaskDatabase``
+-  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase``
 
 Usage Example
 -------------

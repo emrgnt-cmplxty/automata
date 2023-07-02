@@ -1,7 +1,7 @@
 import logging
 
-from automata.core.base.symbol import Symbol
-from automata.core.base.symbol_embedding import (
+from automata.core.symbol.base import Symbol
+from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
     SymbolEmbeddingHandler,

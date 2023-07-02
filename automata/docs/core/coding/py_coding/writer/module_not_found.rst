@@ -11,11 +11,11 @@ manipulate a set of Python modules within a given project directory.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py_coding.writer.PyCodeWriter.ModuleNotFound``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.coding.directory.DirectoryManager``
--  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter.ModuleNotFound``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.navigation.directory.DirectoryManager``
+-  ``automata.core.toolss.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.toolss.py_code_retriever.PyCodeRetrieverTool``
 -  ``automata.tests.unit.test_py_writer.py_writer``
 
 Example
@@ -26,8 +26,8 @@ with ``PyCodeWriter``:
 
 .. code:: python
 
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
+   from automata.core.code_handling.py_coding.writer import PyCodeWriter
 
    sample_dir = "path/to/sample_directory"
    module_map = LazyModuleTreeMap(sample_dir)

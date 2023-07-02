@@ -4,7 +4,7 @@ import pytest
 
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
-from automata.core.agent.tool.tool_utils import AgentToolFactory
+from automata.core.tools.factory import AgentToolFactory
 
 
 def test_automata_agent_init(automata_agent):
@@ -47,8 +47,8 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
 
 def test_builder_accepts_all_fields(automata_agent_config_builder):
     toolkit_list = ["py-reader", "py-writer"]
-    from automata.core.coding.py.reader import PyReader
-    from automata.core.coding.py.writer import PyWriter
+    from automata.core.code_handling.py.reader import PyReader
+    from automata.core.code_handling.py.writer import PyWriter
 
     tools = AgentToolFactory.build_tools(
         toolkit_list,

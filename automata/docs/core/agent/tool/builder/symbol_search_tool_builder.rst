@@ -22,10 +22,10 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
--  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchOpenAIToolkit``
--  ``automata.core.base.agent.AgentToolkit``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
+-  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.experimental.search.symbol_search.SymbolSearch``
 
 Example
 -------
@@ -36,11 +36,11 @@ various search tools.
 
 .. code:: python
 
-   from automata.core.agent.tool.builder.symbol_search import (
+   from automata.core.tools.builders.symbol_search import (
        SymbolSearchToolkit,
        SearchTool,
    )
-   from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.experimental.search.symbol_search import SymbolSearch
 
    # Assuming an instance of SymbolSearch
    symbol_search = SymbolSearch( ... )

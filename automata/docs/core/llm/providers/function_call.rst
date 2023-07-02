@@ -13,11 +13,11 @@ Related Symbols
 
 -  ``automata.tests.unit.sample_modules.sample.Person``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.core.base.task.ITaskExecution.execute``
+-  ``automata.core.tasks.base.ITaskExecution.execute``
 -  ``automata.tests.unit.sample_modules.sample.Person.run``
 -  ``automata.core.llm.providers.openai.OpenAIChatMessage.__init__``
 -  ``automata.tests.unit.sample_modules.sample.sample_function``
--  ``automata.core.base.task.TaskStatus``
+-  ``automata.core.tasks.base.TaskStatus``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
 -  ``automata.core.llm.foundation.LLMChatCompletionProvider.__init__``
 -  ``automata.tests.unit.sample_modules.sample.f``

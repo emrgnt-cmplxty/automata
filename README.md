@@ -38,7 +38,7 @@ Follow these steps to setup the Automata environment
 # Copy the env and setup files
 cp .setup.sh.example setup.sh && cp .env.example .env
 
-# Allow for execution  
+# Allow for execution
 chmod 755 setup.sh
 
 # Update the setup and env files with your local paths
@@ -103,8 +103,9 @@ Sometimes the best way to understand a complicated system is to start by underst
 import logging
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
-from automata.core.coding.py.module_loader import py_module_loader
+from automata.core.tools.tool_utils import AgentToolFactory
+from automata.core.singletons.dependency_factory import dependency_factory
+from automata.core.singletons.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
@@ -142,9 +143,10 @@ Examples of these classes are:
 `SymbolDocEmbedding` a class used for storing embeddings related to the documentation of a symbol.
 
 Code example for creating an instance of 'SymbolCodeEmbedding':
+
 ```python
 import numpy as np
-from automata.core.base.symbol_embedding import SymbolCodeEmbedding
+from automata.core.symbol_embedding.base import SymbolCodeEmbedding
 from automata.core.symbol.parser import parse_symbol
 
 symbol_str = 'scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#'
@@ -156,8 +158,9 @@ embedding = SymbolCodeEmbedding(symbol=symbol, source_code=source_code, vector=v
 ```
 
 Code example for creating an instance of 'SymbolDocEmbedding':
+
 ```python
-from automata.core.base.symbol_embedding import SymbolDocEmbedding
+from automata.core.symbol_embedding.base import SymbolDocEmbedding
 from automata.core.symbol.parser import parse_symbol
 import numpy as np
 
@@ -184,7 +187,6 @@ discussion, and please direct specific questions.**
 
 The Automata project strives to abide by generally accepted best practices in
 open-source software development.
-
 
 ## Future
 

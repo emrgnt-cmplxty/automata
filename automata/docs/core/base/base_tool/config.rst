@@ -23,12 +23,12 @@ settings, like forbidding extra fields and allowing arbitrary types.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
--  ``automata.core.base.tool.InvalidTool``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.tools.tool.InvalidTool``
 -  ``automata.tests.unit.test_base_tool.test_base_tool_instantiation``
 -  ``automata.tests.unit.test_base_tool.test_base_tool_call``
--  ``automata.core.base.tool.Toolkit``
--  ``automata.core.agent.tools.agent_tool.AgentTool``
+-  ``automata.core.tools.tool.Toolkit``
+-  ``automata.core.toolss.agent_tool.AgentTool``
 
 Examples
 --------

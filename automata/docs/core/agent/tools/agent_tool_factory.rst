@@ -20,15 +20,15 @@ class and arguments.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.ToolkitType``
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
--  ``automata.core.agent.tools.context_oracle.ContextOracleTool``
--  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.agent.tools.symbol_search.SymbolSearchTool``
--  ``automata.core.agent.tools.tool_utils.DependencyFactory``
--  ``automata.core.agent.tools.tool_utils.UnknownToolError``
--  ``automata.core.agent.tools.tool_utils.ToolCreationError``
+-  ``automata.core.tools.tool.ToolkitType``
+-  ``automata.core.toolss.agent_tool.AgentTool``
+-  ``automata.core.toolss.py_code_retriever.PyCodeRetrieverTool``
+-  ``automata.core.toolss.context_oracle.ContextOracleTool``
+-  ``automata.core.toolss.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.toolss.symbol_search.SymbolSearchTool``
+-  ``automata.core.toolss.tool_utils.DependencyFactory``
+-  ``automata.core.toolss.tool_utils.UnknownToolError``
+-  ``automata.core.toolss.tool_utils.ToolCreationError``
 
 Example
 -------
@@ -39,9 +39,9 @@ The following example demonstrates the usage of
 
 .. code:: python
 
-   from automata.core.agent.tools.tool_utils import AgentToolFactory
-   from automata.core.base.tool import ToolkitType
-   from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.toolss.tool_utils import AgentToolFactory
+   from automata.core.tools.tool import ToolkitType
+   from automata.core.experimental.search.symbol_search import SymbolSearch
    from automata.core.symbol_embedding.similarity import SymbolSimilarity
    from automata.core.symbol.graph import SymbolGraph
    from automata.tests.unit.test_base_tool import mock_tool

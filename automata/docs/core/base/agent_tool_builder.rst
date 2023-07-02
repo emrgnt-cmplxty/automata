@@ -18,10 +18,10 @@ the ``build`` method to define the tool creation logic.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
--  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolkit``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.tools.tool_utils.AgentToolFactory``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.py_reader.PyReaderOpenAIToolkit``
 
 Example
 -------
@@ -31,8 +31,8 @@ that inherits the ``AgentToolkit`` class.
 
 .. code:: python
 
-   from automata.core.base.agent import AgentToolkit
-   from automata.core.base.tool import Tool
+   from automata.core.agent.agent import AgentToolkit
+   from automata.core.tools.tool import Tool
 
    class CustomToolkit(AgentToolkit):
        def build(self) -> List[Tool]:

@@ -9,14 +9,14 @@ allowing users to get and put messages for a specific session.
 Related Symbols
 ---------------
 
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.agent.agent.AutomataAgent``
 -  ``config.config_types.AgentConfigName``
 -  ``automata.core.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.config.config_types.AutomataAgentConfig``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter``
+-  ``automata.core.code_handling.py_coding.module_tree.LazyModuleTreeMap``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.agent.action.AutomataActionExtractor``
 -  ``automata.core.base.openai.OpenAIChatMessage``

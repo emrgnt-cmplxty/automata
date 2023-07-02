@@ -23,9 +23,9 @@ Related Symbols
 
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
 -  ``automata.tests.unit.test_py_writer_tool.python_writer_tool_builder``
--  ``automata.core.base.agent.AgentToolkit``
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.tools.tool.Tool``
 
 Example
 -------
@@ -35,8 +35,8 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.core.coding.py.reader import PyReader
-   from automata.core.agent.tool.builder.py_reader import PyReaderToolkit
+   from automata.core.code_handling.py.reader import PyReader
+   from automata.core.tools.builders.py_reader import PyReaderToolkit
 
    py_reader = PyReader()
    tool_builder = PyReaderToolkit(py_reader=py_reader)

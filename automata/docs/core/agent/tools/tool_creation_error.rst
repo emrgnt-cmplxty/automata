@@ -12,9 +12,9 @@ Related Symbols
 
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
 -  ``automata.tests.unit.test_tool.test_invalid_tool``
--  ``automata.core.base.tool.ToolNotFoundError``
+-  ``automata.core.tools.tool.ToolNotFoundError``
 -  ``automata.tests.unit.test_base_tool.test_base_tool_instantiation``
--  ``automata.core.agent.tools.tool_utils.UnknownToolError``
+-  ``automata.core.toolss.tool_utils.UnknownToolError``
 -  ``automata.tests.unit.test_tool.test_invalid_tool_async``
 
 Example
@@ -25,8 +25,8 @@ can be raised and caught during the creation of an invalid tool.
 
 .. code:: python
 
-   from automata.core.agent.tools.agent_tool import AgentTool
-   from automata.core.agent.tools.tool_utils import ToolCreationError
+   from automata.core.toolss.agent_tool import AgentTool
+   from automata.core.toolss.tool_utils import ToolCreationError
 
    class InvalidTool(AgentTool):
        pass

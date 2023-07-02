@@ -20,12 +20,12 @@ summary.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py_coding.writer.PyDocWriter``
+-  ``automata.core.code_handling.py_coding.writer.PyDocWriter``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.base.symbol_embedding.SymbolDocEmbedding``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 
 Example
 -------
@@ -36,9 +36,9 @@ structure:
 
 .. code:: python
 
-   from automata.core.coding.py_coding.writer import PyDocWriter
-   from automata.core.base.symbol import Symbol
-   from automata.core.base.symbol_embedding import SymbolDocEmbedding
+   from automata.core.code_handling.py_coding.writer import PyDocWriter
+   from automata.core.symbol.base import Symbol
+   from automata.core.symbol_embedding.base import SymbolDocEmbedding
 
    # Assuming you have the documentation info in the following variables:
    # - docs: a dictionary containing the {Symbol: SymbolDocEmbedding} pairs

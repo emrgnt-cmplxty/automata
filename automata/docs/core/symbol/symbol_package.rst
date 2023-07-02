@@ -8,9 +8,9 @@ from URI string format.
 Related Symbols
 ---------------
 
--  ``automata.core.base.scip_pb2.Descriptor``
+-  ``automata.core.symbol.scip_pb2.Descriptor``
 -  ``automata.core.symbol.parser.parse_symbol``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
 
 Methods

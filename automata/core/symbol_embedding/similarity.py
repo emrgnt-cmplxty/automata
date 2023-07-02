@@ -3,13 +3,13 @@ from typing import Dict, List, Optional, Set
 
 import numpy as np
 
-from automata.core.base.embedding import (
+from automata.core.embedding.base import (
     EmbeddingNormType,
     EmbeddingProvider,
     EmbeddingSimilarityCalculator,
 )
-from automata.core.base.symbol import Symbol
-from automata.core.base.symbol_embedding import SymbolEmbeddingHandler
+from automata.core.symbol.base import Symbol
+from automata.core.symbol_embedding.base import SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 

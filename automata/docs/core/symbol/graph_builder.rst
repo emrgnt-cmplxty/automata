@@ -22,7 +22,7 @@ Related Symbols
 -  ``automata.core.symbol.graph._RelationshipManager``
 -  ``automata.core.symbol.graph._OccurrenceManager``
 -  ``automata.core.symbol.graph._CallerCalleeManager``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.graph.SymbolGraph``
 
 Example
@@ -34,7 +34,7 @@ build a graph from a given index.
 .. code:: python
 
    from automata.core.symbol.graph import GraphBuilder
-   from automata.core.base.scip_pb2 import Index
+   from automata.core.symbol.scip_pb2 import Index
 
    # Assuming a valid index object
    index = Index()

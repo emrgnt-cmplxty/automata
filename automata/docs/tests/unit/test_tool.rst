@@ -21,7 +21,7 @@ provides an example of how to use the tool with related symbols like
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.test_tool``
 -  ``automata.tests.unit.test_tool.test_tool_run``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``

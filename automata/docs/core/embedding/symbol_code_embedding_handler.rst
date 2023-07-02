@@ -25,8 +25,8 @@ Related Symbols
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.llm.core.EmbeddingProvider``
--  ``automata.core.base.symbol.Symbol``
--  ``automata.core.base.symbol_embedding.SymbolCodeEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
 
 Example
@@ -39,7 +39,7 @@ The following example demonstrates how to create an instance of
 
    from automata.core.base.database.vector import VectorDatabaseProvider
    from automata.core.llm.core import EmbeddingProvider, SymbolCodeEmbeddingHandler
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
 
    # Mocked objects for demonstration purposes
    mock_embedding_db = VectorDatabaseProvider()

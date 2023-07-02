@@ -19,9 +19,9 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.agent.tools.tool_utils.ToolkitType``
+-  ``automata.core.toolss.tool_utils.ToolkitType``
 -  ``automata.core.agent.agent_enums.ToolField``
 
 Example
@@ -32,7 +32,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.base.tool import Toolkit
+   from automata.core.tools.tool import Toolkit
    from automata.tests.unit.test_tool import TestTool
 
    test_tool = TestTool(

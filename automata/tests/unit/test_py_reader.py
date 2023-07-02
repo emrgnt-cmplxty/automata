@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.coding.py.reader import PyReader
+from automata.core.code_handling.py.reader import PyReader
+from automata.core.singletons.module_loader import py_module_loader
 
 
 @pytest.fixture(autouse=True)

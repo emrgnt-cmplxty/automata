@@ -19,11 +19,11 @@ additional metadata for use on the OpenAI platform.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tool.builder.py_reader.PyReaderToolkit``
+-  ``automata.core.tools.builders.py_reader.PyReaderToolkit``
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
--  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolkitRegistry``
--  ``automata.core.coding.py.reader.PyReader``
+-  ``automata.core.tools.registries.OpenAIAutomataAgentToolkitRegistry``
+-  ``automata.core.code_handling.py.reader.PyReader``
 
 Example
 -------
@@ -34,8 +34,8 @@ tools.
 
 .. code:: python
 
-   from automata.core.coding.py.reader import PyReader
-   from automata.core.agent.tool.builder.py_reader import PyReaderOpenAIToolkit
+   from automata.core.code_handling.py.reader import PyReader
+   from automata.core.tools.builders.py_reader import PyReaderOpenAIToolkit
 
    py_reader = PyReader()
    tool_builder = PyReaderOpenAIToolkit(py_reader=py_reader)

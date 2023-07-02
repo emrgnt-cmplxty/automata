@@ -6,7 +6,7 @@ from typing import Dict, Generic, List, Optional, TypeVar, Union
 import yaml
 from pydantic import BaseModel, PrivateAttr
 
-from automata.core.base.tool import Tool
+from automata.core.tools.base import Tool
 from automata.core.utils import convert_kebab_to_snake
 
 

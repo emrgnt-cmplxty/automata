@@ -23,8 +23,8 @@ Overview
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.navigation.find_syntax_tree_node``
--  ``automata.core.coding.py.module_loader.PyModuleLoader.fetch_module``
+-  ``automata.core.navigation.py.navigation_utils.find_syntax_tree_node``
+-  ``automata.core.singletons.module_loader.PyModuleLoader.fetch_module``
 
 Example
 -------
@@ -34,7 +34,7 @@ retrieve the docstring of a specified function/method.
 
 .. code:: python
 
-   from automata.core.coding.py.reader import PyReader
+   from automata.core.code_handling.py.reader import PyReader
 
    module_dotpath = "os.path.join"
    object_path = None

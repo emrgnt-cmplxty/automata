@@ -21,11 +21,11 @@ context oracle.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Toolkit``
--  ``automata.core.base.tool.ToolkitType``
--  ``automata.core.agent.tools.tool_utils.UnknownToolError``
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.agent.tools.tool_utils.AgentToolFactory``
+-  ``automata.core.tools.tool.Toolkit``
+-  ``automata.core.tools.tool.ToolkitType``
+-  ``automata.core.toolss.tool_utils.UnknownToolError``
+-  ``automata.core.toolss.agent_tool.AgentTool``
+-  ``automata.core.toolss.tool_utils.AgentToolFactory``
 
 Example
 -------
@@ -35,8 +35,8 @@ using the ``ToolkitBuilder`` class.
 
 .. code:: python
 
-   from automata.core.agent.tools.tool_utils import ToolkitBuilder
-   from automata.core.base.tool import ToolkitType
+   from automata.core.toolss.tool_utils import ToolkitBuilder
+   from automata.core.tools.tool import ToolkitType
 
    # Create a ToolkitBuilder instance
    builder = ToolkitBuilder()

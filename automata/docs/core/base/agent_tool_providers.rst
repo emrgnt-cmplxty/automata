@@ -19,14 +19,14 @@ Related Symbols
 ---------------
 
 -  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
 -  ``automata.core.llm.foundation.LLMIterationResult``
 -  ``automata.core.llm.providers.available.LLMPlatforms``
--  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
--  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchOpenAIToolkit``
--  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolkitRegistry``
+-  ``automata.core.tools.tool_utils.AgentToolFactory``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
+-  ``automata.core.tools.registries.OpenAIAutomataAgentToolkitRegistry``
 
 Example
 -------
@@ -36,7 +36,7 @@ it to an agent using ``AgentToolkitNames``.
 
 .. code:: python
 
-   from automata.core.base.agent import AgentToolkitNames
+   from automata.core.agent.agent import AgentToolkitNames
 
    class CustomTool(AgentToolkitNames):
        def __init__(self):

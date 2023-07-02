@@ -1,7 +1,7 @@
 import os
 from unittest.mock import MagicMock
 
-from automata.core.base.task import TaskStatus
+from automata.core.tasks.base import TaskStatus
 
 
 class TestURL:

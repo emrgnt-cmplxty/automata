@@ -21,10 +21,10 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.base.tool.InvalidTool``
--  ``automata.core.base.tool.Toolkit``
--  ``automata.core.base.tool.tool``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.tools.tool.InvalidTool``
+-  ``automata.core.tools.tool.Toolkit``
+-  ``automata.core.tools.tool.tool``
 
 Example
 -------

@@ -3,16 +3,16 @@ from typing import List
 from jinja2 import Template
 
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-from automata.core.base.embedding import EmbeddingProvider
-from automata.core.base.symbol import Symbol
-from automata.core.base.symbol_embedding import (
+from automata.core.embedding.base import EmbeddingProvider
+from automata.core.experimental.search.symbol_search import SymbolSearch
+from automata.core.llm.foundation import LLMChatCompletionProvider
+from automata.core.retrievers.py.context import PyContextRetriever
+from automata.core.symbol.base import Symbol
+from automata.core.symbol_embedding.base import (
     SymbolCodeEmbedding,
     SymbolDocEmbedding,
     SymbolEmbeddingBuilder,
 )
-from automata.core.context.py.retriever import PyContextRetriever
-from automata.core.llm.foundation import LLMChatCompletionProvider
-from automata.core.symbol.search.symbol_search import SymbolSearch
 
 
 class SymbolCodeEmbeddingBuilder(SymbolEmbeddingBuilder):
@@ -61,7 +61,7 @@ class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
         -  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``
         -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
         -  ``automata.tests.unit.test_task_environment.TestURL``
-        -  ``automata.core.base.agent.AgentInstance.Config``
+        -  ``automata.core.agent.agent.AgentInstance.Config``
         Example
         -------
         The following example demonstrates how to create a custom agent

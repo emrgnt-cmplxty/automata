@@ -20,10 +20,10 @@ also has utility methods to replace newline characters in input strings.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_py_writer``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterToolkit``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.singletons.dependency_factory.create_py_writer``
+-  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
 
 Example
 -------
@@ -34,8 +34,8 @@ updating, and deleting.
 
 .. code:: python
 
-   from automata.core.coding.py.reader import PyReader
-   from automata.core.coding.py.writer import PyWriter
+   from automata.core.code_handling.py.reader import PyReader
+   from automata.core.code_handling.py.writer import PyWriter
 
    # Initialize PyReader and PyWriter
    py_reader = PyReader()

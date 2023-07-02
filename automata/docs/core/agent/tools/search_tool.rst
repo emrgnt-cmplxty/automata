@@ -5,7 +5,7 @@ SearchTool
 tools, each with a different functionality. The primary search tools
 include exact-search, symbol-rank-search, source-code-search, and
 symbol-references-search. The ``SearchTool`` class is part of the
-``automata.core.agent.tools.symbol_search`` module and can be used to
+``automata.core.toolss.symbol_search`` module and can be used to
 build specific tools by specifying the desired search tool type.
 
 Overview
@@ -20,9 +20,9 @@ tool for exact-search can be built by specifying the
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tools.symbol_search.SymbolSearchTool``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.symbol.search.symbol_search.*``
+-  ``automata.core.toolss.symbol_search.SymbolSearchTool``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.experimental.search.symbol_search.*``
 
 Example
 -------
@@ -32,8 +32,8 @@ and execute an exact-search tool:
 
 .. code:: python
 
-   from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.agent.tools.symbol_search import (
+   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.core.toolss.symbol_search import (
        SymbolSearchTool,
        SearchTool,
    )

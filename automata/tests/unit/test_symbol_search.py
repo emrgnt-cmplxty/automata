@@ -7,7 +7,7 @@ from automata.core.symbol.parser import parse_symbol
 
 def test_retrieve_source_code_by_symbol(symbols, symbol_search):
     with patch(
-        "automata.core.symbol.search.symbol_search.convert_to_fst_object",
+        "automata.core.experimental.search.symbol_search.convert_to_fst_object",
         return_value="module1",
     ) as mock_method:
         result = symbol_search.retrieve_source_code_by_symbol(symbols[0].uri)
@@ -26,7 +26,7 @@ def test_symbol_references(symbols, symbol_search, symbol_graph_mock):
 
 def test_exact_search(symbol_search):
     with patch(
-        "automata.core.symbol.search.symbol_search.SymbolSearch._find_pattern_in_modules",
+        "automata.core.experimental.search.symbol_search.SymbolSearch._find_pattern_in_modules",
         return_value=["file1", "file2"],
     ):
         result = symbol_search.exact_search("pattern1")

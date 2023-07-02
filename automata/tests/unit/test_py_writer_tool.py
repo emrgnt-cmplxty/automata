@@ -4,11 +4,11 @@ import textwrap
 
 import pytest
 
-from automata.core.agent.tool.builder.py_writer import PyWriterToolkit
-from automata.core.base.tool import Tool
-from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.coding.py.reader import PyReader
-from automata.core.coding.py.writer import PyWriter
+from automata.core.code_handling.py.reader import PyReader
+from automata.core.code_handling.py.writer import PyWriter
+from automata.core.singletons.module_loader import py_module_loader
+from automata.core.tools.base import Tool
+from automata.core.tools.builders.py_writer import PyWriterToolkit
 from automata.core.utils import get_root_py_fpath
 
 
@@ -136,7 +136,7 @@ def test_extend_module_with_documented_new_class(python_writer_tool_builder):
         '''from typing import List
 
 
-from automata.core.base.tool import Tool
+from automata.core.tools.base import Tool
 
 from automata.tools.python_tools.python_agent import PythonAgent
 
@@ -206,7 +206,7 @@ def test_extend_module_with_documented_new_module(python_writer_tool_builder):
     module_str = textwrap.dedent(
         """from typing import List, Optional
 from automata.buffer import PassThroughBuffer
-from automata.tools.tool import Tool
+from automata.tools.base import Tool
 from automata.tools.python_tools.python_agent import PythonAgent
 
 class PythonAgentToolkit:

@@ -30,8 +30,8 @@ Import Statements
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.File``
--  ``automata.core.coding.directory.Node``
+-  ``automata.core.navigation.directory.File``
+-  ``automata.core.navigation.directory.Node``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 
 Example
@@ -42,7 +42,7 @@ instance:
 
 .. code:: python
 
-   from automata.core.coding.directory import Directory
+   from automata.core.navigation.directory import Directory
 
    root_directory = Directory("root")
    child_directory = Directory("child", parent=root_directory)

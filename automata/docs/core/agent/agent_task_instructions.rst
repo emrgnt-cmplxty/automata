@@ -9,16 +9,16 @@ empty, and if they are empty, the relevant code raises this exception.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_task_database.task``
--  ``automata.core.base.agent.Agent``
+-  ``automata.core.agent.agent.Agent``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata.core.agent.task.task import AutomataTask
+   from automata.core.tasks.tasks import AutomataTask
    from automata.core.agent.error import AgentTaskInstructions
 
    try:

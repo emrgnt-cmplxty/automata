@@ -26,7 +26,7 @@ Related Symbols
 -  ``automata.core.llm.core.SymbolEmbeddingHandler``
 -  ``automata.core.llm.core.EmbeddingProvider``
 -  ``automata.core.llm.core.EmbeddingNormType``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 
 Example
 -------
@@ -44,7 +44,7 @@ given query text.
        EmbeddingNormType,
        SymbolSimilarity,
    )
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
 
    # Create a mock SymbolEmbeddingHandler and EmbeddingProvider
    symbol_embedding_handler = SymbolEmbeddingHandler(...)

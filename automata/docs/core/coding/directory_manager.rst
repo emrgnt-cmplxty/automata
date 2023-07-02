@@ -20,9 +20,9 @@ the ``Directory``, ``File``, and ``Node`` classes.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.Directory``
--  ``automata.core.coding.directory.File``
--  ``automata.core.coding.directory.Node``
+-  ``automata.core.navigation.directory.Directory``
+-  ``automata.core.navigation.directory.File``
+-  ``automata.core.navigation.directory.Node``
 -  ``automata.tests.unit.test_directory_manager``
 
 Example
@@ -34,7 +34,7 @@ structure.
 
 .. code:: python
 
-   from automata.core.coding.directory import DirectoryManager
+   from automata.core.navigation.directory import DirectoryManager
    import tempfile
 
    # Create a temporary directory

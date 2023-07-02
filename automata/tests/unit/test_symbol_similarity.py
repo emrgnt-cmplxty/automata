@@ -2,13 +2,13 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from automata.core.base.embedding import EmbeddingProvider
-from automata.core.base.symbol_embedding import (
+from automata.core.embedding.base import EmbeddingProvider
+from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
     SymbolEmbeddingBuilder,
 )
-from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 
 

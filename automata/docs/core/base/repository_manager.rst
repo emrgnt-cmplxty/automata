@@ -1,17 +1,17 @@
-RepositoryManager
+RepositoryClient
 =================
 
-``RepositoryManager`` is an abstract base class that defines interface
+``RepositoryClient`` is an abstract base class that defines interface
 methods for managing repositories. It provides a set of abstract methods
 such as ``clone_repository``, ``create_branch``, ``checkout_branch``,
 ``commit_and_push_changes``, and others that are implemented by
-subclasses like ``GitHubManager``.
+subclasses like ``GitHubClient``.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.github_manager.GitHubManager``
--  ``automata.core.agent.task.environment.AutomataTaskEnvironment``
+-  ``automata.core.base.github_management.client.GitHubClient``
+-  ``automata.core.tasks.environment.AutomataTaskEnvironment``
 -  ``config.automata_agent_config.AutomataAgentConfig``
 -  ``automata.core.agent.agent.AutomataAgent``
 
@@ -20,13 +20,13 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.base.github_manager import GitHubManager
+   from automata.core.base.github_management.client import GitHubClient
 
    access_token = "your_github_access_token"
    remote_name = "your/remote_repository"
    primary_branch = "main"
 
-   github_manager = GitHubManager(access_token, remote_name, primary_branch)
+   github_manager = GitHubClient(access_token, remote_name, primary_branch)
 
 Methods
 -------
@@ -48,7 +48,7 @@ Methods
 Limitations
 -----------
 
-The primary limitation of ``RepositoryManager`` is that it is an
+The primary limitation of ``RepositoryClient`` is that it is an
 abstract base class and cannot directly interact with repositories. It
 needs to be subclassed, and the abstract methods need to be implemented
 for specific repository services like GitHub or GitLab.
@@ -57,6 +57,6 @@ Follow-up Questions:
 --------------------
 
 -  How are the underlying git and GitHub operations managed with the
-   ``RepositoryManager`` abstract methods?
+   ``RepositoryClient`` abstract methods?
 -  Are there other related symbols that need to be included in the
    documentation?

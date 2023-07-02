@@ -21,9 +21,9 @@ using the desired tool.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata.core.agent.tools.symbol_search.SearchTool``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.experimental.search.symbol_search.SymbolSearch``
+-  ``automata.core.toolss.symbol_search.SearchTool``
+-  ``automata.core.tools.tool.Tool``
 
 Example
 -------
@@ -34,8 +34,8 @@ of the available search tools.
 
 .. code:: python
 
-   from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.agent.tools.symbol_search import SymbolSearchTool, SearchTool
+   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.core.toolss.symbol_search import SymbolSearchTool, SearchTool
 
    symbol_search = SymbolSearch()  # Note: Replace with actual SymbolSearch instance
    symbol_search_tool = SymbolSearchTool(symbol_search)

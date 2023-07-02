@@ -19,10 +19,10 @@ of built tools.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tool.builder.symbol_search.SearchToolkit``
--  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchToolkit``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.builders.symbol_search.SearchToolkit``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkit``
+-  ``automata.core.experimental.search.symbol_search.SymbolSearch``
+-  ``automata.core.tools.tool.Tool``
 
 Example
 -------
@@ -32,8 +32,8 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.agent.tool.builder.symbol_search import SearchTool, SymbolSearchToolkit
+   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.core.tools.builders.symbol_search import SearchTool, SymbolSearchToolkit
 
    symbol_search = SymbolSearch()
    search_tools = [SearchTool.EXACT_SEARCH]

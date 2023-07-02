@@ -14,13 +14,13 @@ other functionalities.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tool.tool_utils.classmethod_lru_cache``
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.coding.py.writer.PyWriter``
+-  ``automata.core.tools.tool_utils.classmethod_lru_cache``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.code_handling.py.writer.PyWriter``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
--  ``automata.core.context.py.retriever.PyContextRetrieverConfig``
+-  ``automata.core.retrievers.py.context.PyContextRetrieverConfig``
 -  ``automata.core.agent.error.AgentGeneralError``
 
 Example
@@ -31,7 +31,7 @@ Here is a simple example demonstrating the usage of
 
 .. code:: python
 
-   from automata.core.agent.tool.tool_utils import DependencyFactory
+   from automata.core.tools.tool_utils import DependencyFactory
 
    inst_factory = DependencyFactory()
    symbol_search = inst_factory.get("symbol_search")

@@ -23,19 +23,19 @@ Overview
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.toolss.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter``
+-  ``automata.core.tools.tool.Tool``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata.core.agent.tools.py_code_writer import PyCodeWriterTool
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.toolss.py_code_writer import PyCodeWriterTool
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
+   from automata.core.code_handling.py_coding.writer import PyCodeWriter
 
    py_retriever = PyCodeRetriever()
    py_writer = PyCodeWriter(py_retriever)

@@ -32,8 +32,8 @@ Related Symbols
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.core.llm.core.EmbeddingProvider``
 -  ``automata.core.llm.core.SymbolEmbeddingHandler``
--  ``automata.core.base.symbol.Symbol``
--  ``automata.core.base.symbol_embedding.SymbolDocEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 
 Example
 -------
@@ -46,8 +46,8 @@ embeddings.
 
    from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
    from automata.core.llm.foundation import LLMChatCompletionProvider
-   from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.context.py.retriever import PyContextRetriever
+   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.core.retrievers.py.context import PyContextRetriever
 
    symbol = ...
    embedding_db = ...

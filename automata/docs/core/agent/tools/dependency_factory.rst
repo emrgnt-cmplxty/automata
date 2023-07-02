@@ -12,12 +12,12 @@ dependencies required and can also be fetched by their names using the
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.agent.tools.context_oracle.ContextOracleTool``
--  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
--  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.agent.tools.symbol_search.SymbolSearchTool``
--  ``automata.core.base.tool.Toolkit``
+-  ``automata.core.toolss.agent_tool.AgentTool``
+-  ``automata.core.toolss.context_oracle.ContextOracleTool``
+-  ``automata.core.toolss.py_code_retriever.PyCodeRetrieverTool``
+-  ``automata.core.toolss.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.toolss.symbol_search.SymbolSearchTool``
+-  ``automata.core.tools.tool.Toolkit``
 
 Example
 -------
@@ -28,7 +28,7 @@ dependency names.
 
 .. code:: python
 
-   from automata.core.agent.tools.tool_utils import DependencyFactory
+   from automata.core.toolss.tool_utils import DependencyFactory
 
    dependency_factory = DependencyFactory()
    py_context_retriever = dependency_factory.get("py_context_retriever")

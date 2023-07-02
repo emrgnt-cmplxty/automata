@@ -27,9 +27,9 @@ Related Symbols
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolkit.can_handle``
 -  ``automata.tests.unit.test_tool.TestTool.run``
--  ``automata.core.base.agent.AgentToolkit.build``
+-  ``automata.core.agent.agent.AgentToolkit.build``
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
--  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
+-  ``automata.core.tools.tool_utils.AgentToolFactory``
 
 Example
 -------
@@ -39,7 +39,7 @@ subclass, called ``TestTool``.
 
 .. code:: python
 
-   from automata.core.base.tool import Tool
+   from automata.core.tools.tool import Tool
    from typing import Dict
 
    class TestTool(Tool):

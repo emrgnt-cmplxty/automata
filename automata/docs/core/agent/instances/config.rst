@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
 
 Example
 -------

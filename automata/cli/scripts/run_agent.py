@@ -5,9 +5,10 @@ from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
-from automata.core.base.github_manager import GitHubManager
-from automata.core.coding.py.module_loader import py_module_loader
+from automata.core.github_management.client import GitHubClient
+from automata.core.singletons.dependency_factory import dependency_factory
+from automata.core.singletons.module_loader import py_module_loader
+from automata.core.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ DEFAULT_ISSUES_PROMPT_SUFFIX = """You may use the context oracle (multiple times
 # Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
 
 
-def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> List[str]:
+def process_issues(issue_numbers: List[int], github_manager: GitHubClient) -> List[str]:
     """
     Process the issues and create tasks for each of them.
 
@@ -41,7 +42,7 @@ def process_issues(issue_numbers: List[int], github_manager: GitHubManager) -> L
 
 def main(*args, **kwargs):
     py_module_loader.initialize()
-    github_manager = GitHubManager(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
+    github_manager = GitHubClient(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
 
     # Pre-process issues if they are passsed
     issue_numbers = kwargs.get("fetch_issues", "")

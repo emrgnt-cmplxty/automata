@@ -20,11 +20,11 @@ processes or modifying existing Python code in a dynamic manner.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.reader.PyReader``
+-  ``automata.core.code_handling.py.reader.PyReader``
 -  ``automata.tests.unit.test_py_writer.py_writer``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_py_writer``
+-  ``automata.core.singletons.dependency_factory.create_py_writer``
 -  ``automata.tests.unit.test_py_writer_tool.PyWriterOpenAIToolkit``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
 
 Example
 -------
@@ -34,8 +34,8 @@ module using ``PyWriter``.
 
 .. code:: python
 
-   from automata.core.coding.py.reader import PyReader
-   from automata.core.coding.py.writer import PyWriter
+   from automata.core.code_handling.py.reader import PyReader
+   from automata.core.code_handling.py.writer import PyWriter
 
    # Initialize PyWriter with a PyReader instance
    py_reader = PyReader()

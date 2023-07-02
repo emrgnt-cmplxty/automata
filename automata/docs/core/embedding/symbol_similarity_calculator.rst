@@ -21,12 +21,12 @@ Related Symbols
 
 -  ``automata.tests.unit.test_context_oracle_tool.test_context_generator``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_code_similarity``
+-  ``automata.core.singletons.dependency_factory.create_symbol_code_similarity``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
 -  ``automata.tests.unit.test_symbol_search_tool.test_exact_search``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_doc_similarity``
+-  ``automata.core.singletons.dependency_factory.create_symbol_doc_similarity``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.conftest.symbol_search``
 -  ``automata.core.llm.core.EmbeddingSimilarityCalculator``
 
@@ -42,7 +42,7 @@ Usage Example
    )
    from typing import Dict, List, Optional, Set
    from ann_embed.synthetic_provider import SyntheticProvider
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
    from numpy import random
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
 

@@ -20,8 +20,8 @@ manage modules in the map with efficiency.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py_coding.module_tree.DotPathMap``
--  ``automata.core.coding.py_coding.py_utils``
+-  ``automata.core.code_handling.py_coding.module_tree.DotPathMap``
+-  ``automata.core.code_handling.py_coding.py_utils``
 -  ``automata.tests.unit.test_py_code_retriever.module_map``
 
 Example
@@ -32,7 +32,7 @@ instance and access a module.
 
 .. code:: python
 
-   from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+   from automata.core.code_handling.py_coding.module_tree import LazyModuleTreeMap
    from automata.core.utils import root_fpath
 
    root_path = root_fpath()

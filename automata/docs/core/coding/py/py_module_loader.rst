@@ -19,9 +19,9 @@ ensuring that there is only one instance throughout the application.
 Related Symbols
 ---------------
 
--  ``automata.core.base.singleton.Singleton``
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.coding.py.writer.PyWriter``
+-  ``automata.core.base.patterns.singleton.Singleton``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.code_handling.py.writer.PyWriter``
 
 Example
 -------
@@ -31,7 +31,7 @@ The following example demonstrates how to initialize and use
 
 .. code:: python
 
-   from automata.core.coding.py.module_loader import PyModuleLoader
+   from automata.core.singletons.module_loader import PyModuleLoader
    from automata.core.utils import get_root_fpath, get_root_py_fpath
 
    # Initialize PyModuleLoader

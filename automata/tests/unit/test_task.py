@@ -4,10 +4,10 @@ from unittest.mock import PropertyMock, patch
 import pytest
 
 from automata.config.base import AgentConfigName
-from automata.core.agent.task.task import AutomataTask
-from automata.core.base.task import TaskStatus
+from automata.core.tasks.base import TaskStatus
+from automata.core.tasks.tasks import AutomataTask
 
-from ..conftest import MockRepositoryManager
+from ..conftest import MockRepositoryClient
 
 
 @patch("logging.config.dictConfig", return_value=None)
@@ -98,7 +98,7 @@ def test_deterministic_task_id(automata_agent_config_builder):
 
 def test_deterministic_vs_non_deterministic_task_id():
     task_1 = AutomataTask(
-        MockRepositoryManager(),
+        MockRepositoryClient(),
         test1="arg1",
         test2="arg2",
         priority=5,
@@ -108,7 +108,7 @@ def test_deterministic_vs_non_deterministic_task_id():
     )
 
     task_2 = AutomataTask(
-        MockRepositoryManager(),
+        MockRepositoryClient(),
         test1="arg1",
         test2="arg2",
         priority=5,

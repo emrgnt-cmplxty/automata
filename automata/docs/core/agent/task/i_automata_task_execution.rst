@@ -19,12 +19,12 @@ task accordingly.
 Related Symbols
 ---------------
 
--  ``automata.core.base.task.Task``
+-  ``automata.core.tasks.base.Task``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.tasks.AutomataTask``
 -  ``automata.core.agent.error.AgentTaskGeneralError``
--  ``automata.core.agent.task.executor.AutomataTaskExecutor``
--  ``automata.core.base.task.TaskStatus``
+-  ``automata.core.tasks.executor.AutomataTaskExecutor``
+-  ``automata.core.tasks.base.TaskStatus``
 
 Example
 -------
@@ -35,9 +35,9 @@ to execute a task and handle retries.
 .. code:: python
 
    import time
-   from automata.core.agent.task.executor import IAutomataTaskExecution
-   from automata.core.agent.task.task import AutomataTask
-   from automata.core.base.task import TaskStatus
+   from automata.core.tasks.executor import IAutomataTaskExecution
+   from automata.core.tasks.tasks import AutomataTask
+   from automata.core.tasks.base import TaskStatus
 
    task = AutomataTask("test_task", instructions="Run test instructions")
    execution = IAutomataTaskExecution()

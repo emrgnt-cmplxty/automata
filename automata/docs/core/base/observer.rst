@@ -14,7 +14,7 @@ Related Symbols
 -  ``automata.tests.unit.test_task.test_callback``
 -  ``automata.tests.unit.sample_modules.sample.Person``
 -  ``automata.core.llm.providers.openai.OpenAIConversation.register_observer``
--  ``automata.tests.conftest.MockRepositoryManager``
+-  ``automata.tests.conftest.MockRepositoryClient``
 -  ``automata.core.llm.providers.openai.OpenAIConversation.unregister_observer``
 -  ``automata.tests.unit.test_py_reader.getter``
 -  ``automata.core.llm.foundation.LLMConversation.register_observer``
@@ -31,7 +31,7 @@ inherits from the ``Observer`` class and implements the
 
 .. code:: python
 
-   from automata.core.base.observer import Observer
+   from automata.core.base.patterns.observer import Observer
 
    class CustomObserver(Observer):
        def update_database(self, subject):

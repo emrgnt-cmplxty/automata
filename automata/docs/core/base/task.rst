@@ -22,9 +22,9 @@ hashable kwargs - Notifying observers when the task status changes
 Related Symbols
 ---------------
 
--  ``automata.core.agent.task.task.AutomataTask``
--  ``automata.core.base.task.ITaskExecution.execute``
--  ``automata.core.base.task.ITaskExecution``
+-  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.core.tasks.base.ITaskExecution.execute``
+-  ``automata.core.tasks.base.ITaskExecution``
 -  ``automata.tests.unit.test_task_database.task``
 
 Example
@@ -36,7 +36,7 @@ The following is an example demonstrating how to create a custom
 .. code:: python
 
    import uuid
-   from automata.core.base.task import Task, TaskStatus
+   from automata.core.tasks.base import Task, TaskStatus
 
    class MyCustomTask(Task):
        def __init__(self, *args, **kwargs):

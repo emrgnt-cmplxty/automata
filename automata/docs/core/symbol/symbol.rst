@@ -42,7 +42,7 @@ Example
 
    symbol_class = parse_symbol("scic-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#")
 
-   symbol_method = parse_symbol("scic-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__().")
+   symbol_method = parse_symbol("scic-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tools.tool`/ToolNotFoundError#__init__().")
 
 Limitations
 -----------

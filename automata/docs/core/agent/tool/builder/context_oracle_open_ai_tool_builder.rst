@@ -22,20 +22,20 @@ context.
 Related Symbols
 ---------------
 
--  ``automata.core.base.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkit``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.llm.providers.available.LLMPlatforms``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleTool``
--  ``automata.core.agent.tool.registry.AutomataOpenAIAgentToolkitRegistry``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleTool``
+-  ``automata.core.tools.registries.OpenAIAutomataAgentToolkitRegistry``
 
 Example
 -------
 
 .. code:: python
 
-   from automata.core.agent.tool.builder.context_oracle import ContextOracleOpenAIToolkit
-   from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.tools.builders.context_oracle import ContextOracleOpenAIToolkit
+   from automata.core.experimental.search.symbol_search import SymbolSearch
    from automata.core.symbol_embedding.similarity import SymbolSimilarity
 
    symbol_search = SymbolSearch()

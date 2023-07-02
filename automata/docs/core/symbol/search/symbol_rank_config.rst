@@ -23,10 +23,10 @@ acceptable range.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.search.rank.SymbolRank``
+-  ``automata.core.experimental.search.rank.SymbolRank``
 -  ``automata.tests.unit.test_symbol_rank.test_get_ranks``
 -  ``automata.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_search``
+-  ``automata.core.singletons.dependency_factory.create_symbol_search``
 
 Example
 -------
@@ -36,7 +36,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.search.rank import SymbolRankConfig
+   from automata.core.experimental.search.rank import SymbolRankConfig
 
    config = SymbolRankConfig(alpha=0.25, max_iterations=100, tolerance=1.0e-6)
    SymbolRankConfig.validate_config(config)

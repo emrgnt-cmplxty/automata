@@ -24,9 +24,9 @@ of failure, up to the maximum number of retries specified in the task.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.task.task.AutomataTask``
--  ``automata.core.base.task.ITaskExecution``
--  ``automata.core.agent.task.executor.IAutomataTaskExecution``
+-  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.core.tasks.base.ITaskExecution``
+-  ``automata.core.tasks.executor.IAutomataTaskExecution``
 
 Example
 -------
@@ -36,8 +36,8 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.agent.task.executor import AutomataTaskExecutor, ITaskExecution
-   from automata.core.agent.task.task import AutomataTask
+   from automata.core.tasks.executor import AutomataTaskExecutor, ITaskExecution
+   from automata.core.tasks.tasks import AutomataTask
 
    # Define custom execution behavior by implementing ITaskExecution
    class CustomExecuteBehavior(ITaskExecution):

@@ -18,10 +18,10 @@ Import Statements
    from contextlib import contextmanager
    from typing import List, Optional, Set
    from redbaron import RedBaron
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
    from automata.core.database.vector import VectorDatabaseProvider
    from automata.core.symbol.graph import SymbolGraph
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
    from automata.core.symbol.symbol_utils import (
        convert_to_fst_object,
        get_rankable_symbols,
@@ -40,10 +40,10 @@ a project.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
 -  ``automata.core.database.vector.VectorDatabaseProvider``
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.symbol_utils``
 -  ``automata.core.utils.root_py_fpath``
 
@@ -57,7 +57,7 @@ demonstrates its basic functionality.
 
    from automata.core.context.py_context.retriever import PyContextRetriever
    from automata.core.symbol.graph import SymbolGraph
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
 
    graph = SymbolGraph()
    symbol = Symbol.from_string("some_string_representation_of_symbol")

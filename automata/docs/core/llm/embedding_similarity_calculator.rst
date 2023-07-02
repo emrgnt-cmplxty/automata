@@ -19,10 +19,10 @@ and the symbols.
 Related Symbols
 ---------------
 
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarityCalculator``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_code_similarity``
+-  ``automata.core.singletons.dependency_factory.create_symbol_code_similarity``
 
 Example
 -------
@@ -34,7 +34,7 @@ EmbeddingSimilarityCalculator -
 
    from automata.core.llm.core import EmbeddingSimilarityCalculator
    from typing import Dict
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
 
    class MyEmbeddingSimilarityCalculator(EmbeddingSimilarityCalculator):
        def calculate_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:

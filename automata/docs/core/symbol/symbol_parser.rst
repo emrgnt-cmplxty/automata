@@ -16,10 +16,10 @@ descriptor suffixes.
 Related Symbols
 ---------------
 
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.parser.parse_symbol``
 -  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.base.symbol.SymbolDescriptor``
+-  ``automata.core.symbol.base.SymbolDescriptor``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.context.py_context.retriever.PyContextRetriever``
 
@@ -38,7 +38,7 @@ function to create a ``Symbol`` object from a symbol URI string.
    )
 
    symbol_method = parse_symbol(
-       "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.base.tool`/ToolNotFoundError#__init__()."
+       "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tools.tool`/ToolNotFoundError#__init__()."
    )
 
 Limitations

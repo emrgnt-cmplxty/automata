@@ -24,10 +24,10 @@ files and symbols.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
+-  ``automata.core.toolss.agent_tool.AgentTool``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter``
 
 Example
 -------
@@ -38,8 +38,8 @@ file.
 
 .. code:: python
 
-   from automata.core.agent.tools.py_code_retriever import PyCodeRetrieverTool
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
+   from automata.core.toolss.py_code_retriever import PyCodeRetrieverTool
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
 
    py_retriever = PyCodeRetriever()
    tool_instance = PyCodeRetrieverTool(py_retriever=py_retriever)

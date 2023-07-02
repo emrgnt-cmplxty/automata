@@ -13,7 +13,7 @@ Overview
 
 ``AutomataTaskEnvironment`` provides methods to setup and interact with
 the task environment, which is based on a GitHub repository. It uses a
-``GitHubManager`` instance to perform repository-related operations such
+``GitHubClient`` instance to perform repository-related operations such
 as cloning, creating branches, and handling pull requests. The task
 environment is prepared with the necessary files and directories during
 the setup process, and task status is updated accordingly throughout the
@@ -22,23 +22,23 @@ task lifecycle.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.tasks.AutomataTask``
 -  ``automata.tests.conftest.environment``
--  ``automata.core.base.task.TaskEnvironment``
--  ``automata.core.base.github_manager.GitHubManager``
+-  ``automata.core.tasks.base.TaskEnvironment``
+-  ``automata.core.base.github_management.client.GitHubClient``
 
 Example
 -------
 
 The following example demonstrates how to create an instance of
-``AutomataTaskEnvironment`` using a ``GitHubManager`` instance.
+``AutomataTaskEnvironment`` using a ``GitHubClient`` instance.
 
 .. code:: python
 
-   from automata.core.base.github_manager import GitHubManager
-   from automata.core.agent.task.environment import AutomataTaskEnvironment
+   from automata.core.base.github_management.client import GitHubClient
+   from automata.core.tasks.environment import AutomataTaskEnvironment
 
-   github_manager = GitHubManager(access_token="your_access_token", remote_name="your_remote_repo")
+   github_manager = GitHubClient(access_token="your_access_token", remote_name="your_remote_repo")
    task_environment = AutomataTaskEnvironment(github_manager)
 
 Limitations

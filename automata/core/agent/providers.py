@@ -4,6 +4,7 @@ from typing import Dict, Final, List, Sequence
 
 from automata.config.base import ConfigCategory
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
+from automata.core.agent.agent import Agent, AgentToolkit
 from automata.core.agent.error import (
     AgentDatabaseError,
     AgentGeneralError,
@@ -11,7 +12,6 @@ from automata.core.agent.error import (
     AgentResultError,
     AgentStopIteration,
 )
-from automata.core.base.agent import Agent, AgentToolkit
 from automata.core.llm.foundation import (
     LLMChatMessage,
     LLMConversationDatabaseProvider,

@@ -89,10 +89,10 @@ EXACT_CALLS_TO_HITS = {
         "automata.config.agent_config_builder",
     ],
     "SymbolRank": [
-        "automata.core.symbol.search.symbol_search",
-        "automata.core.symbol.search.rank",
-        "automata.core.agent.tools.symbol_search",
-        "automata.core.agent.tools.tool_utils",
+        "automata.core.experimental.search.symbol_search",
+        "automata.core.experimental.search.rank",
+        "automata.core.toolss.symbol_search",
+        "automata.core.toolss.factory",
     ],
 }
 

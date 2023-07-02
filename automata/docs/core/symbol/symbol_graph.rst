@@ -21,12 +21,12 @@ Related Symbols
 ---------------
 
 -  ``automata.core.symbol.parser.parse_symbol``
--  ``automata.core.base.scip_pb2.Index``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.scip_pb2.Index``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol.graph.GraphBuilder``
 -  ``automata.core.symbol.graph._SymbolGraphNavigator``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_symbol_graph``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
+-  ``automata.core.singletons.dependency_factory.create_symbol_graph``
+-  ``automata.core.experimental.search.symbol_search.SymbolSearch``
 
 Example
 -------

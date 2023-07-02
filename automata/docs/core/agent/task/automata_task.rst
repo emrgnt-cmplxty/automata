@@ -22,7 +22,7 @@ accessed after the task execution.
 Related Symbols
 ---------------
 
--  ``automata.core.base.task.Task``
+-  ``automata.core.tasks.base.Task``
 -  ``automata.core.agent.error.AgentTaskInstructions``
 -  ``automata.core.utils.get_logging_config``
 -  ``automata.core.utils.get_root_fpath``
@@ -37,7 +37,7 @@ folder.
 
 .. code:: python
 
-   from automata.core.agent.task.task import AutomataTask
+   from automata.core.tasks.tasks import AutomataTask
 
    instructions = "Perform text analysis and store the results."
    task = AutomataTask(instructions=instructions)

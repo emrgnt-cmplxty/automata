@@ -10,16 +10,16 @@ Overview
 --------
 
 The ``Tool.Config`` class is part of the
-``automata.core.base.tool.Tool`` class and helps to set up the
+``automata.core.tools.tool.Tool`` class and helps to set up the
 configuration for the tool.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.test_tool``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.base.tool.Tool.run``
+-  ``automata.core.tools.tool.Tool.run``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolkit.can_handle``
 
@@ -31,7 +31,7 @@ uses the ``Tool.Config`` and is able to run with some input.
 
 .. code:: python
 
-   from automata.core.base.tool import Tool
+   from automata.core.tools.tool import Tool
    from typing import Dict
 
    class TestTool(Tool):

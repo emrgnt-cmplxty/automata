@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
-from automata.core.base.agent import AgentInstance
+from automata.core.agent.agent import AgentInstance
 
 if TYPE_CHECKING:
     from automata.core.agent.providers import OpenAIAutomataAgent

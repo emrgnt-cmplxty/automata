@@ -10,8 +10,8 @@ task as it progresses through different stages of execution.
 Related Symbols
 ---------------
 
--  ``automata.core.base.task.Task``
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.base.Task``
+-  ``automata.core.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_task``
 
 Example
@@ -22,8 +22,8 @@ The following example demonstrates how to use ``TaskStatus`` with an
 
 .. code:: python
 
-   from automata.core.agent.task.task import AutomataTask
-   from automata.core.base.task import TaskStatus
+   from automata.core.tasks.tasks import AutomataTask
+   from automata.core.tasks.base import TaskStatus
 
    task = AutomataTask(instructions="example_instructions")
    print("Task initial status:", task.status)

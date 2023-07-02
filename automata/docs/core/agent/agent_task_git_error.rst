@@ -9,10 +9,10 @@ and pushing changes, and creating a pull request.
 Related Symbols
 ---------------
 
--  ``automata.core.base.github_manager.GitHubManager``
--  ``automata.core.base.github_manager.RepositoryManager``
--  ``automata.core.agent.task.environment.AutomataTaskEnvironment``
--  ``automata.tests.conftest.MockRepositoryManager``
+-  ``automata.core.base.github_management.client.GitHubClient``
+-  ``automata.core.base.github_management.client.RepositoryClient``
+-  ``automata.core.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tests.conftest.MockRepositoryClient``
 
 Example
 -------
@@ -24,12 +24,12 @@ repository using the ``AutomataTaskEnvironment``.
 .. code:: python
 
    from automata.core.agent.error import AgentTaskGitError
-   from automata.core.agent.task.environment import AutomataTaskEnvironment
-   from automata.core.base.github_manager import GitHubManager
+   from automata.core.tasks.environment import AutomataTaskEnvironment
+   from automata.core.base.github_management.client import GitHubClient
 
    access_token = "your_github_access_token"
    remote_name = "your_repo_remote_name"
-   github_manager = GitHubManager(access_token, remote_name)
+   github_manager = GitHubClient(access_token, remote_name)
    environment = AutomataTaskEnvironment(github_manager)
 
    try:

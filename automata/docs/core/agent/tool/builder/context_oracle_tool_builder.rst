@@ -28,12 +28,12 @@ Import Statements
    import textwrap
    from typing import List
    from automata.config.base import LLMProvider
-   from automata.core.agent.tool.registry import AutomataOpenAIAgentToolkitRegistry
-   from automata.core.base.agent import AgentToolkit, AgentToolkitNames
-   from automata.core.base.tool import Tool
+   from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
+   from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
+   from automata.core.tools.tool import Tool
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
    from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAITool
-   from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.experimental.search.symbol_search import SymbolSearch
 
 Related Symbols
 ---------------
@@ -41,7 +41,7 @@ Related Symbols
 Here are the classes closely related to ``ContextOracleToolkit``
 
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``
 -  ``automata.tests.unit.test_context_oracle_tool.test_build``
 
@@ -53,8 +53,8 @@ Below is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.agent.tool.builder.context_oracle import ContextOracleToolkit
-   from automata.core.symbol.search.symbol_search import SymbolSearch # Replace MagicMock in example
+   from automata.core.tools.builders.context_oracle import ContextOracleToolkit
+   from automata.core.experimental.search.symbol_search import SymbolSearch # Replace MagicMock in example
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator # Replace MagicMock in example
 
    symbol_search = SymbolSearch() # Mocked in example, replace with appropriate parameters
