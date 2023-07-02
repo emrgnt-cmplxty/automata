@@ -20,7 +20,7 @@ Related Symbols
 -  ``automata.config.base.ConfigCategory``
 -  ``automata.config.base.AgentConfig.Config``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
--  ``automata.core.base.agent.AgentInstance.Config``
+-  ``automata.core.agent.agent.AgentInstance.Config``
 
 Example 1
 ---------

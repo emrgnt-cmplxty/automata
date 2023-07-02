@@ -20,15 +20,15 @@ execution process.
 Related Symbols
 ---------------
 
--  ``automata.core.base.task.ITaskExecution``
+-  ``automata.core.tasks.base.ITaskExecution``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
--  ``automata.core.agent.task.executor.AutomataTaskExecutor.__init__``
+-  ``automata.core.tasks.executor.AutomataTaskExecutor.__init__``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.core.base.task.TaskStatus``
+-  ``automata.core.tasks.base.TaskStatus``
 -  ``automata.tests.unit.test_tool.test_tool_run``
--  ``automata.core.agent.task.executor.AutomataTaskExecutor``
+-  ``automata.core.tasks.executor.AutomataTaskExecutor``
 -  ``automata.tests.unit.test_tool.test_tool``
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_task_environment.TestURL``
 
 Usage Example
@@ -40,7 +40,7 @@ for executing a test task:
 .. code:: python
 
    from automata.tests.unit.test_task_executor import TestExecuteBehavior
-   from automata.core.base.task import Task
+   from automata.core.tasks.base import Task
 
    # Create a sample Task instance
    task = Task()

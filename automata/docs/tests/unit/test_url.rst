@@ -11,15 +11,15 @@ task.
 Related Symbols
 ---------------
 
--  ``automata.core.base.task.TaskStatus``
+-  ``automata.core.tasks.base.TaskStatus``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.test_tool_run``
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_tool.test_tool``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.coding.py.reader.PyReader``
+-  ``automata.core.code_handling.py.reader.PyReader``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 
 Example

@@ -18,7 +18,7 @@ properties.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.base.base_tool.BaseTool``
 -  ``automata.core.agent.agent_enums.ResultField``
 -  ``automata.tests.unit.test_base_tool.MockTool``
@@ -32,7 +32,7 @@ of a tool.
 .. code:: python
 
    from automata.core.agent.agent_enums import ToolField
-   from automata.core.base.tool import Tool
+   from automata.core.tools.tool import Tool
 
    tool = Tool(name="ExampleTool", func=lambda x: "Example response", description="An example tool for demonstration purposes")
 

@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.core.database.vector.VectorDatabaseProvider``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.symbol.base.Symbol``
 
 Example
 -------
@@ -34,7 +34,7 @@ The following code snippet demonstrates the usage of
    from automata.core.database.vector import JSONEmbeddingVectorDatabase
    from automata.core.memory_store.embedding_types import EmbeddingProvider
    from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-   from automata.core.base.symbol import Symbol
+   from automata.core.symbol.base import Symbol
 
    # Define the embedding database and embedding provider
    embedding_db = JSONEmbeddingVectorDatabase(database_filepath)

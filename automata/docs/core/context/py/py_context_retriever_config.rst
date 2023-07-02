@@ -20,12 +20,12 @@ offers an easy way to adjust the configuration of any
 Related Symbols
 ---------------
 
--  ``automata.core.context.py.retriever.PyContextRetriever``
+-  ``automata.core.retrievers.py.context.PyContextRetriever``
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
 -  ``automata.tests.unit.test_py_writer.py_writer``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_py_context_retriever``
+-  ``automata.core.singletons.dependency_factory.create_py_context_retriever``
 -  ``automata.tests.unit.test_py_reader.getter``
--  ``automata.core.coding.py.reader.PyReader``
+-  ``automata.core.code_handling.py.reader.PyReader``
 -  ``automata.tests.unit.test_py_reader_tool.test_init``
 -  ``automata.tests.unit.test_py_reader_tool.test_tool_execution``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance.Config``
@@ -39,7 +39,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.core.context.py.retriever import PyContextRetrieverConfig
+   from automata.core.retrievers.py.context import PyContextRetrieverConfig
 
    config = PyContextRetrieverConfig(
        spacer="\t",

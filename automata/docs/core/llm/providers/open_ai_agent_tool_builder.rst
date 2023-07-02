@@ -18,12 +18,12 @@ of ``OpenAITool`` instances, which are specialized versions of the
 Related Symbols
 ---------------
 
--  ``automata.core.base.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkit``
 -  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
--  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchOpenAIToolkit``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
--  ``automata.core.agent.tool.builder.py_reader.PyReaderOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.py_reader.PyReaderOpenAIToolkit``
 
 Example
 -------

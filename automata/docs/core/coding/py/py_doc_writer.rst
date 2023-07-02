@@ -22,10 +22,10 @@ camel case, and generating index files and summaries for the project.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.coding.directory.DirectoryManager``
--  ``automata.core.base.symbol.Symbol``
--  ``automata.core.base.symbol_embedding.SymbolDocEmbedding``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.navigation.directory.DirectoryManager``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
 -  ``type: ignore``
 
 Example
@@ -36,7 +36,7 @@ generating documentation for Python modules.
 
 .. code:: python
 
-   from automata.core.coding.py.writer import PyDocWriter
+   from automata.core.code_handling.py.writer import PyDocWriter
 
    base_path = "path/to/project"
    docs_dir = "path/to/docs"

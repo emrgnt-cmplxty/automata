@@ -27,7 +27,7 @@ Related Symbols
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.config.config_types.InstructionConfigVersion``
 
 Example

@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.agent.tool.builder.context_oracle import ContextOracleToolkit
-from automata.core.base.tool import Tool
+from automata.core.tools.base import Tool
+from automata.core.tools.builders.context_oracle import ContextOracleToolkit
 
 
 @pytest.fixture

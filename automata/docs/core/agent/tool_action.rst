@@ -20,7 +20,7 @@ Overview
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.agent.action.AutomataActionExtractor``
 -  ``automata.core.agent.agent_enums.ActionIndicator``
 -  ``core.agent.action.AutomataActionExtractor.extract_actions``

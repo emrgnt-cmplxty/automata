@@ -11,8 +11,8 @@ and files respectively within the tree.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.File``
--  ``automata.core.coding.directory.Directory``
+-  ``automata.core.navigation.directory.File``
+-  ``automata.core.navigation.directory.Directory``
 
 Example
 -------
@@ -23,7 +23,7 @@ file tree hierarchy.
 
 .. code:: python
 
-   from automata.core.coding.directory import Directory, File
+   from automata.core.navigation.directory import Directory, File
 
    # Create the root directory
    root = Directory("root")

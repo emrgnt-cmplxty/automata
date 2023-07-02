@@ -7,14 +7,14 @@ import openai
 import tiktoken
 from termcolor import colored
 
-from automata.core.base.embedding import EmbeddingProvider
-from automata.core.base.tool import Tool
+from automata.core.embedding.base import EmbeddingProvider
 from automata.core.llm.foundation import (
     LLMChatCompletionProvider,
     LLMChatMessage,
     LLMCompletionResult,
     LLMConversation,
 )
+from automata.core.tools.base import Tool
 from automata.core.utils import set_openai_api_key
 
 logger = logging.getLogger(__name__)

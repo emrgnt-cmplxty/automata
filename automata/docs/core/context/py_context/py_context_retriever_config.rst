@@ -22,8 +22,8 @@ Related Symbols
 ---------------
 
 -  ``automata.core.context.py_context.retriever.PyContextRetriever``
--  ``automata.core.agent.tools.tool_utils.DependencyFactory.create_py_context_retriever``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.toolss.tool_utils.DependencyFactory.create_py_context_retriever``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
 
 Example
 -------

@@ -10,11 +10,11 @@ extends ``AgentTool``.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.TestTool``
 -  ``automata.tests.unit.test_base_tool.MockTool``
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.base.tool.Toolkit``
+-  ``automata.core.tools.tool.Toolkit``
 
 Example
 -------
@@ -24,7 +24,7 @@ extending the ``AgentTool`` class:
 
 .. code:: python
 
-   from automata.core.agent.tools.agent_tool import AgentTool
+   from automata.core.toolss.agent_tool import AgentTool
    from typing import Any
 
    class CustomTool(AgentTool):

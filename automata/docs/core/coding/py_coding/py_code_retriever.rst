@@ -20,9 +20,9 @@ source code without docstring contents.
 Related symbols
 ---------------
 
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.coding.py_coding.module_tree.LazyModuleTreeMap.cached_default``
--  ``automata.core.coding.py_coding.navigation.find_syntax_tree_node``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.code_handling.py_coding.module_tree.LazyModuleTreeMap.cached_default``
+-  ``automata.core.code_handling.py_coding.navigation.find_syntax_tree_node``
 -  ``redbaron.ClassNode``
 -  ``redbaron.DefNode``
 -  ``redbaron.Node``
@@ -33,12 +33,12 @@ Examples
 
 .. code:: python
 
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata.core.coding.py_coding.module_tree import LazyModuleTreeMap
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
+   from automata.core.code_handling.py_coding.module_tree import LazyModuleTreeMap
 
    module_tree_map = LazyModuleTreeMap.cached_default()
    code_retriever = PyCodeRetriever(module_tree_map)
-   module_dotpath = 'automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool'
+   module_dotpath = 'automata.core.toolss.py_code_retriever.PyCodeRetrieverTool'
    object_path = 'PyCodeRetrieverTool.__init__'
 
    source_code = code_retriever.get_source_code(module_dotpath, object_path)

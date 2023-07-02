@@ -23,10 +23,10 @@ returns the output of the ``function``.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.llm.providers.openai.OpenAIFunction``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
 
 Example
 -------
@@ -36,7 +36,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.base.tool import OpenAITool
+   from automata.core.tools.tool import OpenAITool
 
    def example_function(tool_input):
        return f"Example tool response: {tool_input['input_text']}"

@@ -19,16 +19,16 @@ trees and interacting with file tree data structures.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.Node``
+-  ``automata.core.navigation.directory.Node``
 -  ``automata.tests.unit.test_symbol_graph.test_get_all_files``
 -  ``automata.tests.unit.test_database_vector.test_save``
--  ``automata.core.base.symbol.SymbolFile``
+-  ``automata.core.symbol.base.SymbolFile``
 -  ``automata.tests.unit.test_database_vector.test_init_vector``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.tests.unit.test_database_vector.test_load``
--  ``automata.core.base.symbol.SymbolFile.__eq__``
+-  ``automata.core.symbol.base.SymbolFile.__eq__``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.core.base.symbol.SymbolReference``
+-  ``automata.core.symbol.base.SymbolReference``
 -  ``automata.tests.unit.test_task_environment.TestURL``
 
 Usage Example
@@ -39,7 +39,7 @@ The following example demonstrates how to create an instance of the
 
 .. code:: python
 
-   from automata.core.coding.directory import File, Node
+   from automata.core.navigation.directory import File, Node
 
    parent_node = Node("ParentNode")
    file_instance = File("File1", parent_node)

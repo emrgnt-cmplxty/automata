@@ -28,7 +28,7 @@ Related Symbols
 -  ``automata.core.llm.providers.openai.OpenAIAgent``
 -  ``automata.config.config_types.AutomataAgentConfig``
 -  ``config.automata_agent_config_utils.AutomataAgentConfigBuilder``
--  ``automata.core.agent.task.executor.IAutomataTaskExecution._build_agent``
+-  ``automata.core.tasks.executor.IAutomataTaskExecution._build_agent``
 
 Example
 -------

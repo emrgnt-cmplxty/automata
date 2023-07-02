@@ -22,10 +22,10 @@ The current supported ``ToolkitType`` enumeration values include:
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Toolkit``
+-  ``automata.core.tools.tool.Toolkit``
 -  ``automata.tests.unit.test_tool.TestTool``
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.agent.tools.tool_utils.UnknownToolError``
+-  ``automata.core.toolss.tool_utils.UnknownToolError``
 
 Example
 -------
@@ -34,7 +34,7 @@ Here is an example of using ``ToolkitType``:
 
 .. code:: python
 
-   from automata.core.base.tool import ToolkitType
+   from automata.core.tools.tool import ToolkitType
 
    toolkit_type = ToolkitType.PY_RETRIEVER
    print(toolkit_type.name)

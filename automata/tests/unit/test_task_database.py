@@ -2,15 +2,15 @@ import os
 
 import pytest
 
-from automata.core.agent.task.registry import AutomataTaskDatabase
-from automata.core.agent.task.task import AutomataTask
-from automata.core.base.task import TaskStatus
+from automata.core.tasks.agent_database import AutomataAgentTaskDatabase
+from automata.core.tasks.base import TaskStatus
+from automata.core.tasks.tasks import AutomataTask
 
 
 @pytest.fixture(scope="module")
 def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
-    db = AutomataTaskDatabase(str(db_file))
+    db = AutomataAgentTaskDatabase(str(db_file))
     yield db
     db.close()
     os.remove(str(db_file))

@@ -21,8 +21,8 @@ Related Symbols
 
 -  ``JSONEmbeddingVectorDatabase`` inherits from
    ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.base.symbol.Symbol``
--  ``automata.core.base.symbol_embedding.SymbolEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding``
 
 Example
 -------
@@ -34,7 +34,7 @@ and retrieving vectors associated with symbols.
 .. code:: python
 
    from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-   from automata.core.base.symbol import Symbol, SymbolEmbedding
+   from automata.core.symbol.base import Symbol, SymbolEmbedding
 
    file_path = "path/to/json/database.json"
    vector_db = JSONEmbeddingVectorDatabase(file_path)

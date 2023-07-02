@@ -19,10 +19,10 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_py_writer.py_writer``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter``
--  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter``
+-  ``automata.core.toolss.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol.base.Symbol``
 
 Example
 -------
@@ -33,8 +33,8 @@ code:
 
 .. code:: python
 
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
+   from automata.core.code_handling.py_coding.writer import PyCodeWriter
 
    retriever = PyCodeRetriever()
    code_writer = PyCodeWriter(retriever)

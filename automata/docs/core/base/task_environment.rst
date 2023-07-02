@@ -11,10 +11,10 @@ environment implementations.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.task.environment.AutomataTaskEnvironment``
+-  ``automata.core.tasks.environment.AutomataTaskEnvironment``
 -  ``automata.tests.conftest.environment``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.agent.task.task.AutomataTask``
+-  ``automata.core.tasks.tasks.AutomataTask``
 
 Example
 -------
@@ -24,7 +24,7 @@ implementation of the ``TaskEnvironment`` abstract base class.
 
 .. code:: python
 
-   from automata.core.base.task import TaskEnvironment
+   from automata.core.tasks.base import TaskEnvironment
    from typing import Any
 
    class CustomTaskEnvironment(TaskEnvironment):

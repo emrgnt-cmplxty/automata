@@ -19,8 +19,8 @@ Related Symbols
 
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance``
--  ``automata.core.base.agent.Agent``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.agent.agent.Agent``
+-  ``automata.core.tools.tool.Tool``
 
 Example
 -------
@@ -30,7 +30,7 @@ instance by subclassing ``AgentInstance``.
 
 .. code:: python
 
-   from automata.core.base.agent import AgentInstance
+   from automata.core.agent.agent import AgentInstance
    from automata.core.config.config_types import AgentConfigName
 
    class CustomAgentInstance(AgentInstance):

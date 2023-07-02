@@ -40,7 +40,7 @@ The following example demonstrates how to create an instance of
 .. code:: python
 
    from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
-   from automata.tools.registry import Tool
+   from automata.tools.registries import Tool
 
    builder = AutomataOpenAIAgentConfigBuilder()
    builder = builder.with_model("gpt-3.5-turbo")

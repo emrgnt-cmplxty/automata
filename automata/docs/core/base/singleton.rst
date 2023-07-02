@@ -12,13 +12,13 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.tests.unit.sample_modules.sample.Person``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``
--  ``automata.core.coding.py.module_loader.PyModuleLoader``
+-  ``automata.core.singletons.module_loader.PyModuleLoader``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
 -  ``automata.core.llm.foundation.LLMChatCompletionProvider.__init__``
--  ``automata.tests.conftest.MockRepositoryManager``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.tests.conftest.MockRepositoryClient``
+-  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.unit.test_py_reader.getter``
--  ``automata.core.coding.py.module_loader.PyModuleLoader.__init__``
+-  ``automata.core.singletons.module_loader.PyModuleLoader.__init__``
 
 Example
 -------
@@ -29,7 +29,7 @@ ensure that only one instance of the class is created.
 .. code:: python
 
    import abc
-   from automata.core.base.singleton import Singleton
+   from automata.core.base.patterns.singleton import Singleton
 
    class MyClass(metaclass=Singleton):
        def __init__(self):

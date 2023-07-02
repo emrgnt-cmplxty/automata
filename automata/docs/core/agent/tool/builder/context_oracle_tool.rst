@@ -15,13 +15,13 @@ object and a ``SymbolSimilarity`` object. The ``build()`` method
 provides a list of tools associated with the context oracle.
 
 Key related symbols include: -
-``automata.core.symbol.search.symbol_search.SymbolSearch`` -
+``automata.core.experimental.search.symbol_search.SymbolSearch`` -
 ``automata.core.symbol_embedding.similarity.SymbolSimilarity`` -
-``automata.core.base.tool.Tool`` -
-``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
-- ``automata.core.base.agent.AgentToolkit`` -
-``automata.core.base.agent.AgentToolkitNames`` -
-``automata.core.agent.tool_tool_utils.AgentToolFactory``
+``automata.core.tools.tool.Tool`` -
+``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+- ``automata.core.agent.agent.AgentToolkit`` -
+``automata.core.agent.agent.AgentToolkitNames`` -
+``automata.core.tools_tool_utils.AgentToolFactory``
 
 Example
 -------
@@ -31,9 +31,9 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.experimental.search.symbol_search import SymbolSearch
    from automata.core.symbol_embedding.similarity import SymbolSimilarity
-   from automata.core.agent.tool.builder.context_oracle import ContextOracleTool
+   from automata.core.tools.builders.context_oracle import ContextOracleTool
 
    symbol_search = SymbolSearch(...)  # Set up the SymbolSearch object
    symbol_doc_similarity = SymbolSimilarity(...)  # Set up the SymbolSimilarity object

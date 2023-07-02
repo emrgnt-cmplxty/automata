@@ -13,17 +13,17 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.base_tool.BaseTool``
--  ``automata.core.agent.tools.tool_utils.ToolCreationError``
--  ``automata.core.agent.tools.tool_utils.UnknownToolError``
--  ``automata.core.coding.py_coding.writer.PyCodeWriter.ClassOrFunctionNotFound``
--  ``automata.core.base.tool.InvalidTool``
+-  ``automata.core.toolss.tool_utils.ToolCreationError``
+-  ``automata.core.toolss.tool_utils.UnknownToolError``
+-  ``automata.core.code_handling.py_coding.writer.PyCodeWriter.ClassOrFunctionNotFound``
+-  ``automata.core.tools.tool.InvalidTool``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata.core.base.tool import ToolNotFoundError
+   from automata.core.tools.tool import ToolNotFoundError
    from automata.tests.unit.test_tool import TestTool
 
    def find_tool(tool_name: str):

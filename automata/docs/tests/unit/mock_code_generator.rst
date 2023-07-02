@@ -23,11 +23,11 @@ generates random strings of specified length.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.coding.py.writer.PyWriter``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.code_handling.py.writer.PyWriter``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
 
 Example
 -------

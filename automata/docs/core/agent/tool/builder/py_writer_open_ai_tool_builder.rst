@@ -19,8 +19,8 @@ to write or modify the code in the specified module, class, or function.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.writer.PyWriter``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterToolkit``
+-  ``automata.core.code_handling.py.writer.PyWriter``
+-  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 
@@ -29,16 +29,16 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.coding.py.reader import PyReader
-   from automata.core.coding.py.writer import PyWriter
-   from automata.core.agent.tool.builder.py_writer import PyWriterToolkit
+   from automata.core.code_handling.py.reader import PyReader
+   from automata.core.code_handling.py.writer import PyWriter
+   from automata.core.tools.builders.py_writer import PyWriterToolkit
    from automata.core.llm.providers.openai import OpenAITool
 
    py_reader = PyReader()
    py_writer = PyWriter(py_reader)
    py_writer_tool_builder = PyWriterToolkit(py_writer)
 
-   # We assume that PyWriterToolkit is registered in the AutomataOpenAIAgentToolkitRegistry
+   # We assume that PyWriterToolkit is registered in the OpenAIAutomataAgentToolkitRegistry
    open_ai_tools = py_writer_tool_builder.build_for_open_ai()
 
    for tool in open_ai_tools:

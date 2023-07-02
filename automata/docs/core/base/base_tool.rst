@@ -23,10 +23,10 @@ providing specific implementations for ``_run`` and ``_arun`` methods.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.base.tool.Toolkit``
--  ``automata.core.base.tool.InvalidTool``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.toolss.agent_tool.AgentTool``
+-  ``automata.core.tools.tool.Toolkit``
+-  ``automata.core.tools.tool.InvalidTool``
 -  ``automata.tests.unit.test_base_tool.MockTool``: This mock object is
    used for testing purposes; refer to actual implementations of
    ``BaseTool`` as examples.

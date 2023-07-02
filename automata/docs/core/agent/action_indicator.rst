@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.core.agent.action.AutomataActionExtractor``
 -  ``automata.core.agent.agent_enums.ActionIndicator``
 -  ``automata.core.agent.agent_enums.ToolField``
--  ``automata.core.base.tool.ToolkitType``
+-  ``automata.core.tools.tool.ToolkitType``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.tests.unit.test_tool.TestTool``
 

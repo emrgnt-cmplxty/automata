@@ -37,7 +37,7 @@ iteration and has a limited number of total steps.
 .. code:: python
 
    import logging
-   from automata.core.base.agent import Agent
+   from automata.core.agent.agent import Agent
    from automata.core.llm.foundation import LLMIterationResult
 
    class CustomAgent(Agent):

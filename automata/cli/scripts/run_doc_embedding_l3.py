@@ -4,23 +4,23 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.base.symbol import SymbolDescriptor
-from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
-from automata.core.coding.py.module_loader import py_module_loader
-from automata.core.context.py.retriever import (
-    PyContextRetriever,
-    PyContextRetrieverConfig,
-)
+from automata.core.experimental.search.rank import SymbolRankConfig
+from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
 )
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.core.retrievers.py.context import (
+    PyContextRetriever,
+    PyContextRetrieverConfig,
+)
+from automata.core.singletons.module_loader import py_module_loader
+from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
-from automata.core.symbol.search.rank import SymbolRankConfig
-from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol.symbol_utils import get_rankable_symbols
+from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,

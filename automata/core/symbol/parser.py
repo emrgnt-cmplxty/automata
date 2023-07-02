@@ -1,7 +1,7 @@
 import re
 from typing import List, Optional
 
-from automata.core.base.symbol import Symbol, SymbolDescriptor, SymbolPackage
+from automata.core.symbol.base import Symbol, SymbolDescriptor, SymbolPackage
 
 
 class _SymbolParser:

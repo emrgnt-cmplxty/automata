@@ -20,10 +20,10 @@ platforms.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.agent.tool.builder.symbol_search.SymbolSearchToolkit``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkit``
 -  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
 
 Example
@@ -35,8 +35,8 @@ platforms.
 
 .. code:: python
 
-   from automata.core.symbol.search.symbol_search import SymbolSearch
-   from automata.core.agent.tool.builder.symbol_search import (
+   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.core.tools.builders.symbol_search import (
        SymbolSearchOpenAIToolkit,
    )
 

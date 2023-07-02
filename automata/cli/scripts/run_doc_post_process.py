@@ -2,8 +2,8 @@ import logging
 import os
 
 from automata.config.base import ConfigCategory
-from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
-from automata.core.coding.py.writer import PyDocWriter
+from automata.core.code_handling.py.writer import PyDocWriter
+from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.utils import get_config_fpath, get_root_py_fpath
 
 logger = logging.getLogger(__name__)

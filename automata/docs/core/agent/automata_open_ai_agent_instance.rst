@@ -21,7 +21,7 @@ Related Symbols
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance``
 -  ``automata.config.agent_config_builder.AutomataAgentConfigFactory``
 -  ``automata.config.config_types.AgentConfigName``
--  ``automata.core.base.agent.AgentInstance``
+-  ``automata.core.agent.agent.AgentInstance``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.agent_config_builder``
 

@@ -21,19 +21,19 @@ of the “context-oracle” tool.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.tools.agent_tool.AgentTool``
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.toolss.agent_tool.AgentTool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
--  ``automata.core.symbol.search.symbol_search.SymbolSearch``
+-  ``automata.core.experimental.search.symbol_search.SymbolSearch``
 
 Example
 -------
 
 .. code:: python
 
-   from automata.core.agent.tools.context_oracle import ContextOracleTool
+   from automata.core.toolss.context_oracle import ContextOracleTool
    from automata.core.symbol_embedding.similarity import SymbolSimilarity
-   from automata.core.symbol.search.symbol_search import SymbolSearch
+   from automata.core.experimental.search.symbol_search import SymbolSearch
 
    symbol_search = SymbolSearch()
    symbol_doc_similarity = SymbolSimilarity()

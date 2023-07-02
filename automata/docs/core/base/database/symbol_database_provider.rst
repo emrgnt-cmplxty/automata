@@ -9,8 +9,8 @@ embeddings in the database.
 Related Symbols
 ---------------
 
--  ``automata.core.base.symbol.Symbol``
--  ``automata.core.base.symbol_embedding.SymbolEmbedding``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
 -  ``automata.tests.utils.factories.symbol_search_live``
@@ -24,7 +24,7 @@ The following is an example of a custom implementation of
 .. code:: python
 
    from automata.core.base.database.provider import SymbolDatabaseProvider
-   from automata.core.base.symbol import Symbol, SymbolEmbedding
+   from automata.core.symbol.base import Symbol, SymbolEmbedding
 
    class CustomDatabase(SymbolDatabaseProvider):
        def __init__(self):

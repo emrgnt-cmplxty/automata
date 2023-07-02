@@ -9,13 +9,13 @@ modules, and deleting specific objects in a module.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.directory.DirectoryManager``
--  ``automata.core.coding.py_coding.navigation.find_all_function_and_class_syntax_tree_nodes``
--  ``automata.core.coding.py_coding.retriever.PyCodeRetriever``
--  ``automata.core.base.symbol.Symbol``
--  ``automata.core.agent.tools.py_code_writer.PyCodeWriterTool``
--  ``automata.core.agent.tools.py_code_retriever.PyCodeRetrieverTool``
--  ``automata.core.coding.py_coding.writer.PyDocWriter``
+-  ``automata.core.navigation.directory.DirectoryManager``
+-  ``automata.core.code_handling.py_coding.navigation.find_all_function_and_class_syntax_tree_nodes``
+-  ``automata.core.code_handling.py_coding.retriever.PyCodeRetriever``
+-  ``automata.core.symbol.base.Symbol``
+-  ``automata.core.toolss.py_code_writer.PyCodeWriterTool``
+-  ``automata.core.toolss.py_code_retriever.PyCodeRetrieverTool``
+-  ``automata.core.code_handling.py_coding.writer.PyDocWriter``
 
 Example
 -------
@@ -25,9 +25,9 @@ using ``PyCodeWriter``.
 
 .. code:: python
 
-   from automata.core.coding.directory import DirectoryManager
-   from automata.core.coding.py_coding.retriever import PyCodeRetriever
-   from automata.core.coding.py_coding.writer import PyCodeWriter
+   from automata.core.navigation.directory import DirectoryManager
+   from automata.core.code_handling.py_coding.retriever import PyCodeRetriever
+   from automata.core.code_handling.py_coding.writer import PyCodeWriter
 
    # Create PyCodeWriter instance
    directory_manager = DirectoryManager("path/to/your/project")

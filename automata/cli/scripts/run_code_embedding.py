@@ -4,12 +4,12 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.base.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
-from automata.core.coding.py.module_loader import py_module_loader
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.singletons.module_loader import py_module_loader
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
+from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
 from automata.core.utils import get_config_fpath
 

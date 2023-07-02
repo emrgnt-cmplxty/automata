@@ -12,7 +12,7 @@ Related Symbols
 -  ``automata.tests.unit.test_automata_agent.test_run_with_no_completion``
 -  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``
 -  ``automata.core.agent.error.AgentMaxIterError``
--  ``automata.core.base.agent.Agent.__iter__``
+-  ``automata.core.agent.agent.Agent.__iter__``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent.__iter__``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent.run``
 

@@ -2,7 +2,7 @@ from typing import List
 
 from tools.python_tools.python_agent import PythonAgent
 
-from automata.core.base.tool import Tool
+from automata.core.tools.base import Tool
 
 
 class PythonAgentToolkit:

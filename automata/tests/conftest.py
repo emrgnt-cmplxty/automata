@@ -8,19 +8,20 @@ import pytest
 
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.core.agent.agent import AgentToolkitNames
 from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.agent.task.environment import AutomataTaskEnvironment
-from automata.core.agent.task.registry import AutomataTaskRegistry
-from automata.core.agent.task.task import AutomataTask
-from automata.core.agent.tool.tool_utils import AgentToolFactory, dependency_factory
-from automata.core.base.agent import AgentToolkitNames
-from automata.core.base.github_manager import GitHubManager, RepositoryManager
+from automata.core.experimental.search.rank import SymbolRankConfig
+from automata.core.experimental.search.symbol_search import SymbolSearch
+from automata.core.github_management.client import GitHubClient, RepositoryClient
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.singletons.dependency_factory import dependency_factory
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
-from automata.core.symbol.search.rank import SymbolRankConfig
-from automata.core.symbol.search.symbol_search import SymbolSearch
 from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.tasks.agent_database import AutomataTaskRegistry
+from automata.core.tasks.environment import AutomataTaskEnvironment
+from automata.core.tasks.tasks import AutomataTask
+from automata.core.tools.factory import AgentToolFactory
 
 
 @pytest.fixture
@@ -73,7 +74,7 @@ def symbols():
         ),
         # Init
         parse_symbol(
-            "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `core.base.tool`/ToolNotFoundError#__init__()."
+            "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `core.tools.base`/ToolNotFoundError#__init__()."
         ),
     ]
 
@@ -139,8 +140,6 @@ def automata_agent_config_builder():
     # Otherwise, the dependency factory will attempt to actually instantiate the dependencies
     import unittest.mock
 
-    from automata.core.agent.tool.tool_utils import dependency_factory
-
     dependency_factory.get = unittest.mock.MagicMock(return_value=None)
 
     return AutomataOpenAIAgentConfigBuilder.from_name(config_name)
@@ -173,7 +172,7 @@ def automata_agent(mocker, automata_agent_config_builder):
     )
 
 
-class MockRepositoryManager(RepositoryManager):
+class MockRepositoryClient(RepositoryClient):
     def clone_repository(self, local_path: str):
         pass
 
@@ -201,7 +200,7 @@ class MockRepositoryManager(RepositoryManager):
 
 @pytest.fixture
 def task():
-    repo_manager = MockRepositoryManager()
+    repo_manager = MockRepositoryClient()
     return AutomataTask(
         repo_manager,
         config_to_load=AgentConfigName.TEST.value,
@@ -212,7 +211,7 @@ def task():
 
 @pytest.fixture
 def environment():
-    github_mock = MagicMock(spec=GitHubManager)
+    github_mock = MagicMock(spec=GitHubClient)
     return AutomataTaskEnvironment(github_mock)
 
 

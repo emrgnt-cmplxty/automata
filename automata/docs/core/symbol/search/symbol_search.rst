@@ -21,9 +21,9 @@ Related Symbols
 
 -  ``automata.core.symbol.graph.SymbolGraph``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
--  ``automata.core.symbol.search.rank.SymbolRank``
--  ``automata.core.symbol.search.rank.SymbolRankConfig``
--  ``automata.core.base.symbol.Symbol``
+-  ``automata.core.experimental.search.rank.SymbolRank``
+-  ``automata.core.experimental.search.rank.SymbolRankConfig``
+-  ``automata.core.symbol.base.Symbol``
 
 Example
 -------
@@ -35,8 +35,8 @@ The following example demonstrates how to create an instance of
 
    from automata.core.symbol.graph import SymbolGraph
    from automata.core.symbol_embedding.similarity import SymbolSimilarity
-   from automata.core.symbol.search.symbol_search import SymbolSearch, ExactSearchResult
-   from automata.core.symbol.search.rank import SymbolRankConfig
+   from automata.core.experimental.search.symbol_search import SymbolSearch, ExactSearchResult
+   from automata.core.experimental.search.rank import SymbolRankConfig
 
    # Create instances of SymbolGraph and SymbolSimilarity
    symbol_graph = SymbolGraph(...)

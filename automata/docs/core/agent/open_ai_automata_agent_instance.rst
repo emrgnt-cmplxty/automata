@@ -20,11 +20,11 @@ Related Symbols
 -  ``automata.tests.conftest.automata_agent``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder``
 -  ``automata.tests.conftest.task``
--  ``automata.core.agent.tool.builder.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
 -  ``automata.tests.unit.test_automata_agent``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder.create_from_args``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent.run``
--  ``automata.core.base.agent.AgentInstance``
+-  ``automata.core.agent.agent.AgentInstance``
 -  ``automata.config.base.AgentConfigName``
 
 Example Usage

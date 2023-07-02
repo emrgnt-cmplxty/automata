@@ -12,11 +12,11 @@ scenarios where code modifications need to be done programmatically.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py.reader.PyReader``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterToolkit``
+-  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
 -  ``automata.tests.unit.test_py_writer_tool.test_init``
--  ``automata.core.agent.tool.tool_utils.DependencyFactory.create_py_writer``
--  ``automata.core.agent.tool.builder.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.singletons.dependency_factory.create_py_writer``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
 
 Usage Example
 -------------
@@ -27,8 +27,8 @@ update a Python module by providing the ``source_code`` input.
 .. code:: python
 
    import os
-   from automata.core.coding.py.reader import PyReader
-   from automata.core.coding.py.writer import PyWriter
+   from automata.core.code_handling.py.reader import PyReader
+   from automata.core.code_handling.py.writer import PyWriter
 
    # Initialize the PyReader and PyWriter instances
    py_reader = PyReader()

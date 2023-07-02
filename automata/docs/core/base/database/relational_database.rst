@@ -22,7 +22,7 @@ Related Symbols
 -  ``automata.core.base.database.relational.SQLDatabase``
 -  ``automata.tests.unit.test_task_database.db``
 -  ``automata.tests.unit.test_conversation_database.db``
--  ``automata.core.agent.task.registry.AutomataTaskDatabase``
+-  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase``
 -  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
 
 Example

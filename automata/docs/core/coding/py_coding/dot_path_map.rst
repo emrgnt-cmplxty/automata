@@ -29,9 +29,9 @@ directory.
 Related Symbols
 ---------------
 
--  ``automata.core.coding.py_coding.module_tree.DotPathMap``
+-  ``automata.core.code_handling.py_coding.module_tree.DotPathMap``
 -  ``automata.core.utils.root_fpath``
--  ``automata.core.coding.py_coding.py_utils.convert_fpath_to_module_dotpath``
+-  ``automata.core.code_handling.py_coding.py_utils.convert_fpath_to_module_dotpath``
 
 Example
 -------
@@ -41,7 +41,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.coding.py_coding.module_tree import DotPathMap
+   from automata.core.code_handling.py_coding.module_tree import DotPathMap
 
    # Initialize the DotPathMap with the absolute path to the root of the module tree
    root_path = "/path/to/project/root"

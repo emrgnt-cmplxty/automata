@@ -12,14 +12,14 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task_executor.TestExecuteBehavior``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.core.agent.task.executor.AutomataTaskExecutor.__init__``
+-  ``automata.core.tasks.executor.AutomataTaskExecutor.__init__``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
--  ``automata.core.base.task.TaskStatus``
+-  ``automata.core.tasks.base.TaskStatus``
 -  ``automata.tests.unit.test_task_database.task``
 -  ``automata.tests.unit.test_task_database.test_database_lifecycle``
--  ``automata.core.agent.task.executor.IAutomataTaskExecution``
+-  ``automata.core.tasks.executor.IAutomataTaskExecution``
 -  ``automata.tests.unit.test_task_database.test_update_task``
--  ``automata.core.agent.task.executor.AutomataTaskExecutor``
+-  ``automata.core.tasks.executor.AutomataTaskExecutor``
 
 Example
 -------
@@ -30,8 +30,8 @@ specific type of task.
 
 .. code:: python
 
-   from automata.core.base.task import Task
-   from automata.core.base.task.ITaskExecution import ITaskExecution
+   from automata.core.tasks.base import Task
+   from automata.core.tasks.base.ITaskExecution import ITaskExecution
 
    class CustomTaskExecution(ITaskExecution):
        def execute(self, task: Task) -> None:

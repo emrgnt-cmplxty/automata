@@ -9,9 +9,9 @@ system.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Tool``
+-  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.agent.tool.tool_utils.AgentToolFactory``
+-  ``automata.core.tools.tool_utils.AgentToolFactory``
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
 
 Example
@@ -22,7 +22,7 @@ trying to create an unsupported tool:
 
 .. code:: python
 
-   from automata.core.agent.tool.tool_utils import AgentToolFactory
+   from automata.core.tools.tool_utils import AgentToolFactory
    from automata.core.agent.error import UnknownToolError
 
    class UnsupportedTool:

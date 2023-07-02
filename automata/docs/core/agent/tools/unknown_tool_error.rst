@@ -9,13 +9,13 @@ message.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.ToolNotFoundError``
+-  ``automata.core.tools.tool.ToolNotFoundError``
 -  ``automata.tests.unit.test_tool.test_invalid_tool``
 -  ``automata.tests.unit.test_tool.test_invalid_tool_async``
--  ``automata.core.base.tool.InvalidTool``
+-  ``automata.core.tools.tool.InvalidTool``
 -  ``automata.tests.unit.test_base_tool.TestTool``
 -  ``automata.tests.unit.test_base_tool.MockTool``
--  ``automata.core.agent.tools.tool_utils.ToolCreationError``
+-  ``automata.core.toolss.tool_utils.ToolCreationError``
 
 Example
 -------
@@ -25,8 +25,8 @@ this example assumes an unknown toolkit type.
 
 .. code:: python
 
-   from automata.core.base.tool import ToolkitType
-   from automata.core.agent.tools.tool_utils import UnknownToolError
+   from automata.core.tools.tool import ToolkitType
+   from automata.core.toolss.tool_utils import UnknownToolError
 
    def get_tool_by_toolkit(toolkit_type: ToolkitType):
        if toolkit_type == ToolkitType.UNKNOWN:

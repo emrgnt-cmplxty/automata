@@ -18,9 +18,9 @@ handling for users.
 Related Symbols
 ---------------
 
--  ``automata.core.base.tool.Toolkit``
--  ``automata.core.base.tool.Tool``
--  ``automata.core.base.tool.ToolNotFoundError``
+-  ``automata.core.tools.tool.Toolkit``
+-  ``automata.core.tools.tool.Tool``
+-  ``automata.core.tools.tool.ToolNotFoundError``
 -  ``automata.core.base.base_tool.BaseTool``
 
 Example
@@ -31,7 +31,7 @@ instance and run it with an invalid tool name:
 
 .. code:: python
 
-   from automata.core.base.tool import InvalidTool
+   from automata.core.tools.tool import InvalidTool
 
    invalid_tool = InvalidTool()
    response = invalid_tool.run(("InvalidToolName",))
@@ -42,7 +42,7 @@ Additionally, ``InvalidTool`` can be run asynchronously:
 .. code:: python
 
    import asyncio
-   from automata.core.base.tool import InvalidTool
+   from automata.core.tools.tool import InvalidTool
 
    async def main():
        invalid_tool = InvalidTool()

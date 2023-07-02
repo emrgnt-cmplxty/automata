@@ -17,15 +17,15 @@ instructions on them.
 Related Symbols
 ---------------
 
--  ``automata.core.base.agent.AgentInstance.Config``
+-  ``automata.core.agent.agent.AgentInstance.Config``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.core.base.agent.AgentInstance.create``
+-  ``automata.core.agent.agent.AgentInstance.create``
 -  ``automata.tests.conftest.task``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.conftest.automata_agent_config_builder``
 -  ``automata.core.agent.instances.AutomataOpenAIAgentInstance``
 -  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit.python_agent_python_task``
--  ``automata.core.base.agent.Agent``
+-  ``automata.core.agent.agent.Agent``
 
 Example
 -------
