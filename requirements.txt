@@ -24,5 +24,5 @@ termcolor==2.3.0
 tiktoken==0.4.0
 types-protobuf==4.23.0.1
 GitPython==3.1.31
-PyGithub==1.58.2
+PyGithub==1.59.0
 PyYAML==6.0
