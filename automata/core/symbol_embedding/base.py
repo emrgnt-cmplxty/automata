@@ -11,6 +11,7 @@ from automata.core.embedding.base import (
     EmbeddingBuilder,
 )
 from automata.core.symbol.base import Symbol, ISymbolProvider
+from automata.core.utils import is_sorted
 
 
 class SymbolEmbedding(Embedding):
@@ -68,7 +69,7 @@ class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase):
         super().__init__(file_path)
 
     def entry_to_key(self, entry: SymbolEmbedding) -> str:
-        """Method to generate a hashable key from an entry of type T."""
+        """Concrete implementation to generate a simple hashable key from a Symbol."""
         return entry.symbol.dotpath
 
     def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
@@ -87,7 +88,9 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
         """An abstract constructor for SymbolEmbeddingHandler"""
         self.embedding_db = embedding_db
         self.embedding_builder = embedding_builder
-        self.supported_symbols = [ele.symbol for ele in self.embedding_db.get_ordered_embeddings()]
+        self.sorted_supported_symbols = [
+            ele.symbol for ele in self.embedding_db.get_ordered_embeddings()
+        ]
 
     @abc.abstractmethod
     def get_embedding(self, symbol: Symbol) -> Any:
@@ -99,10 +102,14 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
         """An abstract method to process the embedding for a symbol"""
         pass
 
+    def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
+        return [self.get_embedding(ele) for ele in self.sorted_supported_symbols]
+
     # ISymbolProvider methods
 
-    def _get_all_supported_symbols(self) -> List[Symbol]:
-        return self.supported_symbols
+    def _get_sorted_supported_symbols(self) -> List[Symbol]:
+        return self.sorted_supported_symbols
 
-    def filter_symbols(self, supported_symbols: Set[Symbol]) -> None:
-        self.supported_symbols = list(supported_symbols)
+    def filter_symbols(self, new_sorted_supported_symbols: List[Symbol]) -> None:
+        """Filter the symbols to only those in the new sorted_supported_symbols set"""
+        self.sorted_supported_symbols = new_sorted_supported_symbols

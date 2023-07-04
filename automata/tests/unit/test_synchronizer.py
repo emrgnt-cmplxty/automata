@@ -53,11 +53,11 @@ def test_build_graph_and_handler_and_synchronize(
         from automata.core.context_providers.symbol_synchronization import SymbolProviderRegistry
 
         SymbolProviderRegistry._providers = set([])
-        SymbolProviderRegistry.supported_symbols = []
+        SymbolProviderRegistry.sorted_supported_symbols = []
 
         synchronization_context.register_provider(symbol_graph_tester)
         synchronization_context.register_provider(cem)
         synchronization_context.synchronize()
 
-    assert len(symbol_graph_tester.get_all_supported_symbols()) == 1
-    assert len(cem.get_all_supported_symbols()) == 1  # post synchronization
+    assert len(symbol_graph_tester.get_sorted_supported_symbols()) == 1
+    assert len(cem.get_sorted_supported_symbols()) == 1  # post synchronization

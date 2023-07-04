@@ -1,24 +1,24 @@
-OpenAIAgentToolkitProvider
+OpenAIAgentToolkitBuilder
 ======================
 
 Overview
 --------
 
-``OpenAIAgentToolkitProvider`` is an abstract class for creating tools for
+``OpenAIAgentToolkitBuilder`` is an abstract class for creating tools for
 use with OpenAI providers. Tools are constructs designed to execute
 tasks during a conversation, or within an iteration of an AI model.
-``OpenAIAgentToolkitProvider`` provides a framework for defining such tools
+``OpenAIAgentToolkitBuilder`` provides a framework for defining such tools
 to enable interaction with OpenAI-based agents effectively.
 
 This abstract class defines two core methods: ``build_for_open_ai`` and
 ``can_handle``. The ``build_for_open_ai`` method is an abstract method
 and, therefore, must be implemented by any class that inherits from
-``OpenAIAgentToolkitProvider``. This method as designed to return a list of
+``OpenAIAgentToolkitBuilder``. This method as designed to return a list of
 ``OpenAITool`` objects. The ``can_handle`` method is a class-level
 method used to check if a given ``tool_manager`` matches the tool type
 associated with a particular builder.
 
-``OpenAIAgentToolkitProvider`` is used in the context of the Automata
+``OpenAIAgentToolkitBuilder`` is used in the context of the Automata
 project, an undertaking that integrates OpenAI’s GPT-3 model with
 additional tools and logic to create a more interactive, and rich AI
 experience.
@@ -27,15 +27,15 @@ Related Symbols
 ---------------
 
 Several classes and methods interact or have a tied relationship with
-``OpenAIAgentToolkitProvider``. Some of them include:
+``OpenAIAgentToolkitBuilder``. Some of them include:
 
 -  ``PythonAgentToolkit``: A concrete implementation of a builder
    class for generating tools to interact with PythonAgent.
 
--  ``ContextOracleOpenAIToolkit``,
-   ``SymbolSearchOpenAIToolkit``, ``PyWriterOpenAIToolkit``,
+-  ``ContextOracleOpenAIToolkitBuilder``,
+   ``SymbolSearchOpenAIToolkitBuilder``, ``PyWriterOpenAIToolkitBuilder``,
    ``PyReaderOpenAIToolkit``: These are potential classes that may
-   inherit from ``OpenAIAgentToolkitProvider``, defining their custom
+   inherit from ``OpenAIAgentToolkitBuilder``, defining their custom
    toolsets and targets for interaction.
 
 -  ``test_builder_creates_proper_instance``,
@@ -50,7 +50,7 @@ Several classes and methods interact or have a tied relationship with
 Example
 -------
 
-Given the abstract nature of ``OpenAIAgentToolkitProvider``, it doesn’t have
+Given the abstract nature of ``OpenAIAgentToolkitBuilder``, it doesn’t have
 direct usage. However, a child class like ``PythonAgentToolkit``
 provides an example of how such a builder class might be used:
 
@@ -81,7 +81,7 @@ list.
 Limitations
 -----------
 
-Being an abstract class, ``OpenAIAgentToolkitProvider`` is not directly
+Being an abstract class, ``OpenAIAgentToolkitBuilder`` is not directly
 usable and requires concrete classes to provide meaningful
 implementations of ``build_for_open_ai``. This could lead to
 inconsistency in implementations of its methods.
@@ -98,5 +98,5 @@ Follow-up Questions:
 
 Please note: This documentation is constructed on the basis of available
 context and might not completely represent the functional scope of
-``OpenAIAgentToolkitProvider``. Some areas might require additional
+``OpenAIAgentToolkitBuilder``. Some areas might require additional
 clarification or input from the code developers for complete accuracy.

@@ -2,8 +2,8 @@ import logging
 from typing import List, Optional
 
 from automata.config.base import LLMProvider
-from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
-from automata.core.agent.providers import OpenAIAgentToolkitProvider
+from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
+from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.tools.base import Tool
@@ -12,7 +12,7 @@ from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolk
 logger = logging.getLogger(__name__)
 
 
-class PyReaderToolkit(AgentToolkitProvider):
+class PyReaderToolkitBuilder(AgentToolkitBuilder):
     """
     A class for interacting with the PythonIndexer API,
     which provides functionality to retrieve python code.
@@ -92,7 +92,7 @@ class PyReaderToolkit(AgentToolkitProvider):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class PyReaderOpenAIToolkit(PyReaderToolkit, OpenAIAgentToolkitProvider):
+class PyReaderOpenAIToolkit(PyReaderToolkitBuilder, OpenAIAgentToolkitBuilder):
     TOOL_TYPE = AgentToolkitNames.PY_READER
     PLATFORM = LLMProvider.OPENAI
 

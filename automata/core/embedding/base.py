@@ -1,7 +1,7 @@
 import abc
 import logging
 from enum import Enum
-from typing import Any, Dict, TypeVar, Generic, List
+from typing import Any, Dict, TypeVar, Generic, List, Sequence
 from automata.core.base.database.vector import VectorDatabaseProvider
 
 import numpy as np
@@ -93,7 +93,7 @@ class EmbeddingSimilarityCalculator:
         self.norm_type = norm_type
 
     def calculate_query_similarity_dict(
-        self, ordered_embeddings: List[Embedding], query_text: str, return_sorted: bool = True
+        self, ordered_embeddings: Sequence[Embedding], query_text: str, return_sorted: bool = True
     ) -> Dict[Symbol, float]:
         """
         Similarity is calculated between the dot product

@@ -2,8 +2,8 @@ import logging
 from typing import List, Optional
 
 from automata.config.base import LLMProvider
-from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
-from automata.core.agent.providers import OpenAIAgentToolkitProvider
+from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
+from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 from automata.core.code_handling.py.writer import PyWriter
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.tools.base import Tool
@@ -12,7 +12,7 @@ from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolk
 logger = logging.getLogger(__name__)
 
 
-class PyWriterToolkit(AgentToolkitProvider):
+class PyWriterToolkitBuilder(AgentToolkitBuilder):
     """
     A class for interacting with the PythonWriter API,
     which provides functionality to modify python code.
@@ -75,7 +75,7 @@ class PyWriterToolkit(AgentToolkitProvider):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class PyWriterOpenAIToolkit(PyWriterToolkit, OpenAIAgentToolkitProvider):
+class PyWriterOpenAIToolkitBuilder(PyWriterToolkitBuilder, OpenAIAgentToolkitBuilder):
     TOOL_TYPE = AgentToolkitNames.PY_WRITER
     PLATFORM = LLMProvider.OPENAI
 

@@ -3,27 +3,31 @@ import textwrap
 from typing import List
 
 from automata.config.base import LLMProvider
-from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
-from automata.core.agent.providers import OpenAIAgentToolkitProvider
+from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
+from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.tools.base import Tool
 from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
 
-class ContextOracleToolkit(AgentToolkitProvider):
-    """The ContextOracleToolkit provides tools which translate NLP queries to relevant context."""
+class ContextOracleToolkitBuilder(AgentToolkitBuilder):
+    """The ContextOracleToolkitBuilder provides tools which translate NLP queries to relevant context."""
 
     def __init__(
         self,
-        symbol_doc_similarity: EmbeddingSimilarityCalculator,
-        symbol_code_similarity: EmbeddingSimilarityCalculator,
+        symbol_doc_embedding_handler: SymbolDocEmbeddingHandler,
+        symbol_code_embedding_handler: SymbolCodeEmbeddingHandler,
+        embedding_similarity_calculator: EmbeddingSimilarityCalculator,
         **kwargs,
     ) -> None:
-        self.symbol_doc_similarity = symbol_doc_similarity
-        self.symbol_code_similarity = symbol_code_similarity
+        self.symbol_doc_embedding_handler = symbol_doc_embedding_handler
+        self.symbol_code_embedding_handler = symbol_code_embedding_handler
+        self.embedding_similarity_calculator = embedding_similarity_calculator
 
     def build(self) -> List[Tool]:
         """Builds the tools associated with the context oracle."""
@@ -49,8 +53,14 @@ class ContextOracleToolkit(AgentToolkitProvider):
         results when populated for the relevant query. Thus, selecting the maximum will factor in documentation
         when populated.
         """
-        doc_search_results = self.symbol_doc_similarity.calculate_query_similarity_dict(query)
-        code_search_results = self.symbol_code_similarity.calculate_query_similarity_dict(query)
+        doc_embeddings = self.symbol_doc_embedding_handler.get_ordered_embeddings()
+        doc_search_results = self.embedding_similarity_calculator.calculate_query_similarity_dict(
+            doc_embeddings, query
+        )
+        code_embeddings = self.symbol_code_embedding_handler.get_ordered_embeddings()
+        code_search_results = self.embedding_similarity_calculator.calculate_query_similarity_dict(
+            code_embeddings, query
+        )
         combined_results = {
             key: max(doc_search_results.get(key, 0), code_search_results.get(key, 0))
             for key in set(doc_search_results).union(code_search_results)
@@ -62,15 +72,15 @@ class ContextOracleToolkit(AgentToolkitProvider):
 
         most_similar_symbol = most_similar_symbols[0]
 
-        most_similar_embedding = self.symbol_code_similarity.embedding_handler.get_embedding(
+        most_similar_code_embedding = self.symbol_code_embedding_handler.get_embedding(
             most_similar_symbol
         )
 
-        result = most_similar_embedding.input_object
+        result = most_similar_code_embedding.input_object
 
         try:
-            most_similar_doc_embedding = (
-                self.symbol_doc_similarity.embedding_handler.get_embedding(most_similar_symbol)
+            most_similar_doc_embedding = self.symbol_doc_embedding_handler.get_embedding(
+                most_similar_symbol
             )
             result += f"Documentation Summary:\n\n{most_similar_doc_embedding.summary}"
         except Exception as e:
@@ -91,7 +101,9 @@ class ContextOracleToolkit(AgentToolkitProvider):
                     break
                 try:
                     result += f"{symbol.dotpath}\n\n"
-                    result += f"{self.symbol_doc_similarity.embedding_handler.get_embedding(symbol).summary}\n\n"
+                    result += (
+                        f"{self.symbol_doc_embedding_handler.get_embedding(symbol).summary}\n\n"
+                    )
                     counter += 1
                 except Exception as e:
                     logger.error(
@@ -105,7 +117,7 @@ class ContextOracleToolkit(AgentToolkitProvider):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class ContextOracleOpenAIToolkit(ContextOracleToolkit, OpenAIAgentToolkitProvider):
+class ContextOracleOpenAIToolkitBuilder(ContextOracleToolkitBuilder, OpenAIAgentToolkitBuilder):
     TOOL_TYPE = AgentToolkitNames.CONTEXT_ORACLE
     PLATFORM = LLMProvider.OPENAI
 

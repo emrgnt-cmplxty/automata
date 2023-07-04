@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
@@ -297,10 +298,11 @@ class _SymbolGraphNavigator:
         # TODO - Find the correct way to define a bounding box
         self.bounding_box: Dict[Symbol, Any] = {}  # Default to empty bounding boxes
 
-    def get_all_supported_symbols(self) -> List[Symbol]:
-        return [
+    def get_sorted_supported_symbols(self) -> List[Symbol]:
+        unsorted_symbols = [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
+        return sorted(unsorted_symbols, key=lambda x: x.dotpath)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         references_in_range = self._get_symbol_references_in_scope(symbol)
@@ -428,8 +430,7 @@ class _SymbolGraphNavigator:
             return
 
         logger.info("Pre-computing bounding boxes for all rankable symbols")
-        filtered_symbols = get_rankable_symbols(self.get_all_supported_symbols())
-        from functools import partial
+        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
 
         # prepare loader_args here (replace this comment with actual code)
         if not py_module_loader.initialized:
@@ -515,7 +516,7 @@ class SymbolGraph(ISymbolProvider):
         """
         G = nx.DiGraph()
 
-        filtered_symbols = get_rankable_symbols(self.get_all_supported_symbols())
+        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
 
         if path_filter is not None:
             filtered_symbols = [
@@ -553,12 +554,12 @@ class SymbolGraph(ISymbolProvider):
         return G
 
     # ISymbolProvider methods
-    def _get_all_supported_symbols(self) -> List[Symbol]:
-        return list(set(self.navigator.get_all_supported_symbols()))
+    def _get_sorted_supported_symbols(self) -> List[Symbol]:
+        return self.navigator.get_sorted_supported_symbols()
 
-    def filter_symbols(self, supported_symbols: Set[Symbol]):
+    def filter_symbols(self, sorted_supported_symbols: List[Symbol]):
         if self._graph:
-            self._graph = filter_multi_digraph_by_symbols(self._graph, supported_symbols)
+            filter_multi_digraph_by_symbols(self._graph, sorted_supported_symbols)
 
     @staticmethod
     def _load_index_protobuf(path: str) -> Index:

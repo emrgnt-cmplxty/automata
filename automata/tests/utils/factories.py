@@ -40,6 +40,11 @@ def symbol_search_live() -> SymbolSearch:
     code_embedding_fpath = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
+    code_embedding_db = JSONSymbolEmbeddingVectorDatabase(code_embedding_fpath)
+    embedding_provider = OpenAIEmbeddingProvider()
+    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
+
     embedding_provider = OpenAIEmbeddingProvider()
 
     symbol_graph = SymbolGraph(scip_path)
@@ -48,4 +53,6 @@ def symbol_search_live() -> SymbolSearch:
 
     symbol_rank_config = SymbolRankConfig()
 
-    return SymbolSearch(symbol_graph, symbol_rank_config, embedding_similarity_calculator)
+    return SymbolSearch(
+        symbol_graph, symbol_rank_config, code_embedding_handler, embedding_similarity_calculator
+    )

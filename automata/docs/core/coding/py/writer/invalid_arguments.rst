@@ -13,10 +13,10 @@ Related Symbols
 ---------------
 
 -  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterToolkitBuilder``
 -  ``automata.tests.unit.test_py_writer_tool.test_init``
 -  ``automata.core.singletons.dependency_factory.create_py_writer``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 
 Usage Example
 -------------

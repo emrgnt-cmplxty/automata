@@ -2,20 +2,20 @@ import pkgutil
 from typing import List, Set, Type
 
 from automata.core.base.patterns.singleton import Singleton
-from automata.core.agent.providers import OpenAIAgentToolkitProvider
+from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 
 
 class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
-    _all_builders: Set[Type[OpenAIAgentToolkitProvider]] = set([])
+    _all_builders: Set[Type[OpenAIAgentToolkitBuilder]] = set([])
     _is_initialized: bool = False
 
     @staticmethod
-    def register_tool_manager(cls: Type[OpenAIAgentToolkitProvider]):
+    def register_tool_manager(cls: Type[OpenAIAgentToolkitBuilder]):
         OpenAIAutomataAgentToolkitRegistry._all_builders.add(cls)
         return cls
 
     @staticmethod
-    def get_all_builders() -> List[Type[OpenAIAgentToolkitProvider]]:
+    def get_all_builders() -> List[Type[OpenAIAgentToolkitBuilder]]:
         """
         Get all the registered tool builders.
         Initializes the builder registry if it has not been initialized yet.

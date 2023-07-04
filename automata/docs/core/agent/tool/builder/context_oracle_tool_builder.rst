@@ -1,7 +1,7 @@
-ContextOracleToolkit
+ContextOracleToolkitBuilder
 ========================
 
-``ContextOracleToolkit`` is a class that provides a powerful tool
+``ContextOracleToolkitBuilder`` is a class that provides a powerful tool
 combining ``SymbolSearch`` and ``SymbolSimilarity`` to create rich and
 relevant contexts given a query. This functionality can be useful in
 applications such as documentation or codebase exploration where context
@@ -10,7 +10,7 @@ about certain elements is required.
 Overview
 --------
 
-The ``ContextOracleToolkit`` class creates a tool that allows you to
+The ``ContextOracleToolkitBuilder`` class creates a tool that allows you to
 search for symbols and analyze symbol-related documentation. Given a
 query, it calculates the similarity between each symbol’s documentation
 and the query to find the most similar documents. Then, it uses
@@ -29,19 +29,19 @@ Import Statements
    from typing import List
    from automata.config.base import LLMProvider
    from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
-   from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
+   from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
    from automata.core.tools.tool import Tool
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
-   from automata.core.llm.providers.openai import OpenAIAgentToolkitProvider, OpenAITool
+   from automata.core.llm.providers.openai import OpenAIAgentToolkitBuilder, OpenAITool
    from automata.core.experimental.search.symbol_search import SymbolSearch
 
 Related Symbols
 ---------------
 
-Here are the classes closely related to ``ContextOracleToolkit``
+Here are the classes closely related to ``ContextOracleToolkitBuilder``
 
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``
 -  ``automata.tests.unit.test_context_oracle_tool.test_build``
 
@@ -49,18 +49,18 @@ Example
 -------
 
 Below is an example demonstrating how to create an instance of
-``ContextOracleToolkit``.
+``ContextOracleToolkitBuilder``.
 
 .. code:: python
 
-   from automata.core.tools.builders.context_oracle import ContextOracleToolkit
+   from automata.core.tools.builders.context_oracle import ContextOracleToolkitBuilder
    from automata.core.experimental.search.symbol_search import SymbolSearch # Replace MagicMock in example
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator # Replace MagicMock in example
 
    symbol_search = SymbolSearch() # Mocked in example, replace with appropriate parameters
    symbol_doc_similarity = SymbolSimilarityCalculator() # Mocked in example, replace with appropriate parameters
 
-   context_oracle_tool_builder = ContextOracleToolkit(
+   context_oracle_tool_builder = ContextOracleToolkitBuilder(
                    symbol_search=symbol_search_mock, 
                    symbol_doc_similarity=symbol_doc_similarity_mock
                )
@@ -69,7 +69,7 @@ Limitations
 -----------
 
 It is important to note that the quality of the context created by
-``ContextOracleToolkit`` largely depends on the effectiveness and
+``ContextOracleToolkitBuilder`` largely depends on the effectiveness and
 accuracy of the ``SymbolSearch`` and ``SymbolSimilarityCalculator``
 classes. If these classes are flawed or not finely tuned, the generated
 context might not be as relevant or comprehensive.

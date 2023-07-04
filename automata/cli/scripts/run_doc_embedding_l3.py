@@ -84,7 +84,7 @@ def main(*args, **kwargs) -> str:
 
     embedding_handler = SymbolDocEmbeddingHandler(embedding_db_l3, symbol_doc_embedding_builder)
 
-    all_defined_symbols = symbol_graph.get_all_supported_symbols()
+    all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
@@ -94,7 +94,7 @@ def main(*args, **kwargs) -> str:
             except Exception as e:
                 logger.error(f"Error updating embedding for {symbol.dotpath}: {e}")
 
-    for symbol in embedding_handler.get_all_supported_symbols():
+    for symbol in embedding_handler.get_sorted_supported_symbols():
         if symbol not in filtered_symbols:
             logger.info(f"Discarding stale symbol {symbol}...")
             embedding_db_l3.discard(symbol.dotpath)

@@ -23,8 +23,8 @@ Related Symbols
 -  ``automata.core.code_handling.py.reader.PyReader``
 -  ``automata.tests.unit.test_py_writer.py_writer``
 -  ``automata.core.singletons.dependency_factory.create_py_writer``
--  ``automata.tests.unit.test_py_writer_tool.PyWriterOpenAIToolkit``
--  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
+-  ``automata.tests.unit.test_py_writer_tool.PyWriterOpenAIToolkitBuilder``
+-  ``automata.core.tools.builders.py_writer.PyWriterToolkitBuilder``
 
 Example
 -------

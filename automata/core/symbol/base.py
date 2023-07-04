@@ -277,18 +277,26 @@ class ISymbolProvider(abc.ABC):
     def __init__(self):
         self.is_synchronized = False
 
-    def get_all_supported_symbols(self) -> List[Symbol]:
+    @abc.abstractmethod
+    def _get_sorted_supported_symbols(self) -> List[Symbol]:
+        pass
+
+    @abc.abstractmethod
+    def filter_symbols(self, sorted_supported_symbols: List[Symbol]) -> None:
+        pass
+
+    def get_sorted_supported_symbols(self) -> List[Symbol]:
+        from automata.core.utils import is_sorted
+
         if not self.is_synchronized:
             raise RuntimeError("Cannot get symbols before synchronization")
-        return self._get_all_supported_symbols()
+
+        sorted_symbols = self._get_sorted_supported_symbols()
+
+        if not is_sorted([symbol.dotpath for symbol in sorted_symbols]):
+            raise ValueError("sorted_supported_symbols must be sorted")
+
+        return sorted_symbols
 
     def set_synchronized(self, value: bool):
         self.is_synchronized = value
-
-    @abc.abstractmethod
-    def _get_all_supported_symbols(self) -> List[Symbol]:
-        pass
-
-    @abc.abstractmethod
-    def filter_symbols(self, supported_symbols: Set[Symbol]) -> None:
-        pass

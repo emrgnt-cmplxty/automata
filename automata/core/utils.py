@@ -65,21 +65,21 @@ def convert_kebab_to_snake(s: str) -> str:
     return s.replace("-", "_")
 
 
-def filter_digraph_by_symbols(graph: nx.DiGraph, supported_symbols: Set[Symbol]) -> None:
-    """Filters a digraph to only contain nodes that are in the supported_symbols set."""
+def filter_digraph_by_symbols(graph: nx.DiGraph, sorted_supported_symbols: List[Symbol]) -> None:
+    """Filters a digraph to only contain nodes that are in the sorted_supported_symbols set."""
     graph_nodes = deepcopy(graph.nodes())
     for symbol in graph_nodes:
-        if symbol not in supported_symbols:
+        if symbol not in sorted_supported_symbols:
             graph.remove_node(symbol)
 
 
 def filter_multi_digraph_by_symbols(
-    graph: nx.MultiDiGraph, supported_symbols: Set[Symbol], label="symbol"
+    graph: nx.MultiDiGraph, sorted_supported_symbols: List[Symbol], label="symbol"
 ) -> None:
-    """Filters a multi digraph to only contain nodes that are in the supported_symbols set."""
+    """Filters a multi digraph to only contain nodes that are in the sorted_supported_symbols set."""
     graph_nodes_and_data = deepcopy(graph.nodes(data=True))
     for node, data in graph_nodes_and_data:
-        if data.get("label") == "symbol" and node not in supported_symbols:
+        if data.get("label") == "symbol" and node not in sorted_supported_symbols:
             graph.remove_node(node)
 
 
@@ -153,3 +153,7 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
+
+
+def is_sorted(lst):
+    return all(a <= b for a, b in zip(lst, lst[1:]))

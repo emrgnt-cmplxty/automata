@@ -12,6 +12,8 @@ from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.symbol_utils import convert_to_fst_object
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
 
+from automata.core.symbol_embedding.base import SymbolEmbeddingHandler
+
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
 SourceCodeResult = Optional[str]
@@ -25,6 +27,7 @@ class SymbolSearch:
         self,
         symbol_graph: SymbolGraph,
         symbol_rank_config: SymbolRankConfig,
+        search_embedding_handler: SymbolEmbeddingHandler,
         embedding_similarity_calculator: EmbeddingSimilarityCalculator,
     ) -> None:
         """
@@ -35,13 +38,18 @@ class SymbolSearch:
 
         self.symbol_graph = symbol_graph
         self.embedding_similarity_calculator = embedding_similarity_calculator
+        self.search_embedding_handler = search_embedding_handler
         self.symbol_rank = SymbolRank(
             symbol_graph.default_rankable_subgraph, config=symbol_rank_config
         )
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(query)
+        ordered_embeddings = self.search_embedding_handler.get_ordered_embeddings()
+
+        query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
+            ordered_embeddings, query
+        )
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )

@@ -124,12 +124,16 @@ def symbol_search(mocker, symbol_graph_mock):
     """Creates a SymbolSearch object with Mock dependencies for testing"""
     symbol_similarity_mock = mocker.MagicMock(spec=EmbeddingSimilarityCalculator)
     symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
+
+    symbol_code_embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
+
     symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
     symbol_rank_config_mock.validate_config = mocker.MagicMock()
 
     return SymbolSearch(
         symbol_graph_mock,
         symbol_rank_config_mock,
+        symbol_code_embedding_handler,
         symbol_similarity_mock,
     )
 

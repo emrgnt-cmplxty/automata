@@ -25,8 +25,8 @@ Related Symbols
 
 -  ``automata.core.tools.tool.Tool``
 -  ``automata.core.llm.providers.openai.OpenAIFunction``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 
 Example
 -------

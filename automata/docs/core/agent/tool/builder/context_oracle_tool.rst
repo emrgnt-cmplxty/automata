@@ -18,8 +18,8 @@ Key related symbols include: -
 ``automata.core.experimental.search.symbol_search.SymbolSearch`` -
 ``automata.core.symbol_embedding.similarity.SymbolSimilarity`` -
 ``automata.core.tools.tool.Tool`` -
-``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
-- ``automata.core.agent.agent.AgentToolkitProvider`` -
+``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
+- ``automata.core.agent.agent.AgentToolkitBuilder`` -
 ``automata.core.agent.agent.AgentToolkitNames`` -
 ``automata.core.tools_tool_utils.AgentToolFactory``
 

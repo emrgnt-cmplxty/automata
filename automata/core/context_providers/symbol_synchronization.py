@@ -4,7 +4,7 @@ from typing import List, Type, Set
 
 class SymbolProviderRegistry:
     _providers: Set[ISymbolProvider] = set([])
-    supported_symbols: List[Symbol] = []
+    sorted_supported_symbols: List[Symbol] = []
 
     @staticmethod
     def register_provider(provider: ISymbolProvider):
@@ -15,24 +15,28 @@ class SymbolProviderRegistry:
     @staticmethod
     def synchronize():
         all_symbols = [
-            set(provider._get_all_supported_symbols())
+            set(provider._get_sorted_supported_symbols())
             for provider in SymbolProviderRegistry._providers
         ]
-        supported_symbols = set.intersection(*all_symbols)
+        sorted_supported_symbols = set.intersection(*all_symbols)
+
+        sorted_supported_symbols = sorted(list(sorted_supported_symbols), key=lambda x: x.dotpath)
+
         for provider in SymbolProviderRegistry._providers:
-            provider.filter_symbols(supported_symbols)
+            provider.filter_symbols(sorted_supported_symbols)
             provider.set_synchronized(True)
 
-        SymbolProviderRegistry.supported_symbols = list(supported_symbols)
+        SymbolProviderRegistry.sorted_supported_symbols = sorted_supported_symbols
 
-        if not SymbolProviderRegistry.supported_symbols:
+        if not SymbolProviderRegistry.sorted_supported_symbols:
             raise RuntimeError("No symbols are supported by any symbol provider")
 
     @staticmethod
-    def get_all_supported_symbols():
-        if not SymbolProviderRegistry.supported_symbols:
+    def get_sorted_supported_symbols():
+        if not SymbolProviderRegistry.sorted_supported_symbols:
             SymbolProviderRegistry.synchronize()
-        return SymbolProviderRegistry.supported_symbols
+
+        return SymbolProviderRegistry.sorted_supported_symbols
 
 
 class SymbolProviderSynchronizationContext:

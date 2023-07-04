@@ -3,22 +3,26 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.core.tools.base import Tool
-from automata.core.tools.builders.context_oracle import ContextOracleToolkit
+from automata.core.tools.builders.context_oracle import ContextOracleToolkitBuilder
 
 
 @pytest.fixture
 def context_oracle_tool_builder():
-    symbol_doc_similarity_mock = MagicMock()
-    symbol_code_similarity_mock = MagicMock()
-    return ContextOracleToolkit(
-        symbol_doc_similarity=symbol_doc_similarity_mock,
-        symbol_code_similarity=symbol_code_similarity_mock,
+    symbol_doc_embedding_handler = MagicMock()
+    symbol_code_embedding_handler = MagicMock()
+    embedding_similarity_calculator = MagicMock()
+
+    return ContextOracleToolkitBuilder(
+        symbol_doc_embedding_handler=symbol_doc_embedding_handler,
+        symbol_code_embedding_handler=symbol_code_embedding_handler,
+        embedding_similarity_calculator=embedding_similarity_calculator,
     )
 
 
 def test_init(context_oracle_tool_builder):
-    assert isinstance(context_oracle_tool_builder.symbol_code_similarity, MagicMock)
-    assert isinstance(context_oracle_tool_builder.symbol_doc_similarity, MagicMock)
+    assert isinstance(context_oracle_tool_builder.embedding_similarity_calculator, MagicMock)
+    assert isinstance(context_oracle_tool_builder.symbol_doc_embedding_handler, MagicMock)
+    assert isinstance(context_oracle_tool_builder.symbol_code_embedding_handler, MagicMock)
 
 
 def test_build(context_oracle_tool_builder):

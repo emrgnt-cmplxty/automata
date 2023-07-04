@@ -2,9 +2,9 @@ from enum import Enum
 from typing import List, Optional, Union
 
 from automata.config.base import LLMProvider
-from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
+from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.core.agent.error import UnknownToolError
-from automata.core.agent.providers import OpenAIAgentToolkitProvider
+from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 from automata.core.experimental.search.symbol_search import (
     ExactSearchResult,
     SourceCodeResult,
@@ -28,7 +28,7 @@ class SearchTool(Enum):
     EXACT_SEARCH = "exact-search"
 
 
-class SymbolSearchToolkit(AgentToolkitProvider):
+class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     """A class for interacting with the SymbolSearch API,
     which provides functionality to search an indexed python codebase."""
 
@@ -96,7 +96,7 @@ class SymbolSearchToolkit(AgentToolkitProvider):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class SymbolSearchOpenAIToolkit(SymbolSearchToolkit, OpenAIAgentToolkitProvider):
+class SymbolSearchOpenAIToolkitBuilder(SymbolSearchToolkitBuilder, OpenAIAgentToolkitBuilder):
     TOOL_TYPE = AgentToolkitNames.SYMBOL_SEARCH
     PLATFORM = LLMProvider.OPENAI
 

@@ -20,7 +20,7 @@ Related Symbols
 -  ``automata.tests.conftest.automata_agent``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder``
 -  ``automata.tests.conftest.task``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_automata_agent``
 -  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder.create_from_args``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent.run``

@@ -12,7 +12,7 @@ def test_get_all_symbols(symbol_graph_static_test):  # noqa: F811
         synchronization_context.register_provider(symbol_graph_static_test)
         synchronization_context.synchronize()
 
-    graph_symbols = symbol_graph_static_test.get_all_supported_symbols()
+    graph_symbols = symbol_graph_static_test.get_sorted_supported_symbols()
     assert isinstance(graph_symbols, list)
     assert all(isinstance(s, Symbol) for s in graph_symbols)
 
@@ -23,7 +23,7 @@ def test_build_real_graph(symbol_graph_static_test):  # noqa: F811
         synchronization_context.synchronize()
 
     all_symbols = sorted(
-        symbol_graph_static_test.get_all_supported_symbols(), key=lambda x: x.dotpath
+        symbol_graph_static_test.get_sorted_supported_symbols(), key=lambda x: x.dotpath
     )
 
     assert isinstance(symbol_graph_static_test, SymbolGraph)

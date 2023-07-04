@@ -112,7 +112,7 @@ SOURCE_CODE_HITS = {
 
 @pytest.mark.regression
 def test_source_code_retrieval(symbol_search_live):  # noqa : F811
-    symbols = symbol_search_live.symbol_graph.get_all_supported_symbols()
+    symbols = symbol_search_live.symbol_graph.get_sorted_supported_symbols()
 
     for search in SOURCE_CODE_HITS:
         symbol = [symbol for symbol in symbols if search[:-1] == symbol.descriptors[-1].name][0]

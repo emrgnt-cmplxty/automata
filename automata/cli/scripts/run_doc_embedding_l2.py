@@ -66,10 +66,10 @@ def setup(**kwargs):
     )
 
     # sync the symbol graph with the code embedding
-    graph_symbols = symbol_graph.get_all_supported_symbols()
-    embedding_symbols = code_embedding_handler.get_all_supported_symbols()
-    supported_symbols = set(graph_symbols).intersection(set(embedding_symbols))
-    filter_digraph_by_symbols(symbol_graph.default_rankable_subgraph, supported_symbols)
+    graph_symbols = symbol_graph.get_sorted_supported_symbols()
+    embedding_symbols = code_embedding_handler.get_sorted_supported_symbols()
+    sorted_supported_symbols = set(graph_symbols).intersection(set(embedding_symbols))
+    filter_digraph_by_symbols(symbol_graph.default_rankable_subgraph, sorted_supported_symbols)
 
     return {
         "embedding_handler": embedding_handler,
@@ -79,7 +79,7 @@ def setup(**kwargs):
 
 
 def process_embeddings(embedding_handler, doc_embedding_db_l2, symbol_graph):
-    all_defined_symbols = symbol_graph.get_all_supported_symbols()
+    all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
     for symbol in tqdm(filtered_symbols):
@@ -93,10 +93,10 @@ def process_embeddings(embedding_handler, doc_embedding_db_l2, symbol_graph):
 
 
 def discard_stale_symbols(embedding_handler, doc_embedding_db_l2, symbol_graph):
-    all_defined_symbols = symbol_graph.get_all_supported_symbols()
+    all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
-    for symbol in embedding_handler.get_all_supported_symbols():
+    for symbol in embedding_handler.get_sorted_supported_symbols():
         if symbol not in filtered_symbols:
             logger.info(f"Discarding stale symbol {symbol}...")
             doc_embedding_db_l2.discard(symbol.dotpath)
@@ -160,7 +160,7 @@ def main(*args, **kwargs) -> str:
 #         doc_embedding_db_l2, symbol_doc_embedding_builder
 #     )
 
-#     all_defined_symbols = symbol_graph.get_all_supported_symbols()
+#     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
 #     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
 #     for symbol in tqdm(filtered_symbols):
@@ -172,7 +172,7 @@ def main(*args, **kwargs) -> str:
 #             except Exception as e:
 #                 logger.error(f"Failed to update embedding for symbol {symbol}: {e}")
 
-#     for symbol in embedding_handler.get_all_supported_symbols():
+#     for symbol in embedding_handler.get_sorted_supported_symbols():
 #         if symbol not in filtered_symbols:
 #             logger.info(f"Discarding stale symbol {symbol}...")
 #             doc_embedding_db_l2.discard(symbol.dotpath)
