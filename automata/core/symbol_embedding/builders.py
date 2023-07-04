@@ -3,15 +3,12 @@ from typing import List
 from jinja2 import Template
 
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-from automata.core.embedding.base import EmbeddingVectorProvider, EmbeddingBuilder
+from automata.core.embedding.base import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.foundation import LLMChatCompletionProvider
 from automata.core.retrievers.py.context import PyContextRetriever
 from automata.core.symbol.base import Symbol
-from automata.core.symbol_embedding.base import (
-    SymbolCodeEmbedding,
-    SymbolDocEmbedding,
-)
+from automata.core.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 
 
 class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
@@ -21,16 +18,11 @@ class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
         embedding_vector = self.embedding_provider.build_embedding_vector(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
-    def fetch_embedding_input(self, symbol: Symbol) -> str:
-        """An abstract method for embedding the context is the source code itself."""
-        from automata.core.symbol.symbol_utils import (  # imported late for mocking
-            convert_to_fst_object,
-        )
-
-        return str(convert_to_fst_object(symbol))
-
 
 class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
+    """Builds `Symbol` documentation embeddings."""
+
+    # TODO - Make this class more modular and consider it's structure
     def __init__(
         self,
         embedding_provider: EmbeddingVectorProvider,

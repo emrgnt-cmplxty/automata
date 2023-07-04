@@ -26,16 +26,22 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         return self.embedding_db.get(symbol.dotpath)
 
     def process_embedding(self, symbol: Symbol) -> None:
-        source_code = self.embedding_builder.fetch_embedding_input(symbol)
+        """
+        Process the embedding for a `Symbol` -
+        Currently we do nothing if the symbol is already contained
+        """
+
+        source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
 
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
 
         if self.embedding_db.contains(symbol.dotpath):
-            self.update_existing_embedding(source_code, symbol)
-        else:
-            symbol_embedding = self.embedding_builder.build(source_code, symbol)
-            self.embedding_db.add(symbol_embedding)
+            # self.update_existing_embedding(source_code, symbol)
+            return
+        # else:
+        symbol_embedding = self.embedding_builder.build(source_code, symbol)
+        self.embedding_db.add(symbol_embedding)
 
     def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         existing_embedding = self.embedding_db.get(symbol.dotpath)

@@ -1,11 +1,11 @@
 import abc
 import logging
 from enum import Enum
-from typing import Any, Dict, TypeVar, Generic, List, Sequence
-from automata.core.base.database.vector import VectorDatabaseProvider
+from typing import Any, Dict, Sequence
 
 import numpy as np
 
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.symbol.base import Symbol
 
 logger = logging.getLogger(__name__)
@@ -52,10 +52,13 @@ class EmbeddingBuilder(abc.ABC):
         """An abstract method to build the embedding for a symbol"""
         pass
 
-    @abc.abstractmethod
-    def fetch_embedding_input(self, symbol: Symbol) -> str:
+    def fetch_embedding_source_code(self, symbol: Symbol) -> str:
         """An abstract method for embedding the context is the source code itself."""
-        pass
+        from automata.core.symbol.symbol_utils import (  # imported late for mocking
+            convert_to_fst_object,
+        )
+
+        return str(convert_to_fst_object(symbol))
 
 
 class EmbeddingHandler(abc.ABC):

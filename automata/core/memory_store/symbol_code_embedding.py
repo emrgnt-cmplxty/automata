@@ -26,7 +26,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
 
     def process_embedding(self, symbol: Symbol) -> None:
         """Process the embedding for a `Symbol` by updating if the source code has changed."""
-        source_code = self.embedding_builder.fetch_embedding_input(symbol)
+        source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
 
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")

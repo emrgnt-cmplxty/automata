@@ -1,7 +1,8 @@
-import networkx as nx
 import os
 from functools import lru_cache
 from typing import Any, Dict, List, Set, Tuple
+
+import networkx as nx
 
 from automata.config.base import ConfigCategory
 from automata.core.agent.agent import AgentToolkitNames
@@ -9,6 +10,7 @@ from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.base.patterns.singleton import Singleton
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.code_handling.py.writer import PyWriter
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.providers.openai import (
@@ -23,11 +25,12 @@ from automata.core.retrievers.py.context import (
 )
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
-from automata.core.symbol_embedding.builders import SymbolDocEmbeddingBuilder
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
+from automata.core.symbol_embedding.builders import (
+    SymbolCodeEmbeddingBuilder,
+    SymbolDocEmbeddingBuilder,
+)
 from automata.core.tools.factory import AgentToolFactory, logger
 from automata.core.utils import get_config_fpath
-from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
 
 
 class DependencyFactory(metaclass=Singleton):
@@ -59,7 +62,7 @@ class DependencyFactory(metaclass=Singleton):
             symbol_rank_config (SymbolRankConfig())
             py_context_retriever_config (PyContextRetrieverConfig())
             coding_project_path (get_root_py_fpath())
-            doc_completion_provider (OpenAIChatCompletionProvider())
+            llm_completion_provider (OpenAIChatCompletionProvider())
         }
         """
         self._instances: Dict[str, Any] = {}
@@ -158,15 +161,40 @@ class DependencyFactory(metaclass=Singleton):
             embedding_provider (OpenAIEmbedding())
         """
 
-        default_code_embedding_fpath = os.path.join(
-            get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
-        )
         code_embedding_db = JSONSymbolEmbeddingVectorDatabase(
-            self.overrides.get("symbol_rank_config", default_code_embedding_fpath)
+            self.overrides.get(
+                "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
+            )
         )
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
         embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
         return SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
+
+    @lru_cache()
+    def create_symbol_doc_embedding_handler(self) -> SymbolDocEmbeddingHandler:
+        """
+        Associated Keyword Args:
+            doc_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            embedding_provider (OpenAIEmbedding())
+        """
+
+        doc_embedding_db = JSONSymbolEmbeddingVectorDatabase(
+            self.overrides.get(
+                "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
+            )
+        )
+        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
+        llm_completion_provider = self.overrides.get(
+            "llm_completion_provider", OpenAIChatCompletionProvider()
+        )
+        symbol_search = self.get("symbol_search")
+        retriver = self.get("py_context_retriever")
+
+        embedding_builder = SymbolDocEmbeddingBuilder(
+            embedding_provider, llm_completion_provider, symbol_search, retriver
+        )
+
+        return SymbolDocEmbeddingHandler(doc_embedding_db, embedding_builder)
 
     @lru_cache()
     def create_symbol_search(self) -> SymbolSearch:

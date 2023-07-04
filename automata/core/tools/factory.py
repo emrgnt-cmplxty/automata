@@ -6,8 +6,10 @@ from automata.core.agent.agent import AgentToolkitNames
 from automata.core.agent.error import UnknownToolError
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.code_handling.py.writer import PyWriter
-from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
+from automata.core.experimental.search.symbol_search import SymbolSearch
+from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.tools.base import Tool
 
 logger = logging.getLogger(__name__)
@@ -21,8 +23,9 @@ class AgentToolFactory:
         AgentToolkitNames.PY_WRITER: [("py_writer", PyWriter)],
         AgentToolkitNames.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         AgentToolkitNames.CONTEXT_ORACLE: [
-            ("symbol_doc_similarity", EmbeddingSimilarityCalculator),
-            ("symbol_code_similarity", EmbeddingSimilarityCalculator),
+            ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
+            ("symbol_code_embedding_handler", SymbolCodeEmbeddingHandler),
+            ("embedding_similarity_calculator", EmbeddingSimilarityCalculator),
         ],
     }
 
