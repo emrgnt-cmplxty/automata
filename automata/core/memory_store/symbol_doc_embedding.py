@@ -19,8 +19,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_db: JSONSymbolEmbeddingVectorDatabase,
         embedding_builder: SymbolDocEmbeddingBuilder,
     ) -> None:
-        self.embedding_db = embedding_db
-        self.embedding_builder = embedding_builder
+        super().__init__(embedding_db, embedding_builder)
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
         return self.embedding_db.get(symbol.dotpath)

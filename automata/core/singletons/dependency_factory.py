@@ -136,14 +136,8 @@ class DependencyFactory(metaclass=Singleton):
 
     @lru_cache()
     def create_subgraph(self) -> nx.DiGraph:
-        """
-        Associated Keyword Args:
-            flow_rank ("bidirectional")
-        """
-        symbol_graph = self.get("symbol_graph")
-        return symbol_graph.default_rankable_subgraph(
-            self.overrides.get("flow_rank", "bidirectional")
-        )
+        symbol_graph: SymbolGraph = self.get("symbol_graph")
+        return symbol_graph.default_rankable_subgraph
 
     @lru_cache()
     def create_symbol_rank(self) -> SymbolRank:
@@ -151,7 +145,7 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             symbol_rank_config (SymbolRankConfig())
         """
-        subgraph: nx.DiGraph = self.get("symbol_graph")
+        subgraph: nx.DiGraph = self.get("subgraph")
         return SymbolRank(subgraph, self.overrides.get("symbol_rank_config", SymbolRankConfig()))
 
     @lru_cache()
@@ -161,26 +155,17 @@ class DependencyFactory(metaclass=Singleton):
             code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
             embedding_provider (OpenAIEmbedding())
         """
-        print("loading db")
-
-        print(
-            "from fpath = ",
-            self.overrides.get(
-                "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
-            ),
-        )
-
         code_embedding_db = JSONSymbolEmbeddingVectorDatabase(
             self.overrides.get(
                 "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
             )
         )
-        print("db loaded")
-        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
-        print("embedding provider loaded")
-
-        embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
-        print("embedding builder loaded")
+        embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
+            "embedding_provider", OpenAIEmbeddingProvider()
+        )
+        embedding_builder: SymbolCodeEmbeddingBuilder = SymbolCodeEmbeddingBuilder(
+            embedding_provider
+        )
 
         return SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
 
@@ -197,12 +182,14 @@ class DependencyFactory(metaclass=Singleton):
                 "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
             )
         )
-        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
-        llm_completion_provider = self.overrides.get(
+        embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
+            "embedding_provider", OpenAIEmbeddingProvider()
+        )
+        llm_completion_provider: OpenAIChatCompletionProvider = self.overrides.get(
             "llm_completion_provider", OpenAIChatCompletionProvider()
         )
-        symbol_search = self.get("symbol_search")
-        retriver = self.get("py_context_retriever")
+        symbol_search: SymbolSearch = self.get("symbol_search")
+        retriver: PyContextRetriever = self.get("py_context_retriever")
 
         embedding_builder = SymbolDocEmbeddingBuilder(
             embedding_provider, llm_completion_provider, symbol_search, retriver
@@ -216,14 +203,21 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             symbol_rank_config (SymbolRankConfig())
         """
-        symbol_graph = self.get("symbol_graph")
-        symbol_rank_config = self.overrides.get("symbol_rank_config", SymbolRankConfig())
-        symbol_code_embedding_handler = self.get("symbol_code_embedding_handler")
-        embedding_similarity_calculator = self.get("embedding_similarity_calculator")
+        symbol_graph: SymbolGraph = self.get("symbol_graph")
+        symbol_rank_config: SymbolRankConfig = self.overrides.get(
+            "symbol_rank_config", SymbolRankConfig()
+        )
+        symbol_code_embedding_handler: SymbolCodeEmbeddingBuilder = self.get(
+            "symbol_code_embedding_handler"
+        )
+        embedding_similarity_calculator: EmbeddingSimilarityCalculator = self.get(
+            "embedding_similarity_calculator"
+        )
         return SymbolSearch(
             symbol_graph,
             symbol_rank_config,
-            symbol_code_embedding_handler,
+            # FIXME - Fix this type ignore
+            symbol_code_embedding_handler,  # type: ignore
             embedding_similarity_calculator,
         )
 
@@ -233,8 +227,8 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             py_context_retriever_config (PyContextRetrieverConfig())
         """
-        symbol_graph = self.get("symbol_graph")
-        py_context_retriever_config = self.overrides.get(
+        symbol_graph: SymbolGraph = self.get("symbol_graph")
+        py_context_retriever_config: PyContextRetrieverConfig = self.overrides.get(
             "py_context_retriever_config", PyContextRetrieverConfig()
         )
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
@@ -245,7 +239,9 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             embedding_provider (OpenAIEmbedding())
         """
-        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
+        embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
+            "embedding_provider", OpenAIEmbeddingProvider()
+        )
         return EmbeddingSimilarityCalculator(embedding_provider)
 
     @lru_cache()
@@ -254,7 +250,8 @@ class DependencyFactory(metaclass=Singleton):
 
     @lru_cache()
     def create_py_writer(self) -> PyWriter:
-        return PyWriter(self.get("py_reader"))
+        py_reader: PyReader = self.get("py_reader")
+        return PyWriter(py_reader)
 
 
 dependency_factory = DependencyFactory()
