@@ -5,12 +5,12 @@ import numpy as np
 
 from automata.core.base.database.vector import JSONVectorDatabase
 from automata.core.embedding.base import (
-    EmbeddingVectorProvider,
     Embedding,
-    EmbeddingHandler,
     EmbeddingBuilder,
+    EmbeddingHandler,
+    EmbeddingVectorProvider,
 )
-from automata.core.symbol.base import Symbol, ISymbolProvider
+from automata.core.symbol.base import ISymbolProvider, Symbol
 from automata.core.utils import is_sorted
 
 
@@ -24,6 +24,10 @@ class SymbolEmbedding(Embedding):
     @property
     def symbol(self) -> Symbol:
         return self.key
+
+    @symbol.setter
+    def symbol(self, value: Symbol):
+        self.key = value
 
     @abc.abstractmethod
     def __str__(self) -> str:

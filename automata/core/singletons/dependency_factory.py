@@ -54,7 +54,7 @@ class DependencyFactory(metaclass=Singleton):
     def __init__(self, **kwargs) -> None:
         """
         Keyword Args (Defaults):
-            symbol_graph_path (DependencyFactory.DEFAULT_SCIP_FPATH)
+            symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
             flow_rank ("bidirectional")
             embedding_provider (OpenAIEmbedding())
             code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
@@ -66,6 +66,9 @@ class DependencyFactory(metaclass=Singleton):
         }
         """
         self._instances: Dict[str, Any] = {}
+        self.overrides = kwargs
+
+    def set_overrides(self, **kwargs) -> None:
         self.overrides = kwargs
 
     def get(self, dependency: str) -> Any:
@@ -125,10 +128,10 @@ class DependencyFactory(metaclass=Singleton):
     def create_symbol_graph(self) -> SymbolGraph:
         """
         Associated Keyword Args:
-            symbol_graph_path (DependencyFactory.DEFAULT_SCIP_FPATH)
+            symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
         return SymbolGraph(
-            self.overrides.get("symbol_graph_path", DependencyFactory.DEFAULT_SCIP_FPATH)
+            self.overrides.get("symbol_graph_scip_fpath", DependencyFactory.DEFAULT_SCIP_FPATH)
         )
 
     @lru_cache()
@@ -160,14 +163,27 @@ class DependencyFactory(metaclass=Singleton):
             code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
             embedding_provider (OpenAIEmbedding())
         """
+        print("loading db")
+
+        print(
+            "from fpath = ",
+            self.overrides.get(
+                "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
+            ),
+        )
 
         code_embedding_db = JSONSymbolEmbeddingVectorDatabase(
             self.overrides.get(
                 "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
             )
         )
+        print("db loaded")
         embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
+        print("embedding provider loaded")
+
         embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+        print("embedding builder loaded")
+
         return SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
 
     @lru_cache()
