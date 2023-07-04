@@ -4,7 +4,7 @@ SymbolEmbeddingBuilder
 ``SymbolEmbeddingBuilder`` is an abstract class that serves as a
 blueprint for specific embedding builder classes that construct
 embeddings for various types of symbols. The constructor accepts an
-instance of ``EmbeddingProvider`` as a parameter, which provides
+instance of ``EmbeddingVectorProvider`` as a parameter, which provides
 embeddings for the symbols. It includes a ``build`` method, which must
 be implemented in the child classes, designed for building the
 embeddings based on a source text and a symbol.
@@ -15,7 +15,7 @@ Overview
 ``SymbolEmbeddingBuilder`` offers a systematic way of generating
 embeddings for symbols by providing an organizational structure to
 support the process. Its primary functionality revolves around creating
-embeddings for symbols using the underlying ``EmbeddingProvider`` and
+embeddings for symbols using the underlying ``EmbeddingVectorProvider`` and
 source text. Furthermore, it includes a ``fetch_embedding_context``
 method that retrieves the context for a source code embedding, which
 abstracts the conversion of a symbol to a string object.
@@ -44,10 +44,10 @@ concrete class (``SymbolCodeEmbeddingBuilder``) that extends
 .. code:: python
 
    from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingBuilder
-   from automata.core.llm.core import EmbeddingProvider
+   from automata.core.llm.core import EmbeddingVectorProvider
 
-   # Create an instance of EmbeddingProvider
-   embedding_provider = EmbeddingProvider() 
+   # Create an instance of EmbeddingVectorProvider
+   embedding_provider = EmbeddingVectorProvider() 
    # Substitute with appropriate parameter value
 
    # Create an instance of SymbolCodeEmbeddingBuilder
@@ -67,7 +67,7 @@ Follow-up Questions:
 --------------------
 
 -  What is the structure of the embeddings provided by the
-   ``EmbeddingProvider``?
+   ``EmbeddingVectorProvider``?
 -  How are the outputs of the ``build`` method structured and used by
    other classes in the framework?
 -  How are the concrete classes such as ``SymbolCodeEmbeddingBuilder``

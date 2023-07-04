@@ -3,7 +3,7 @@ from typing import List
 from jinja2 import Template
 
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-from automata.core.embedding.base import EmbeddingProvider
+from automata.core.embedding.base import EmbeddingVectorProvider, EmbeddingBuilder
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.foundation import LLMChatCompletionProvider
 from automata.core.retrievers.py.context import PyContextRetriever
@@ -11,22 +11,29 @@ from automata.core.symbol.base import Symbol
 from automata.core.symbol_embedding.base import (
     SymbolCodeEmbedding,
     SymbolDocEmbedding,
-    SymbolEmbeddingBuilder,
 )
 
 
-class SymbolCodeEmbeddingBuilder(SymbolEmbeddingBuilder):
+class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` source code embeddings."""
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
-        embedding_vector = self.embedding_provider.build_embedding_array(source_code)
+        embedding_vector = self.embedding_provider.build_embedding_vector(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
+    def fetch_embedding_input(self, symbol: Symbol) -> str:
+        """An abstract method for embedding the context is the source code itself."""
+        from automata.core.symbol.symbol_utils import (  # imported late for mocking
+            convert_to_fst_object,
+        )
 
-class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
+        return str(convert_to_fst_object(symbol))
+
+
+class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     def __init__(
         self,
-        embedding_provider: EmbeddingProvider,
+        embedding_provider: EmbeddingVectorProvider,
         completion_provider: LLMChatCompletionProvider,
         symbol_search: SymbolSearch,
         retriever: PyContextRetriever,
@@ -102,7 +109,7 @@ class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
         summary = self.completion_provider.standalone_call(
             f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
         )
-        embedding = self.embedding_provider.build_embedding_array(document)
+        embedding = self.embedding_provider.build_embedding_vector(document)
 
         return SymbolDocEmbedding(
             symbol,

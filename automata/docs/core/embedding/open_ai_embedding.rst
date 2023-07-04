@@ -26,7 +26,7 @@ Related Symbols
 -  ``automata.tests.conftest.mock_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.core.symbol_embedding.base.SymbolEmbedding``
--  ``automata.core.memory_store.embedding_types.EmbeddingProvider``
+-  ``automata.core.memory_store.embedding_types.EmbeddingVectorProvider``
 
 Usage Example
 -------------

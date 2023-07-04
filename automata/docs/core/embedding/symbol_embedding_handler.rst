@@ -32,13 +32,13 @@ The following code snippet demonstrates the usage of
 .. code:: python
 
    from automata.core.database.vector import JSONEmbeddingVectorDatabase
-   from automata.core.memory_store.embedding_types import EmbeddingProvider
+   from automata.core.memory_store.embedding_types import EmbeddingVectorProvider
    from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
    from automata.core.symbol.base import Symbol
 
    # Define the embedding database and embedding provider
    embedding_db = JSONEmbeddingVectorDatabase(database_filepath)
-   embedding_provider = EmbeddingProvider(api_key)
+   embedding_provider = EmbeddingVectorProvider(api_key)
 
    # Instantiate the SymbolCodeEmbeddingHandler
    code_embedding_handler = SymbolCodeEmbeddingHandler(embedding_db, embedding_provider)

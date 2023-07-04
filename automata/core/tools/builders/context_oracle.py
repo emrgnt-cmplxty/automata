@@ -6,7 +6,7 @@ from automata.config.base import LLMProvider
 from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
 from automata.core.agent.providers import OpenAIAgentToolkit
 from automata.core.llm.providers.openai import OpenAITool
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.tools.base import Tool
 from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
 
@@ -18,8 +18,8 @@ class ContextOracleToolkit(AgentToolkit):
 
     def __init__(
         self,
-        symbol_doc_similarity: SymbolSimilarityCalculator,
-        symbol_code_similarity: SymbolSimilarityCalculator,
+        symbol_doc_similarity: EmbeddingSimilarityCalculator,
+        symbol_code_similarity: EmbeddingSimilarityCalculator,
         **kwargs,
     ) -> None:
         self.symbol_doc_similarity = symbol_doc_similarity
@@ -32,7 +32,7 @@ class ContextOracleToolkit(AgentToolkit):
                 name="context-oracle",
                 function=self._get_context,
                 description=textwrap.dedent(
-                    """This tool utilizes the SymbolSimilarityCalculator and SymbolSearch to provide context for a given query by computing semantic similarity between the query and all available symbols' documentation and code. The symbol with the highest combined similarity score is identified, with its source code and documentation summary forming the primary context. Additionally, if enabled, the documentation summaries of related symbols (those next most similar to the query) are included."""
+                    """This tool utilizes the EmbeddingSimilarityCalculator and SymbolSearch to provide context for a given query by computing semantic similarity between the query and all available symbols' documentation and code. The symbol with the highest combined similarity score is identified, with its source code and documentation summary forming the primary context. Additionally, if enabled, the documentation summaries of related symbols (those next most similar to the query) are included."""
                 ),
             )
         ]
@@ -66,7 +66,7 @@ class ContextOracleToolkit(AgentToolkit):
             most_similar_symbol
         )
 
-        result = most_similar_embedding.embedding_source
+        result = most_similar_embedding.input_object
 
         try:
             most_similar_doc_embedding = (

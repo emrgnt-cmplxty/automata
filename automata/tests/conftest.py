@@ -1,3 +1,4 @@
+import networkx as nx
 import os
 import random
 from typing import Any, Set
@@ -17,7 +18,7 @@ from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbedding
 from automata.core.singletons.dependency_factory import dependency_factory
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.tasks.agent_database import AutomataTaskRegistry
 from automata.core.tasks.environment import AutomataTaskEnvironment
 from automata.core.tasks.tasks import AutomataTask
@@ -112,24 +113,24 @@ def mock_embedding():
 def symbol_graph_mock(mocker):
     """Mock a SymbolGraph object for cases where we don't need to test the graph itself"""
     mock = mocker.MagicMock(spec=SymbolGraph)
+    code_subgraph_mock = mocker.MagicMock(spec=nx.DiGraph)
+    mock.rankable_subgraph = mocker.MagicMock()
+
     return mock
 
 
 @pytest.fixture
 def symbol_search(mocker, symbol_graph_mock):
     """Creates a SymbolSearch object with Mock dependencies for testing"""
-    symbol_similarity_mock = mocker.MagicMock(spec=SymbolSimilarityCalculator)
+    symbol_similarity_mock = mocker.MagicMock(spec=EmbeddingSimilarityCalculator)
     symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
     symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
-    code_subgraph_mock = mocker.MagicMock(spec=SymbolGraph.SubGraph)
-    code_subgraph_mock.parent = symbol_graph_mock
-    code_subgraph_mock.graph = mocker.MagicMock()
+    symbol_rank_config_mock.validate_config = mocker.MagicMock()
 
     return SymbolSearch(
         symbol_graph_mock,
-        symbol_similarity_mock,
         symbol_rank_config_mock,
-        code_subgraph_mock,
+        symbol_similarity_mock,
     )
 
 

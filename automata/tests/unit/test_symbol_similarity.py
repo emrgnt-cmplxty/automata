@@ -2,14 +2,13 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from automata.core.embedding.base import EmbeddingProvider
+from automata.core.embedding.base import EmbeddingVectorProvider
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
-    SymbolEmbeddingBuilder,
 )
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.embedding.base import EmbeddingSimilarityCalculator, EmbeddingBuilder
 
 
 def test_get_nearest_symbols_for_query(
@@ -37,30 +36,31 @@ def test_get_nearest_symbols_for_query(
     embedding_db.add(embedding3)
 
     # Create an instance of the class
-    mock_builder = MagicMock(SymbolEmbeddingBuilder)
+    mock_builder = MagicMock(EmbeddingBuilder)
     cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_builder=mock_builder)
-    mock_provider = MagicMock(EmbeddingProvider)
+    mock_provider = MagicMock(EmbeddingVectorProvider)
     embeddings = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
     cem.get_embedding = lambda x: embeddings[x]  # MagicMock(return_value=embeddings[x])
-    symbol_similarity = SymbolSimilarityCalculator(cem, mock_provider)
+    symbol_similarity = EmbeddingSimilarityCalculator(mock_provider)
 
     # Test with query_text that is most similar to symbol1
-    symbol_similarity.embedding_provider.build_embedding_array.return_value = np.array(
+    symbol_similarity.embedding_provider.build_embedding_vector.return_value = np.array(
         [1, 0, 0, 0]
     )
-    result = symbol_similarity.calculate_query_similarity_dict("symbol1")
+    ordered_embeddings = embedding_db.get_ordered_embeddings()
+    result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, "symbol1")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol1
 
     # # Test with query_text that is most similar to symbol2
-    symbol_similarity.embedding_provider.build_embedding_array.return_value = np.array(
+    symbol_similarity.embedding_provider.build_embedding_vector.return_value = np.array(
         [0, 1, 0, 0]
     )
-    result = symbol_similarity.calculate_query_similarity_dict("symbol2")
+    result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, "symbol2")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol2
 
     # # Test with query_text that is most similar to symbol3
-    symbol_similarity.embedding_provider.build_embedding_array.return_value = np.array(
+    symbol_similarity.embedding_provider.build_embedding_vector.return_value = np.array(
         [0, 0, 1, 0]
     )
-    result = symbol_similarity.calculate_query_similarity_dict("symbol3")
+    result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, "symbol3")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol3

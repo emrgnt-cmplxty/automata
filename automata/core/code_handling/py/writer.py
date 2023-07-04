@@ -373,7 +373,7 @@ class PyDocWriter:
 
             with open(os.path.join(new_module_dir, f"{snaked_symbol_name}.rst"), "w") as f:
                 try:
-                    doc_md_string = docs[symbol].embedding_source
+                    doc_md_string = docs[symbol].input_object
                     rst_string = pypandoc.convert_text(doc_md_string, "rst", format="md")
                     f.write(rst_string)
                 except Exception as e:

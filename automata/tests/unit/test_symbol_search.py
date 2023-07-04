@@ -1,3 +1,4 @@
+import networkx as nx
 from unittest.mock import patch
 
 import pytest

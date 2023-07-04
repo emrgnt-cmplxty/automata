@@ -5,7 +5,7 @@ SymbolCodeEmbeddingHandler
 embeddings of symbols in the source code. It provides methods to build,
 update, and retrieve embeddings of symbols. The class interacts with
 other components such as ``VectorDatabaseProvider`` and
-``EmbeddingProvider``. It is used in tasks like symbol similarity
+``EmbeddingVectorProvider``. It is used in tasks like symbol similarity
 calculations and code completion.
 
 Overview
@@ -13,7 +13,7 @@ Overview
 
 ``SymbolCodeEmbeddingHandler`` supports the generation and management of
 symbol code embeddings. The class takes an instance of
-``VectorDatabaseProvider`` and ``EmbeddingProvider`` as input, which
+``VectorDatabaseProvider`` and ``EmbeddingVectorProvider`` as input, which
 handle the storage and generation of embeddings, respectively. The key
 methods available in this class include ``build_embedding``,
 ``get_embedding``, and ``update_embedding``. These methods enable
@@ -24,7 +24,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.llm.core.EmbeddingProvider``
+-  ``automata.core.llm.core.EmbeddingVectorProvider``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
@@ -38,12 +38,12 @@ The following example demonstrates how to create an instance of
 .. code:: python
 
    from automata.core.base.database.vector import VectorDatabaseProvider
-   from automata.core.llm.core import EmbeddingProvider, SymbolCodeEmbeddingHandler
+   from automata.core.llm.core import EmbeddingVectorProvider, SymbolCodeEmbeddingHandler
    from automata.core.symbol.base import Symbol
 
    # Mocked objects for demonstration purposes
    mock_embedding_db = VectorDatabaseProvider()
-   mock_embedding_provider = EmbeddingProvider()
+   mock_embedding_provider = EmbeddingVectorProvider()
 
    symbol_handler = SymbolCodeEmbeddingHandler(
        embedding_db=mock_embedding_db,
@@ -60,13 +60,13 @@ Limitations
 
 ``SymbolCodeEmbeddingHandler`` depends on the existence of a
 ``VectorDatabaseProvider`` instance for storing embeddings and an
-``EmbeddingProvider`` instance for generating embeddings. The class
+``EmbeddingVectorProvider`` instance for generating embeddings. The class
 raises a ``ValueError`` if the symbol has no source code for updating
 its embedding.
 
 Follow-up Questions:
 --------------------
 
--  How can we manage custom ``EmbeddingProvider`` and
+-  How can we manage custom ``EmbeddingVectorProvider`` and
    ``VectorDatabaseProvider`` instances with
    ``SymbolCodeEmbeddingHandler``?

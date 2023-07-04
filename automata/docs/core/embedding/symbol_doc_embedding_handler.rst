@@ -3,7 +3,7 @@ SymbolDocEmbeddingHandler
 
 ``SymbolDocEmbeddingHandler`` is a class designed to manage and store
 embeddings for the documentation of any given symbol in the code. It
-extends the ``EmbeddingProvider`` and ``SymbolEmbeddingHandler``
+extends the ``EmbeddingVectorProvider`` and ``SymbolEmbeddingHandler``
 classes, allowing for easy integration with other parts of the Automata
 system. The class provides functionality for building, updating, and
 retrieving embeddings for symbol documentation, as well as fetching
@@ -30,7 +30,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.llm.core.EmbeddingProvider``
+-  ``automata.core.llm.core.EmbeddingVectorProvider``
 -  ``automata.core.llm.core.SymbolEmbeddingHandler``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``

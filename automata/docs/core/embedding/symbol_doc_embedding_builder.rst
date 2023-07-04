@@ -2,7 +2,7 @@ SymbolDocEmbeddingBuilder
 =========================
 
 ``SymbolDocEmbeddingBuilder`` is designed to build an embedding for a
-symbol’s documentation. It accepts the ``EmbeddingProvider``,
+symbol’s documentation. It accepts the ``EmbeddingVectorProvider``,
 ``LLMChatCompletionProvider``, ``SymbolSearch``, and
 ``PyContextRetriever`` in order to generate the documentation.
 
@@ -19,7 +19,7 @@ Import Statements
    from automata.core.retrievers.py.context import PyContextRetriever
    from automata.core.llm.foundation import LLMChatCompletionProvider
    from automata.core.llm.core import (
-       EmbeddingProvider,
+       EmbeddingVectorProvider,
        SymbolEmbeddingBuilder,
        SymbolEmbeddingHandler,
    )
@@ -36,14 +36,14 @@ Here we will walk through an example of how to use the
 .. code:: python
 
    from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingBuilder
-   from automata.core.llm.core import EmbeddingProvider
+   from automata.core.llm.core import EmbeddingVectorProvider
    from automata.core.llm.foundation import LLMChatCompletionProvider
    from automata.core.retrievers.py.context import PyContextRetriever
    from automata.core.experimental.search.symbol_search import SymbolSearch
    from automata.core.symbol.base import Symbol
 
    # create instances of the dependent classes
-   embedding_provider = EmbeddingProvider()
+   embedding_provider = EmbeddingVectorProvider()
    completion_provider = LLMChatCompletionProvider()
    symbol_search = SymbolSearch()
    retriever = PyContextRetriever()
@@ -86,7 +86,7 @@ Limitations
 -----------
 
 The current implementation of ``SymbolDocEmbeddingBuilder`` relies
-heavily on the passed instances of ``EmbeddingProvider``,
+heavily on the passed instances of ``EmbeddingVectorProvider``,
 ``LLMChatCompletionProvider``, ``SymbolSearch``, and
 ``PyContextRetriever``. Any misconfigurations on these instances could
 result in improper documentation embedding generation.

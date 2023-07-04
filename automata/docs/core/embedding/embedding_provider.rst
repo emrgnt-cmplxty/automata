@@ -1,7 +1,7 @@
-EmbeddingProvider
+EmbeddingVectorProvider
 =================
 
-``EmbeddingProvider`` is an abstract base class that provides embeddings
+``EmbeddingVectorProvider`` is an abstract base class that provides embeddings
 for symbols. It is used in different embedding types such as
 ``OpenAIEmbedding`` and as an input in classes like
 ``SymbolCodeEmbeddingHandler`` and ``SymbolDocEmbeddingHandler`` for
@@ -10,9 +10,9 @@ managing symbol embeddings.
 Overview
 --------
 
-The primary purpose of the ``EmbeddingProvider`` is to provide a
+The primary purpose of the ``EmbeddingVectorProvider`` is to provide a
 consistent interface for generating embeddings for symbols. Any class
-that implements the ``EmbeddingProvider`` interface must provide a
+that implements the ``EmbeddingVectorProvider`` interface must provide a
 ``build_embedding`` method that takes a ``symbol_source`` as input and
 returns a numpy ndarray.
 
@@ -27,15 +27,15 @@ Example
 -------
 
 The following is an example demonstrating how to create an instance of a
-class that inherits from ``EmbeddingProvider`` and implement the
+class that inherits from ``EmbeddingVectorProvider`` and implement the
 ``build_embedding`` method.
 
 .. code:: python
 
    import numpy as np
-   from automata.core.memory_store.embedding_types import EmbeddingProvider
+   from automata.core.memory_store.embedding_types import EmbeddingVectorProvider
 
-   class MyEmbeddingProvider(EmbeddingProvider):
+   class MyEmbeddingProvider(EmbeddingVectorProvider):
 
        def build_embedding(self, symbol_source: str) -> np.ndarray:
            # Implement your own logic to generate the embedding for a given symbol source
@@ -49,7 +49,7 @@ class that inherits from ``EmbeddingProvider`` and implement the
 Limitations
 -----------
 
-Since ``EmbeddingProvider`` is an abstract base class, it cannot be used
+Since ``EmbeddingVectorProvider`` is an abstract base class, it cannot be used
 directly to generate embeddings. Instead, it should be inherited and
 implemented by a subclass providing a specific kind of embedding, such
 as an implementation using OpenAI’s API.
@@ -60,4 +60,4 @@ Follow-up Questions:
 -  Are there any specific requirements for the input ``symbol_source``
    when using the ``build_embedding`` method?
 -  What are some example use cases for creating custom
-   ``EmbeddingProvider`` implementations?
+   ``EmbeddingVectorProvider`` implementations?

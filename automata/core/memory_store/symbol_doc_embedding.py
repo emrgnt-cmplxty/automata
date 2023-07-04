@@ -26,7 +26,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         return self.embedding_db.get(symbol.dotpath)
 
     def process_embedding(self, symbol: Symbol) -> None:
-        source_code = self.embedding_builder.fetch_embedding_context(symbol)
+        source_code = self.embedding_builder.fetch_embedding_input(symbol)
 
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")

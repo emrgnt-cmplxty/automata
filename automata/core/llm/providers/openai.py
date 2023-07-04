@@ -7,7 +7,7 @@ import openai
 import tiktoken
 from termcolor import colored
 
-from automata.core.embedding.base import EmbeddingProvider
+from automata.core.embedding.base import EmbeddingVectorProvider
 from automata.core.llm.foundation import (
     LLMChatCompletionProvider,
     LLMChatMessage,
@@ -368,16 +368,16 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         )
 
 
-class OpenAIEmbeddingProvider(EmbeddingProvider):
+class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
     """A class to provide embeddings from the OpenAI API."""
 
     def __init__(self, engine: str = "text-embedding-ada-002") -> None:
         self.engine = engine
         set_openai_api_key()
 
-    def build_embedding_array(self, source: str) -> np.ndarray:
+    def build_embedding_vector(self, source: str) -> np.ndarray:
         """Gets an embedding for the given source text."""
-        # wait to import build_embedding_array to allow easy mocking of the function in tests.
+        # wait to import build_embedding_vector to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
         return np.array(get_embedding(source, engine=self.engine))

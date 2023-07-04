@@ -6,8 +6,9 @@ from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbedding
 from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
-    SymbolEmbeddingBuilder,
 )
+
+from automata.core.embedding.base import EmbeddingBuilder
 
 
 def test_update_embeddings(
@@ -21,9 +22,9 @@ def test_update_embeddings(
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingProvider methods
-    mock_provider = Mock(SymbolEmbeddingBuilder)
-    # mock_provider.build_embedding_array.return_value = mock_embedding
+    # Mock EmbeddingVectorProvider methods
+    mock_provider = Mock(EmbeddingBuilder)
+    # mock_provider.build_embedding_vector.return_value = mock_embedding
 
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
@@ -53,9 +54,9 @@ def test_get_embedding(
     mock_embedding,
     mock_simple_method_symbols,
 ):
-    # Mock EmbeddingProvider methods
-    mock_provider = Mock(SymbolEmbeddingBuilder)
-    # mock_provider.build_embedding_array.return_value = mock_embedding
+    # Mock EmbeddingVectorProvider methods
+    mock_provider = Mock(EmbeddingBuilder)
+    # mock_provider.build_embedding_vector.return_value = mock_embedding
 
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
@@ -74,15 +75,15 @@ def test_get_embedding(
 
 
 def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
-    # Test exception in build_embedding_array function
+    # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingProvider methods
-    mock_provider = Mock(SymbolEmbeddingBuilder)
-    # mock_provider.build_embedding_array.return_value = [1, 2, 3]
+    # Mock EmbeddingVectorProvider methods
+    mock_provider = Mock(EmbeddingBuilder)
+    # mock_provider.build_embedding_vector.return_value = [1, 2, 3]
 
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
@@ -99,14 +100,14 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
 
 
 def test_update_embedding(monkeypatch, mock_simple_method_symbols):
-    # Test exception in build_embedding_array function
+    # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingProvider methods
-    mock_provider = Mock(SymbolEmbeddingBuilder)
+    # Mock EmbeddingVectorProvider methods
+    mock_provider = Mock(EmbeddingBuilder)
 
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     mock_db = MagicMock(JSONSymbolEmbeddingVectorDatabase)
@@ -139,14 +140,14 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
 
 
 def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
-    # Test exception in build_embedding_array function
+    # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.core.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingProvider methods
-    mock_provider = Mock(SymbolEmbeddingBuilder)
+    # Mock EmbeddingVectorProvider methods
+    mock_provider = Mock(EmbeddingBuilder)
     mock_provider.build.side_effect = Exception("Test exception")
 
     # Mock JSONSymbolEmbeddingVectorDatabase methods

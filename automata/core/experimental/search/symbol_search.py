@@ -10,7 +10,7 @@ from automata.core.symbol.base import Symbol, SymbolReference
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.symbol_utils import convert_to_fst_object
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
@@ -24,9 +24,8 @@ class SymbolSearch:
     def __init__(
         self,
         symbol_graph: SymbolGraph,
-        symbol_code_similarity: SymbolSimilarityCalculator,
         symbol_rank_config: SymbolRankConfig,
-        code_subgraph: SymbolGraph.SubGraph,
+        symbol_similarity_calculator: EmbeddingSimilarityCalculator,
     ) -> None:
         """
         Raises:
@@ -34,23 +33,13 @@ class SymbolSearch:
         TODO - We should modify SymbolSearch to receive a completed instance of SymbolRank.
         """
 
-        if code_subgraph.parent != symbol_graph:
-            raise ValueError("code_subgraph must be a subgraph of symbol_graph")
-
-        graph_symbols = symbol_graph.get_all_available_symbols()
-        embedding_symbols = symbol_code_similarity.embedding_handler.get_all_supported_symbols()
-        available_symbols = set(graph_symbols).intersection(set(embedding_symbols))
-        SymbolSearch.filter_graph(code_subgraph.graph, available_symbols)
-
-        # TODO - Do we need to filter the SymbolGraph as well?
         self.symbol_graph = symbol_graph
-        self.symbol_code_similarity = symbol_code_similarity
-        symbol_code_similarity.set_available_symbols(available_symbols)
-        self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
+        self.symbol_similarity_calculator = symbol_similarity_calculator
+        self.symbol_rank = SymbolRank(symbol_graph.rankable_subgraph, config=symbol_rank_config)
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        query_vec = self.symbol_code_similarity.calculate_query_similarity_dict(query)
+        query_vec = self.symbol_similarity_calculator.calculate_query_similarity_dict(query)
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )

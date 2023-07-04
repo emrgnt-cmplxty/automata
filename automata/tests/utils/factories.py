@@ -10,7 +10,7 @@ from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.utils import get_config_fpath
 
 
@@ -48,7 +48,7 @@ def symbol_search_live() -> SymbolSearch:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler, embedding_provider)
+    symbol_code_similarity = EmbeddingSimilarityCalculator(embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
     symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()

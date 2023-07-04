@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import networkx as nx
 from google.protobuf.json_format import MessageToDict  # type: ignore
 from tqdm import tqdm
+from functools import lru_cache
 
 from automata.config import MAX_WORKERS
 from automata.core.singletons.module_loader import py_module_loader
@@ -474,11 +475,6 @@ class SymbolGraph:
     "contains", "reference", "relationship", "caller", or "callee".
     """
 
-    @dataclass
-    class SubGraph:
-        parent: "SymbolGraph"
-        graph: nx.DiGraph
-
     def __init__(self, index_path: str, build_caller_relationships: bool = False) -> None:
         index = self._load_index_protobuf(index_path)
         builder = GraphBuilder(index, build_caller_relationships)
@@ -518,9 +514,14 @@ class SymbolGraph:
     def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
         return self.navigator.get_references_to_symbol(symbol)
 
-    def get_rankable_symbol_dependency_subgraph(
+    @property
+    def rankable_subgraph(self) -> nx.DiGraph:
+        return self._build_rankable_subgraph()
+
+    @lru_cache(maxsize=None)
+    def _build_rankable_subgraph(
         self, flow_rank="bidirectional", path_filter: Optional[str] = None
-    ) -> SubGraph:
+    ) -> nx.DiGraph:
         """
         Creates a `SubGraph` of the original `SymbolGraph` which
         contains only rankable symbols. The nodes in the subgraph
@@ -564,7 +565,7 @@ class SymbolGraph:
 
         logger.info("Built the rankable symbol subgraph")
 
-        return SymbolGraph.SubGraph(graph=G, parent=self)
+        return G
 
     @staticmethod
     def _load_index_protobuf(path: str) -> Index:

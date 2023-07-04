@@ -1,7 +1,8 @@
 import abc
 import logging
 from enum import Enum
-from typing import Dict
+from typing import Any, Dict, TypeVar, Generic, List
+from automata.core.base.database.vector import VectorDatabaseProvider
 
 import numpy as np
 
@@ -16,24 +17,121 @@ class EmbeddingNormType(Enum):
     SOFTMAX = "softmax"
 
 
-class EmbeddingProvider(abc.ABC):
+class EmbeddingVectorProvider(abc.ABC):
     """A class to provide embeddings for symbols"""
 
     @abc.abstractmethod
-    def build_embedding_array(self, symbol_source: str) -> np.ndarray:
+    def build_embedding_vector(self, symbol_source: str) -> np.ndarray:
         pass
 
 
-class EmbeddingSimilarityCalculator(abc.ABC):
+class Embedding(abc.ABC):
+    """Abstract base class for different types of embeddings"""
+
+    def __init__(self, key: Any, input_object: str, vector: np.ndarray):
+        self.key = key
+        self.input_object = input_object
+        self.vector = vector
+
     @abc.abstractmethod
-    def calculate_query_similarity_dict(self, query_text: str) -> Dict[Symbol, float]:
-        """An abstract method to get the similarity between a query and all symbols"""
+    def __str__(self) -> str:
+        pass
+
+
+class EmbeddingBuilder(abc.ABC):
+    """An abstract class to build embeddings"""
+
+    def __init__(
+        self,
+        embedding_provider: EmbeddingVectorProvider,
+    ) -> None:
+        self.embedding_provider = embedding_provider
+
+    @abc.abstractmethod
+    def build(self, source_text: str, symbol: Symbol) -> Any:
+        """An abstract method to build the embedding for a symbol"""
         pass
 
     @abc.abstractmethod
-    def _calculate_embedding_similarity(self, embedding_array: np.ndarray) -> np.ndarray:
-        """An abstract method to calculate the similarity between the embedding array target embeddings."""
+    def fetch_embedding_input(self, symbol: Symbol) -> str:
+        """An abstract method for embedding the context is the source code itself."""
         pass
+
+
+class EmbeddingHandler(abc.ABC):
+    """An abstract class to handle embeddings"""
+
+    @abc.abstractmethod
+    def __init__(
+        self,
+        embedding_db: VectorDatabaseProvider,
+        embedding_builder: EmbeddingBuilder,
+    ) -> None:
+        """An abstract constructor for EmbeddingHandler"""
+        self.embedding_db = embedding_db
+        self.embedding_builder = embedding_builder
+
+    @abc.abstractmethod
+    def get_embedding(self, symbol: Symbol) -> Any:
+        """An abstract method to get the embedding for a symbol"""
+        pass
+
+    @abc.abstractmethod
+    def process_embedding(self, symbol: Symbol) -> None:
+        """An abstract method to process the embedding for a symbol"""
+        pass
+
+    def get_all_supported_symbols(self) -> List[Symbol]:
+        return [embedding.symbol for embedding in self.embedding_db.get_ordered_embeddings()]
+
+
+class EmbeddingSimilarityCalculator:
+    def __init__(
+        self,
+        embedding_provider: EmbeddingVectorProvider,
+        norm_type: EmbeddingNormType = EmbeddingNormType.L2,
+    ) -> None:
+        """Initializes SymbolSimilarity by building the associated symbol mappings."""
+        self.embedding_provider: EmbeddingVectorProvider = embedding_provider
+        self.norm_type = norm_type
+
+    def calculate_query_similarity_dict(
+        self, ordered_embeddings: List[Embedding], query_text: str, return_sorted: bool = True
+    ) -> Dict[Symbol, float]:
+        """
+        Similarity is calculated between the dot product
+        of the query embedding and the symbol embeddings.
+        Return result is sorted in descending order by default.
+        """
+        query_embedding_array = self.embedding_provider.build_embedding_vector(query_text)
+        # Compute the similarity of the query to all symbols
+        similarity_scores = self._calculate_embedding_similarity(
+            [ele.vector for ele in ordered_embeddings], query_embedding_array
+        )
+
+        similarity_dict = {
+            ele.key: similarity_scores[i] for i, ele in enumerate(ordered_embeddings)
+        }
+
+        if return_sorted:
+            # Sort the dictionary by values in descending order
+            similarity_dict = dict(
+                sorted(similarity_dict.items(), key=lambda item: item[1], reverse=True)
+            )
+
+        return similarity_dict
+
+    def _calculate_embedding_similarity(
+        self, ordered_embeddings: np.ndarray, embedding_array: np.ndarray
+    ) -> np.ndarray:
+        """Calculate the similarity score between the embedding with all symbol embeddings"""
+        # Normalize the embeddings and the query embedding
+        embeddings_norm = self._normalize_embeddings(ordered_embeddings, self.norm_type)
+        normed_embedding = self._normalize_embeddings(
+            embedding_array[np.newaxis, :], self.norm_type
+        )[0]
+
+        return np.dot(embeddings_norm, normed_embedding)
 
     @staticmethod
     def _normalize_embeddings(

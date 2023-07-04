@@ -37,7 +37,7 @@ Usage Example
 
    from automata.core.llm.core import (
        EmbeddingNormType,
-       EmbeddingProvider,
+       EmbeddingVectorProvider,
        SymbolEmbeddingHandler,
    )
    from typing import Dict, List, Optional, Set

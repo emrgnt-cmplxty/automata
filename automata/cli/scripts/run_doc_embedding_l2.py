@@ -25,7 +25,7 @@ from automata.core.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,
 )
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
@@ -61,12 +61,12 @@ def main(*args, **kwargs) -> str:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    symbol_code_similarity = SymbolSimilarityCalculator(code_embedding_handler, embedding_provider)
+    symbol_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
-    symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()
+    symbol_graph_subgraph = symbol_graph.rankable_subgraph
     symbol_search = SymbolSearch(
-        symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
+        symbol_graph, symbol_similarity_calculator, symbol_rank_config, symbol_graph_subgraph
     )
     py_context_retriever = PyContextRetriever(symbol_graph, PyContextRetrieverConfig())
     chat_provider = OpenAIChatCompletionProvider(model=kwargs.get("model", "gpt-4"))
