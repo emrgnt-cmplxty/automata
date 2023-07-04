@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.core.code_handling.py.reader.PyReader``
 -  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
 -  ``automata.core.navigation.directory.DirectoryManager``
--  ``automata.core.singletons.module_loader.py_module_loader``
+-  ``automata.core.singletons.py_module_loader.py_module_loader``
 -  ``automata.core.singletons.dependency_factory.create_py_writer``
 
 Example

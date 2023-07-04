@@ -6,7 +6,7 @@ from tqdm import tqdm
 from automata.config.base import ConfigCategory
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
 from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase

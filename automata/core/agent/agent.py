@@ -77,10 +77,10 @@ class AgentToolkitNames(Enum):
     CONTEXT_ORACLE = "context-oracle"
 
 
-class AgentToolkit(ABC):
+class AgentToolkitProvider(ABC):
     """
 
-    AgentToolkit is an abstract class for building tools for providers.
+    AgentToolkitProvider is an abstract class for building tools for providers.
 
     Each builder builds the tools associated with a specific AgentToolkitNames.
     """

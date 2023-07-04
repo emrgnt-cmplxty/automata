@@ -15,7 +15,7 @@ Related Symbols
 -  ``automata.core.utils.LoggingConfig``
 -  ``automata.tests.unit.test_directory_manager.test_load_directory_structure``
 -  ``automata.core.utils.HandlerDict``
--  ``automata.core.singletons.module_loader.PyModuleLoader``
+-  ``automata.core.singletons.py_module_loader.PyModuleLoader``
 -  ``automata.tests.unit.test_task_environment.TestURL``
 -  ``automata.core.symbol.base.Symbol``
 

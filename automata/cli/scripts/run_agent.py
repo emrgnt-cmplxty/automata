@@ -7,7 +7,7 @@ from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.github_management.client import GitHubClient
 from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)

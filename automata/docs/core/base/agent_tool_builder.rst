@@ -1,18 +1,18 @@
-AgentToolkit
+AgentToolkitProvider
 ================
 
-``AgentToolkit`` is an abstract class for building tools for
+``AgentToolkitProvider`` is an abstract class for building tools for
 providers. Tools are essential components as they define the
-functionality and behavior of an agent. The ``AgentToolkit`` class
+functionality and behavior of an agent. The ``AgentToolkitProvider`` class
 provides a standard interface for creating tools. This class should be
 inherited by classes implementing specific tool creation logic.
 
 Overview
 --------
 
-The primary method in the ``AgentToolkit`` class is ``build()``.
+The primary method in the ``AgentToolkitProvider`` class is ``build()``.
 This method returns a list of ``Tool`` objects. To implement a custom
-tool builder, inherit from the ``AgentToolkit`` class and override
+tool builder, inherit from the ``AgentToolkitProvider`` class and override
 the ``build`` method to define the tool creation logic.
 
 Related Symbols
@@ -27,14 +27,14 @@ Example
 -------
 
 The following example demonstrates how to create a custom tool builder
-that inherits the ``AgentToolkit`` class.
+that inherits the ``AgentToolkitProvider`` class.
 
 .. code:: python
 
-   from automata.core.agent.agent import AgentToolkit
+   from automata.core.agent.agent import AgentToolkitProvider
    from automata.core.tools.tool import Tool
 
-   class CustomToolkit(AgentToolkit):
+   class CustomToolkit(AgentToolkitProvider):
        def build(self) -> List[Tool]:
            # Implement tool creation logic here
            tools = []
@@ -43,7 +43,7 @@ that inherits the ``AgentToolkit`` class.
 Limitations
 -----------
 
-As ``AgentToolkit`` is an abstract base class, it does not contain
+As ``AgentToolkitProvider`` is an abstract base class, it does not contain
 any implementation details for tool building. To leverage this class,
 you must create a concrete subclass that implements the ``build``
 method.

@@ -24,7 +24,7 @@ Import Statements:
    from google.protobuf.json_format import MessageToDict
    from tqdm import tqdm
    from automata.config import MAX_WORKERS
-   from automata.core.singletons.module_loader import py_module_loader
+   from automata.core.singletons.py_module_loader import py_module_loader
    from automata.core.symbol.parser import parse_symbol
    from automata.core.symbol.scip_pb2 import Index, SymbolRole
    from automata.core.symbol.base import (

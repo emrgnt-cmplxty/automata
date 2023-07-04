@@ -36,7 +36,7 @@ instance and retrieve a rankable symbol subgraph.
 
    index_path = "/path/to/index.protobuf"  # Replace with the path to your own index.protobuf file
    symbol_graph = SymbolGraph(index_path)
-   rankable_subgraph = symbol_graph.get_rankable_symbol_subgraph()
+   default_rankable_subgraph = symbol_graph.get_rankable_symbol_subgraph()
 
 Limitations
 -----------

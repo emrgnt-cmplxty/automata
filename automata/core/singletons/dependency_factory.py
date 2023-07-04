@@ -134,7 +134,9 @@ class DependencyFactory(metaclass=Singleton):
             flow_rank ("bidirectional")
         """
         symbol_graph = self.get("symbol_graph")
-        return symbol_graph.rankable_subgraph(self.overrides.get("flow_rank", "bidirectional"))
+        return symbol_graph.default_rankable_subgraph(
+            self.overrides.get("flow_rank", "bidirectional")
+        )
 
     @lru_cache()
     def create_symbol_similarity(self) -> EmbeddingSimilarityCalculator:

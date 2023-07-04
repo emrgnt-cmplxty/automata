@@ -23,7 +23,7 @@ Related Symbols
 
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
 -  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
--  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkitProvider``
 -  ``automata.core.tools.tool.Tool``
 -  ``automata.core.experimental.search.symbol_search.SymbolSearch``
 

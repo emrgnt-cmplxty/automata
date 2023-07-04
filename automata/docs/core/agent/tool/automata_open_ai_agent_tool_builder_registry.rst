@@ -2,7 +2,7 @@ OpenAIAutomataAgentToolkitRegistry
 ======================================
 
 ``OpenAIAutomataAgentToolkitRegistry`` is a static registry class
-that holds a list of available ``OpenAIAgentToolkit`` classes. The
+that holds a list of available ``OpenAIAgentToolkitProvider`` classes. The
 main purpose of this class is to keep a registry of all available tool
 builders, which can be used for creating tools to interact with OpenAI
 Automata Agents. The ``OpenAIAutomataAgentToolkitRegistry`` class
@@ -32,9 +32,9 @@ tool builder:
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAIAutomataAgentToolkitRegistry
+   from automata.core.llm.providers.openai import OpenAIAgentToolkitProvider, OpenAIAutomataAgentToolkitRegistry
 
-   class CustomOpenAIToolkit(OpenAIAgentToolkit):
+   class CustomOpenAIToolkit(OpenAIAgentToolkitProvider):
        def build_for_open_ai(self) -> List[OpenAITool]:
            # Implementation of the tool builder
            pass
@@ -62,5 +62,5 @@ Follow-up Questions:
 -  How does ``OpenAIAutomataAgentToolkitRegistry`` ensure that all
    available tool builders are registered properly?
 -  Is it possible to use dependency injections or any other design
-   patterns to manage ``OpenAIAgentToolkit`` classes more
+   patterns to manage ``OpenAIAgentToolkitProvider`` classes more
    effectively?

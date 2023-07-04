@@ -4,8 +4,8 @@ PyWriterOpenAIToolkit
 ``PyWriterOpenAIToolkit`` is a class for interacting with the
 ``PyWriter`` API that provides functionality to modify the code state of
 a given directory of Python files and build tools suitable for use with
-the OpenAI API. This class extends from ``AgentToolkit`` and
-``OpenAIAgentToolkit``, allowing it to generate a list of
+the OpenAI API. This class extends from ``AgentToolkitProvider`` and
+``OpenAIAgentToolkitProvider``, allowing it to generate a list of
 ``OpenAITool`` instances for code writing.
 
 Overview
@@ -21,7 +21,7 @@ Related Symbols
 
 -  ``automata.core.code_handling.py.writer.PyWriter``
 -  ``automata.core.tools.builders.py_writer.PyWriterToolkit``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkitProvider``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 
 Usage Example

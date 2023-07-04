@@ -29,10 +29,10 @@ Import Statements
    from typing import List
    from automata.config.base import LLMProvider
    from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
-   from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
+   from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
    from automata.core.tools.tool import Tool
    from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
-   from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAITool
+   from automata.core.llm.providers.openai import OpenAIAgentToolkitProvider, OpenAITool
    from automata.core.experimental.search.symbol_search import SymbolSearch
 
 Related Symbols

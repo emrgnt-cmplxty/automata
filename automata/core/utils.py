@@ -65,12 +65,22 @@ def convert_kebab_to_snake(s: str) -> str:
     return s.replace("-", "_")
 
 
-def filter_graph_by_symbols(graph: nx.DiGraph, supported_symbols: Set[Symbol]) -> None:
-    """Filters a graph to only contain nodes that are in the supported_symbols set."""
+def filter_digraph_by_symbols(graph: nx.DiGraph, supported_symbols: Set[Symbol]) -> None:
+    """Filters a digraph to only contain nodes that are in the supported_symbols set."""
     graph_nodes = deepcopy(graph.nodes())
     for symbol in graph_nodes:
         if symbol not in supported_symbols:
             graph.remove_node(symbol)
+
+
+def filter_multi_digraph_by_symbols(
+    graph: nx.MultiDiGraph, supported_symbols: Set[Symbol], label="symbol"
+) -> None:
+    """Filters a multi digraph to only contain nodes that are in the supported_symbols set."""
+    graph_nodes_and_data = deepcopy(graph.nodes(data=True))
+    for node, data in graph_nodes_and_data:
+        if data.get("label") == "symbol" and node not in supported_symbols:
+            graph.remove_node(node)
 
 
 class HandlerDict(TypedDict):

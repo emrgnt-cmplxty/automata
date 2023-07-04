@@ -1,5 +1,5 @@
 import abc
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Set
 
 import numpy as np
 
@@ -10,7 +10,7 @@ from automata.core.embedding.base import (
     EmbeddingHandler,
     EmbeddingBuilder,
 )
-from automata.core.symbol.base import Symbol
+from automata.core.symbol.base import Symbol, ISymbolProvider
 
 
 class SymbolEmbedding(Embedding):
@@ -75,7 +75,7 @@ class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase):
         return sorted(self.data, key=lambda x: self.entry_to_key(x))
 
 
-class SymbolEmbeddingHandler(EmbeddingHandler):
+class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
     """An abstract class to handle the embedding of symbols"""
 
     @abc.abstractmethod
@@ -98,3 +98,11 @@ class SymbolEmbeddingHandler(EmbeddingHandler):
     def process_embedding(self, symbol: Symbol) -> None:
         """An abstract method to process the embedding for a symbol"""
         pass
+
+    # ISymbolProvider methods
+
+    def _get_all_supported_symbols(self) -> List[Symbol]:
+        return self.supported_symbols
+
+    def filter_symbols(self, supported_symbols: Set[Symbol]) -> None:
+        self.supported_symbols = list(supported_symbols)

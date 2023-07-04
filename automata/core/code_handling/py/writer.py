@@ -16,7 +16,7 @@ from automata.core.navigation.py.navigation_utils import (
     find_import_syntax_tree_nodes,
     find_syntax_tree_node,
 )
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import Symbol
 from automata.core.symbol_embedding.base import SymbolDocEmbedding
 

@@ -16,7 +16,7 @@ from automata.core.retrievers.py.context import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
@@ -71,7 +71,7 @@ def main(*args, **kwargs) -> str:
     embedding_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
-    symbol_graph_subgraph = symbol_graph.rankable_subgraph
+    symbol_graph_subgraph = symbol_graph.default_rankable_subgraph
     symbol_search = SymbolSearch(symbol_graph, symbol_rank_config, embedding_similarity_calculator)
     py_context_retriever = PyContextRetriever(
         symbol_graph, PyContextRetrieverConfig(), embedding_db_l2

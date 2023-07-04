@@ -114,7 +114,7 @@ def symbol_graph_mock(mocker):
     """Mock a SymbolGraph object for cases where we don't need to test the graph itself"""
     mock = mocker.MagicMock(spec=SymbolGraph)
     code_subgraph_mock = mocker.MagicMock(spec=nx.DiGraph)
-    mock.rankable_subgraph = mocker.MagicMock()
+    mock.default_rankable_subgraph = mocker.MagicMock()
 
     return mock
 

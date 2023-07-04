@@ -24,7 +24,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.navigation.py.navigation_utils.find_syntax_tree_node``
--  ``automata.core.singletons.module_loader.PyModuleLoader.fetch_module``
+-  ``automata.core.singletons.py_module_loader.PyModuleLoader.fetch_module``
 
 Example
 -------

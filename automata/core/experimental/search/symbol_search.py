@@ -5,7 +5,7 @@ import networkx as nx
 import numpy as np
 
 from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import Symbol, SymbolReference
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
@@ -35,7 +35,9 @@ class SymbolSearch:
 
         self.symbol_graph = symbol_graph
         self.embedding_similarity_calculator = embedding_similarity_calculator
-        self.symbol_rank = SymbolRank(symbol_graph.rankable_subgraph, config=symbol_rank_config)
+        self.symbol_rank = SymbolRank(
+            symbol_graph.default_rankable_subgraph, config=symbol_rank_config
+        )
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""

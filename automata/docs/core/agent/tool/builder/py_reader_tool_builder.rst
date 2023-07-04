@@ -16,14 +16,14 @@ The ``PyReaderToolkit`` class allows for managing and interacting
 with the code state in local Python files. By using a ``PyReader``
 object, the class enables an interface to access code, docstrings, and
 raw code of various Python structures. It is used in conjunction with
-``AgentToolkit`` and other related tools.
+``AgentToolkitProvider`` and other related tools.
 
 Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
 -  ``automata.tests.unit.test_py_writer_tool.python_writer_tool_builder``
--  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkitProvider``
 -  ``automata.core.code_handling.py.reader.PyReader``
 -  ``automata.core.tools.tool.Tool``
 

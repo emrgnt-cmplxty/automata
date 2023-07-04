@@ -15,7 +15,7 @@ tools associated with the Python code writer. These tools are used to
 create, update, and delete Python files and objects in an existing
 directory. It has utility methods to create new modules, update existing
 modules, and delete specific objects from existing modules. It includes
-related symbols like ``PyWriter``, ``AgentToolkit``, and ``Tool``.
+related symbols like ``PyWriter``, ``AgentToolkitProvider``, and ``Tool``.
 
 Import Statements
 -----------------
@@ -25,17 +25,17 @@ Import Statements
    import logging
    from typing import List, Optional
    from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
-   from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
+   from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
    from automata.core.tools.tool import Tool
    from automata.core.code_handling.py.writer import PyWriter
    from automata.core.llm.providers.available import LLMPlatforms
-   from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAITool
+   from automata.core.llm.providers.openai import OpenAIAgentToolkitProvider, OpenAITool
 
 Related Symbols
 ---------------
 
 -  ``automata.core.code_handling.py.writer.PyWriter``
--  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkitProvider``
 -  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_py_writer_tool.test_init``
 -  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``

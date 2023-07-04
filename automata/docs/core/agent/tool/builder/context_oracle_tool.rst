@@ -19,7 +19,7 @@ Key related symbols include: -
 ``automata.core.symbol_embedding.similarity.SymbolSimilarity`` -
 ``automata.core.tools.tool.Tool`` -
 ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
-- ``automata.core.agent.agent.AgentToolkit`` -
+- ``automata.core.agent.agent.AgentToolkitProvider`` -
 ``automata.core.agent.agent.AgentToolkitNames`` -
 ``automata.core.tools_tool_utils.AgentToolFactory``
 

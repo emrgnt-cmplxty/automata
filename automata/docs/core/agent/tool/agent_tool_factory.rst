@@ -17,7 +17,7 @@ Related Symbols
 -  ``automata.core.agent.agent.AgentToolkitNames``
 -  ``automata.core.tools.tool.Tool``
 -  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkitProvider``
 -  ``automata.core.experimental.search.symbol_search.SymbolSearch``
 -  ``automata.core.agent.error.UnknownToolError``
 

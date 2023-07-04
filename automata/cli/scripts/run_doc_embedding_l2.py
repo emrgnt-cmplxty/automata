@@ -16,7 +16,7 @@ from automata.core.retrievers.py.context import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
@@ -69,7 +69,7 @@ def setup(**kwargs):
     graph_symbols = symbol_graph.get_all_supported_symbols()
     embedding_symbols = code_embedding_handler.get_all_supported_symbols()
     supported_symbols = set(graph_symbols).intersection(set(embedding_symbols))
-    filter_graph_by_symbols(symbol_graph.rankable_subgraph, supported_symbols)
+    filter_digraph_by_symbols(symbol_graph.default_rankable_subgraph, supported_symbols)
 
     return {
         "embedding_handler": embedding_handler,

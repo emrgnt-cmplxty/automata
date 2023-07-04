@@ -4,7 +4,7 @@ import pytest
 
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.code_handling.py.writer import PyWriter
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.tasks.base import Task, TaskStatus
 from automata.core.tasks.executor import AutomataTaskExecutor, ITaskExecution
 from automata.core.utils import get_root_py_fpath

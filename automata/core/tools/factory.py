@@ -29,7 +29,7 @@ class AgentToolFactory:
     @staticmethod
     def create_tools_from_builder(agent_tool: AgentToolkitNames, **kwargs) -> Sequence[Tool]:
         """Uses the Builder Registry to create tools from a given agent tool name."""
-        from automata.core.tools.registries import (  # import here for easy mocking
+        from automata.core.singletons.toolkit_registries import (  # import here for easy mocking
             OpenAIAutomataAgentToolkitRegistry,
         )
 

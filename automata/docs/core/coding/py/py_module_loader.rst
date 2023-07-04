@@ -31,7 +31,7 @@ The following example demonstrates how to initialize and use
 
 .. code:: python
 
-   from automata.core.singletons.module_loader import PyModuleLoader
+   from automata.core.singletons.py_module_loader import PyModuleLoader
    from automata.core.utils import get_root_fpath, get_root_py_fpath
 
    # Initialize PyModuleLoader

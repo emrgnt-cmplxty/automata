@@ -4,7 +4,7 @@ PyReaderOpenAIToolkit
 ``PyReaderOpenAIToolkit`` is a class for building OpenAI tools to
 interact with the Python code reading functionality provided by the
 ``PyReader`` class. It is part of the Automata framework for AI-driven
-tool development. The class inherits from ``OpenAIAgentToolkit``,
+tool development. The class inherits from ``OpenAIAgentToolkitProvider``,
 providing methods that build tools in a format compatible with the
 OpenAI platform.
 
@@ -21,7 +21,7 @@ Related Symbols
 
 -  ``automata.core.tools.builders.py_reader.PyReaderToolkit``
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkitProvider``
 -  ``automata.core.tools.registries.OpenAIAutomataAgentToolkitRegistry``
 -  ``automata.core.code_handling.py.reader.PyReader``
 

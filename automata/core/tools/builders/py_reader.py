@@ -2,18 +2,17 @@ import logging
 from typing import List, Optional
 
 from automata.config.base import LLMProvider
-from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
-from automata.core.agent.providers import OpenAIAgentToolkit
+from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
+from automata.core.agent.providers import OpenAIAgentToolkitProvider
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.llm.providers.openai import OpenAITool
-from automata.core.singletons.module_loader import NO_RESULT_FOUND_STR
 from automata.core.tools.base import Tool
-from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
+from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
 
 logger = logging.getLogger(__name__)
 
 
-class PyReaderToolkit(AgentToolkit):
+class PyReaderToolkit(AgentToolkitProvider):
     """
     A class for interacting with the PythonIndexer API,
     which provides functionality to retrieve python code.
@@ -31,7 +30,7 @@ class PyReaderToolkit(AgentToolkit):
                 function=self._run_indexer_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given python path, without docstrings."
-                f' If no match is found, then "{NO_RESULT_FOUND_STR}" is returned.\n\n'
+                f' If no match is found, then "{PyReader.NO_RESULT_FOUND_STR}" is returned.\n\n'
                 f'For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory,'
                 f"then the correct tool input is:\n"
                 f'arguments: {{"module_path": "my_file", "object_path": "my_file"}}'
@@ -93,7 +92,7 @@ class PyReaderToolkit(AgentToolkit):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class PyReaderOpenAIToolkit(PyReaderToolkit, OpenAIAgentToolkit):
+class PyReaderOpenAIToolkit(PyReaderToolkit, OpenAIAgentToolkitProvider):
     TOOL_TYPE = AgentToolkitNames.PY_READER
     PLATFORM = LLMProvider.OPENAI
 

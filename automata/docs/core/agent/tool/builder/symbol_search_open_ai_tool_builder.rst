@@ -2,7 +2,7 @@ SymbolSearchOpenAIToolkit
 =============================
 
 ``SymbolSearchOpenAIToolkit`` is a concrete implementation of
-``OpenAIAgentToolkit`` that provides tools for symbol search related
+``OpenAIAgentToolkitProvider`` that provides tools for symbol search related
 functions. The builder generates tools that interact with
 ``SymbolSearch`` to perform exact symbol search, symbol ranking, source
 code retrieval, and symbol references retrieval.
@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.core.tools.tool.Tool``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 -  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkit``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkitProvider``
 
 Example
 -------

@@ -1,15 +1,15 @@
-OpenAIAgentToolkit
+OpenAIAgentToolkitProvider
 ======================
 
-``OpenAIAgentToolkit`` is an abstract class for building tools for
-providers. It provides a base class for creating ``AgentToolkit``
+``OpenAIAgentToolkitProvider`` is an abstract class for building tools for
+providers. It provides a base class for creating ``AgentToolkitProvider``
 implementations that work with providers that use OpenAI APIs (e.g.,
 GPT-3).
 
 Overview
 --------
 
-``OpenAIAgentToolkit`` inherits from ``AgentToolkit`` and
+``OpenAIAgentToolkitProvider`` inherits from ``AgentToolkitProvider`` and
 introduces an abstract method ``build_for_open_ai`` which needs to be
 implemented by any concrete subclasses. This method should return a list
 of ``OpenAITool`` instances, which are specialized versions of the
@@ -18,7 +18,7 @@ of ``OpenAITool`` instances, which are specialized versions of the
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkitProvider``
 -  ``automata.core.llm.providers.openai.OpenAITool``
 -  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
 -  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
@@ -29,13 +29,13 @@ Example
 -------
 
 The following example demonstrates how to create a custom
-``OpenAIAgentToolkit`` implementation.
+``OpenAIAgentToolkitProvider`` implementation.
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAITool
+   from automata.core.llm.providers.openai import OpenAIAgentToolkitProvider, OpenAITool
 
-   class MyOpenAIToolkit(OpenAIAgentToolkit):
+   class MyOpenAIToolkit(OpenAIAgentToolkitProvider):
        TOOL_TYPE = "custom_tool"
 
        def build_for_open_ai(self) -> List[OpenAITool]:
@@ -63,7 +63,7 @@ The following example demonstrates how to create a custom
 Limitations
 -----------
 
-``OpenAIAgentToolkit`` is an abstract class and cannot be used
+``OpenAIAgentToolkitProvider`` is an abstract class and cannot be used
 directly. It must be subclassed with implementations provided for the
 ``build_for_open_ai`` method. Another limitation is the reliance on the
 specific OpenAI APIs or tools.
@@ -72,5 +72,5 @@ Follow-up Questions:
 --------------------
 
 -  What other abstract methods or properties could be included in
-   ``OpenAIAgentToolkit`` to simplify building custom
-   ``AgentToolkit`` implementations for OpenAI providers?
+   ``OpenAIAgentToolkitProvider`` to simplify building custom
+   ``AgentToolkitProvider`` implementations for OpenAI providers?

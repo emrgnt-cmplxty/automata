@@ -3,17 +3,17 @@ import textwrap
 from typing import List
 
 from automata.config.base import LLMProvider
-from automata.core.agent.agent import AgentToolkit, AgentToolkitNames
-from automata.core.agent.providers import OpenAIAgentToolkit
+from automata.core.agent.agent import AgentToolkitProvider, AgentToolkitNames
+from automata.core.agent.providers import OpenAIAgentToolkitProvider
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.tools.base import Tool
-from automata.core.tools.registries import OpenAIAutomataAgentToolkitRegistry
+from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
 
 logger = logging.getLogger(__name__)
 
 
-class ContextOracleToolkit(AgentToolkit):
+class ContextOracleToolkit(AgentToolkitProvider):
     """The ContextOracleToolkit provides tools which translate NLP queries to relevant context."""
 
     def __init__(
@@ -105,7 +105,7 @@ class ContextOracleToolkit(AgentToolkit):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class ContextOracleOpenAIToolkit(ContextOracleToolkit, OpenAIAgentToolkit):
+class ContextOracleOpenAIToolkit(ContextOracleToolkit, OpenAIAgentToolkitProvider):
     TOOL_TYPE = AgentToolkitNames.CONTEXT_ORACLE
     PLATFORM = LLMProvider.OPENAI
 

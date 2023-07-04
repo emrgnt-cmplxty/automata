@@ -3,7 +3,7 @@ ContextOracleOpenAIToolkit
 
 ``ContextOracleOpenAIToolkit`` is responsible for managing and
 building context oracle tools for OpenAI. It inherits from
-``OpenAIAgentToolkit`` and provides a method to create OpenAI
+``OpenAIAgentToolkitProvider`` and provides a method to create OpenAI
 compatible tools for use in the Automata agent. The context oracle tools
 help in searching and ranking related symbols based on the given query
 string.
@@ -22,10 +22,10 @@ context.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.AgentToolkit``
+-  ``automata.core.agent.agent.AgentToolkitProvider``
 -  ``automata.core.symbol_embedding.similarity.SymbolSimilarity``
 -  ``automata.core.llm.providers.available.LLMPlatforms``
--  ``automata.core.llm.providers.openai.OpenAIAgentToolkit``
+-  ``automata.core.llm.providers.openai.OpenAIAgentToolkitProvider``
 -  ``automata.core.tools.builders.context_oracle.ContextOracleTool``
 -  ``automata.core.tools.registries.OpenAIAutomataAgentToolkitRegistry``
 
@@ -56,8 +56,8 @@ Limitations
 -----------
 
 ``ContextOracleOpenAIToolkit`` has a limitation in terms of its
-dependency on the inherited OpenAIAgentToolkit class. It relies on
-OpenAIAgentToolkit to create tools that are compatible with OpenAI
+dependency on the inherited OpenAIAgentToolkitProvider class. It relies on
+OpenAIAgentToolkitProvider to create tools that are compatible with OpenAI
 providers. Additionally, the properties and required parameters are
 predefined during the conversion process, preventing any customization
 of those values.

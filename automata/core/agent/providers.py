@@ -4,7 +4,7 @@ from typing import Dict, Final, List, Sequence
 
 from automata.config.base import ConfigCategory
 from automata.config.openai_agent import AutomataOpenAIAgentConfig
-from automata.core.agent.agent import Agent, AgentToolkit
+from automata.core.agent.agent import Agent, AgentToolkitProvider
 from automata.core.agent.error import (
     AgentDatabaseError,
     AgentGeneralError,
@@ -262,8 +262,8 @@ class OpenAIAutomataAgent(Agent):
         )
 
 
-class OpenAIAgentToolkit(AgentToolkit, ABC):
-    """OpenAIAgentToolkit is an abstract class for building tools for providers."""
+class OpenAIAgentToolkitProvider(AgentToolkitProvider, ABC):
+    """OpenAIAgentToolkitProvider is an abstract class for building OpenAI agent tools."""
 
     @abstractmethod
     def build_for_open_ai(self) -> List[OpenAITool]:
