@@ -87,6 +87,7 @@ class SymbolEmbeddingHandler(EmbeddingHandler):
         """An abstract constructor for SymbolEmbeddingHandler"""
         self.embedding_db = embedding_db
         self.embedding_builder = embedding_builder
+        self.supported_symbols = [ele.symbol for ele in self.embedding_db.get_ordered_embeddings()]
 
     @abc.abstractmethod
     def get_embedding(self, symbol: Symbol) -> Any:
@@ -97,6 +98,3 @@ class SymbolEmbeddingHandler(EmbeddingHandler):
     def process_embedding(self, symbol: Symbol) -> None:
         """An abstract method to process the embedding for a symbol"""
         pass
-
-    def get_all_supported_symbols(self) -> List[Symbol]:
-        return [embedding.symbol for embedding in self.embedding_db.get_ordered_embeddings()]

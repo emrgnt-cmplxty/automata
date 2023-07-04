@@ -1,7 +1,10 @@
+from copy import deepcopy
+import networkx as nx
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional, TypedDict, Union, cast
+from typing import Any, Dict, List, Optional, TypedDict, Union, cast, Set
+from automata.core.symbol.base import Symbol
 
 import colorlog
 import openai
@@ -48,6 +51,26 @@ def load_config(
         elif config_type == "json":
             samples_json_string = file.read()
             return json.loads(samples_json_string, object_hook=custom_decoder)
+
+
+def format_text(format_variables: Dict[str, str], input_text: str) -> str:
+    """Format expected strings into the config."""
+    for arg in format_variables:
+        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
+    return input_text
+
+
+def convert_kebab_to_snake(s: str) -> str:
+    """Convert a kebab-case string to snake_case."""
+    return s.replace("-", "_")
+
+
+def filter_graph_by_symbols(graph: nx.DiGraph, supported_symbols: Set[Symbol]) -> None:
+    """Filters a graph to only contain nodes that are in the supported_symbols set."""
+    graph_nodes = deepcopy(graph.nodes())
+    for symbol in graph_nodes:
+        if symbol not in supported_symbols:
+            graph.remove_node(symbol)
 
 
 class HandlerDict(TypedDict):
@@ -120,15 +143,3 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
-
-
-def format_text(format_variables: Dict[str, str], input_text: str) -> str:
-    """Format expected strings into the config."""
-    for arg in format_variables:
-        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
-    return input_text
-
-
-def convert_kebab_to_snake(s: str) -> str:
-    """Convert a kebab-case string to snake_case."""
-    return s.replace("-", "_")

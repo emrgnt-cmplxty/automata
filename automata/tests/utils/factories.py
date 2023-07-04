@@ -26,8 +26,7 @@ def symbol_graph_static_test() -> SymbolGraph:
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
     index_path = os.path.join(file_dir, "..", "index.scip")
-    graph = SymbolGraph(index_path)
-    return graph
+    return SymbolGraph(index_path)
 
 
 @pytest.fixture
@@ -41,19 +40,12 @@ def symbol_search_live() -> SymbolSearch:
     code_embedding_fpath = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
     )
-    code_embedding_db = JSONSymbolEmbeddingVectorDatabase(code_embedding_fpath)
     embedding_provider = OpenAIEmbeddingProvider()
-    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
-    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
 
     symbol_graph = SymbolGraph(scip_path)
 
-    symbol_code_similarity = EmbeddingSimilarityCalculator(embedding_provider)
+    embedding_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
-    symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()
-    symbol_search = SymbolSearch(
-        symbol_graph, symbol_code_similarity, symbol_rank_config, symbol_graph_subgraph
-    )
 
-    return symbol_search
+    return SymbolSearch(symbol_graph, symbol_rank_config, embedding_similarity_calculator)

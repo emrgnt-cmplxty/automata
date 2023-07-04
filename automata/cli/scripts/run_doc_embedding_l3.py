@@ -68,13 +68,11 @@ def main(*args, **kwargs) -> str:
 
     embedding_db_l3 = JSONSymbolEmbeddingVectorDatabase(embedding_path_l3)
 
-    symbol_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
+    embedding_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
-    symbol_graph_subgraph = symbol_graph.get_rankable_symbol_dependency_subgraph()
-    symbol_search = SymbolSearch(
-        symbol_graph, symbol_similarity_calculator, symbol_rank_config, symbol_graph_subgraph
-    )
+    symbol_graph_subgraph = symbol_graph.rankable_subgraph
+    symbol_search = SymbolSearch(symbol_graph, symbol_rank_config, embedding_similarity_calculator)
     py_context_retriever = PyContextRetriever(
         symbol_graph, PyContextRetrieverConfig(), embedding_db_l2
     )
@@ -86,7 +84,7 @@ def main(*args, **kwargs) -> str:
 
     embedding_handler = SymbolDocEmbeddingHandler(embedding_db_l3, symbol_doc_embedding_builder)
 
-    all_defined_symbols = symbol_graph.get_all_available_symbols()
+    all_defined_symbols = symbol_graph.get_all_supported_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
     for symbol in tqdm(filtered_symbols):
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:

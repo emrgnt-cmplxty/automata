@@ -24,6 +24,8 @@ from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
+from automata.core.embedding.base import EmbeddingHandler
+from automata.core.utils import filter_graph_by_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -310,7 +312,7 @@ class _SymbolGraphNavigator:
             if data.get("label") == "file"
         ]
 
-    def get_all_available_symbols(self) -> List[Symbol]:
+    def get_all_supported_symbols(self) -> List[Symbol]:
         return [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
@@ -441,7 +443,7 @@ class _SymbolGraphNavigator:
             return
 
         logger.info("Pre-computing bounding boxes for all rankable symbols")
-        filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
+        filtered_symbols = get_rankable_symbols(self.get_all_supported_symbols())
         from functools import partial
 
         # prepare loader_args here (replace this comment with actual code)
@@ -484,8 +486,8 @@ class SymbolGraph:
     def get_all_files(self) -> List[SymbolFile]:
         return self.navigator.get_all_files()
 
-    def get_all_available_symbols(self) -> List[Symbol]:
-        return list(set(self.navigator.get_all_available_symbols()))
+    def get_all_supported_symbols(self) -> List[Symbol]:
+        return list(set(self.navigator.get_all_supported_symbols()))
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         return self.navigator.get_symbol_dependencies(symbol)
@@ -518,7 +520,6 @@ class SymbolGraph:
     def rankable_subgraph(self) -> nx.DiGraph:
         return self._build_rankable_subgraph()
 
-    @lru_cache(maxsize=None)
     def _build_rankable_subgraph(
         self, flow_rank="bidirectional", path_filter: Optional[str] = None
     ) -> nx.DiGraph:
@@ -530,7 +531,7 @@ class SymbolGraph:
         """
         G = nx.DiGraph()
 
-        filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
+        filtered_symbols = get_rankable_symbols(self.get_all_supported_symbols())
 
         if path_filter is not None:
             filtered_symbols = [

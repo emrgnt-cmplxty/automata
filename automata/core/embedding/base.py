@@ -81,9 +81,6 @@ class EmbeddingHandler(abc.ABC):
         """An abstract method to process the embedding for a symbol"""
         pass
 
-    def get_all_supported_symbols(self) -> List[Symbol]:
-        return [embedding.symbol for embedding in self.embedding_db.get_ordered_embeddings()]
-
 
 class EmbeddingSimilarityCalculator:
     def __init__(
@@ -106,7 +103,7 @@ class EmbeddingSimilarityCalculator:
         query_embedding_array = self.embedding_provider.build_embedding_vector(query_text)
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(
-            [ele.vector for ele in ordered_embeddings], query_embedding_array
+            np.array([ele.vector for ele in ordered_embeddings]), query_embedding_array
         )
 
         similarity_dict = {

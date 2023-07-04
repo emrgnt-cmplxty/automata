@@ -25,7 +25,7 @@ class SymbolSearch:
         self,
         symbol_graph: SymbolGraph,
         symbol_rank_config: SymbolRankConfig,
-        symbol_similarity_calculator: EmbeddingSimilarityCalculator,
+        embedding_similarity_calculator: EmbeddingSimilarityCalculator,
     ) -> None:
         """
         Raises:
@@ -34,12 +34,12 @@ class SymbolSearch:
         """
 
         self.symbol_graph = symbol_graph
-        self.symbol_similarity_calculator = symbol_similarity_calculator
+        self.embedding_similarity_calculator = embedding_similarity_calculator
         self.symbol_rank = SymbolRank(symbol_graph.rankable_subgraph, config=symbol_rank_config)
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        query_vec = self.symbol_similarity_calculator.calculate_query_similarity_dict(query)
+        query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(query)
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )
@@ -101,14 +101,6 @@ class SymbolSearch:
                 if line_numbers:
                     matches[module_path] = line_numbers
         return matches
-
-    @staticmethod
-    def filter_graph(graph: nx.DiGraph, available_symbols: Set[Symbol]) -> None:
-        """Filters a graph to only contain nodes that are in the available_symbols set."""
-        graph_nodes = deepcopy(graph.nodes())
-        for symbol in graph_nodes:
-            if symbol not in available_symbols:
-                graph.remove_node(symbol)
 
     @staticmethod
     def shifted_z_score_powered(

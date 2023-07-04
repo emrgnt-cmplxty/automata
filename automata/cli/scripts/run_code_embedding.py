@@ -34,7 +34,7 @@ def main(*args, **kwargs) -> str:
 
     symbol_graph = SymbolGraph(scip_path)
 
-    all_defined_symbols = symbol_graph.get_all_available_symbols()
+    all_defined_symbols = symbol_graph.get_all_supported_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
     embedding_db = JSONSymbolEmbeddingVectorDatabase(embedding_path)

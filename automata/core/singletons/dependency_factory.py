@@ -164,14 +164,12 @@ class DependencyFactory(metaclass=Singleton):
             symbol_rank_config (SymbolRankConfig())
         """
         symbol_graph = self.get("symbol_graph")
-        symbol_code_similarity = self.get("symbol_code_similarity")
         symbol_rank_config = self.overrides.get("symbol_rank_config", SymbolRankConfig())
-        symbol_graph_subgraph = self.get("subgraph")
+        embedding_similarity_calculator = self.get("embedding_similarity_calculator")
         return SymbolSearch(
             symbol_graph,
-            symbol_code_similarity,
             symbol_rank_config,
-            symbol_graph_subgraph,
+            embedding_similarity_calculator,
         )
 
     @lru_cache()
@@ -185,6 +183,15 @@ class DependencyFactory(metaclass=Singleton):
             "py_context_retriever_config", PyContextRetrieverConfig()
         )
         return PyContextRetriever(symbol_graph, py_context_retriever_config)
+
+    @lru_cache()
+    def create_symbol_similarity_calculator(self) -> EmbeddingSimilarityCalculator:
+        """
+        Associated Keyword Args:
+            embedding_provider (OpenAIEmbedding())
+        """
+        embedding_provider = self.overrides.get("embedding_provider", OpenAIEmbeddingProvider())
+        return EmbeddingSimilarityCalculator(embedding_provider)
 
     @lru_cache()
     def create_py_reader(self) -> PyReader:
