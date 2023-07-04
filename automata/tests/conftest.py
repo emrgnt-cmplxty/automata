@@ -1,9 +1,9 @@
-import networkx as nx
 import os
 import random
 from typing import Any, Set
 from unittest.mock import MagicMock
 
+import networkx as nx
 import numpy as np
 import pytest
 
@@ -11,6 +11,7 @@ from automata.config.base import AgentConfigName
 from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.agent import AgentToolkitNames
 from automata.core.agent.providers import OpenAIAutomataAgent
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRankConfig
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.github_management.client import GitHubClient, RepositoryClient
@@ -18,7 +19,6 @@ from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbedding
 from automata.core.singletons.dependency_factory import dependency_factory
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.tasks.agent_database import AutomataTaskRegistry
 from automata.core.tasks.environment import AutomataTaskEnvironment
 from automata.core.tasks.tasks import AutomataTask
@@ -112,11 +112,7 @@ def mock_embedding():
 @pytest.fixture
 def symbol_graph_mock(mocker):
     """Mock a SymbolGraph object for cases where we don't need to test the graph itself"""
-    mock = mocker.MagicMock(spec=SymbolGraph)
-    code_subgraph_mock = mocker.MagicMock(spec=nx.DiGraph)
-    mock.default_rankable_subgraph = mocker.MagicMock()
-
-    return mock
+    return mocker.MagicMock(spec=SymbolGraph)
 
 
 @pytest.fixture

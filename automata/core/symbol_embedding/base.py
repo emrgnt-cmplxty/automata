@@ -1,17 +1,11 @@
 import abc
-from typing import Any, List, Optional, Set
+from typing import Any, List, Optional
 
 import numpy as np
 
 from automata.core.base.database.vector import JSONVectorDatabase
-from automata.core.embedding.base import (
-    Embedding,
-    EmbeddingBuilder,
-    EmbeddingHandler,
-    EmbeddingVectorProvider,
-)
+from automata.core.embedding.base import Embedding, EmbeddingBuilder, EmbeddingHandler
 from automata.core.symbol.base import ISymbolProvider, Symbol
-from automata.core.utils import is_sorted
 
 
 class SymbolEmbedding(Embedding):

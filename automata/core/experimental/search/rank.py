@@ -170,9 +170,11 @@ class SymbolRank:
         if query_to_symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
         missing = set(self.graph) - set(query_to_symbol_similarity)
+        print("len(self.graph) = ", len(self.graph))
+        print("len(set(query_to_symbol_similarity)) = ", len(set(query_to_symbol_similarity)))
         if missing:
             raise NetworkXError(
-                f"query_to_symbol_similarity dictionary must have a value for every node. Missing nodes {missing}"
+                f"query_to_symbol_similarity dictionary must have a value for every node. Missing {len(missing)} nodes."
             )
         s = sum(query_to_symbol_similarity.values())
         return {k: v / s for k, v in query_to_symbol_similarity.items()}

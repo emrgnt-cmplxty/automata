@@ -1,19 +1,18 @@
-from functools import partial
 import logging
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
+from functools import lru_cache, partial
 from time import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict  # type: ignore
 from tqdm import tqdm
-from functools import lru_cache
 
 from automata.config import MAX_WORKERS
 from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import (
+    ISymbolProvider,
     Symbol,
     SymbolDescriptor,
     SymbolReference,
@@ -24,9 +23,7 @@ from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
-from automata.core.embedding.base import EmbeddingHandler
-from automata.core.utils import filter_multi_digraph_by_symbols, filter_digraph_by_symbols
-from automata.core.symbol.base import ISymbolProvider
+from automata.core.utils import filter_multi_digraph_by_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -513,6 +510,8 @@ class SymbolGraph(ISymbolProvider):
         contains only rankable symbols. The nodes in the subgraph
         are rankable symbols, and the edges are the dependencies
         between them.
+
+        TODO - Think of how to handle relationships here.
         """
         G = nx.DiGraph()
 
@@ -528,12 +527,12 @@ class SymbolGraph(ISymbolProvider):
         logger.info("Building the rankable symbol subgraph...")
         for symbol in tqdm(filtered_symbols):
             try:
-                dependencies = self.get_symbol_dependencies(symbol)
-                relationships = self.get_symbol_relationships(symbol)
-                filtered_related_symbols = get_rankable_symbols(
-                    list(dependencies.union(relationships))
-                )
-                for dependency in filtered_related_symbols:
+                dependencies = [
+                    ele
+                    for ele in self.get_symbol_dependencies(symbol)
+                    if ele in self.get_sorted_supported_symbols()
+                ]
+                for dependency in dependencies:
                     if flow_rank == "to_dependents":
                         G.add_edge(symbol, dependency)
                     elif flow_rank == "from_dependents":
@@ -550,6 +549,7 @@ class SymbolGraph(ISymbolProvider):
                 logger.error(f"Error processing {symbol.uri}: {e}")
 
         logger.info("Built the rankable symbol subgraph")
+        print("len(G) = ", len(G))
 
         return G
 

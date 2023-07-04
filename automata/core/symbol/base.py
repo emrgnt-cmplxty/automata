@@ -2,7 +2,7 @@ import abc
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple, Set, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto  # type: ignore
 

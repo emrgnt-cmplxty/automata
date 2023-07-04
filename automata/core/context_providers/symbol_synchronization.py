@@ -1,5 +1,6 @@
-from automata.core.symbol.base import Symbol, ISymbolProvider
-from typing import List, Type, Set
+from typing import List, Set
+
+from automata.core.symbol.base import ISymbolProvider, Symbol
 
 
 class SymbolProviderRegistry:

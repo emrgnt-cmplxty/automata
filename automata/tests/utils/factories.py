@@ -3,6 +3,7 @@ import os
 import pytest
 
 from automata.config.base import ConfigCategory
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRankConfig
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
@@ -10,7 +11,6 @@ from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbedding
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.utils import get_config_fpath
 
 

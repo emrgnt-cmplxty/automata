@@ -13,8 +13,10 @@ from automata.core.experimental.search.symbol_search import (
     SymbolSearch,
 )
 from automata.core.llm.providers.openai import OpenAITool
+from automata.core.singletons.toolkit_registries import (
+    OpenAIAutomataAgentToolkitRegistry,
+)
 from automata.core.tools.base import Tool
-from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
 
 
 class SearchTool(Enum):

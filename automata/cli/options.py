@@ -24,8 +24,13 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which index file to use for the embedding modifications.",
         ),
         click.option(
-            "--embedding-file",
+            "--code-embedding-file",
             default="symbol_code_embedding.json",
+            help="Which embedding file to save to.",
+        ),
+        click.option(
+            "--doc-embedding-file",
+            default="symbol_doc_embedding_l3.json",
             help="Which embedding file to save to.",
         ),
     ]

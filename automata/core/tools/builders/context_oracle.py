@@ -5,12 +5,14 @@ from typing import List
 from automata.config.base import LLMProvider
 from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.core.agent.providers import OpenAIAgentToolkitBuilder
-from automata.core.llm.providers.openai import OpenAITool
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
-from automata.core.tools.base import Tool
-from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+from automata.core.llm.providers.openai import OpenAITool
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.core.singletons.toolkit_registries import (
+    OpenAIAutomataAgentToolkitRegistry,
+)
+from automata.core.tools.base import Tool
 
 logger = logging.getLogger(__name__)
 

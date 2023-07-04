@@ -1,18 +1,19 @@
 from copy import deepcopy
-import networkx as nx
-from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-import numpy as np
-from automata.core.symbol_embedding.base import (
-    SymbolCodeEmbedding,
-    JSONSymbolEmbeddingVectorDatabase,
-)
 from unittest.mock import MagicMock
-from automata.core.embedding.base import EmbeddingBuilder
+
+import networkx as nx
+import numpy as np
 
 from automata.core.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
-from automata.tests.utils.factories import symbol_graph_static_test  # noqa: F401
+from automata.core.embedding.base import EmbeddingBuilder
+from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.core.symbol_embedding.base import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+)
+from automata.tests.utils.factories import symbol_graph_static_test  # noqa: F811
 
 
 def test_build_graph_and_handler_and_synchronize(
@@ -50,7 +51,9 @@ def test_build_graph_and_handler_and_synchronize(
     symbol_graph_tester.navigator._graph = G
 
     with SymbolProviderSynchronizationContext() as synchronization_context:
-        from automata.core.context_providers.symbol_synchronization import SymbolProviderRegistry
+        from automata.core.context_providers.symbol_synchronization import (
+            SymbolProviderRegistry,
+        )
 
         SymbolProviderRegistry._providers = set([])
         SymbolProviderRegistry.sorted_supported_symbols = []

@@ -1,17 +1,14 @@
-from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import networkx as nx
 import numpy as np
 
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import Symbol, SymbolReference
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.symbol_utils import convert_to_fst_object
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
-
 from automata.core.symbol_embedding.base import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
@@ -39,9 +36,16 @@ class SymbolSearch:
         self.symbol_graph = symbol_graph
         self.embedding_similarity_calculator = embedding_similarity_calculator
         self.search_embedding_handler = search_embedding_handler
-        self.symbol_rank = SymbolRank(
-            symbol_graph.default_rankable_subgraph, config=symbol_rank_config
-        )
+        self.symbol_rank_config = symbol_rank_config
+        self._symbol_rank = None  # Create a placeholder for the lazy loaded SymbolRank
+
+    @property
+    def symbol_rank(self):
+        if self._symbol_rank is None:
+            self._symbol_rank = SymbolRank(
+                self.symbol_graph.default_rankable_subgraph, config=self.symbol_rank_config
+            )
+        return self._symbol_rank
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""

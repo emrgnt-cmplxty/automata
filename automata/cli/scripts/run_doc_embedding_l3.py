@@ -4,6 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRankConfig
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.providers.openai import (
@@ -25,7 +26,6 @@ from automata.core.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,
 )
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,9 @@ def main(*args, **kwargs) -> str:
     code_embedding_db = JSONSymbolEmbeddingVectorDatabase(code_embedding_fpath)
     embedding_provider = OpenAIEmbeddingProvider()
     embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
-    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
+    symbol_code_embedding_handler = SymbolCodeEmbeddingHandler(
+        code_embedding_db, embedding_builder
+    )
 
     # TODO - Add option for the user to modify l2 & l3  embedding path in commands.py
     embedding_path_l2 = os.path.join(
@@ -71,8 +73,12 @@ def main(*args, **kwargs) -> str:
     embedding_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
 
     symbol_rank_config = SymbolRankConfig()
-    symbol_graph_subgraph = symbol_graph.default_rankable_subgraph
-    symbol_search = SymbolSearch(symbol_graph, symbol_rank_config, embedding_similarity_calculator)
+    symbol_search = SymbolSearch(
+        symbol_graph,
+        symbol_rank_config,
+        symbol_code_embedding_handler,
+        embedding_similarity_calculator,
+    )
     py_context_retriever = PyContextRetriever(
         symbol_graph, PyContextRetrieverConfig(), embedding_db_l2
     )

@@ -151,10 +151,8 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             symbol_rank_config (SymbolRankConfig())
         """
-        subgraph = self.get("subgraph")
-        return SymbolRank(
-            subgraph.graph, self.overrides.get("symbol_rank_config", SymbolRankConfig())
-        )
+        subgraph: nx.DiGraph = self.get("symbol_graph")
+        return SymbolRank(subgraph, self.overrides.get("symbol_rank_config", SymbolRankConfig()))
 
     @lru_cache()
     def create_symbol_code_embedding_handler(self) -> SymbolCodeEmbeddingHandler:

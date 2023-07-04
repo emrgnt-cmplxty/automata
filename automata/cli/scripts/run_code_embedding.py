@@ -4,17 +4,12 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.context_providers.symbol_synchronization import (
-    SymbolProviderSynchronizationContext,
-)
 from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.singletons.dependency_factory import dependency_factory
 from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
-from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
-from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
 from automata.core.utils import get_config_fpath
 
 logger = logging.getLogger(__name__)
@@ -33,7 +28,7 @@ def main(*args, **kwargs) -> str:
     code_embedding_fpath = os.path.join(
         get_config_fpath(),
         ConfigCategory.SYMBOL.value,
-        kwargs.get("embedding-file", "symbol_code_embedding.json"),
+        kwargs.get("code-embedding-file", "symbol_code_embedding.json"),
     )
     embedding_provider = OpenAIEmbeddingProvider()
 
@@ -57,11 +52,11 @@ def main(*args, **kwargs) -> str:
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
     for symbol in tqdm(filtered_symbols):
-        # try:
-        symbol_code_embedding_handler.process_embedding(symbol)
-        symbol_code_embedding_handler.embedding_db.save()
-    # except Exception as e:
-    # logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
+        try:
+            symbol_code_embedding_handler.process_embedding(symbol)
+            symbol_code_embedding_handler.embedding_db.save()
+        except Exception as e:
+            logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
 
     # for symbol in symbol_code_embedding_handler.get_sorted_supported_symbols():
     #     if symbol not in filtered_symbols:

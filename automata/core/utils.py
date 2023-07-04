@@ -1,14 +1,15 @@
-from copy import deepcopy
-import networkx as nx
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional, TypedDict, Union, cast, Set
-from automata.core.symbol.base import Symbol
+from copy import deepcopy
+from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
 import colorlog
+import networkx as nx
 import openai
 import yaml
+
+from automata.core.symbol.base import Symbol
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:

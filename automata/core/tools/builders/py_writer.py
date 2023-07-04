@@ -6,8 +6,10 @@ from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 from automata.core.code_handling.py.writer import PyWriter
 from automata.core.llm.providers.openai import OpenAITool
+from automata.core.singletons.toolkit_registries import (
+    OpenAIAutomataAgentToolkitRegistry,
+)
 from automata.core.tools.base import Tool
-from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
 
 logger = logging.getLogger(__name__)
 
