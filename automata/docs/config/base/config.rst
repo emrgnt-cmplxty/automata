@@ -28,7 +28,7 @@ Example
 
 The following example demonstrates how the ``AgentConfig.Config`` class
 is implemented within the ``AgentConfig`` class. In this case, we are
-using the ``AutomataOpenAIAgentConfig`` subclass, which inherits the
+using the ``OpenAIAutomataAgentConfig`` subclass, which inherits the
 properties from the ``AgentConfig`` class.
 
 .. code:: python
@@ -36,7 +36,7 @@ properties from the ``AgentConfig`` class.
    from automata.config.base import AgentConfig, LLMProvider
    from pydantic import BaseModel
 
-   class AutomataOpenAIAgentConfig(AgentConfig, BaseModel):
+   class OpenAIAutomataAgentConfig(AgentConfig, BaseModel):
        class Config:
            arbitrary_types_allowed = True
            provider = LLMProvider.OPENAI

@@ -10,7 +10,7 @@ Overview
 --------
 
 ``SymbolSimilarity`` is built using a ``SymbolEmbeddingHandler``
-instance to manage symbol embeddings and an ``EmbeddingProvider`` to
+instance to manage symbol embeddings and an ``EmbeddingVectorProvider`` to
 generate embeddings for query texts. It is capable of computing
 similarity scores using different norm types (specified by the optional
 ``norm_type`` parameter).
@@ -24,7 +24,7 @@ Related Symbols
 ---------------
 
 -  ``automata.core.llm.core.SymbolEmbeddingHandler``
--  ``automata.core.llm.core.EmbeddingProvider``
+-  ``automata.core.llm.core.EmbeddingVectorProvider``
 -  ``automata.core.llm.core.EmbeddingNormType``
 -  ``automata.core.symbol.base.Symbol``
 
@@ -40,15 +40,15 @@ given query text.
    import numpy as np
    from automata.core.llm.core import (
        SymbolEmbeddingHandler,
-       EmbeddingProvider,
+       EmbeddingVectorProvider,
        EmbeddingNormType,
        SymbolSimilarity,
    )
    from automata.core.symbol.base import Symbol
 
-   # Create a mock SymbolEmbeddingHandler and EmbeddingProvider
+   # Create a mock SymbolEmbeddingHandler and EmbeddingVectorProvider
    symbol_embedding_handler = SymbolEmbeddingHandler(...)
-   embedding_provider = EmbeddingProvider(...)
+   embedding_provider = EmbeddingVectorProvider(...)
 
    # Instantiate SymbolSimilarity
    symbol_similarity = SymbolSimilarity(
@@ -65,7 +65,7 @@ Limitations
 -----------
 
 ``SymbolSimilarity`` relies on the ``SymbolEmbeddingHandler`` and
-``EmbeddingProvider`` being properly set up with the correct embeddings
+``EmbeddingVectorProvider`` being properly set up with the correct embeddings
 and data. If the embeddings used by these classes are of low quality or
 not appropriate for the compared symbols, the similarity calculation may
 not provide useful results. Additionally, the class assumes that the

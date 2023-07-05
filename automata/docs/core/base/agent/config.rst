@@ -36,11 +36,11 @@ The following example demonstrates how to create and run an instance of
 .. code:: python
 
    from automata.core.agent.instances import AutomataOpenAIAgentInstance
-   from automata.core.agent.config import AutomataOpenAIAgentConfig
+   from automata.core.agent.config import OpenAIAutomataAgentConfig
    from automata.core.agent.config_config_enums import AgentConfigName
 
    config_name = AgentConfigName.TEST
-   config = AutomataOpenAIAgentConfig.load(config_name)
+   config = OpenAIAutomataAgentConfig.load(config_name)
    instructions = "This is a test."
 
    agent_instance = AutomataOpenAIAgentInstance.create(config_name)

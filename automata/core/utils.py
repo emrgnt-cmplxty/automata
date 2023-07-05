@@ -1,11 +1,15 @@
 import json
 import logging
 import os
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
 import colorlog
+import networkx as nx
 import openai
 import yaml
+
+from automata.core.symbol.base import Symbol
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:
@@ -48,6 +52,36 @@ def load_config(
         elif config_type == "json":
             samples_json_string = file.read()
             return json.loads(samples_json_string, object_hook=custom_decoder)
+
+
+def format_text(format_variables: Dict[str, str], input_text: str) -> str:
+    """Format expected strings into the config."""
+    for arg in format_variables:
+        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
+    return input_text
+
+
+def convert_kebab_to_snake(s: str) -> str:
+    """Convert a kebab-case string to snake_case."""
+    return s.replace("-", "_")
+
+
+def filter_digraph_by_symbols(graph: nx.DiGraph, sorted_supported_symbols: List[Symbol]) -> None:
+    """Filters a digraph to only contain nodes that are in the sorted_supported_symbols set."""
+    graph_nodes = deepcopy(graph.nodes())
+    for symbol in graph_nodes:
+        if symbol not in sorted_supported_symbols:
+            graph.remove_node(symbol)
+
+
+def filter_multi_digraph_by_symbols(
+    graph: nx.MultiDiGraph, sorted_supported_symbols: List[Symbol], label="symbol"
+) -> None:
+    """Filters a multi digraph to only contain nodes that are in the sorted_supported_symbols set."""
+    graph_nodes_and_data = deepcopy(graph.nodes(data=True))
+    for node, data in graph_nodes_and_data:
+        if data.get("label") == "symbol" and node not in sorted_supported_symbols:
+            graph.remove_node(node)
 
 
 class HandlerDict(TypedDict):
@@ -122,13 +156,5 @@ def get_logging_config(
     return cast(dict[str, Any], logging_config)
 
 
-def format_text(format_variables: Dict[str, str], input_text: str) -> str:
-    """Format expected strings into the config."""
-    for arg in format_variables:
-        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
-    return input_text
-
-
-def convert_kebab_to_snake(s: str) -> str:
-    """Convert a kebab-case string to snake_case."""
-    return s.replace("-", "_")
+def is_sorted(lst):
+    return all(a <= b for a, b in zip(lst, lst[1:]))

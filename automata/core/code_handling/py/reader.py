@@ -6,7 +6,7 @@ from typing import Optional, Union
 from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
 
 from automata.core.navigation.py.navigation_utils import find_syntax_tree_node
-from automata.core.singletons.module_loader import NO_RESULT_FOUND_STR, py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]
@@ -14,6 +14,8 @@ FSTNode = Union[Node, RedBaron]
 
 class PyReader:
     """Code retriever for fetching python code"""
+
+    NO_RESULT_FOUND_STR = "No Result Found."
 
     def __init__(self) -> None:
         pass
@@ -37,7 +39,7 @@ class PyReader:
             if result:
                 return result.dumps()
 
-        return NO_RESULT_FOUND_STR
+        return PyReader.NO_RESULT_FOUND_STR
 
     def get_docstring(self, module_dotpath: str, object_path: Optional[str]) -> str:
         """
@@ -55,7 +57,7 @@ class PyReader:
         module = py_module_loader.fetch_module(module_dotpath)
         if module:
             return PyReader.get_docstring_from_node(find_syntax_tree_node(module, object_path))
-        return NO_RESULT_FOUND_STR
+        return PyReader.NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(
         self, module_dotpath: str, object_path: Optional[str]
@@ -101,7 +103,7 @@ class PyReader:
             if result:
                 _remove_docstrings(result)
                 return result.dumps()
-        return NO_RESULT_FOUND_STR
+        return PyReader.NO_RESULT_FOUND_STR
 
     @staticmethod
     def get_docstring_from_node(node: Optional[FSTNode]) -> str:
@@ -112,7 +114,7 @@ class PyReader:
             node: The FST node to get the docstring from
         """
         if not node:
-            return NO_RESULT_FOUND_STR
+            return PyReader.NO_RESULT_FOUND_STR
 
         if isinstance(node, (ClassNode, DefNode, RedBaron)):
             filtered_nodes = node.filtered()  # get rid of extra whitespace

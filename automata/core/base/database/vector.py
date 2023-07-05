@@ -40,7 +40,7 @@ class VectorDatabaseProvider(Generic[T, K]):
         pass
 
     @abc.abstractmethod
-    def get_all_entries(self) -> List[T]:
+    def get_ordered_embeddings(self) -> List[T]:
         """Abstract method to calculate the similarity between the given vector and vectors in the database."""
         pass
 

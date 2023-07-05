@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
+from functools import lru_cache, partial
 from time import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -10,11 +10,11 @@ from google.protobuf.json_format import MessageToDict  # type: ignore
 from tqdm import tqdm
 
 from automata.config import MAX_WORKERS
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import (
+    ISymbolProvider,
     Symbol,
     SymbolDescriptor,
-    SymbolFile,
     SymbolReference,
 )
 from automata.core.symbol.parser import parse_symbol
@@ -23,6 +23,7 @@ from automata.core.symbol.symbol_utils import (
     convert_to_fst_object,
     get_rankable_symbols,
 )
+from automata.core.utils import filter_multi_digraph_by_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +239,6 @@ class GraphBuilder:
         Edges are added for relationships, references, and calls between `Symbol` nodes.
         """
         for document in self.index.documents:
-            self._add_file_vertices(document)
             self._add_symbol_vertices(document)
             self._process_relationships(document)
             self._process_references(document)
@@ -246,13 +246,6 @@ class GraphBuilder:
                 self._process_caller_callee_relationships(document)
 
         return self._graph
-
-    def _add_file_vertices(self, document: Any) -> None:
-        self._graph.add_node(
-            document.relative_path,
-            file=SymbolFile(document.relative_path, occurrences=document.occurrences),
-            label="file",
-        )
 
     def _add_symbol_vertices(self, document: Any) -> None:
         for symbol_information in document.symbols:
@@ -302,17 +295,11 @@ class _SymbolGraphNavigator:
         # TODO - Find the correct way to define a bounding box
         self.bounding_box: Dict[Symbol, Any] = {}  # Default to empty bounding boxes
 
-    def get_all_files(self) -> List[SymbolFile]:
-        return [
-            data.get("file")
-            for _, data in self._graph.nodes(data=True)
-            if data.get("label") == "file"
-        ]
-
-    def get_all_available_symbols(self) -> List[Symbol]:
-        return [
+    def get_sorted_supported_symbols(self) -> List[Symbol]:
+        unsorted_symbols = [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
+        return sorted(unsorted_symbols, key=lambda x: x.dotpath)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         references_in_range = self._get_symbol_references_in_scope(symbol)
@@ -440,8 +427,7 @@ class _SymbolGraphNavigator:
             return
 
         logger.info("Pre-computing bounding boxes for all rankable symbols")
-        filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
-        from functools import partial
+        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
 
         # prepare loader_args here (replace this comment with actual code)
         if not py_module_loader.initialized:
@@ -467,29 +453,19 @@ class _SymbolGraphNavigator:
         self.bounding_box = bounding_boxes
 
 
-class SymbolGraph:
+class SymbolGraph(ISymbolProvider):
     """
     A SymbolGraph contains the symbols and relationships between them.
     Currently, nodes are files and symbols, and edges consist of either
     "contains", "reference", "relationship", "caller", or "callee".
     """
 
-    @dataclass
-    class SubGraph:
-        parent: "SymbolGraph"
-        graph: nx.DiGraph
-
     def __init__(self, index_path: str, build_caller_relationships: bool = False) -> None:
+        super().__init__()
         index = self._load_index_protobuf(index_path)
         builder = GraphBuilder(index, build_caller_relationships)
         self._graph = builder.build_graph()
         self.navigator = _SymbolGraphNavigator(self._graph)
-
-    def get_all_files(self) -> List[SymbolFile]:
-        return self.navigator.get_all_files()
-
-    def get_all_available_symbols(self) -> List[Symbol]:
-        return list(set(self.navigator.get_all_available_symbols()))
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         return self.navigator.get_symbol_dependencies(symbol)
@@ -518,18 +494,26 @@ class SymbolGraph:
     def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
         return self.navigator.get_references_to_symbol(symbol)
 
-    def get_rankable_symbol_dependency_subgraph(
-        self, flow_rank="bidirectional", path_filter: Optional[str] = None
-    ) -> SubGraph:
+    @property
+    def default_rankable_subgraph(self) -> nx.DiGraph:
+        return self._build_default_rankable_subgraph()
+
+    @lru_cache(maxsize=1)
+    def _build_default_rankable_subgraph(self) -> nx.DiGraph:
+        return self._build_rankable_subgraph()
+
+    def _build_rankable_subgraph(self, path_filter: Optional[str] = None) -> nx.DiGraph:
         """
-        Creates a `SubGraph` of the original `SymbolGraph` which
+        Creates a subgraph of the original `SymbolGraph` which
         contains only rankable symbols. The nodes in the subgraph
         are rankable symbols, and the edges are the dependencies
         between them.
+
+        TODO - Think of how to handle relationships here.
         """
         G = nx.DiGraph()
 
-        filtered_symbols = get_rankable_symbols(self.get_all_available_symbols())
+        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
 
         if path_filter is not None:
             filtered_symbols = [
@@ -541,30 +525,27 @@ class SymbolGraph:
         logger.info("Building the rankable symbol subgraph...")
         for symbol in tqdm(filtered_symbols):
             try:
-                dependencies = self.get_symbol_dependencies(symbol)
-                relationships = self.get_symbol_relationships(symbol)
-                filtered_related_symbols = get_rankable_symbols(
-                    list(dependencies.union(relationships))
-                )
-                for dependency in filtered_related_symbols:
-                    if flow_rank == "to_dependents":
-                        G.add_edge(symbol, dependency)
-                    elif flow_rank == "from_dependents":
-                        G.add_edge(dependency, symbol)
-                    elif flow_rank == "bidirectional":
-                        G.add_edge(symbol, dependency)
-                        G.add_edge(dependency, symbol)
-                    else:
-                        raise ValueError(
-                            "flow_rank must be one of 'to_dependents', 'from_dependents', or 'bidirectional'"
-                        )
-
+                dependencies = [
+                    ele
+                    for ele in self.get_symbol_dependencies(symbol)
+                    if ele in self.get_sorted_supported_symbols()
+                ]
+                for dependency in dependencies:
+                    G.add_edge(symbol, dependency)
+                    G.add_edge(dependency, symbol)
             except Exception as e:
                 logger.error(f"Error processing {symbol.uri}: {e}")
 
         logger.info("Built the rankable symbol subgraph")
+        return G
 
-        return SymbolGraph.SubGraph(graph=G, parent=self)
+    # ISymbolProvider methods
+    def _get_sorted_supported_symbols(self) -> List[Symbol]:
+        return self.navigator.get_sorted_supported_symbols()
+
+    def filter_symbols(self, sorted_supported_symbols: List[Symbol]):
+        if self._graph:
+            filter_multi_digraph_by_symbols(self._graph, sorted_supported_symbols)
 
     @staticmethod
     def _load_index_protobuf(path: str) -> Index:

@@ -36,12 +36,12 @@ SR_SEARCHES_TO_HITS = {
         "AutomataAgentConfigBuilder",
         "AutomataInstance",
     ],
-    "SymbolGraph": ["SymbolGraph", "Symbol", "SubGraph", "GraphBuilder", "SymbolSearch"],
+    "SymbolGraph": ["SymbolGraph", "Symbol", "GraphBuilder", "SymbolSearch"],
     "Embedding": [
         "SymbolEmbedding",
         "SymbolDocEmbedding",
         "SymbolCodeEmbedding",
-        "EmbeddingProvider",
+        "EmbeddingVectorProvider",
         "SymbolCodeEmbeddingHandler",
         "SymbolDocEmbeddingHandler",
     ],
@@ -112,7 +112,7 @@ SOURCE_CODE_HITS = {
 
 @pytest.mark.regression
 def test_source_code_retrieval(symbol_search_live):  # noqa : F811
-    symbols = symbol_search_live.symbol_graph.get_all_available_symbols()
+    symbols = symbol_search_live.symbol_graph.get_sorted_supported_symbols()
 
     for search in SOURCE_CODE_HITS:
         symbol = [symbol for symbol in symbols if search[:-1] == symbol.descriptors[-1].name][0]

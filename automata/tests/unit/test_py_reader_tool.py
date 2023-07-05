@@ -4,9 +4,9 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.core.code_handling.py.reader import PyReader
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.tools.base import Tool
-from automata.core.tools.builders.py_reader import PyReaderToolkit
+from automata.core.tools.builders.py_reader import PyReaderToolkitBuilder
 from automata.core.utils import get_root_py_fpath
 
 
@@ -26,7 +26,7 @@ def module_loader():
 @pytest.fixture
 def python_retriever_tool_builder():
     python_code_retriever = PyReader()
-    return PyReaderToolkit(py_reader=python_code_retriever)
+    return PyReaderToolkitBuilder(py_reader=python_code_retriever)
 
 
 def test_init(python_retriever_tool_builder):

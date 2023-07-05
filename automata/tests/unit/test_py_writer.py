@@ -17,7 +17,7 @@ from redbaron import (
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.code_handling.py.writer import PyWriter
 from automata.core.navigation.py.navigation_utils import find_syntax_tree_node
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 
 
 class MockCodeGenerator:

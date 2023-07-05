@@ -3,11 +3,11 @@ from typing import List
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.config.base import AgentConfigName
-from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.github_management.client import GitHubClient
 from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_ISSUES_PROMPT_PREFIX = """Provide a comprehensive explanation and full code implementation (in Markdown) which address the Github issue(s) that follow:"""
 
 DEFAULT_ISSUES_PROMPT_SUFFIX = """You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. If you are tasked with writing code, then keep to the SOLID Principles Further, pay special attention to Dependency Inversion Principle and Dependency Injection."""
-# Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
 
 
 def process_issues(issue_numbers: List[int], github_manager: GitHubClient) -> List[str]:
@@ -63,7 +62,7 @@ def main(*args, **kwargs):
     logger.info("Done building tools...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata-main"))
     agent_config = (
-        AutomataOpenAIAgentConfigBuilder.from_name(config_name)
+        OpenAIAutomataAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)
         .with_model(kwargs.get("model", "gpt-4-0613"))
         .build()

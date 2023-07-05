@@ -41,7 +41,7 @@ and retrieving vectors associated with symbols.
 
    # Add a SymbolEmbedding to the database
    symbol = Symbol.from_string("example.Symbol#")
-   embedding = SymbolEmbedding(symbol, "embedding_source", [0.1, 0.2, 0.3])
+   embedding = SymbolEmbedding(symbol, "input_object", [0.1, 0.2, 0.3])
    vector_db.add(embedding)
 
    # Check if the symbol exists in the database

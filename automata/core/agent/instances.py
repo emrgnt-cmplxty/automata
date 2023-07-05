@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict
 from pydantic import BaseModel
 
 from automata.config.base import AgentConfigName
-from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.agent import AgentInstance
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ class OpenAIAutomataAgentInstance(AgentInstance, BaseModel):
         Raises:
             Exception: If any error occurs during agent execution.
         """
-        config = AutomataOpenAIAgentConfigBuilder.create_from_args(
+        config = OpenAIAutomataAgentConfigBuilder.create_from_args(
             config_to_load=self.config_name, **self.kwargs
         )
 

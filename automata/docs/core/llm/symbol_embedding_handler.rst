@@ -38,11 +38,11 @@ specific symbol.
    from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
    from automata.core.symbol.base import Symbol
    from automata.core.base.database.vector import JSONEmbeddingVectorDatabase
-   from automata.core.memory_store.embedding_provider import EmbeddingProvider
+   from automata.core.memory_store.embedding_provider import EmbeddingVectorProvider
 
    # Create instances for the database and embedding provider
    embedding_db = JSONEmbeddingVectorDatabase(database_filename)
-   embedding_provider = EmbeddingProvider()
+   embedding_provider = EmbeddingVectorProvider()
 
    # Create a SymbolCodeEmbeddingHandler instance
    code_embedding_handler = SymbolCodeEmbeddingHandler(

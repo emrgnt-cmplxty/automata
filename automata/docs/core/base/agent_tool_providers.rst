@@ -24,8 +24,8 @@ Related Symbols
 -  ``automata.core.llm.foundation.LLMIterationResult``
 -  ``automata.core.llm.providers.available.LLMPlatforms``
 -  ``automata.core.tools.tool_utils.AgentToolFactory``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
 -  ``automata.core.tools.registries.OpenAIAutomataAgentToolkitRegistry``
 
 Example

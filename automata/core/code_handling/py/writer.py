@@ -16,7 +16,7 @@ from automata.core.navigation.py.navigation_utils import (
     find_import_syntax_tree_nodes,
     find_syntax_tree_node,
 )
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import Symbol
 from automata.core.symbol_embedding.base import SymbolDocEmbedding
 
@@ -373,7 +373,7 @@ class PyDocWriter:
 
             with open(os.path.join(new_module_dir, f"{snaked_symbol_name}.rst"), "w") as f:
                 try:
-                    doc_md_string = docs[symbol].embedding_source
+                    doc_md_string = docs[symbol].input_object
                     rst_string = pypandoc.convert_text(doc_md_string, "rst", format="md")
                     f.write(rst_string)
                 except Exception as e:

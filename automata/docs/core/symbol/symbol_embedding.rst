@@ -14,7 +14,7 @@ Overview
 The primary purpose of ``SymbolEmbedding`` and its derived classes is to
 store and manage embeddings of code symbols obtained from different
 sources. It contains methods to initialize the embeddings with a
-``Symbol`` object, an ``embedding_source``, and a ``vector``
+``Symbol`` object, an ``input_object``, and a ``vector``
 representing the actual embedding.
 
 ``SymbolEmbedding`` is the base class for more specialized embeddings

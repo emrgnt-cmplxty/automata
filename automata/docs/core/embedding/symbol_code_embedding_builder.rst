@@ -10,7 +10,7 @@ Overview
 
 The main responsibility of the ``SymbolCodeEmbeddingBuilder`` class is
 to generate embeddings from source code associated with a ``Symbol``. It
-uses an instance of an ``EmbeddingProvider`` to create these embeddings.
+uses an instance of an ``EmbeddingVectorProvider`` to create these embeddings.
 
 The result of the embedding process is a ``SymbolCodeEmbedding`` object.
 This is a concrete class that holds the ``Symbol`` object, its
@@ -35,11 +35,11 @@ Below is an example demonstrating the use of the
 .. code:: python
 
    from automata.core.base.database.vector import VectorDatabaseProvider
-   from automata.core.llm.core import EmbeddingProvider, SymbolCodeEmbeddingBuilder
+   from automata.core.llm.core import EmbeddingVectorProvider, SymbolCodeEmbeddingBuilder
    from automata.core.symbol.base import Symbol, SymbolCodeEmbedding
 
    # create an instance of an embedding provider.
-   embed_provider = EmbeddingProvider()
+   embed_provider = EmbeddingVectorProvider()
 
    # create an instance of the SymbolCodeEmbeddingBuilder.
    embed_builder = SymbolCodeEmbeddingBuilder(embedding_provider=embed_provider)
@@ -63,14 +63,14 @@ Limitations
 -----------
 
 As ``SymbolCodeEmbeddingBuilder`` relies on a given
-``EmbeddingProvider``, the quality and efficiency of symbol embedding
+``EmbeddingVectorProvider``, the quality and efficiency of symbol embedding
 directly depends on the performance of the underlying
-``EmbeddingProvider``.
+``EmbeddingVectorProvider``.
 
 Follow-up Questions:
 --------------------
 
--  What variety of ``EmbeddingProvider`` derivatives can be effectively
+-  What variety of ``EmbeddingVectorProvider`` derivatives can be effectively
    integrated with ``SymbolCodeEmbeddingBuilder``?
 -  Does the length or complexity of ``source_code`` affect the
    performance of ``SymbolCodeEmbeddingBuilder``?

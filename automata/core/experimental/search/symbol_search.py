@@ -1,16 +1,15 @@
-from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import networkx as nx
 import numpy as np
 
+from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.symbol.base import Symbol, SymbolReference
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.parser import parse_symbol
 from automata.core.symbol.symbol_utils import convert_to_fst_object
-from automata.core.symbol_embedding.similarity import SymbolSimilarityCalculator
+from automata.core.symbol_embedding.base import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
@@ -24,9 +23,9 @@ class SymbolSearch:
     def __init__(
         self,
         symbol_graph: SymbolGraph,
-        symbol_code_similarity: SymbolSimilarityCalculator,
         symbol_rank_config: SymbolRankConfig,
-        code_subgraph: SymbolGraph.SubGraph,
+        search_embedding_handler: SymbolEmbeddingHandler,
+        embedding_similarity_calculator: EmbeddingSimilarityCalculator,
     ) -> None:
         """
         Raises:
@@ -34,23 +33,27 @@ class SymbolSearch:
         TODO - We should modify SymbolSearch to receive a completed instance of SymbolRank.
         """
 
-        if code_subgraph.parent != symbol_graph:
-            raise ValueError("code_subgraph must be a subgraph of symbol_graph")
-
-        graph_symbols = symbol_graph.get_all_available_symbols()
-        embedding_symbols = symbol_code_similarity.embedding_handler.get_all_supported_symbols()
-        available_symbols = set(graph_symbols).intersection(set(embedding_symbols))
-        SymbolSearch.filter_graph(code_subgraph.graph, available_symbols)
-
-        # TODO - Do we need to filter the SymbolGraph as well?
         self.symbol_graph = symbol_graph
-        self.symbol_code_similarity = symbol_code_similarity
-        symbol_code_similarity.set_available_symbols(available_symbols)
-        self.symbol_rank = SymbolRank(code_subgraph.graph, config=symbol_rank_config)
+        self.embedding_similarity_calculator = embedding_similarity_calculator
+        self.search_embedding_handler = search_embedding_handler
+        self.symbol_rank_config = symbol_rank_config
+        self._symbol_rank = None  # Create a placeholder for the lazy loaded SymbolRank
+
+    @property
+    def symbol_rank(self):
+        if self._symbol_rank is None:
+            self._symbol_rank = SymbolRank(
+                self.symbol_graph.default_rankable_subgraph, config=self.symbol_rank_config
+            )
+        return self._symbol_rank
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        query_vec = self.symbol_code_similarity.calculate_query_similarity_dict(query)
+        ordered_embeddings = self.search_embedding_handler.get_ordered_embeddings()
+
+        query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
+            ordered_embeddings, query
+        )
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, SymbolSearch.shifted_z_score_powered
         )
@@ -112,14 +115,6 @@ class SymbolSearch:
                 if line_numbers:
                     matches[module_path] = line_numbers
         return matches
-
-    @staticmethod
-    def filter_graph(graph: nx.DiGraph, available_symbols: Set[Symbol]) -> None:
-        """Filters a graph to only contain nodes that are in the available_symbols set."""
-        graph_nodes = deepcopy(graph.nodes())
-        for symbol in graph_nodes:
-            if symbol not in available_symbols:
-                graph.remove_node(symbol)
 
     @staticmethod
     def shifted_z_score_powered(

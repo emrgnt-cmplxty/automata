@@ -2,7 +2,7 @@ OpenAIEmbeddingProvider
 =======================
 
 ``OpenAIEmbeddingProvider`` is a class that provides embeddings for
-symbols using OpenAI’s API. It extends the ``EmbeddingProvider``
+symbols using OpenAI’s API. It extends the ``EmbeddingVectorProvider``
 abstract base class and implements the method ``build_embedding`` to get
 the embedding for a given symbol.
 
@@ -18,7 +18,7 @@ embedding.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.core.EmbeddingProvider``
+-  ``automata.core.llm.core.EmbeddingVectorProvider``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding_exception``
 -  ``automata.tests.unit.test_symbol_embedding.test_add_new_embedding``

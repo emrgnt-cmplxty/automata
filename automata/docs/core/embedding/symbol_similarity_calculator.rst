@@ -37,7 +37,7 @@ Usage Example
 
    from automata.core.llm.core import (
        EmbeddingNormType,
-       EmbeddingProvider,
+       EmbeddingVectorProvider,
        SymbolEmbeddingHandler,
    )
    from typing import Dict, List, Optional, Set
@@ -78,7 +78,7 @@ embeddings only. As such, it is limited by the quality and richness of
 the symbol embeddings. In particular, embeddings that do not capture the
 semantical nature of symbols will not produce meaningful similarities.
 Furthermore, the similarity calculation is conducted in a complete
-symbols space, unless ``available_symbols`` is set to constrain it.
+symbols space, unless ``supported_symbols`` is set to constrain it.
 High-dimensional embeddings or a large number of symbols might thus
 impose scalability issues.
 

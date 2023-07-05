@@ -3,30 +3,31 @@ from typing import List
 from jinja2 import Template
 
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-from automata.core.embedding.base import EmbeddingProvider
+from automata.core.code_handling.py.reader import PyReader
+from automata.core.embedding.base import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.foundation import LLMChatCompletionProvider
 from automata.core.retrievers.py.context import PyContextRetriever
 from automata.core.symbol.base import Symbol
-from automata.core.symbol_embedding.base import (
-    SymbolCodeEmbedding,
-    SymbolDocEmbedding,
-    SymbolEmbeddingBuilder,
-)
+from automata.core.symbol.symbol_utils import convert_to_fst_object
+from automata.core.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 
 
-class SymbolCodeEmbeddingBuilder(SymbolEmbeddingBuilder):
+class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` source code embeddings."""
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
-        embedding_vector = self.embedding_provider.build_embedding_array(source_code)
+        embedding_vector = self.embedding_provider.build_embedding_vector(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
 
-class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
+class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
+    """Builds `Symbol` documentation embeddings."""
+
+    # TODO - Make this class more modular and consider it's structure
     def __init__(
         self,
-        embedding_provider: EmbeddingProvider,
+        embedding_provider: EmbeddingVectorProvider,
         completion_provider: LLMChatCompletionProvider,
         symbol_search: SymbolSearch,
         retriever: PyContextRetriever,
@@ -102,7 +103,7 @@ class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
         summary = self.completion_provider.standalone_call(
             f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
         )
-        embedding = self.embedding_provider.build_embedding_array(document)
+        embedding = self.embedding_provider.build_embedding_vector(document)
 
         return SymbolDocEmbedding(
             symbol,
@@ -111,6 +112,22 @@ class SymbolDocEmbeddingBuilder(SymbolEmbeddingBuilder):
             document=document,
             summary=summary,
             context=prompt,
+        )
+
+    def build_non_class(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
+        ast_object = convert_to_fst_object(symbol)
+        raw_doctring = PyReader.get_docstring_from_node(ast_object)
+        document = f"Symbol: {symbol.dotpath}\n{raw_doctring}"
+
+        embedding = self.embedding_provider.build_embedding_vector(document)
+
+        return SymbolDocEmbedding(
+            symbol,
+            vector=embedding,
+            source_code=source_code,
+            document=document,
+            summary=document,
+            context="",
         )
 
     def generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:

@@ -12,13 +12,13 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.tests.unit.sample_modules.sample.Person``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``
--  ``automata.core.singletons.module_loader.PyModuleLoader``
+-  ``automata.core.singletons.py_module_loader.PyModuleLoader``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
 -  ``automata.core.llm.foundation.LLMChatCompletionProvider.__init__``
 -  ``automata.tests.conftest.MockRepositoryClient``
 -  ``automata.core.symbol.base.Symbol``
 -  ``automata.tests.unit.test_py_reader.getter``
--  ``automata.core.singletons.module_loader.PyModuleLoader.__init__``
+-  ``automata.core.singletons.py_module_loader.PyModuleLoader.__init__``
 
 Example
 -------

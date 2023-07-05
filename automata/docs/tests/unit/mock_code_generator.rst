@@ -27,7 +27,7 @@ Related Symbols
 -  ``automata.core.code_handling.py.writer.PyWriter``
 -  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 -  ``automata.core.tools.tool.Tool``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkit``
+-  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 
 Example
 -------

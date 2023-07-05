@@ -2,7 +2,7 @@ OpenAIAutomataAgentToolkitRegistry
 ======================================
 
 ``OpenAIAutomataAgentToolkitRegistry`` is a static registry class
-that holds a list of available ``OpenAIAgentToolkit`` classes. The
+that holds a list of available ``OpenAIAgentToolkitBuilder`` classes. The
 main purpose of this class is to keep a registry of all available tool
 builders, which can be used for creating tools to interact with OpenAI
 Automata Agents. The ``OpenAIAutomataAgentToolkitRegistry`` class
@@ -15,10 +15,10 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit``
 -  ``automata.tests.conftest.automata_agent``
 -  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkit``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_accepts_all_fields``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkit``
+-  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
 -  ``automata.core.tools.builders.py_reader.PyReaderOpenAIToolkit``
@@ -32,9 +32,9 @@ tool builder:
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIAgentToolkit, OpenAIAutomataAgentToolkitRegistry
+   from automata.core.llm.providers.openai import OpenAIAgentToolkitBuilder, OpenAIAutomataAgentToolkitRegistry
 
-   class CustomOpenAIToolkit(OpenAIAgentToolkit):
+   class CustomOpenAIToolkit(OpenAIAgentToolkitBuilder):
        def build_for_open_ai(self) -> List[OpenAITool]:
            # Implementation of the tool builder
            pass
@@ -62,5 +62,5 @@ Follow-up Questions:
 -  How does ``OpenAIAutomataAgentToolkitRegistry`` ensure that all
    available tool builders are registered properly?
 -  Is it possible to use dependency injections or any other design
-   patterns to manage ``OpenAIAgentToolkit`` classes more
+   patterns to manage ``OpenAIAgentToolkitBuilder`` classes more
    effectively?

@@ -172,7 +172,7 @@ class SymbolRank:
         missing = set(self.graph) - set(query_to_symbol_similarity)
         if missing:
             raise NetworkXError(
-                f"query_to_symbol_similarity dictionary must have a value for every node. Missing nodes {missing}"
+                f"query_to_symbol_similarity dictionary must have a value for every node. Missing {len(missing)} nodes."
             )
         s = sum(query_to_symbol_similarity.values())
         return {k: v / s for k, v in query_to_symbol_similarity.items()}

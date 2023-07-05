@@ -35,6 +35,9 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 Follow these steps to setup the Automata environment
 
 ```bash
+# Clone the repository
+git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata
+
 # Copy the env and setup files
 cp .setup.sh.example setup.sh && cp .env.example .env
 
@@ -43,7 +46,6 @@ chmod 755 setup.sh
 
 # Update the setup and env files with your local paths
 vim setup.sh
-vim .env
 
 # Run the setup script
 ./setup.sh
@@ -68,10 +70,10 @@ automata run-code-embedding
 
 # "L1" docs are the docstrings written into the code
 # "L2" docs are generated from the L1 docs + symbol context
-automata run-doc-embedding-l2
+automata run-doc-embedding --embedding-level 2
 
 # "L3" docs are generated from the L2 docs + symbol context
-automata run-doc-embedding-l3
+automata run-doc-embedding --embedding-level 3
 ```
 
 ### Run the system
@@ -83,7 +85,7 @@ The following commands illustrate how to run the system with a trivial instructi
 automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
 # Run a single agent w/ a non-trivial instruction
-automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent." --model=gpt-3.5-turbo-16k
+automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent."
 ```
 
 ---
@@ -100,14 +102,12 @@ Sometimes the best way to understand a complicated system is to start by underst
 
 ```python
 
-import logging
-from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.config.base import AgentConfigName
+from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.tools.tool_utils import AgentToolFactory
 from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.module_loader import py_module_loader
-
-logger = logging.getLogger(__name__)
+from automata.core.singletons.py_module_loader import py_module_loader
+from automata.core.tools.factory import AgentToolFactory
 
 # Initialize the module loader to the local directory
 py_module_loader.initialize()
@@ -121,7 +121,7 @@ tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
 
 # Build the agent config
 agent_config = (
-    AutomataOpenAIAgentConfigBuilder.from_name("automata-main")
+    OpenAIAutomataAgentConfigBuilder.from_name("automata-main")
     .with_tools(tools)
     .with_model("gpt-4")
     .build()

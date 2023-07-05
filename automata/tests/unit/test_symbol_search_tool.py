@@ -3,13 +3,13 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.core.tools.base import Tool
-from automata.core.tools.builders.symbol_search import SymbolSearchToolkit
+from automata.core.tools.builders.symbol_search import SymbolSearchToolkitBuilder
 
 
 @pytest.fixture
 def symbol_search_tool_builder():
     symbol_search_mock = MagicMock()
-    return SymbolSearchToolkit(symbol_search=symbol_search_mock)
+    return SymbolSearchToolkitBuilder(symbol_search=symbol_search_mock)
 
 
 def test_init(symbol_search_tool_builder):

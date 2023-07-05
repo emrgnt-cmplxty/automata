@@ -3,14 +3,14 @@ InstructionConfigVersion
 
 ``InstructionConfigVersion`` is an enumerated class that represents the
 various versions of instruction sets available for use in the
-``AutomataOpenAIAgentConfig`` class. It corresponds to the name of the
+``OpenAIAutomataAgentConfig`` class. It corresponds to the name of the
 YAML file in the ``automata/configs/instruction_configs`` directory.
 
 Overview
 --------
 
 This enumeration helps to identify the specific instruction version to
-be used in an ``AutomataOpenAIAgentConfig`` instance. The different
+be used in an ``OpenAIAutomataAgentConfig`` instance. The different
 versions of instructions can be managed through these enumerated values,
 allowing a user to switch between different sets of agent instructions
 easily.
@@ -18,25 +18,25 @@ easily.
 Related Symbols
 ---------------
 
--  ``automata.config.openai_agent.AutomataOpenAIAgentConfig``
+-  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``
 -  ``automata.config.base.InstructionConfigVersion``
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
 -  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
--  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder.with_instruction_version``
+-  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder.with_instruction_version``
 
 Example
 -------
 
 The following is an example demonstrating how to use the
 ``InstructionConfigVersion`` enumeration when building an
-``AutomataOpenAIAgentConfig`` instance:
+``OpenAIAutomataAgentConfig`` instance:
 
 .. code:: python
 
-   from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+   from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
    from automata.config.base import InstructionConfigVersion
 
-   config_builder = AutomataOpenAIAgentConfigBuilder()
+   config_builder = OpenAIAutomataAgentConfigBuilder()
    config = (
        config_builder.with_instruction_version(InstructionConfigVersion.AGENT_INTRODUCTION)
        .build()

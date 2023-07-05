@@ -66,7 +66,7 @@ YAML, it raises an Exception. Once the loading completes, it adds
 Inherited Classes
 -----------------
 
-The ``AutomataOpenAIAgentConfig`` is a concrete class that inherits from
+The ``OpenAIAutomataAgentConfig`` is a concrete class that inherits from
 ``AgentConfig``. This class specifies ``OPENAI`` as the ``LLMProvider``
 and allows the use of different models. It further enriches the
 configuration by defining the system template, system template
@@ -76,16 +76,16 @@ instruction.
 Example
 -------
 
-Creating a derived class ``AutomataOpenAIAgentConfig`` and using the
+Creating a derived class ``OpenAIAutomataAgentConfig`` and using the
 ``load`` method:
 
 .. code:: python
 
-       from automata.config.openai_agent import AutomataOpenAIAgentConfig
+       from automata.config.openai_agent import OpenAIAutomataAgentConfig
        from automata.config.base import AgentConfigName
        
-       config = AutomataOpenAIAgentConfig.load(AgentConfigName.DEFAULT)
-       assert isinstance(config, AutomataOpenAIAgentConfig)
+       config = OpenAIAutomataAgentConfig.load(AgentConfigName.DEFAULT)
+       assert isinstance(config, OpenAIAutomataAgentConfig)
 
 Limitations
 -----------

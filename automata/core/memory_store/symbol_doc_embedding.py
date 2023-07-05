@@ -1,6 +1,6 @@
 import logging
 
-from automata.core.symbol.base import Symbol
+from automata.core.symbol.base import Symbol, SymbolDescriptor
 from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolDocEmbedding,
@@ -19,23 +19,34 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_db: JSONSymbolEmbeddingVectorDatabase,
         embedding_builder: SymbolDocEmbeddingBuilder,
     ) -> None:
-        self.embedding_db = embedding_db
-        self.embedding_builder = embedding_builder
+        super().__init__(embedding_db, embedding_builder)
 
     def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
         return self.embedding_db.get(symbol.dotpath)
 
     def process_embedding(self, symbol: Symbol) -> None:
-        source_code = self.embedding_builder.fetch_embedding_context(symbol)
+        """
+        Process the embedding for a `Symbol` -
+        Currently we do nothing except update symbol commit hash and source code
+        if the symbol is already in the database.
+        """
+
+        source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
 
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
 
         if self.embedding_db.contains(symbol.dotpath):
             self.update_existing_embedding(source_code, symbol)
-        else:
+            return
+        if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
-            self.embedding_db.add(symbol_embedding)
+        else:
+            if not isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
+                raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
+            symbol_embedding = self.embedding_builder.build_non_class(source_code, symbol)
+
+        self.embedding_db.add(symbol_embedding)
 
     def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         existing_embedding = self.embedding_db.get(symbol.dotpath)

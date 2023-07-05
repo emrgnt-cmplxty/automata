@@ -3,7 +3,7 @@ import os
 import pytest
 
 from automata.core.code_handling.py.reader import PyReader
-from automata.core.singletons.module_loader import py_module_loader
+from automata.core.singletons.py_module_loader import py_module_loader
 
 
 @pytest.fixture(autouse=True)
@@ -54,6 +54,7 @@ def test_get_code_module(getter):
     object_path = None
     result = getter.get_source_code_without_docstrings(module_name, object_path)
     expected_match = 'import math\n\n\ndef sample_function(name):\n    return f"Hello, {name}! Sqrt(2) = " + str(math.sqrt(2))\n\n\nclass Person:\n\n    def __init__(self, name):\n        self.name = name\n\n    def say_hello(self):\n        return f"Hello, I am {self.name}."\n\n    def run(self) -> str:\n        return "run"\n\n\ndef f(x) -> int:\n    return x + 1\n\n\nclass EmptyClass:\n    pass\n\n\nclass OuterClass:\n    class InnerClass:\n\n        def inner_method(self):\n'
+
     assert result.split("\n") == expected_match.split("\n")
 
 

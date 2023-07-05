@@ -1,7 +1,7 @@
-AutomataOpenAIAgentConfig
+OpenAIAutomataAgentConfig
 =========================
 
-``AutomataOpenAIAgentConfig`` is a configuration class that helps in
+``OpenAIAutomataAgentConfig`` is a configuration class that helps in
 setting up and interacting with an ``OpenAIAutomataAgent``. It contains
 attributes such as ``config_name``, ``tools``, ``instructions``, and
 others to provide the necessary setup and settings to be used by the
@@ -10,7 +10,7 @@ agent.
 Overview
 --------
 
-``AutomataOpenAIAgentConfig`` provides a way to load agent
+``OpenAIAutomataAgentConfig`` provides a way to load agent
 configurations specified by the ``AgentConfigName``. The configuration
 options can be set during the instantiation of the class or can be
 loaded using the ``load`` classmethod. It provides utility methods to
@@ -34,20 +34,20 @@ Example
 -------
 
 The following example demonstrates how to create an instance of
-``AutomataOpenAIAgentConfig`` using a predefined configuration name.
+``OpenAIAutomataAgentConfig`` using a predefined configuration name.
 
 .. code:: python
 
-   from automata.config.openai_agent import AutomataOpenAIAgentConfig
+   from automata.config.openai_agent import OpenAIAutomataAgentConfig
    from automata.config.config_types import AgentConfigName
 
    config_name = AgentConfigName.AUTOMATA_MAIN
-   config = AutomataOpenAIAgentConfig.load(config_name)
+   config = OpenAIAutomataAgentConfig.load(config_name)
 
 Limitations
 -----------
 
-The primary limitation of ``AutomataOpenAIAgentConfig`` is that it
+The primary limitation of ``OpenAIAutomataAgentConfig`` is that it
 relies on the predefined configuration files based on
 ``AgentConfigName``. It can only load configurations from those files
 and cannot load custom configuration files. In addition, it assumes a
@@ -57,6 +57,6 @@ Follow-up Questions:
 --------------------
 
 -  How can we include custom configuration files for loading into the
-   ``AutomataOpenAIAgentConfig`` class?
--  What are the applications of ``AutomataOpenAIAgentConfig`` when
+   ``OpenAIAutomataAgentConfig`` class?
+-  What are the applications of ``OpenAIAutomataAgentConfig`` when
    working with ``OpenAIAutomataAgent`` in a real-world scenario?

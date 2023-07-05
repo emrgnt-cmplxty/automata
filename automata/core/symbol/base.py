@@ -1,7 +1,8 @@
+import abc
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto  # type: ignore
 
@@ -272,19 +273,30 @@ class SymbolReference:
         return False
 
 
-@dataclass
-class SymbolFile:
-    """Represents a file that contains a symbol"""
+class ISymbolProvider(abc.ABC):
+    def __init__(self):
+        self.is_synchronized = False
 
-    path: str
-    occurrences: str
+    @abc.abstractmethod
+    def _get_sorted_supported_symbols(self) -> List[Symbol]:
+        pass
 
-    def __hash__(self) -> int:
-        return hash(self.path)
+    @abc.abstractmethod
+    def filter_symbols(self, sorted_supported_symbols: List[Symbol]) -> None:
+        pass
 
-    def __eq__(self, other) -> bool:
-        if isinstance(other, SymbolFile):
-            return self.path == other.path
-        elif isinstance(other, str):
-            return self.path == other
-        return False
+    def get_sorted_supported_symbols(self) -> List[Symbol]:
+        from automata.core.utils import is_sorted
+
+        if not self.is_synchronized:
+            raise RuntimeError("Cannot get symbols before synchronization")
+
+        sorted_symbols = self._get_sorted_supported_symbols()
+
+        if not is_sorted([symbol.dotpath for symbol in sorted_symbols]):
+            raise ValueError("sorted_supported_symbols must be sorted")
+
+        return sorted_symbols
+
+    def set_synchronized(self, value: bool):
+        self.is_synchronized = value

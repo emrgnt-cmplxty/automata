@@ -13,7 +13,7 @@ from redbaron import (
     RedBaron,
 )
 
-from automata.core.singletons.module_loader import DOT_SEP
+from automata.core.navigation.py.dot_path_map import DotPathMap
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def find_syntax_tree_node(
     if not object_path:
         return code_obj
 
-    obj_parts = object_path.split(DOT_SEP)
+    obj_parts = object_path.split(DotPathMap.DOT_SEP)
 
     node = code_obj
     while node and obj_parts:
