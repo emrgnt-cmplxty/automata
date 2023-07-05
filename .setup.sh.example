@@ -1,9 +1,5 @@
 ## NOTE - the code below is contained in setup.sh.example
 
-# Clone the repository
-git clone git@github.com:emrgnt-cmplxty/Automata.git
-cd Automata
-
 # Create the local environment
 python3 -m venv local_env
 source local_env/bin/activate
@@ -16,8 +12,8 @@ pre-commit install
 
 # Set up .env
 cp .env.example .env
-OPEN_API_KEY=your_openai_api_key_here
-GITHUB_API_KEY=your_github_api_key
+OPEN_API_KEY='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'
+GITHUB_API_KEY='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'
 CONVERSATION_DB_PATH="$PWD/conversation_db.sqlite3"
 TASK_DB_PATH="$PWD/task_db.sqlite3"
 TASKS_OUTPUT_PATH="$PWD/tasks"

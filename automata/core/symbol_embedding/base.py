@@ -60,7 +60,7 @@ class SymbolDocEmbedding(SymbolEmbedding):
         return f"SymbolDocEmbedding(\nsymbol={self.symbol},\n\nembedding_source={self.input_object}\n\nvector_length={len(self.vector)}\n\nsource_code={self.source_code}\n\nsummary={self.summary}\n\ncontext={self.context}\n)"
 
 
-class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase):
+class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase[SymbolEmbedding, str]):
     """Concrete class to provide a vector database that saves into a JSON file."""
 
     def __init__(self, file_path: str):

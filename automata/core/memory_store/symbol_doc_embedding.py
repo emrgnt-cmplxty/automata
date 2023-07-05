@@ -36,7 +36,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             raise ValueError(f"Symbol {symbol} has no source code")
 
         if self.embedding_db.contains(symbol.dotpath):
-            # self.update_existing_embedding(source_code, symbol)
+            self.update_existing_embedding(source_code, symbol)
             return
         # else:
         symbol_embedding = self.embedding_builder.build(source_code, symbol)

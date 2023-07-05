@@ -63,6 +63,7 @@ class DependencyFactory(metaclass=Singleton):
             py_context_retriever_config (PyContextRetrieverConfig())
             coding_project_path (get_root_py_fpath())
             llm_completion_provider (OpenAIChatCompletionProvider())
+            py_retriever_doc_embedding_db (None)
         }
         """
         self._instances: Dict[str, Any] = {}
@@ -226,12 +227,17 @@ class DependencyFactory(metaclass=Singleton):
         """
         Associated Keyword Args:
             py_context_retriever_config (PyContextRetrieverConfig())
+            py_retriever_doc_embedding_db (None)
         """
         symbol_graph: SymbolGraph = self.get("symbol_graph")
         py_context_retriever_config: PyContextRetrieverConfig = self.overrides.get(
             "py_context_retriever_config", PyContextRetrieverConfig()
         )
-        return PyContextRetriever(symbol_graph, py_context_retriever_config)
+        return PyContextRetriever(
+            symbol_graph,
+            py_context_retriever_config,
+            self.overrides.get("py_retriever_doc_embedding_db"),
+        )
 
     @lru_cache()
     def create_embedding_similarity_calculator(self) -> EmbeddingSimilarityCalculator:

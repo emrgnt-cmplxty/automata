@@ -549,8 +549,6 @@ class SymbolGraph(ISymbolProvider):
                 logger.error(f"Error processing {symbol.uri}: {e}")
 
         logger.info("Built the rankable symbol subgraph")
-        print("len(G) = ", len(G))
-
         return G
 
     # ISymbolProvider methods

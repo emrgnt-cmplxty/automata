@@ -35,6 +35,9 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 Follow these steps to setup the Automata environment
 
 ```bash
+# Clone the repository
+git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata
+
 # Copy the env and setup files
 cp .setup.sh.example setup.sh && cp .env.example .env
 
@@ -43,7 +46,6 @@ chmod 755 setup.sh
 
 # Update the setup and env files with your local paths
 vim setup.sh
-vim .env
 
 # Run the setup script
 ./setup.sh
@@ -68,10 +70,10 @@ automata run-code-embedding
 
 # "L1" docs are the docstrings written into the code
 # "L2" docs are generated from the L1 docs + symbol context
-automata run-doc-embedding-l2
+automata run-doc-embedding --embedding-level 2
 
 # "L3" docs are generated from the L2 docs + symbol context
-automata run-doc-embedding-l3
+automata run-doc-embedding --embedding-level 3
 ```
 
 ### Run the system
@@ -105,7 +107,7 @@ from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.tools.tool_utils import AgentToolFactory
 from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.py_module_loader import py_module_loader
+from automata.core.singletons.module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 

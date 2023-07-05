@@ -47,25 +47,15 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
-def run_doc_embedding_l2(ctx, *args, **kwargs) -> None:
-    """Run the document embedding Level-2 pipeline."""
-    from automata.cli.scripts.run_doc_embedding_l2 import main
+@click.option("--embedding-level", type=int, default=2, help="Level of the embedding.")
+def run_doc_embedding(ctx, *args, **kwargs) -> None:
+    from automata.cli.scripts.run_doc_embedding import main
 
+    """Run the document embedding pipeline."""
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Calling run_doc_embedding_l2")
-    main(**kwargs)
-
-
-@common_options
-@cli.command()
-@click.pass_context
-def run_doc_embedding_l3(ctx, *args, **kwargs) -> None:
-    """Run the document embedding Level-3 pipeline."""
-    from automata.cli.scripts.run_doc_embedding_l3 import main
-
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Calling run_doc_embedding_l3")
-    main(**kwargs)
+    logger.info("Calling run_doc_embedding")
+    result = main(*args, **kwargs)
+    logger.info(f"Result = {result}")
 
 
 @common_options
@@ -91,25 +81,4 @@ def run_agent(ctx, *args, **kwargs) -> None:
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running agent")
-    main(**kwargs)
-
-
-@common_options
-@agent_options
-@cli.command()
-@click.option("--fetch-issues", default="", help="Comma-separated list of issue numbers to fetch")
-@click.pass_context
-def run_agent_task(ctx, *args, **kwargs) -> None:
-    """
-    Run an agent task.
-
-    Note - This is similar to run_agent, but executes the agent
-    within the task framework. This allows for more flexibility
-    across multiple tasks.
-
-    """
-    from automata.cli.scripts.run_agent_task import main
-
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Running the task")
     main(**kwargs)
