@@ -1,50 +1,81 @@
-AgentConfigName
-===============
+``AgentConfigName`` Python Enum
+===============================
 
-``AgentConfigName`` is an enumeration of agent configuration names. It
-corresponds to the name of the YAML file in the
-``automata/config/agent/`` directory.
+The enum class ``AgentConfigName`` is a part of the
+``automata.config.base`` module in the Automata framework. It includes
+string constants representing the various configuration names of the
+automata agents. This class is used to fetch specific configuration
+files within the directory ``automata/config/agent/*.yaml`` for
+configuring the automata agent.
 
 Overview
 --------
 
-``AgentConfigName`` is primarily used in configuration and testing for
-the Automata project. It defines the possible enumeration values for
-agent configuration names. These values are typically used when loading
-the agent configurations using the ``AutomataAgentConfig`` class.
+``AgentConfigName`` class is defined as an Enum (enumeration), which is
+a symbolic name for a set of values. Enum attributes are read-only and
+cannot be instantiated, but they can be iterated through with a for
+loop.
+
+This Enum helps to create more readable and manageable code by providing
+meaningful names for specific configuration files. It contains two types
+of config names
+
+-  Helper Configs: DEFAULT and TEST.
+-  Specific or production Configs: AUTOMATA_MAIN
+
+It should be noted that the config name corresponds to config files
+present in the directory ``automata/config/agent/*.yaml``.
+
+Usage
+-----
+
+The ``AgentConfigName`` enumeration can be used when loading different
+configurations of the automata agent. The string representation of the
+enumerations defined in ``AgentConfigName`` corresponds to the filenames
+of different configurations in the ``automata/config/agent/*.yaml``
+directory.
+
+.. code:: python
+
+   from automata.config.base import AgentConfigName
+   from automata.automata_builder import OpenAIAutomataAgentConfig
+
+   def load_config():
+       for config_name in AgentConfigName:  # iterate over all config names
+           if config_name == AgentConfigName.DEFAULT:  # Skip the "default" config
+               continue
+           config = OpenAIAutomataAgentConfig.load(config_name)  # load the config
+           assert isinstance(config, OpenAIAutomataAgentConfig)  # check the config type
 
 Related Symbols
 ---------------
 
--  ``config.config_enums.AgentConfigName``
--  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
-
-Example
--------
-
-Here’s an example of how to use ``AgentConfigName`` to load an
-``AutomataAgentConfig``.
-
-.. code:: python
-
-   from config.config_enums import AgentConfigName
-   from config.automata_agent_config import AutomataAgentConfig
-
-   config_name = AgentConfigName.AUTOMATA_MAIN
-   config = AutomataAgentConfig.load(config_name)
+-  ``automata.core.agent.agent.AgentInstance.Config``: A class for
+   configuring the agent instance arbitrary types allowed.
+-  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``:
+   A test function that iterates over all ``AgentConfigName``, skips the
+   DEFAULT, loads the config and checks its type.
+-  ``automata.tests.conftest.automata_agent_config_builder``: A pytest
+   fixture to construct ``OpenAIAutomataAgentConfig``.
+-  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``:
+   Class for configuring the OpenAI automata agent instance.
+-  ``automata.config.base.AgentConfig.Config``: Class for configuring
+   the Agent, where arbitrary types are allowed and defines a provider.
 
 Limitations
 -----------
 
-The primary limitation of ``AgentConfigName`` is that it only references
-predefined enumeration values. Adding custom configuration names would
-require modifying the ``AgentConfigName`` enumeration and adding the
-corresponding YAML configuration files to the project’s
-``config/agent/`` directory.
+One primary limitation of ``AgentConfigName`` is that it can only
+provide names for configuration files that exist in the
+``automata/config/agent/*.yaml`` directory. If a configuration file does
+not exist for a particular name enumerated in ``AgentConfigName``, an
+error would occur when attempting to use it.
 
 Follow-up Questions:
 --------------------
 
--  Can the ``AgentConfigName`` enumeration be extended programmatically
-   to support custom configuration names?
+-  How can we dynamically update ``AgentConfigName`` when a new
+   configuration file is added to the ``automata/config/agent/``
+   directory?
+-  Where should we document newly added configuration names in code for
+   future reference?

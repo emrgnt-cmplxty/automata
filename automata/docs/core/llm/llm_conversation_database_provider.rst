@@ -2,65 +2,73 @@ LLMConversationDatabaseProvider
 ===============================
 
 ``LLMConversationDatabaseProvider`` is an abstract base class for
-implementing different types of database providers to store and manage
-conversation messages. The class defines the necessary methods such as
-``get_messages()`` and ``save_message()``, which can be used by the
-Automata Agent to interact with conversation databases.
+different types of database providers intended to be used in an automata
+environment. It contains methods that allow for the retrieval and
+storage of messages.
 
 Overview
 --------
 
-``LLMConversationDatabaseProvider`` provides a way to get and save
-messages for an agent by implementing the required abstract methods in
-its subclasses. It also allows observing conversation changes and
-updating the database accordingly. The class is closely related to the
-``AgentConversationDatabase`` implementation, which is a
-specific implementation for Automata providers.
+The ``LLMConversationDatabaseProvider`` class is a crucial component in
+automata’s conversation functionality. It includes two abstract methods,
+``get_messages`` and ``save_message``, which must be implemented by any
+concrete class inheriting from it to retrieve and store messages
+respectively. Additionally, the ``update`` method, inherited from the
+``Observer`` pattern, is implemented to update the database when the
+``LLMConversation`` changes.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.database.relational.SQLDatabase``
--  ``automata.core.llm.foundation.LLMChatMessage``
--  ``automata.core.memory_store.agent_conversations.AgentConversationDatabase``
--  ``automata.core.llm.foundation.LLMConversation``
+-  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
+-  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
 
-Example
--------
+Usage example
+-------------
 
-The following example demonstrates an example subclass of
-``LLMConversationDatabaseProvider``:
+The following is a simple example demonstrating a concept of how
+``LLMConversationDatabaseProvider`` may be used.
 
 .. code:: python
 
-   from automata.core.llm.foundation import LLMConversationDatabaseProvider, LLMChatMessage
-   from automata.core.base.database.relational import SQLDatabase
-
-   class CustomDatabaseProvider(LLMConversationDatabaseProvider, SQLDatabase):
-       def __init__(self, session_id: str, db_path: str):
-           super().__init__(session_id, db_path)
-
-       def get_messages(self):
-           # Implement the method to get all messages from the database
+   class ExampleDatabaseProvider(LLMConversationDatabaseProvider):
+       def __init__(self):
+           # some potential implementation for a specific type of database
            pass
 
-       def save_message(self, message: LLMChatMessage):
-           # Implement the method to save a message to the database
+       def get_messages(self) -> List[LLMChatMessage]:
+            """Fetches all messages from the implemented database."""
            pass
+
+       def save_message(self, message: LLMChatMessage) -> None:
+          """Saves a message to the implemented database."""
+          pass
+
+The above example replaces the abstract methods of
+``LLMConversationDatabaseProvider`` with simple illustrations. In an
+actual deployment scenario, a specific database technology (like SQLite,
+PostgreSQL, etc.) would be implemented in the
+``ExampleDatabaseProvider``.
 
 Limitations
 -----------
 
-``LLMConversationDatabaseProvider`` is an abstract base class and cannot
-be used directly. It must be subclassed with the implementation of its
-abstract methods for a specific database type. Furthermore, it does not
-provide reasoning or decision-making capabilities and should be used
-solely as a means to store and manage conversation messages for the
-providers.
+The ``LLMConversationDatabaseProvider`` class does not include any
+implementation details, as it is an abstract base class. The
+effectiveness, efficiency, and abilities of any concrete class that
+inherits ``LLMConversationDatabaseProvider`` would depend on its
+implementation.
 
 Follow-up Questions:
 --------------------
 
--  How can we better integrate database management within the existing
-   framework of the Automata Agent?
--  Is there a need for other database types besides SQL?
+-  What are the actual implementations provided for the
+   ``LLMConversationDatabaseProvider`` in the system?
+-  How do specific implementations handle potential database versioning,
+   migration, or recovery scenarios?
+-  In what scenarios is the ``update`` method called to reflect changes
+   in the LLM conversation?
+-  How is concurrency managed in the database operations?
+-  Are there any specific databases that work better or worse with the
+   system this class is part of?

@@ -2,57 +2,62 @@ FunctionCall
 ============
 
 ``FunctionCall`` is a class representing a function call to be made by
-the OpenAI agent. It provides methods to create a function call from a
-response dictionary, handle the termination of a conversation, and
-convert a ``FunctionCall`` object to a dictionary. The class is designed
-to help process function call information, representing a function name
-and its corresponding arguments as attributes.
+the OpenAI agent within the ``automata.core.llm.providers.openai``
+module.
+
+Overview
+--------
+
+``FunctionCall`` allows the OpenAI agent to perform a function call
+within a conversation. It does this by encapsulating the name of the
+function to be called and the arguments to be passed in the
+conversation, if any. The class provides methods to create an instance
+from the response dictionary received (``from_response_dict``), to
+handle termination of a function call (``handle_termination``), and to
+convert a function call into a dictionary representation (``to_dict``).
 
 Related Symbols
 ---------------
 
+-  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult.get_function_call``
+-  ``automata.core.llm.providers.openai.OpenAIChatMessage.__init__``
 -  ``automata.tests.unit.sample_modules.sample.Person``
+-  ``automata.tests.unit.sample_modules.sample.Person.run``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.core.tasks.base.ITaskExecution.execute``
--  ``automata.tests.unit.sample_modules.sample.Person.run``
--  ``automata.core.llm.providers.openai.OpenAIChatMessage.__init__``
+-  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 -  ``automata.tests.unit.sample_modules.sample.sample_function``
--  ``automata.core.tasks.base.TaskStatus``
--  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider.__init__``
--  ``automata.tests.unit.sample_modules.sample.f``
+-  ``automata.core.code_handling.py.writer.PyWriter.InvalidArguments``
 
-Example
--------
+Examples
+--------
 
-Here’s an example of creating a ``FunctionCall`` object from a response
-dictionary:
+Below is a simple example to demonstrate interaction with
+``FunctionCall``.
 
 .. code:: python
 
    from automata.core.llm.providers.openai import FunctionCall
 
-   response_dict = {
-       "name": "sample_function",
-       "arguments": '{"name": "John Doe"}',
-   }
+   # Creating an instance of FunctionCall
+   fn_call = FunctionCall(name="functionName", arguments={"arg1":"value1", "arg2":"value2"})
 
-   function_call = FunctionCall.from_response_dict(response_dict)
+   # Printing function call as dictionary
+   print(fn_call.to_dict())
 
-Limitations
------------
+Discussion
+----------
 
-The handling of conversation termination in ``FunctionCall`` relies on a
-hacky solution due to the problem of parsing Markdown with JSON. This
-solution needs to be made more robust and generalizable. Further
-improvements are required to ensure that the solution is adequate to
-solve all possible problems associated with adopting a Markdown return
-format.
+The class relies on JSON for serialization. One of the limitations of
+``FunctionCall`` is the method ``handle_termination`` while parsing the
+return format, especially with Markdown where JSON decode errors may
+occur. This solution is considered hacky and needs to be more robust and
+generalizable.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  How can we improve the handling of conversation termination and
-   parsing Markdown with JSON?
--  Is the current implementation sufficient to handle all possible
-   cases, or are there any edge cases that might cause issues?
+-  What is the exact role of ``FunctionCall`` in managing conversational
+   flow, especially in terms of error recovery and edge cases?
+-  How can ``FunctionCall`` be extended or customized for different
+   conversation control models?

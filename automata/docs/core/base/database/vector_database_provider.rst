@@ -1,76 +1,56 @@
 VectorDatabaseProvider
 ======================
 
-``VectorDatabaseProvider`` is an abstract base class for different types
-of vector database providers. These database providers are designed to
-store and manage ``SymbolEmbedding`` instances, which represent the
-embeddings of symbols within a given context. This class provides the
-structure and common functionality for specific implementations of
-vector database providers, such as ``JSONEmbeddingVectorDatabase``.
-
 Overview
 --------
 
-``VectorDatabaseProvider`` includes abstract methods like
-``calculate_similarity`` and ``get_all_symbols`` which must be
-implemented by any concrete class that inherits from it. The
-``calculate_similarity`` method is used to calculate the similarity
-between a given embedding vector and the vectors stored in the database,
-while ``get_all_symbols`` method retrieves all symbols currently stored
-in the database.
+The ``VectorDatabaseProvider`` is an abstract base class for different
+types of vector database providers. These providers are responsible for
+managing databases holding vector data. They have various methods that
+need to be implemented in the concrete classes inheriting from the
+``VectorDatabaseProvider``.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.base.database.provider.SymbolDatabaseProvider``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol_embedding.base.SymbolEmbedding``
+-  ``automata.core.symbol_embedding.base.JSONSymbolEmbeddingVectorDatabase``
+-  ``automata.core.base.database.vector.JSONVectorDatabase``
+-  ``automata.core.embedding.base.EmbeddingVectorProvider``
 
 Example
 -------
 
-The following example demonstrates how to create a custom database
-provider that inherits from ``VectorDatabaseProvider``.
+As ``VectorDatabaseProvider`` is an abstract base class, an instance of
+it cannot be created. However, its methods can be implemented by
+inheriting this class. One of the example concrete classes is
+``JSONSymbolEmbeddingVectorDatabase``
 
 .. code:: python
 
-   import numpy as np
-   from automata.core.base.database.vector import VectorDatabaseProvider
+   from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 
-   class MyVectorDatabaseProvider(VectorDatabaseProvider):
+   class ExampleVectorDatabase(JSONSymbolEmbeddingVectorDatabase):
+       def __init__(self, file_path: str):
+           super().__init__(file_path)
 
-       def __init__(self):
-           self.data = []
-           
-       def calculate_similarity(self, embedding_vec: np.ndarray) -> Dict[Symbol, float]:
-           # Implement similarity calculation logic here
-           pass
-
-       def get_all_symbols(self) -> List[Symbol]:
-           # Implement logic to retrieve all symbols here
-           pass
-
-   # Usage
-   my_vector_db_provider = MyVectorDatabaseProvider()
+       # Implement all the abstract methods required by the parent class
+       # The methods signature should be same as that in VectorDatabaseProvider
 
 Limitations
 -----------
 
-As an abstract base class, ``VectorDatabaseProvider`` cannot be
-instantiated directly and must be subclassed by a concrete
-implementation. Additionally, the specific database provider
-implementation determines the storage format and efficiency of
-similarity calculations, which may vary depending on the chosen
-provider.
+The primary limitation of the ``VectorDatabaseProvider`` base class is
+that it does not provide any concrete implementations of the methods.
+The specific implementations for vector database operations are deferred
+to the classes that inherit it. It is essential to understand that each
+concrete class may have its own limitations depending on the implemented
+data source or methodology.
 
 Follow-up Questions:
 --------------------
 
--  Are there any existing implementations of ``VectorDatabaseProvider``
-   other than ``JSONEmbeddingVectorDatabase``?
--  How can the process of adding, updating, or removing
-   ``SymbolEmbedding`` instances be optimized or customized for
-   different application requirements?
--  Are any performance guarantees provided for similarity-based queries?
+-  How can we ensure efficient implementation of the abstract methods
+   across different classes inheriting ``VectorDatabaseProvider``?
+-  Are there some implementations of ``VectorDatabaseProvider`` which
+   are specifically optimized for specific types of vector data or
+   specific data sources?

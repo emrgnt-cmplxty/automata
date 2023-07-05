@@ -1,59 +1,76 @@
 LLMChatMessage
 ==============
 
-``LLMChatMessage`` is a base class for different types of LLM chat
-messages. It stores message metadata (such as role and content) and
-provides a ``to_dict`` method to convert the message into a dictionary
-format for easier processing.
+``LLMChatMessage`` is a base class representing different types of Lower
+Level Model (LLM) chat messages. This class structures the chat messages
+that are processed to and from an LLM. It is used widely throughout the
+linked conversational module talks, and plays a critical role in
+structuring and storing various chat interactions for retrieval later.
+
+Overview
+--------
+
+The ``LLMChatMessage`` class provides a way to structure conversations
+in a conversational user interface with an LLM. Each instance of the
+class represents one message in the chat. The ``LLMChatMessage`` class
+encapsulates the role and content of a chat message and provides a
+uniform interface in the form of the ``to_dict()`` method for converting
+the message to a dictionary object.
+
+The ``LLMChatMessage`` class is included in the interaction with the
+chat API, the chat message completion providers, the chat conversations,
+and in test scenarios.
 
 Related Symbols
 ---------------
 
+-  ``automata.core.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
 -  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider``
--  ``automata.tests.unit.test_conversation_database.test_put_message_increments_interaction_id``
--  ``automata.core.llm.foundation.LLMConversation``
--  ``automata.tests.unit.test_conversation_database.test_get_messages_returns_all_messages_for_session``
--  ``automata.core.llm.providers.openai.OpenAIChatMessage``
--  ``automata.tests.unit.test_conversation_database.test_multiple_put_message_increments_interaction_id``
--  ``automata.core.llm.providers.openai.OpenAIConversation``
--  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
 
-Example
--------
+Examples
+--------
 
-Here is an example of creating an ``LLMChatMessage`` instance:
+The following is an example demonstrating how to create an instance of
+``LLMChatMessage`` and use it in conversation.
 
 .. code:: python
 
    from automata.core.llm.foundation import LLMChatMessage
 
-   role = "user"
-   content = "Hello, how are you?"
+   # Create a LLMChatMessage instance
+   message = LLMChatMessage(role="user", content="Hello, how are you?")
 
-   message = LLMChatMessage(role=role, content=content)
+   # Convert the message to a dict
+   message_dict = message.to_dict()
+   print(message_dict) # Prints: {'role': 'user', 'content': 'Hello, how are you?'}
 
-``LLMChatMessage`` can also be converted into a dictionary using the
-``to_dict`` method:
+The following is an example demonstrating how to save a conversation
+interaction to a database.
 
 .. code:: python
 
-   message_dict = message.to_dict()
-   print(message_dict)  # Output: {'role': 'user', 'content': 'Hello, how are you?'}
+   from automata.core.llm.foundation import LLMChatMessage
+   from automata.core.base.database.relational import SQLDatabase
+
+   # Given a SQL database instance and a conversation interaction
+   db = SQLDatabase()
+   interaction = {"role": "user", "content": "Good morning!"}
+
+   # Save the message to the database
+   db.save_message(LLMChatMessage(**interaction))
 
 Limitations
 -----------
 
-The ``LLMChatMessage`` class does not handle message processing or
-validation; it simply stores the message metadata. Any additional
-processing or validation should be implemented by the developer using
-this class.
+``LLMChatMessage`` is essentially a structure providing interface for a
+chat message object. It does not check the validity of the chat message
+or analyze its text. Additional limitations depend on the
+implementations in the related symbols.
 
-Follow-up Questions:
---------------------
+##Follow-up Questions:
 
--  Are there any specific data types that should be supported beyond the
-   base string and dictionary types?
--  Is there a need for additional utility methods or properties within
-   the ``LLMChatMessage`` class for common use cases?
+-  What are the valid values for the ``role`` attribute in
+   ``LLMChatMessage``?
+-  Is there a limit on the ``content`` length for a chat message? If so,
+   how is a message beyond this limit handled?

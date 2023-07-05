@@ -1,73 +1,62 @@
 OpenAIAutomataAgentInstance
 ===========================
 
-The ``OpenAIAutomataAgentInstance`` is a class that manages instances of
-the Automata OpenAI agent. It stores instructions and configuration for
-an agent allowing it to be run multiple times without needing to be
-reinitialized. This includes procedures for agent execution, error
-handling, and interfacing with the ``OpenAIAutomataAgent`` and the
-``OpenAIAutomataAgentConfigBuilder`` for agent creation and
-configuration, respectively.
+``OpenAIAutomataAgentInstance`` provides an interface for running an
+instance of an Automata OpenAI agent multiple times without needing to
+reinitialize the agent each time.
+
+Overview
+--------
+
+The class stores instructions and configuration for an automata agent,
+allowing it to execute those instructions, leveraging the OpenAI API. By
+providing instruction configuration, this class enables consistent
+responses from the AI agent across multiple runs, thus boosting
+performance and efficiency.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.test_automata_agent_builder``
--  ``automata.tests.unit.test_automata_agent``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``
--  ``automata.tests.conftest.automata_agent``
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
--  ``automata.tests.conftest.task``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
--  ``automata.tests.unit.test_automata_agent``
--  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder.create_from_args``
--  ``automata.core.agent.providers.OpenAIAutomataAgent.run``
--  ``automata.core.agent.agent.AgentInstance``
--  ``automata.config.base.AgentConfigName``
 
-Example Usage
--------------
+Example
+-------
+
+In the following example, an instance of ``OpenAIAutomataAgentInstance``
+is created by providing instructions. The instance executes the
+instructions and returns the result.
 
 .. code:: python
 
-   from automata.config.base import AgentConfigName
    from automata.core.agent.instances import OpenAIAutomataAgentInstance
+   from automata.config.base import AgentConfigName
 
-   agent_instance = OpenAIAutomataAgentInstance(AgentConfigName("my_config"))
-   instructions = "These are my instructions"
+   config_name = AgentConfigName.AUTOMATA_MAIN
+   instructions = "Hello, this is a test instruction"
+
+   agent_instance = OpenAIAutomataAgentInstance(config_name=config_name)
+
    result = agent_instance.run(instructions)
 
-Discussion
-----------
+Limitations
+-----------
 
-The ``OpenAIAutomataAgentInstance`` calls the ``run`` method of an
-``OpenAIAutomataAgent`` which executes the agent with a specified number
-of iterations. If the maximum iteration count is exceeded, an error is
-raised. If the agent successfully executes, it returns the result.
+Currently, the ``run`` method raises a generic Exception for any error
+that occurs during agent execution. More specific exceptions could offer
+better insight into what could go wrong during execution.
 
-This class depends on the
-``OpenAIAutomataAgentConfigBuilder.create_from_args`` function to set up
-an ``OpenAIAutomataAgent`` with the appropriate configurations. To avoid
-errors, make sure the required configuration parameters are included in
-``kwargs`` when creating the ``OpenAIAutomataAgentInstance``.
-
-Although ``OpenAIAutomataAgentInstance`` helps with reusing an agent
-without reinitialization, it may still be resource-intensive for large
-tasks or numerous inititializations due to its reliance on the OpenAI
-API. To mitigate this, ensure configurations are chosen efficiently and
-the agent is properly managed.
+Another limitation is that there is no explicit feature to save or load
+previously created instances. Saving and restoring instances would allow
+for better reusability and faster startup times.
 
 Follow-up Questions:
 --------------------
 
--  What is the specific process the ``run`` method follows when
-   executing the agent?
--  How does the ``OpenAIAutomataAgentConfigBuilder`` integrate with the
-   ``OpenAIAutomataAgent`` in initializing an agent?
--  What are efficient ways to manage the agent for large tasks or
-   numerous initializations?
--  Are there any specific use-cases for which
-   ``OpenAIAutomataAgentInstance`` is particularly well suited or poorly
-   suited?
+-  Can the exception handling be more specific, for instance, by
+   throwing different types of exceptions based on different error
+   conditions?
+-  Is there a possibility to implement functionality for saving and
+   loading previously created instances?
+-  Does the agent have a limit on the number of times it can be run?

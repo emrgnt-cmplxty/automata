@@ -1,75 +1,94 @@
-OpenAIChatCompletionResult
-==========================
-
-``OpenAIChatCompletionResult`` is a class to represent a completion
-result from the OpenAI API. The class provides utility methods to
-interact with and process completion results, as well as a way to create
-a new ``OpenAIChatCompletionResult`` from arguments. The class extends
-the base class ``LLMCompletionResult``.
+``OpenAIChatCompletionResult``
+==============================
 
 Overview
 --------
 
-``OpenAIChatCompletionResult`` offers methods to get the content and
-role of the completion message and retrieve the function call if
-present. The class can also serve as a foundation to build more
-specialized completion result classes if needed.
+``OpenAIChatCompletionResult`` is a class that represents a chat
+response from the OpenAI API. This class takes in raw messages from the
+chat API and structures them for further use. Apart from regular chat
+message contents, it can also include function calls which the API may
+return during an ongoing chat.
 
 Related Symbols
 ---------------
 
--  ``automata.core.llm.foundation.LLMCompletionResult``
--  ``automata.core.llm.providers.openai.FunctionCall``
--  ``automata.core.llm.providers.openai.OpenAIChatMessage``
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
--  ``automata.tests.unit.test_automata_agent.test_run_with_completion_message``
+-  ``LLMChatCompletionProvider``
+-  ``LLMChatMessage``
+-  ``FunctionCall``
+-  ``OpenAIChatMessage``
+-  ``OpenAIChatCompletionProvider``
 
-Example
--------
+Initialization
+--------------
 
-The following is an example demonstrating how to create an instance of
-``OpenAIChatCompletionResult`` using a raw response dictionary.
+``OpenAIChatCompletionResult`` class can be initialized by providing the
+raw data from OpenAI chat API. The ``__init__`` function processes the
+raw data and assigns it to class variables.
 
 .. code:: python
 
-   api_response_data = {
+   from automata.core.llm.providers.openai import OpenAIChatCompletionResult
+
+   # Example raw data from OpenAI chat API
+   raw_data = {
        "choices": [
            {
                "message": {
                    "role": "assistant",
-                   "content": "Welcome to the chat!",
+                   "content": "Hello, how can I assist you today?",
+                   "function_call": None
                }
            }
        ]
    }
 
-   completion_result = OpenAIChatCompletionResult(raw_data=api_response_data)
+   completion_result = OpenAIChatCompletionResult(raw_data)
 
-To create a new ``OpenAIChatCompletionResult`` from arguments:
+Methods
+-------
+
+``OpenAIChatCompletionResult`` class has a few methods for handling and
+representing the data it encapsulates:
+
+-  ``__str__``: Produces a string representation of the completion
+   result.
+-  ``from_args``: A class method for creating an instance of
+   ``OpenAIChatCompletionResult``.
+-  ``get_function_call``: Returns the ``FunctionCall`` object if
+   present. If no function call is present, it returns None.
+
+Usage Example
+-------------
+
+Following is an example of a using ``from_args`` method to create an
+instance and printing it out using the ``__str__`` method:
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import FunctionCall, OpenAIChatCompletionResult
+   # Import necessary classes
+   from automata.core.llm.providers.openai import OpenAIChatCompletionResult
 
-   role = "assistant"
-   content = "Hello user!"
-   function_call = FunctionCall.from_response_dict({"name": "greet_user", "arguments": {}})
+   # Create an instance using the `from_args` class method
+   completion_result = OpenAIChatCompletionResult.from_args("assistant", "Hello, how can I assist you today?", None)
 
-   completion_result = OpenAIChatCompletionResult.from_args(role, content, function_call)
+   # Use the `__str__` method to print the instance
+   print(completion_result)
 
 Limitations
 -----------
 
-The primary limitation of ``OpenAIChatCompletionResult`` is that it is
-designed specifically for processing completion results received from
-the OpenAI API. It cannot work with completion results from other APIs
-or different response structures.
+One possible limitation of the ``OpenAIChatCompletionResult`` is its
+strict reliance on the OpenAI API’s ``choices`` output structure. Any
+changes in the API’s response structure can potentially break the
+functionality of this class.
 
-Follow-up Questions:
+Follow-Up Questions:
 --------------------
 
--  How can we extend ``OpenAIChatCompletionResult`` to support more
-   specialized completion results or other APIs?
--  Are there any alternative ways to represent completion results that
-   would provide more flexibility or modularity?
+-  What happens if the OpenAI API changes the response structure? Do we
+   have a mechanism to handle these changes?
+-  Is there a validation step to check the integrity and format of the
+   raw data received from the OpenAI API before it’s processed?
+-  Is there a way to handle other roles besides “assistant”? Are other
+   roles anticipated in the future?

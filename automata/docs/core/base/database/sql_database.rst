@@ -1,74 +1,93 @@
 SQLDatabase
 ===========
 
-``SQLDatabase`` is a concrete class that provides a simple interface to
-interact with SQL databases. It provides methods to connect, create
-tables, insert, update, delete, and select data from the database. The
-class is derived from the ``RelationalDatabase`` abstract base class.
+``SQLDatabase`` is a concrete class that enables interaction with an
+SQLite database. It encapsulates various common operations that one
+needs to perform on a SQL database such as creation and deletion of
+tables, data insertion, selection, and deletion as well as closing the
+database connection.
 
 Overview
 --------
 
-``SQLDatabase`` allows for establishing a connection to an SQLite
-database, and offers a set of CRUD (Create, Read, Update, and Delete)
-operations for working with the data. It simplifies the process of
-interacting with SQL databases and can be used with predefined
-configurations provided by the ``CONVERSATION_DB_PATH`` variable.
+``SQLDatabase`` opens a connection to a SQLite database file and
+provides a set of methods to execute SQL queries for Data Definition
+Language (DDL) like ``create_table`` and Data Manipulation Language
+(DML) like ``delete``, ``insert``, ``select``, and ``update_database``.
+
+Import Statements
+-----------------
+
+.. code:: python
+
+   import sqlite3
+   from abc import ABC, abstractmethod
+   from typing import Dict, List
+   from automata.config import CONVERSATION_DB_PATH
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.database.relational.RelationalDatabase``
 -  ``automata.tests.unit.test_task_database.db``
 -  ``automata.tests.unit.test_conversation_database.db``
 -  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase``
+-  ``automata.core.base.database.relational.RelationalDatabase``
+-  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
 
-Usage Example
--------------
+Example
+-------
 
-The following example demonstrates how to work with an SQLDatabase.
+This example demonstrates the way to use the ``SQLDatabase`` for
+performing the basic SQL operations.
 
 .. code:: python
 
-   from automata.core.base.database.relational import SQLDatabase
-   from automata.config import CONVERSATION_DB_PATH
+   # Create instance of SQLDatabase
+   database = SQLDatabase()
 
-   db = SQLDatabase()
-   db.connect(CONVERSATION_DB_PATH)
+   # Connect to the SQLite database
+   database.connect('example.db')
 
-   table_name = "test_table"
-   fields = {"id": "integer primary key", "name": "text", "age": "integer"}
-   db.create_table(table_name, fields)
+   # Create a table
+   database.create_table('students', {'name': 'TEXT', 'age': 'INTEGER'})
 
-   data = {"id": 1, "name": "John Doe", "age": 30}
-   db.insert(table_name, data)
+   # Insert data into the table
+   database.insert('students', {'name': 'John', 'age': 20})
 
-   # Update
-   updated_data = {"age": 31}
-   conditions = {"id": 1, "name": "John Doe"}
-   db.update(table_name, updated_data, conditions)
+   # Select data from the table
+   data = database.select('students', ['name', 'age'])
 
-   # Select
-   selected_data = db.select(table_name, ["name", "age"], conditions)
-   print(selected_data)
+   print(data)
 
-   # Delete
-   db.delete(table_name, conditions)
+   # Delete data from the table
+   database.delete('students', {'name': 'John'})
 
-   db.close()
+   # Close the database connection
+   database.close()
 
 Limitations
 -----------
 
-The primary limitation of ``SQLDatabase`` is that it is focused on
-SQLite and may not provide complete compatibility with other SQL
-databases. In addition, it assumes a specific format for queries and
-conditions, which may not cover all possible SQL query variations.
+The ``SQLDatabase`` class specifically designed for SQLite databases. It
+is not explicitly designed to work with other types of SQL databases,
+for example MySQL or PostgreSQL.
 
 Follow-up Questions:
 --------------------
 
--  Are there plans to extend the functionality of ``SQLDatabase`` to
-   support other SQL databases?
--  What is the suggested approach for using complex conditions when
-   working with this class?
+-  Is ``SQLDatabase`` compatible with all versions of SQLite or only
+   with particular ones?
+-  How is exception handling managed in the ``SQLDatabase`` class?
+-  Are there any plans to extend ``SQLDatabase`` class for compatibility
+   with other types of SQL databases?
+
+Notes
+-----
+
+-  Mock objects referenced in test files have been replaced with actual
+   objects for this documentation.
+-  Information provided for
+   ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
+   class has been excluded from this documentation, as it appears to be
+   unrelated to the primary symbol. If this class is important to
+   understanding ``SQLDatabase``, more context would be helpful.

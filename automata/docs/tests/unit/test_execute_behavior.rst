@@ -1,69 +1,80 @@
 TestExecuteBehavior
 ===================
 
-``TestExecuteBehavior`` is a class for executing test tasks in the
-Automata system. It inherits from ``ITaskExecution``, which is an
-interface for task execution behaviors. The main functionality of this
-class is provided by its ``execute`` method, which takes a ``Task``
-instance as an argument and performs execution on it.
+``TestExecuteBehavior`` is a class that implements the
+``ITaskExecution`` interface for executing test tasks.
 
 Overview
 --------
 
-The main purpose of ``TestExecuteBehavior`` is to execute test tasks by
-creating a new Python module based on the provided task information. It
-utilizes other Automata-related classes and utilities, such as
-``PyReader``, ``PyWriter``, and some utility functions for Python file
-path management. The class cleans up any output files created during the
-execution process.
+``TestExecuteBehavior`` is a testing utility class used for executing
+tasks in a test environment. It is a part of the automata test suite.
+The class is an ``ITaskExecution`` subtype, which means it contains the
+``execute()`` method responsible for executing tasks. The ``execute()``
+method in ``TestExecuteBehavior`` creates a new module using the
+``PyWriter`` and ``PyReader`` utilities, defines a simple function
+inside it, assigns a result to the task, and cleans up the newly created
+module file.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.tasks.base.ITaskExecution``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
--  ``automata.core.tasks.executor.AutomataTaskExecutor.__init__``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.core.tasks.base.TaskStatus``
--  ``automata.tests.unit.test_tool.test_tool_run``
 -  ``automata.core.tasks.executor.AutomataTaskExecutor``
--  ``automata.tests.unit.test_tool.test_tool``
+-  ``automata.core.tasks.base.TaskStatus``
 -  ``automata.core.tasks.tasks.AutomataTask``
--  ``automata.tests.unit.test_task_environment.TestURL``
+-  ``automata.core.tasks.base.ITaskExecution.execute``
+-  ``automata.core.code_handling.py.writer.PyWriter.create_new_module``
+-  ``automata.core.tasks.base.Task``
 
-Usage Example
--------------
+Example
+-------
 
-The following example demonstrates how to use ``TestExecuteBehavior``
-for executing a test task:
+The following example demonstrates how to use ``TestExecuteBehavior`` to
+execute a task in an Automata task executor.
 
 .. code:: python
 
-   from automata.tests.unit.test_task_executor import TestExecuteBehavior
    from automata.core.tasks.base import Task
+   from automata.core.tasks.executor import AutomataTaskExecutor
+   from automata.tests.unit.test_task_executor import TestExecuteBehavior
 
-   # Create a sample Task instance
+   # define a Task
    task = Task()
 
-   # Create a TestExecuteBehavior instance and execute the task
+   # use TestExecuteBehavior for task execution
    execution = TestExecuteBehavior()
-   execution.execute(task)
+   task_executor = AutomataTaskExecutor(execution)
 
-   # Check the result of the task
-   print(task.result)  # Outputs: "Test result"
+   # execute the task
+   result = task_executor.execute(task)
+
+In the example above, we first instantiate a ``Task`` object. Then, we
+create an instance of ``TestExecuteBehavior`` and provide it to the
+``AutomataTaskExecutor``, which will execute the task using the
+``TestExecuteBehavior``.
 
 Limitations
 -----------
 
-One limitation of ``TestExecuteBehavior`` is that it requires a specific
-directory structure for the Python module creation and cleanup. This
-means that any changes to the directory structure would require updating
-the ``TestExecuteBehavior`` implementation.
+``TestExecuteBehavior`` is primarily meant for testing and may not fully
+emulate the behavior of a typical execution behavior used in production.
+It generates python files and deletes them immediately after execution.
+Therefore, this behavior may not be appropriate for scenarios where
+persistent modification of the python filesystem is required.
 
 Follow-up Questions:
 --------------------
 
--  How can ``TestExecuteBehavior`` be made more generic to handle
-   different types of tasks and directory structures?
--  What are the best practices for handling temporary files and cleaning
-   them up after execution in the Automata-framework?
+-  While ``TestExecuteBehavior`` serves as an excellent tool for testing
+   task execution, could it benefit from more comprehensive testing
+   features?
+-  Would extending ``TestExecuteBehavior`` with more helper methods
+   streamline testing in certain scenarios? For example, a method to
+   handle and track exceptions during task execution. Is there a
+   possibility to extend this class functionality?
+-  Is ``TestExecuteBehavior`` suitable for integration testing, or
+   should we rely on more sophisticated tooling/frameworks for
+   integration tests?

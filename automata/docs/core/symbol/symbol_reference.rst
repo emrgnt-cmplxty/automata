@@ -1,62 +1,74 @@
 SymbolReference
 ===============
 
-``SymbolReference`` is a class representing a reference to a symbol in a
-file. It provides equality and hashing functions that allow easy
-comparison and storage of symbol references. This class is used in
-various contexts, such as symbol searching, symbol embedding, and
-retrieving source code by symbol.
+``SymbolReference`` is a class in the ``automata.core.symbol.base``
+module that represents a reference to a symbol in a file. It is
+particularly useful in complex code structures where the same symbol can
+be used in different parts of the code, and these references need to be
+identified or compared.
 
 Overview
 --------
 
-``SymbolReference`` is mainly used to reference a symbol in a file and
-is utilized in various applications, such as searching for symbol
-references or storing them in databases. By providing equality and
-hashing methods, ``SymbolReference`` allows for simple handling and
-comparison of symbol reference objects, even across different files.
+The ``SymbolReference`` class has two magic methods ``__eq__`` and
+``__hash__`` which are used to evaluate equality and generate an
+immutable hash, respectively. The class is used to compare instances of
+``SymbolReference`` and check the equality of the ``uri``,
+``line_number`` and ``column_number`` of the symbol reference. They are
+also important for the usage of ``SymbolReference`` instances in sets or
+dictionaries, where hash values are required.
+
+Methods
+-------
+
+The class ``SymbolReference`` contains the following methods:
+
+-  ``__eq__(self, other) -> bool`` : It checks the equality of two
+   instances of ``SymbolReference`` by comparing the ``uri``,
+   ``line_number`` and ``column_number`` of the ``SymbolReference``
+   instances.
+
+-  ``__hash__(self) -> int`` : This method creates a hash value for the
+   instance of ``SymbolReference`` using the ``uri``, ``line_number``
+   and ``column_number``.
+
+It should be noted that the ``__hash__`` method could cause collisions
+if the same symbol is referenced in different files at the same
+location.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.graph._SymbolGraphNavigator._get_symbol_references_in_scope``
--  ``automata.tests.unit.test_symbol_search.tool.test_symbol_references``
--  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
+-  ``automata.core.symbol.graph.SymbolGraph``
+-  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.tests.unit.test_symbol_search.test_symbol_references``
+-  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
 
-Example
--------
+Examples
+--------
+
+The following is an example demonstrating how to create an instance of
+``SymbolReference`` and how to use the ``__eq__`` method.
 
 .. code:: python
 
    from automata.core.symbol.base import Symbol, SymbolReference
+   from automata.core.symbol.parser import parse_symbol
 
-   # Create two Symbol objects
-   symbol_1 = Symbol.from_string("scip-python python automata 0.1.0 AutomataNamespace/ClassName#")
-   symbol_2 = Symbol.from_string("scip-python python automata 0.2.0 AutomataNamespace/ClassName#")
+   symbol_uri = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   symbol = parse_symbol(symbol_uri)
 
-   # Create two SymbolReference objects with the created Symbol objects
-   symbol_reference_1 = SymbolReference(symbol=symbol_1, line_number=10, column_number=5)
-   symbol_reference_2 = SymbolReference(symbol=symbol_2, line_number=10, column_number=5)
+   symbol_ref_1 = SymbolReference(symbol=symbol, line_number=10, column_number=20)
+   symbol_ref_2 = SymbolReference(symbol=symbol, line_number=10, column_number=20)
 
-   # Evaluate the equality of the SymbolReference objects
-   assert symbol_reference_1 != symbol_reference_2
+   print(symbol_ref_1 == symbol_ref_2)  # Will output: True
 
-Limitations
------------
-
-Although ``SymbolReference`` provides an efficient way to compare symbol
-references, its hashing method can potentially generate collisions if
-the same symbol is referenced in different files at the same location.
-This might affect performance when storing symbol references in large
-collections, such as dictionaries or sets. However, this does not
-significantly impact the overall functionality or usability of the
-class.
-
-Follow-up Questions:
+Follow-Up Questions:
 --------------------
 
--  Are there any other known use cases for ``SymbolReference`` apart
-   from those in the related symbols?
+-  How are instances of ``SymbolReference`` generated in the system?
+-  What are the likely scenarios where symbol collisions can occur and
+   how are these handled?
+-  Potential limitations or drawbacks of the ``__hash__`` implementation
+   weren’t specified, can these be determined and documented?

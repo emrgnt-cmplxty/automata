@@ -1,59 +1,90 @@
 Symbol
 ======
 
-``Symbol`` is a class that identifies a class, method, or a local
-variable, similar to a URI. ``Symbol`` contains rich metadata about
-symbols, such as docstrings. It has a standardized string representation
-that can be used interchangeably, with a specific syntax to represent
-each type of symbol.
-
-``Symbol`` provides various methods, utility functions, and attributes
-to work with symbols, compare them, and extract information such as the
-symbol’s module name, parent symbol, dotpath, and symbol kind.
+The ``Symbol`` class in Automata is used to represent a reference to a
+Python object in a standardized format. This could be a class, method,
+or a local variable. The ``Symbol`` is specified by a Uniform Resource
+Identifier (URI) with a defined syntax.
 
 Overview
 --------
 
-``Symbol`` is initialized with four parameters - ``uri``, ``scheme``,
-``package``, and ``descriptors``. It provides methods to compare two
-symbols, get a symbol’s dotpath, hash a symbol, and create a string
-representation of the symbol. Additionally, it includes utility
-functions to determine whether a symbol is local, meta, parameter, or
-protobuf.
+The ``Symbol`` class primarily works with the concept of a URI. A URI
+for a Symbol is composed of a ``scheme``, ``package``, and
+``descriptor``. The ``scheme`` consists of any UTF-8 characters, and
+spaces within this portion of the URI need to be escaped using a double
+space. The ``package`` specifies the ``manager``, ``package-name``, and
+``version``. The ``descriptors`` define the ``namespace``, ``type``,
+``term``, ``method``, ``type-parameter``, ``parameter``, ``meta``, or
+``macro``.
+
+Useful methods offered by the ``Symbol`` class include:
+
+-  ``__eq__()``: Compares the current symbol to another to determine
+   equivalence.
+-  ``__hash__()``: Calculates the hash value of a symbol.
+-  ``__repr__()``: Returns the string representation of the Symbol
+   instance.
+-  ``dotpath()``: Returns the dotpath of the symbol.
+-  ``from_string()``: Creates a ``Symbol`` instance from a string
+   representation.
+-  ``is_local()``, ``is_meta()``, ``is_parameter()``, ``is_protobuf()``:
+   These methods help determine the type of symbol based on the
+   descriptor attributes.
+-  ``module_name()``: Returns the module name of the symbol.
+-  ``parent()``: Returns the parent symbol of the current symbol.
+-  ``symbol_kind_by_suffix()``, ``symbol_raw_kind_by_suffix()``: The two
+   methods convert the suffix of the URI into PyKind and DescriptorProto
+   respectively, which help determine the type of symbol.
+
+Examples
+--------
+
+Here is an example of how you can use the ``Symbol`` class:
+
+.. code:: python
+
+   from automata.core.experimental.search.symbol_parser import parse_symbol
+
+   symbol_class = parse_symbol(
+   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   )
+
+   symbol_method = parse_symbol(
+   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tools.base`/ToolNotFoundError#__init__()."
+   )
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
--  ``automata.tests.unit.test_database_vector.test_delete_symbol``
+The following are the related symbols:
+
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.base.database.vector.JSONEmbeddingVectorDatabase``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
--  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.tests.unit.test_database_vector.test_add_symbol``
-
-Example
--------
-
-.. code:: python
-
-   from automata.core.symbol.parser import parse_symbol
-
-   symbol_class = parse_symbol("scic-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#")
-
-   symbol_method = parse_symbol("scic-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tools.tool`/ToolNotFoundError#__init__().")
+-  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
+-  ``automata.core.symbol_embedding.base.SymbolEmbedding.symbol``
+-  ``automata.tests.unit.test_database_vector.test_delete_symbol``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.tests.unit.test_symbol_parser.test_is_local_symbol``
 
 Limitations
 -----------
 
-The primary limitation of the ``Symbol`` class is that it assumes a
-specific structure and syntax for symbols. Incorrectly formatted symbols
-may result in errors or unexpected behavior during parsing or usage.
+Given that the ``Symbol`` class relies on formatting a URI with a
+specific syntax, it is important to follow the symbol syntax strictly,
+especially when dealing with special characters.
+
+Dependencies
+------------
+
+-  ``automata.core.symbol.parser.parse_symbol``: This parses a
+   ``Symbol`` given a URI.
 
 Follow-up Questions:
 --------------------
 
--  Are there any plans to support custom symbol formats?
--  Can symbol representations be easily extended to support additional
-   symbol types if needed in the future?
+-  What happens if the supplied URI for the ``Symbol`` doesn’t match the
+   specified format?
+-  What if the ``scheme`` or ``package`` supplied in the URI doesn’t
+   exist?
+-  Is there any way to validate if the ``Symbol`` created maps to a
+   valid Python object?

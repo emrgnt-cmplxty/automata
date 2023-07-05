@@ -1,64 +1,73 @@
 TestTool
 ========
 
-``TestTool`` is a simple testing tool that inherits from the ``Tool``
-class. It is designed for testing purposes within the automata
-framework. Its primary function is to return a predefined string when
-executed. ``TestTool`` serves as an example of how to create and use
-custom tools within the framework.
+``TestTool`` is a simple tool derived from the base ``Tool`` that
+directly exposes a function or coroutine. This tool, primarily built for
+testing purposes, accepts an input dictionary and returns a static
+response string.
 
 Overview
 --------
 
-``TestTool`` is a subclass of ``Tool`` that takes a function as input
-and returns a predefined string. The class is intended for testing
-purposes and demonstrates how to create and use custom tools within the
-Automata framework. The ``TestTool`` class has a single method named
-``run``, which takes a dictionary as input and returns a string. It also
-provides an example of how to use the tool with related symbols like
-``pytest.fixture`` and test functions.
+``TestTool`` is part of a broader ecosystem designed around automating
+various tasks and processes. The TestTool class encapsulates a basic
+function - in this case, returning a hardcoded string response - which
+is exposed via a ``run`` method.
 
 Related Symbols
 ---------------
 
--  ``automata.core.tools.tool.Tool``
 -  ``automata.tests.unit.test_tool.test_tool``
+-  ``automata.core.tools.base.Tool``
 -  ``automata.tests.unit.test_tool.test_tool_run``
+-  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
+-  ``automata.core.tasks.base.TaskStatus``
+-  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
+-  ``automata.core.tools.builders.symbol_search.SearchTool``
+-  ``automata.tests.unit.test_symbol_search_tool.test_build``
+-  ``automata.core.code_handling.py.reader.PyReader``
 
-Example
--------
+Usage Example
+-------------
 
-The following example demonstrates how to create an instance of
-``TestTool``, run the tool with provided input, and obtain the
-response):
+The following example demonstrates how to instantiate and run the
+``TestTool``.
 
 .. code:: python
 
    from automata.tests.unit.test_tool import TestTool
+
+   # Instantiate TestTool
+   tool = TestTool()
+
+   # Input for the tool
    tool_input = {"test": "test"}
-   test_tool = TestTool(
-       name="TestTool",
-       description="A test tool for testing purposes",
-       function=lambda x: "TestTool response",
-   )
 
-   response = test_tool.run(tool_input)
-   print(response)  # Output: "TestTool response"
+   # Run the tool
+   response = tool.run(tool_input)
 
-Limitations
------------
+   print(response) # --> "TestTool response"
 
-The primary limitation of ``TestTool`` is that it is intended for
-testing purposes only and does not provide any real-world functionality
-or use case. Its purpose is to serve as an example of how to create and
-use custom tools within the Automata framework.
+Limitation
+----------
+
+The primary limitation of ``TestTool`` is its simplicity. Given its
+purpose for testing, ``TestTool`` doesn’t involve complex processes or
+computations. It accepts an input dictionary, and no matter what the
+contents, it returns a static string. Therefore, it is not suitable for
+any practical applications outside of testing.
 
 Follow-up Questions:
 --------------------
 
--  How can we create more advanced tools that interact with external
-   services or process complex data?
+-  Could the ``TestTool`` support more complex functions for advanced
+   testing scenarios?
+-  Is the current implementation of ``TestTool`` sufficient for testing
+   the whole ecosystem it is a part of?
 
--  What are the best practices for designing and implementing custom
-   tools within the Automata framework?
+Please note: Some information regarding related symbols and dependencies
+are included for contextual reference and may not be directly relevant
+to the working of ``TestTool``. Furthermore, in tests, actual objects
+are preferred over ‘Mock’ objects for better comprehensibility, but if
+they are used, this will be explicitly mentioned.

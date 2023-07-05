@@ -11,19 +11,13 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
-   completion/index
+   foundation/index
    providers/index
-   embedding_norm_type
-   embedding_provider
-   embedding_similarity
-   embedding_similarity_calculator
    llm_chat_completion_provider
    llm_chat_message
    llm_completion_result
    llm_conversation
    llm_conversation_database_provider
-   symbol_embedding_builder
-   symbol_embedding_handler
 
 
 Summary of content

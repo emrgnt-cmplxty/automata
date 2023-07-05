@@ -11,19 +11,12 @@ how to :ref:`installation` the project.
 .. toctree::
    :maxdepth: 1
 
+   embedding
+   embedding_builder
    embedding_handler
-   embedding_provider
-   embedding_similarity
-   embeddings_provider
-   norm_type
-   open_ai_embedding
-   symbol_code_embedding_builder
-   symbol_code_embedding_handler
-   symbol_doc_embedding_builder
-   symbol_doc_embedding_handler
-   symbol_embedding_handler
-   symbol_similarity
-   symbol_similarity_calculator
+   embedding_norm_type
+   embedding_similarity_calculator
+   embedding_vector_provider
 
 
 Summary of content

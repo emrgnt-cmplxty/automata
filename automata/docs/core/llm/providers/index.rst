@@ -12,9 +12,6 @@ how to :ref:`installation` the project.
    :maxdepth: 1
 
    function_call
-   llm_platforms
-   open_ai_agent
-   open_ai_agent_tool_builder
    open_ai_chat_completion_provider
    open_ai_chat_completion_result
    open_ai_chat_message

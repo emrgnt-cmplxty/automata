@@ -1,70 +1,93 @@
-Agent
-=====
+Automata.core.agent.agent.Agent
+===============================
 
-``Agent`` is an abstract base class representing an autonomous entity
-that can perform actions and communicate with other providers in the
-context of Automata. Derived classes from ``Agent`` should implement the
-``iter_step``, ``run`` and ``set_coordinator`` abstract methods.
-``Agent`` provides the basic structure for different types of providers
-that can be used in the Automata system.
+``Agent`` class is an abstract base class, used as blueprint for
+creating autonomous agents that can perform tasks and communicate.
+Instantiation and primary operations of the agent are defined within the
+class and are often implemented in subclasses.
 
 Overview
 --------
 
-To create a custom agent, you should inherit from the ``Agent`` base
-class and define the abstract methods based on your agent’s purpose. The
-agent should be able to perform actions by implementing the
-``iter_step`` and ``run`` methods. Additionally, the agent should be
-able to interact with an ``AutomataCoordinator`` by implementing the
-``set_coordinator`` method. This will allow them to be managed and
-communicate with other providers within the same coordinator.
+The ``Agent`` is an abstract base class that contains several abstract
+methods. These methods are ``__iter__``, ``__next__``, ``run`` and
+``set_database_provider``. Derived classes that inherit from ``Agent``
+must provide implementations for these methods.
 
-Related Symbols
----------------
-
--  ``automata.core.agent.agent.AutomataAgent``
--  ``automata.core.agent.coordinator.AutomataCoordinator``
--  ``automata.tests.unit.test_automata_coordinator.test_set_coordinator_main``
-
-Example
--------
-
-Below is an example of how to create a custom agent that inherits from
-the ``Agent`` base class:
+Import Statement
+----------------
 
 .. code:: python
 
    from automata.core.agent.agent import Agent
-   from automata.core.coordinator.automata_coordinator import AutomataCoordinator
-   from typing import Optional, Tuple
-   from automata.core.base.openai import OpenAIChatMessage
 
-   class MyCustomAgent(Agent):
-       def iter_step(self) -> Optional[Tuple[OpenAIChatMessage, OpenAIChatMessage]]:
-           # Perform specific actions for your custom agent here
-           return some_action_output
-           
-       def run(self) -> str:
-           # Implement the main logic for your custom agent here
-           return some_result
-         
-       def set_coordinator(self, coordinator: AutomataCoordinator) -> None:
-           # Set the AutomataCoordinator instance for your custom agent here
-           self.coordinator = coordinator
+Methods
+-------
+
+-  ``__init__ (self, instructions: str) -> None``:
+
+   Constructor method that initializes an agent with a set of
+   instructions and sets task completion status and
+   ``database_provider`` to None.
+
+-  ``__iter__ (self) -> None``:
+
+   An abstract method that should be overridden in subclasses, and used
+   for iterating over the agent.
+
+-  ``__next__ (self) -> LLMIterationResult``:
+
+   Abstract method used to move the agent one step forward in its task.
+   Result of this operation is returned as an instance of
+   ``LLMIterationResult``, or None if task either completed or isn’t
+   initialized.
+
+-  ``run (self) -> str``:
+
+   Abstract method that should be overridden in subclasses. Designed to
+   execute the agent’s task until it’s complete - meaning, until
+   ``__next__`` method returns None. May raise an ``AgentError`` if an
+   attempt is made to run a task that has already been completed or
+   exceeds the permissible number of iterations.
+
+-  ``set_database_provider (self, provider: LLMConversationDatabaseProvider) -> None``:
+
+   Abstract method that should be overridden in subclasses. Used to set
+   the iteration provider for the database. If an agent fails to set a
+   database provider, ``AgentDatabaseError`` is raised.
+
+Related Symbols
+---------------
+
+-  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
+-  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
+-  ``automata.core.agent.error.AgentResultError``
+-  ``automata.tests.conftest.task``
+-  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit.python_agent_python_task``
+-  ``automata.core.agent.error.AgentGeneralError``
+-  ``automata.tests.conftest.automata_agent_config_builder``
+-  ``automata.core.agent.error.AgentDatabaseError``
+
+Dependencies
+------------
+
+-  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
 
 Limitations
 -----------
 
-As ``Agent`` is an abstract base class, it cannot be directly
-instantiated and must be subclassed. The abstract methods must be
-implemented in the derived class to properly define the agent’s behavior
-and interaction with the ``AutomataCoordinator``.
+The ``Agent`` class provides a foundation for creating classes for
+specific autonomous agents. However, as it is an abstract base class, it
+cannot be instantiated or used on its own. It must be subclassed and its
+methods must be implemented according to the specific requirements of
+the derived classes.
 
 Follow-up Questions:
 --------------------
 
--  How can the derived class interact with other providers in the Automata
-   system?
--  What additional methods or attributes should be added to the
-   ``Agent`` abstract base class to support a wider range of agent
-   types?
+-  What are some common agents that can be implemented from this base
+   class?
+-  Can we further expand the ``Agent`` class to include additional
+   optional base functionalities?

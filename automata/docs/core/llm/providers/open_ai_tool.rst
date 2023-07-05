@@ -1,75 +1,77 @@
 OpenAITool
 ==========
 
-``OpenAITool`` is a class that allows you to create custom tools that
-interact with the OpenAI API. This is particularly useful when you want
-your OpenAI-based agent to perform tasks using specific functionalities
-provided by these tools. The ``OpenAITool`` class inherits from the
-``Tool`` class and incorporates the ``OpenAIFunction`` class to specify
-the function callable by the OpenAI agent.
-
 Overview
 --------
 
-``OpenAITool`` takes in a ``function``, ``name``, ``description``, and
-``properties`` during instantiation. The ``function`` is the main
-callable that the tool needs to execute. The ``name``, ``description``,
-and ``properties`` are used to describe the tool and its functions.
+``OpenAITool`` is a class intended to represent a tool that can be
+implemented by the OpenAI agent. This class mainly provides
+functionalities for initializing OpenAI tools with specific functions,
+names, descriptions, properties, and requirements. The initialization
+process of ``OpenAITool`` involves invoking the ``OpenAIFunction``
+class.
 
-The main method provided by the ``OpenAITool`` class is the ``run``
-method, which takes a ``tool_input`` dictionary as its parameter and
-returns the output of the ``function``.
+This class is primarily used by OpenAI’s toolkit builders, such as
+``ContextOracleOpenAIToolkitBuilder``, ``PyWriterOpenAIToolkitBuilder``,
+and ``SymbolSearchOpenAIToolkitBuilder``, to create lists of
+``OpenAITool`` instances for OpenAI.
 
 Related Symbols
 ---------------
 
--  ``automata.core.tools.tool.Tool``
--  ``automata.core.llm.providers.openai.OpenAIFunction``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
+-  ``automata.core.embedding.base.EmbeddingVectorProvider``
+-  ``automata.core.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.core.llm.foundation.LLMCompletionResult``
+-  ``automata.core.llm.foundation.LLMConversation``
+-  ``automata.core.tools.base.Tool``
+-  ``automata.tests.unit.test_tool.TestTool``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``OpenAITool``.
+Below is an example of how to instantiate an ``OpenAITool`` using the
+test tool as a function, which simply returns a string “TestTool
+response” irrespective of the input provided.
 
 .. code:: python
 
-   from automata.core.tools.tool import OpenAITool
+   from automata.core.llm.providers.openai import OpenAITool
+   from automata.tests.unit.test_tool import TestTool
 
-   def example_function(tool_input):
-       return f"Example tool response: {tool_input['input_text']}"
-
-   example_tool = OpenAITool(
-       function=example_function,
-       name="ExampleTool",
-       description="An example tool for demonstration purposes",
-       properties={
-           "input_text": {
-               "type": "string",
-               "description": "The input text for the example tool",
-           }
-       },
+   tool = TestTool(
+       name="TestTool",
+       description="A test tool for testing purposes",
+       function=lambda x: "TestTool response",
    )
 
-   tool_input = {"input_text": "Hello, World!"}
-   response = example_tool.run(tool_input)
-   print(response)  # "Example tool response: Hello, World!"
+   openai_tool = OpenAITool(
+       function=tool.run,
+       name=tool.name,
+       description=tool.description,
+       properties={'test_prop': {'description': 'A test property', 'type': 'string'}},
+   )
+
+Here the ``run`` method of the ``TestTool`` instance ``tool`` is passed
+as the ``function`` parameter to ``OpenAITool``. The ``properties`` is a
+dictionary that includes additional data about the tool, such as a
+description and type for each property. The ``name`` and ``description``
+are self-explanatory.
 
 Limitations
 -----------
 
-The main limitation of the ``OpenAITool`` class is that it assumes a
-specific structure for the ``properties`` parameter, which should be a
-dictionary of dictionaries with specific keys. Moreover, the
-``function`` parameter should be easily serializable, as it might be
-passed to the OpenAI API.
+The OpenAITool provides a basic framework to facilitate the creation and
+usage of tools for the OpenAI agent. The actual functionality of the
+tool would largely depend on the function passed during its
+instantiation. Also, even though it provides a property variable for
+additional data storage, it does not inherently provide methods to
+handle or manipulate these properties.
 
 Follow-up Questions:
 --------------------
 
--  How can we extend the functionality of ``OpenAITool`` to handle more
-   complex ``properties`` structures?
--  Are there any performance or security concerns when passing the
-   ``function`` parameter to the OpenAI API?
+-  How are the properties of the OpenAITool used in the toolkit builders
+   and eventually by the OpenAI agent?
+-  Are there any specific requirements or constraints for the function
+   that is passed during the initialisation of an OpenAITool?
