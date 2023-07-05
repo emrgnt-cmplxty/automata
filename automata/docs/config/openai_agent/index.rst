@@ -8,11 +8,26 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   config
-   template_formatter
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       config
+       template_formatter
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

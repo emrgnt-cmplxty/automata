@@ -8,11 +8,26 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   observer
-   singleton
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       observer
+       singleton
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

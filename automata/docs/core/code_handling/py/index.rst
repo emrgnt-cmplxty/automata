@@ -8,13 +8,28 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   writer/index
-   py_doc_writer
-   py_reader
-   py_writer
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       py_doc_writer
+       py_reader
+       py_writer
+       writer/index
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+
