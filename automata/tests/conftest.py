@@ -3,12 +3,11 @@ import random
 from typing import Any, Set
 from unittest.mock import MagicMock
 
-import networkx as nx
 import numpy as np
 import pytest
 
 from automata.config.base import AgentConfigName
-from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.agent import AgentToolkitNames
 from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
@@ -143,7 +142,7 @@ def automata_agent_config_builder():
 
     dependency_factory.get = unittest.mock.MagicMock(return_value=None)
 
-    return AutomataOpenAIAgentConfigBuilder.from_name(config_name)
+    return OpenAIAutomataAgentConfigBuilder.from_name(config_name)
 
 
 @pytest.fixture

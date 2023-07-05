@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Sequence
 
 from automata.config.base import ConfigCategory
-from automata.config.openai_agent import AutomataOpenAIAgentConfig
+from automata.config.openai_agent import OpenAIAutomataAgentConfig
 from automata.core.agent.agent import Agent, AgentToolkitBuilder
 from automata.core.agent.error import (
     AgentDatabaseError,
@@ -41,7 +41,7 @@ class OpenAIAutomataAgent(Agent):
     EXECUTION_PREFIX: Final = "Execution Result:\n\n"
     _initialized = False
 
-    def __init__(self, instructions: str, config: AutomataOpenAIAgentConfig) -> None:
+    def __init__(self, instructions: str, config: OpenAIAutomataAgentConfig) -> None:
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0

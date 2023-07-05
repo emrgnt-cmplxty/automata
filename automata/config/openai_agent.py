@@ -14,7 +14,7 @@ from automata.core.experimental.search.rank import SymbolRank
 from automata.core.singletons.dependency_factory import dependency_factory
 
 
-class AutomataOpenAIAgentConfig(AgentConfig):
+class OpenAIAutomataAgentConfig(AgentConfig):
     """A class to hold the configuration for the Automata OpenAI Agent."""
 
     class Config:
@@ -37,7 +37,7 @@ class AutomataOpenAIAgentConfig(AgentConfig):
     class TemplateFormatter:
         @staticmethod
         def create_default_formatter(
-            config: "AutomataOpenAIAgentConfig",
+            config: "OpenAIAutomataAgentConfig",
             symbol_rank: SymbolRank,
             max_default_overview_symbols: int = 100,
         ) -> Dict[str, str]:
@@ -62,7 +62,7 @@ class AutomataOpenAIAgentConfig(AgentConfig):
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:
             self.system_template_formatter = (
-                AutomataOpenAIAgentConfig.TemplateFormatter.create_default_formatter(
+                OpenAIAutomataAgentConfig.TemplateFormatter.create_default_formatter(
                     self, dependency_factory.get("symbol_rank")
                 )
             )
@@ -70,13 +70,13 @@ class AutomataOpenAIAgentConfig(AgentConfig):
             self.system_instruction = self._formatted_instruction()
 
     @classmethod
-    def load(cls, config_name: AgentConfigName) -> "AutomataOpenAIAgentConfig":
+    def load(cls, config_name: AgentConfigName) -> "OpenAIAutomataAgentConfig":
         """Loads the config for the agent."""
         if config_name == AgentConfigName.DEFAULT:
-            return AutomataOpenAIAgentConfig()
+            return OpenAIAutomataAgentConfig()
 
         loaded_yaml = cls._load_automata_yaml_config(config_name)
-        return AutomataOpenAIAgentConfig(**loaded_yaml)
+        return OpenAIAutomataAgentConfig(**loaded_yaml)
 
     @staticmethod
     def get_llm_provider() -> LLMProvider:
@@ -105,29 +105,29 @@ class AutomataOpenAIAgentConfig(AgentConfig):
         return formatted_instruction
 
 
-class AutomataOpenAIAgentConfigBuilder(AgentConfigBuilder):
+class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
     """
     The AutomataAgentConfigBuilder class is a builder for constructing instances of AutomataAgents.
     It offers a flexible and easy-to-use interface for setting various properties of the agent before instantiation.
     """
 
-    _config: AutomataOpenAIAgentConfig = PrivateAttr()
+    _config: OpenAIAutomataAgentConfig = PrivateAttr()
 
     @staticmethod
-    def create_config(config_name: Optional[AgentConfigName]) -> AutomataOpenAIAgentConfig:  # type: ignore
+    def create_config(config_name: Optional[AgentConfigName]) -> OpenAIAutomataAgentConfig:  # type: ignore
         if config_name:
-            return AutomataOpenAIAgentConfig.load(config_name)
-        return AutomataOpenAIAgentConfig()
+            return OpenAIAutomataAgentConfig.load(config_name)
+        return OpenAIAutomataAgentConfig()
 
     def with_model(self, model: str) -> AgentConfigBuilder:
-        if model not in AutomataOpenAIAgentConfig.Config.SUPPORTED_MODELS:
+        if model not in OpenAIAutomataAgentConfig.Config.SUPPORTED_MODELS:
             raise ValueError(f"Model {model} not found in Supported OpenAI list of models.")
         self._config.model = model
         return self
 
     def with_system_template_formatter(
         self, system_template_formatter: Dict[str, str]
-    ) -> "AutomataOpenAIAgentConfigBuilder":
+    ) -> "OpenAIAutomataAgentConfigBuilder":
         """
         Set the template formatter for the AutomataAgent instance and validate if it is supported.
 
@@ -142,13 +142,13 @@ class AutomataOpenAIAgentConfigBuilder(AgentConfigBuilder):
 
     def with_instruction_version(
         self, instruction_version: str
-    ) -> "AutomataOpenAIAgentConfigBuilder":
+    ) -> "OpenAIAutomataAgentConfigBuilder":
         self._validate_type(instruction_version, str, "Instruction version")
         self._config.instruction_version = InstructionConfigVersion(instruction_version)
         return self
 
     @staticmethod
-    def create_from_args(*args, **kwargs) -> AutomataOpenAIAgentConfig:
+    def create_from_args(*args, **kwargs) -> OpenAIAutomataAgentConfig:
         """Creates an AutomataAgentConfig instance from the provided arguments."""
 
         config_to_load = kwargs.get("config_to_load", None)
@@ -161,11 +161,11 @@ class AutomataOpenAIAgentConfigBuilder(AgentConfigBuilder):
             raise ValueError("Config to load and config cannot both be specified.")
 
         if config_to_load:
-            builder = AutomataOpenAIAgentConfigBuilder.from_name(
+            builder = OpenAIAutomataAgentConfigBuilder.from_name(
                 config_name=AgentConfigName(config_to_load)
             )
         else:
-            builder = AutomataOpenAIAgentConfigBuilder.from_config(config)  # type: ignore
+            builder = OpenAIAutomataAgentConfigBuilder.from_config(config)  # type: ignore
 
         if "model" in kwargs:
             builder = builder.with_model(kwargs["model"])

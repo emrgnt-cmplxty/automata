@@ -3,7 +3,7 @@ from typing import List
 
 from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.config.base import AgentConfigName
-from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.github_management.client import GitHubClient
 from automata.core.singletons.dependency_factory import dependency_factory
@@ -63,7 +63,7 @@ def main(*args, **kwargs):
     logger.info("Done building tools...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata-main"))
     agent_config = (
-        AutomataOpenAIAgentConfigBuilder.from_name(config_name)
+        OpenAIAutomataAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)
         .with_model(kwargs.get("model", "gpt-4-0613"))
         .build()

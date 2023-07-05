@@ -4,24 +4,31 @@ from automata.core.symbol.base import ISymbolProvider, Symbol
 
 
 class SymbolProviderRegistry:
+    """A class for registering and tracking `ISymbolProvider` instances."""
+
     _providers: Set[ISymbolProvider] = set([])
     sorted_supported_symbols: List[Symbol] = []
 
     @staticmethod
-    def register_provider(provider: ISymbolProvider):
+    def register_provider(provider: ISymbolProvider) -> None:
         provider.set_synchronized(False)
         SymbolProviderRegistry._providers.add(provider)
-        return provider
 
     @staticmethod
-    def synchronize():
+    def synchronize() -> None:
+        """
+        Synchronizes all symbol providers.
+        As part of the synchronization process, each provider has
+        their synchronized status set True and their supported symbols
+        filtered to only include symbols that are supported by all providers.
+        """
         all_symbols = [
             set(provider._get_sorted_supported_symbols())
             for provider in SymbolProviderRegistry._providers
         ]
-        sorted_supported_symbols = set.intersection(*all_symbols)
+        supported_symbols = set.intersection(*all_symbols)
 
-        sorted_supported_symbols = sorted(list(sorted_supported_symbols), key=lambda x: x.dotpath)
+        sorted_supported_symbols = sorted(list(supported_symbols), key=lambda x: x.dotpath)
 
         for provider in SymbolProviderRegistry._providers:
             provider.filter_symbols(sorted_supported_symbols)
@@ -33,7 +40,8 @@ class SymbolProviderRegistry:
             raise RuntimeError("No symbols are supported by any symbol provider")
 
     @staticmethod
-    def get_sorted_supported_symbols():
+    def get_sorted_supported_symbols() -> List[Symbol]:
+        """Returns a list of all supported symbols."""
         if not SymbolProviderRegistry.sorted_supported_symbols:
             SymbolProviderRegistry.synchronize()
 
@@ -41,6 +49,8 @@ class SymbolProviderRegistry:
 
 
 class SymbolProviderSynchronizationContext:
+    """A context manager for synchronizing symbol providers."""
+
     def __init__(self):
         self._was_synchronized = False
 

@@ -45,7 +45,7 @@ Several classes and methods interact or have a tied relationship with
 
 -  ``automata_agent_config_builder``: A fixture used as a way to
    standardize and isolate setup procedures for testing by generating an
-   instance of ``AutomataOpenAIAgentConfigBuilder``.
+   instance of ``OpenAIAutomataAgentConfigBuilder``.
 
 Example
 -------

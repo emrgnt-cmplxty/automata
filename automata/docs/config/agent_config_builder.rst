@@ -26,7 +26,7 @@ object or the configuration object name.
 Related Symbols
 ---------------
 
--  ``automata.config.openai_agent.AutomataOpenAIAgentConfigBuilder``
+-  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 
@@ -34,15 +34,15 @@ Example
 -------
 
 The following example demonstrates how to create an instance of
-``AutomataOpenAIAgentConfigBuilder``, a subclass of
+``OpenAIAutomataAgentConfigBuilder``, a subclass of
 ``AgentConfigBuilder``, and configure its properties.
 
 .. code:: python
 
-   from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+   from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
    from automata.tools.registries import Tool
 
-   builder = AutomataOpenAIAgentConfigBuilder()
+   builder = OpenAIAutomataAgentConfigBuilder()
    builder = builder.with_model("gpt-3.5-turbo")
    builder = builder.with_stream(True)
    builder = builder.with_verbose(True)
@@ -58,7 +58,7 @@ Limitations
 
 The main limitation of ``AgentConfigBuilder`` is that it’s an abstract
 class and can’t be used directly. Subclasses (like
-``AutomataOpenAIAgentConfigBuilder``) should be used, which implement
+``OpenAIAutomataAgentConfigBuilder``) should be used, which implement
 the necessary methods, and can be built efficiently with specific
 configurations.
 

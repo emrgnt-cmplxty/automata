@@ -103,7 +103,7 @@ Sometimes the best way to understand a complicated system is to start by underst
 ```python
 
 import logging
-from automata.config.openai_agent import AutomataOpenAIAgentConfigBuilder
+from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
 from automata.core.tools.tool_utils import AgentToolFactory
 from automata.core.singletons.dependency_factory import dependency_factory
@@ -123,7 +123,7 @@ tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
 
 # Build the agent config
 agent_config = (
-    AutomataOpenAIAgentConfigBuilder.from_name("automata-main")
+    OpenAIAutomataAgentConfigBuilder.from_name("automata-main")
     .with_tools(tools)
     .with_model("gpt-4")
     .build()
