@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_ISSUES_PROMPT_PREFIX = """Provide a comprehensive explanation and full code implementation (in Markdown) which address the Github issue(s) that follow:"""
 
 DEFAULT_ISSUES_PROMPT_SUFFIX = """You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. If you are tasked with writing code, then keep to the SOLID Principles Further, pay special attention to Dependency Inversion Principle and Dependency Injection."""
-# Solve the GitHub issues by writing the relevant code via the PyWriter tool. The issues begin now:"""
 
 
 def process_issues(issue_numbers: List[int], github_manager: GitHubClient) -> List[str]:

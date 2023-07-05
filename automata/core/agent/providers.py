@@ -40,7 +40,8 @@ class OpenAIAutomataAgent(Agent):
     CONTINUE_PREFIX: Final = f"Continue..."
     EXECUTION_PREFIX: Final = "Execution Result:"
     _initialized = False
-    GENERAL_SUFFIX: Final = "NOTE - you are at iteration {iteration_count} out of max {max_iterations}. Please return a result with call_termination when ready."
+    GENERAL_SUFFIX: Final = "NOTE - you are at iteration {iteration_count} out of a maximum of {max_iterations}. Please return a result with call_termination when ready."
+    STOPPING_SUFFIX: Final = "NOTE - YOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS, RETURN A RESULT NOW WITH call_termination."
 
     def __init__(self, instructions: str, config: OpenAIAutomataAgentConfig) -> None:
         super().__init__(instructions)
@@ -135,11 +136,11 @@ class OpenAIAutomataAgent(Agent):
                 break
 
         last_message = self.agent_conversation_database.get_latest_message()
-        if self.iteration_count >= self.config.max_iterations:
+        if not self.completed and self.iteration_count >= self.config.max_iterations:
             raise AgentMaxIterError("The agent exceeded the maximum number of iterations.")
-        if not self.completed or not isinstance(last_message, OpenAIChatMessage):
+        elif not self.completed or not isinstance(last_message, OpenAIChatMessage):
             raise AgentResultError("The agent did not produce a result.")
-        if not last_message.content:
+        elif not last_message.content:
             raise AgentResultError("The agent produced an empty result.")
         return last_message.content
 
@@ -197,21 +198,28 @@ class OpenAIAutomataAgent(Agent):
         If it does, then the corresponding tool is run and the result is returned.
         Otherwise, the user is prompted to continue the conversation.
         """
-        iteration_message = OpenAIAutomataAgent.GENERAL_SUFFIX.format(
-            iteration_count=self.iteration_count, max_iterations=self.config.max_iterations
-        )
+        if self.iteration_count != self.config.max_iterations - 1:
+            iteration_message = OpenAIAutomataAgent.GENERAL_SUFFIX.format(
+                iteration_count=self.iteration_count, max_iterations=self.config.max_iterations
+            )
+        else:
+            iteration_message = OpenAIAutomataAgent.STOPPING_SUFFIX
+
         if assistant_message.function_call:
             for tool in self.tools:
                 if assistant_message.function_call.name == tool.openai_function.name:
                     result = tool.run(assistant_message.function_call.arguments)
+                    # Completion can occur from running `call_terminate` in the block above.
+                    function_iteration_message = (
+                        "" if self.completed else f"\n\n{iteration_message}"
+                    )
                     return OpenAIChatMessage(
                         role="user",
-                        content=f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\n{result}\n\n{iteration_message}",
+                        content=f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\n{result}{function_iteration_message}",
                     )
-
         return OpenAIChatMessage(
             role="user",
-            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}\n\n{iteration_message}",
+            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{iteration_message}",
         )
 
     def _setup(self) -> None:
