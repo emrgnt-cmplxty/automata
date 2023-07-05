@@ -85,7 +85,7 @@ The following commands illustrate how to run the system with a trivial instructi
 automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
 # Run a single agent w/ a non-trivial instruction
-automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent." --model=gpt-3.5-turbo-16k
+automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent."
 ```
 
 ---
@@ -102,14 +102,12 @@ Sometimes the best way to understand a complicated system is to start by underst
 
 ```python
 
-import logging
+from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.tools.tool_utils import AgentToolFactory
 from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.module_loader import py_module_loader
-
-logger = logging.getLogger(__name__)
+from automata.core.singletons.py_module_loader import py_module_loader
+from automata.core.tools.factory import AgentToolFactory
 
 # Initialize the module loader to the local directory
 py_module_loader.initialize()

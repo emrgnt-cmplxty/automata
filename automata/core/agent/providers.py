@@ -37,9 +37,10 @@ class OpenAIAutomataAgent(Agent):
     responses based on given instructions and manages interactions with various tools.
     """
 
-    CONTINUE_MESSAGE: Final = "Continue.."
-    EXECUTION_PREFIX: Final = "Execution Result:\n\n"
+    CONTINUE_PREFIX: Final = f"Continue..."
+    EXECUTION_PREFIX: Final = "Execution Result:"
     _initialized = False
+    GENERAL_SUFFIX: Final = "NOTE - you are at iteration {iteration_count} out of max {max_iterations}. Please return a result with call_termination when ready."
 
     def __init__(self, instructions: str, config: OpenAIAutomataAgentConfig) -> None:
         super().__init__(instructions)
@@ -76,12 +77,12 @@ class OpenAIAutomataAgent(Agent):
             logger.debug(f"{assistant_message}\n")
         logging.debug(f"\n{('-' * 120)}")
 
+        self.iteration_count += 1
+
         user_message = self._get_next_user_response(assistant_message)
         logger.debug(f"Latest User Message -- \n{user_message}\n")
         self.chat_provider.add_message(user_message)
         logging.debug(f"\n{('-' * 120)}")
-
-        self.iteration_count += 1
 
         return (assistant_message, user_message)
 
@@ -196,15 +197,22 @@ class OpenAIAutomataAgent(Agent):
         If it does, then the corresponding tool is run and the result is returned.
         Otherwise, the user is prompted to continue the conversation.
         """
+        iteration_message = OpenAIAutomataAgent.GENERAL_SUFFIX.format(
+            iteration_count=self.iteration_count, max_iterations=self.config.max_iterations
+        )
         if assistant_message.function_call:
             for tool in self.tools:
                 if assistant_message.function_call.name == tool.openai_function.name:
                     result = tool.run(assistant_message.function_call.arguments)
                     return OpenAIChatMessage(
-                        role="user", content=f"{OpenAIAutomataAgent.EXECUTION_PREFIX}{result}"
+                        role="user",
+                        content=f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\n{result}\n\n{iteration_message}",
                     )
 
-        return OpenAIChatMessage(role="user", content=OpenAIAutomataAgent.CONTINUE_MESSAGE)
+        return OpenAIChatMessage(
+            role="user",
+            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}\n\n{iteration_message}",
+        )
 
     def _setup(self) -> None:
         """

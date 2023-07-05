@@ -35,7 +35,7 @@ def test_iter_step_without_api_call(mock_openai_chatcompletion_create, automata_
     # Check if the result is as expected
     assistant_message, user_message = result
     assert assistant_message.content == "The dummy_tool has been tested successfully."
-    assert user_message.content, OpenAIAutomataAgent.CONTINUE_MESSAGE
+    assert user_message.content, OpenAIAutomataAgent.CONTINUE_PREFIX
     assert automata_agent.iteration_count == 1
 
 
@@ -83,7 +83,10 @@ def test_run_with_completion_message(
     result = automata_agent.run()
 
     # Check if the result is None, indicating that the agent has completed
-    assert result == f"{OpenAIAutomataAgent.EXECUTION_PREFIX}Success"
+    assert (
+        result
+        == f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\nSuccess\n\nNOTE - you are at iteration 1 out of max 50. Please return a result with call_termination when ready."
+    )
 
     # Verify that the agent's completed attribute is set to True
     assert automata_agent.completed is True

@@ -52,6 +52,7 @@ class OpenAIAutomataAgentConfig(AgentConfig):
                     f"{symbol}"
                     for symbol, _ in sorted(top_symbols, key=lambda x: x[1], reverse=True)
                 )
+                formatter["max_iterations"] = str(config.max_iterations)
             elif config.config_name != AgentConfigName.TEST:
                 raise NotImplementedError("Automata does not have a default template formatter.")
 

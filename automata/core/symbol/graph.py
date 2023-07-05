@@ -502,9 +502,7 @@ class SymbolGraph(ISymbolProvider):
     def _build_default_rankable_subgraph(self) -> nx.DiGraph:
         return self._build_rankable_subgraph()
 
-    def _build_rankable_subgraph(
-        self, flow_rank="bidirectional", path_filter: Optional[str] = None
-    ) -> nx.DiGraph:
+    def _build_rankable_subgraph(self, path_filter: Optional[str] = None) -> nx.DiGraph:
         """
         Creates a subgraph of the original `SymbolGraph` which
         contains only rankable symbols. The nodes in the subgraph
@@ -533,18 +531,8 @@ class SymbolGraph(ISymbolProvider):
                     if ele in self.get_sorted_supported_symbols()
                 ]
                 for dependency in dependencies:
-                    if flow_rank == "to_dependents":
-                        G.add_edge(symbol, dependency)
-                    elif flow_rank == "from_dependents":
-                        G.add_edge(dependency, symbol)
-                    elif flow_rank == "bidirectional":
-                        G.add_edge(symbol, dependency)
-                        G.add_edge(dependency, symbol)
-                    else:
-                        raise ValueError(
-                            "flow_rank must be one of 'to_dependents', 'from_dependents', or 'bidirectional'"
-                        )
-
+                    G.add_edge(symbol, dependency)
+                    G.add_edge(dependency, symbol)
             except Exception as e:
                 logger.error(f"Error processing {symbol.uri}: {e}")
 

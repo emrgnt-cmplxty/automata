@@ -10,6 +10,9 @@ from automata.core.agent.error import AgentGeneralError, UnknownToolError
 from automata.core.base.patterns.singleton import Singleton
 from automata.core.code_handling.py.reader import PyReader
 from automata.core.code_handling.py.writer import PyWriter
+from automata.core.context_providers.symbol_synchronization import (
+    SymbolProviderSynchronizationContext,
+)
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.core.experimental.search.symbol_search import SymbolSearch
@@ -23,6 +26,7 @@ from automata.core.retrievers.py.context import (
     PyContextRetriever,
     PyContextRetrieverConfig,
 )
+from automata.core.symbol.base import ISymbolProvider
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.symbol_embedding.builders import (
@@ -54,22 +58,29 @@ class DependencyFactory(metaclass=Singleton):
     def __init__(self, **kwargs) -> None:
         """
         Keyword Args (Defaults):
-            symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
-            flow_rank ("bidirectional")
-            embedding_provider (OpenAIEmbedding())
-            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
-            doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH)
-            symbol_rank_config (SymbolRankConfig())
-            py_context_retriever_config (PyContextRetrieverConfig())
-            coding_project_path (get_root_py_fpath())
-            llm_completion_provider (OpenAIChatCompletionProvider())
-            py_retriever_doc_embedding_db (None)
+            disable_synchronization (False): Disable synchronization of ISymbolProvider dependencies and created classes?
+            symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH): Filepath to the SCIP index file.
+            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH): Filepath to the code embedding database.
+            doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH): Filepath to the doc embedding database.
+            coding_project_path (get_root_py_fpath()): Filepath to the root of the coding project.
+            symbol_rank_config (SymbolRankConfig()): Configuration for the SymbolRank algorithm.
+            py_context_retriever_config (PyContextRetrieverConfig()): Configuration for the PyContextRetriever.
+            embedding_provider (OpenAIEmbedding()): The embedding provider to use.
+            llm_completion_provider (OpenAIChatCompletionProvider()): The LLM completion provider to use.
+            py_retriever_doc_embedding_db (None): The doc embedding database to use for the PyContextRetriever.
         }
         """
         self._instances: Dict[str, Any] = {}
         self.overrides = kwargs
 
     def set_overrides(self, **kwargs) -> None:
+        if self._class_cache:
+            raise AgentGeneralError("Cannot set overrides after dependencies have been created.")
+
+        for override_obj in kwargs.values():
+            if isinstance(override_obj, ISymbolProvider):
+                self._synchronize_provider(override_obj)
+
         self.overrides = kwargs
 
     def get(self, dependency: str) -> Any:
@@ -100,6 +111,10 @@ class DependencyFactory(metaclass=Singleton):
 
         self._instances[dependency] = instance
 
+        # Perform synchronization
+        if isinstance(instance, ISymbolProvider):
+            self._synchronize_provider(instance)
+
         return instance
 
     def build_dependencies_for_tools(self, toolkit_list: List[str]) -> Dict[str, Any]:
@@ -124,6 +139,13 @@ class DependencyFactory(metaclass=Singleton):
             tool_dependencies[dependency] = self.get(dependency)
 
         return tool_dependencies
+
+    def _synchronize_provider(self, provider: ISymbolProvider) -> None:
+        """Synchronize an ISymbolProvider instance."""
+        if not self.overrides.get("disable_synchronization", False):
+            with SymbolProviderSynchronizationContext() as synchronization_context:
+                synchronization_context.register_provider(provider)
+                synchronization_context.synchronize()
 
     @lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:

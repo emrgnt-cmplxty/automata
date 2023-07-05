@@ -12,7 +12,6 @@ from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbedding
 from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.core.singletons.dependency_factory import dependency_factory
 from automata.core.singletons.py_module_loader import py_module_loader
-from automata.core.symbol.base import SymbolDescriptor
 from automata.core.symbol.graph import SymbolGraph
 from automata.core.symbol.symbol_utils import get_rankable_symbols
 from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
@@ -45,6 +44,7 @@ def initialize_providers(embedding_level, **kwargs):
         "code_embedding_fpath": code_embedding_fpath,
         "doc_embedding_fpath": doc_embedding_fpath,
         "embedding_provider": embedding_provider,
+        "disable_synchronization": True,
     }
 
     if embedding_level == 3:
@@ -88,9 +88,8 @@ def main(*args, **kwargs) -> str:
 
     logger.info("Looping over filtered symbols...")
     for symbol in tqdm(filtered_symbols):
-        if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
-            logger.info(f"Caching embedding for {symbol}")
-            symbol_doc_embedding_handler.process_embedding(symbol)
-            symbol_doc_embedding_handler.embedding_db.save()
+        logger.info(f"Caching embedding for {symbol}")
+        symbol_doc_embedding_handler.process_embedding(symbol)
+        symbol_doc_embedding_handler.embedding_db.save()
 
     return "Success"

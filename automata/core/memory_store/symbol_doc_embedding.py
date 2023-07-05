@@ -1,6 +1,6 @@
 import logging
 
-from automata.core.symbol.base import Symbol
+from automata.core.symbol.base import Symbol, SymbolDescriptor
 from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolDocEmbedding,
@@ -27,7 +27,8 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
     def process_embedding(self, symbol: Symbol) -> None:
         """
         Process the embedding for a `Symbol` -
-        Currently we do nothing if the symbol is already contained
+        Currently we do nothing except update symbol commit hash and source code
+        if the symbol is already in the database.
         """
 
         source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
@@ -38,8 +39,13 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         if self.embedding_db.contains(symbol.dotpath):
             self.update_existing_embedding(source_code, symbol)
             return
-        # else:
-        symbol_embedding = self.embedding_builder.build(source_code, symbol)
+        if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
+            symbol_embedding = self.embedding_builder.build(source_code, symbol)
+        else:
+            if not isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
+                raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
+            symbol_embedding = self.embedding_builder.build_non_class(source_code, symbol)
+
         self.embedding_db.add(symbol_embedding)
 
     def update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
