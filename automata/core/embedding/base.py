@@ -103,10 +103,10 @@ class EmbeddingSimilarityCalculator:
         of the query embedding and the symbol embeddings.
         Return result is sorted in descending order by default.
         """
-        query_embedding_array = self.embedding_provider.build_embedding_vector(query_text)
+        query_embedding_vector = self.embedding_provider.build_embedding_vector(query_text)
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(
-            np.array([ele.vector for ele in ordered_embeddings]), query_embedding_array
+            np.array([ele.vector for ele in ordered_embeddings]), query_embedding_vector
         )
 
         similarity_dict = {

@@ -380,6 +380,7 @@ class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
         # wait to import build_embedding_vector to allow easy mocking of the function in tests.
         from openai.embeddings_utils import get_embedding
 
+        print("trying to build embedding vector for souce = ", source)
         return np.array(get_embedding(source, engine=self.engine))
 
 
