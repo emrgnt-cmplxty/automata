@@ -8,10 +8,25 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   dot_path_map
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       dot_path_map
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

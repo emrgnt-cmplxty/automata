@@ -8,15 +8,30 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   embedding
-   embedding_builder
-   embedding_handler
-   embedding_norm_type
-   embedding_similarity_calculator
-   embedding_vector_provider
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       embedding
+       embedding_builder
+       embedding_handler
+       embedding_norm_type
+       embedding_similarity_calculator
+       embedding_vector_provider
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

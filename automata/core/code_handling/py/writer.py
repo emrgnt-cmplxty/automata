@@ -398,22 +398,45 @@ class PyDocWriter:
                 doc_directory_manager.root, root_relative_to_base
             )
 
+            index_path = os.path.join(root, "index.rst")
             if rst_files or dirs:
-                with open(os.path.join(root, "index.rst"), "w") as index_file:
-                    index_file.write(PyDocWriter.get_payload(root))
+                if os.path.exists(index_path):
+                    with open(index_path, "r") as index_file:
+                        existing_content = index_file.read()
+                else:
+                    existing_content = ""
 
-                    index_file.write(".. toctree::\n")
-                    index_file.write(
-                        "   :maxdepth: 2\n\n"
-                        if not root_dir_node or root_dir_node.is_root_dir()  # type: ignore
-                        else "   :maxdepth: 1\n\n"
-                    )
+                # Identify start and end of the auto-generated content
+                auto_start_marker = "\n..  AUTO-GENERATED CONTENT START\n..\n\n"
+                auto_end_marker = "\n..  AUTO-GENERATED CONTENT END\n..\n\n"
 
-                    for sub_dir_ in sorted(dirs):
-                        index_file.write(f"   {sub_dir_}/index\n")
-                    for file in sorted(rst_files):
-                        if file != "index.rst":
-                            index_file.write(f"   {file[:-4]}\n")  # Remove .rst extension
+                # Remove the auto-generated part if it already exists
+                if auto_start_marker in existing_content and auto_end_marker in existing_content:
+                    start_idx = existing_content.index(auto_start_marker)
+                    end_idx = existing_content.index(auto_end_marker) + len(auto_end_marker)
+                    existing_content = existing_content[:start_idx] + existing_content[end_idx:]
+
+                # Add new auto-generated content
+                auto_content = auto_start_marker
+                auto_content += "    .. toctree::\n"
+                auto_content += (
+                    "       :maxdepth: 2\n\n"
+                    if not root_dir_node or root_dir_node.is_root_dir()  # type: ignore
+                    else "       :maxdepth: 1\n\n"
+                )
+                for file in sorted(rst_files):
+                    if file != "index.rst":
+                        auto_content += f"       {file[:-4]}\n"  # Remove .rst extension
+                for sub_dir_ in sorted(dirs):
+                    auto_content += f"       {sub_dir_}/index\n"
+                auto_content += auto_end_marker
+
+                # Write everything back to the file
+                with open(index_path, "w") as index_file:
+                    if existing_content.strip() == "":
+                        index_file.write(PyDocWriter.get_payload(root) + auto_content)
+                    else:
+                        index_file.write(existing_content + auto_content)
 
                 self.generate_module_summary(root)
 
@@ -442,7 +465,6 @@ class PyDocWriter:
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
-.. note::
 
 """
 
@@ -450,7 +472,7 @@ how to :ref:`installation` the project.
     def generate_summary(content: str) -> str:
         """This method should implement the logic to generate summary from the content."""
         # TODO: Implement summary generation function.
-        return "Summary of content"
+        return ""
 
     @staticmethod
     def camel_to_snake(name: str) -> str:

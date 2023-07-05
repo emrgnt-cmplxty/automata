@@ -8,11 +8,26 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   git_hub_client
-   repository_client
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       git_hub_client
+       repository_client
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

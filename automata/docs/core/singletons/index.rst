@@ -8,12 +8,27 @@ how to :ref:`installation` the project.
 
 .. note::
 
-.. toctree::
-   :maxdepth: 1
-
-   dependency_factory
-   open_ai_automata_agent_toolkit_registry
-   py_module_loader
 
 
-Summary of content
+
+
+
+
+
+
+
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       dependency_factory
+       open_ai_automata_agent_toolkit_registry
+       py_module_loader
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+
