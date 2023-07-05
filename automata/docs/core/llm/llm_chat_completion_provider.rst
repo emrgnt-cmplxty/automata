@@ -1,77 +1,79 @@
 LLMChatCompletionProvider
 =========================
 
-``LLMChatCompletionProvider`` is an abstract base class that defines the
-methods and behaviors for chat completion providers that work with the
-LLM (Language Learning Machine) models. It provides an interface for
-derived classes to implement core methods such as adding messages to the
-chat, getting the next message from the assistant, and resetting the
-chat provider.
+``LLMChatCompletionProvider`` is an abstract base class used to
+structure different types of Language Learning Model (LLM) chat
+completion providers. The class contains four essential methods that
+should be implemented by any subclass. These methods include adding new
+chat messages and retrieving the next assistant’s completion from a chat
+provider. Additionally, the chat provider can be reset, and it can
+operate as a standalone output supplier for the LLM.
 
-Derived chat providers, such as ``OpenAIChatCompletionProvider``, can be
-used to communicate with different language models for generating
-completions and managing chat state.
+Its main function is to form the fundamental structure for various chat
+completion providers in the LLM by standardizing their core methods.
+
+Overview
+--------
+
+The ``LLMChatCompletionProvider`` class provides a blueprint for LLM
+chat completion providers. It comprises two primary operations – sending
+and receiving messages from the chat provider and managing the chat
+session. This is especially crucial in controlling the flow of data in
+and out of the chat provider, paired with the functionality to control
+and manipulate the chat buffer.
 
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.core.llm.foundation.LLMChatMessage``
--  ``automata.core.llm.foundation.LLMConversation``
+-  ``LLMChatMessage``: This is a base class for different types of chat
+   messages that are used by LLM and can be provided to the
+   LLMChatCompletionProvider to add new messages to the chat buffer.
+-  ``LLMCompletionResult``: This provides the structure for different
+   types of completion results received from the
+   ``LLMChatCompletionProvider``.
+-  ``OpenAIChatCompletionProvider``: This is a subclass of
+   ``LLMChatCompletionProvider`` that uses the OpenAI API to provide
+   chat messages. This class has implemented the abstract methods of the
+   ``LLMChatCompletionProvider`` and can operate as functional
+   completion provider.
 
 Example
 -------
 
-You can create a custom chat completion provider that extends
-``LLMChatCompletionProvider``. For this example, let’s create a custom
-completion provider called ``MyChatCompletionProvider``:
+As ``LLMChatCompletionProvider`` is an abstract base class, you cannot
+instantiate it or use it as is. Instead, you use subclasses of
+``LLMChatCompletionProvider`` that have implemented the abstract
+methods. One such subclass is ``OpenAIChatCompletionProvider``. Below is
+an example of how to use it:
 
 .. code:: python
 
-   from automata.core.llm.foundation import LLMChatCompletionProvider, LLMChatMessage
+   from automata.core.llm.providers.openai import OpenAIChatCompletionProvider
+   from automata.core.llm.foundation import LLMChatMessage
 
-   class MyChatCompletionProvider(LLMChatCompletionProvider):
+   provider = OpenAIChatCompletionProvider()
 
-       def __init__(self):
-           super().__init__()
+   # Add a new message to the provider's buffer
+   provider.add_message(LLMChatMessage(content="Hello World", channel="general"))
 
-       def add_message(self, message: LLMChatMessage) -> None:
-           # Implement your custom logic for adding messages.
-           pass
-
-       def get_next_assistant_completion(self) -> LLMChatMessage:
-           # Implement your custom logic for generating completions from the LLM.
-           pass
-
-       def reset(self) -> None:
-           # Implement your custom logic for resetting the chat provider.
-           pass
-
-Once you have implemented your custom chat completion provider, you can
-use it to generate completions from the LLM:
-
-.. code:: python
-
-   my_chat_provider = MyChatCompletionProvider()
-   user_message = LLMChatMessage(role="user", content="Hello, how are you?")
-   my_chat_provider.add_message(user_message)
-   assistant_response = my_chat_provider.get_next_assistant_completion()
-   print(assistant_response.content)
+   # Get the next assistant completion from the LLM.
+   next_message = provider.get_next_assistant_completion()
+   print(next_message.content)  # Prints the content of the next assistant completion message
 
 Limitations
 -----------
 
-Since ``LLMChatCompletionProvider`` is an abstract base class, you
-cannot instantiate it directly. You must create a derived class and
-implement the required abstract methods.
+The LLMChatCompletionProvider only provides an abstract structure and
+does not implement the methods which limits its direct usage. Subclasses
+are required to implement the where necessary for interacting with
+different LLM chat completion providers.
 
-Also, it only specifies the methods for adding messages, getting the
-next completion, and resetting the provider. Additional features or
-functionalities, such as streaming or advanced control over generated
-completions, should be implemented in the derived classes.
+It also assumes that a unique message can be added to the provider’s
+buffer and that the provider can be queried for the next assistant
+completion at any time. This may not align with the actual behavior of
+all chat completion providers.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  Can you provide examples of using different derived classes of
-   LLMChatCompletionProvider with different LLM models?
+-  Can this class be refactored further for more versatile usage?

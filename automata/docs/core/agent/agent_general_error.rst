@@ -1,24 +1,60 @@
 AgentGeneralError
 =================
 
-``AgentGeneralError`` is an exception raised when a general error arises
-with the ``AutomataAgent``. This error typically represents non-specific
-issues that may occur during the agent’s operation.
+Overview
+--------
+
+``AgentGeneralError`` is an exception class in the
+``automata.core.agent.error`` module of the Automata library. This
+exception is raised when a general error arises while the automata agent
+is in operation. It’s a part of a series of custom exceptions designed
+to handle errors specific to the agent’s operations.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.error.AgentTaskGeneralError``
--  ``automata.core.agent.error.AgentTaskGitError``
--  ``automata.core.agent.error.AgentResultError``
--  ``automata.core.agent.error.AgentDatabaseError``
--  ``automata.core.agent.agent.AutomataAgent``
+1. ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 
-Example
--------
+   A unit test function to validate the initialization of
+   ``AutomataAgent``.
 
-The following example demonstrates how to raise and handle an
-``AgentGeneralError`` when an unexpected condition occurs:
+2. ``automata.core.agent.error.AgentTaskGeneralError``
+
+   An exception raised when a general error occurs during task
+   execution.
+
+3. ``automata.core.agent.error.AgentTaskGitError``
+
+   An exception raised when the task encounters a git error.
+
+4. ``automata.core.agent.error.AgentResultError``
+
+   An exception raised when the agent fails to produce a result.
+
+5. ``automata.core.agent.error.AgentDatabaseError``
+
+   An exception raised when the agent fails to set the database
+   provider.
+
+Examples
+--------
+
+This exception, like any other, can be raised with a custom error
+message as shown below:
+
+.. code:: python
+
+   try:
+       # some agent operations
+       pass
+   except Exception as e:
+       raise AgentGeneralError("A general error occurred during agent operation") from e
+
+This is a generic example that doesn’t contain specific operations since
+the ``AgentGeneralError`` is a general error class.
+
+However, within a more specific context, for instance, during an
+operation related to an ``AutomataAgent``, it can be used as follows:
 
 .. code:: python
 
@@ -27,24 +63,24 @@ The following example demonstrates how to raise and handle an
 
    try:
        agent = AutomataAgent()
-       # Some operation that may raise an AgentGeneralError
-       raise AgentGeneralError("An unexpected error occurred")
-
-   except AgentGeneralError as e:
-       print(f"Error: {e}")
+       agent.run()
+   except Exception as e:
+       raise AgentGeneralError("A general error occurred while running the agent") from e
 
 Limitations
 -----------
 
-The primary limitation of ``AgentGeneralError`` is that it provides
-little information about the exact cause of the problem. It is
-recommended to use more specific exceptions when possible, like
-``AgentTaskGeneralError``, ``AgentTaskGitError``, ``AgentResultError``
-or ``AgentDatabaseError``.
+As ``AgentGeneralError`` is a general exception class, it lacks detailed
+information about possible causes of errors compared to more specific
+exceptions like ``AgentTaskGitError`` or ``AgentDatabaseError``.
+Therefore, it should be used when no other more specific exception is
+applicable.
 
 Follow-up Questions:
 --------------------
 
--  Are there any improvements that could be made to
-   ``AgentGeneralError`` to provide more information about the cause of
-   the error?
+-  What are the common scenarios where this error is usually thrown?
+-  What is the hierarchy of custom exception classes in the
+   ``automata.core.agent.error`` module? Does ``AgentGeneralError``
+   serve as a parent class to any other exceptions? If not, is there a
+   reason why not?

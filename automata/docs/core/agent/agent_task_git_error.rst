@@ -1,69 +1,71 @@
 AgentTaskGitError
 =================
 
-``AgentTaskGitError`` is an exception raised when a task encounters a
-git error while performing operations such as cloning a repository,
-creating a branch, checking out a branch, staging changes, committing
-and pushing changes, and creating a pull request.
+``AgentTaskGitError`` is an exception class that gets raised when there
+is an error encountered with git operations in the task.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.github_management.client.GitHubClient``
--  ``automata.core.base.github_management.client.RepositoryClient``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
 -  ``automata.tests.conftest.MockRepositoryClient``
+-  ``automata.tests.unit.test_task_environment.test_commit_task``
+-  ``automata.core.github_management.client.GitHubClient``
+-  ``automata.tests.conftest.environment``
+-  ``automata.core.github_management.client.GitHubClient.clone_repository``
+-  ``automata.tests.conftest.MockRepositoryClient.clone_repository``
+-  ``automata.core.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tests.conftest.MockRepositoryClient.checkout_branch``
+-  ``automata.core.github_management.client.GitHubClient.__init__``
+-  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 
-Example
--------
+Using AgentTaskGitError
+-----------------------
 
-The following is an example demonstrating how to handle an
-``AgentTaskGitError`` exception when interacting with a remote GitHub
-repository using the ``AutomataTaskEnvironment``.
+Due to the nature of this exception, its usage is not as straightforward
+as other classes. It will be raised when an error is encountered while
+performing Git operations on a task. Here’s an example of how such a
+scenario might occur:
 
 .. code:: python
 
-   from automata.core.agent.error import AgentTaskGitError
-   from automata.core.tasks.environment import AutomataTaskEnvironment
-   from automata.core.base.github_management.client import GitHubClient
+   def test_commit_task(task, mocker, environment):
+       # Setup
+       os.makedirs(task.task_dir, exist_ok=True)
+       task.status = TaskStatus.SUCCESS
+       mocker.spy(environment.github_manager, "create_branch")
+       # Execution
+       try:
+           environment.commit_task(
+               task,
+               commit_message="This is a commit message",
+               pull_title="This is a test",
+               pull_body="I am testing this...",
+               pull_branch_name="test_branch__ZZ__",
+           )
+       except AgentTaskGitError as e:
+           print(f"An error occurred: {e}")
 
-   access_token = "your_github_access_token"
-   remote_name = "your_repo_remote_name"
-   github_manager = GitHubClient(access_token, remote_name)
-   environment = AutomataTaskEnvironment(github_manager)
-
-   try:
-       # Perform git operations using the AutomataTaskEnvironment
-       # This could be creating a branch, checking out a branch, etc.
-   except AgentTaskGitError as e:
-       print(f"An error occurred while performing git operations: {str(e)}")
-
-Discussion
-----------
-
-``AgentTaskGitError`` is raised in scenarios when there is an issue
-related to git operations performed by an AI agent. This can occur when
-the agent is interacting with a remote git repository where it needs to
-perform tasks like cloning a repository, creating a branch, checking out
-a branch, staging changes, committing and pushing changes, and creating
-a pull request.
-
-It is essential to handle this exception to notify the user about the
-encountered git error and take necessary actions to troubleshoot it if
-needed.
+In the scenario above, we are testing the ``commit_task`` method, and
+``AgentTaskGitError`` may be raised if there’s an error with any of the
+git operations like creating a branch, checking out a branch, staging
+all changes, committing and pushing changes, or creating a pull request.
 
 Limitations
 -----------
 
-The primary limitation of the ``AgentTaskGitError`` exception is that it
-only provides information about the error related to git operations. It
-does not provide solutions or suggestions to fix the problem. The user
-or the AI agent should have a mechanism to handle these types of
-exceptions and remediate the situation.
+``AgentTaskGitError``, being an exception class, has its purpose solely
+to signal the occurrence of an event that disrupts normal operation. It
+doesn’t perform any operation regarding solving the problem or avoiding
+it instead it exists just to signal it. The limitation regarding error
+handling rests on the underlying git operations and methods that lead to
+this exception being thrown.
 
 Follow-up Questions:
 --------------------
 
--  How can we improve the exception handling process for
-   ``AgentTaskGitError`` to provide more context about why the error
-   occurred and possibly suggest some potential fixes?
+-  Can we specify the types of Git errors that could lead to
+   ``AgentTaskGitError`` being raised?
+-  Are there certain Git operations more likely to raise this error than
+   others?
+-  Are there specific ways to handle ``AgentTaskGitError`` effectively
+   within tasks?

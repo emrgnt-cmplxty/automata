@@ -1,55 +1,69 @@
 UnknownToolError
 ================
 
-``UnknownToolError`` is an exception class that gets raised when an
-unknown toolkit type is provided. This can occur when attempting to
-create an instance of a toolkit that is not recognized or defined by the
-system.
+Overview
+--------
+
+``UnknownToolError`` is an exception class in the
+``automata.core.agent.error`` module. This exception is raised when an
+unknown tool type is provided to the framework.
+
+In broad terms, a tool in this context refers to a callable
+functionality of the system (such as ``TestTool`` or any class
+inheriting from ``Tool``), which can be invoked with a certain input to
+produce a certain output.
+
+For instance, when building tools for an agent like this
+``AgentToolFactory.create_tools_from_builder(agent_tool: AgentToolkitNames, **kwargs)``,
+if an unrecognized ``agent_tool`` is provided, ``UnknownToolError`` is
+raised.
 
 Related Symbols
 ---------------
 
--  ``automata.core.tools.tool.Tool``
+-  ``automata.tests.unit.test_tool.test_tool_instantiation``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.tools.tool_utils.AgentToolFactory``
+-  ``automata.tests.unit.test_tool.test_tool_run``
+-  ``automata.core.tools.base.Tool``
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
+-  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
+-  ``automata.tests.unit.test_tool.test_tool``
+-  ``automata.core.tools.factory.AgentToolFactory.create_tools_from_builder``
+-  ``automata.tests.unit.test_context_oracle_tool.test_build``
+-  ``automata.core.agent.agent.AgentToolkitBuilder.build``
 
-Example
--------
-
-Here’s an example of how ``UnknownToolError`` might be raised when
-trying to create an unsupported tool:
+Usage Example
+-------------
 
 .. code:: python
 
-   from automata.core.tools.tool_utils import AgentToolFactory
+   from automata.core.tools.factory import AgentToolFactory
    from automata.core.agent.error import UnknownToolError
 
-   class UnsupportedTool:
-       pass
-
    try:
-       AgentToolFactory.create_tools_from_builder(UnsupportedTool)
+       tool = AgentToolFactory.create_tools_from_builder("NonExistentTool")
    except UnknownToolError as e:
-       print(e)
-
-In this example, the ``AgentToolFactory`` attempts to create an instance
-of an ``UnsupportedTool``. Since the ``UnsupportedTool`` is not a
-recognized tool, the ``UnknownToolError`` will be raised.
+       print(str(e))  # Will print error message about unknown tool type.
 
 Limitations
 -----------
 
-The primary limitation of ``UnknownToolError`` is that the error message
-provided does not include sufficient context information about why the
-specific toolkit type is not recognized or if there is a specific import
-issue. This could make debugging and error resolution more difficult for
-developers.
+``UnknownToolError`` is a basic extension of Python’s built-in
+``Exception`` class, and thus shares the same limitations. It’s sole
+purpose is to provide meaningful error information when an unrecognized
+tool type is provided to the framework. It is not designed to handle
+additional error processing or functionality.
 
-Follow-up Questions:
---------------------
+As a part of error handling in the ``automata`` library, efficient usage
+of this error class assumes that developers using this library have a
+handle on the tool types that are permitted to be used.
 
--  Are there any plans to improve the error message for
-   ``UnknownToolError`` to provide more information to developers?
--  Can ``UnknownToolError`` be extended to handle additional types of
-   toolkit-related errors, such as import issues or misconfigured tools?
+Follow-up Questions
+-------------------
+
+-  What are the specific conditions which may lead to this error beyond
+   the tool being unknown or unrecognized?
+-  Does this exception handle other edge cases such as the input type
+   not matching the expected tool type?
+-  Besides the tool name, are there any other parameters or information
+   that could be helpful to include in the error message?

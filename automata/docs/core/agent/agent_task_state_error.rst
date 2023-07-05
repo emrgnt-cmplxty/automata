@@ -1,52 +1,74 @@
 AgentTaskStateError
 ===================
 
-``AgentTaskStateError`` is an exception class raised when the task is
-not in the correct state for the operation. This is a specific error
-handling mechanism for tasks to ensure that they are being executed
-under valid and expected conditions.
+Overview
+--------
+
+``AgentTaskStateError`` is an exception class in
+``automata.core.agent.error`` module that is raised when the task is not
+in the correct state for the operation. This class deals with erroneous
+cases where, for instance, an action is being performed on a task but
+its state is not correctly set for that particular action.
 
 Related Symbols
 ---------------
 
--  ``automata.core.tasks.base.TaskStatus``
--  ``automata.tests.unit.test_task.test_task_inital_state``
--  ``automata.tests.unit.test_task.test_status_setter``
--  ``automata.core.agent.error.AgentTaskGitError``
--  ``automata.core.agent.error.AgentTaskGeneralError``
--  ``automata.core.agent.error.AgentTaskInstructions``
+-  ``automata.core.tasks.base.TaskStatus``: Refers to various statuses a
+   task can have, like ``CREATED``, ``RETRYING``, ``FAILED``,
+   ``SUCCESS``, etc.
+-  ``automata.tests.unit.test_task.test_task_inital_state``: A unit test
+   that asserts if the initial status of the task is ``CREATED``.
+-  ``automata.tests.unit.test_task.test_status_setter``: A unit test to
+   check if the task status can be set to ``RETRYING``.
+-  ``automata.core.agent.error.AgentTaskGitError``: An exception raised
+   when the task encounters a git related error.
+-  ``automata.core.agent.error.AgentTaskGeneralError``: An exception
+   raised when a general error occurs during task execution.
+-  ``automata.core.agent.error.AgentTaskInstructions``: An exception
+   raised when there is an error with the task instructions.
 
 Example
 -------
 
-The following is an example demonstrating how to raise the
-``AgentTaskStateError`` when a task is not in the correct state.
+The following is a simplified example demonstrating how
+``AgentTaskStateError`` could be used:
 
 .. code:: python
 
-   from automata.core.tasks.base import AutomataTask, TaskStatus
    from automata.core.agent.error import AgentTaskStateError
+   from automata.core.tasks.base import TaskStatus, AutomataTask
 
-   # Define your task
-   task = AutomataTask(...)
+   # Creating a Mock Task
+   task = AutomataTask()
 
-   # Assuming your task must be in TaskStatus.SUCCESS to retrieve the result
-   if task.status != TaskStatus.SUCCESS:
-       raise AgentTaskStateError("Cannot retrieve the result if the task is not in a SUCCESS state")
+   # Simulating a condition where task is being executed without setting its status to 'EXECUTING'
+   try:
+       if task.status != TaskStatus.EXECUTING:
+           raise AgentTaskStateError('Task status is not set to EXECUTING.')
+   except AgentTaskStateError as e:
+       print(str(e))
 
-   # Retrieve the result if the task is in SUCCESS state
-   result = task.result
+In the above example, an ``AgentTaskStateError`` is raised if an attempt
+is made to execute a task, ``task``, without changing its status to
+``EXECUTING``.
+
+Note: Mocks are used in the above example for demonstration. In actual
+usage, replace the ``AutomataTask()`` with the actual Operation to be
+performed.
 
 Limitations
 -----------
 
-The primary limitation of ``AgentTaskStateError`` is that it assumes
-that a task’s state is based on the ``TaskStatus`` enumeration. It may
-not be compatible with other task states defined outside
-``automata.core.tasks.base.TaskStatus``.
+The ``AgentTaskStateError`` class on its own doesn’t have limitations as
+it is simply a description of a specific type of error that could occur.
+The limitations would rather be on the workflow scale where
+mismanagement or lack of proper checks on the task’s state could lead to
+such errors.
 
 Follow-up Questions:
 --------------------
 
--  Can ``AgentTaskStateError`` handle custom tasks that do not use the
-   default ``TaskStatus`` enumeration?
+-  How does the execution pipeline ensure that the tasks go through the
+   proper state changes?
+-  Could there be any adverse effects if the state of a task is not
+   managed properly?

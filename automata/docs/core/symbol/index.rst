@@ -12,20 +12,13 @@ how to :ref:`installation` the project.
    :maxdepth: 1
 
    base/index
-   graph/index
-   search/index
-   symbol_types/index
    graph_builder
    graph_processor
+   i_symbol_provider
    symbol
-   symbol_code_embedding
    symbol_descriptor
-   symbol_doc_embedding
-   symbol_embedding
-   symbol_file
    symbol_graph
    symbol_package
-   symbol_parser
    symbol_reference
 
 

@@ -1,57 +1,66 @@
 AgentResultError
 ================
 
-``AgentResultError`` is an exception raised when an
-``OpenAIAutomataAgent`` fails to produce a result. This error is raised
-by the ``run()`` method of the ``OpenAIAutomataAgent`` when the agent
-doesn’t produce a result within the specified maximum number of
-iterations.
+Overview
+--------
+
+``AgentResultError`` is an exception class in the
+``automata.core.agent.error`` module. This exception is raised when an
+instance of an agent fails to produce a result during the execution
+process. It’s typically thrown if there’s an issue with the method call
+of an agent.
 
 Related Symbols
 ---------------
 
+-  ``automata.tests.unit.test_automata_agent.test_run_with_no_completion``
+-  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.core.agent.error.AgentTaskInstructions``
--  ``automata.core.agent.error.AgentMaxIterError``
+-  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``
+-  ``automata.core.agent.error.AgentTaskStateError``
+-  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
+-  ``automata.core.agent.agent.Agent``
+-  ``automata/tests/unit/test_automata_agent.test_build_initial_messages``
+-  ``automata.core.agent.error.AgentTaskGeneralError``
+-  ``automata.tests.conftest.task``
 
 Example
 -------
 
-The following example illustrates how the ``OpenAIAutomataAgent`` can
-raise an ``AgentResultError`` when a specific result is not received in
-the conversation within the maximum number of iterations.
+The following is an example demonstrating how to handle the
+``AgentResultError`` exception when using an agent:
 
 .. code:: python
 
    from automata.core.agent.providers import OpenAIAutomataAgent
-   from automata.core.agent.config import AutomataAgentConfig
-   from automata.core.agent.error import AgentResultError
-
-   instructions = "Please find the result for this task."
-   config = AutomataAgentConfig.load("your_config_name")
-
-   agent = OpenAIAutomataAgent(instructions, config)
-   agent.config.max_iterations = 3
+   from automata.core.agent.error import AgentResultError, AgentMaxIterError
 
    try:
-       result = agent.run()
-   except AgentResultError:
-       print("Agent failed to produce a result within the maximum number of iterations.")
+       agent = OpenAIAutomataAgent(
+           "Test Instructions",
+           config=UserDefinedConfig()
+       )
+       agent.run()
+   except (AgentResultError,  AgentMaxIterError) as error:
+       print(str(error))
+
+Here, we’ve created an instance of OpenAIAutomataAgent and called the
+``run()`` method, set within a try-catch block to catch
+``AgentResultError`` or ``AgentMaxIterError`` exceptions.
 
 Limitations
 -----------
 
-The primary limitation of ``AgentResultError`` is that it assumes that
-the agent must produce an explicit result within the maximum number of
-iterations. When this error is raised, it might not necessarily indicate
-an insufficiency in the agent itself but rather that the task is too
-complex, or the conversation has not converged to a specific result.
+The ``AgentResultError`` provides a general exception case, but detailed
+debugging may become complex due to less layer-specific error
+information. More specific exceptions can help in identifying the issue
+faster, without tracing through the entire execution.
 
-Follow-up Questions:
---------------------
+Follow-Up Questions
+-------------------
 
--  Are there any other possible reasons the ``AgentResultError`` might
-   be raised besides exceeding the maximum number of iterations?
--  Is there any possibility that, although the maximum number of
-   iterations is exceeded, the conversation content might still contain
-   the desired result?
+-  What are the common reasons for the agent to fail to produce a
+   result?
+-  How can we better handle ``AgentResultError`` and
+   ``AgentMaxIterError`` exceptions to prevent abrupt termination of the
+   program?

@@ -1,48 +1,92 @@
-AgentStopIteration
-==================
+automata.core.agent.error.AgentStopIteration
+============================================
 
-``AgentStopIteration`` is an exception raised when the agent stops
-iterating. This can occur during the execution of tasks in the
-``AutomataAgent``. The agent may stop iterating due to having reached a
-stopping criteria or completing the assigned tasks.
+Overview
+--------
+
+``AgentStopIteration`` is a built-in exception class in the ``automata``
+library. It is raised when the agent stops iterating in the program
+execution process. It provides useful debugging information if a running
+agent stops iterating prematurely for some reason.
+
+The ``AgentStopIteration`` exception is mostly used within classes that
+implement the Python iterable and iterator protocols. It serves as a
+signal to the agent’s iterator to stop the iteration process.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.test_automata_agent.test_run_with_no_completion``
--  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``
--  ``automata.core.agent.error.AgentMaxIterError``
--  ``automata.core.agent.agent.Agent.__iter__``
--  ``automata.core.agent.providers.OpenAIAutomataAgent.__iter__``
--  ``automata.core.agent.providers.OpenAIAutomataAgent.run``
+-  ``automata.tests.unit.test_automata_agent.test_run_with_no_completion``:
+   This unit test uses the ``AgentStopIteration`` exception to ensure
+   the ``automata_agent`` stops iterating when no completion is present.
+
+-  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``:
+   In this unit test, ``AgentStopIteration`` reflects the expected
+   behavior when manually feeding next(…) calls to the automata agent
+   without an API call.
+
+-  ``automata.core.agent.error.AgentMaxIterError``: This is another
+   exception class used when the agent exceeds the maximum number of
+   allowed iterations.
+
+-  ``automata.core.agent.agent.Agent.__iter__``: The ``__iter__`` method
+   of the ``Agent`` class calls upon the ``AgentStopIteration`` when the
+   agent stops iterating.
+
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``: The
+   ``OpenAIAutomataAgent``, designed to execute instructions and
+   interact with various tools, uses the ``AgentStopIteration``
+   exception to handle situations where the agent ceases to iterate.
+
+-  ``automata.core.agent.providers.OpenAIAutomataAgent.__iter__``: The
+   ``__iter__`` method in the ``OpenAIAutomataAgent`` class handles the
+   ``AgentStopIteration`` exception when the iteration process is
+   stopped.
 
 Example
 -------
 
-The following example demonstrates how to catch an
-``AgentStopIteration`` exception while using an ``OpenAIAutomataAgent``.
+There’s no directly instantiable example of ``AgentStopIteration`` as it
+is raised when an iteration is stopped in a running agent. However,
+below is an example of a possible use case in context of
+``OpenAIAutomataAgent``. Please note mock situations have been
+represented without the actual underlying object:
 
 .. code:: python
 
+   from unittest.mock import patch
    from automata.core.agent.providers import OpenAIAutomataAgent
-   from automata.core.agent.error import AgentStopIteration
+   from automata.core.agent.error import AgentMaxIterError
 
-   agent = OpenAIAutomataAgent()
+   @patch("openai.ChatCompletion.create")
+   def test_agent_stops_iteration(mock_openai_chatcompletion_create, automata_agent):
+       automata_agent = OpenAIAutomataAgent('instructions', 'config')
+       # Mock the API response
+       mock_openai_chatcompletion_create.return_value = {
+           "choices": [{"message": {"content": "...", "role": "assistant"}}]
+       }
 
-   try:
-       while True:
-           agent.iter_step()
-   except AgentStopIteration:
-       print("Agent has stopped iterating.")
+       try: 
+           automata_agent.run()   # runs the agent
+       except AgentStopIteration:
+           print("Agent has stopped iterating.")
+
+In this code snippet, ``AgentStopIteration`` is expected to be raised
+when ``automata_agent.run()`` is called. If the agent stops, the
+exception is caught and it prints “Agent has stopped iterating.”
 
 Limitations
 -----------
 
-``AgentStopIteration`` is an exception specific to the
-``AutomataAgent``. It is not applicable in other agent contexts.
+The ``AgentStopIteration`` exception is raised when the agent stops
+iterating. However, it does not provide information regarding why the
+agent stopped iterating. Determining the agents stopping reasoning
+requires additional debugging or error checks within the code.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  Are there any alternative ways of implementing a stop iteration for
-   providers other than raising an exception?
+-  What specific conditions in the agent’s operations trigger
+   ``AgentStopIteration``?
+-  Can we handle and resume from ``AgentStopIteration`` in certain
+   contexts?

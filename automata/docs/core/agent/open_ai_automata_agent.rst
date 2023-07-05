@@ -1,7 +1,7 @@
 OpenAIAutomataAgent
 ===================
 
-``OpenAIAutomataAgent`` is an autonomous agent designed to execute
+``OpenAIAutomataAgent`` is an autonomous agent used to execute
 instructions and report the results back to the main system. It
 communicates with the OpenAI API to generate responses based on given
 instructions and manages interactions with various tools.
@@ -9,63 +9,67 @@ instructions and manages interactions with various tools.
 Overview
 --------
 
-An instance of ``OpenAIAutomataAgent`` is initialized with a set of
-instructions and an optional configuration. The agent can then be used
-to perform multiple iterations of tasks until a final result is produced
-or the maximum number of iterations is reached. During execution, it
-communicates with the OpenAI API to generate responses based on given
-instructions.
+``OpenAIAutomataAgent`` uses OpenAI API to iterate over instructions and
+generates user and assistant messages using the
+``get_next_user_response`` and ``get_next_assistant_completion`` methods
+from the OpenAI’s chat completion provider, respectively.
 
-The agent’s configuration options can be customized via an instance of
-``AutomataAgentConfig``. This configuration can include specific
-settings like model parameters, tool providers, iteration limits, and
-more.
+``OpenAIAutomataAgent`` carries an OpenAI conversation database to store
+messages and other operational data during its life cycle. The agent is
+made to operate in iterations and stop iterating when it completes its
+task or exceeds the maximum iterations set in the configuration.
 
-Related Symbols
----------------
+``OpenAIAutomataAgent`` uses tools that are instance of ``OpenAITool``.
+Each ``OpenAIFunction`` associated with an ``OpenAITool`` represents
+specific capabilities of the agent.
 
--  ``automata.core.agent.instances.AutomataOpenAIAgentInstance``
--  ``automata.core.llm.providers.openai.OpenAIAgent``
--  ``automata.config.config_types.AutomataAgentConfig``
--  ``config.automata_agent_config_utils.AutomataAgentConfigBuilder``
--  ``automata.core.tasks.executor.IAutomataTaskExecution._build_agent``
+Usage:
+------
 
-Example
--------
-
-Below is an example on how to create an instance of
-``OpenAIAutomataAgent``:
+The basic usage of ``OpenAIAutomataAgent`` involves initialization with
+instructions and configuration, iteration over instructions and
+execution of tasks. For example:
 
 .. code:: python
 
-   from automata.config.config_enums import AgentConfigName
    from automata.core.agent.providers import OpenAIAutomataAgent
-   from automata.config.automata_agent_config_utils import AutomataAgentConfigBuilder
-
-   config_name = AgentConfigName.AUTOMATA_MAIN
-   config_builder = AutomataAgentConfigBuilder.from_name(config_name)
-
-   instructions = "Calculate the square of 5."
-   agent = OpenAIAutomataAgent(instructions, config=config_builder.build())
-
+   from automata.config.openai_agent import OpenAIAutomataAgentConfig
+   # Create OpenAIAutomataAgentConfig
+   config = OpenAIAutomataAgentConfig()
+   # Initialize OpenAIAutomataAgent
+   agent = OpenAIAutomataAgent('your_instructions', config)
+   # Iterate over instructions
+   for message in agent:
+       print(message)
+   # Run the agent
    result = agent.run()
-   print(result)  # Output: "The square of 5 is 25."
+
+Related Symbols and Dependencies:
+---------------------------------
+
+-  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
+-  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
+-  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``
+-  ``automata.core.agent.instances.OpenAIAutomataAgentInstance``
+-  ``automata.tests.conftest.automata_agent_config_builder``
+-  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
+-  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
+-  ``automata.core.llm.providers.openai.OpenAITool``
+-  ``automata.core.agent.error.AgentResultError``
 
 Limitations
 -----------
 
--  The ``OpenAIAutomataAgent`` class relies on the OpenAI API for
-   generating responses. If the OpenAI API is unavailable or if there
-   are issues with the API key, the agent will not be able to function.
--  The agent’s execution is limited by the number of iterations
-   configured in the ``AutomataAgentConfig``. If a valid result is not
-   found within the given number of iterations, it raises an error.
--  The output of the agent may not always be accurate if the
-   instructions provided are unclear or if the model used is not
-   well-suited for the given task.
+Full functionality of ``OpenAIAutomataAgent`` depends on the integration
+with OpenAI API requirements and limitations. For instance, the
+``OpenAIAutomataAgent`` class might need improvements in logging and
+exception handling. Additionally, it currently does not support multiple
+assistants.
 
 Follow-up Questions:
 --------------------
 
--  How can we ensure more accurate and consistent results when using an
-   ``OpenAIAutomataAgent``?
+-  How can the iteration process in ``OpenAIAutomataAgent`` be improved?
+-  Can multiple assistants be implemented in ``OpenAIAutomataAgent``?
+-  How can the logging and exception handling in ``OpenAIAutomataAgent``
+   be made more robust?

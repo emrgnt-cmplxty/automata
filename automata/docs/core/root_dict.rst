@@ -1,74 +1,124 @@
 RootDict
 ========
 
-``RootDict`` is a class that represents a dictionary for the root logger
-configuration. It is used to set up and configure logging within the
-``automata`` library. Instances of ``RootDict`` contain logging-related
-settings for the root logger, which can be used by the library when
-generating logs.
+**Import Statements**:
 
-Related Symbols
----------------
+.. code:: python
 
--  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.tests.conftest.MockRepositoryClient``
--  ``automata.core.utils.LoggingConfig``
--  ``automata.tests.unit.test_directory_manager.test_load_directory_structure``
--  ``automata.core.utils.HandlerDict``
--  ``automata.core.singletons.py_module_loader.PyModuleLoader``
--  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.core.symbol.base.Symbol``
+   import json
+   import logging
+   import os
+   import colorlog
+   import networkx as nx
+   import openai
+   import yaml
+   from copy import deepcopy
+   from typing import Any, Dict, List, Optional, TypedDict, Union, cast
+   from automata.core.symbol.base import Symbol
+   from automata.config import OPENAI_API_KEY
+
+**Class Docstring**: ``RootDict`` is a dictionary representing the root
+logger
+
+Overview:
+---------
+
+The ``RootDict`` class is part of the ``automata.core.utils`` module and
+is used to represent a dictionary-like data structure for the root
+logger. This root logger dictionary is typically used for logger
+configuration.
+
+Related Symbols:
+----------------
+
+1.  ``automata.tests.unit.sample_modules.sample.EmptyClass``
+
+2.  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU.__init__``
+
+    .. code:: python
+
+       def __init__(self):
+           pass
+
+3.  ``automata.core.utils.LoggingConfig``
+
+    .. code:: python
+
+       class LoggingConfig(TypedDict, total=False):
+           """A dictionary representing the logging configuration"""
+
+           version: int
+           disable_existing_loggers: bool
+           formatters: dict
+           handlers: dict[str, Union[HandlerDict, dict]]
+           root: RootDict
+
+4.  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
+
+    .. code:: python
+
+       class CsSWU:
+           """hWrByOIFxNMacOLrgszg"""
+
+           def __init__(self):
+               pass
+
+5.  ``automata.core.utils.HandlerDict``
+
+    -  A dictionary representing a logging handler
+
+6.  ``automata.tests.unit.test_directory_manager.test_load_directory_structure``
+
+7.  ``automata.core.llm.foundation.LLMChatMessage.to_dict``
+
+8.  ``automata.tests.unit.sample_modules.sample.OuterClass``
+
+9.  ``automata.core.llm.providers.openai.OpenAIChatMessage.to_dict``
+
+10. ``automata.tests.unit.test_task_environment.TestURL``
 
 Example
 -------
 
-The following example demonstrates how to create a custom root
-dictionary logger and use it in the logging configuration:
+While no direct usage of ``RootDict`` has been provided in the context,
+we can still infer an example usage from the given context:
 
 .. code:: python
 
-   from automata.core.utils import RootDict, LoggingConfig
-   from logging.config import dictConfig
+   from typing import Any
+   from automata.core.utils import RootDict
 
-   root_dict: RootDict = {
-       "level": "DEBUG",
-       "handlers": ["console"],
-   }
+   # Initialize a root logger dictionary
+   logger_dict: RootDict = {"level": "INFO", "handlers": ["console"]}
 
-   logging_config: LoggingConfig = {
+   # Usage in a logging configuration
+   logging_config = {
        "version": 1,
        "disable_existing_loggers": False,
-       "formatters": {
-           "simple": {
-               "format": "%(asctime)s - %(levelname)s - %(message)s"
-           }
-       },
        "handlers": {
            "console": {
                "class": "logging.StreamHandler",
-               "level": "DEBUG",
-               "formatter": "simple",
-               "stream": "ext://sys.stdout"
+               "level": "INFO",
+               "formatter": "default"
            }
        },
-       "root": root_dict,
+       "root": logger_dict
    }
-
-   dictConfig(logging_config)
 
 Limitations
 -----------
 
-The ``RootDict`` class itself does not impose any major limitations, but
-it does rely on the ``logging`` module from the Python Standard Library
-for configuring logging settings. This does imply that any limitations
-of the ``logging`` module would also apply when using ``RootDict``.
+There are no notable limitations identified for this class from the
+provided context. As this class essentially behaves like a dictionary,
+the operations and limitations consistent with typical Python dictionary
+objects will apply here. More specific limitations may be
+context-dependent.
 
 Follow-up Questions:
 --------------------
 
--  Are there any performance implications when using a complex
-   configuration with ``RootDict``?
--  How well do the default settings in ``RootDict`` work for most use
-   cases, and is it necessary to provide a custom configuration in most
-   cases?
+-  What are the mandatory and optional fields for ``RootDict``?
+-  How does one link or bind the root logger dictionary to the actual
+   logger?
+-  Is ``RootDict`` typically used in certain types of applications or in
+   specific scenarios?

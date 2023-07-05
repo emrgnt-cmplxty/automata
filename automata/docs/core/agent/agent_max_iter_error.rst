@@ -1,59 +1,70 @@
 AgentMaxIterError
 =================
 
-``AgentMaxIterError`` is an exception raised when the agent exceeds the
-maximum number of iterations while performing a task.
+``AgentMaxIterError`` is an exception class in automata.core.agent.error
+module that is raised when an agent exceeds the maximum number of
+iterations during its execution.
 
 Overview
 --------
 
-This error is raised to indicate that the ``OpenAIAutomataAgent`` has
-reached its maximum number of iterations before producing an expected
-result. It is typically encountered during the ``run()`` method
-execution of the agent. The error is a subclass of
-``AgentIterationError``.
+``AgentMaxIterError`` can be used to handle errors when the execution of
+an agent’s tasks doesn’t complete within the maximum number of
+iterations allowed by the agent’s configuration. This prevents the agent
+from being stuck in an infinite loop if a task isn’t producing the
+expected results or isn’t reaching completion.
 
 Related Symbols
 ---------------
 
--  ``automata.core.agent.error.AgentIterationError``
 -  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.config.agent_config_builder.AutomataAgentConfigBuilder.with_max_iterations``
+-  ``automata.config.base.AgentConfigBuilder.with_max_iterations``
+-  ``automata.core.agent.error.AgentStopIteration``
 
 Example
 -------
 
-The following example demonstrates how to handle ``AgentMaxIterError``
-during the execution of an ``OpenAIAutomataAgent`` instance.
+The ``AgentMaxIterError`` can be used to gracefully handle exceptions
+when running an agent. Here is an illustrative example:
 
 .. code:: python
 
-   from automata.core.agent.providers import OpenAIAutomataAgent
    from automata.core.agent.error import AgentMaxIterError
+   from automata.core.agent.providers import OpenAIAutomataAgent
+   from automata.config.base import AgentConfigBuilder
 
-   instructions = "Find the answer to the equation: x + 2 = 5"
-   config = AutomataAgentConfig.load(AgentConfigName.AUTOMATA_MAIN)
-   config.max_iterations = 5
+   # Instantiate a config builder and set max_iterations
+   config_builder = AgentConfigBuilder()
+   config_builder = config_builder.with_max_iterations(5)
 
-   agent = OpenAIAutomataAgent(instructions, config)
+   # Instantiate an agent with the above configuration
+   my_agent = OpenAIAutomataAgent("Instructions to the agent", config_builder.build())
 
+   # Run the agent and catch the exception if it exceeds maximum iterations
    try:
-       result = agent.run()
-       print("The result is:", result)
+       my_agent.run()
    except AgentMaxIterError:
-       print("The agent exceeded the maximum number of iterations.")
+       print("The agent has exceeded the maximum number of iterations allowed.")
 
 Limitations
 -----------
 
-The ``AgentMaxIterError`` exception is only raised when the agent
-reaches the ``max_iterations`` during its ``run()`` method execution.
-Adjusting the ``max_iterations`` attribute in the
-``AutomataAgentConfig`` can help mitigate this issue, but excessive
-iteration counts might cause unnecessary load on the system.
+One of the limitations of the ``AgentMaxIterError`` is that it depends
+on the maximum number of iterations set in the agent configuration. If
+the maximum iterations are set too high, it could result in an agent
+running for an excessively long time before the error is raised.
+Conversely, if it’s set too low, normal processes might be prematurely
+interrupted by the error.
 
 Follow-up Questions:
 --------------------
 
--  Is there a way to gracefully recover from ``AgentMaxIterError`` and
-   provide partial results?
+-  How is the ideal maximum number of iterations determined for
+   different types of agents?
+-  How will the system behave if the maximum number of iterations isn’t
+   set in the agent configuration?
+
+*This documentation is based on the code context provided and some
+assumptions might have been made. For example, it’s assumed that ‘agent’
+mentioned in the docstrings refers to instances of
+``OpenAIAutomataAgent``.*

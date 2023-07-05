@@ -65,6 +65,12 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which model to use?",
         ),
         click.option(
+            "--max_iterations",
+            default=None,
+            help="How many iterations can we use?",
+            type=int,
+        ),
+        click.option(
             "--config-to-load",
             default="automata-main",
             help="Which agent to use for this task?",

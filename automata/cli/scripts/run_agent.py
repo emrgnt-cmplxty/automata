@@ -61,14 +61,17 @@ def main(*args, **kwargs):
     tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
     logger.info("Done building tools...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata-main"))
-    agent_config = (
+    agent_config_builder = (
         OpenAIAutomataAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)
         .with_model(kwargs.get("model", "gpt-4-0613"))
-        .build()
     )
 
-    agent = OpenAIAutomataAgent(instructions, config=agent_config)
+    max_iterations = kwargs.get("max_iterations", None)
+    if max_iterations is not None:
+        agent_config_builder = agent_config_builder.with_max_iterations(max_iterations)
+
+    agent = OpenAIAutomataAgent(instructions, config=agent_config_builder.build())
     result = agent.run()
     print("Final result:\n\n", result)
     return result

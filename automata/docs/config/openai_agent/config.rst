@@ -1,61 +1,63 @@
-OpenAIAutomataAgentConfig
-=========================
+OpenAIAutomataAgentConfig.Config
+================================
 
-``OpenAIAutomataAgentConfig`` is a configuration class that helps
-configure, setup, and interact with an ``OpenAIAutomataAgent``. It
-contains various attributes such as ``SUPPORTED_MODELS``,
-``arbitrary_types_allowed``, and others to provide the necessary setup
-and settings to be used by the agent.
+The ``OpenAIAutomataAgentConfig.Config`` class is a configuration class
+that is used within ``OpenAIAutomataAgentConfig``. It manages
+configurations related to OpenAI models and set up parameters for the
+Automata agent such as which OpenAI engine models are supported and
+whether arbitrary types are allowed.
+
+The computation setup and the model are crucial elements while building
+an agent. This class provides configurations for such important elements
+enabling developers to build and utilize the agents effectively.
 
 Overview
 --------
 
-``OpenAIAutomataAgentConfig`` provides a way to manage the agent
-configurations and settings for interacting with the OpenAI API. The
-configuration includes the supported models, arbitrary types allowance,
-and other necessary settings for generating responses based on given
-instructions and managing agent interactions.
+The class includes attributes such as ``SUPPORTED_MODELS`` and
+``arbitrary_types_allowed``. The ``SUPPORTED_MODELS`` attribute is a
+list of OpenAI engine model names that identifies which models are
+supported to help ensure compatibility and performance. The
+``arbitrary_types_allowed`` attribute dictates whether arbitrary types
+are allowed in the model.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
+-  ``automata.core.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
--  ``automata.config.config_types.AgentConfigName``
 
 Example
 -------
 
-The following is an example demonstrating how to create an instance of
-``OpenAIAutomataAgentConfig`` using
-``OpenAIAutomataAgentConfigBuilder``.
+Here is an example of how you might build and use an
+``OpenAIAutomataAgentConfig`` with a specified model:
 
 .. code:: python
 
-   from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-   from automata.config.config_types import AgentConfigName
+   from automata.config.openai_agent import OpenAIAutomataAgentConfig
+   from automata.config.base import AgentConfigName
 
-   config_name = AgentConfigName.TEST
-   config_builder = OpenAIAutomataAgentConfigBuilder.from_name(config_name)
-   config = config_builder.build()
+   config = OpenAIAutomataAgentConfig.Config()
+   config_name = AgentConfigName.AUTOMATA_MAIN # get config name
+   config.model = "gpt-4"  # Set model
+   config.arbitrary_types_allowed = True
 
 Limitations
 -----------
 
-The primary limitation of ``OpenAIAutomataAgentConfig`` is that it
-relies on the predefined configuration options. It does not support
-custom configuration options outside of the specified settings, and any
-customization should be done within the boundaries of these settings.
+``OpenAIAutomataAgentConfig.Config`` can only use the predefined models
+listed in ``SUPPORTED_MODELS``. If you need to use a different model,
+you would need to update the ``SUPPORTED_MODELS`` attribute in the
+class.
 
 Follow-up Questions:
 --------------------
 
--  How can we include custom configuration options in
-   ``OpenAIAutomataAgentConfig`` to allow for more flexible agent
-   configurations?
--  Are there any considerations regarding backward compatibility or
-   dependency issues when adding new configuration options or modifying
-   existing ones in ``OpenAIAutomataAgentConfig``?
+-  Currently, the class uses a hard-coded list for supported models. Can
+   it potentially support all models in the future?
+-  How does the class handle arbitrary types in a safe and performant
+   manner?

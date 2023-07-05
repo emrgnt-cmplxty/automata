@@ -1,39 +1,66 @@
 MockCodeGenerator
 =================
 
-``MockCodeGenerator`` is a utility class used in unit tests to generate
-Python code snippets with specific characteristics such as the presence
-of classes, methods, functions, import statements, and docstrings. It
-has various attributes to control the presence of these elements in the
-generated code and provides an easy way to generate random names and
-docstrings for these elements.
+The ``MockCodeGenerator`` class from
+``automata.tests.unit.test_py_writer`` is a Python code generator for
+testing purposes. The class helps create Python code mockups for testing
+functions, classes, docstrings, etc.
+
+It allows to randomly create Python source code snippets including:
+
+-  Function and method names
+-  Class, method, and function docstrings
+-  Import statements
+-  Class definitions including methods
+
+It also includes methods to validate the structure of generated Python
+source code.
 
 Overview
 --------
 
-``MockCodeGenerator`` can be instantiated by passing boolean flags to
-indicate whether particular code elements (e.g., class, method,
-function, import statement, and docstrings) should be present in the
-generated code. It also offers a ``generate_code`` method to generate
-the code snippet based on the specified configuration. The
-``_check_*_obj`` methods can be used to assert the presence of specific
-elements in the generated code. The ``random_string`` static method
-generates random strings of specified length.
+The ``MockCodeGenerator`` is primarily used for unit testing in
+``automata.tests.unit.test_py_writer`` module. The class allows to
+create mock Python source code snippets for testing PyReader and
+PyWriter utility classes, the ``PyReader``, ``PyWriter``, and
+``PyWriterToolkitBuilder`` classes in particular.
+
+Attributes
+----------
+
+``MockCodeGenerator`` has the following attributes:
+
+-  Boolean flags to specify whether the code snippet needs to contain a
+   class, method, function, import statement, module docstring, class
+   docstring, method docstring, and/or function docstring
+-  Randomly generated class, method, and function names
+-  Randomly generated module, class, method, and function docstrings
+
+Methods
+-------
+
+``MockCodeGenerator`` includes several methods:
+
+1. ``generate_code(self)``: Generates Python source code based on the
+   specified attributes.
+2. ``_check_function_obj(self, function_obj=None)``: Checks the validity
+   of a function object.
+3. ``_check_class_obj(self, class_obj=None)``: Checks the validity of a
+   class object.
+4. ``_check_module_obj(self, module_obj=None)``: Checks the validity of
+   a module object.
+5. ``random_string(length: int)``: A static function that generates a
+   random string of a specified length.
 
 Related Symbols
 ---------------
 
 -  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.core.code_handling.py.writer.PyWriter``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.tools.tool.Tool``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 
 Example
 -------
-
-The following is an example demonstrating how to create an instance of
-``MockCodeGenerator``:
 
 .. code:: python
 
@@ -52,15 +79,25 @@ The following is an example demonstrating how to create an instance of
 
    source_code = mock_generator.generate_code()
 
+   print(source_code)
+
+The ``source_code`` variable is expected to include a Python source code
+snippet containing a class definition, a method definition within the
+class, a function definition, an import statement, and a set of
+docstrings for the module, class, method, and function.
+
 Limitations
 -----------
 
-``MockCodeGenerator`` is primarily used for testing purposes, and its
-generated code snippets are not intended to be functional code. It is
-not meant to be used outside of the context of unit tests.
+The ``MockCodeGenerator`` is designed specifically for testing. Hence,
+the generated code snippets may not make sense for use outside of
+testing contexts. Also, it only generates simple code snippets and does
+not generate complex code structures.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  Are there any other use cases for ``MockCodeGenerator`` outside of
-   unit testing?
+-  Could the ``MockCodeGenerator`` be extended to generate more complex
+   code structures?
+-  How reliable is the validity checking of code structures especially
+   for complex code structures?
