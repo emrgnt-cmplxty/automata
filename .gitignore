@@ -57,3 +57,4 @@ local_env/*
 playground/*
 *.sqlite3
 tasks/
+setup.sh
