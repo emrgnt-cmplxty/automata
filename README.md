@@ -35,6 +35,9 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 Follow these steps to setup the Automata environment
 
 ```bash
+# Clone the repository
+git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata
+
 # Copy the env and setup files
 cp .setup.sh.example setup.sh && cp .env.example .env
 
@@ -43,7 +46,6 @@ chmod 755 setup.sh
 
 # Update the setup and env files with your local paths
 vim setup.sh
-vim .env
 
 # Run the setup script
 ./setup.sh
