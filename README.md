@@ -36,10 +36,10 @@ Follow these steps to setup the Automata environment
 
 ```bash
 # Clone the repository
-git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata
+git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/scripts
 
 # Copy the env and setup files
-cp .setup.sh.example setup.sh && cp .env.example .env
+cp .setup.sh.example setup.sh && cp ../.env.example ../.env
 
 # Allow for execution
 chmod 755 setup.sh
@@ -56,6 +56,7 @@ vim setup.sh
 [SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates symbols by dependencies across the codebase. New indices are generated and uploaded periodically for the Automata codebase, but programmers must be generate them manually if necessary for their local development. If you encounter issues, we recommend referring to the [instructions here](https://github.com/sourcegraph/scip-python).
 
 ```bash
+# Make sure you are in /scripts
 # Install dependencies and run indexing on the local codebase
 ./install_indexing.sh && ./regenerate_index.sh
 ```

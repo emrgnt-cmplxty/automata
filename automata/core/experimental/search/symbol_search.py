@@ -111,7 +111,6 @@ class SymbolSearch:
         """Finds exact line matches for a given pattern string in all modules."""
         matches = {}
         for module_path, module in py_module_loader.items():
-            print("Checking module = ", module)
             if module:
                 lines = module.dumps().splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]

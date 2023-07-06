@@ -25,6 +25,6 @@ CONVERSATION_DB_PATH = os.getenv(
     "CONVERSATION_DB_PATH", os.path.join("..", "conversation_db.sqlite3")
 )
 TASK_DB_PATH = os.getenv("TASK_DB_PATH", os.path.join("..", "task_db.sqlite3"))
-TASK_OUTPUT_PATH = os.getenv("TASKS_OUTPUT_PATH", os.path.join("..", "tasks"))
+TASK_OUTPUT_PATH = os.getenv("TASKS_OUTPUT_PATH", os.path.join("..", "local_tasks"))
 REPOSITORY_NAME = os.getenv("REPOSITORY_NAME", "emrgnt-cmplxty/Automata")
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", 8))
