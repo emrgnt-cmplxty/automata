@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentTaskStateError &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="AgentToolkitBuilder" href="agent_toolkit_builder.html" />
+    <link rel="prev" title="AgentTaskInstructions" href="agent_task_instructions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">agent</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="agent.html">Automata.core.agent.agent.Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_database_error.html">AgentDatabaseError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_general_error.html">AgentGeneralError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_instance.html">AgentInstance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_max_iter_error.html">AgentMaxIterError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_result_error.html">AgentResultError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_stop_iteration.html">automata.core.agent.error.AgentStopIteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_general_error.html">AgentTaskGeneralError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_git_error.html">AgentTaskGitError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_instructions.html">AgentTaskInstructions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AgentTaskStateError</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agent_toolkit_builder.html">AgentToolkitBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_toolkit_names.html">AgentToolkitNames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="open_ai_agent_toolkit_builder.html">OpenAIAgentToolkitBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="open_ai_automata_agent.html">OpenAIAutomataAgent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="open_ai_automata_agent_instance.html">OpenAIAutomataAgentInstance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unknown_tool_error.html">UnknownToolError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent/index.html">agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="instances/index.html">instances</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm/index.html">llm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">agent</a></li>
+      <li class="breadcrumb-item active">AgentTaskStateError</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/agent/agent_task_state_error.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agenttaskstateerror">
+<h1>AgentTaskStateError<a class="headerlink" href="#agenttaskstateerror" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AgentTaskStateError</span></code> is an exception class in
+<code class="docutils literal notranslate"><span class="pre">automata.core.agent.error</span></code> module that is raised when the task is not
+in the correct state for the operation. This class deals with erroneous
+cases where, for instance, an action is being performed on a task but
+its state is not correctly set for that particular action.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.base.TaskStatus</span></code>: Refers to various statuses a
+task can have, like <code class="docutils literal notranslate"><span class="pre">CREATED</span></code>, <code class="docutils literal notranslate"><span class="pre">RETRYING</span></code>, <code class="docutils literal notranslate"><span class="pre">FAILED</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SUCCESS</span></code>, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_task.test_task_inital_state</span></code>: A unit test
+that asserts if the initial status of the task is <code class="docutils literal notranslate"><span class="pre">CREATED</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_task.test_status_setter</span></code>: A unit test to
+check if the task status can be set to <code class="docutils literal notranslate"><span class="pre">RETRYING</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.error.AgentTaskGitError</span></code>: An exception raised
+when the task encounters a git related error.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.error.AgentTaskGeneralError</span></code>: An exception
+raised when a general error occurs during task execution.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.error.AgentTaskInstructions</span></code>: An exception
+raised when there is an error with the task instructions.</p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>The following is a simplified example demonstrating how
+<code class="docutils literal notranslate"><span class="pre">AgentTaskStateError</span></code> could be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.agent.error</span> <span class="kn">import</span> <span class="n">AgentTaskStateError</span>
+<span class="kn">from</span> <span class="nn">automata.core.tasks.base</span> <span class="kn">import</span> <span class="n">TaskStatus</span><span class="p">,</span> <span class="n">AutomataTask</span>
+
+<span class="c1"># Creating a Mock Task</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">AutomataTask</span><span class="p">()</span>
+
+<span class="c1"># Simulating a condition where task is being executed without setting its status to &#39;EXECUTING&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">EXECUTING</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">AgentTaskStateError</span><span class="p">(</span><span class="s1">&#39;Task status is not set to EXECUTING.&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">AgentTaskStateError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In the above example, an <code class="docutils literal notranslate"><span class="pre">AgentTaskStateError</span></code> is raised if an attempt
+is made to execute a task, <code class="docutils literal notranslate"><span class="pre">task</span></code>, without changing its status to
+<code class="docutils literal notranslate"><span class="pre">EXECUTING</span></code>.</p>
+<p>Note: Mocks are used in the above example for demonstration. In actual
+usage, replace the <code class="docutils literal notranslate"><span class="pre">AutomataTask()</span></code> with the actual Operation to be
+performed.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">AgentTaskStateError</span></code> class on its own doesn’t have limitations as
+it is simply a description of a specific type of error that could occur.
+The limitations would rather be on the workflow scale where
+mismanagement or lack of proper checks on the task’s state could lead to
+such errors.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How does the execution pipeline ensure that the tasks go through the
+proper state changes?</p></li>
+<li><p>Could there be any adverse effects if the state of a task is not
+managed properly?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="agent_task_instructions.html" class="btn btn-neutral float-left" title="AgentTaskInstructions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="agent_toolkit_builder.html" class="btn btn-neutral float-right" title="AgentToolkitBuilder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

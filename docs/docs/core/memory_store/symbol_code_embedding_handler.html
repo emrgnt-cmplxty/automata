@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SymbolCodeEmbeddingHandler &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SymbolDocEmbeddingHandler" href="symbol_doc_embedding_handler.html" />
+    <link rel="prev" title="AgentConversationDatabase" href="agent_conversation_database.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent/index.html">agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm/index.html">llm</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">memory_store</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="agent_conversation_database.html">AgentConversationDatabase</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">SymbolCodeEmbeddingHandler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#method-details">Method Details</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#drawbacks">Drawbacks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="symbol_doc_embedding_handler.html">SymbolDocEmbeddingHandler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">memory_store</a></li>
+      <li class="breadcrumb-item active">SymbolCodeEmbeddingHandler</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/memory_store/symbol_code_embedding_handler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="symbolcodeembeddinghandler">
+<h1>SymbolCodeEmbeddingHandler<a class="headerlink" href="#symbolcodeembeddinghandler" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingHandler</span></code> is a class within the Automata framework
+for handling the storage and retrieval of symbol source code embeddings.
+In machine learning applications, embedding is the process of taking raw
+data and converting it to a vector of numbers. Within this context, the
+handler is used to store and retrieve embeddings of symbols, which are
+encoded representations of Python classes, methods, or local variables.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingHandler</span></code> interacts with a database of
+<code class="docutils literal notranslate"><span class="pre">JSONSymbolEmbeddingVectorDatabase</span></code>, which stores symbol code
+embeddings. You can retrieve an existing embedding for a <code class="docutils literal notranslate"><span class="pre">Symbol</span></code> with
+the <code class="docutils literal notranslate"><span class="pre">get_embedding</span></code> method. The handler is also equipped to process an
+embedding by comparing its source code with the one in the database. If
+there are updates or changes, it will accordingly update the existing
+embedding.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.symbol_embedding.base.SymbolCodeEmbedding</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_symbol_embedding.test_get_embedding</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_synchronizer.test_build_graph_and_handler_and_synchronize</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_database_vector.test_load</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.singletons.dependency_factory.DependencyFactory.create_symbol_code_embedding_handler</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_database_vector.test_lookup_symbol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.symbol_embedding.builders.SymbolCodeEmbeddingBuilder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_database_vector.test_add_symbols</span></code></p></li>
+</ul>
+</section>
+<section id="method-details">
+<h2>Method Details<a class="headerlink" href="#method-details" title="Permalink to this headline"></a></h2>
+<p><strong>``__init__``</strong>: This function initializes the class with a
+<code class="docutils literal notranslate"><span class="pre">JSONSymbolEmbeddingVectorDatabase</span></code> object (embedding_db) and
+<code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingBuilder</span></code> object (embedding_builder).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_db</span><span class="p">:</span> <span class="n">JSONSymbolEmbeddingVectorDatabase</span><span class="p">,</span> <span class="n">embedding_builder</span><span class="p">:</span> <span class="n">SymbolCodeEmbeddingBuilder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>``get_embedding``</strong>: Returns the embedding for a given <code class="docutils literal notranslate"><span class="pre">Symbol</span></code> from
+the database.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="n">Symbol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SymbolCodeEmbedding</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>``process_embedding``</strong>: If the source code has changed, then it
+processes the embedding by creating a new one or updating the existing
+one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="n">Symbol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>``update_existing_embedding``</strong>: It checks for differences between the
+source code of the symbol and the source code of the existing embedding.
+If there are differences, it updates the embedding.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_existing_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="n">Symbol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</pre></div>
+</div>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>Consider the following code snippet, where we use
+<code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingHandler</span></code> for symbol1, symbol2, and symbol3.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.symbol.base</span> <span class="kn">import</span> <span class="n">Symbol</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol_embedding.base</span> <span class="kn">import</span> <span class="n">JSONSymbolEmbeddingVectorDatabase</span><span class="p">,</span> <span class="n">SymbolCodeEmbedding</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol_embedding.base</span> <span class="kn">import</span> <span class="n">SymbolCodeEmbeddingHandler</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol_embedding.builders</span> <span class="kn">import</span> <span class="n">SymbolCodeEmbeddingBuilder</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span>
+
+<span class="c1"># Mock symbols and their embeddings</span>
+<span class="n">symbol1</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">symbol2</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">symbol3</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="n">embedding1</span> <span class="o">=</span> <span class="n">SymbolCodeEmbedding</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">symbol1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">source_code</span><span class="o">=</span><span class="s2">&quot;symbol1&quot;</span><span class="p">)</span>
+<span class="n">embedding2</span> <span class="o">=</span> <span class="n">SymbolCodeEmbedding</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">symbol2</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">source_code</span><span class="o">=</span><span class="s2">&quot;symbol2&quot;</span><span class="p">)</span>
+<span class="n">embedding3</span> <span class="o">=</span> <span class="n">SymbolCodeEmbedding</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">symbol3</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">source_code</span><span class="o">=</span><span class="s2">&quot;symbol3&quot;</span><span class="p">)</span>
+
+<span class="c1"># JSONSymbolEmbeddingVectorDatabase methods</span>
+<span class="n">embedding_db</span> <span class="o">=</span> <span class="n">JSONSymbolEmbeddingVectorDatabase</span><span class="p">(</span><span class="s1">&#39;path_to_file&#39;</span><span class="p">)</span>
+<span class="n">embedding_db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">embedding1</span><span class="p">)</span>
+<span class="n">embedding_db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">embedding2</span><span class="p">)</span>
+<span class="n">embedding_db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">embedding3</span><span class="p">)</span>
+
+<span class="c1"># Create an instance of the class</span>
+<span class="n">mock_builder</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">SymbolCodeEmbeddingBuilder</span><span class="p">)</span>
+<span class="n">cem</span> <span class="o">=</span> <span class="n">SymbolCodeEmbeddingHandler</span><span class="p">(</span><span class="n">embedding_db</span><span class="o">=</span><span class="n">embedding_db</span><span class="p">,</span> <span class="n">embedding_builder</span><span class="o">=</span><span class="n">mock_builder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, we have created symbols and their embeddings. We then
+create a JSONSymbolEmbeddingVectorDatabase with a given file path and
+add the embeddings to the database. Next, we create an instance of
+SymbolCodeEmbeddingHandler and pass the database and a mock builder
+instance to it.</p>
+</section>
+<section id="drawbacks">
+<h2>Drawbacks<a class="headerlink" href="#drawbacks" title="Permalink to this headline"></a></h2>
+<p>The handling, storage, and retrieval of symbol embeddings are dependent
+on the correctness and updated status of the
+<code class="docutils literal notranslate"><span class="pre">JSONSymbolEmbeddingVectorDatabase</span></code> database. If the database is not
+correctly maintained or updated, the embeddings may not accurately
+represent the symbols. More testing and validation steps may be needed
+to ascertain embedding changes are accurately detected and handled.</p>
+<p>Another limitation is that <code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingHandler</span></code> class cannot
+load custom databases. It assumes a specific structure for the database
+files and expects them to be in a certain format.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How does the <code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingHandler</span></code> handle embeddings for
+symbols that are not found within the
+<code class="docutils literal notranslate"><span class="pre">JSONSymbolEmbeddingVectorDatabase</span></code>?</p></li>
+<li><p>How scalable is the use of this class when dealing with large code
+bases and many different symbols?</p></li>
+<li><p>How are changes propagated in the database when multiple instances of
+<code class="docutils literal notranslate"><span class="pre">SymbolCodeEmbeddingHandler</span></code> use the same database?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="agent_conversation_database.html" class="btn btn-neutral float-left" title="AgentConversationDatabase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="symbol_doc_embedding_handler.html" class="btn btn-neutral float-right" title="SymbolDocEmbeddingHandler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentConversationDatabase &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SymbolCodeEmbeddingHandler" href="symbol_code_embedding_handler.html" />
+    <link rel="prev" title="memory_store" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent/index.html">agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm/index.html">llm</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">memory_store</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AgentConversationDatabase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="symbol_code_embedding_handler.html">SymbolCodeEmbeddingHandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symbol_doc_embedding_handler.html">SymbolDocEmbeddingHandler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">memory_store</a></li>
+      <li class="breadcrumb-item active">AgentConversationDatabase</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/memory_store/agent_conversation_database.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agentconversationdatabase">
+<h1>AgentConversationDatabase<a class="headerlink" href="#agentconversationdatabase" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AgentConversationDatabase</span></code> is a class that manages the interactions
+of a given conversation with the Automata agent. Its main
+functionalities are connecting to the conversation database, creating
+and managing the interaction’s table in the database, and saving,
+retrieving and ordering the messages of a given conversation session.
+This class inherits from the abstract base class
+<code class="docutils literal notranslate"><span class="pre">LLMConversationDatabaseProvider</span></code> and thus provides an implementation
+for the methods <code class="docutils literal notranslate"><span class="pre">get_messages</span></code> and <code class="docutils literal notranslate"><span class="pre">save_message</span></code>.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.providers.openai.OpenAIChatCompletionProvider.reset</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.config.CONVERSATION_DB_PATH</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.base.database.relational.SQLDatabase.connect</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_conversation_database.db</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_conversation_database.test_get_messages_returns_all_messages_for_session</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_conversation_database.test_put_message_increments_interaction_id</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.foundation.LLMConversationDatabaseProvider.get_messages</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.foundation.LLMConversationDatabaseProvider.save_message</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.providers.OpenAIAutomataAgent.set_database_provider</span></code></p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>The following is an example demonstrating how to create an instance of
+<code class="docutils literal notranslate"><span class="pre">AgentConversationDatabase</span></code>, save a message and then retrieve it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.memory_store.agent_conversation_database</span> <span class="kn">import</span> <span class="n">AgentConversationDatabase</span>
+<span class="kn">from</span> <span class="nn">automata.core.llm.foundation</span> <span class="kn">import</span> <span class="n">LLMChatMessage</span>
+
+<span class="c1"># Initialize a database path and session id</span>
+<span class="n">db_path</span> <span class="o">=</span> <span class="s1">&#39;path/to/db&#39;</span>
+<span class="n">session_id</span> <span class="o">=</span> <span class="s1">&#39;a_unique_session_id&#39;</span>
+
+<span class="c1"># Create an instance of AgentConversationDatabase</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">AgentConversationDatabase</span><span class="p">(</span><span class="n">session_id</span><span class="p">,</span> <span class="n">db_path</span><span class="p">)</span>
+
+<span class="c1"># Create a message</span>
+<span class="n">message</span> <span class="o">=</span> <span class="n">LLMChatMessage</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s1">&#39;Hello, world!&#39;</span><span class="p">)</span>
+
+<span class="c1"># Save the message to the database</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+<span class="c1"># Retrieve all messages from the database</span>
+<span class="n">messages</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In this example, the ‘messages’ object should now contain the previously
+saved LLMChatMessage.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>One of the limitations of <code class="docutils literal notranslate"><span class="pre">AgentConversationDatabase</span></code> is it’s heavily
+reliant on the underlying SQL database implementation, thus requiring
+careful handling of database connections and queries to prevent
+potential data corruption. The current implementation also lacks support
+for efficiently handling function call conversations, as stated in the
+TODO comment found in the <code class="docutils literal notranslate"><span class="pre">save_message</span></code> method.</p>
+<p>Certain aspects are pending improvements, including additional testing
+around the <code class="docutils literal notranslate"><span class="pre">get_messages</span></code> method and better handling of function calls
+in <code class="docutils literal notranslate"><span class="pre">save_message</span></code>. This is evidenced by the presence of “TODO”
+comments in the codebase for this class.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How can we expand the functionality to handle additional forms of
+conversation such as function calls more efficiently?</p></li>
+<li><p>What kind of additional testing and validation is required around the
+<code class="docutils literal notranslate"><span class="pre">get_messages</span></code> method?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="memory_store" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="symbol_code_embedding_handler.html" class="btn btn-neutral float-right" title="SymbolCodeEmbeddingHandler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
