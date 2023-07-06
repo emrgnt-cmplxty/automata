@@ -231,4 +231,4 @@ class PyModuleLoader(metaclass=Singleton):
             return None
 
 
-py_module_loader = PyModuleLoader()
+py_module_loader: PyModuleLoader = PyModuleLoader()
