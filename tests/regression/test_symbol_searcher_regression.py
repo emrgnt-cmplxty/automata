@@ -43,12 +43,14 @@ def check_hits(expected_in_top_hits, found_top_hits):
 def test_symbol_rank_search_on_symbol(
     symbol_search_live, search, expected_in_top_hits  # noqa : F811
 ):
+    py_module_loader.initialized = (
+        False  # This is a hacky way to avoid any risk of initialization error
+    )
     py_module_loader.initialize()
     results = symbol_search_live.symbol_rank_search(search)
     filtered_results = [result for result in results if ".tests." not in result[0].dotpath]
     found_top_hits = get_top_n_results_desc_name(filtered_results, 10)
     check_hits(expected_in_top_hits, found_top_hits)
-    py_module_loader.initialized = False  # This is a hacky way to allow next test to run
 
 
 EXACT_CALLS_TO_HITS = {
@@ -86,14 +88,13 @@ EXACT_CALLS_TO_HITS = {
     ],
 )
 def test_exact_search(symbol_search_live, search, expected_in_hits):  # noqa : F811
+    py_module_loader.initialized = (
+        False  # This is a hacky way to avoid any risk of initialization error
+    )
     py_module_loader.initialize()
-
-    print("py_module_loader.items() = ", py_module_loader.items())
     expected_in_exact_hits = EXACT_CALLS_TO_HITS[search]
     found_in_exact_hits = list(symbol_search_live.exact_search(search).keys())
-    print("found_in_exact_hits = ", found_in_exact_hits)
     check_hits(expected_in_exact_hits, found_in_exact_hits)
-    py_module_loader.initialized = False  # This is a hacky way to allow next test to run
 
 
 @pytest.mark.regression
@@ -110,6 +111,9 @@ def test_exact_search(symbol_search_live, search, expected_in_hits):  # noqa : F
     ],
 )
 def test_source_code_retrieval(symbol_search_live, search, expected_in_source):  # noqa : F811
+    py_module_loader.initialized = (
+        False  # This is a hacky way to avoid any risk of initialization error
+    )
     py_module_loader.initialize()
     symbols = symbol_search_live.symbol_graph.get_sorted_supported_symbols()
 
@@ -119,5 +123,3 @@ def test_source_code_retrieval(symbol_search_live, search, expected_in_source): 
         assert (
             source_hit in found_source_code
         ), f"Expected to find {source_hit} in source code, but it was not found"
-
-    py_module_loader.initialized = False  # This is a hacky way to allow next test to run
