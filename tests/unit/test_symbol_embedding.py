@@ -4,10 +4,8 @@ import numpy as np
 
 from automata.embedding.base import EmbeddingBuilder
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.symbol_embedding.base import (
-    JSONSymbolEmbeddingVectorDatabase,
-    SymbolCodeEmbedding,
-)
+from automata.symbol_embedding.base import SymbolCodeEmbedding
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 
 def test_update_embeddings(
@@ -126,7 +124,7 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     )
 
     cem.embedding_builder.build.return_value = SymbolCodeEmbedding(
-        symbol=mock_simple_method_symbols[0], source_code="xx", vector=np.array([1, 2, 3, 4])
+        key=mock_simple_method_symbols[0], document="xx", vector=np.array([1, 2, 3, 4])
     )
     cem.embedding_db.contains = lambda x: True
     cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]

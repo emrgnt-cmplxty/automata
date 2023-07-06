@@ -10,7 +10,7 @@ from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.symbol.symbol_utils import convert_to_fst_object
-from automata.symbol_embedding.base import SymbolEmbeddingHandler
+from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]

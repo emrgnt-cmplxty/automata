@@ -16,7 +16,7 @@ from redbaron import (
     RedBaron,
 )
 
-from automata.navigation.py.dot_path_map import DotPathMap
+from automata.navigation.py.dotpath_map import DotPathMap
 
 logger = logging.getLogger(__name__)
 

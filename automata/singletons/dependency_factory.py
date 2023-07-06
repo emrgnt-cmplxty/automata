@@ -26,11 +26,11 @@ from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
 from automata.symbol.base import ISymbolProvider
 from automata.symbol.graph import SymbolGraph
-from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,
 )
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 from automata.tools.factory import AgentToolFactory, logger
 
 

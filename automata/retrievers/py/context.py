@@ -201,7 +201,7 @@ class PyContextRetriever:
 
         if self.doc_embedding_db is not None and self.doc_embedding_db.contains(symbol.dotpath):
             if is_main_symbol:
-                document = self.doc_embedding_db.get(symbol.dotpath).input_object
+                document = self.doc_embedding_db.get(symbol.dotpath).document
             else:
                 document = self.doc_embedding_db.get(symbol.dotpath).summary
             self.process_message("Class Document:")

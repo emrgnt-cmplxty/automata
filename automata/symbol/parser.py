@@ -18,10 +18,9 @@ class _SymbolParser:
     def __init__(self, symbol: str) -> None:
         self.symbol = symbol
         self.index = 0
-        self.symbol_str = symbol
 
     def error(self, message: str) -> ValueError:
-        return ValueError(f"{message}\n{self.symbol_str}\n{'_' * self.index}^")
+        return ValueError(f"{message}\n{self.symbol}\n{'_' * self.index}^")
 
     def current(self) -> str:
         return self.symbol[self.index]

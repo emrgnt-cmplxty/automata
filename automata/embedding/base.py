@@ -28,9 +28,9 @@ class EmbeddingVectorProvider(abc.ABC):
 class Embedding(abc.ABC):
     """Abstract base class for different types of embeddings"""
 
-    def __init__(self, key: Any, input_object: str, vector: np.ndarray):
+    def __init__(self, key: Any, document: str, vector: np.ndarray):
         self.key = key
-        self.input_object = input_object
+        self.document = document
         self.vector = vector
 
     @abc.abstractmethod
