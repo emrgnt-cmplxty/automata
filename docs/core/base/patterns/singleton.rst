@@ -32,12 +32,12 @@ Related Symbols
    initializer for the ``CsSWU`` class.
 -  ``automata.tests.unit.sample_modules.sample.Person``, a sample class
    for unit testing.
--  ``automata.symbol.base.ISymbolProvider.__init__``, initializer
-   for the ``ISymbolProvider`` Interface.
+-  ``automata.symbol.base.ISymbolProvider.__init__``, initializer for
+   the ``ISymbolProvider`` Interface.
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``, a sample
    outer class with an inner class for unit testing.
--  ``automata.symbol.base.Symbol``, core class for creating,
-   managing, and manipulating symbols.
+-  ``automata.symbol.base.Symbol``, core class for creating, managing,
+   and manipulating symbols.
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``,
    a sample inner class located within an outer class for unit testing.
 

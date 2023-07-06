@@ -15,6 +15,6 @@ python3 generate_faq.py
 # Return to working dir
 cd -
 
-# Optional command to build docs locally - 'sphinx-build -a automata/docs ../docs'
+# Optional command to build docs locally - 'sphinx-build -a ../docs ../../docs'
 
 deactivate
