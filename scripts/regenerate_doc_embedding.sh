@@ -2,7 +2,7 @@
 
 # activate the local_env
 
-source local_env/bin/activate
+source ../local_env/bin/activate
 
 # Build and embed the L2 docs
 automata run-doc-embedding --embedding-level=2
