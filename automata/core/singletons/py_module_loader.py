@@ -48,7 +48,7 @@ class PyModuleLoader(metaclass=Singleton):
         self,
         root_fpath: str = get_root_fpath(),
         py_fpath: str = get_root_py_fpath(),
-        parsing_strategy: Union[None, ParsingStrategy] = None,
+        parsing_strategy: Optional[ParsingStrategy] = None,
     ) -> None:
         """
         Initializes the loader by setting paths across the entire project
