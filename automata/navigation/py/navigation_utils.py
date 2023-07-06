@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
+from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef
+from ast import Module as ModuleNode
+from ast import iter_child_nodes
+from typing import List, Optional, Union
 
 from redbaron import (
     ClassNode,
@@ -18,9 +21,28 @@ from automata.navigation.py.dot_path_map import DotPathMap
 logger = logging.getLogger(__name__)
 
 
+def find_syntax_tree_node_pyast(code_obj: Union[ModuleNode, AST], object_path: List[str]):
+    def find_subnode(node, obj_name):
+        for child in iter_child_nodes(node):
+            if (
+                isinstance(child, (ClassDef, FunctionDef, AsyncFunctionDef))
+                and child.name == obj_name
+            ):
+                return child
+        return None
+
+    if isinstance(code_obj, (ModuleNode, ClassDef)):
+        node = code_obj
+        while node and object_path:
+            obj_name = object_path.pop(0)
+            node = find_subnode(node, obj_name)
+        return node
+    return None
+
+
 def find_syntax_tree_node(
-    code_obj: Optional[Union[RedBaron, ClassNode]], object_path: Optional[str]
-) -> Optional[Union[Node, RedBaron]]:
+    code_obj: Optional[Union[RedBaron, ClassNode, ModuleNode]], object_path: Optional[str]
+) -> Optional[Union[Node, RedBaron, AST]]:
     """
     Find a module, or find a function, method, or class inside a module.
 
@@ -40,11 +62,14 @@ def find_syntax_tree_node(
 
     obj_parts = object_path.split(DotPathMap.DOT_SEP)
 
-    node = code_obj
-    while node and obj_parts:
-        obj_name = obj_parts.pop(0)
-        node = _find_subnode(node, obj_name)
-    return node
+    if isinstance(code_obj, RedBaron) or isinstance(code_obj, ClassNode):
+        node = code_obj
+        while node and obj_parts:
+            obj_name = obj_parts.pop(0)
+            node = _find_subnode(node, obj_name)
+        return node
+    else:
+        return find_syntax_tree_node_pyast(code_obj, obj_parts)
 
 
 def find_import_syntax_tree_nodes(module: RedBaron) -> Optional[NodeList]:

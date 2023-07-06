@@ -1,6 +1,19 @@
 from __future__ import annotations
 
+import copy
 import logging
+from ast import (
+    AST,
+    AsyncFunctionDef,
+    ClassDef,
+    Constant,
+    Expr,
+    FunctionDef,
+    NodeTransformer,
+    fix_missing_locations,
+    get_docstring,
+)
+from ast import unparse as pyast_unparse
 from typing import Optional, Union, cast
 
 from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
@@ -10,6 +23,36 @@ from automata.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 FSTNode = Union[Node, RedBaron]
+
+
+class DocstringRemover(NodeTransformer):
+    """
+    A NodeTransformer subclass that removes docstrings.
+    """
+
+    def visit_Module(self, node):
+        return self.generic_visit(node)
+
+    def visit_ClassDef(self, node):
+        node.body = [
+            n for n in node.body if not isinstance(n, Expr) or not isinstance(n.value, Constant)
+        ]
+        self.generic_visit(node)
+        return node
+
+    def visit_FunctionDef(self, node):
+        node.body = [
+            n for n in node.body if not isinstance(n, Expr) or not isinstance(n.value, Constant)
+        ]
+        self.generic_visit(node)
+        return node
+
+    def visit_AsyncFunctionDef(self, node):
+        node.body = [
+            n for n in node.body if not isinstance(n, Expr) or not isinstance(n.value, Constant)
+        ]
+        self.generic_visit(node)
+        return node
 
 
 class PyReader:
@@ -37,7 +80,10 @@ class PyReader:
         if module:
             result = find_syntax_tree_node(module, object_path)
             if result:
-                return result.dumps()
+                if isinstance(result, (RedBaron, Node)):
+                    return result.dumps()
+                else:
+                    return pyast_unparse(result)
 
         return PyReader.NO_RESULT_FOUND_STR
 
@@ -94,19 +140,28 @@ class PyReader:
                     if child_node is not node:
                         _remove_docstrings(child_node)
 
-        module = cast(RedBaron, py_module_loader.fetch_module(module_dotpath))
+        module = py_module_loader.fetch_module(module_dotpath)
 
         if module:
-            module_copy = RedBaron(module.dumps())
+            if isinstance(module, RedBaron):
+                # Why do we need to copy the module?
+                module_copy = RedBaron(module.dumps())
+            else:
+                module_copy = copy.deepcopy(module)
             result = find_syntax_tree_node(module_copy, object_path)
 
             if result:
-                _remove_docstrings(result)
-                return result.dumps()
+                if isinstance(result, (RedBaron, Node)):
+                    _remove_docstrings(result)
+                    return result.dumps()
+                else:
+                    DocstringRemover().visit(result)
+                    fix_missing_locations(result)
+                    return pyast_unparse(result)
         return PyReader.NO_RESULT_FOUND_STR
 
     @staticmethod
-    def get_docstring_from_node(node: Optional[FSTNode]) -> str:
+    def get_docstring_from_node(node: Optional[Union[FSTNode, AST]]) -> str:
         """
         Gets the docstring from the specified node
 
@@ -120,8 +175,15 @@ class PyReader:
             filtered_nodes = node.filtered()  # get rid of extra whitespace
             if isinstance(filtered_nodes[0], StringNode):
                 return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
+        elif isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef)):
+            doc_string = get_docstring(node)
+            if doc_string:
+                doc_string.replace('"""', "").replace("'''", "")
+            else:
+                return PyReader.NO_RESULT_FOUND_STR
         return ""
 
+    # There are no usages of this function, do we need it and should we migrate it to the python's AST?
     @staticmethod
     def _create_line_number_tuples(node: FSTNode, start_line: int, start_col: int):
         """
