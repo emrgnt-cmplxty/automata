@@ -184,12 +184,6 @@ class PyModuleLoader(metaclass=Singleton):
             Exception: If the map or python directory have not been initialized
         """
         for module_dotpath, fpath in self._dotpath_map.items():  # type: ignore
-            if (
-                not self.py_fpath
-                or self.py_fpath not in module_dotpath
-                or "tasks" in module_dotpath
-            ):
-                continue
             if module_dotpath not in self._loaded_modules:
                 self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
 
