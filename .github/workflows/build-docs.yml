@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r automata/docs/requirements.txt  # replace with your requirements file path
+          pip install -r docs/requirements.txt
 
       - name: Build docs
-        run: make -C automata/docs/ html # replace with your Sphinx docs directory
+        run: make -C docs/ html
