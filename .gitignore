@@ -58,3 +58,4 @@ playground/*
 *.sqlite3
 local_tasks/
 scripts/setup.sh
+setup.sh
