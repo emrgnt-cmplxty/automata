@@ -44,6 +44,7 @@
             pyyaml
             jupyter
             notebook
+            mypy
           ]);
       in
       {

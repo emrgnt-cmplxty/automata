@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
 
@@ -94,7 +94,7 @@ class PyReader:
                     if child_node is not node:
                         _remove_docstrings(child_node)
 
-        module = py_module_loader.fetch_module(module_dotpath)
+        module = cast(RedBaron, py_module_loader.fetch_module(module_dotpath))
 
         if module:
             module_copy = RedBaron(module.dumps())

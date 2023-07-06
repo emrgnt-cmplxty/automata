@@ -59,4 +59,5 @@ playground/*
 local_tasks/
 scripts/setup.sh
 setup.sh
+.direnv
 docs/_build
