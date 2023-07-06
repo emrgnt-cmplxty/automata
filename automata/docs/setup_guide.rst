@@ -58,13 +58,23 @@ Detect Operating System
 .. code-block:: bash
 
    if [[ "$OSTYPE" == "darwin"* ]]; then
-       # Mac OSX
-       # Replace placeholders in .env with actual values using `sed`
+      # Mac OSX
+      sed -i '' "s|your_openai_api_key|$OPEN_API_KEY|" .env
+      sed -i '' "s|your_github_api_key|$GITHUB_API_KEY|" .env
+      sed -i '' "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" .env
+      sed -i '' "s|your_task_db_path|$TASK_DB_PATH|" .env
+      sed -i '' "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" .env
+      sed -i '' "s|your_repository_name|$REPOSITORY_NAME|" .env
    else
-       # Linux and others
-       # Replace placeholders in .env with actual values using `sed`
+      # Linux and others
+      sed -i "s|your_openai_api_key|$OPEN_API_KEY|" .env
+      sed -i "s|your_github_api_key|$GITHUB_API_KEY|" .env
+      sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" .env
+      sed -i "s|your_task_db_path|$TASK_DB_PATH|" .env
+      sed -i "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" .env
+      sed -i "s|your_repository_name|$REPOSITORY_NAME|" .env
    fi
-
+   
 Fetch Submodules
 ----------------
 

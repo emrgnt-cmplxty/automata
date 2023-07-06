@@ -6,9 +6,31 @@ Automata: The Future is Self-Written
 .. image:: https://github.com/emrgnt-cmplxty/Automata/assets/68796651/61fe3c33-9b7a-4c1b-9726-a77140476b83
    :alt: Automata Banner
 
+
 **Getting Started**
 
-For setup instructions, refer to our detailed :doc:`setup guide <setup>`. It covers creating a local Python environment, setting up necessary environment variables, fetching the Git submodules, and initializing Git LFS. It's designed to get you up and running with Automata in no time.
+For those looking to embark on a journey with Automata, our quick-start guides are your first steps to understanding and implementing the project's core features:
+
+- For setup instructions, refer to our :doc:`detailed setup guide <setup_guide>`
+- Learn how to create :doc:`your own embeddings <embedding_guide>`
+- Run  :doc:`your own agent <agent_guide>`
+
+**Key Features**
+
+Automata comes with several core features, designed to promote a rich and interactive AI development experience. Each feature has associated examples and API documentation to ease your understanding and usage.
+
+These features include, in order of complexity:
+
+- `Embeddings`_: Documentations on how to generate code embeddings for Automata Interpreter codebase.
+  
+- `Code and Documentation Generation`_: Guides on comprehensive code and documentation generation forming the backbone of Automata's self-programming ability.
+
+- `Indexing`: In-depth tutorials on creating and using SCIP indices for the Automata Search.
+
+- `Execution`: Detailed information about executing advanced coding tasks using downstream tooling.
+
+- `Automata Agent`: Complete guide on how to run an Automata agent, including trivial and non-trivial instruction execution.
+
 
 **Live Status**
 
@@ -34,6 +56,8 @@ For setup instructions, refer to our detailed :doc:`setup guide <setup>`. It cov
    :alt: Twitter Follow
    :target: https://twitter.com/ocolegro
 
+**Other**
+
 You can find a `demo <https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7>`_ and a rough schematic diagram of the system on our GitHub page. For further information, including installation, usage and how to contribute, refer to the respective sections below.
 
 .. note::
@@ -47,13 +71,25 @@ The following module documents are auto-generated via the run-doc-embedding pipe
 
 
 
+
+
+
+
+
+
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
     .. toctree::
        :maxdepth: 2
 
-       setup
+       setup_guide
+       faq
+       embedding_guide
+       agent_guide
+       _static/index
        config/index
        core/index
        tests/index

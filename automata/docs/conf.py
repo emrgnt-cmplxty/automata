@@ -14,7 +14,7 @@ author = "emrgnt-cmplxty"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = ["sphinx_panels", "sphinx_rtd_dark_mode"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -23,7 +23,8 @@ root_doc = "index"
 
 
 # -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+# https://www.sphinx-doc.org/en/master/usage/configurat3ion.html#options-for-html-output
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx-rtd-dark-mode"
+
 html_static_path = ["_static"]
