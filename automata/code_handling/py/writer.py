@@ -228,7 +228,9 @@ class PyWriter:
         """
         for new_node in class_or_function_nodes:
             child_node_name = new_node.name
-            existing_node = cast(Union[Node, RedBaron], find_syntax_tree_node(node_to_update, child_node_name))
+            existing_node = cast(
+                Union[Node, RedBaron], find_syntax_tree_node(node_to_update, child_node_name)
+            )
             if existing_node:
                 existing_node.replace(new_node)
             else:
