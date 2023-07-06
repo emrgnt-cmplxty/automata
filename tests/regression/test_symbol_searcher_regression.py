@@ -1,7 +1,8 @@
 import pytest
 
 from automata.core.singletons.py_module_loader import py_module_loader
-from automata.tests.utils.factories import symbol_search_live  # noqa
+
+from ..utils.factories import symbol_search_live  # noqa
 
 
 def get_top_n_results_desc_name(result, n=0):

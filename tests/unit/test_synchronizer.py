@@ -13,7 +13,8 @@ from automata.core.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
 )
-from automata.tests.utils.factories import symbol_graph_static_test  # noqa: F811
+
+from ..utils.factories import symbol_graph_static_test  # noqa: F811
 
 
 def test_build_graph_and_handler_and_synchronize(
