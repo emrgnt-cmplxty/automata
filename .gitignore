@@ -56,6 +56,6 @@ notebooks/
 local_env/*
 playground/*
 *.sqlite3
-tasks/
+local_tasks/
+scripts/setup.sh
 setup.sh
-.direnv

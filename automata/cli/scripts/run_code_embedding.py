@@ -37,6 +37,7 @@ def main(*args, **kwargs) -> str:
             "symbol_graph_scip_fpath": scip_fpath,
             "code_embedding_fpath": code_embedding_fpath,
             "embedding_provider": embedding_provider,
+            "disable_synchronization": True,
         }
     )
 
@@ -57,11 +58,5 @@ def main(*args, **kwargs) -> str:
             symbol_code_embedding_handler.embedding_db.save()
         except Exception as e:
             logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
-
-    # for symbol in symbol_code_embedding_handler.get_sorted_supported_symbols():
-    #     if symbol not in filtered_symbols:
-    #         logger.info(f"Discarding stale symbol {symbol}...")
-    #         symbol_code_embedding_handler.embedding_db.discard(symbol.dotpath)
-    # symbol_code_embedding_handler.embedding_db.save()
 
     return "Success"
