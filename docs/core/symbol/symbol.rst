@@ -44,14 +44,14 @@ Here is an example of how you can use the ``Symbol`` class:
 
 .. code:: python
 
-   from automata.core.experimental.search.symbol_parser import parse_symbol
+   from automata.experimental.search.symbol_parser import parse_symbol
 
    symbol_class = parse_symbol(
-   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#"
    )
 
    symbol_method = parse_symbol(
-   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tools.base`/ToolNotFoundError#__init__()."
+   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.tools.base`/ToolNotFoundError#__init__()."
    )
 
 Related Symbols
@@ -61,9 +61,9 @@ The following are the related symbols:
 
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
 -  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
--  ``automata.core.symbol_embedding.base.SymbolEmbedding.symbol``
+-  ``automata.symbol_embedding.base.SymbolEmbedding.symbol``
 -  ``automata.tests.unit.test_database_vector.test_delete_symbol``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_parser.test_is_local_symbol``
 
 Limitations
@@ -76,7 +76,7 @@ especially when dealing with special characters.
 Dependencies
 ------------
 
--  ``automata.core.symbol.parser.parse_symbol``: This parses a
+-  ``automata.symbol.parser.parse_symbol``: This parses a
    ``Symbol`` given a URI.
 
 Follow-up Questions:

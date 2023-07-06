@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.core.agent.error import AgentMaxIterError
-from automata.core.agent.providers import OpenAIAutomataAgent
+from automata.agent.error import AgentMaxIterError
+from automata.agent.providers import OpenAIAutomataAgent
 
 
 def test_build_initial_messages(automata_agent):

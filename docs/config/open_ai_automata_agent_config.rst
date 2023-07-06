@@ -37,9 +37,9 @@ Related Symbols
 -  ``automata.tests.conftest.automata_agent_config_builder``: This is a
    fixture that provides a builder for the OpenAIAutomataAgentConfig
    class.
--  ``automata.core.agent.providers.OpenAIAutomataAgent``: This class
-   utilizes the OpenAIAutomataAgentConfig for operational settings
-   during its instantiation and behavior.
+-  ``automata.agent.providers.OpenAIAutomataAgent``: This class utilizes
+   the OpenAIAutomataAgentConfig for operational settings during its
+   instantiation and behavior.
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``:
    This method tests the initialization of the AutomataAgent with the
    corresponding configuration.

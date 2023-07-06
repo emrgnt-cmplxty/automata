@@ -10,8 +10,8 @@ from automata.config.base import (
     InstructionConfigVersion,
     LLMProvider,
 )
-from automata.core.experimental.search.rank import SymbolRank
-from automata.core.singletons.dependency_factory import dependency_factory
+from automata.experimental.search.rank import SymbolRank
+from automata.singletons.dependency_factory import dependency_factory
 
 
 class OpenAIAutomataAgentConfig(AgentConfig):

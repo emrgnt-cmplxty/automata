@@ -26,9 +26,8 @@ automata environment. The attributes set in ``AgentConfig`` include:
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.AgentInstance.Config``: Specifies that as
-   part of an agent instance, the ``AgentConfig`` allows arbitrary
-   types.
+-  ``automata.agent.agent.AgentInstance.Config``: Specifies that as part
+   of an agent instance, the ``AgentConfig`` allows arbitrary types.
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``:
    Demonstrates how to build a default configuration.
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``:
@@ -39,8 +38,8 @@ Related Symbols
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``: An
    expanded class of ``AgentConfig`` that also includes instructional
    templates and formatters.
--  ``automata.core.tools.base.Tool.Config``: Defines an additional class
-   for tool-specific Configuration that also allows arbitrary types but
+-  ``automata.tools.base.Tool.Config``: Defines an additional class for
+   tool-specific Configuration that also allows arbitrary types but
    forbids extra parameters.
 
 Example

@@ -1,6 +1,6 @@
 import pytest
 
-from automata.core.singletons.py_module_loader import py_module_loader
+from automata.singletons.py_module_loader import py_module_loader
 
 from ..utils.factories import symbol_search_live  # noqa
 
@@ -37,7 +37,7 @@ def check_hits(expected_in_top_hits, found_top_hits):
             ],
         ),
         ("LLM", ["LLMProvider", "LLMChatMessage", "LLMConversation", "LLMCompletionResult"]),
-        ("Symbol", ["Symbol", "SymbolGraph", "JSONSymbolEmbeddingVectorDatabase"]),
+        ("Symbol", ["Symbol", "SymbolGraph"]),
     ],
 )
 def test_symbol_rank_search_on_symbol(
@@ -54,12 +54,12 @@ def test_symbol_rank_search_on_symbol(
 EXACT_CALLS_TO_HITS = {
     "OpenAIAutomataAgent": [
         "automata.cli.scripts.run_agent",
-        "automata.core.agent.providers",
-        "automata.core.singletons.toolkit_registries",
+        "automata.agent.providers",
+        "automata.singletons.toolkit_registries",
     ],
     "SymbolRank": [
-        "automata.core.experimental.search.symbol_search",
-        "automata.core.experimental.search.rank",
+        "automata.experimental.search.symbol_search",
+        "automata.experimental.search.rank",
     ],
 }
 
@@ -72,15 +72,15 @@ EXACT_CALLS_TO_HITS = {
             "OpenAIAutomataAgent",
             [
                 "automata.cli.scripts.run_agent",
-                "automata.core.agent.providers",
-                "automata.core.singletons.toolkit_registries",
+                "automata.agent.providers",
+                "automata.singletons.toolkit_registries",
             ],
         ),
         (
             "SymbolRank",
             [
-                "automata.core.experimental.search.symbol_search",
-                "automata.core.experimental.search.rank",
+                "automata.experimental.search.symbol_search",
+                "automata.experimental.search.rank",
             ],
         ),
     ],

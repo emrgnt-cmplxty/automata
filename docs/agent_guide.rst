@@ -44,7 +44,7 @@ Usage
 
 .. code-block:: python
 
-   from automata.core.agent.providers import OpenAIAutomataAgent
+   from automata.agent.providers import OpenAIAutomataAgent
    from automata.config.openai_agent import OpenAIAutomataAgentConfig
 
    # Create OpenAIAutomataAgentConfig

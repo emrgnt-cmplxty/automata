@@ -13,9 +13,9 @@ need to be implemented in the concrete classes inheriting from the
 Related Symbols
 ---------------
 
--  ``automata.core.symbol_embedding.base.JSONSymbolEmbeddingVectorDatabase``
+-  ``automata.symbol_embedding.base.JSONSymbolEmbeddingVectorDatabase``
 -  ``automata.core.base.database.vector.JSONVectorDatabase``
--  ``automata.core.embedding.base.EmbeddingVectorProvider``
+-  ``automata.embedding.base.EmbeddingVectorProvider``
 
 Example
 -------
@@ -27,7 +27,7 @@ inheriting this class. One of the example concrete classes is
 
 .. code:: python
 
-   from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
+   from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 
    class ExampleVectorDatabase(JSONSymbolEmbeddingVectorDatabase):
        def __init__(self, file_path: str):

@@ -30,9 +30,9 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task_database.db``
 -  ``automata.tests.unit.test_conversation_database.db``
--  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase``
+-  ``automata.tasks.agent_database.AutomataAgentTaskDatabase``
 -  ``automata.core.base.database.relational.RelationalDatabase``
--  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
 
 Example
 -------

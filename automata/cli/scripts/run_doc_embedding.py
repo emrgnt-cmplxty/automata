@@ -4,18 +4,18 @@ import os
 from tqdm import tqdm
 
 from automata.config.base import ConfigCategory
-from automata.core.context_providers.symbol_synchronization import (
+from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
-from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
-from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.py_module_loader import py_module_loader
-from automata.core.symbol.graph import SymbolGraph
-from automata.core.symbol.symbol_utils import get_rankable_symbols
-from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 from automata.core.utils import get_config_fpath
+from automata.llm.providers.openai import OpenAIEmbeddingProvider
+from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.singletons.dependency_factory import dependency_factory
+from automata.singletons.py_module_loader import py_module_loader
+from automata.symbol.graph import SymbolGraph
+from automata.symbol.symbol_utils import get_rankable_symbols
+from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 
 logger = logging.getLogger(__name__)
 

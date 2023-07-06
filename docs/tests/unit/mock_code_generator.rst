@@ -55,9 +55,9 @@ Methods
 Related Symbols
 ---------------
 
--  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
--  ``automata.core.code_handling.py.writer.PyWriter``
+-  ``automata.code_handling.py.reader.PyReader``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.code_handling.py.writer.PyWriter``
 
 Example
 -------

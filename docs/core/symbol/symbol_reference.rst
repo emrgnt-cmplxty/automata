@@ -1,7 +1,7 @@
 SymbolReference
 ===============
 
-``SymbolReference`` is a class in the ``automata.core.symbol.base``
+``SymbolReference`` is a class in the ``automata.symbol.base``
 module that represents a reference to a symbol in a file. It is
 particularly useful in complex code structures where the same symbol can
 be used in different parts of the code, and these references need to be
@@ -39,9 +39,9 @@ location.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.symbol.base.Symbol``
+-  ``automata.symbol.graph.SymbolGraph``
+-  ``automata.symbol.parser.parse_symbol``
 -  ``automata.tests.unit.test_symbol_search.test_symbol_references``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
 
@@ -53,10 +53,10 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.base import Symbol, SymbolReference
-   from automata.core.symbol.parser import parse_symbol
+   from automata.symbol.base import Symbol, SymbolReference
+   from automata.symbol.parser import parse_symbol
 
-   symbol_uri = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   symbol_uri = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#"
    symbol = parse_symbol(symbol_uri)
 
    symbol_ref_1 = SymbolReference(symbol=symbol, line_number=10, column_number=20)

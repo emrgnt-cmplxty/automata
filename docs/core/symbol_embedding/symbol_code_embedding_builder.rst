@@ -29,14 +29,14 @@ symbol, and the embedding vector to build a ``SymbolCodeEmbedding``.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.base.EmbeddingBuilder``: An abstract class
+-  ``automata.embedding.base.EmbeddingBuilder``: An abstract class
    to build embeddings, from which ``SymbolCodeEmbeddingBuilder``
    inherits.
--  ``automata.core.embedding.base.EmbeddingVectorProvider``: An abstract
+-  ``automata.embedding.base.EmbeddingVectorProvider``: An abstract
    class that provides a standard API for creating embedding vectors.
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``: A class
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``: A class
    for symbol code embeddings.
--  ``automata.core.symbol.base.Symbol``: A class which contains the
+-  ``automata.symbol.base.Symbol``: A class which contains the
    associated logic for a Symbol.
 
 Example
@@ -48,9 +48,9 @@ This is an example demonstrating how to create an instance of
 .. code:: python
 
    # Required imports
-   from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
-   from automata.core.symbol.base import Symbol
-   from automata.core.embedding.base import EmbeddingVectorProvider
+   from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
+   from automata.symbol.base import Symbol
+   from automata.embedding.base import EmbeddingVectorProvider
 
    # Instantiate embedding vector provider
    embedding_provider = EmbeddingVectorProvider()  # Replace with specific instance of embedding vector provider.

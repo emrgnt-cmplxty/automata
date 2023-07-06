@@ -19,15 +19,15 @@ Related Symbols
    a test tool for testing purposes.
 -  ``automata.tests.unit.test_tool.TestTool``: A subclass of ``Tool``
    used for testing purposes.
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder.can_handle``:
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder.can_handle``:
    A method that checks if a tool can be handled.
 -  ``automata.tests.unit.test_tool.test_tool_run``: A function that
    tests the ``run`` method of a tool.
--  ``automata.core.llm.providers.openai.OpenAITool``: A subclass of
+-  ``automata.llm.providers.openai.OpenAITool``: A subclass of
    ``Tool`` that is designed for use by the OpenAI agent.
--  ``automata.core.agent.agent.AgentToolkitBuilder.build``: A method
+-  ``automata.agent.agent.AgentToolkitBuilder.build``: A method
    that builds a list of tools.
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder.build``:
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder.build``:
    A method that builds a list of symbol search toolkits.
 
 Example

@@ -21,7 +21,7 @@ Frequently Asked Questions
    
    Here's an example of its use: 
    ```python
-   from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
+   from automata.llm.providers.openai import OpenAIEmbeddingProvider
    import numpy as np
    
    embedding_provider = OpenAIEmbeddingProvider(engine="text-embedding-ada-002")
@@ -49,9 +49,9 @@ Frequently Asked Questions
    A URI for a Symbol is composed of a scheme, package, and descriptor. The scheme consists of any UTF-8 characters. The package specifies the manager, package name, and version. Descriptors define a namespace, type, term, method, type-parameter, parameter, meta, or macro.
    Example:
    
-   ```from automata.core.experimental.search.symbol_parser import parse_symbol
+   ```from automata.experimental.search.symbol_parser import parse_symbol
    symbol_class = parse_symbol(
-   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"```
+   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#"```
 
 .. dropdown:: Q: How does `SymbolRank` work?
    :container: + shadow

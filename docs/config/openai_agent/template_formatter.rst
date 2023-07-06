@@ -49,7 +49,7 @@ The following example demonstrates how to create an instance of
 
    from automata.config.openai_agent import OpenAIAutomataAgentConfig
    from config.config_enums import AgentConfigName
-   from automata.core.experimental.search.rank import SymbolRank
+   from automata.experimental.search.rank import SymbolRank
 
    config = OpenAIAutomataAgentConfig.load(AgentConfigName.AUTOMATA_MAIN)
    symbol_rank = SymbolRank()

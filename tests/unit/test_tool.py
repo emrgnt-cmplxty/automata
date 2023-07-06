@@ -2,7 +2,7 @@ from typing import Dict
 
 import pytest
 
-from automata.core.tools.base import Tool
+from automata.tools.base import Tool
 
 
 class TestTool(Tool):
