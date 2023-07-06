@@ -87,6 +87,37 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
     def discard(self, key: str, **kwargs: Any) -> None:
         self._collection.delete(ids=[key])
 
+    def clear(self):
+        # Clear the collection.
+        self._collection.delete(where={})
+
+    def contains(self, key: str) -> bool:
+        # Check if a key is present in the collection.
+        result = self._collection.get(ids=[key])
+        return len(result["ids"]) != 0
+
+    def get_ordered_embeddings(self, keys: List[str]) -> List[V]:
+        # Retrieve ordered embeddings by keys.
+        results = self._collection.get(ids=keys, include=["embeddings"])
+        return [self._factory(vector=embedding) for embedding in results["embeddings"]]
+
+    def load(self) -> None:
+        # As Chroma is a live database, no specific load action is required.
+        pass
+
+    def save(self) -> None:
+        # As Chroma is a live database, no specific save action is required.
+        pass
+
+    def update_database(self, entry: V):
+        # Update the entry in the database.
+        self._collection.update(
+            documents=[entry.document],
+            metadatas=[entry.metadata],
+            ids=[self.entry_to_key(entry)],
+            embeddings=[[int(ele) for ele in entry.vector]],
+        )
+
 
 class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase[str, SymbolEmbedding]):
     """Concrete class to provide a vector database that saves into a JSON file."""
