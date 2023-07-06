@@ -1,10 +1,11 @@
-from enum import Enum
 import logging
 import os.path
+from ast import Module
+from ast import parse as pyast_parse
+from enum import Enum
 from typing import Dict, Iterable, Optional, Tuple, Union
 
 from redbaron import RedBaron
-from ast import Module, parse as pyast_parse
 
 from automata.core.base.patterns.singleton import Singleton
 from automata.core.navigation.py.dot_path_map import DotPathMap

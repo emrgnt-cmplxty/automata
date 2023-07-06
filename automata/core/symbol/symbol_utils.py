@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast
 
 from redbaron import RedBaron
 
@@ -25,7 +25,7 @@ def convert_to_fst_object(symbol: Symbol) -> RedBaron:
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
                 module_dotpath = module_dotpath[len("") :]  # indexer omits this
-            obj = py_module_loader.fetch_module(module_dotpath)
+            obj = cast(RedBaron, py_module_loader.fetch_module(module_dotpath))
             # TODO - Understand why some modules might be None
             if not obj:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")

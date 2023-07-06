@@ -1,6 +1,7 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np
+from redbaron import RedBaron
 
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
 from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
@@ -110,7 +111,9 @@ class SymbolSearch:
     def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
         """Finds exact line matches for a given pattern string in all modules."""
         matches = {}
-        for module_path, module in py_module_loader.items():
+        for module_path, module in cast(
+            Iterable[Tuple[str, Optional[RedBaron]]], py_module_loader.items()
+        ):
             print("Checking module = ", module)
             if module:
                 lines = module.dumps().splitlines()
