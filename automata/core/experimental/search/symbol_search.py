@@ -26,6 +26,7 @@ class SymbolSearch:
         symbol_rank_config: SymbolRankConfig,
         search_embedding_handler: SymbolEmbeddingHandler,
         embedding_similarity_calculator: EmbeddingSimilarityCalculator,
+        z_score_power: float = 2.0,
     ) -> None:
         """
         Raises:
@@ -37,6 +38,7 @@ class SymbolSearch:
         self.embedding_similarity_calculator = embedding_similarity_calculator
         self.search_embedding_handler = search_embedding_handler
         self.symbol_rank_config = symbol_rank_config
+        self.z_score_power = z_score_power
         self._symbol_rank = None  # Create a placeholder for the lazy loaded SymbolRank
 
     @property
@@ -55,7 +57,7 @@ class SymbolSearch:
             ordered_embeddings, query
         )
         transformed_query_vec = SymbolSearch.transform_dict_values(
-            query_vec, SymbolSearch.shifted_z_score_powered
+            query_vec, self.shifted_z_score_powered
         )
         return self.symbol_rank.get_ranks(query_to_symbol_similarity=transformed_query_vec)
 
@@ -116,10 +118,7 @@ class SymbolSearch:
                     matches[module_path] = line_numbers
         return matches
 
-    @staticmethod
-    def shifted_z_score_powered(
-        values: Union[List[float], np.ndarray], power: int = 4
-    ) -> np.ndarray:
+    def shifted_z_score_powered(self, values: Union[List[float], np.ndarray]) -> np.ndarray:
         """
         Calculates the z-score, shifts them to be positive,
         and then raises the values to the specified power.
@@ -136,7 +135,7 @@ class SymbolSearch:
         mean = np.mean(values)
         std_dev = np.std(values)
         zscores = [(value - mean) / std_dev for value in values]
-        return (zscores - np.min(zscores)) ** power
+        return (zscores - np.min(zscores)) ** self.z_score_power
 
     @staticmethod
     def transform_dict_values(

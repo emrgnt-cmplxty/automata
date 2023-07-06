@@ -2,10 +2,9 @@ import os
 
 import pytest
 
-from automata.core.symbol.graph import SymbolGraph
 from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.py_module_loader import py_module_loader
+from automata.core.symbol.graph import SymbolGraph
 
 
 @pytest.fixture
@@ -29,5 +28,4 @@ def symbol_search_live() -> SymbolSearch:
     Creates a non-mock SymbolRank object to be used for testing the search
 
     """
-    py_module_loader.initialize()
     return dependency_factory.get("symbol_search")
