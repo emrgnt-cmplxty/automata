@@ -20,13 +20,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
 -  ``automata.tests.unit.test_symbol_search_tool.test_init``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
+-  ``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
+-  ``automata.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_symbol_search_tool.test_exact_search``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.tools.builders.py_reader.PyReaderOpenAIToolkit``
+-  ``automata.tools.builders.py_reader.PyReaderOpenAIToolkit``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
 
 Example
@@ -37,8 +37,8 @@ The following example demonstrates how to build OpenAI tools using the
 
 .. code:: python
 
-   from automata.core.tools.builders.symbol_search import SymbolSearchOpenAIToolkitBuilder
-   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.tools.builders.symbol_search import SymbolSearchOpenAIToolkitBuilder
+   from automata.experimental.search.symbol_search import SymbolSearch
 
    symbol_search = SymbolSearch(index_name="your-index-name")
    builder = SymbolSearchOpenAIToolkitBuilder(symbol_search=symbol_search)
@@ -63,10 +63,10 @@ Limitations
 Dependencies
 ------------
 
--  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.singletons.toolkit_registries.OpenAIAutomataAgentToolkitRegistry``
--  ``automata.core.agent.agent.AgentToolkitNames``
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder``
+-  ``automata.llm.providers.openai.OpenAITool``
+-  ``automata.singletons.toolkit_registries.OpenAIAutomataAgentToolkitRegistry``
+-  ``automata.agent.agent.AgentToolkitNames``
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder``
 
 Follow-up Questions:
 --------------------

@@ -22,14 +22,14 @@ the time of object initialization, and the default engine used is
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.base.EmbeddingVectorProvider``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider``
--  ``automata.core.llm.foundation.LLMChatMessage``
--  ``automata.core.llm.foundation.LLMCompletionResult``
--  ``automata.core.llm.foundation.LLMConversation``
--  ``automata.core.singletons.dependency_factory.DependencyFactory``
+-  ``automata.embedding.base.EmbeddingVectorProvider``
+-  ``automata.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.llm.foundation.LLMChatMessage``
+-  ``automata.llm.foundation.LLMCompletionResult``
+-  ``automata.llm.foundation.LLMConversation``
+-  ``automata.singletons.dependency_factory.DependencyFactory``
 -  ``automata.config.base.LLMProvider``
--  ``automata.core.tools.base.Tool``
+-  ``automata.tools.base.Tool``
 
 Example
 -------
@@ -39,7 +39,7 @@ Below is an example demonstrating how to use the
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
+   from automata.llm.providers.openai import OpenAIEmbeddingProvider
    import numpy as np
 
    # Create an instance of OpenAIEmbeddingProvider

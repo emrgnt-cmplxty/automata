@@ -28,7 +28,7 @@ raw data and assigns it to class variables.
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIChatCompletionResult
+   from automata.llm.providers.openai import OpenAIChatCompletionResult
 
    # Example raw data from OpenAI chat API
    raw_data = {
@@ -67,7 +67,7 @@ instance and printing it out using the ``__str__`` method:
 .. code:: python
 
    # Import necessary classes
-   from automata.core.llm.providers.openai import OpenAIChatCompletionResult
+   from automata.llm.providers.openai import OpenAIChatCompletionResult
 
    # Create an instance using the `from_args` class method
    completion_result = OpenAIChatCompletionResult.from_args("assistant", "Hello, how can I assist you today?", None)

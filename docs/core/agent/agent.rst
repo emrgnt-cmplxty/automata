@@ -19,7 +19,7 @@ Import Statement
 
 .. code:: python
 
-   from automata.core.agent.agent import Agent
+   from automata.agent.agent import Agent
 
 Methods
 -------
@@ -61,19 +61,19 @@ Related Symbols
 
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.core.agent.error.AgentResultError``
+-  ``automata.agent.error.AgentResultError``
 -  ``automata.tests.conftest.task``
 -  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit.python_agent_python_task``
--  ``automata.core.agent.error.AgentGeneralError``
+-  ``automata.agent.error.AgentGeneralError``
 -  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.core.agent.error.AgentDatabaseError``
+-  ``automata.agent.error.AgentDatabaseError``
 
 Dependencies
 ------------
 
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider``
 
 Limitations
 -----------

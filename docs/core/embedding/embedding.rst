@@ -21,17 +21,17 @@ Related Symbols
 Primary Symbol
 ~~~~~~~~~~~~~~
 
--  automata.core.embedding.base.Embedding
+-  automata.embedding.base.Embedding
 
 Others
 ~~~~~~
 
 -  automata.core.base.database.vector.VectorDatabaseProvider
--  automata.core.symbol.base.Symbol
--  automata.core.symbol.symbol_utils.convert_to_fst_object
--  automata.core.symbol_embedding.base.SymbolCodeEmbedding
--  automata.core.symbol_embedding.base.SymbolDocEmbedding
--  automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler
+-  automata.symbol.base.Symbol
+-  automata.symbol.symbol_utils.convert_to_fst_object
+-  automata.symbol_embedding.base.SymbolCodeEmbedding
+-  automata.symbol_embedding.base.SymbolDocEmbedding
+-  automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler
 -  automata.tests.unit.test_symbol_embedding.test_update_embeddings
 -  automata.tests.unit.test_database_vector.test_load
 

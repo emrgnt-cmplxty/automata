@@ -6,22 +6,22 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
+from automata.agent.agent import AgentToolkitNames
+from automata.agent.providers import OpenAIAutomataAgent
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-from automata.core.agent.agent import AgentToolkitNames
-from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
-from automata.core.experimental.search.rank import SymbolRankConfig
-from automata.core.experimental.search.symbol_search import SymbolSearch
-from automata.core.github_management.client import GitHubClient, RepositoryClient
-from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.symbol.graph import SymbolGraph
-from automata.core.symbol.parser import parse_symbol
-from automata.core.tasks.agent_database import AutomataTaskRegistry
-from automata.core.tasks.environment import AutomataTaskEnvironment
-from automata.core.tasks.tasks import AutomataTask
-from automata.core.tools.factory import AgentToolFactory
+from automata.embedding.base import EmbeddingSimilarityCalculator
+from automata.experimental.search.rank import SymbolRankConfig
+from automata.experimental.search.symbol_search import SymbolSearch
+from automata.github_management.client import GitHubClient, RepositoryClient
+from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.singletons.dependency_factory import dependency_factory
+from automata.symbol.graph import SymbolGraph
+from automata.symbol.parser import parse_symbol
+from automata.tasks.agent_database import AutomataTaskRegistry
+from automata.tasks.environment import AutomataTaskEnvironment
+from automata.tasks.tasks import AutomataTask
+from automata.tools.factory import AgentToolFactory
 
 
 @pytest.fixture

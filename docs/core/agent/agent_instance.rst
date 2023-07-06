@@ -25,10 +25,10 @@ Related Symbols
 ---------------
 
 -  ``config.config_enums.AgentConfigName``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance``
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance``
 
 Example
 -------
@@ -40,7 +40,7 @@ and implement the ``run`` method to create a custom agent instance.
 .. code:: python
 
    from automata.config.base import AgentConfigName
-   from automata.core.agent.agent import AgentInstance
+   from automata.agent.agent import AgentInstance
 
    class MyAgent(AgentInstance):
        def run(self, instructions: str) -> str:

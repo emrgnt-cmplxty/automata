@@ -23,10 +23,10 @@ can be retrieved when required. An important aspect is that the
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatMessage``
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.llm.providers.openai.OpenAIChatMessage``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionProvider``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
+-  ``automata.llm.foundation.LLMChatMessage``
 
 Example
 -------
@@ -36,7 +36,7 @@ Here is an example demonstrating how to create and manage messages in an
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIConversation, OpenAIChatMessage
+   from automata.llm.providers.openai import OpenAIConversation, OpenAIChatMessage
 
    # create conversation
    conversation = OpenAIConversation()

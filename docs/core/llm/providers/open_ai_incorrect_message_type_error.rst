@@ -18,13 +18,13 @@ Related Symbols
 1.  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
 2.  ``automata.tests.unit.test_automata_agent.test_run_with_completion_message``
 3.  ``automata.tests.unit.test_automata_agent.test_run_with_no_completion``
-4.  ``automata.core.llm.providers.openai.OpenAIConversation``
+4.  ``automata.llm.providers.openai.OpenAIConversation``
 5.  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
-6.  ``automata.core.llm.providers.openai.OpenAIConversation.add_message``
+6.  ``automata.llm.providers.openai.OpenAIConversation.add_message``
 7.  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``
-8.  ``automata.core.agent.providers.OpenAIAutomataAgent``
+8.  ``automata.agent.providers.OpenAIAutomataAgent``
 9.  ``automata.tests.unit.test_automata_agent_builder.test_builder_invalid_input_types``
-10. ``automata.core.llm.providers.openai.OpenAIConversation.__init__``
+10. ``automata.llm.providers.openai.OpenAIConversation.__init__``
 
 Example
 -------
@@ -36,7 +36,7 @@ error is raised.
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIConversation, OpenAIIncorrectMessageTypeError
+   from automata.llm.providers.openai import OpenAIConversation, OpenAIIncorrectMessageTypeError
 
    try:
        conversation = OpenAIConversation()

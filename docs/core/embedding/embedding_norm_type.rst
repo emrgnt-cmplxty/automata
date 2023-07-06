@@ -27,8 +27,8 @@ that instance.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
--  ``automata.core.embedding.base.EmbeddingSimilarityCalculator``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.embedding.base.EmbeddingSimilarityCalculator``
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
 
@@ -37,8 +37,8 @@ Example
 
 .. code:: python
 
-   from automata.core.embedding.base import EmbeddingNormType, EmbeddingSimilarityCalculator
-   from automata.core.symbol_embedding.base import SymbolCodeEmbedding
+   from automata.embedding.base import EmbeddingNormType, EmbeddingSimilarityCalculator
+   from automata.symbol_embedding.base import SymbolCodeEmbedding
    from automata.core.base.database.vector import JSONSymbolEmbeddingVectorDatabase
 
    # Assuming you have a set of symbol embeddings stored in a JSON database.

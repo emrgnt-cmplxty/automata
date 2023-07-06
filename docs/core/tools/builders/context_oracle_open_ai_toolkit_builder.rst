@@ -15,14 +15,14 @@ Import Statements
    import textwrap
    from typing import List
    from automata.config.base import LLMProvider
-   from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
-   from automata.core.agent.providers import OpenAIAgentToolkitBuilder
-   from automata.core.embedding.base import EmbeddingSimilarityCalculator
-   from automata.core.llm.providers.openai import OpenAITool
-   from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-   from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-   from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
-   from automata.core.tools.base import Tool
+   from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
+   from automata.agent.providers import OpenAIAgentToolkitBuilder
+   from automata.embedding.base import EmbeddingSimilarityCalculator
+   from automata.llm.providers.openai import OpenAITool
+   from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+   from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+   from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+   from automata.tools.base import Tool
 
 Methods
 -------
@@ -63,10 +63,10 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-   from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-   from automata.core.embedding.base import EmbeddingSimilarityCalculator
-   from automata.core.tools.builders.context_oracle import ContextOracleOpenAIToolkitBuilder
+   from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+   from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+   from automata.embedding.base import EmbeddingSimilarityCalculator
+   from automata.tools.builders.context_oracle import ContextOracleOpenAIToolkitBuilder
 
    symbol_doc_embedding_handler = SymbolDocEmbeddingHandler()
    symbol_code_embedding_handler = SymbolCodeEmbeddingHandler()
@@ -86,13 +86,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder``
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder``
 -  ``automata.tests.unit.test_context_oracle_tool.test_build``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
+-  ``automata.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
+-  ``automata.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
--  ``automata.core.tools.builders.context_oracle.ContextOracleToolkitBuilder``
+-  ``automata.tools.builders.context_oracle.ContextOracleToolkitBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_accepts_all_fields``
 
 Limitations

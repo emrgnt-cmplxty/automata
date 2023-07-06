@@ -1,4 +1,4 @@
-automata.core.agent.error.AgentStopIteration
+automata.agent.error.AgentStopIteration
 ============================================
 
 Overview
@@ -25,20 +25,20 @@ Related Symbols
    behavior when manually feeding next(…) calls to the automata agent
    without an API call.
 
--  ``automata.core.agent.error.AgentMaxIterError``: This is another
+-  ``automata.agent.error.AgentMaxIterError``: This is another
    exception class used when the agent exceeds the maximum number of
    allowed iterations.
 
--  ``automata.core.agent.agent.Agent.__iter__``: The ``__iter__`` method
+-  ``automata.agent.agent.Agent.__iter__``: The ``__iter__`` method
    of the ``Agent`` class calls upon the ``AgentStopIteration`` when the
    agent stops iterating.
 
--  ``automata.core.agent.providers.OpenAIAutomataAgent``: The
+-  ``automata.agent.providers.OpenAIAutomataAgent``: The
    ``OpenAIAutomataAgent``, designed to execute instructions and
    interact with various tools, uses the ``AgentStopIteration``
    exception to handle situations where the agent ceases to iterate.
 
--  ``automata.core.agent.providers.OpenAIAutomataAgent.__iter__``: The
+-  ``automata.agent.providers.OpenAIAutomataAgent.__iter__``: The
    ``__iter__`` method in the ``OpenAIAutomataAgent`` class handles the
    ``AgentStopIteration`` exception when the iteration process is
    stopped.
@@ -55,8 +55,8 @@ represented without the actual underlying object:
 .. code:: python
 
    from unittest.mock import patch
-   from automata.core.agent.providers import OpenAIAutomataAgent
-   from automata.core.agent.error import AgentMaxIterError
+   from automata.agent.providers import OpenAIAutomataAgent
+   from automata.agent.error import AgentMaxIterError
 
    @patch("openai.ChatCompletion.create")
    def test_agent_stops_iteration(mock_openai_chatcompletion_create, automata_agent):

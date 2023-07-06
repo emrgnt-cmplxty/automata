@@ -2,12 +2,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.core.code_handling.py.reader import PyReader
-from automata.core.code_handling.py.writer import PyWriter
-from automata.core.singletons.py_module_loader import py_module_loader
-from automata.core.tasks.base import Task, TaskStatus
-from automata.core.tasks.executor import AutomataTaskExecutor, ITaskExecution
+from automata.code_handling.py.reader import PyReader
+from automata.code_handling.py.writer import PyWriter
 from automata.core.utils import get_root_py_fpath
+from automata.singletons.py_module_loader import py_module_loader
+from automata.tasks.base import Task, TaskStatus
+from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 
 
 # TODO - Unify module loader fixture

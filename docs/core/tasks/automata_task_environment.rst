@@ -21,13 +21,13 @@ Related Symbols
 
 -  ``automata.tests.conftest.environment``
 -  ``automata.tests.unit.test_task_database.task``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.conftest.task``
--  ``automata.core.tasks.base.TaskEnvironment``
+-  ``automata.tasks.base.TaskEnvironment``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
--  ``automata.core.tasks.executor.IAutomataTaskExecution``
+-  ``automata.tasks.executor.IAutomataTaskExecution``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_task.test_callback``
 
 Example
@@ -38,9 +38,9 @@ commit ``AutomataTask``:
 
 .. code:: python
 
-   from automata.core.github_management.client import GitHubClient
-   from automata.core.tasks.environment import AutomataTaskEnvironment
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.github_management.client import GitHubClient
+   from automata.tasks.environment import AutomataTaskEnvironment
+   from automata.tasks.tasks import AutomataTask
 
    github_manager = GitHubClient(access_token = "your_access_token_here", remote_name = "your_remote_name_here", primary_branch = "main")
    task_env = AutomataTaskEnvironment(github_manager)

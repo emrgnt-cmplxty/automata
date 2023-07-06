@@ -32,7 +32,7 @@ execution of tasks. For example:
 
 .. code:: python
 
-   from automata.core.agent.providers import OpenAIAutomataAgent
+   from automata.agent.providers import OpenAIAutomataAgent
    from automata.config.openai_agent import OpenAIAutomataAgentConfig
    # Create OpenAIAutomataAgentConfig
    config = OpenAIAutomataAgentConfig()
@@ -50,12 +50,12 @@ Related Symbols and Dependencies:
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance``
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance``
 -  ``automata.tests.conftest.automata_agent_config_builder``
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
 -  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
--  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.agent.error.AgentResultError``
+-  ``automata.llm.providers.openai.OpenAITool``
+-  ``automata.agent.error.AgentResultError``
 
 Limitations
 -----------

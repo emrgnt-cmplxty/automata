@@ -2,7 +2,7 @@ EmbeddingSimilarityCalculator
 =============================
 
 ``EmbeddingSimilarityCalculator`` is a class in the
-``automata.core.embedding.base`` module. It takes an instance of
+``automata.embedding.base`` module. It takes an instance of
 ``EmbeddingVectorProvider`` and calculates the similarity score between
 a query text and symbol embeddings.
 
@@ -29,11 +29,11 @@ optionally sorts the dictionary.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.base.EmbeddingVectorProvider``
--  ``automata.core.embedding.base.EmbeddingNormType``
--  ``automata.core.embedding.base.Embedding``
+-  ``automata.embedding.base.EmbeddingVectorProvider``
+-  ``automata.embedding.base.EmbeddingNormType``
+-  ``automata.embedding.base.Embedding``
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.symbol.base.Symbol``
 
 Example:
 --------
@@ -43,8 +43,8 @@ the symbol most similar to a given query text:
 
 .. code:: python
 
-   from automata.core.embedding.base import EmbeddingSimilarityCalculator, EmbeddingVectorProvider
-   from automata.core.symbol.base import Symbol
+   from automata.embedding.base import EmbeddingSimilarityCalculator, EmbeddingVectorProvider
+   from automata.symbol.base import Symbol
    from numpy import array
 
    # Create an instance of the class

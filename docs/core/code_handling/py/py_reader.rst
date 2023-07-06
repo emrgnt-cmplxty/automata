@@ -33,7 +33,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.core.code_handling.py.reader import PyReader
+   from automata.code_handling.py.reader import PyReader
 
    py_reader = PyReader()
    module_dotpath = "package.module"

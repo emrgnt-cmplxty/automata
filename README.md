@@ -105,10 +105,10 @@ Sometimes the best way to understand a complicated system is to start by underst
 
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-from automata.core.agent.providers import OpenAIAutomataAgent
-from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.singletons.py_module_loader import py_module_loader
-from automata.core.tools.factory import AgentToolFactory
+from automata.agent.providers import OpenAIAutomataAgent
+from automata.singletons.dependency_factory import dependency_factory
+from automata.singletons.py_module_loader import py_module_loader
+from automata.tools.factory import AgentToolFactory
 
 # Initialize the module loader to the local directory
 py_module_loader.initialize()
@@ -147,10 +147,10 @@ Code example for creating an instance of 'SymbolCodeEmbedding':
 
 ```python
 import numpy as np
-from automata.core.symbol_embedding.base import SymbolCodeEmbedding
-from automata.core.symbol.parser import parse_symbol
+from automata.symbol_embedding.base import SymbolCodeEmbedding
+from automata.symbol.parser import parse_symbol
 
-symbol_str = 'scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#'
+symbol_str = 'scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#'
 symbol = parse_symbol(symbol_str)
 source_code = 'symbol_source'
 vector = np.array([1, 0, 0, 0])
@@ -161,8 +161,8 @@ embedding = SymbolCodeEmbedding(symbol=symbol, source_code=source_code, vector=v
 Code example for creating an instance of 'SymbolDocEmbedding':
 
 ```python
-from automata.core.symbol_embedding.base import SymbolDocEmbedding
-from automata.core.symbol.parser import parse_symbol
+from automata.symbol_embedding.base import SymbolDocEmbedding
+from automata.symbol.parser import parse_symbol
 import numpy as np
 
 symbol = parse_symbol('your_symbol_here')

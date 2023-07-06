@@ -45,7 +45,7 @@ abstract class, it can’t be instantiated directly.
 
 .. code:: python
 
-   from automata.core.symbol_embedding.base import SymbolEmbedding, Symbol
+   from automata.symbol_embedding.base import SymbolEmbedding, Symbol
    import numpy as np
 
    class SymbolCodeEmbedding(SymbolEmbedding):
@@ -59,7 +59,7 @@ Create an instance of ``SymbolCodeEmbedding``:
 
 .. code:: python
 
-   from automata.core.symbol.base import Symbol
+   from automata.symbol.base import Symbol
    symbol = Symbol.from_string("Sample symbol string")
    vector = np.array([1, 0, 0, 0])
    embedding_instance = SymbolCodeEmbedding(symbol, "source code", vector)

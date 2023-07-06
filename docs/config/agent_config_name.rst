@@ -50,14 +50,14 @@ directory.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.AgentInstance.Config``: A class for
+-  ``automata.agent.agent.AgentInstance.Config``: A class for
    configuring the agent instance arbitrary types allowed.
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``:
    A test function that iterates over all ``AgentConfigName``, skips the
    DEFAULT, loads the config and checks its type.
 -  ``automata.tests.conftest.automata_agent_config_builder``: A pytest
    fixture to construct ``OpenAIAutomataAgentConfig``.
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``:
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance.Config``:
    Class for configuring the OpenAI automata agent instance.
 -  ``automata.config.base.AgentConfig.Config``: Class for configuring
    the Agent, where arbitrary types are allowed and defines a provider.

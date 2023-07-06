@@ -5,7 +5,7 @@ Overview
 --------
 
 The ``Node`` class is an abstract base class used in the creation of a
-file tree in the ``automata.core.navigation.directory`` module. Each
+file tree in the ``automata.navigation.directory`` module. Each
 node can represent a file or a directory within this file tree. It is
 primarily used in the construction of trees for file or directory
 navigation within the Automata project. Each instance of the ``Node``
@@ -18,14 +18,14 @@ Related Symbols
 
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.tests.unit.test_directory_manager.test_get_node_for_path``
--  ``automata.core.navigation.directory.File``
+-  ``automata.navigation.directory.File``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``
--  ``automata.core.navigation.directory.Directory``
+-  ``automata.navigation.directory.Directory``
 -  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
 -  ``automata.tests.conftest.MockRepositoryClient``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.symbol.base.Symbol``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
--  ``automata.core.code_handling.py.writer.PyWriter``
+-  ``automata.code_handling.py.writer.PyWriter``
 
 Example
 -------
@@ -37,7 +37,7 @@ subclasses like ``File`` and ``Directory``. In the example below, a
 
 .. code:: python
 
-   from automata.core.navigation.directory import File
+   from automata.navigation.directory import File
 
    file = File("sample_file", None)
 

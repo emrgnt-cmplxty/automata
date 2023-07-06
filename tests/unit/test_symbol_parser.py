@@ -1,4 +1,4 @@
-from automata.core.symbol.parser import Symbol, is_global_symbol, is_local_symbol
+from automata.symbol.parser import Symbol, is_global_symbol, is_local_symbol
 
 
 def test_parse_symbol(symbols):

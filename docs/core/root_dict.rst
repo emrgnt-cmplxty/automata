@@ -14,7 +14,7 @@ RootDict
    import yaml
    from copy import deepcopy
    from typing import Any, Dict, List, Optional, TypedDict, Union, cast
-   from automata.core.symbol.base import Symbol
+   from automata.symbol.base import Symbol
    from automata.config import OPENAI_API_KEY
 
 **Class Docstring**: ``RootDict`` is a dictionary representing the root
@@ -69,11 +69,11 @@ Related Symbols:
 
 6.  ``automata.tests.unit.test_directory_manager.test_load_directory_structure``
 
-7.  ``automata.core.llm.foundation.LLMChatMessage.to_dict``
+7.  ``automata.llm.foundation.LLMChatMessage.to_dict``
 
 8.  ``automata.tests.unit.sample_modules.sample.OuterClass``
 
-9.  ``automata.core.llm.providers.openai.OpenAIChatMessage.to_dict``
+9.  ``automata.llm.providers.openai.OpenAIChatMessage.to_dict``
 
 10. ``automata.tests.unit.test_task_environment.TestURL``
 

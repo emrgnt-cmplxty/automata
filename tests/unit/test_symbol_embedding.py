@@ -2,9 +2,9 @@ from unittest.mock import MagicMock, Mock
 
 import numpy as np
 
-from automata.core.embedding.base import EmbeddingBuilder
-from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.core.symbol_embedding.base import (
+from automata.embedding.base import EmbeddingBuilder
+from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.symbol_embedding.base import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
 )
@@ -17,7 +17,7 @@ def test_update_embeddings(
     mock_simple_class_symbols,
 ):
     monkeypatch.setattr(
-        "automata.core.symbol.symbol_utils.convert_to_fst_object",
+        "automata.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 
@@ -76,7 +76,7 @@ def test_get_embedding(
 def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
-        "automata.core.symbol.symbol_utils.convert_to_fst_object",
+        "automata.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 
@@ -101,7 +101,7 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
 def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
-        "automata.core.symbol.symbol_utils.convert_to_fst_object",
+        "automata.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 
@@ -121,7 +121,7 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
     cem.process_embedding(mock_simple_method_symbols[0])
     monkeypatch.setattr(
-        "automata.core.symbol.symbol_utils.convert_to_fst_object",
+        "automata.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "xx",
     )
 
@@ -141,7 +141,7 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
 def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
-        "automata.core.symbol.symbol_utils.convert_to_fst_object",
+        "automata.symbol.symbol_utils.convert_to_fst_object",
         lambda args: "symbol_source",
     )
 

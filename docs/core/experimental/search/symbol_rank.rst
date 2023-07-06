@@ -46,8 +46,8 @@ Examples
 
 .. code:: python
 
-   from automata.core.symbol.base import Symbol
-   from automata.core.experimental.search.rank import SymbolRank, SymbolRankConfig
+   from automata.symbol.base import Symbol
+   from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
    import networkx as nx
 
    # create a graph
@@ -66,9 +66,9 @@ Examples
 Related Modules
 ---------------
 
--  automata.core.symbol.base.Symbol
--  automata.core.experimental.search.symbol_search.SymbolSearch
--  automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder
+-  automata.symbol.base.Symbol
+-  automata.experimental.search.symbol_search.SymbolSearch
+-  automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder
 
 Limitations
 -----------

@@ -2,7 +2,7 @@ ITaskExecution
 ==============
 
 ``ITaskExecution`` is an interface specifying the behavior for task
-execution in the ``automata.core.tasks`` module. It provides an abstract
+execution in the ``automata.tasks`` module. It provides an abstract
 method ``execute`` which defines how a task object should be executed.
 
 Overview
@@ -18,10 +18,10 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_task_executor.TestExecuteBehavior``
--  ``automata.core.tasks.executor.AutomataTaskExecutor``
--  ``automata.core.tasks.executor.IAutomataTaskExecution``
--  ``automata.core.tasks.base.Task``
--  ``automata.core.tasks.base.TaskStatus``
+-  ``automata.tasks.executor.AutomataTaskExecutor``
+-  ``automata.tasks.executor.IAutomataTaskExecution``
+-  ``automata.tasks.base.Task``
+-  ``automata.tasks.base.TaskStatus``
 
 Example
 -------
@@ -32,7 +32,7 @@ implementation of the ``execute`` method.
 
 .. code:: python
 
-   from automata.core.tasks.base import ITaskExecution, Task
+   from automata.tasks.base import ITaskExecution, Task
 
    class TestExecuteBehavior(ITaskExecution):
        """

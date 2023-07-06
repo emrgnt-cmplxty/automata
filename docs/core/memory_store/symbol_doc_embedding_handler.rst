@@ -15,12 +15,12 @@ Related Symbols
 ---------------
 
 -  automata.tests.unit.sample_modules.sample.OuterClass.InnerClass
--  automata.core.symbol_embedding.base.SymbolDocEmbedding
+-  automata.symbol_embedding.base.SymbolDocEmbedding
 -  automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder
--  automata.core.singletons.dependency_factory.DependencyFactory.create_symbol_doc_embedding_handler
--  automata.core.symbol_embedding.builders.SymbolDocEmbeddingBuilder
+-  automata.singletons.dependency_factory.DependencyFactory.create_symbol_doc_embedding_handler
+-  automata.symbol_embedding.builders.SymbolDocEmbeddingBuilder
 -  automata.tests.unit.test_symbol_embedding.test_get_embedding
--  automata.core.tools.builders.context_oracle.ContextOracleToolkitBuilder.\__init\_\_
+-  automata.tools.builders.context_oracle.ContextOracleToolkitBuilder.\__init\_\_
 -  automata.tests.unit.test_py_reader.test_get_docstring_nested_class_method
 
 Example
@@ -30,9 +30,9 @@ The following example demonstrates how to use SymbolDocEmbeddingHandler:
 
 .. code:: python
 
-   from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase, SymbolDocEmbedding, SymbolEmbeddingHandler
-   from automata.core.symbol_embedding.builders import SymbolDocEmbeddingBuilder
-   from automata.core.symbol.base import Symbol 
+   from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase, SymbolDocEmbedding, SymbolEmbeddingHandler
+   from automata.symbol_embedding.builders import SymbolDocEmbeddingBuilder
+   from automata.symbol.base import Symbol 
 
    # Initialize database and builder
    embedding_db = JSONSymbolEmbeddingVectorDatabase('path_to_embedding_db')

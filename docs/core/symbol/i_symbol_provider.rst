@@ -44,7 +44,7 @@ Some symbolic classes and methods that are related to
 
 -  ``automata.tests.unit.test_symbol_graph.test_get_all_symbols``
 -  ``automata.tests.unit.test_symbol_graph.test_build_real_graph``
--  ``automata.core.context_providers.symbol_synchronization.SymbolProviderRegistry``
+-  ``automata.context_providers.symbol_synchronization.SymbolProviderRegistry``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 
 Example

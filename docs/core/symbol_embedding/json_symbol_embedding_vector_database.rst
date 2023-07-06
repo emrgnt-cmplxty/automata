@@ -2,7 +2,7 @@ JSONSymbolEmbeddingVectorDatabase
 =================================
 
 ``JSONSymbolEmbeddingVectorDatabase`` is a concrete class under
-``automata.core.symbol_embedding.base`` module used to map symbols to
+``automata.symbol_embedding.base`` module used to map symbols to
 their vector representation in a JSON file. This class is an extension
 of the ``automata.core.base.database.vector.JSONVectorDatabase`` class,
 it provides similar functionality with additional methods to handle
@@ -15,10 +15,10 @@ embeddings in a JSON file.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.core.base.database.vector.JSONVectorDatabase``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 
 Overview
 --------
@@ -45,7 +45,7 @@ Below are example usages extracted mainly from the unit test functions:
 
 .. code:: python
 
-   from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
+   from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
 
    vector_database = JSONSymbolEmbeddingVectorDatabase("path_to_your_json_file")
 
@@ -53,8 +53,8 @@ Below are example usages extracted mainly from the unit test functions:
 
 .. code:: python
 
-   from automata.core.symbol_embedding.base import SymbolCodeEmbedding
-   from automata.core.symbol.base import Symbol
+   from automata.symbol_embedding.base import SymbolCodeEmbedding
+   from automata.symbol.base import Symbol
 
    symbol1 = Symbol("symbol_1")
    symbol2 = Symbol("symbol_2")

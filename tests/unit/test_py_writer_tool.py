@@ -4,12 +4,12 @@ import textwrap
 
 import pytest
 
-from automata.core.code_handling.py.reader import PyReader
-from automata.core.code_handling.py.writer import PyWriter
-from automata.core.singletons.py_module_loader import py_module_loader
-from automata.core.tools.base import Tool
-from automata.core.tools.builders.py_writer import PyWriterToolkitBuilder
+from automata.code_handling.py.reader import PyReader
+from automata.code_handling.py.writer import PyWriter
 from automata.core.utils import get_root_fpath
+from automata.singletons.py_module_loader import py_module_loader
+from automata.tools.base import Tool
+from automata.tools.builders.py_writer import PyWriterToolkitBuilder
 
 
 # TODO - Unify module loader fixture
@@ -140,7 +140,7 @@ def test_extend_module_with_documented_new_class(python_writer_tool_builder):
         '''from typing import List
 
 
-from automata.core.tools.base import Tool
+from automata.tools.base import Tool
 
 from automata.tools.python_tools.python_agent import PythonAgent
 

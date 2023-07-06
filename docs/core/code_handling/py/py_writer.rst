@@ -29,8 +29,8 @@ The following is an example illustrating the usage of ``PyWriter``.
 
 .. code:: python
 
-   from automata.core.code_handling.py.reader import PyReader
-   from automata.core.code_handling.py.writer import PyWriter
+   from automata.code_handling.py.reader import PyReader
+   from automata.code_handling.py.writer import PyWriter
 
    # Initialize a PyReader and PyWriter instances
    py_reader = PyReader()

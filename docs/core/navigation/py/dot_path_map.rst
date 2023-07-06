@@ -20,7 +20,7 @@ corresponding filepaths. A counterpart map,
 Related Symbols
 ---------------
 
--  ``automata.core.singletons.py_module_loader.PyModuleLoader``
+-  ``automata.singletons.py_module_loader.PyModuleLoader``
 -  ``automata.tests.unit.test_directory_manager.test_get_node_for_path``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
 
@@ -29,7 +29,7 @@ Example
 
 .. code:: python
 
-   from automata.core.navigation.py.dot_path_map import DotPathMap
+   from automata.navigation.py.dot_path_map import DotPathMap
 
    # Initialize a new DotPathMap
    dpm = DotPathMap('/path/to/your/module/root', 'prefix')

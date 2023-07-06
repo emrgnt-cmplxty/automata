@@ -51,7 +51,7 @@ inherits from ``AgentToolkitBuilder``.
 
 .. code:: python
 
-   from automata.core.tools.base import Tool
+   from automata.tools.base import Tool
 
    class PythonAgentToolkit:
        def __init__(self, python_agent: PythonAgent):

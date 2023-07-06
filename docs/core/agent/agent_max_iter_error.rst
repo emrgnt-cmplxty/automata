@@ -1,7 +1,7 @@
 AgentMaxIterError
 =================
 
-``AgentMaxIterError`` is an exception class in automata.core.agent.error
+``AgentMaxIterError`` is an exception class in automata.agent.error
 module that is raised when an agent exceeds the maximum number of
 iterations during its execution.
 
@@ -17,9 +17,9 @@ expected results or isn’t reaching completion.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.base.AgentConfigBuilder.with_max_iterations``
--  ``automata.core.agent.error.AgentStopIteration``
+-  ``automata.agent.error.AgentStopIteration``
 
 Example
 -------
@@ -29,8 +29,8 @@ when running an agent. Here is an illustrative example:
 
 .. code:: python
 
-   from automata.core.agent.error import AgentMaxIterError
-   from automata.core.agent.providers import OpenAIAutomataAgent
+   from automata.agent.error import AgentMaxIterError
+   from automata.agent.providers import OpenAIAutomataAgent
    from automata.config.base import AgentConfigBuilder
 
    # Instantiate a config builder and set max_iterations

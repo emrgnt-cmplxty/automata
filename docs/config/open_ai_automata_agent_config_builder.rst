@@ -35,7 +35,7 @@ Related Symbols
    fixture that sets up a mocked ``OpenAIAutomataAgentConfigBuilder``.
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``: Holds the
    configuration for the Automata OpenAI Agent.
--  ``automata.core.agent.providers.OpenAIAutomataAgent``: An autonomous
+-  ``automata.agent.providers.OpenAIAutomataAgent``: An autonomous
    agent designed to execute instructions and report the results back to
    the main system with interactions with OpenAI API.
 

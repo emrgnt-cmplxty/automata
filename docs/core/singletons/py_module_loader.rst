@@ -42,7 +42,7 @@ Example
 
 .. code:: python
 
-   from automata.core.singletons.py_module_loader import PyModuleLoader
+   from automata.singletons.py_module_loader import PyModuleLoader
    from automata.core.utils import get_root_fpath, get_root_py_fpath
 
    # Initialize the loader
@@ -57,18 +57,18 @@ Example
 Related Symbols
 ---------------
 
--  ``automata.core.navigation.py.dot_path_map.DotPathMap``
+-  ``automata.navigation.py.dot_path_map.DotPathMap``
 -  ``automata.core.base.patterns.singleton.Singleton``
--  ``automata.core.navigation.py.dot_path_map.DotPathMap``
--  ``automata.core.navigation.py.dot_path_map.DotPathMap.contains_dotpath``
+-  ``automata.navigation.py.dot_path_map.DotPathMap``
+-  ``automata.navigation.py.dot_path_map.DotPathMap.contains_dotpath``
 -  ``automata.core.utils.get_root_fpath``
 -  ``automata.core.utils.get_root_py_fpath``
 
 Dependencies
 ------------
 
--  ``automata.core.navigation.py.dot_path_map.DotPathMap.put_module``
--  ``automata.core.navigation.py.dot_path_map.DotPathMap.get_module_dotpath_by_fpath``
+-  ``automata.navigation.py.dot_path_map.DotPathMap.put_module``
+-  ``automata.navigation.py.dot_path_map.DotPathMap.get_module_dotpath_by_fpath``
 
 Limitations
 -----------
