@@ -20,10 +20,10 @@ Related Symbols
 
 -  ``automata.tests.unit.sample_modules.sample.sample_function``: An
    example of a function that can be represented by ``OpenAIFunction``.
--  ``automata.core.agent.providers.OpenAIAutomataAgent.functions``: A
+-  ``automata.agent.providers.OpenAIAutomataAgent.functions``: A
    method that returns a list of ``OpenAIFunction`` instances
    representing the available functions for the agent.
--  ``automata.core.llm.providers.openai.OpenAITool``: A class
+-  ``automata.llm.providers.openai.OpenAITool``: A class
    representing a tool that can be used by the OpenAI agent which
    utilizes ``OpenAIFunction``.
 
@@ -36,7 +36,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIFunction
+   from automata.llm.providers.openai import OpenAIFunction
 
    # Initialize OpenAIFunction object
    function = OpenAIFunction(

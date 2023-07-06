@@ -22,11 +22,11 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.embedding.base.EmbeddingBuilder``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol_embedding.base.SymbolEmbeddingHandler``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.embedding.base.EmbeddingBuilder``
+-  ``automata.symbol.base.Symbol``
+-  ``automata.symbol_embedding.base.SymbolEmbeddingHandler``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
 
 Methods
 -------

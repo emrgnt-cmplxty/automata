@@ -20,9 +20,9 @@ respectively. Additionally, the ``update`` method, inherited from the
 Related Symbols
 ---------------
 
--  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
--  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
--  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
+-  ``automata.llm.foundation.LLMConversation.get_latest_message``
+-  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``automata.llm.providers.openai.OpenAIConversation.get_latest_message``
 
 Usage example
 -------------

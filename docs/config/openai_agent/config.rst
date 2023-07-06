@@ -26,7 +26,7 @@ Related Symbols
 
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_config_loading_different_versions``
 

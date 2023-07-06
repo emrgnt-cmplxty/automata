@@ -17,13 +17,13 @@ found in the module dictionary.
 Related Symbols
 ---------------
 
--  ``automata.core.code_handling.py.writer.PyWriter``
--  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.code_handling.py.writer.PyWriter``
+-  ``automata.code_handling.py.reader.PyReader``
 -  ``automata.tests.unit.test_py_writer.py_writer``
 -  ``automata.tests.unit.test_py_writer_tool.test_init``
 -  ``automata.tests.unit.test_py_writer_tool.python_writer_tool_builder``
--  ``automata.core.singletons.dependency_factory.DependencyFactory.create_py_writer``
--  ``automata.core.tools.builders.py_writer.PyWriterToolkitBuilder``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_py_writer``
+-  ``automata.tools.builders.py_writer.PyWriterToolkitBuilder``
 -  ``automata.tests.unit.test_py_writer.test_create_update_write_module``
 
 Example
@@ -37,7 +37,7 @@ functionality. The purpose is to show how to instantiate and use the
 
    # MockCodeGenerator is a hypothetical class and its instance generates the source code for testing PyWriter
    from automata.tests.unit.test_py_writer import PyWriter, MockCodeGenerator
-   from automata.core.code_handling.py.reader import PyReader
+   from automata.code_handling.py.reader import PyReader
    import os
 
    py_writer = PyWriter(PyReader()) 

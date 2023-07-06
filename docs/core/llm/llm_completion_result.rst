@@ -10,14 +10,14 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
--  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult``
+-  ``automata.llm.foundation.LLMConversation.get_latest_message``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionResult``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 -  ``automata.config.base.LLMProvider``
--  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
--  ``automata.core.llm.providers.openai.OpenAIChatMessage``
+-  ``automata.llm.providers.openai.OpenAIConversation.get_latest_message``
+-  ``automata.llm.providers.openai.OpenAIChatMessage``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider.get_next_assistant_completion``
+-  ``automata.llm.foundation.LLMChatCompletionProvider.get_next_assistant_completion``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 
 Example
@@ -29,7 +29,7 @@ example illustrating its functionality.
 
 .. code:: python
 
-   from automata.core.llm.foundation import LLMCompletionResult
+   from automata.llm.foundation import LLMCompletionResult
 
    # create an instance of LLMCompletionResult with defined role and content attributes
    completion_result = LLMCompletionResult(content="content of the completion result", role="assistant")

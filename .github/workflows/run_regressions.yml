@@ -22,6 +22,11 @@ jobs:
           python -m pip install --upgrade pip
           pip3 install -e .
 
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs pull
+
       - name: Run regression tests
         run: |
           pytest -m regression

@@ -3,7 +3,7 @@ LLMConversation
 
 ``LLMConversation`` is an abstract base class designed to represent
 different types of LLM (Language Learning Module) conversations. It is a
-part of the library, ``automata.core.llm.foundation``.
+part of the library, ``automata.llm.foundation``.
 
 Overview
 --------
@@ -21,11 +21,11 @@ an empty conversation.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
--  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
--  ``automata.core.llm.foundation.LLMChatMessage``
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
--  ``automata.core.llm.providers.openai.OpenAIConversation``
+-  ``automata.llm.foundation.LLMConversation.get_latest_message``
+-  ``automata.llm.providers.openai.OpenAIConversation.get_latest_message``
+-  ``automata.llm.foundation.LLMChatMessage``
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider``
+-  ``automata.llm.providers.openai.OpenAIConversation``
 
 Example
 -------
@@ -37,7 +37,7 @@ subclass:
 
 .. code:: python
 
-   from automata.core.llm.foundation.LLMConversation import LLMEmptyConversationError, LLMChatMessage
+   from automata.llm.foundation.LLMConversation import LLMEmptyConversationError, LLMChatMessage
    from automata.core.base.patterns.observer import Observer
 
    class CustomConversation(LLMConversation):

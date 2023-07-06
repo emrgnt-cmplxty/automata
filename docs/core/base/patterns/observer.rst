@@ -18,13 +18,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task.test_callback``
 -  ``automata.tests.unit.sample_modules.sample.Person``
--  ``automata.core.llm.foundation.LLMConversation.register_observer``
+-  ``automata.llm.foundation.LLMConversation.register_observer``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 -  ``automata.tests.conftest.MockRepositoryClient``
--  ``automata.core.llm.foundation.LLMConversation.unregister_observer``
--  ``automata.core.llm.foundation.LLMConversation.notify_observers``
+-  ``automata.llm.foundation.LLMConversation.unregister_observer``
+-  ``automata.llm.foundation.LLMConversation.notify_observers``
 -  ``automata.tests.unit.test_py_reader.getter``
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider``
 
 Example
 -------

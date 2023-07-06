@@ -16,15 +16,15 @@ for the methods ``get_messages`` and ``save_message``.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider.reset``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionProvider.reset``
 -  ``automata.config.CONVERSATION_DB_PATH``
 -  ``automata.core.base.database.relational.SQLDatabase.connect``
 -  ``automata.tests.unit.test_conversation_database.db``
 -  ``automata.tests.unit.test_conversation_database.test_get_messages_returns_all_messages_for_session``
 -  ``automata.tests.unit.test_conversation_database.test_put_message_increments_interaction_id``
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider.get_messages``
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider.save_message``
--  ``automata.core.agent.providers.OpenAIAutomataAgent.set_database_provider``
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider.get_messages``
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider.save_message``
+-  ``automata.agent.providers.OpenAIAutomataAgent.set_database_provider``
 
 Example
 -------
@@ -34,8 +34,8 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.memory_store.agent_conversation_database import AgentConversationDatabase
-   from automata.core.llm.foundation import LLMChatMessage
+   from automata.memory_store.agent_conversation_database import AgentConversationDatabase
+   from automata.llm.foundation import LLMChatMessage
 
    # Initialize a database path and session id
    db_path = 'path/to/db'

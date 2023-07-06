@@ -15,13 +15,13 @@ Related Symbols
 
 -  ``automata.tests.conftest.environment``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tasks.environment.AutomataTaskEnvironment``
 -  ``automata.tests.conftest.task``
 -  ``automata.tests.unit.test_task_database.db``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment.teardown``
+-  ``automata.tasks.environment.AutomataTaskEnvironment.teardown``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.core.tasks.base.Task``
+-  ``automata.tasks.base.Task``
 
 Example
 -------
@@ -31,7 +31,7 @@ implements its abstract methods:
 
 .. code:: python
 
-   from automata.core.tasks.base import TaskEnvironment
+   from automata.tasks.base import TaskEnvironment
 
    class MyEnvironment(TaskEnvironment):
 

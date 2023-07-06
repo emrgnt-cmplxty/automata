@@ -4,8 +4,8 @@ from unittest.mock import PropertyMock, patch
 import pytest
 
 from automata.config.base import AgentConfigName
-from automata.core.tasks.base import TaskStatus
-from automata.core.tasks.tasks import AutomataTask
+from automata.tasks.base import TaskStatus
+from automata.tasks.tasks import AutomataTask
 
 from ..conftest import MockRepositoryClient
 

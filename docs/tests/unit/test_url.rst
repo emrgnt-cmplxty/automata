@@ -16,15 +16,15 @@ arena, mostly for task committing operations.
 Related Symbols
 ---------------
 
--  ``automata.core.tasks.base.TaskStatus``
+-  ``automata.tasks.base.TaskStatus``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.tools.base.Tool``
+-  ``automata.tools.base.Tool``
 -  ``automata.tests.unit.test_tool.test_tool``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_tool.test_tool_run``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment.validate``
+-  ``automata.tasks.environment.AutomataTaskEnvironment.validate``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tasks.environment.AutomataTaskEnvironment``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 
 Example

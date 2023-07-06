@@ -22,11 +22,11 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task.test_status_setter``
 -  ``automata.tests.unit.test_task.test_task_inital_state``
--  ``automata.core.tasks.base.Task.status``
+-  ``automata.tasks.base.Task.status``
 -  ``automata.tests.unit.test_task_database.test_update_task``
--  ``automata.core.tasks.base.Task``
+-  ``automata.tasks.base.Task``
 -  ``automata.tests.unit.test_task_database.test_database_lifecycle``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_task.test_register_task``
 
 Example
@@ -37,8 +37,8 @@ status of a ``Task``.
 
 .. code:: python
 
-   from automata.core.tasks.base import Task
-   from automata.core.tasks.base import TaskStatus
+   from automata.tasks.base import Task
+   from automata.tasks.base import TaskStatus
 
    task = Task("Task1", "", priority=1)
    print(task.status)  # Should print: TaskStatus.CREATED

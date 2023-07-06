@@ -48,8 +48,8 @@ an example of how to use it:
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIChatCompletionProvider
-   from automata.core.llm.foundation import LLMChatMessage
+   from automata.llm.providers.openai import OpenAIChatCompletionProvider
+   from automata.llm.foundation import LLMChatMessage
 
    provider = OpenAIChatCompletionProvider()
 

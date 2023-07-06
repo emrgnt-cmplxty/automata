@@ -24,9 +24,9 @@ and in test scenarios.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatMessage``
--  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
--  ``automata.core.llm.foundation.LLMConversation.get_latest_message``
+-  ``automata.llm.providers.openai.OpenAIChatMessage``
+-  ``automata.llm.providers.openai.OpenAIConversation.get_latest_message``
+-  ``automata.llm.foundation.LLMConversation.get_latest_message``
 
 Examples
 --------
@@ -36,7 +36,7 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.llm.foundation import LLMChatMessage
+   from automata.llm.foundation import LLMChatMessage
 
    # Create a LLMChatMessage instance
    message = LLMChatMessage(role="user", content="Hello, how are you?")
@@ -50,7 +50,7 @@ interaction to a database.
 
 .. code:: python
 
-   from automata.core.llm.foundation import LLMChatMessage
+   from automata.llm.foundation import LLMChatMessage
    from automata.core.base.database.relational import SQLDatabase
 
    # Given a SQL database instance and a conversation interaction

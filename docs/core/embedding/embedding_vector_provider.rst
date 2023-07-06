@@ -25,10 +25,10 @@ associated unit testing files.
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.base.EmbeddingBuilder``
--  ``automata.core.llm.providers.openai.OpenAIEmbeddingProvider``
--  ``automata.core.symbol_embedding.base.JSONSymbolEmbeddingVectorDatabase``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.embedding.base.EmbeddingBuilder``
+-  ``automata.llm.providers.openai.OpenAIEmbeddingProvider``
+-  ``automata.symbol_embedding.base.JSONSymbolEmbeddingVectorDatabase``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_embedding``
 
 Example
@@ -42,7 +42,7 @@ Here is an example involving the ``OpenAIEmbeddingProvider``:
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
+   from automata.llm.providers.openai import OpenAIEmbeddingProvider
 
    embed_provider = OpenAIEmbeddingProvider()
 

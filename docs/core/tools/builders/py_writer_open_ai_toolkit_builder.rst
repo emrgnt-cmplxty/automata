@@ -20,9 +20,9 @@ builds are used by the OpenAI agent to modify python files.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder``: The base
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder``: The base
    class this builder extends from.
--  ``automata.core.llm.providers.openai.OpenAITool``: This class
+-  ``automata.llm.providers.openai.OpenAITool``: This class
    represents tools that ``PyWriterOpenAIToolkitBuilder`` builds.
 
 Example
@@ -33,8 +33,8 @@ PyWriterOpenAIToolkitBuilder:
 
 .. code:: python
 
-   from automata.core.code_handling.py.writer import PyWriter
-   from automata.core.tools.builders.py_writer import PyWriterOpenAIToolkitBuilder
+   from automata.code_handling.py.writer import PyWriter
+   from automata.tools.builders.py_writer import PyWriterOpenAIToolkitBuilder
 
    py_writer = PyWriter()
    toolkit_builder = PyWriterOpenAIToolkitBuilder(py_writer)

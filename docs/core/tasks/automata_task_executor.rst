@@ -36,8 +36,8 @@ The following is an example demonstrating how to use
 
 .. code:: python
 
-   from automata.core.tasks.executor import AutomataTaskExecutor
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.tasks.executor import AutomataTaskExecutor
+   from automata.tasks.tasks import AutomataTask
    from automata.tests.unit.test_task_executor import TestExecuteBehavior
 
    # Create an AutomataTask instance

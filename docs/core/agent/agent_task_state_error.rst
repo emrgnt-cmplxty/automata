@@ -5,7 +5,7 @@ Overview
 --------
 
 ``AgentTaskStateError`` is an exception class in
-``automata.core.agent.error`` module that is raised when the task is not
+``automata.agent.error`` module that is raised when the task is not
 in the correct state for the operation. This class deals with erroneous
 cases where, for instance, an action is being performed on a task but
 its state is not correctly set for that particular action.
@@ -13,18 +13,18 @@ its state is not correctly set for that particular action.
 Related Symbols
 ---------------
 
--  ``automata.core.tasks.base.TaskStatus``: Refers to various statuses a
+-  ``automata.tasks.base.TaskStatus``: Refers to various statuses a
    task can have, like ``CREATED``, ``RETRYING``, ``FAILED``,
    ``SUCCESS``, etc.
 -  ``automata.tests.unit.test_task.test_task_inital_state``: A unit test
    that asserts if the initial status of the task is ``CREATED``.
 -  ``automata.tests.unit.test_task.test_status_setter``: A unit test to
    check if the task status can be set to ``RETRYING``.
--  ``automata.core.agent.error.AgentTaskGitError``: An exception raised
+-  ``automata.agent.error.AgentTaskGitError``: An exception raised
    when the task encounters a git related error.
--  ``automata.core.agent.error.AgentTaskGeneralError``: An exception
+-  ``automata.agent.error.AgentTaskGeneralError``: An exception
    raised when a general error occurs during task execution.
--  ``automata.core.agent.error.AgentTaskInstructions``: An exception
+-  ``automata.agent.error.AgentTaskInstructions``: An exception
    raised when there is an error with the task instructions.
 
 Example
@@ -35,8 +35,8 @@ The following is a simplified example demonstrating how
 
 .. code:: python
 
-   from automata.core.agent.error import AgentTaskStateError
-   from automata.core.tasks.base import TaskStatus, AutomataTask
+   from automata.agent.error import AgentTaskStateError
+   from automata.tasks.base import TaskStatus, AutomataTask
 
    # Creating a Mock Task
    task = AutomataTask()

@@ -17,20 +17,20 @@ provide a single central registry.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.base.ISymbolProvider``
+-  ``automata.symbol.base.Symbol``
+-  ``automata.symbol.base.ISymbolProvider``
 -  ``automata.tests.unit.test_symbol_graph.test_get_all_symbols``
 -  ``automata.tests.unit.test_symbol_graph.test_build_real_graph``
--  ``automata.core.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext.register_provider``
--  ``automata.core.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext.synchronize``
+-  ``automata.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext.register_provider``
+-  ``automata.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext.synchronize``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata.core.symbol.base import ISymbolProvider, Symbol
-   from automata.core.context_providers.symbol_synchronization import SymbolProviderRegistry
+   from automata.symbol.base import ISymbolProvider, Symbol
+   from automata.context_providers.symbol_synchronization import SymbolProviderRegistry
 
    # Define a custom symbol provider
    class CustomSymbolProvider(ISymbolProvider):

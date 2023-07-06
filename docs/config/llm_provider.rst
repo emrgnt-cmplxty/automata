@@ -19,7 +19,7 @@ Related Symbols
    sample function used in unit testing.
 -  ``automata.config.base.AgentConfig.get_llm_provider``: Method to get
    the LLM (Language Learning Model) Provider for the Automata agent.
--  ``automata.core.agent.agent.Agent.set_database_provider``: Method to
+-  ``automata.agent.agent.Agent.set_database_provider``: Method to
    set the database provider, where potential LLM conversations may be
    stored.
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``:
@@ -28,7 +28,7 @@ Related Symbols
    Method to get the LLM Provider specifically for an OpenAI agent.
 -  ``automata.tests.unit.test_py_reader.getter``: A test fixture that
    creates and returns an instance of ``PyReader``.
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``:
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider``:
    Abstract base class for different types of database providers
    specifically for LLM conversation.
 

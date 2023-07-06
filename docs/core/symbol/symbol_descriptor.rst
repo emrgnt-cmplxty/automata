@@ -16,14 +16,14 @@ Related Symbols
 
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.symbol.base.Symbol``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
 -  ``automata.tests.regression.test_symbol_searcher_regression.get_top_n_results_desc_name``
--  ``automata.core.symbol.parser._SymbolParser.parse_descriptors``
+-  ``automata.symbol.parser._SymbolParser.parse_descriptors``
 -  ``automata.tests.unit.test_symbol_search_tool.test_init``
--  ``automata.core.symbol.base.Symbol.__repr__``
+-  ``automata.symbol.base.Symbol.__repr__``
 -  ``automata.tests.unit.test_symbol_search.test_symbol_references``
--  ``automata.core.symbol.parser.new_local_symbol``
+-  ``automata.symbol.parser.new_local_symbol``
 
 Example
 -------
@@ -32,8 +32,8 @@ Here is an example of ``SymbolDescriptor`` utilization:
 
 .. code:: python
 
-   from automata.core.symbol.base import SymbolDescriptor
-   from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
+   from automata.symbol.base import SymbolDescriptor
+   from automata.symbol.scip_pb2 import Descriptor as DescriptorProto
 
    symbol_descriptor = SymbolDescriptor('name', DescriptorProto.Type, 'disambiguator')
    assert str(symbol_descriptor) == "Descriptor(name, Type, disambiguator)"

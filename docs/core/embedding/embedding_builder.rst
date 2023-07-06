@@ -9,7 +9,7 @@ embeddings.
 Overview
 --------
 
-``EmbeddingBuilder`` is an important part of the automata.core.embedding
+``EmbeddingBuilder`` is an important part of the automata.embedding
 module. It provides the foundation for building symbol embeddings in an
 abstract way, allowing for different methods of building embeddings to
 be developed and used interchangeably. The class contains abstract
@@ -19,10 +19,10 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``
--  ``automata.core.symbol_embedding.builders.SymbolCodeEmbeddingBuilder``
--  ``automata.core.symbol_embedding.builders.SymbolDocEmbeddingBuilder``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler.__init__``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler.__init``
+-  ``automata.symbol_embedding.builders.SymbolCodeEmbeddingBuilder``
+-  ``automata.symbol_embedding.builders.SymbolDocEmbeddingBuilder``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler.__init__``
+-  ``automata.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler.__init``
 
 Example
 -------
@@ -54,9 +54,9 @@ symbol recognition.
 Dependencies
 ------------
 
--  ``automata.core.embedding.base.EmbeddingVectorProvider``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
+-  ``automata.embedding.base.EmbeddingVectorProvider``
+-  ``automata.symbol.base.Symbol``
+-  ``automata.symbol.symbol_utils.convert_to_fst_object``
 
 Follow-up Questions:
 --------------------

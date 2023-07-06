@@ -3,7 +3,7 @@ Tool
 
 ``Tool`` directly exposes a function or coroutine. It takes inputs in
 the form of dictionary in a run method. The ``Tool`` class is part of
-the automata.core.tools.base module.
+the automata.tools.base module.
 
 Overview
 --------
@@ -22,13 +22,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_tool.test_tool``
 -  ``automata.tests.unit.test_tool.TestTool``
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
 -  ``automata.tests.unit.test_tool.test_tool_run``
--  ``automata.core.llm.providers.openai.OpenAITool``
+-  ``automata.llm.providers.openai.OpenAITool``
 -  ``automata.tests.unit.test_tool.TestTool.run``
--  ``automata.core.agent.agent.AgentToolkitBuilder.build``
+-  ``automata.agent.agent.AgentToolkitBuilder.build``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder.build``
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder.build``
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
 
 Example
@@ -39,7 +39,7 @@ and running it with an input.
 
 .. code:: python
 
-   from automata.core.tools.base import Tool
+   from automata.tools.base import Tool
 
    test_tool = Tool(
        name="TestTool", 

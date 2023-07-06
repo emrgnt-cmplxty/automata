@@ -29,11 +29,11 @@ Related Symbols
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_provided_parameters_override_defaults``
--  ``automata.core.agent.agent.AgentInstance.Config``
+-  ``automata.agent.agent.AgentInstance.Config``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_accepts_all_fields``
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance.Config``
 -  ``automata.config.base.AgentConfigName``
--  ``automata.core.tools.base.Tool``
+-  ``automata.tools.base.Tool``
 
 Usage Example
 -------------

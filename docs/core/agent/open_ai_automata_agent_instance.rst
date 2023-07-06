@@ -18,7 +18,7 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
 
 Example
@@ -30,7 +30,7 @@ instructions and returns the result.
 
 .. code:: python
 
-   from automata.core.agent.instances import OpenAIAutomataAgentInstance
+   from automata.agent.instances import OpenAIAutomataAgentInstance
    from automata.config.base import AgentConfigName
 
    config_name = AgentConfigName.AUTOMATA_MAIN

@@ -45,8 +45,8 @@ Import Statements
    import pypandoc
    from typing import Dict, List, Optional, Union, cast
    from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
-   from automata.core.code_handling.py.reader import PyReader
-   from automata.core.navigation.directory import DirectoryManager
+   from automata.code_handling.py.reader import PyReader
+   from automata.navigation.directory import DirectoryManager
 
 Methods
 -------
@@ -78,10 +78,10 @@ Example Usage
 
 .. code:: python
 
-   from automata.core.code_handling.py.writer import PyDocWriter
+   from automata.code_handling.py.writer import PyDocWriter
    from typing import Dict, List
-   from automata.core.symbol_embedding.base import SymbolDocEmbedding
-   from automata.core.symbol.base import Symbol
+   from automata.symbol_embedding.base import SymbolDocEmbedding
+   from automata.symbol.base import Symbol
 
    symbol1 = Symbol.from_string(symbol_str='package1 ClassA# method1().')
    symbol2 = Symbol.from_string(symbol_str='package2 ClassB# method2().')

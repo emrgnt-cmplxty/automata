@@ -16,11 +16,11 @@ run multiple times without having to reinitialize the agent each time.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.Agent``
--  ``automata.core.agent.agent.AgentInstance.Config``
--  ``automata.core.agent.agent.AgentInstance.create``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance``
+-  ``automata.agent.agent.Agent``
+-  ``automata.agent.agent.AgentInstance.Config``
+-  ``automata.agent.agent.AgentInstance.create``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 
 Example
@@ -33,8 +33,8 @@ from ``AgentInstance``. Here is how you can create an instance of
 
 .. code:: python
 
-   from automata.core.agent.instances import OpenAIAutomataAgentInstance
-   from automata.core.agent.config_enums import AgentConfigName
+   from automata.agent.instances import OpenAIAutomataAgentInstance
+   from automata.agent.config_enums import AgentConfigName
 
    config_name = AgentConfigName.TEST
    description = "This is a test instance"

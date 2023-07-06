@@ -12,15 +12,15 @@ Overview
 properties and validating its instructions. It also manages the logging
 for the task by creating a log file in the task directory and fetches
 log content. The class utilizes parent class ``Task`` from
-``automata.core.tasks.base`` to handle the underlying procedures.
+``automata.tasks.base`` to handle the underlying procedures.
 
 Related Symbols
 ---------------
 
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
--  ``automata.core.tasks.agent_database.AutomataTaskRegistry.get_all_tasks``
--  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase.insert_task``
--  ``automata.core.tasks.executor.IAutomataTaskExecution``
+-  ``automata.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tasks.agent_database.AutomataTaskRegistry.get_all_tasks``
+-  ``automata.tasks.agent_database.AutomataAgentTaskDatabase.insert_task``
+-  ``automata.tasks.executor.IAutomataTaskExecution``
 
 Example
 -------
@@ -29,13 +29,13 @@ Examples on how to create instances of ``AutomataTask``:
 
 .. code:: python
 
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.tasks.tasks import AutomataTask
 
    task = AutomataTask("task1", instructions="instruction1")
 
 .. code:: python
 
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.tasks.tasks import AutomataTask
    from tests.mocks import MockRepositoryClient
    from config.config_enums import AgentConfigName
 

@@ -24,7 +24,7 @@ Its ``build`` method provides two functionalities:
 Related Symbols
 ---------------
 
--  ``automata.core.tools.base.Tool``: The ``Tool`` class exposes a
+-  ``automata.tools.base.Tool``: The ``Tool`` class exposes a
    function or coroutine directly which is then used by
    ``PyWriterToolkitBuilder`` to implement its methods.
 
@@ -32,11 +32,11 @@ Related Symbols
    This tests the ``PyWriterToolkitBuilder`` and asserts its instance
    type as ``Tool``.
 
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``:
+-  ``automata.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``:
    Provides similar method to ``build()`` in ``PyWriterToolkitBuilder``
    to build Python toolkit for OpenAI.
 
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``:
+-  ``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``:
    Builds toolkit for handling of context Oracle within OpenAI.
 
 Usage Example
@@ -44,8 +44,8 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.code_handling.py.writer import PyWriter
-   from automata.core.tools.builders.py_writer import PyWriterToolkitBuilder
+   from automata.code_handling.py.writer import PyWriter
+   from automata.tools.builders.py_writer import PyWriterToolkitBuilder
 
    py_writer = PyWriter(py_reader)
    py_toolkit_builder = PyWriterToolkitBuilder(py_writer=py_writer)

@@ -22,12 +22,12 @@ attribute.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.base.ISymbolProvider``
+-  ``automata.symbol.base.ISymbolProvider``
 -  ``automata.tests.unit.test_symbol_graph.test_get_all_symbols``
 -  ``automata.tests.unit.test_symbol_graph.test_build_real_graph``
 -  ``automata.tests.unit.test_symbol_graph.test_build_real_graph_and_subgraph``
 -  ``automata.tests.unit.test_synchronizer.test_build_graph_and_handler_and_synchronize``
--  ``automata.core.context_providers.symbol_synchronization.SymbolProviderRegistry``
+-  ``automata.context_providers.symbol_synchronization.SymbolProviderRegistry``
 
 Example
 -------
@@ -39,8 +39,8 @@ Example 1: Synchronizing a SymbolProvider
 
 .. code:: python
 
-   from automata.core.context_providers.symbol_synchronization import SymbolProviderSynchronizationContext
-   from automata.core.symbol.base import ISymbolProvider
+   from automata.context_providers.symbol_synchronization import SymbolProviderSynchronizationContext
+   from automata.symbol.base import ISymbolProvider
 
    provider = ISymbolProvider() # an instance of ISymbolProvider
 

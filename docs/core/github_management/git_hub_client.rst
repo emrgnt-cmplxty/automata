@@ -5,7 +5,7 @@ Overview
 --------
 
 ``GitHubClient`` is a class under the
-``automata.core.github_management.client`` package that provides an
+``automata.github_management.client`` package that provides an
 interface for interacting with GitHub repositories. Its main function is
 to manage operations directly related to the GitHub repository, such as
 creating new branches, checking out branches, staging all changes to the
@@ -22,13 +22,13 @@ Related Symbols
 
 -  ``automata.tests.conftest.MockRepositoryClient``
 -  ``automata.tests.conftest.environment``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment.__init__``
+-  ``automata.tasks.environment.AutomataTaskEnvironment.__init__``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
 -  ``automata.tests.conftest.task``
--  ``automata.core.github_management.client.RepositoryClient``
+-  ``automata.github_management.client.RepositoryClient``
 -  ``automata.tests.unit.test_py_reader_tool.test_tool_execution``
 -  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tasks.environment.AutomataTaskEnvironment``
 -  ``automata.tests.unit.test_task_environment.TestURL``
 
 Example

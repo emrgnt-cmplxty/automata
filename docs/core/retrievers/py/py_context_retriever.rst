@@ -20,11 +20,11 @@ Related Symbols
 ---------------
 
 -  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.symbol_utils.convert_to_fst_object``
--  ``automata.core.symbol.symbol_utils.get_rankable_symbols``
+-  ``automata.code_handling.py.reader.PyReader``
+-  ``automata.symbol.base.Symbol``
+-  ``automata.symbol.graph.SymbolGraph``
+-  ``automata.symbol.symbol_utils.convert_to_fst_object``
+-  ``automata.symbol.symbol_utils.get_rankable_symbols``
 -  ``automata.core.utils.get_root_py_fpath``
 
 Example
@@ -36,9 +36,9 @@ project.
 
 .. code:: python
 
-   from automata.core.retrievers.py.context import PyContextRetriever
-   from automata.core.symbol.graph import SymbolGraph
-   from automata.core.symbol.base import Symbol
+   from automata.retrievers.py.context import PyContextRetriever
+   from automata.symbol.graph import SymbolGraph
+   from automata.symbol.base import Symbol
 
    graph = SymbolGraph(index_path="my_index_path")
    symbol = Symbol.from_string(symbol_str="my_symbol")

@@ -22,8 +22,8 @@ Related Symbols
 
 -  ``automata.tests.unit.test_symbol_graph.test_build_real_graph``
 -  ``automata.tests.unit.test_symbol_graph.test_build_real_graph_and_subgraph``
--  ``automata.core.symbol.base.Symbol``
--  ``automata.core.singletons.dependency_factory.DependencyFactory.create_symbol_graph``
+-  ``automata.symbol.base.Symbol``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_graph``
 
 Methods
 -------

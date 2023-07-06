@@ -31,7 +31,7 @@ Related Symbols
 
 -  ``automata.tests.unit.test_tool.test_tool``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
--  ``automata.core.singletons.toolkit_registries.OpenAIAutomataAgentToolkitRegistry.register_tool_manager``
+-  ``automata.singletons.toolkit_registries.OpenAIAutomataAgentToolkitRegistry.register_tool_manager``
 -  ``automata.tests.unit.test_py_writer_tool.python_writer_tool_builder``
 
 Usage Example
@@ -39,8 +39,8 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.tools.factory import AgentToolFactory
-   from automata.core.agent.agent import AgentToolkitNames
+   from automata.tools.factory import AgentToolFactory
+   from automata.agent.agent import AgentToolkitNames
 
    toolkit_list = ["tool_name1", "tool_name2"]
    tools = AgentToolFactory.build_tools(toolkit_list)

@@ -20,18 +20,18 @@ descriptions.
 Related Symbols
 ---------------
 
--  ``automata.core.tools.builders.py_reader.PyReaderOpenAIToolkit``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
--  ``automata.core.tools.builders.py_writer.PyWriterToolkitBuilder``
--  ``automata.core.agent.agent.AgentToolkitBuilder``
+-  ``automata.tools.builders.py_reader.PyReaderOpenAIToolkit``
+-  ``automata.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
+-  ``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
+-  ``automata.tools.builders.py_writer.PyWriterToolkitBuilder``
+-  ``automata.agent.agent.AgentToolkitBuilder``
 
 Dependencies
 ------------
 
--  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.tools.base.Tool``
--  ``automata.core.agent.agent.AgentToolkitBuilder``
+-  ``automata.code_handling.py.reader.PyReader``
+-  ``automata.tools.base.Tool``
+-  ``automata.agent.agent.AgentToolkitBuilder``
 
 Usage Example
 -------------
@@ -42,8 +42,8 @@ tools related to the retrieval of Python code:
 
 .. code:: python
 
-   from automata.core.code_handling.py.reader import PyReader
-   from automata.core.tools.builders.py_reader import PyReaderToolkitBuilder
+   from automata.code_handling.py.reader import PyReader
+   from automata.tools.builders.py_reader import PyReaderToolkitBuilder
 
    # Instantiate the PyReader object
    python_code_retriever = PyReader()

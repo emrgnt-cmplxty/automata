@@ -3,7 +3,7 @@ SymbolDocEmbeddingBuilder
 
 ``SymbolDocEmbeddingBuilder`` is a class that creates documentation
 embeddings for a given ``Symbol``. This class exists in the
-``automata.core.symbol_embedding.builders`` package. It is crucial in
+``automata.symbol_embedding.builders`` package. It is crucial in
 understanding and building the context surrounding primary symbols in
 the code.
 
@@ -21,12 +21,12 @@ other classes such as ``EmbeddingVectorProvider``,
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.base.EmbeddingBuilder``
--  ``automata.core.embedding.base.EmbeddingVectorProvider``
--  ``automata.core.retrievers.py.context.PyContextRetriever``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider``
--  ``automata.core.experimental.search.symbol_search.SymbolSearch``
--  ``automata.core.symbol_embedding.base.SymbolDocEmbedding``
+-  ``automata.embedding.base.EmbeddingBuilder``
+-  ``automata.embedding.base.EmbeddingVectorProvider``
+-  ``automata.retrievers.py.context.PyContextRetriever``
+-  ``automata.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.experimental.search.symbol_search.SymbolSearch``
+-  ``automata.symbol_embedding.base.SymbolDocEmbedding``
 
 Examples
 --------
@@ -37,11 +37,11 @@ embeddings for a symbol.
 
 .. code:: python
 
-   from automata.core.symbol_embedding.builders import SymbolDocEmbeddingBuilder
-   from automata.core.embedding.base.EmbeddingVectorProvider import MyEmbeddingVectorProvider
-   from automata.core.llm.foundation import MyLLMChatCompletionProvider
-   from automata.core.experimental.search.symbol_search import MySymbolSearch
-   from automata.core.retrievers.py.context import PyContextRetriever
+   from automata.symbol_embedding.builders import SymbolDocEmbeddingBuilder
+   from automata.embedding.base.EmbeddingVectorProvider import MyEmbeddingVectorProvider
+   from automata.llm.foundation import MyLLMChatCompletionProvider
+   from automata.experimental.search.symbol_search import MySymbolSearch
+   from automata.retrievers.py.context import PyContextRetriever
 
    embedding_provider = MyEmbeddingVectorProvider(...)
    completion_provider = MyLLMChatCompletionProvider(...)

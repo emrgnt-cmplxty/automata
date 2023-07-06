@@ -19,7 +19,7 @@ efficiency and system performance.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.providers.OpenAIAutomataAgent``: The agent that
+-  ``automata.agent.providers.OpenAIAutomataAgent``: The agent that
    this class holds an instance of.
 -  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``: The
    configuration used by the agent.
@@ -37,7 +37,7 @@ Here is an example of how to use the ``OpenAIAutomataAgentInstance``:
 
    from automata.config.openai_agent import OpenAIAutomataAgentConfig
    from automata.config.config_enums import AgentConfigName
-   from automata.core.agent.instances import OpenAIAutomataAgentInstance
+   from automata.agent.instances import OpenAIAutomataAgentInstance
 
    # load configuration
    config = OpenAIAutomataAgentConfig.load(AgentConfigName.TEST)

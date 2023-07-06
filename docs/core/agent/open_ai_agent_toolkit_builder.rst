@@ -12,10 +12,10 @@ Overview
 
 Some classes that have implemented the ``OpenAIAgentToolkitBuilder``
 abstract class include
-``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``,
-``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``,
+``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``,
+``automata.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``,
 and
-``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
+``automata.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder``
 among others. Every implementing class must define the
 ``build_for_open_ai`` method which returns a list of ``OpenAITool``
 objects, and the ``can_handle`` method which checks if the class can
@@ -24,18 +24,18 @@ handle a given tool manager.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.agent.agent.AgentToolkitBuilder``
+-  ``automata.llm.providers.openai.OpenAITool``
+-  ``automata.agent.agent.AgentToolkitBuilder``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
+-  ``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
+-  ``automata.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
 
 Example
 -------
 
 .. code:: python
 
-   from automata.core.tools.builders.context_oracle import ContextOracleOpenAIToolkitBuilder
+   from automata.tools.builders.context_oracle import ContextOracleOpenAIToolkitBuilder
 
    class MyOpenAIToolkitBuilder(ContextOracleOpenAIToolkitBuilder):
        TOOL_TYPE = "my-type"

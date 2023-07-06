@@ -27,15 +27,15 @@ bounds, it raises a ValueError.
 Related Symbols
 ---------------
 
--  ``automata.core.experimental.search.rank.SymbolRank``
+-  ``automata.experimental.search.rank.SymbolRank``
 -  ``automata.tests.unit.test_symbol_rank.test_get_ranks``
 -  ``automata.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
--  ``automata.core.experimental.search.symbol_search.SymbolSearch.symbol_rank``
+-  ``automata.experimental.search.symbol_search.SymbolSearch.symbol_rank``
 -  ``automata.tests.unit.test_symbol_rank.test_prepare_initial_ranks``
--  ``automata.core.singletons.dependency_factory.DependencyFactory.create_symbol_rank``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_rank``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
 -  ``automata.tests.unit.test_symbol_rank.test_pagerank_config_validation``
--  ``automata.core.singletons.dependency_factory.DependencyFactory.create_symbol_search``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_search``
 -  ``automata.tests.regression.test_symbol_searcher_regression.test_symbol_rank_search_on_symbol``
 
 Example
@@ -46,7 +46,7 @@ SymbolRankConfig.
 
 .. code:: python
 
-   from automata.core.experimental.search.rank import SymbolRankConfig
+   from automata.experimental.search.rank import SymbolRankConfig
    config = SymbolRankConfig(alpha=0.5, max_iterations=100, tolerance=1.0e-6)
    config.validate_config(config)
 

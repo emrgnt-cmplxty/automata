@@ -17,10 +17,10 @@ getting completion messages from the AI, and resetting conversations.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult``
--  ``automata.core.llm.providers.openai.OpenAIChatMessage``
--  ``automata.core.llm.foundation.LLMConversation``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionResult``
+-  ``automata.llm.providers.openai.OpenAIChatMessage``
+-  ``automata.llm.foundation.LLMConversation``
+-  ``automata.llm.foundation.LLMChatCompletionProvider``
 
 Example
 -------
@@ -30,7 +30,7 @@ The following is an example demonstrating how to instantiate and use the
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAIChatCompletionProvider, LLMChatMessage
+   from automata.llm.providers.openai import OpenAIChatCompletionProvider, LLMChatMessage
 
    model = "gpt-4"
    conversation = OpenAIChatCompletionProvider(model)

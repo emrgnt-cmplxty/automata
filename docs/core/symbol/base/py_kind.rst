@@ -24,11 +24,11 @@ from a descriptor to its original format.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.scip_pb2.Descriptor`` - the protobuf format of
+-  ``automata.symbol.scip_pb2.Descriptor`` - the protobuf format of
    descriptor used to interact with descriptors
--  ``automata.core.symbol.base.Symbol`` - the base class for symbols for
+-  ``automata.symbol.base.Symbol`` - the base class for symbols for
    which ``SymbolDescriptor`` provides description functionality
--  ``automata.core.symbol.parser`` - where the ``parse_symbol`` method
+-  ``automata.symbol.parser`` - where the ``parse_symbol`` method
    utilizes ``SymbolDescriptor``
 
 Example
@@ -39,8 +39,8 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol.scip_pb2 import Descriptor as DescriptorProto
-   from automata.core.symbol.base import SymbolDescriptor
+   from automata.symbol.scip_pb2 import Descriptor as DescriptorProto
+   from automata.symbol.base import SymbolDescriptor
 
    descriptor_suffix = DescriptorProto.NAME  # example value
    name = 'test_name'
@@ -51,9 +51,9 @@ symbol -
 
 .. code:: python
 
-   from automata.core.experimental.search.symbol_parser import parse_symbol
+   from automata.experimental.search.symbol_parser import parse_symbol
    symbol_method = parse_symbol(
-       "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.tools.base`/ToolNotFoundError#__init__()."
+       "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.tools.base`/ToolNotFoundError#__init__()."
    )
    # SymbolDescriptor is used internally in this process
 

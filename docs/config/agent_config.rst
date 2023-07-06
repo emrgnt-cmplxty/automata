@@ -48,9 +48,9 @@ Related Symbols
 
 -  ``automata.config.base.AgentConfigName``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
--  ``automata.core.agent.agent.AgentInstance.Config``
+-  ``automata.agent.agent.AgentInstance.Config``
 -  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance.Config``
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
 
 Example Usage

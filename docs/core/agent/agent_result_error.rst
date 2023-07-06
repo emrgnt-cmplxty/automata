@@ -5,7 +5,7 @@ Overview
 --------
 
 ``AgentResultError`` is an exception class in the
-``automata.core.agent.error`` module. This exception is raised when an
+``automata.agent.error`` module. This exception is raised when an
 instance of an agent fails to produce a result during the execution
 process. It’s typically thrown if there’s an issue with the method call
 of an agent.
@@ -15,13 +15,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_automata_agent.test_run_with_no_completion``
 -  ``automata.tests.unit.test_automata_agent.mock_openai_response_with_completion_message``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_automata_agent.test_iter_step_without_api_call``
--  ``automata.core.agent.error.AgentTaskStateError``
+-  ``automata.agent.error.AgentTaskStateError``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.core.agent.agent.Agent``
+-  ``automata.agent.agent.Agent``
 -  ``automata/tests/unit/test_automata_agent.test_build_initial_messages``
--  ``automata.core.agent.error.AgentTaskGeneralError``
+-  ``automata.agent.error.AgentTaskGeneralError``
 -  ``automata.tests.conftest.task``
 
 Example
@@ -32,8 +32,8 @@ The following is an example demonstrating how to handle the
 
 .. code:: python
 
-   from automata.core.agent.providers import OpenAIAutomataAgent
-   from automata.core.agent.error import AgentResultError, AgentMaxIterError
+   from automata.agent.providers import OpenAIAutomataAgent
+   from automata.agent.error import AgentResultError, AgentMaxIterError
 
    try:
        agent = OpenAIAutomataAgent(

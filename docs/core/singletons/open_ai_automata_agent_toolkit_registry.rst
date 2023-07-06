@@ -21,13 +21,13 @@ load all the registered builders when the system starts.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder``: This is
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder``: This is
    the base class for all toolkit builders. Each specific toolkit
    builder must subclass this and implement its methods.
--  ``automata.core.tools.builders.PyReaderOpenAIToolkitBuilder``: This
+-  ``automata.tools.builders.PyReaderOpenAIToolkitBuilder``: This
    is an example of a specific toolkit builder. It is responsible for
    building ``PyReader`` tools for the OpenAI agent.
--  ``automata.core.tools.builders.PyWriterOpenAIToolkitBuilder``: This
+-  ``automata.tools.builders.PyWriterOpenAIToolkitBuilder``: This
    is another example of a specific toolkit builder. It is responsible
    for building ``PyWriter`` tools for the OpenAI agent.
 
@@ -36,8 +36,8 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
-   from automata.core.tools.builders.py_reader import PyReaderOpenAIToolkitBuilder
+   from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+   from automata.tools.builders.py_reader import PyReaderOpenAIToolkitBuilder
 
    # registering a builder
    OpenAIAutomataAgentToolkitRegistry.register_tool_manager(PyReaderOpenAIToolkitBuilder)
