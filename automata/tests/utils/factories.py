@@ -2,16 +2,10 @@ import os
 
 import pytest
 
-from automata.config.base import ConfigCategory
-from automata.core.embedding.base import EmbeddingSimilarityCalculator
-from automata.core.experimental.search.rank import SymbolRankConfig
-from automata.core.experimental.search.symbol_search import SymbolSearch
-from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
-from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.symbol.graph import SymbolGraph
-from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
-from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
-from automata.core.utils import get_config_fpath
+from automata.core.experimental.search.symbol_search import SymbolSearch
+from automata.core.singletons.dependency_factory import dependency_factory
+from automata.core.singletons.py_module_loader import py_module_loader
 
 
 @pytest.fixture
@@ -32,27 +26,8 @@ def symbol_graph_static_test() -> SymbolGraph:
 @pytest.fixture
 def symbol_search_live() -> SymbolSearch:
     """
-    Creates a non-mock SymbolGraph object to be used for testing the search
+    Creates a non-mock SymbolRank object to be used for testing the search
 
     """
-    scip_path = os.path.join(get_config_fpath(), ConfigCategory.SYMBOL.value, "index.scip")
-
-    code_embedding_fpath = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
-    )
-    code_embedding_db = JSONSymbolEmbeddingVectorDatabase(code_embedding_fpath)
-    embedding_provider = OpenAIEmbeddingProvider()
-    embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
-    code_embedding_handler = SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
-
-    embedding_provider = OpenAIEmbeddingProvider()
-
-    symbol_graph = SymbolGraph(scip_path)
-
-    embedding_similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider)
-
-    symbol_rank_config = SymbolRankConfig()
-
-    return SymbolSearch(
-        symbol_graph, symbol_rank_config, code_embedding_handler, embedding_similarity_calculator
-    )
+    py_module_loader.initialize()
+    return dependency_factory.get("symbol_search")
