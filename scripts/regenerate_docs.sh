@@ -7,7 +7,7 @@ source ../local_env/bin/activate
 automata run-doc-post-process
 
 # Change into docs directory
-cd ../automata/docs 
+cd ../docs 
 
 # Generate the FAQ
 python3 generate_faq.py

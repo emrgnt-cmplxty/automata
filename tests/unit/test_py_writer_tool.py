@@ -9,15 +9,15 @@ from automata.core.code_handling.py.writer import PyWriter
 from automata.core.singletons.py_module_loader import py_module_loader
 from automata.core.tools.base import Tool
 from automata.core.tools.builders.py_writer import PyWriterToolkitBuilder
-from automata.core.utils import get_root_py_fpath
+from automata.core.utils import get_root_fpath
 
 
 # TODO - Unify module loader fixture
 @pytest.fixture(autouse=True)
 def module_loader():
     py_module_loader.initialize(
-        os.path.join(get_root_py_fpath(), "tests", "unit"),
-        os.path.join(get_root_py_fpath(), "tests", "unit", "sample_modules"),
+        os.path.join(get_root_fpath(), "tests", "unit"),
+        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
     )
     yield py_module_loader
     py_module_loader._dotpath_map = None
@@ -59,6 +59,7 @@ def test_bootstrap_module_with_new_function(python_writer_tool_builder):
 
     file_py_path = f"{package}.{module}"
     file_abs_path = os.path.join(absolute_path, package, f"{module}.py")
+
     create_module_tool.function(file_py_path, code=function_def)
 
     with open(file_abs_path, "r", encoding="utf-8") as f:
@@ -86,6 +87,9 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
+    print("file_rel_path = ", file_rel_path)
+    print("file_abs_path = ", file_abs_path)
+
     code_writer.function(file_py_path, code=function_def)
 
     with open(file_abs_path, "r", encoding="utf-8") as f:

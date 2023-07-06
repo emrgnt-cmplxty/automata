@@ -59,3 +59,4 @@ playground/*
 local_tasks/
 scripts/setup.sh
 setup.sh
+docs/_build
