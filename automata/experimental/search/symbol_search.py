@@ -1,3 +1,4 @@
+from ast import unparse as pyast_unparse
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np
@@ -111,12 +112,13 @@ class SymbolSearch:
     def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
         """Finds exact line matches for a given pattern string in all modules."""
         matches = {}
-        for module_path, module in cast(
-            Iterable[Tuple[str, Optional[RedBaron]]], py_module_loader.items()
-        ):
+        for module_path, module in py_module_loader.items():
             print("Checking module = ", module)
             if module:
-                lines = module.dumps().splitlines()
+                if isinstance(module, RedBaron):
+                    lines = module.dumps().splitlines()
+                else:
+                    lines = pyast_unparse(module).splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
                 if line_numbers:
                     matches[module_path] = line_numbers
