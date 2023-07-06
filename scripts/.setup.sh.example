@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# TODO - Do we need to call 'cd ../' everywhere we are doing so?
+
+# Create the local environment
+python3 -m venv ../local_env
+
+# Activate the local environment
+source ../local_env/bin/activate
+
+# Install the project in editable mode
+cd ../ && pip3 install -e . && cd -
+
+# Setup pre-commit hooks
+cd ../ && pre-commit install && cd -
+
+# Set up .env
+cp ../.env.example ../.env
+OPEN_API_KEY=your_openai_api_key_here
+GITHUB_API_KEY=your_github_api_key
+CONVERSATION_DB_PATH="$PWD/conversation_db.sqlite3"
+TASK_DB_PATH="$PWD/task_db.sqlite3"
+TASKS_OUTPUT_PATH="$PWD/local_tasks"
+REPOSITORY_NAME="emrgnt-cmplxty/Automata"
+
+# Detect the operating system
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    sed -i '' "s|your_openai_api_key|$OPEN_API_KEY|" ../.env
+    sed -i '' "s|your_github_api_key|$GITHUB_API_KEY|" ../.env
+    sed -i '' "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" ../.env
+    sed -i '' "s|your_task_db_path|$TASK_DB_PATH|" ../.env
+    sed -i '' "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" ../.env
+    sed -i '' "s|your_repository_name|$REPOSITORY_NAME|" ../.env
+else
+    # Linux and others
+    sed -i "s|your_openai_api_key|$OPEN_API_KEY|" ../.env
+    sed -i "s|your_github_api_key|$GITHUB_API_KEY|" ../.env
+    sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" ../.env
+    sed -i "s|your_task_db_path|$TASK_DB_PATH|" ../.env
+    sed -i "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" ../.env
+    sed -i "s|your_repository_name|$REPOSITORY_NAME|" ../.env
+fi
+# Additional Notes -
+# Default Max Workers is 8, manually change the .env to update this quantity.
+
+# Fetch the submodules
+cd ../ && git submodule update --init --recursive && cd -
+
+### NOTE - You must install git-lfs, if you have not done so already
+
+### For Ubuntu, run the following:
+##  sudo apt-get install git-lfs
+### For Mac, run the following:
+##  brew install git-lfs
+###
+### Then, initialize by running the following:
+##  git lfs install
+##  git lfs pull

@@ -79,16 +79,21 @@ The following module documents are auto-generated via the run-doc-embedding pipe
 
 
 
+
+
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
     .. toctree::
        :maxdepth: 2
 
-       setup_guide
-       faq
-       embedding_guide
        agent_guide
+       embedding_guide
+       faq
+       setup_guide
+       _build/index
        _static/index
        config/index
        core/index

@@ -19,7 +19,7 @@ pytest = "^7.4"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=tasks/"
+addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=local_tasks/"
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]
@@ -42,7 +42,7 @@ exclude = '''
     | local_env
     | build
     | scip-python
-    | tasks
+    | local_tasks
   )/
 )
 '''
@@ -60,7 +60,7 @@ skip_glob = ["local_env/*", "**/sample_code/*"]
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(local_env|scip-python|__pycache__|tasks|sample_modules)/'
+exclude = '(local_env|scip-python|__pycache__|local_tasks|sample_modules)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"
