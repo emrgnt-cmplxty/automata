@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TestExecuteBehavior &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TestTool" href="test_tool.html" />
+    <link rel="prev" title="MockCodeGenerator" href="mock_code_generator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core/index.html">Core Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Test Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../mock_repository_client.html">MockRepositoryClient</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">unit</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mock_code_generator.html">MockCodeGenerator</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">TestExecuteBehavior</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="test_tool.html">TestTool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_url.html">TestURL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sample_modules/index.html">sample_modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Test Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">unit</a></li>
+      <li class="breadcrumb-item active">TestExecuteBehavior</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/tests/unit/test_execute_behavior.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="testexecutebehavior">
+<h1>TestExecuteBehavior<a class="headerlink" href="#testexecutebehavior" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> is a class that implements the
+<code class="docutils literal notranslate"><span class="pre">ITaskExecution</span></code> interface for executing test tasks.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> is a testing utility class used for executing
+tasks in a test environment. It is a part of the automata test suite.
+The class is an <code class="docutils literal notranslate"><span class="pre">ITaskExecution</span></code> subtype, which means it contains the
+<code class="docutils literal notranslate"><span class="pre">execute()</span></code> method responsible for executing tasks. The <code class="docutils literal notranslate"><span class="pre">execute()</span></code>
+method in <code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> creates a new module using the
+<code class="docutils literal notranslate"><span class="pre">PyWriter</span></code> and <code class="docutils literal notranslate"><span class="pre">PyReader</span></code> utilities, defines a simple function
+inside it, assigns a result to the task, and cleans up the newly created
+module file.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.base.ITaskExecution</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_task_executor.test_execute_automata_task_success</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_task_executor.test_execute_automata_task_fail</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.executor.AutomataTaskExecutor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.base.TaskStatus</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.tasks.AutomataTask</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.base.ITaskExecution.execute</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.code_handling.py.writer.PyWriter.create_new_module</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.base.Task</span></code></p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>The following example demonstrates how to use <code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> to
+execute a task in an Automata task executor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.tasks.base</span> <span class="kn">import</span> <span class="n">Task</span>
+<span class="kn">from</span> <span class="nn">automata.core.tasks.executor</span> <span class="kn">import</span> <span class="n">AutomataTaskExecutor</span>
+<span class="kn">from</span> <span class="nn">automata.tests.unit.test_task_executor</span> <span class="kn">import</span> <span class="n">TestExecuteBehavior</span>
+
+<span class="c1"># define a Task</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">()</span>
+
+<span class="c1"># use TestExecuteBehavior for task execution</span>
+<span class="n">execution</span> <span class="o">=</span> <span class="n">TestExecuteBehavior</span><span class="p">()</span>
+<span class="n">task_executor</span> <span class="o">=</span> <span class="n">AutomataTaskExecutor</span><span class="p">(</span><span class="n">execution</span><span class="p">)</span>
+
+<span class="c1"># execute the task</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">task_executor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the example above, we first instantiate a <code class="docutils literal notranslate"><span class="pre">Task</span></code> object. Then, we
+create an instance of <code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> and provide it to the
+<code class="docutils literal notranslate"><span class="pre">AutomataTaskExecutor</span></code>, which will execute the task using the
+<code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code>.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> is primarily meant for testing and may not fully
+emulate the behavior of a typical execution behavior used in production.
+It generates python files and deletes them immediately after execution.
+Therefore, this behavior may not be appropriate for scenarios where
+persistent modification of the python filesystem is required.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>While <code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> serves as an excellent tool for testing
+task execution, could it benefit from more comprehensive testing
+features?</p></li>
+<li><p>Would extending <code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> with more helper methods
+streamline testing in certain scenarios? For example, a method to
+handle and track exceptions during task execution. Is there a
+possibility to extend this class functionality?</p></li>
+<li><p>Is <code class="docutils literal notranslate"><span class="pre">TestExecuteBehavior</span></code> suitable for integration testing, or
+should we rely on more sophisticated tooling/frameworks for
+integration tests?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mock_code_generator.html" class="btn btn-neutral float-left" title="MockCodeGenerator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="test_tool.html" class="btn btn-neutral float-right" title="TestTool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

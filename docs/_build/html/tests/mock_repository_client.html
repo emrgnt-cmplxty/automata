@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MockRepositoryClient &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="unit" href="unit/index.html" />
+    <link rel="prev" title="Test Classes" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Config Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core/index.html">Core Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Test Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MockRepositoryClient</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit/index.html">unit</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Test Classes</a></li>
+      <li class="breadcrumb-item active">MockRepositoryClient</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tests/mock_repository_client.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mockrepositoryclient">
+<h1>MockRepositoryClient<a class="headerlink" href="#mockrepositoryclient" title="Permalink to this headline"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code> class is a mock version of the
+<code class="docutils literal notranslate"><span class="pre">RepositoryClient</span></code> class for testing purposes. It implements all the
+methods available in the <code class="docutils literal notranslate"><span class="pre">RepositoryClient</span></code> but instead of performing
+the actual operation, the mock methods are designed to do nothing or
+return a pre-defined output.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code> class is written in the <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code>
+module of <code class="docutils literal notranslate"><span class="pre">automata.tests</span></code> package and used mostly in unit tests. Each
+method in the class represents a corresponding method in the
+<code class="docutils literal notranslate"><span class="pre">RepositoryClient</span></code> and <code class="docutils literal notranslate"><span class="pre">GitHubClient</span></code>. The class helps to design
+tests for functionalities that involve interactions with a
+<code class="docutils literal notranslate"><span class="pre">RepositoryClient</span></code>, without the need for a real Git repository.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.github_management.client.RepositoryClient</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.github_management.client.GitHubClient</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.conftest.environment</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.conftest.task</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.environment.AutomataTaskEnvironment</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tasks.tasks.AutomataTask</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder</span></code></p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>While writing unit tests that involve interactions with a
+<code class="docutils literal notranslate"><span class="pre">RepositoryClient</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code>. Here is
+an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">task</span><span class="p">():</span>
+    <span class="n">repo_manager</span> <span class="o">=</span> <span class="n">MockRepositoryClient</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">AutomataTask</span><span class="p">(</span>
+        <span class="n">repo_manager</span><span class="p">,</span>
+        <span class="n">config_to_load</span><span class="o">=</span><span class="n">AgentConfigName</span><span class="o">.</span><span class="n">TEST</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">generate_deterministic_id</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">instructions</span><span class="o">=</span><span class="s2">&quot;This is a test.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>Since <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code> is a mock, it does not perform any actual
+operations on a git repository. It is only designed to provide the same
+interface as <code class="docutils literal notranslate"><span class="pre">RepositoryClient</span></code> for testing purposes. Therefore, it
+should not be used in actual runtime code.</p>
+<p>While using <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code> in tests, developers need to keep
+in mind that the mock methods have been designed in a specific way to
+return pre-defined output. The behavior of these methods might not
+accurately represent the behavior of actual RepositoryClient methods in
+all situations.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How can we make the <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code> more robust for testing
+different scenarios?</p></li>
+<li><p>How can <code class="docutils literal notranslate"><span class="pre">MockRepositoryClient</span></code> be extended to create more testing
+utilities?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Test Classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit/index.html" class="btn btn-neutral float-right" title="unit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

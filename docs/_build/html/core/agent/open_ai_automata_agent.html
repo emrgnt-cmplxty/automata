@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenAIAutomataAgent &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OpenAIAutomataAgentInstance" href="open_ai_automata_agent_instance.html" />
+    <link rel="prev" title="OpenAIAgentToolkitBuilder" href="open_ai_agent_toolkit_builder.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">agent</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="agent.html">Automata.core.agent.agent.Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_database_error.html">AgentDatabaseError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_general_error.html">AgentGeneralError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_instance.html">AgentInstance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_max_iter_error.html">AgentMaxIterError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_result_error.html">AgentResultError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_stop_iteration.html">automata.core.agent.error.AgentStopIteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_general_error.html">AgentTaskGeneralError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_git_error.html">AgentTaskGitError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_instructions.html">AgentTaskInstructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_task_state_error.html">AgentTaskStateError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_toolkit_builder.html">AgentToolkitBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent_toolkit_names.html">AgentToolkitNames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="open_ai_agent_toolkit_builder.html">OpenAIAgentToolkitBuilder</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">OpenAIAutomataAgent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage">Usage:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols-and-dependencies">Related Symbols and Dependencies:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="open_ai_automata_agent_instance.html">OpenAIAutomataAgentInstance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unknown_tool_error.html">UnknownToolError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agent/index.html">agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="instances/index.html">instances</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm/index.html">llm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">agent</a></li>
+      <li class="breadcrumb-item active">OpenAIAutomataAgent</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/agent/open_ai_automata_agent.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="openaiautomataagent">
+<h1>OpenAIAutomataAgent<a class="headerlink" href="#openaiautomataagent" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> is an autonomous agent used to execute
+instructions and report the results back to the main system. It
+communicates with the OpenAI API to generate responses based on given
+instructions and manages interactions with various tools.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> uses OpenAI API to iterate over instructions and
+generates user and assistant messages using the
+<code class="docutils literal notranslate"><span class="pre">get_next_user_response</span></code> and <code class="docutils literal notranslate"><span class="pre">get_next_assistant_completion</span></code> methods
+from the OpenAI’s chat completion provider, respectively.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> carries an OpenAI conversation database to store
+messages and other operational data during its life cycle. The agent is
+made to operate in iterations and stop iterating when it completes its
+task or exceeds the maximum iterations set in the configuration.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> uses tools that are instance of <code class="docutils literal notranslate"><span class="pre">OpenAITool</span></code>.
+Each <code class="docutils literal notranslate"><span class="pre">OpenAIFunction</span></code> associated with an <code class="docutils literal notranslate"><span class="pre">OpenAITool</span></code> represents
+specific capabilities of the agent.</p>
+</section>
+<section id="usage">
+<h2>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<p>The basic usage of <code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> involves initialization with
+instructions and configuration, iteration over instructions and
+execution of tasks. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.agent.providers</span> <span class="kn">import</span> <span class="n">OpenAIAutomataAgent</span>
+<span class="kn">from</span> <span class="nn">automata.config.openai_agent</span> <span class="kn">import</span> <span class="n">OpenAIAutomataAgentConfig</span>
+<span class="c1"># Create OpenAIAutomataAgentConfig</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">OpenAIAutomataAgentConfig</span><span class="p">()</span>
+<span class="c1"># Initialize OpenAIAutomataAgent</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">OpenAIAutomataAgent</span><span class="p">(</span><span class="s1">&#39;your_instructions&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+<span class="c1"># Iterate over instructions</span>
+<span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">agent</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="c1"># Run the agent</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="related-symbols-and-dependencies">
+<h2>Related Symbols and Dependencies:<a class="headerlink" href="#related-symbols-and-dependencies" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_automata_agent_builder.test_automata_agent_init</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.config.openai_agent.OpenAIAutomataAgentConfig</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.instances.OpenAIAutomataAgentInstance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.conftest.automata_agent_config_builder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_automata_agent.test_build_initial_messages</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.providers.openai.OpenAITool</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.error.AgentResultError</span></code></p></li>
+</ul>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>Full functionality of <code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> depends on the integration
+with OpenAI API requirements and limitations. For instance, the
+<code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> class might need improvements in logging and
+exception handling. Additionally, it currently does not support multiple
+assistants.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How can the iteration process in <code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code> be improved?</p></li>
+<li><p>Can multiple assistants be implemented in <code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code>?</p></li>
+<li><p>How can the logging and exception handling in <code class="docutils literal notranslate"><span class="pre">OpenAIAutomataAgent</span></code>
+be made more robust?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="open_ai_agent_toolkit_builder.html" class="btn btn-neutral float-left" title="OpenAIAgentToolkitBuilder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="open_ai_automata_agent_instance.html" class="btn btn-neutral float-right" title="OpenAIAutomataAgentInstance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

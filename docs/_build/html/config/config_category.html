@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConfigCategory &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="InstructionConfigVersion" href="instruction_config_version.html" />
+    <link rel="prev" title="AgentConfigName Python Enum" href="agent_config_name.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Config Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="agent_config.html">AgentConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent_config_builder.html">AgentConfigBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agent_config_name.html"><code class="docutils literal notranslate"><span class="pre">AgentConfigName</span></code> Python Enum</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ConfigCategory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="instruction_config_version.html">InstructionConfigVersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llm_provider.html">LLMProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="open_ai_automata_agent_config.html">OpenAIAutomataAgentConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="open_ai_automata_agent_config_builder.html">OpenAIAutomataAgentConfigBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openai_agent/index.html">openai_agent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../core/index.html">Core Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Config Classes</a></li>
+      <li class="breadcrumb-item active">ConfigCategory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/config/config_category.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configcategory">
+<h1>ConfigCategory<a class="headerlink" href="#configcategory" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ConfigCategory</span></code> is an enumeration class in the
+<code class="docutils literal notranslate"><span class="pre">automata.config.base</span></code> module of the Automata applications. These are
+used to represent different categories of configuration options in the
+context of the application. Current categories include <code class="docutils literal notranslate"><span class="pre">AGENT</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PROMPT</span></code>, <code class="docutils literal notranslate"><span class="pre">SYMBOL</span></code>, and <code class="docutils literal notranslate"><span class="pre">INSTRUCTION</span></code>. The string values
+correspond to the names of configuration folders in the
+<code class="docutils literal notranslate"><span class="pre">automata/configs</span></code> directory.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.sample_modules.sample_module_write.CsSWU</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.sample_modules.sample.EmptyClass</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.agent.AgentInstance.Config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_task_environment.TestURL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.instances.OpenAIAutomataAgentInstance.Config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_py_writer.MockCodeGenerator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tools.base.Tool.Config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.config.base.AgentConfig.Config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.sample_modules.sample_module_write.CsSWU.__init__</span></code></p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>To use a <code class="docutils literal notranslate"><span class="pre">ConfigCategory</span></code>, import it from <code class="docutils literal notranslate"><span class="pre">automata.config.base</span></code> and
+you can use one of the predefined categories.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.config.base</span> <span class="kn">import</span> <span class="n">ConfigCategory</span>
+
+<span class="k">def</span> <span class="nf">access_config</span><span class="p">(</span><span class="n">category</span><span class="p">:</span> <span class="n">ConfigCategory</span><span class="p">):</span>
+    <span class="c1"># example function using ConfigCategory enum</span>
+    <span class="k">pass</span>
+
+<span class="n">access_config</span><span class="p">(</span><span class="n">ConfigCategory</span><span class="o">.</span><span class="n">AGENT</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, the <code class="docutils literal notranslate"><span class="pre">access_config</span></code> function is an example function
+that uses <code class="docutils literal notranslate"><span class="pre">ConfigCategory</span></code> as an argument. The function is then called
+with <code class="docutils literal notranslate"><span class="pre">ConfigCategory.AGENT</span></code>.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>One possible limitation for the <code class="docutils literal notranslate"><span class="pre">ConfigCategory</span></code> is that adding a new
+category requires modification to the enum class. The new category
+follows the pattern of having a corresponding folder in
+<code class="docutils literal notranslate"><span class="pre">automata/configs</span></code>.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>What is the best way to handle the addition of a new category to the
+<code class="docutils literal notranslate"><span class="pre">ConfigCategory</span></code> enum?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="agent_config_name.html" class="btn btn-neutral float-left" title="AgentConfigName Python Enum" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="instruction_config_version.html" class="btn btn-neutral float-right" title="InstructionConfigVersion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

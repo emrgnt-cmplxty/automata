@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/dark_mode_js/default_dark.js"></script>
+        <script src="_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Creating Your Own Embeddings" href="embedding_guide.html" />
+    <link rel="prev" title="Setup" href="setup_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup_guide.html">Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config/index.html">Config Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core/index.html">Core Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frequently Asked Questions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frequently-asked-questions">
+<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline"></a></h1>
+<details class="sphinx-bs dropdown card mb-3 shadow">
+<summary class="summary-title card-header bg-primary text-white text-center">
+Q: How are embeddings used by the codebase?<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body bg-dark font-weight-light docutils">
+<p class="card-text">A: The <cite>SymbolEmbedding</cite> class in the codebase is a representation of symbols in the form of vectors, also known as embeddings. These embeddings are a direct result of using machine learning models to transform complex high-dimensional data into a lower-dimensional space. The transformation helps machines better understand the data.</p>
+<p class="card-text">In the context of this codebase, embeddings could be used to represent complex code logic, functions, classes into simpler and meaningful vector representations. The class <cite>SymbolDocEmbeddingHandler</cite> manages the retrieval and usage of these embeddings within the codebase. Operations on embeddings could include creating, updating, and retrieving for various use cases like code analysis, similarity comparisons, etc.</p>
+</div>
+</details><details class="sphinx-bs dropdown card mb-3 shadow">
+<summary class="summary-title card-header bg-primary text-white text-center">
+Q: How is OpenAI used by the codebase?<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body bg-dark font-weight-light docutils">
+<p class="card-text">A: OpenAI is used in the Automata codebase in multiple ways, particularly in the generation of embeddings and the creation of agents. One example is through the <cite>OpenAIEmbeddingProvider</cite>, which creates embeddings via the OpenAI API, and this class is part of <cite>EmbeddingVectorProvider</cite>. The source text is furnished to the OpenAI API and an embedding, as a numpy array, is received. This class is flexible with the OpenAI API and can adapt to its future improvements. By default, the <cite>text-embedding-ada-002</cite> engine is used to initiate object to create embeddings.</p>
+<p class="card-text">Automata uses OpenAI to convert conversation messages into a machine-readable format for execution. The primary class which provides the interface to OpenAI LLM’s is <cite>OpenAIChatCompletionProvider</cite>. The completion provider leverages`OpenAIChatMessage` when handling OpenAI’s chat models. Every chat message consists of a role, content, and an optional function call to convey the specific action to be executed in the codebase. The <cite>OpenAIChatCompletionResult</cite> class holds the results after automating the chat-based task completion provider. It fetches role, content, and function call details from an output generated by the gpt-3.5-turbo model. Moreover, Automata maintains an <cite>OpenAIConversation</cite> to hold a list of <cite>OpenAIChatMessage</cite> that has a record of all interactions made in the conversation.</p>
+<p class="card-text">Here’s an example of its use:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+from automata.core.llm.providers.openai import OpenAIEmbeddingProvider
+import numpy as np</p>
+<p class="card-text">embedding_provider = OpenAIEmbeddingProvider(engine=”text-embedding-ada-002”)
+source_text = “This is an example text.”
+embedding = embedding_provider.build_embedding_vector(source_text)
+assert isinstance(embedding, np.ndarray)
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+</div>
+</details><details class="sphinx-bs dropdown card mb-3 shadow">
+<summary class="summary-title card-header bg-primary text-white text-center">
+Q: How does <cite>SymbolGraph</cite> work?<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body bg-dark font-weight-light docutils">
+<p class="card-text">A: The <cite>SymbolGraph</cite> class is a core part of the Automata package. It constructs and manipulates a graph representing the symbols and their relationships. Nodes in the SymbolGraph represent symbols, and the edges between them signify different types of relationships, such as “reference”, “relationship”, “caller”, or “callee”. This graph can be used to visualize and analyze the structures and relationships of symbols, and it offers powerful analysis and manipulation tasks, such as identifying potential symbol callees and callers, getting references to a symbol, and building sub-graphs based on certain criteria.</p>
+</div>
+</details><details class="sphinx-bs dropdown card mb-3 shadow">
+<summary class="summary-title card-header bg-primary text-white text-center">
+Q: What is the <cite>Symbol</cite> class?<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body bg-dark font-weight-light docutils">
+<p class="card-text">A: In Automata, Symbol represents a reference to a Python object (class, method, local variable) in a standardized format using a Uniform Resource Identifier (URI). This serves as an efficient system to specify locations in the codebase. The Symbol Search functionality, powered by Symbol and SymbolParser, operates on this Symbol architecture. It uses Embedding Similarity Calculator and SymbolSearch to provide context for a given query by computing semantic similarity between the query and all available symbols’ documentation and code.</p>
+<p class="card-text">A URI for a Symbol is composed of a scheme, package, and descriptor. The scheme consists of any UTF-8 characters. The package specifies the manager, package name, and version. Descriptors define a namespace, type, term, method, type-parameter, parameter, meta, or macro.
+Example:</p>
+<p class="card-text"><code class="docutils literal notranslate"><span class="pre">`from</span> <span class="pre">automata.core.experimental.search.symbol_parser</span> <span class="pre">import</span> <span class="pre">parse_symbol</span>
+<span class="pre">symbol_class</span> <span class="pre">=</span> <span class="pre">parse_symbol(</span>
+<span class="pre">&quot;scip-python</span> <span class="pre">python</span> <span class="pre">automata</span> <span class="pre">75482692a6fe30c72db516201a6f47d9fb4af065</span> <span class="pre">`automata.core.agent.agent_enums`/ActionIndicator#&quot;`</span></code></p>
+</div>
+</details><details class="sphinx-bs dropdown card mb-3 shadow">
+<summary class="summary-title card-header bg-primary text-white text-center">
+Q: How does <cite>SymbolRank</cite> work?<div class="summary-down docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="summary-up docutils">
+<svg version="1.1" width="24" height="24" class="octicon octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="summary-content card-body bg-dark font-weight-light docutils">
+<p class="card-text">A: The SymbolRank class is designed to rank symbols within a software’s semantic and structural context using the PageRank algorithm. It constructs a SymbolGraph where each node is a symbol from the application’s corpus, and the edges represent dependencies. This graph, along with a similarity dictionary, is used to calculate the SymbolRanks, each denoting the prominence of a symbol within the software. The class also utilizes a SymbolRankConfig configuration class for setting up necessary parameters for calculations, such as alpha (a damping factor), max_iterations, and tolerance. However, it could be time-consuming for large graphs due to its iterative algorithm, and might return inaccurate results if the symbol graph and similarity dictionary aren’t properly managed.</p>
+</div>
+</details></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="setup_guide.html" class="btn btn-neutral float-left" title="Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="embedding_guide.html" class="btn btn-neutral float-right" title="Creating Your Own Embeddings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

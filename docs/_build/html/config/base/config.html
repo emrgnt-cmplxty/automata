@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentConfig &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="openai_agent" href="../openai_agent/index.html" />
+    <link rel="prev" title="base" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Config Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../agent_config.html">AgentConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent_config_builder.html">AgentConfigBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent_config_name.html"><code class="docutils literal notranslate"><span class="pre">AgentConfigName</span></code> Python Enum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config_category.html">ConfigCategory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instruction_config_version.html">InstructionConfigVersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm_provider.html">LLMProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../open_ai_automata_agent_config.html">OpenAIAutomataAgentConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../open_ai_automata_agent_config_builder.html">OpenAIAutomataAgentConfigBuilder</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">base</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AgentConfig</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../openai_agent/index.html">openai_agent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../core/index.html">Core Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Config Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">base</a></li>
+      <li class="breadcrumb-item active">AgentConfig</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/config/base/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agentconfig">
+<h1>AgentConfig<a class="headerlink" href="#agentconfig" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> is a configuration class that provides a set of encoded
+defaults regarding how the agent should behave in a given environment.
+These behaviors include model, stream, verbosity, maximum iterations,
+and temperature.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> class supports arbitrary types and defaults to the
+<code class="docutils literal notranslate"><span class="pre">OPENAI</span></code> provider.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> plays a key role in defining the agent’s behavior in an
+automata environment. The attributes set in <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code>: Specifies the model to base the agent’s behavior on.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stream</span></code>: Specifies whether the agent streams or not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Specifies the level of verbosity for log output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_iterations</span></code>: Specifies the maximum number of processing
+iterations for the agent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code>: Specifies the level of randomness in the agent’s
+choice.</p></li>
+</ul>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.agent.AgentInstance.Config</span></code>: Specifies that as
+part of an agent instance, the <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> allows arbitrary
+types.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_automata_agent_builder.test_builder_default_config</span></code>:
+Demonstrates how to build a default configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance</span></code>:
+Shows proper instantiation of <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_automata_agent_builder.test_builder_provided_parameters_override_defaults</span></code>:
+Demonstrates how to override the default parameters of
+<code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.config.openai_agent.OpenAIAutomataAgentConfig</span></code>: An
+expanded class of <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> that also includes instructional
+templates and formatters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.tools.base.Tool.Config</span></code>: Defines an additional class
+for tool-specific Configuration that also allows arbitrary types but
+forbids extra parameters.</p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>Here, we demonstrate how to create an instance of <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> with
+the help of an <code class="docutils literal notranslate"><span class="pre">automata_agent_config_builder</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">automata_agent_config_builder</span><span class="o">.</span><span class="n">with_model</span><span class="p">(</span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">with_stream</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">with_verbose</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">with_max_iterations</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">with_temperature</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">with_session_id</span><span class="p">(</span><span class="s2">&quot;test-session-id&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">stream</span> <span class="ow">is</span> <span class="kc">True</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">max_iterations</span> <span class="o">==</span> <span class="mi">500</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">temperature</span> <span class="o">==</span> <span class="mf">0.5</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">session_id</span> <span class="o">==</span> <span class="s2">&quot;test-session-id&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>A possible limitation of <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> is that the agent’s behavior
+strictly depends on the defined parameters in <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code>, meaning
+it might be inflexible under certain scenarios where dynamic parameter
+adjustment is required. Moreover, error handling for invalid
+configurations may also present challenges.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How does changing different parameters in configurations influence an
+agent’s performance?</p></li>
+<li><p>Are there any strategies for handling faulty configurations?</p></li>
+<li><p>What validations are present to ensure the <code class="docutils literal notranslate"><span class="pre">AgentConfig</span></code> parameters
+are valid?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../openai_agent/index.html" class="btn btn-neutral float-right" title="openai_agent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

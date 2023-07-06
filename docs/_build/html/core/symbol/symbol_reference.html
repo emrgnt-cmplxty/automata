@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SymbolReference &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="base" href="base/index.html" />
+    <link rel="prev" title="SymbolPackage" href="symbol_package.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent/index.html">agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm/index.html">llm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../singletons/index.html">singletons</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">symbol</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="graph_builder.html">GraphBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="graph_processor.html">GraphProcessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="i_symbol_provider.html">ISymbolProvider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symbol.html">Symbol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symbol_descriptor.html">SymbolDescriptor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symbol_graph.html">SymbolGraph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symbol_package.html">SymbolPackage</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">SymbolReference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#methods">Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-Up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="base/index.html">base</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">symbol</a></li>
+      <li class="breadcrumb-item active">SymbolReference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/symbol/symbol_reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="symbolreference">
+<h1>SymbolReference<a class="headerlink" href="#symbolreference" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> is a class in the <code class="docutils literal notranslate"><span class="pre">automata.core.symbol.base</span></code>
+module that represents a reference to a symbol in a file. It is
+particularly useful in complex code structures where the same symbol can
+be used in different parts of the code, and these references need to be
+identified or compared.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> class has two magic methods <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> and
+<code class="docutils literal notranslate"><span class="pre">__hash__</span></code> which are used to evaluate equality and generate an
+immutable hash, respectively. The class is used to compare instances of
+<code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> and check the equality of the <code class="docutils literal notranslate"><span class="pre">uri</span></code>,
+<code class="docutils literal notranslate"><span class="pre">line_number</span></code> and <code class="docutils literal notranslate"><span class="pre">column_number</span></code> of the symbol reference. They are
+also important for the usage of <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> instances in sets or
+dictionaries, where hash values are required.</p>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline"></a></h2>
+<p>The class <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> contains the following methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__eq__(self,</span> <span class="pre">other)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code> : It checks the equality of two
+instances of <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> by comparing the <code class="docutils literal notranslate"><span class="pre">uri</span></code>,
+<code class="docutils literal notranslate"><span class="pre">line_number</span></code> and <code class="docutils literal notranslate"><span class="pre">column_number</span></code> of the <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code>
+instances.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__hash__(self)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code> : This method creates a hash value for the
+instance of <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> using the <code class="docutils literal notranslate"><span class="pre">uri</span></code>, <code class="docutils literal notranslate"><span class="pre">line_number</span></code>
+and <code class="docutils literal notranslate"><span class="pre">column_number</span></code>.</p></li>
+</ul>
+<p>It should be noted that the <code class="docutils literal notranslate"><span class="pre">__hash__</span></code> method could cause collisions
+if the same symbol is referenced in different files at the same
+location.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.symbol.base.Symbol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.symbol.graph.SymbolGraph</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.symbol.parser.parse_symbol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_symbol_search.test_symbol_references</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.tests.unit.test_symbol_search_tool.test_symbol_references</span></code></p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
+<p>The following is an example demonstrating how to create an instance of
+<code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> and how to use the <code class="docutils literal notranslate"><span class="pre">__eq__</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.symbol.base</span> <span class="kn">import</span> <span class="n">Symbol</span><span class="p">,</span> <span class="n">SymbolReference</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol.parser</span> <span class="kn">import</span> <span class="n">parse_symbol</span>
+
+<span class="n">symbol_uri</span> <span class="o">=</span> <span class="s2">&quot;scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#&quot;</span>
+<span class="n">symbol</span> <span class="o">=</span> <span class="n">parse_symbol</span><span class="p">(</span><span class="n">symbol_uri</span><span class="p">)</span>
+
+<span class="n">symbol_ref_1</span> <span class="o">=</span> <span class="n">SymbolReference</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">line_number</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">column_number</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">symbol_ref_2</span> <span class="o">=</span> <span class="n">SymbolReference</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">line_number</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">column_number</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">symbol_ref_1</span> <span class="o">==</span> <span class="n">symbol_ref_2</span><span class="p">)</span>  <span class="c1"># Will output: True</span>
+</pre></div>
+</div>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-Up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>How are instances of <code class="docutils literal notranslate"><span class="pre">SymbolReference</span></code> generated in the system?</p></li>
+<li><p>What are the likely scenarios where symbol collisions can occur and
+how are these handled?</p></li>
+<li><p>Potential limitations or drawbacks of the <code class="docutils literal notranslate"><span class="pre">__hash__</span></code> implementation
+weren’t specified, can these be determined and documented?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="symbol_package.html" class="btn btn-neutral float-left" title="SymbolPackage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="base/index.html" class="btn btn-neutral float-right" title="base" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

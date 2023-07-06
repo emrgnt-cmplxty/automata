@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLMChatCompletionProvider &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="LLMChatMessage" href="llm_chat_message.html" />
+    <link rel="prev" title="llm" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent/index.html">agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">llm</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LLMChatCompletionProvider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-symbols">Related Symbols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="llm_chat_message.html">LLMChatMessage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llm_completion_result.html">LLMCompletionResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llm_conversation.html">LLMConversation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llm_conversation_database_provider.html">LLMConversationDatabaseProvider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="foundation/index.html">foundation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="providers/index.html">providers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">llm</a></li>
+      <li class="breadcrumb-item active">LLMChatCompletionProvider</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/llm/llm_chat_completion_provider.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="llmchatcompletionprovider">
+<h1>LLMChatCompletionProvider<a class="headerlink" href="#llmchatcompletionprovider" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code> is an abstract base class used to
+structure different types of Language Learning Model (LLM) chat
+completion providers. The class contains four essential methods that
+should be implemented by any subclass. These methods include adding new
+chat messages and retrieving the next assistant’s completion from a chat
+provider. Additionally, the chat provider can be reset, and it can
+operate as a standalone output supplier for the LLM.</p>
+<p>Its main function is to form the fundamental structure for various chat
+completion providers in the LLM by standardizing their core methods.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code> class provides a blueprint for LLM
+chat completion providers. It comprises two primary operations – sending
+and receiving messages from the chat provider and managing the chat
+session. This is especially crucial in controlling the flow of data in
+and out of the chat provider, paired with the functionality to control
+and manipulate the chat buffer.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LLMChatMessage</span></code>: This is a base class for different types of chat
+messages that are used by LLM and can be provided to the
+LLMChatCompletionProvider to add new messages to the chat buffer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LLMCompletionResult</span></code>: This provides the structure for different
+types of completion results received from the
+<code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OpenAIChatCompletionProvider</span></code>: This is a subclass of
+<code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code> that uses the OpenAI API to provide
+chat messages. This class has implemented the abstract methods of the
+<code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code> and can operate as functional
+completion provider.</p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>As <code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code> is an abstract base class, you cannot
+instantiate it or use it as is. Instead, you use subclasses of
+<code class="docutils literal notranslate"><span class="pre">LLMChatCompletionProvider</span></code> that have implemented the abstract
+methods. One such subclass is <code class="docutils literal notranslate"><span class="pre">OpenAIChatCompletionProvider</span></code>. Below is
+an example of how to use it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.llm.providers.openai</span> <span class="kn">import</span> <span class="n">OpenAIChatCompletionProvider</span>
+<span class="kn">from</span> <span class="nn">automata.core.llm.foundation</span> <span class="kn">import</span> <span class="n">LLMChatMessage</span>
+
+<span class="n">provider</span> <span class="o">=</span> <span class="n">OpenAIChatCompletionProvider</span><span class="p">()</span>
+
+<span class="c1"># Add a new message to the provider&#39;s buffer</span>
+<span class="n">provider</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">LLMChatMessage</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;general&quot;</span><span class="p">))</span>
+
+<span class="c1"># Get the next assistant completion from the LLM.</span>
+<span class="n">next_message</span> <span class="o">=</span> <span class="n">provider</span><span class="o">.</span><span class="n">get_next_assistant_completion</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">next_message</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>  <span class="c1"># Prints the content of the next assistant completion message</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>The LLMChatCompletionProvider only provides an abstract structure and
+does not implement the methods which limits its direct usage. Subclasses
+are required to implement the where necessary for interacting with
+different LLM chat completion providers.</p>
+<p>It also assumes that a unique message can be added to the provider’s
+buffer and that the provider can be queried for the next assistant
+completion at any time. This may not align with the actual behavior of
+all chat completion providers.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Can this class be refactored further for more versatile usage?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="llm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="llm_chat_message.html" class="btn btn-neutral float-right" title="LLMChatMessage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

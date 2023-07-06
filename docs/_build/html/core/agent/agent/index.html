@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agent &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="AgentInstance" href="config.html" />
+    <link rel="prev" title="UnknownToolError" href="../unknown_tool_error.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../root_dict.html">RootDict</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">agent</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../agent.html">Automata.core.agent.agent.Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_database_error.html">AgentDatabaseError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_general_error.html">AgentGeneralError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_instance.html">AgentInstance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_max_iter_error.html">AgentMaxIterError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_result_error.html">AgentResultError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_stop_iteration.html">automata.core.agent.error.AgentStopIteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_task_general_error.html">AgentTaskGeneralError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_task_git_error.html">AgentTaskGitError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_task_instructions.html">AgentTaskInstructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_task_state_error.html">AgentTaskStateError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_toolkit_builder.html">AgentToolkitBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../agent_toolkit_names.html">AgentToolkitNames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../open_ai_agent_toolkit_builder.html">OpenAIAgentToolkitBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../open_ai_automata_agent.html">OpenAIAutomataAgent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../open_ai_automata_agent_instance.html">OpenAIAutomataAgentInstance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unknown_tool_error.html">UnknownToolError</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">agent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="config.html">AgentInstance</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../instances/index.html">instances</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../llm/index.html">llm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">agent</a></li>
+      <li class="breadcrumb-item active">agent</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/core/agent/agent/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agent">
+<h1>agent<a class="headerlink" href="#agent" title="Permalink to this headline"></a></h1>
+<p><strong>Automata</strong> is a Python library for autonomous providers.</p>
+<p>Check out the <span class="xref std std-doc">usage</span> section for further information, including
+how to <span class="xref std std-ref">installation</span> the project.</p>
+<blockquote>
+<div><div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">AgentInstance</a></li>
+</ul>
+</div>
+</div></blockquote>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../unknown_tool_error.html" class="btn btn-neutral float-left" title="UnknownToolError" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="config.html" class="btn btn-neutral float-right" title="AgentInstance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

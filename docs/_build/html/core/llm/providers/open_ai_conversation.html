@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenAIConversation &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="OpenAIEmbeddingProvider" href="open_ai_embedding_provider.html" />
+    <link rel="prev" title="OpenAIChatMessage" href="open_ai_chat_message.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../root_dict.html">RootDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../agent/index.html">agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../github_management/index.html">github_management</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">llm</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../llm_chat_completion_provider.html">LLMChatCompletionProvider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../llm_chat_message.html">LLMChatMessage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../llm_completion_result.html">LLMCompletionResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../llm_conversation.html">LLMConversation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../llm_conversation_database_provider.html">LLMConversationDatabaseProvider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../foundation/index.html">foundation</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">providers</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="function_call.html">FunctionCall</a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_chat_completion_provider.html">OpenAIChatCompletionProvider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_chat_completion_result.html"><code class="docutils literal notranslate"><span class="pre">OpenAIChatCompletionResult</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_chat_message.html">OpenAIChatMessage</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">OpenAIConversation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_embedding_provider.html">OpenAIEmbeddingProvider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_function.html">OpenAIFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_incorrect_message_type_error.html">OpenAIIncorrectMessageTypeError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="open_ai_tool.html">OpenAITool</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../singletons/index.html">singletons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">llm</a></li>
+          <li class="breadcrumb-item"><a href="index.html">providers</a></li>
+      <li class="breadcrumb-item active">OpenAIConversation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/core/llm/providers/open_ai_conversation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="openaiconversation">
+<h1>OpenAIConversation<a class="headerlink" href="#openaiconversation" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAIConversation</span></code> is a class that represents a conversation with
+the OpenAI API. It manages the series of messages that are part of the
+conversation flow. The class includes methods to add messages, get the
+latest message, get all messages for the next completion, and reset the
+conversation. The OpenAIConversation class is heavily used in
+interactions within the agent classes.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OpenAIConversation</span></code> provides a way to manage and manipulate the
+conversation of an agent with the OpenAI API. Each message in the
+conversation is an instance of OpenAIChatMessage. The primary purpose of
+<code class="docutils literal notranslate"><span class="pre">OpenAIConversation</span></code> is to keep track of the series of messages in the
+conversation. Each new message is appended to the list of messages and
+can be retrieved when required. An important aspect is that the
+<code class="docutils literal notranslate"><span class="pre">OpenAIConversation</span></code> only accepts messages of type
+<code class="docutils literal notranslate"><span class="pre">OpenAIChatMessage</span></code>.</p>
+</section>
+<section id="related-symbols">
+<h2>Related Symbols<a class="headerlink" href="#related-symbols" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.providers.openai.OpenAIChatMessage</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.providers.openai.OpenAIChatCompletionProvider</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.agent.providers.OpenAIAutomataAgent</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">automata.core.llm.foundation.LLMChatMessage</span></code></p></li>
+</ul>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>Here is an example demonstrating how to create and manage messages in an
+<code class="docutils literal notranslate"><span class="pre">OpenAIConversation</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.llm.providers.openai</span> <span class="kn">import</span> <span class="n">OpenAIConversation</span><span class="p">,</span> <span class="n">OpenAIChatMessage</span>
+
+<span class="c1"># create conversation</span>
+<span class="n">conversation</span> <span class="o">=</span> <span class="n">OpenAIConversation</span><span class="p">()</span>
+
+<span class="c1"># create a message and add it into the conversation</span>
+<span class="n">message</span> <span class="o">=</span> <span class="n">OpenAIChatMessage</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Hello, I am an assistant.&quot;</span><span class="p">)</span>
+<span class="n">conversation</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+<span class="c1"># retrieve the latest message</span>
+<span class="n">latest_message</span> <span class="o">=</span> <span class="n">conversation</span><span class="o">.</span><span class="n">get_latest_message</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">latest_message</span><span class="p">)</span>  <span class="c1"># OpenAIChatMessage object</span>
+
+<span class="c1"># retrieve all messages for next completion</span>
+<span class="n">messages_for_completion</span> <span class="o">=</span> <span class="n">conversation</span><span class="o">.</span><span class="n">get_messages_for_next_completion</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">messages_for_completion</span><span class="p">)</span>  <span class="c1"># list of messages</span>
+
+<span class="c1"># reset the conversation</span>
+<span class="n">conversation</span><span class="o">.</span><span class="n">reset_conversation</span><span class="p">()</span>
+<span class="c1"># checking the length of conversation after reset</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conversation</span><span class="p">))</span>  <span class="c1"># Output: 0</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>One limitation of <code class="docutils literal notranslate"><span class="pre">OpenAIConversation</span></code> is that it only accepts
+messages of the type <code class="docutils literal notranslate"><span class="pre">OpenAIChatMessage</span></code>. This could make it less
+flexible if a different message class needs to be used in certain
+situations.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Is there a way to extend the OpenAIConversation to handle more types
+of chat messages?</p></li>
+<li><p>How does the class interact with other parts, like agent classes or
+completion providers, to contribute to the overall functionality of
+the Automata library?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="open_ai_chat_message.html" class="btn btn-neutral float-left" title="OpenAIChatMessage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="open_ai_embedding_provider.html" class="btn btn-neutral float-right" title="OpenAIEmbeddingProvider" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

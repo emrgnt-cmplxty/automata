@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DependencyFactory &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OpenAIAutomataAgentToolkitRegistry" href="open_ai_automata_agent_toolkit_registry.html" />
+    <link rel="prev" title="singletons" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../setup_guide.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Config Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Core Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../handler_dict.html">HandlerDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging_config.html">LoggingConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../root_dict.html">RootDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agent/index.html">agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code_handling/index.html">code_handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../context_providers/index.html">context_providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embedding/index.html">embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../experimental/index.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github_management/index.html">github_management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../llm/index.html">llm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../memory_store/index.html">memory_store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../navigation/index.html">navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../retrievers/index.html">retrievers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">singletons</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">DependencyFactory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#import-statements">Import Statements:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#follow-up-questions">Follow-up Questions:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="open_ai_automata_agent_toolkit_registry.html">OpenAIAutomataAgentToolkitRegistry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_module_loader.html">PyModuleLoader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol/index.html">symbol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../symbol_embedding/index.html">symbol_embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tasks/index.html">tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/index.html">tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Core Classes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">singletons</a></li>
+      <li class="breadcrumb-item active">DependencyFactory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/core/singletons/dependency_factory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dependencyfactory">
+<h1>DependencyFactory<a class="headerlink" href="#dependencyfactory" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">DependencyFactory</span></code> is a source class found in
+<strong>automata.core.singleton.dependency_factory</strong> that is utilized in the
+creation of dependencies for input Tool construction.</p>
+<p>The main functionality of <code class="docutils literal notranslate"><span class="pre">DependencyFactory</span></code> is to ensure that the
+dependencies required by any given set of tools are created and made
+available for use.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DependencyFactory</span></code> class implements singleton design pattern,
+means there will only be one instance of this class and all the required
+dependencies are created on this single instance.</p>
+<section id="import-statements">
+<h2>Import Statements:<a class="headerlink" href="#import-statements" title="Permalink to this headline"></a></h2>
+<p>When making use of the <code class="docutils literal notranslate"><span class="pre">DependencyFactory</span></code> class, below are the
+dependencies to import,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">automata.config.base</span> <span class="kn">import</span> <span class="n">ConfigCategory</span>
+<span class="kn">from</span> <span class="nn">automata.core.agent.agent</span> <span class="kn">import</span> <span class="n">AgentToolkitNames</span>
+<span class="kn">from</span> <span class="nn">automata.core.agent.error</span> <span class="kn">import</span> <span class="n">AgentGeneralError</span><span class="p">,</span> <span class="n">UnknownToolError</span>
+<span class="kn">from</span> <span class="nn">automata.core.base.patterns.singleton</span> <span class="kn">import</span> <span class="n">Singleton</span>
+<span class="kn">from</span> <span class="nn">automata.core.code_handling.py.reader</span> <span class="kn">import</span> <span class="n">PyReader</span>
+<span class="kn">from</span> <span class="nn">automata.core.code_handling.py.writer</span> <span class="kn">import</span> <span class="n">PyWriter</span>
+<span class="kn">from</span> <span class="nn">automata.core.embedding.base</span> <span class="kn">import</span> <span class="n">EmbeddingSimilarityCalculator</span>
+<span class="kn">from</span> <span class="nn">automata.core.experimental.search.rank</span> <span class="kn">import</span> <span class="n">SymbolRank</span><span class="p">,</span> <span class="n">SymbolRankConfig</span>
+<span class="kn">from</span> <span class="nn">automata.core.experimental.search.symbol_search</span> <span class="kn">import</span> <span class="n">SymbolSearch</span>
+<span class="kn">from</span> <span class="nn">automata.core.llm.providers.openai</span> <span class="kn">import</span> <span class="p">(</span>
+      <span class="n">OpenAIChatCompletionProvider</span><span class="p">,</span>
+      <span class="n">OpenAIEmbeddingProvider</span><span class="p">,</span>
+  <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">automata.core.memory_store.symbol_code_embedding</span> <span class="kn">import</span> <span class="n">SymbolCodeEmbeddingHandler</span>
+<span class="kn">from</span> <span class="nn">automata.core.memory_store.symbol_doc_embedding</span> <span class="kn">import</span> <span class="n">SymbolDocEmbeddingHandler</span>
+<span class="kn">from</span> <span class="nn">automata.core.retrievers.py.context</span> <span class="kn">import</span> <span class="p">(</span>
+      <span class="n">PyContextRetriever</span><span class="p">,</span>
+      <span class="n">PyContextRetrieverConfig</span><span class="p">,</span>
+  <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol.graph</span> <span class="kn">import</span> <span class="n">SymbolGraph</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol_embedding.base</span> <span class="kn">import</span> <span class="n">JSONSymbolEmbeddingVectorDatabase</span>
+<span class="kn">from</span> <span class="nn">automata.core.symbol_embedding.builders</span> <span class="kn">import</span> <span class="p">(</span>
+      <span class="n">SymbolCodeEmbeddingBuilder</span><span class="p">,</span>
+      <span class="n">SymbolDocEmbeddingBuilder</span><span class="p">,</span>
+  <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">automata.core.tools.factory</span> <span class="kn">import</span> <span class="n">AgentToolFactory</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">automata.core.utils</span> <span class="kn">import</span> <span class="n">get_config_fpath</span>
+</pre></div>
+</div>
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Permalink to this headline"></a></h2>
+<p>Here is an example that showcases how <code class="docutils literal notranslate"><span class="pre">DependencyFactory</span></code> is used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">automata.core.singletons.dependency_factory</span> <span class="kn">import</span> <span class="n">DependencyFactory</span>
+
+<span class="c1"># Create a DependencyFactory object setting the overrides</span>
+<span class="n">dep_factory</span> <span class="o">=</span> <span class="n">DependencyFactory</span><span class="p">(</span><span class="n">py_context_retriever_config</span><span class="o">=</span><span class="n">PyContextRetrieverConfig</span><span class="p">())</span>
+
+<span class="c1"># To get the instance of a created dependency use &#39;get&#39; method</span>
+<span class="n">symbol_ranker</span> <span class="o">=</span> <span class="n">dep_factory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;symbol_rank&#39;</span><span class="p">)</span>
+
+<span class="c1"># After using the instances, do not forget to reset overrides</span>
+<span class="n">dep_factory</span><span class="o">.</span><span class="n">set_overrides</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>The DependencyFactory class doesn’t handle concurrent requests.
+Therefore it is not suitable for a multi-threaded or a multi-processed
+environment.</p>
+<p>To build more complex dependencies, the DependencyFactory class can
+become a bit bloated and difficult to manage as the number of
+dependencies increases.</p>
+</section>
+<section id="follow-up-questions">
+<h2>Follow-up Questions:<a class="headerlink" href="#follow-up-questions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>What are some of the solutions to handle concurrent requests for
+building dependencies?</p></li>
+<li><p>How to manage DependencyFactory when number of dependencies
+increases?</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="singletons" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="open_ai_automata_agent_toolkit_registry.html" class="btn btn-neutral float-right" title="OpenAIAutomataAgentToolkitRegistry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

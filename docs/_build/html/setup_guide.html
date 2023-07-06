@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup &mdash; Automata  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/dark_mode_js/default_dark.js"></script>
+        <script src="_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Frequently Asked Questions" href="faq.html" />
+    <link rel="prev" title="Automata: The Future is Self-Written" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Automata
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-local-environment">Create Local Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-the-project">Install the Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-pre-commit-hooks">Setup Pre-commit Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-environment-variables">Configure Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect-operating-system">Detect Operating System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fetch-submodules">Fetch Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-and-initialize-git-lfs">Install and Initialize Git LFS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedding_guide.html">Creating Your Own Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent_guide.html">Agent Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config/index.html">Config Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core/index.html">Core Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/index.html">Test Classes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Automata</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Setup</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/setup_guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h1>
+<p>To set up the project, follow the instructions detailed below:</p>
+<section id="create-local-environment">
+<h2>Create Local Environment<a class="headerlink" href="#create-local-environment" title="Permalink to this headline"></a></h2>
+<p>Create a Python virtual environment and activate it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>local_env
+<span class="nb">source</span><span class="w"> </span>local_env/bin/activate
+</pre></div>
+</div>
+</section>
+<section id="install-the-project">
+<h2>Install the Project<a class="headerlink" href="#install-the-project" title="Permalink to this headline"></a></h2>
+<p>Install the project in editable mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="setup-pre-commit-hooks">
+<h2>Setup Pre-commit Hooks<a class="headerlink" href="#setup-pre-commit-hooks" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+</section>
+<section id="configure-environment-variables">
+<h2>Configure Environment Variables<a class="headerlink" href="#configure-environment-variables" title="Permalink to this headline"></a></h2>
+<p>Copy the <cite>.env.example</cite> file to a <cite>.env</cite> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</pre></div>
+</div>
+<p>The <cite>.env</cite> file contains several environment variables which need to be set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span>your_openai_api_key_here
+<span class="nv">GITHUB_API_KEY</span><span class="o">=</span>your_github_api_key
+<span class="nv">CONVERSATION_DB_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/conversation_db.sqlite3&quot;</span>
+<span class="nv">TASK_DB_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/task_db.sqlite3&quot;</span>
+<span class="nv">TASKS_OUTPUT_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/tasks&quot;</span>
+<span class="nv">REPOSITORY_NAME</span><span class="o">=</span><span class="s2">&quot;emrgnt-cmplxty/Automata&quot;</span>
+<span class="nv">MAX_WORKERS</span><span class="o">=</span><span class="m">8</span>
+</pre></div>
+</div>
+<p>Replace the placeholders with your own values. The <cite>OPENAI_API_KEY</cite> and <cite>GITHUB_API_KEY</cite> should be your personal API keys for OpenAI and GitHub respectively.</p>
+</section>
+<section id="detect-operating-system">
+<h2>Detect Operating System<a class="headerlink" href="#detect-operating-system" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OSTYPE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;darwin&quot;</span>*<span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">   </span><span class="c1"># Mac OSX</span>
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s2">&quot;s|your_openai_api_key|</span><span class="nv">$OPEN_API_KEY</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s2">&quot;s|your_github_api_key|</span><span class="nv">$GITHUB_API_KEY</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s2">&quot;s|your_conversation_db_path|</span><span class="nv">$CONVERSATION_DB_PATH</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s2">&quot;s|your_task_db_path|</span><span class="nv">$TASK_DB_PATH</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s2">&quot;s|your_tasks_output_path|</span><span class="nv">$TASKS_OUTPUT_PATH</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s2">&quot;s|your_repository_name|</span><span class="nv">$REPOSITORY_NAME</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="k">else</span>
+<span class="w">   </span><span class="c1"># Linux and others</span>
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|your_openai_api_key|</span><span class="nv">$OPEN_API_KEY</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|your_github_api_key|</span><span class="nv">$GITHUB_API_KEY</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|your_conversation_db_path|</span><span class="nv">$CONVERSATION_DB_PATH</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|your_task_db_path|</span><span class="nv">$TASK_DB_PATH</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|your_tasks_output_path|</span><span class="nv">$TASKS_OUTPUT_PATH</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="w">   </span>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|your_repository_name|</span><span class="nv">$REPOSITORY_NAME</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+<span class="k">fi</span>
+</pre></div>
+</div>
+</section>
+<section id="fetch-submodules">
+<h2>Fetch Submodules<a class="headerlink" href="#fetch-submodules" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init<span class="w"> </span>--recursive
+</pre></div>
+</div>
+</section>
+<section id="install-and-initialize-git-lfs">
+<h2>Install and Initialize Git LFS<a class="headerlink" href="#install-and-initialize-git-lfs" title="Permalink to this headline"></a></h2>
+<p>You must install <cite>git-lfs</cite> if you have not done so already:</p>
+<p>For Ubuntu, run the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>git-lfs
+</pre></div>
+</div>
+<p>For Mac, run the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>git-lfs
+</pre></div>
+</div>
+<p>Then, initialize by running the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>lfs<span class="w"> </span>install
+git<span class="w"> </span>lfs<span class="w"> </span>pull
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Automata: The Future is Self-Written" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="Frequently Asked Questions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, emrgnt-cmplxty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
