@@ -39,8 +39,8 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.tasks.executor import IAutomataTaskExecution
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.tasks.executor import IAutomataTaskExecution
+   from automata.tasks.tasks import AutomataTask
 
    # Construct an Automata Task
    task = AutomataTask(name="custom_task", instructions="execute something")

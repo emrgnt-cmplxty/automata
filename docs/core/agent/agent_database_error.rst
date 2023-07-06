@@ -20,12 +20,12 @@ entities including but not limited to ``AutomataAgentTaskDatabase``,
 Related Symbols
 ---------------
 
--  ``automata.core.agent.providers.OpenAIAutomataAgent.set_database_provider``
--  ``automata.core.tasks.agent_database.AutomataTaskRegistry.__init__``
--  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase``
+-  ``automata.agent.providers.OpenAIAutomataAgent.set_database_provider``
+-  ``automata.tasks.agent_database.AutomataTaskRegistry.__init__``
+-  ``automata.tasks.agent_database.AutomataAgentTaskDatabase``
 -  ``automata.tests.unit.test_conversation_database.db``
 -  ``automata.tests.unit.test_task_database.db``
--  ``automata.core.agent.error.AgentGeneralError``
+-  ``automata.agent.error.AgentGeneralError``
 
 Examples
 --------
@@ -38,7 +38,7 @@ utilized within an agent setup process.
    # Assuming we have a provider and an agent instance
    try:
        agent.set_database_provider(provider)
-   except automata.core.agent.error.AgentDatabaseError as e:
+   except automata.agent.error.AgentDatabaseError as e:
        print(f"Failed to set the database provider: {e}")
 
 Note: In the above example, it’s assumed that the ``provider`` and

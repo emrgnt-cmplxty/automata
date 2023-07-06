@@ -21,13 +21,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task_database.task``
 -  ``automata.tests.conftest.task``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
--  ``automata.core.tasks.tasks.AutomataTask.__init__``
+-  ``automata.tasks.tasks.AutomataTask.__init__``
 -  ``automata.tests.unit.test_task_executor.TestExecuteBehavior``
--  ``automata.core.agent.providers.OpenAIAutomataAgent``
+-  ``automata.agent.providers.OpenAIAutomataAgent``
 -  ``automata.tests.unit.test_task_executor.TestExecuteBehavior.execute``
--  ``automata.core.agent.agent.AgentInstance.run``
+-  ``automata.agent.agent.AgentInstance.run``
 -  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit.python_agent_python_task``
 
 Example
@@ -39,7 +39,7 @@ missing or empty for an ``AutomataTask`` instance.
 
 .. code:: python
 
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.tasks.tasks import AutomataTask
 
    try:
        task = AutomataTask("")  # Empty instructions

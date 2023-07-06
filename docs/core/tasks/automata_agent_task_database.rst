@@ -18,13 +18,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task_database.db``
 -  ``automata.tests.conftest.task``
--  ``automata.core.tasks.agent_database.AutomataTaskRegistry.__init__``
+-  ``automata.tasks.agent_database.AutomataTaskRegistry.__init__``
 -  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.core.tasks.agent_database.AutomataTaskRegistry``
+-  ``automata.tasks.agent_database.AutomataTaskRegistry``
 -  ``automata.tests.unit.test_task.test_deterministic_task_id``
--  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
 -  ``automata.tests.unit.test_task_database.task``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_conversation_database.db``
 
 Method Details
@@ -70,8 +70,8 @@ usage:
 
 .. code:: python
 
-   from automata.core.tasks.agent_database import AutomataAgentTaskDatabase
-   from automata.core.tasks.tasks import AutomataTask
+   from automata.tasks.agent_database import AutomataAgentTaskDatabase
+   from automata.tasks.tasks import AutomataTask
 
    # Instantiate AutomataTask
    task = AutomataTask(

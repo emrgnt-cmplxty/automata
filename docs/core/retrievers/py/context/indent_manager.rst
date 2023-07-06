@@ -1,2 +1,2 @@
 Symbol:
-automata.core.retrievers.py.context.PyContextRetriever.IndentManager
+automata.retrievers.py.context.PyContextRetriever.IndentManager

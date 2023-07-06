@@ -9,13 +9,13 @@ Related Symbols
 
 -  ``automata.tests.conftest.MockRepositoryClient``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.github_management.client.GitHubClient``
+-  ``automata.github_management.client.GitHubClient``
 -  ``automata.tests.conftest.environment``
--  ``automata.core.github_management.client.GitHubClient.clone_repository``
+-  ``automata.github_management.client.GitHubClient.clone_repository``
 -  ``automata.tests.conftest.MockRepositoryClient.clone_repository``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tasks.environment.AutomataTaskEnvironment``
 -  ``automata.tests.conftest.MockRepositoryClient.checkout_branch``
--  ``automata.core.github_management.client.GitHubClient.__init__``
+-  ``automata.github_management.client.GitHubClient.__init__``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 
 Using AgentTaskGitError

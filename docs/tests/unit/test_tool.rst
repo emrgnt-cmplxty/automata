@@ -18,15 +18,15 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_tool.test_tool``
--  ``automata.core.tools.base.Tool``
+-  ``automata.tools.base.Tool``
 -  ``automata.tests.unit.test_tool.test_tool_run``
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
--  ``automata.core.tasks.base.TaskStatus``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
--  ``automata.core.tools.builders.symbol_search.SearchTool``
+-  ``automata.tasks.base.TaskStatus``
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
+-  ``automata.tools.builders.symbol_search.SearchTool``
 -  ``automata.tests.unit.test_symbol_search_tool.test_build``
--  ``automata.core.code_handling.py.reader.PyReader``
+-  ``automata.code_handling.py.reader.PyReader``
 
 Usage Example
 -------------

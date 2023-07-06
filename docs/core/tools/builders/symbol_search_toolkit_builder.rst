@@ -38,8 +38,8 @@ snippet:
 .. code:: python
 
    # assuming symbolGraph and other dependencies are based on existing contextual data
-   from automata.core.experimental.search.symbol_search import SymbolSearch, SymbolSearchConfig
-   from automata.core.tools.builders.symbol_search import SymbolSearchToolkitBuilder, SearchTool
+   from automata.experimental.search.symbol_search import SymbolSearch, SymbolSearchConfig
+   from automata.tools.builders.symbol_search import SymbolSearchToolkitBuilder, SearchTool
 
    # Construct the Symbol Search 
    symbol_search = SymbolSearch(symbolGraph, SymbolSearchConfig.default())

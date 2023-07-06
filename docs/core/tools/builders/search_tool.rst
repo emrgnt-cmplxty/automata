@@ -2,7 +2,7 @@ SearchTool
 ==========
 
 ``SearchTool`` is a class contained within the
-``automata.core.tools.builders.symbol_search`` module. It is one of the
+``automata.tools.builders.symbol_search`` module. It is one of the
 available tools for search operations, as its name implies. It is mainly
 used for building ``SymbolSearchToolkitBuilder`` objects. This class
 enables interaction with ``SymbolSearch`` API, which is capable of
@@ -17,7 +17,7 @@ statements:
 .. code:: python
 
    from enum import Enum
-   from automata.core.tools.builders.symbol_search import SearchTool
+   from automata.tools.builders.symbol_search import SearchTool
 
 Overview
 --------
@@ -30,10 +30,10 @@ values -
 Related Symbols
 ---------------
 
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
--  ``automata.core.tools.base.Tool``
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
+-  ``automata.tools.base.Tool``
 -  ``automata.tests.unit.test_symbol_search_tool.symbol_search_tool_builder``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
+-  ``automata.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``
 -  ``automata.tests.unit.test_tool.TestTool``
 
 Example
@@ -44,8 +44,8 @@ creating the ``SymbolSearchToolkitBuilder`` object –
 
 .. code:: python
 
-   from automata.core.tools.builders.symbol_search import SearchTool, SymbolSearchToolkitBuilder
-   from automata.core.experimental.search.symbol_search import SymbolSearch
+   from automata.tools.builders.symbol_search import SearchTool, SymbolSearchToolkitBuilder
+   from automata.experimental.search.symbol_search import SymbolSearch
 
    symbol_search = SymbolSearch(index="my_python_index")
    builder = SymbolSearchToolkitBuilder(symbol_search=symbol_search, search_tools=[SearchTool.EXACT, SearchTool.RANK])

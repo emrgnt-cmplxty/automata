@@ -27,13 +27,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task_database.task``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_task_database.test_get_tasks_by_query``
--  ``automata.core.tasks.base.ITaskExecution.execute``
+-  ``automata.tasks.base.ITaskExecution.execute``
 -  ``automata.tests.unit.test_task_database.test_update_task``
 -  ``automata.tests.unit.test_task_database.test_database_lifecycle``
 -  ``automata.tests.unit.test_task_database.test_insert_task``
--  ``automata.core.tasks.base.ITaskExecution``
+-  ``automata.tasks.base.ITaskExecution``
 -  ``automata.tests.conftest.registry``
 
 Usage Example
@@ -41,7 +41,7 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.tasks.base import Task
+   from automata.tasks.base import Task
 
    task = Task(priority=1, max_retries=5)
    print(f"ID of the created task: {task.task_id}")

@@ -9,17 +9,17 @@ message TO or FROM the OpenAI LLM Chat API. It provides convenient
 methods to parse and generate messages compatible with the OpenAI Chat
 API.
 
-This class is a part of the ``automata.core.llm.providers.openai``
+This class is a part of the ``automata.llm.providers.openai``
 module and extends the ``LLMChatMessage`` base class, adding unique
 fields and methods suitable for communication with the OpenAI API.
 
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult``
--  ``automata.core.llm.providers.openai.OpenAIConversation``
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionResult``
+-  ``automata.llm.providers.openai.OpenAIConversation``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionProvider``
+-  ``automata.llm.foundation.LLMChatMessage``
 
 Example
 -------
@@ -29,7 +29,7 @@ dictionary, and retrieving it from a completion result:
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import FunctionCall, OpenAIChatCompletionResult, OpenAIChatMessage
+   from automata.llm.providers.openai import FunctionCall, OpenAIChatCompletionResult, OpenAIChatMessage
 
    # The function call 
    function_call = FunctionCall.from_response_dict({

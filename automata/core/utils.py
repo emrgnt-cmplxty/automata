@@ -9,7 +9,7 @@ import networkx as nx
 import openai
 import yaml
 
-from automata.core.symbol.base import Symbol
+from automata.symbol.base import Symbol
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:

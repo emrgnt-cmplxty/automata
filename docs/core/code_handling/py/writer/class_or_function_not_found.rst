@@ -16,9 +16,9 @@ on.
 Related Symbols
 ---------------
 
--  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.tools.builders.py_writer.PyWriterToolkitBuilder``
--  ``automata.core.code_handling.py.writer.PyWriter.ClassOrFunctionNotFound``
+-  ``automata.code_handling.py.reader.PyReader``
+-  ``automata.tools.builders.py_writer.PyWriterToolkitBuilder``
+-  ``automata.code_handling.py.writer.PyWriter.ClassOrFunctionNotFound``
 -  ``automata.tests.unit.test_py_writer.py_writer``
 -  ``automata.tests.unit.test_py_writer_tool.python_writer_tool_builder``
 -  ``automata.tests.unit.test_py_writer_tool.test_init``
@@ -33,8 +33,8 @@ like the following:
 
 .. code:: python
 
-   from automata.core.code_handling.py.reader import PyReader
-   from automata.core.code_handling.py.writer import PyWriter
+   from automata.code_handling.py.reader import PyReader
+   from automata.code_handling.py.writer import PyWriter
 
    py_reader = PyReader()  # Creating an instance of PyReader
    py_writer = PyWriter(py_reader)  # Initializing PyWriter with a PyReader instance

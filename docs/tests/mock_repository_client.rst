@@ -20,12 +20,12 @@ tests for functionalities that involve interactions with a
 Related Symbols
 ---------------
 
--  ``automata.core.github_management.client.RepositoryClient``
--  ``automata.core.github_management.client.GitHubClient``
+-  ``automata.github_management.client.RepositoryClient``
+-  ``automata.github_management.client.GitHubClient``
 -  ``automata.tests.conftest.environment``
 -  ``automata.tests.conftest.task``
--  ``automata.core.tasks.environment.AutomataTaskEnvironment``
--  ``automata.core.tasks.tasks.AutomataTask``
+-  ``automata.tasks.environment.AutomataTaskEnvironment``
+-  ``automata.tasks.tasks.AutomataTask``
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``
 
 Example

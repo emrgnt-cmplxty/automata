@@ -17,11 +17,11 @@ Related Symbols
 
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.core.agent.agent.AgentInstance.Config``
+-  ``automata.agent.agent.AgentInstance.Config``
 -  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.core.agent.instances.OpenAIAutomataAgentInstance.Config``
+-  ``automata.agent.instances.OpenAIAutomataAgentInstance.Config``
 -  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata.core.tools.base.Tool.Config``
+-  ``automata.tools.base.Tool.Config``
 -  ``automata.config.base.AgentConfig.Config``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU.__init__``
 

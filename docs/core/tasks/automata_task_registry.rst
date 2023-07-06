@@ -25,7 +25,7 @@ Example
 
 .. code:: python
 
-   from automata.core.tasks.agent_database import AutomataTaskRegistry
+   from automata.tasks.agent_database import AutomataTaskRegistry
    from automata.tests.unit.test_task_database import task
 
    # Creating a task

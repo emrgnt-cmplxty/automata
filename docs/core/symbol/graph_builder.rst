@@ -1,7 +1,7 @@
 GraphBuilder
 ============
 
-``GraphBuilder`` is a class within the ``automata.core.symbol.graph``
+``GraphBuilder`` is a class within the ``automata.symbol.graph``
 module that constructs a directed multi-graph, called a ``SymbolGraph``,
 from a corresponding Index. The ``SymbolGraph`` incorporates and
 represents the relationship between symbols in a python codebase.
@@ -20,8 +20,8 @@ adds edges representing relationships, references, and calls between
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.symbol.graph.SymbolGraph``
+-  ``automata.symbol.parser.parse_symbol``
 -  ``automata.core.utils.filter_multi_digraph_by_symbols``
 
 Example
@@ -32,8 +32,8 @@ from the context, here is a conceptual example:
 
 .. code:: python
 
-   from automata.core.symbol.graph import GraphBuilder
-   from automata.core.symbol.scip_pb2 import Index  # Some test index
+   from automata.symbol.graph import GraphBuilder
+   from automata.symbol.scip_pb2 import Index  # Some test index
 
    index = Index()  # Object of type Index
    builder = GraphBuilder(index, build_caller_relationships=True)

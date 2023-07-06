@@ -18,15 +18,15 @@ properties and requirements provided within the method.
 Related Symbols
 ---------------
 
--  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.llm.providers.openai.OpenAITool``
--  ``automata.core.agent.agent.AgentToolkitBuilder``
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder``
+-  ``automata.code_handling.py.reader.PyReader``
+-  ``automata.llm.providers.openai.OpenAITool``
+-  ``automata.agent.agent.AgentToolkitBuilder``
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder``
 -  ``automata.config.base.LLMProvider``
--  ``automata.core.tools.builders.py_reader.PyReaderToolkitBuilder.build``
--  ``automata.core.singletons.toolkit_registries.OpenAIAutomataAgentToolkitRegistry``
--  ``automata.core.agent.agent.AgentToolkitNames``
--  ``automata.core.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder.build_for_open_ai``
+-  ``automata.tools.builders.py_reader.PyReaderToolkitBuilder.build``
+-  ``automata.singletons.toolkit_registries.OpenAIAutomataAgentToolkitRegistry``
+-  ``automata.agent.agent.AgentToolkitNames``
+-  ``automata.tools.builders.py_writer.PyWriterOpenAIToolkitBuilder.build_for_open_ai``
 
 Example
 -------
@@ -39,8 +39,8 @@ scope of this document.
 .. code:: python
 
    from unittest.mock import MagicMock
-   from automata.core.code_handling.py.reader import PyReader
-   from automata.core.tools.builders.py_reader import PyReaderOpenAIToolkit
+   from automata.code_handling.py.reader import PyReader
+   from automata.tools.builders.py_reader import PyReaderOpenAIToolkit
 
    # Initialize a mock PyReader object
    py_reader = MagicMock(spec=PyReader)

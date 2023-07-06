@@ -19,15 +19,15 @@ module file.
 Related Symbols
 ---------------
 
--  ``automata.core.tasks.base.ITaskExecution``
+-  ``automata.tasks.base.ITaskExecution``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.core.tasks.executor.AutomataTaskExecutor``
--  ``automata.core.tasks.base.TaskStatus``
--  ``automata.core.tasks.tasks.AutomataTask``
--  ``automata.core.tasks.base.ITaskExecution.execute``
--  ``automata.core.code_handling.py.writer.PyWriter.create_new_module``
--  ``automata.core.tasks.base.Task``
+-  ``automata.tasks.executor.AutomataTaskExecutor``
+-  ``automata.tasks.base.TaskStatus``
+-  ``automata.tasks.tasks.AutomataTask``
+-  ``automata.tasks.base.ITaskExecution.execute``
+-  ``automata.code_handling.py.writer.PyWriter.create_new_module``
+-  ``automata.tasks.base.Task``
 
 Example
 -------
@@ -37,8 +37,8 @@ execute a task in an Automata task executor.
 
 .. code:: python
 
-   from automata.core.tasks.base import Task
-   from automata.core.tasks.executor import AutomataTaskExecutor
+   from automata.tasks.base import Task
+   from automata.tasks.executor import AutomataTaskExecutor
    from automata.tests.unit.test_task_executor import TestExecuteBehavior
 
    # define a Task

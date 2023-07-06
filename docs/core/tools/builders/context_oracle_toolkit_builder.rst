@@ -14,29 +14,29 @@ available symbols.
 Related Symbols
 ---------------
 
--  ``automata.core.agent.agent.AgentToolkitBuilder``
+-  ``automata.agent.agent.AgentToolkitBuilder``
 -  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``
 -  ``automata.tests.unit.test_context_oracle_tool.test_build``
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
+-  ``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``
 
 Dependencies
 ------------
 
--  ``automata.core.embedding.base.EmbeddingSimilarityCalculator``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
--  ``automata.core.tools.base.Tool``
+-  ``automata.embedding.base.EmbeddingSimilarityCalculator``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.tools.base.Tool``
 
 Example
 -------
 
 .. code:: python
 
-   from automata.core.tools.builders.context_oracle import ContextOracleToolkitBuilder
-   from automata.core.embedding.base import EmbeddingSimilarityCalculator
-   from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-   from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+   from automata.tools.builders.context_oracle import ContextOracleToolkitBuilder
+   from automata.embedding.base import EmbeddingSimilarityCalculator
+   from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+   from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 
    symbol_doc_embedding_handler = SymbolDocEmbeddingHandler()
    symbol_code_embedding_handler = SymbolCodeEmbeddingHandler()

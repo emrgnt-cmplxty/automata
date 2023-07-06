@@ -40,9 +40,9 @@ DOC_EXAMPLE_1 = textwrap.dedent(
     ## Related Symbols
 
     - `config.config_enums.AgentConfigName`
-    - `automata.core.agent.agent.AutomataAgent`
+    - `automata.agent.agent.AutomataAgent`
     - `config.automata_agent_config_utils.AutomataAgentConfigBuilder`
-    - `automata.core.coordinator.automata_instance.AutomataInstance`
+    - `automata.coordinator.automata_instance.AutomataInstance`
 
     ## Example
 

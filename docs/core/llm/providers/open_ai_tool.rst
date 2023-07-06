@@ -19,12 +19,12 @@ and ``SymbolSearchOpenAIToolkitBuilder``, to create lists of
 Related Symbols
 ---------------
 
--  ``automata.core.embedding.base.EmbeddingVectorProvider``
--  ``automata.core.llm.foundation.LLMChatCompletionProvider``
--  ``automata.core.llm.foundation.LLMChatMessage``
--  ``automata.core.llm.foundation.LLMCompletionResult``
--  ``automata.core.llm.foundation.LLMConversation``
--  ``automata.core.tools.base.Tool``
+-  ``automata.embedding.base.EmbeddingVectorProvider``
+-  ``automata.llm.foundation.LLMChatCompletionProvider``
+-  ``automata.llm.foundation.LLMChatMessage``
+-  ``automata.llm.foundation.LLMCompletionResult``
+-  ``automata.llm.foundation.LLMConversation``
+-  ``automata.tools.base.Tool``
 -  ``automata.tests.unit.test_tool.TestTool``
 
 Example
@@ -36,7 +36,7 @@ response” irrespective of the input provided.
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import OpenAITool
+   from automata.llm.providers.openai import OpenAITool
    from automata.tests.unit.test_tool import TestTool
 
    tool = TestTool(

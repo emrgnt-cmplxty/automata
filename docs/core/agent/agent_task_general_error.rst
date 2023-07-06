@@ -12,13 +12,13 @@ Related Symbols
 
 -  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
 -  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.core.agent.error.AgentGeneralError``
+-  ``automata.agent.error.AgentGeneralError``
 -  ``automata.tests.unit.test_task.test_task_inital_state``
--  ``automata.core.agent.error.AgentTaskGitError``
+-  ``automata.agent.error.AgentTaskGitError``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
--  ``automata.core.agent.error.AgentTaskInstructions``
+-  ``automata.agent.error.AgentTaskInstructions``
 -  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.core.agent.error.AgentTaskStateError``
+-  ``automata.agent.error.AgentTaskStateError``
 -  ``automata.tests.unit.test_task_executor.TestExecuteBehavior``
 
 Example
@@ -30,7 +30,7 @@ exception could be used in a test case scenario.
 .. code:: python
 
    from unittest.mock import patch, MagicMock
-   from automata.core.agent.error import AgentTaskGeneralError
+   from automata.agent.error import AgentTaskGeneralError
    import pytest
 
    @patch("logging.config.dictConfig", return_value=None)

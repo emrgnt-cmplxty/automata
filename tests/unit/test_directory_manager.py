@@ -1,4 +1,4 @@
-from automata.core.navigation.directory import DirectoryManager
+from automata.navigation.directory import DirectoryManager
 
 
 def create_test_dir_structure(tmp_path):

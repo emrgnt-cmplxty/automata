@@ -22,9 +22,9 @@ retrieval and parsing process of source code, such as ``PyReader``,
 Related Symbols
 ---------------
 
--  ``automata.core.retrievers.py.context.PyContextRetriever``
--  ``automata.core.code_handling.py.reader.PyReader``
--  ``automata.core.singletons.dependency_factory.DependencyFactory.create_py_context_retriever``
+-  ``automata.retrievers.py.context.PyContextRetriever``
+-  ``automata.code_handling.py.reader.PyReader``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_py_context_retriever``
 -  ``automata.tests.unit.test_py_reader_tool.python_retriever_tool_builder``
 
 Usage Example
@@ -32,7 +32,7 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.retrievers.py.context import PyContextRetrieverConfig
+   from automata.retrievers.py.context import PyContextRetrieverConfig
 
    config = PyContextRetrieverConfig(
        spacer="  ",

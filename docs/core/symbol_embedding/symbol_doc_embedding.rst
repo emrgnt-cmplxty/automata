@@ -21,11 +21,11 @@ Related Symbols
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass.inner_method``
--  ``automata.core.symbol_embedding.builders.SymbolDocEmbeddingBuilder``
+-  ``automata.symbol_embedding.builders.SymbolDocEmbeddingBuilder``
 -  ``automata.tests.unit.test_py_reader.test_get_docstring_nested_class_method``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler.get_embedding``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler.get_embedding``
 -  ``automata.tests.unit.test_py_reader.test_get_docstring_nested_class``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.tests.unit.test_py_reader.test_get_docstring_no_docstring_class``
 
 Example
@@ -36,8 +36,8 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.core.symbol_embedding.base import SymbolDocEmbedding
-   from automata.core.symbol.base import Symbol
+   from automata.symbol_embedding.base import SymbolDocEmbedding
+   from automata.symbol.base import Symbol
    import numpy as np
 
    symbol = Symbol.from_string('scip-python python automata')
@@ -63,8 +63,8 @@ Dependencies
 ~~~~~~~~~~~~
 
 This class relies on the
-``automata.core.symbol_embedding.base.SymbolEmbedding`` and
-``automata.core.symbol.base.Symbol`` classes.
+``automata.symbol_embedding.base.SymbolEmbedding`` and
+``automata.symbol.base.Symbol`` classes.
 
 Follow-up Questions:
 --------------------

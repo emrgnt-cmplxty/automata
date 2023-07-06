@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from automata.core.experimental.search.symbol_search import SymbolSearch
-from automata.core.singletons.dependency_factory import dependency_factory
-from automata.core.symbol.graph import SymbolGraph
+from automata.experimental.search.symbol_search import SymbolSearch
+from automata.singletons.dependency_factory import dependency_factory
+from automata.symbol.graph import SymbolGraph
 
 
 @pytest.fixture

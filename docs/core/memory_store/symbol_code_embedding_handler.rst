@@ -23,14 +23,14 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_symbol_similarity.test_get_nearest_symbols_for_query``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_embedding.test_get_embedding``
 -  ``automata.tests.unit.test_synchronizer.test_build_graph_and_handler_and_synchronize``
--  ``automata.core.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
+-  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
 -  ``automata.tests.unit.test_database_vector.test_load``
--  ``automata.core.singletons.dependency_factory.DependencyFactory.create_symbol_code_embedding_handler``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_code_embedding_handler``
 -  ``automata.tests.unit.test_database_vector.test_lookup_symbol``
--  ``automata.core.symbol_embedding.builders.SymbolCodeEmbeddingBuilder``
+-  ``automata.symbol_embedding.builders.SymbolCodeEmbeddingBuilder``
 -  ``automata.tests.unit.test_database_vector.test_add_symbols``
 
 Method Details
@@ -75,10 +75,10 @@ Consider the following code snippet, where we use
 
 .. code:: python
 
-   from automata.core.symbol.base import Symbol
-   from automata.core.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase, SymbolCodeEmbedding
-   from automata.core.symbol_embedding.base import SymbolCodeEmbeddingHandler
-   from automata.core.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
+   from automata.symbol.base import Symbol
+   from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase, SymbolCodeEmbedding
+   from automata.symbol_embedding.base import SymbolCodeEmbeddingHandler
+   from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
    from unittest.mock import MagicMock
 
    # Mock symbols and their embeddings

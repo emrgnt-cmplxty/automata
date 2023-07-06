@@ -19,12 +19,12 @@ and must be subclassed to be utilized.
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIConversation.get_latest_message``
--  ``automata.core.llm.foundation.LLMChatMessage``
+-  ``automata.llm.providers.openai.OpenAIConversation.get_latest_message``
+-  ``automata.llm.foundation.LLMChatMessage``
 -  ``automata.tests.unit.test_conversation_database.test_put_message_increments_interaction_id``
 -  ``automata.tests.unit.test_conversation_database.test_get_messages_returns_all_messages_for_session``
--  ``automata.core.llm.providers.openai.OpenAIConversation``
--  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``automata.llm.providers.openai.OpenAIConversation``
+-  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
 -  ``automata.core.base.patterns.observer.Observer``
 
 Example
@@ -35,7 +35,7 @@ designed:
 
 .. code:: python
 
-   from automata.core.llm.foundation import LLMConversation, LLMChatMessage
+   from automata.llm.foundation import LLMConversation, LLMChatMessage
    from automata.core.base.patterns.observer import Observer
 
    class CustomConversation(LLMConversation):

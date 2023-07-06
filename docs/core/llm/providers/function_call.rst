@@ -2,7 +2,7 @@ FunctionCall
 ============
 
 ``FunctionCall`` is a class representing a function call to be made by
-the OpenAI agent within the ``automata.core.llm.providers.openai``
+the OpenAI agent within the ``automata.llm.providers.openai``
 module.
 
 Overview
@@ -19,15 +19,15 @@ convert a function call into a dictionary representation (``to_dict``).
 Related Symbols
 ---------------
 
--  ``automata.core.llm.providers.openai.OpenAIChatCompletionResult.get_function_call``
--  ``automata.core.llm.providers.openai.OpenAIChatMessage.__init__``
+-  ``automata.llm.providers.openai.OpenAIChatCompletionResult.get_function_call``
+-  ``automata.llm.providers.openai.OpenAIChatMessage.__init__``
 -  ``automata.tests.unit.sample_modules.sample.Person``
 -  ``automata.tests.unit.sample_modules.sample.Person.run``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.core.tasks.base.ITaskExecution.execute``
+-  ``automata.tasks.base.ITaskExecution.execute``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
 -  ``automata.tests.unit.sample_modules.sample.sample_function``
--  ``automata.core.code_handling.py.writer.PyWriter.InvalidArguments``
+-  ``automata.code_handling.py.writer.PyWriter.InvalidArguments``
 
 Examples
 --------
@@ -37,7 +37,7 @@ Below is a simple example to demonstrate interaction with
 
 .. code:: python
 
-   from automata.core.llm.providers.openai import FunctionCall
+   from automata.llm.providers.openai import FunctionCall
 
    # Creating an instance of FunctionCall
    fn_call = FunctionCall(name="functionName", arguments={"arg1":"value1", "arg2":"value2"})

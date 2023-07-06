@@ -15,24 +15,24 @@ Import Statement
 
 .. code:: python
 
-   from automata.core.symbol.base import SymbolPackage
+   from automata.symbol.base import SymbolPackage
 
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.scip_pb2.Descriptor as DescriptorProto``
--  ``automata.core.symbol.parser.parse_symbol``
+-  ``automata.symbol.scip_pb2.Descriptor as DescriptorProto``
+-  ``automata.symbol.parser.parse_symbol``
 -  ``automata.core.utils.is_sorted``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.symbol.base.Symbol``
 -  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
 -  ``automata.tests.unit.sample_modules.sample.EmptyClass``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
 -  ``automata.tests.unit.test_symbol_search.test_retrieve_source_code_by_symbol``
--  ``automata.core.symbol_embedding.base.SymbolCodeEmbedding``
+-  ``automata.symbol_embedding.base.SymbolCodeEmbedding``
 -  ``automata.tests.unit.test_symbol_search.test_exact_search``
--  ``automata.core.symbol.base.Symbol.__repr__``
+-  ``automata.symbol.base.Symbol.__repr__``
 -  ``automata.tests.unit.sample_modules.sample.OuterClass``
--  ``automata.core.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext``
+-  ``automata.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext``
 
 Example
 -------
@@ -42,10 +42,10 @@ The following is an example demonstrating how to generate
 
 .. code:: python
 
-   from automata.core.symbol.parser import parse_symbol
+   from automata.symbol.parser import parse_symbol
 
    symbol_class = parse_symbol(
-   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.core.agent.agent_enums`/ActionIndicator#"
+   "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#"
    )
 
    print(f"Package: {symbol_class.package}")

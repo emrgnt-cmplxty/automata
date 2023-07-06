@@ -2,7 +2,7 @@ AgentToolkitNames
 =================
 
 ``AgentToolkitNames`` is an enumeration class that represents different
-types of agent tools in the ``automata.core.agent.agent`` package. This
+types of agent tools in the ``automata.agent.agent`` package. This
 class helps manage a collection of agent tools that can be used for
 distinct tasks. Each named enum member corresponds to a particular type
 of agent tool. The builders for these tools are located in the
@@ -15,13 +15,13 @@ Related Symbols
    class for building tools to interact with a PythonAgent.
 -  ``automata.tests.unit.test_automata_agent_builder.test_builder_accepts_all_fields``:
    A test function that demonstrates the use of the builder.
--  ``automata.core.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``:
+-  ``automata.tools.builders.symbol_search.SymbolSearchOpenAIToolkitBuilder``:
    Builds tools for Open AI.
--  ``automata.core.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``:
+-  ``automata.tools.builders.context_oracle.ContextOracleOpenAIToolkitBuilder``:
    Builds tools for Context Oracle.
--  ``automata.core.tools.factory.AgentToolFactory``: A factory class for
+-  ``automata.tools.factory.AgentToolFactory``: A factory class for
    creating tools from a given agent tool name.
--  ``automata.core.agent.agent.AgentToolkitBuilder``: an abstract class
+-  ``automata.agent.agent.AgentToolkitBuilder``: an abstract class
    for building tools.
 
 Example
@@ -31,7 +31,7 @@ Below is a brief example of how you can use ``AgentToolkitNames``:
 
 .. code:: python
 
-   from automata.core.agent.agent import AgentToolkitNames
+   from automata.agent.agent import AgentToolkitNames
 
    # Get a specific toolkit name
    toolkit_name = AgentToolkitNames.PYTHON

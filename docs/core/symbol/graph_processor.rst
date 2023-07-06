@@ -21,10 +21,10 @@ The ``GraphProcessor`` provides the following method:
 Related Symbols
 ---------------
 
--  ``automata.core.symbol.graph.SymbolGraph``
--  ``automata.core.symbol.graph._CallerCalleeProcessor``
--  ``automata.core.symbol.graph._ReferenceProcessor``
--  ``automata.core.symbol.graph.GraphBuilder``
+-  ``automata.symbol.graph.SymbolGraph``
+-  ``automata.symbol.graph._CallerCalleeProcessor``
+-  ``automata.symbol.graph._ReferenceProcessor``
+-  ``automata.symbol.graph.GraphBuilder``
 
 These classes interact with ``GraphProcessor`` in different ways. The
 ``SymbolGraph`` class represents a graph of symbols and their
@@ -42,7 +42,7 @@ example could be:
 .. code:: python
 
    from networkx import MultiDiGraph
-   from automata.core.symbol.graph._ReferenceProcessor import ReferenceProcessor
+   from automata.symbol.graph._ReferenceProcessor import ReferenceProcessor
 
    graph = MultiDiGraph()
    graph_processor = ReferenceProcessor(graph, document)

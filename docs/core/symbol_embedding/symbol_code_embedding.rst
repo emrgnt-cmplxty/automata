@@ -3,7 +3,7 @@ SymbolCodeEmbedding
 
 ``SymbolCodeEmbedding`` is a concrete class used for creating embeddings
 for source code symbols. It is part of the
-``automata.core.symbol_embedding.base`` package.
+``automata.symbol_embedding.base`` package.
 
 Overview
 --------
@@ -17,14 +17,14 @@ string representation of the object.
 Related Symbols
 ---------------
 
--  ``automata.core.symbol_embedding.builders.SymbolCodeEmbeddingBuilder``:
+-  ``automata.symbol_embedding.builders.SymbolCodeEmbeddingBuilder``:
    A class that builds ``Symbol`` source code embeddings.
--  ``automata.core.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``:
+-  ``automata.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``:
    Handles a database for ``Symbol`` source code embeddings.
 -  ``automata.core.base.database.vector.JSONVectorDatabase``: A class
    that provides the database for storing and retrieving the vector
    embeddings.
--  ``automata.core.symbol.base.Symbol``: A class which contains
+-  ``automata.symbol.base.Symbol``: A class which contains
    associated logic for a Symbol.
 
 Example
@@ -36,8 +36,8 @@ need a numpy array for the vector representation. Below is an example:
 
 .. code:: python
 
-   from automata.core.symbol.base import Symbol
-   from automata.core.symbol_embedding.base import SymbolCodeEmbedding
+   from automata.symbol.base import Symbol
+   from automata.symbol_embedding.base import SymbolCodeEmbedding
    import numpy as np
 
    symbol = Symbol("URIsymbol")

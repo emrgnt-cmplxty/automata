@@ -1,4 +1,4 @@
-automata.core.navigation.directory.Directory
+automata.navigation.directory.Directory
 ============================================
 
 The ``Directory`` class is a part of the ``automata`` library, primarily
@@ -27,7 +27,7 @@ are needed:
    import logging
    import os
    from typing import Dict, List, Optional
-   from automata.core.navigation.directory import Directory
+   from automata.navigation.directory import Directory
 
 Key Methods
 -----------
@@ -66,7 +66,7 @@ Usage Example
 
 .. code:: python
 
-   from automata.core.navigation.directory import Directory
+   from automata.navigation.directory import Directory
 
    # instantiate
    root_dir = Directory("root")
@@ -88,7 +88,7 @@ Usage Example
    print(root_dir.is_leaf_dir())  # False
 
 Please note that for this example to run you have to import ``File``
-from the ``automata.core.navigation.directory`` module.
+from the ``automata.navigation.directory`` module.
 
 Related Symbols
 ---------------

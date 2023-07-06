@@ -5,7 +5,7 @@ Overview
 --------
 
 ``UnknownToolError`` is an exception class in the
-``automata.core.agent.error`` module. This exception is raised when an
+``automata.agent.error`` module. This exception is raised when an
 unknown tool type is provided to the framework.
 
 In broad terms, a tool in this context refers to a callable
@@ -24,21 +24,21 @@ Related Symbols
 -  ``automata.tests.unit.test_tool.test_tool_instantiation``
 -  ``automata.tests.unit.test_tool.TestTool``
 -  ``automata.tests.unit.test_tool.test_tool_run``
--  ``automata.core.tools.base.Tool``
+-  ``automata.tools.base.Tool``
 -  ``automata.tests.unit.test_context_oracle_tool.test_init``
--  ``automata.core.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
+-  ``automata.agent.providers.OpenAIAgentToolkitBuilder.can_handle``
 -  ``automata.tests.unit.test_tool.test_tool``
--  ``automata.core.tools.factory.AgentToolFactory.create_tools_from_builder``
+-  ``automata.tools.factory.AgentToolFactory.create_tools_from_builder``
 -  ``automata.tests.unit.test_context_oracle_tool.test_build``
--  ``automata.core.agent.agent.AgentToolkitBuilder.build``
+-  ``automata.agent.agent.AgentToolkitBuilder.build``
 
 Usage Example
 -------------
 
 .. code:: python
 
-   from automata.core.tools.factory import AgentToolFactory
-   from automata.core.agent.error import UnknownToolError
+   from automata.tools.factory import AgentToolFactory
+   from automata.agent.error import UnknownToolError
 
    try:
        tool = AgentToolFactory.create_tools_from_builder("NonExistentTool")

@@ -23,11 +23,11 @@ Related Symbols
 -  ``automata.tests.unit.test_conversation_database.db``
 -  ``automata.core.base.database.relational.SQLDatabase``
 -  ``automata.tests.unit.test_task_database.test_database_lifecycle``
--  ``automata.core.llm.foundation.LLMConversationDatabaseProvider``
+-  ``automata.llm.foundation.LLMConversationDatabaseProvider``
 -  ``automata.tests.unit.test_conversation_database.test_get_last_interaction_id_when_no_interactions``
--  ``automata.core.tasks.agent_database.AutomataAgentTaskDatabase``
+-  ``automata.tasks.agent_database.AutomataAgentTaskDatabase``
 -  ``automata.tests.unit.test_task_database.test_get_tasks_by_query``
--  ``automata.core.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
 -  ``automata.tests.unit.test_task_database.test_contains``
 
 Example

@@ -11,13 +11,13 @@ Related Symbols
 ---------------
 
 -  ``automata.tests.unit.test_symbol_search.test_exact_search``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder``
 -  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
--  ``automata.core.tools.builders.symbol_search.SearchTool``
+-  ``automata.tools.builders.symbol_search.SearchTool``
 -  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.core.symbol.base.Symbol``
+-  ``automata.symbol.base.Symbol``
 -  ``automata.tests.unit.test_symbol_search_tool.test_init``
--  ``automata.core.tools.builders.symbol_search.SymbolSearchToolkitBuilder._exact_search_processor``
+-  ``automata.tools.builders.symbol_search.SymbolSearchToolkitBuilder._exact_search_processor``
 -  ``automata.tests.unit.test_symbol_search.test_retrieve_source_code_by_symbol``
 
 Methods
@@ -123,11 +123,11 @@ follows:
 
 .. code:: python
 
-   from automata.core.experimental.search.symbol_search import SymbolSearch
-   from automata.core.symbol.graph import SymbolGraph
-   from automata.core.experimental.search.rank import SymbolRankConfig
-   from automata.core.symbol_embedding.base import SymbolEmbeddingHandler
-   from automata.core.embedding.base import EmbeddingSimilarityCalculator
+   from automata.experimental.search.symbol_search import SymbolSearch
+   from automata.symbol.graph import SymbolGraph
+   from automata.experimental.search.rank import SymbolRankConfig
+   from automata.symbol_embedding.base import SymbolEmbeddingHandler
+   from automata.embedding.base import EmbeddingSimilarityCalculator
 
    symbol_graph = SymbolGraph()
    symbol_rank_config = SymbolRankConfig()
