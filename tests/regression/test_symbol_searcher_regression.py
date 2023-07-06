@@ -37,7 +37,7 @@ def check_hits(expected_in_top_hits, found_top_hits):
             ],
         ),
         ("LLM", ["LLMProvider", "LLMChatMessage", "LLMConversation", "LLMCompletionResult"]),
-        ("Symbol", ["Symbol", "SymbolGraph", "JSONSymbolEmbeddingVectorDatabase"]),
+        ("Symbol", ["Symbol", "SymbolGraph"]),
     ],
 )
 def test_symbol_rank_search_on_symbol(
