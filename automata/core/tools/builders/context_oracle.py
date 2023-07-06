@@ -6,6 +6,7 @@ from automata.config.base import LLMProvider
 from automata.core.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.core.agent.providers import OpenAIAgentToolkitBuilder
 from automata.core.embedding.base import EmbeddingSimilarityCalculator
+from automata.core.experimental.search.symbol_search import SymbolSearch
 from automata.core.llm.providers.openai import OpenAITool
 from automata.core.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.core.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
@@ -22,11 +23,13 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
 
     def __init__(
         self,
+        symbol_search: SymbolSearch,
         symbol_doc_embedding_handler: SymbolDocEmbeddingHandler,
         symbol_code_embedding_handler: SymbolCodeEmbeddingHandler,
         embedding_similarity_calculator: EmbeddingSimilarityCalculator,
         **kwargs,
     ) -> None:
+        self.symbol_search = symbol_search
         self.symbol_doc_embedding_handler = symbol_doc_embedding_handler
         self.symbol_code_embedding_handler = symbol_code_embedding_handler
         self.embedding_similarity_calculator = embedding_similarity_calculator
@@ -43,7 +46,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
             )
         ]
 
-    def _get_context(self, query: str, max_related_symbols=1) -> str:
+    def _get_context(self, query: str, max_related_symbols=10) -> str:
         """
         Retrieves the context corresponding to a given query.
 
@@ -55,24 +58,10 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
         results when populated for the relevant query. Thus, selecting the maximum will factor in documentation
         when populated.
         """
-        doc_embeddings = self.symbol_doc_embedding_handler.get_ordered_embeddings()
-        doc_search_results = self.embedding_similarity_calculator.calculate_query_similarity_dict(
-            doc_embeddings, query
-        )
-        code_embeddings = self.symbol_code_embedding_handler.get_ordered_embeddings()
-        code_search_results = self.embedding_similarity_calculator.calculate_query_similarity_dict(
-            code_embeddings, query
-        )
-        combined_results = {
-            key: max(doc_search_results.get(key, 0), code_search_results.get(key, 0))
-            for key in set(doc_search_results).union(code_search_results)
-        }
 
-        most_similar_symbols = [
-            ele[0] for ele in sorted(combined_results.items(), key=lambda x: -x[1])
-        ]
+        symbol_rank_search_results = self.symbol_search.symbol_rank_search(query)
 
-        most_similar_symbol = most_similar_symbols[0]
+        most_similar_symbol = symbol_rank_search_results[0][0]
 
         most_similar_code_embedding = self.symbol_code_embedding_handler.get_embedding(
             most_similar_symbol
@@ -84,7 +73,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
             most_similar_doc_embedding = self.symbol_doc_embedding_handler.get_embedding(
                 most_similar_symbol
             )
-            result += f"Documentation Summary:\n\n{most_similar_doc_embedding.summary}"
+            result += f"Documentation:\n\n{most_similar_doc_embedding.input_object}"
         except Exception as e:
             logger.error(
                 "Failed to get embedding for symbol %s with error: %s",
@@ -96,7 +85,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
 
             counter = 0
 
-            for symbol in most_similar_symbols:
+            for symbol in [symbol for symbol, _ in symbol_rank_search_results]:
                 if symbol == most_similar_symbol:
                     continue
                 if counter >= max_related_symbols:
@@ -114,7 +103,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                         e,
                     )
                     continue
-
+        print("result = ", result)
         return result
 
 
