@@ -45,6 +45,7 @@
             jupyter
             notebook
             mypy
+            pytest
           ]);
       in
       {
