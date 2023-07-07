@@ -21,11 +21,15 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         self._factory = factory
 
     def entry_to_key(self, entry: V) -> str:
-        """Concrete implementation to generate a simple hashable key from a Symbol."""
+        """
+        Generates a simple hashable key from a Symbol.
+        """
         return entry.symbol.dotpath
 
     def add(self, entry: V) -> None:
         """
+        Adds a SymbolEmbedding to the collection.
+
         Adds the specified SymbolEmbedding to the collection.
         FIXME - Adding raw symbol to the metadata is a hack
         to get around the fact that we are using 'dotpaths' as keys
@@ -51,7 +55,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         **kwargs: Any,
     ) -> V:
         """
-        Gets the collection.
+        Retrieves an entry from the collection using the provided key.
 
         Keyword Args:
             ids: The ids of the embeddings to get. Optional.
@@ -85,18 +89,21 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         return self._construct_object_from_result(result)
 
     def discard(self, key: str, **kwargs: Any) -> None:
+        """Deletes an entry from the collection using the provided key."""
+
         self._collection.delete(ids=[key])
 
     def clear(self):
-        # Clear the collection.
+        """Clears all entries in the collection."""
         self._collection.delete(where={})
 
     def contains(self, key: str) -> bool:
-        # Check if a key is present in the collection.
+        """Checks if a key is present in the collection."""
         result = self._collection.get(ids=[key])
         return len(result["ids"]) != 0
 
     def get_ordered_embeddings(self) -> List[V]:
+        """Retrieves all embeddings in the collection in a sorted order."""
         results = self._collection.get(include=["documents", "metadatas", "embeddings"])
         embeddings = [
             self._construct_object_from_result(
@@ -117,6 +124,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         pass
 
     def update_database(self, entry: V):
+        """Updates an entry in the database."""
         # Update the entry in the database.
         metadata = deepcopy(entry.metadata)
         metadata["symbol_uri"] = entry.symbol.uri
@@ -128,18 +136,8 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         )
 
     def _construct_object_from_result(self, result: "GetResult") -> V:
-        """
-        Constructs an object from the provided result.
-
-        Args:
-            result (Dict): Result object from the Chroma DB collection get operation.
-
-        Returns:
-            V: The constructed object.
-        """
+        """Constructs an object from the provided result."""
         metadatas = result["metadatas"][0]
-        print("result = ", result)
-        print("metadatas = ", metadatas)
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
         metadatas["vector"] = np.array(result["embeddings"][0]).astype(int)
         metadatas["document"] = result["documents"][0]
