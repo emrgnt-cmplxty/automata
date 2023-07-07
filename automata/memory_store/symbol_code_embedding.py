@@ -22,12 +22,10 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         """Process the embedding for a `Symbol` by updating if the source code has changed."""
         source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
 
-        if not source_code:
-            raise ValueError(f"Symbol {symbol} has no source code")
-
         if self.embedding_db.contains(symbol.dotpath):
             self.update_existing_embedding(source_code, symbol)
         else:
+            print("building a new embedding...")
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
             self.embedding_db.add(symbol_embedding)
 
@@ -37,13 +35,14 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         of the existing embedding. If there are differences, update the embedding.
         """
         existing_embedding = self.embedding_db.get(symbol.dotpath)
+
         if existing_embedding.document != source_code:
-            logger.debug("Building a new embedding for %s", symbol)
+            print("Building a new embedding for %s", symbol)
             self.embedding_db.discard(symbol.dotpath)
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
             self.embedding_db.add(symbol_embedding)
         elif existing_embedding.symbol != symbol:
-            logger.debug("Updating the embedding for %s", symbol)
+            print("Updating the symbol for embedding corresponding to %s", symbol)
             self.embedding_db.discard(symbol.dotpath)
             existing_embedding.symbol = symbol
             self.embedding_db.add(existing_embedding)

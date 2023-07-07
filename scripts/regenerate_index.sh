@@ -9,7 +9,7 @@ cd ../
 # create index
 node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
 # put into main index location
-mv index_from_fork.scip automata/config/symbol/automata.scip
+mv index_from_fork.scip embedding_data/indices/automata.scip
 
 # cd back
 cd -

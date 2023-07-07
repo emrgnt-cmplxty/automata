@@ -3,17 +3,12 @@ import os
 
 from tqdm import tqdm
 
-from automata.config.base import ConfigCategory
-from automata.core.utils import get_config_fpath
 from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
+from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
-from automata.symbol_embedding.vector_databases import (
-    ChromaSymbolEmbeddingVectorDatabase,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +43,8 @@ def main(*args, **kwargs) -> str:
     for symbol in tqdm(filtered_symbols):
         try:
             symbol_code_embedding_handler.process_embedding(symbol)
-            symbol_code_embedding_handler.embedding_db.save()
         except Exception as e:
             logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
 
+    symbol_code_embedding_handler.embedding_db.save()
     return "Success"
