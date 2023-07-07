@@ -1,5 +1,6 @@
 import os
 import random
+import shutil
 from typing import Any, Set
 from unittest.mock import MagicMock
 
@@ -30,8 +31,18 @@ def temp_output_filename():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(this_dir, "test_output.json")
     yield filename
-    if os.path.exists(filename):
-        os.remove(filename)
+    try:
+        if os.path.exists(filename):
+            os.remove(filename)
+    except OSError:
+        pass
+
+    # The TemporaryDirectory context manager should already clean up the directory,
+    # but just in case it doesn't (e.g. due to an error), we'll try removing it manually as well.
+    try:
+        shutil.rmtree(filename + "/")
+    except OSError:
+        pass
 
 
 @pytest.fixture

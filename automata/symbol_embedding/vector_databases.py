@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Callable, List, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, TypeVar
 
 import numpy as np
 
@@ -16,8 +16,13 @@ V = TypeVar("V", bound=SymbolEmbedding)
 class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
     """Concrete class to provide a vector database that saves into a Chroma db."""
 
-    def __init__(self, collection_name: str, factory: Callable[..., V]):
-        super().__init__(collection_name)
+    def __init__(
+        self,
+        collection_name: str,
+        factory: Callable[..., V],
+        persist_directory: Optional[str] = None,
+    ):
+        super().__init__(collection_name, persist_directory)
         self._factory = factory
 
     def entry_to_key(self, entry: V) -> str:
@@ -40,7 +45,6 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         """
         metadata = deepcopy(entry.metadata)
         metadata["symbol_uri"] = entry.symbol.uri
-        print("adding metadata = ", metadata)
         self._collection.add(
             documents=[entry.document],
             metadatas=[metadata],

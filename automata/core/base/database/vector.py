@@ -1,7 +1,7 @@
 import abc
 import logging
 import logging.config
-from typing import Any, Dict, Generic, List, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import jsonpickle
 
@@ -128,13 +128,21 @@ class JSONVectorDatabase(VectorDatabaseProvider[K, V], Generic[K, V]):
 class ChromaVectorDatabase(VectorDatabaseProvider[K, V]):
     """Concrete class to provide a vector database that uses Chroma."""
 
-    def __init__(self, collection_name: str):
+    def __init__(self, collection_name: str, persist_directory: Optional[str] = None):
         try:
             import chromadb
-        except ImportError:
+            from chromadb.config import Settings
+        except ImportError as e:
             raise ImportError(
                 "Please install Chroma Python client first: " "`pip install chromadb`"
+            ) from e
+        if persist_directory:
+            self.client = chromadb.Client(
+                Settings(
+                    chroma_db_impl="duckdb+parquet",
+                    persist_directory=persist_directory,  # Optional, defaults to .chromadb/ in the current directory
+                )
             )
-
-        self.client = chromadb.Client()
+        else:
+            self.client = chromadb.Client()
         self._collection = self.client.get_or_create_collection(collection_name)
