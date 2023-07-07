@@ -24,16 +24,18 @@ def initialize_providers(embedding_level, **kwargs):
     py_module_loader.initialize()
 
     scip_fpath = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index-file", "index.scip")
+        get_config_fpath(),
+        ConfigCategory.SYMBOL.to_path(),
+        kwargs.get("index-file", "automata.scip"),
     )
     code_embedding_fpath = os.path.join(
         get_config_fpath(),
-        ConfigCategory.SYMBOL.value,
+        ConfigCategory.SYMBOL.to_path(),
         kwargs.get("code-embedding-file", "symbol_code_embedding.json"),
     )
     doc_embedding_fpath = os.path.join(
         get_config_fpath(),
-        ConfigCategory.SYMBOL.value,
+        ConfigCategory.SYMBOL.to_path(),
         kwargs.get("doc-embedding-file", f"symbol_doc_embedding_l{embedding_level}.json"),
     )
 
@@ -50,7 +52,7 @@ def initialize_providers(embedding_level, **kwargs):
     if embedding_level == 3:
         doc_embedding_fpath_l2 = os.path.join(
             get_config_fpath(),
-            ConfigCategory.SYMBOL.value,
+            ConfigCategory.SYMBOL.to_path(),
             kwargs.get("doc-embedding-file", "symbol_doc_embedding_l2.json"),
         )
         doc_embedding_db_l2 = JSONSymbolEmbeddingVectorDatabase(doc_embedding_fpath_l2)

@@ -23,11 +23,13 @@ def main(*args, **kwargs) -> str:
     py_module_loader.initialize()
 
     scip_fpath = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index-file", "index.scip")
+        get_config_fpath(),
+        ConfigCategory.SYMBOL.to_path(),
+        kwargs.get("index-file", "automata.scip"),
     )
     code_embedding_fpath = os.path.join(
         get_config_fpath(),
-        ConfigCategory.SYMBOL.value,
+        ConfigCategory.SYMBOL.to_path(),
         kwargs.get("code-embedding-file", "symbol_code_embedding.json"),
     )
     embedding_provider = OpenAIEmbeddingProvider()
