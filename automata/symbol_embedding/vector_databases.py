@@ -50,7 +50,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
     # Value dependent methods (e.g. V dependent)
 
     def add(self, entry: V) -> None:
-        """Adds a SymbolEmbedding to the collection, checking for existing entries."""
+        """Adds an entry to the collection, checking for existing entries."""
         self._check_duplicate_entry(self.entry_to_key(entry))
         self._collection.add(**self._prepare_entries_for_insertion([entry]))
 
