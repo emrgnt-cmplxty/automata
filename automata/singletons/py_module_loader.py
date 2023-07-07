@@ -9,7 +9,7 @@ from redbaron import RedBaron
 
 from automata.core.base.patterns.singleton import Singleton
 from automata.core.utils import get_root_fpath, get_root_py_fpath
-from automata.navigation.py.dot_path_map import DotPathMap
+from automata.navigation.py.dotpath_map import DotPathMap
 
 logger = logging.getLogger(__name__)
 

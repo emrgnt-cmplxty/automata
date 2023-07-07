@@ -10,7 +10,7 @@ from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.symbol.symbol_utils import convert_to_fst_object
-from automata.symbol_embedding.base import SymbolEmbeddingHandler
+from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
@@ -114,7 +114,6 @@ class SymbolSearch:
         for module_path, module in cast(
             Iterable[Tuple[str, Optional[RedBaron]]], py_module_loader.items()
         ):
-            print("Checking module = ", module)
             if module:
                 lines = module.dumps().splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]

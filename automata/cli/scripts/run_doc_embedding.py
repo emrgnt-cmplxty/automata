@@ -15,7 +15,7 @@ from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
-from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 logger = logging.getLogger(__name__)
 

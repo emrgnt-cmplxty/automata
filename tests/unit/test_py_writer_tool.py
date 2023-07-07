@@ -87,8 +87,6 @@ def test_extend_module_with_new_function(python_writer_tool_builder):
     file_py_path = f"{package}.{module}"
     file_rel_path = os.path.join(package, f"{module}.py")
     file_abs_path = os.path.join(absolute_path, file_rel_path)
-    print("file_rel_path = ", file_rel_path)
-    print("file_abs_path = ", file_abs_path)
 
     code_writer.function(file_py_path, code=function_def)
 
