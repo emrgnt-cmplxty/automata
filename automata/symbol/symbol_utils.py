@@ -42,7 +42,7 @@ def visit(node: AstNode, descriptors: List[SymbolDescriptor], level=0) -> Option
         return node
 
     for child in iter_child_nodes(node):
-        if not isinstance(child, AstNode):
+        if not isinstance(child, (ClassDef, FunctionDef, AsyncFunctionDef)):
             continue
         result = visit(child, descriptors, level + 1)
         if result:
