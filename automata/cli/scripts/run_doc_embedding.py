@@ -12,7 +12,7 @@ from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.py_module_loader import py_module_loader, pyast_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 def initialize_providers(embedding_level, **kwargs):
     py_module_loader.initialize()
+    pyast_module_loader.initialize()
 
     scip_fpath = os.path.join(
         get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index-file", "index.scip")

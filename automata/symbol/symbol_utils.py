@@ -1,9 +1,70 @@
-from typing import List, cast
+from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, Module, iter_child_nodes
+from ast import parse as pyast_parse
+from ast import unparse as pyast_unparse
+from typing import List, Optional, Union, cast
 
 from redbaron import RedBaron
 
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.py_module_loader import py_module_loader, pyast_module_loader
 from automata.symbol.base import Symbol, SymbolDescriptor
+
+AstNode = Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]
+
+
+def get_descriptor_kind_from_node(node) -> Optional[SymbolDescriptor.PyKind]:
+    if isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
+        return SymbolDescriptor.PyKind.Method
+    elif isinstance(node, ClassDef):
+        return SymbolDescriptor.PyKind.Class
+    elif isinstance(node, Module):
+        return SymbolDescriptor.PyKind.Module
+    else:
+        return None
+
+
+def is_node_matching_descriptor(node: AstNode, descriptor: SymbolDescriptor):
+    descriptor_kind = SymbolDescriptor.convert_scip_to_python_suffix(descriptor.suffix)
+    node_descriptor = get_descriptor_kind_from_node(node)
+    if node_descriptor == descriptor_kind:
+        if isinstance(node, Module):
+            return True
+        return node.name == descriptor.name
+
+
+def visit(node: AstNode, descriptors: List[SymbolDescriptor], level=0) -> Optional[AST]:
+    if level >= len(descriptors):
+        return None
+
+    if not is_node_matching_descriptor(node, descriptors[level]):
+        return None
+
+    if level == len(descriptors) - 1:
+        return node
+
+    for child in iter_child_nodes(node):
+        if not isinstance(child, AstNode):
+            continue
+        result = visit(child, descriptors, level + 1)
+        if result:
+            return result
+
+    return None
+
+
+def get_source_code_of_symbol_using_py_ast(symbol: Symbol) -> AST:
+    descriptors = list(symbol.descriptors)
+    module_dotpath = descriptors[0].name
+    if module_dotpath.startswith(""):
+        module_dotpath = module_dotpath[len("") :]  # indexer omits this
+    tree = pyast_module_loader.fetch_module(module_dotpath)
+    if not tree or not isinstance(tree, Module):
+        raise ValueError(
+            f"Either the module {module_dotpath} was not found or it is not an Python's module object"
+        )
+    node = visit(tree, descriptors)
+    if node is None:
+        raise ValueError(f"Failed to find {symbol.uri} in source code")
+    return node
 
 
 def convert_to_fst_object(symbol: Symbol) -> RedBaron:
