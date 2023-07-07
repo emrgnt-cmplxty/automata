@@ -21,7 +21,7 @@ def main(*args, **kwargs) -> str:
 
     embedding_db = JSONSymbolEmbeddingVectorDatabase(embedding_path)
 
-    symbols = [embedding.symbol for embedding in embedding_db.get_ordered_embeddings()]
+    symbols = [embedding.symbol for embedding in embedding_db.get_ordered_entries()]
 
     docs = {symbol: embedding_db.get(symbol.dotpath) for symbol in symbols}
 

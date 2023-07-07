@@ -131,7 +131,7 @@ def test_get_ordered_embeddings(vector_db, symbols, make_embedding):
     embedded_symbol2 = make_embedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
     vector_db.add(embedded_symbol2)
     vector_db.add(embedded_symbol1)
-    embeddings = vector_db.get_ordered_embeddings()
+    embeddings = vector_db.get_ordered_entries()
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 
@@ -141,7 +141,7 @@ def test_update_database(vector_db, symbols, make_embedding):
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db.add(embedded_symbol)
     updated_embedded_symbol = make_embedding(symbol, "y", np.array([4, 5, 6]).astype(int))
-    vector_db.update_database(updated_embedded_symbol)
+    vector_db.update_entry(updated_embedded_symbol)
     result = vector_db.get(symbol.dotpath)
     assert np.array_equal(result.vector, updated_embedded_symbol.vector)
     assert result.document == updated_embedded_symbol.document
@@ -223,7 +223,7 @@ def test_get_ordered_embeddings_old(vector_db_old, symbols):
     embedded_symbol2 = SymbolCodeEmbedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
     vector_db_old.add(embedded_symbol2)
     vector_db_old.add(embedded_symbol1)
-    embeddings = vector_db_old.get_ordered_embeddings()  # [symbol1.dotpath, symbol2.dotpath])
+    embeddings = vector_db_old.get_ordered_entries()  # [symbol1.dotpath, symbol2.dotpath])
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 
@@ -233,7 +233,55 @@ def test_update_database_old(vector_db_old, symbols):
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_old.add(embedded_symbol)
     updated_embedded_symbol = SymbolCodeEmbedding(symbol, "y", np.array([4, 5, 6]).astype(int))
-    vector_db_old.update_database(updated_embedded_symbol)
+    vector_db_old.update_entry(updated_embedded_symbol)
     result = vector_db_old.get(symbol.dotpath)
     assert np.array_equal(result.vector, updated_embedded_symbol.vector)
     assert result.document == updated_embedded_symbol.document
+
+
+def test_size(vector_db, symbols, make_embedding):
+    symbol1 = symbols[0]
+    symbol2 = symbols[1]
+    embedded_symbol1 = make_embedding(symbol1, "x", np.array([1, 2, 3]).astype(int))
+    embedded_symbol2 = make_embedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
+    vector_db.add(embedded_symbol1)
+    vector_db.add(embedded_symbol2)
+    assert len(vector_db) == 2
+
+
+def test_batch_add_and_remove(vector_db, symbols, make_embedding):
+    embedded_symbols = [
+        make_embedding(symbol, "x", np.array([i, i + 1, i + 2]).astype(int))
+        for i, symbol in enumerate(symbols)
+    ]
+    vector_db.batch_add(embedded_symbols)
+    assert all(vector_db.contains(symbol.dotpath) for symbol in symbols)
+    vector_db.batch_discard([symbol.dotpath for symbol in symbols])
+    assert not any(vector_db.contains(symbol.dotpath) for symbol in symbols)
+
+
+def test_add_duplicate_symbol(vector_db, symbols, make_embedding):
+    symbol = symbols[0]
+    embedded_symbol1 = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
+    vector_db.add(embedded_symbol1)
+    with pytest.raises(KeyError):
+        vector_db.add(embedded_symbol1)
+
+
+def test_get_all_symbols(vector_db, symbols, make_embedding):
+    embedded_symbols = [
+        make_embedding(symbol, "x", np.array([i, i + 1, i + 2]).astype(int))
+        for i, symbol in enumerate(symbols)
+    ]
+    print("embedded_symbols = ", embedded_symbols)
+    for embedded_symbol in embedded_symbols:
+        symbol = embedded_symbol.symbol
+        print("symbol = ", symbol)
+        print("symbol.dotpath = ", symbol.dotpath)
+        print("-" * 100)
+    vector_db.batch_add(embedded_symbols)
+    all_symbols = vector_db.get_ordered_keys()
+    assert len(all_symbols) == len(symbols)
+    print("all_symbols = ", all_symbols)
+    print("list(symbols) = ", list(symbols))
+    assert all(symbol.dotpath in all_symbols for symbol in list(symbols))
