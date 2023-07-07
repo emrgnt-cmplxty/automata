@@ -1,12 +1,10 @@
 import logging
 
 from automata.symbol.base import Symbol, SymbolDescriptor
-from automata.symbol_embedding.base import (
-    JSONSymbolEmbeddingVectorDatabase,
-    SymbolDocEmbedding,
-    SymbolEmbeddingHandler,
-)
+from automata.symbol_embedding.base import SymbolDocEmbedding
 from automata.symbol_embedding.builders import SymbolDocEmbeddingBuilder
+from automata.symbol_embedding.handler import SymbolEmbeddingHandler
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 logger = logging.getLogger(__name__)
 

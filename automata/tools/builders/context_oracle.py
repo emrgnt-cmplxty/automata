@@ -64,14 +64,13 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
         most_similar_code_embedding = self.symbol_code_embedding_handler.get_embedding(
             most_similar_symbol
         )
-
-        result = most_similar_code_embedding.input_object
+        result = most_similar_code_embedding.document
 
         try:
             most_similar_doc_embedding = self.symbol_doc_embedding_handler.get_embedding(
                 most_similar_symbol
             )
-            result += f"Documentation:\n\n{most_similar_doc_embedding.input_object}"
+            result += f"Documentation:\n\n{most_similar_doc_embedding.document}"
         except Exception as e:
             logger.error(
                 "Failed to get embedding for symbol %s with error: %s",
@@ -101,7 +100,6 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                         e,
                     )
                     continue
-        print("result = ", result)
         return result
 
 

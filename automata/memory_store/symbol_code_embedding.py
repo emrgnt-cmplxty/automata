@@ -1,12 +1,10 @@
 import logging
 
 from automata.symbol.base import Symbol
-from automata.symbol_embedding.base import (
-    JSONSymbolEmbeddingVectorDatabase,
-    SymbolCodeEmbedding,
-    SymbolEmbeddingHandler,
-)
+from automata.symbol_embedding.base import SymbolCodeEmbedding
 from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
+from automata.symbol_embedding.handler import SymbolEmbeddingHandler
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         of the existing embedding. If there are differences, update the embedding.
         """
         existing_embedding = self.embedding_db.get(symbol.dotpath)
-        if existing_embedding.input_object != source_code:
+        if existing_embedding.document != source_code:
             logger.debug("Building a new embedding for %s", symbol)
             self.embedding_db.discard(symbol.dotpath)
             symbol_embedding = self.embedding_builder.build(source_code, symbol)

@@ -4,7 +4,7 @@ import os
 from automata.code_handling.py.writer import PyDocWriter
 from automata.config.base import ConfigCategory
 from automata.core.utils import get_config_fpath, get_root_fpath
-from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 logger = logging.getLogger(__name__)
 

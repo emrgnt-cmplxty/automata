@@ -83,7 +83,6 @@ def test_run_with_completion_message(
     result = automata_agent.run()
 
     # Check if the result is None, indicating that the agent has completed
-    print("result = ", result)
     assert result == f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\nSuccess"
 
     # Verify that the agent's completed attribute is set to True

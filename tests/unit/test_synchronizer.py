@@ -9,10 +9,8 @@ from automata.context_providers.symbol_synchronization import (
 )
 from automata.embedding.base import EmbeddingBuilder
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.symbol_embedding.base import (
-    JSONSymbolEmbeddingVectorDatabase,
-    SymbolCodeEmbedding,
-)
+from automata.symbol_embedding.base import SymbolCodeEmbedding
+from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 from ..utils.factories import symbol_graph_static_test  # noqa: F401, F811
 
@@ -25,13 +23,13 @@ def test_build_graph_and_handler_and_synchronize(
     symbol3 = mock_simple_method_symbols[2]
 
     embedding1 = SymbolCodeEmbedding(
-        symbol=symbol1, vector=np.array([1, 0, 0, 0]), source_code="symbol1"
+        key=symbol1, vector=np.array([1, 0, 0, 0]), document="symbol1"
     )
     embedding2 = SymbolCodeEmbedding(
-        symbol=symbol2, vector=np.array([0, 1, 0, 0]), source_code="symbol2"
+        key=symbol2, vector=np.array([0, 1, 0, 0]), document="symbol2"
     )
     embedding3 = SymbolCodeEmbedding(
-        symbol=symbol3, vector=np.array([0, 0, 1, 0]), source_code="symbol3"
+        key=symbol3, vector=np.array([0, 0, 1, 0]), document="symbol3"
     )
 
     # Mock JSONSymbolEmbeddingVectorDatabase methods

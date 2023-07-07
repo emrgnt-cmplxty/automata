@@ -33,5 +33,4 @@ def fill_faq(faq_json_path: str, faq_rst_path: str) -> None:
 
 
 if __name__ == "__main__":
-    print("filling faq")
     fill_faq("faq.json", "faq.rst")
