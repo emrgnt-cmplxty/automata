@@ -1,11 +1,14 @@
 from copy import deepcopy
-from typing import Any, Callable, List, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, List, TypeVar
 
 import numpy as np
 
 from automata.core.base.database.vector import ChromaVectorDatabase, JSONVectorDatabase
 from automata.symbol.parser import parse_symbol
 from automata.symbol_embedding.base import SymbolEmbedding
+
+if TYPE_CHECKING:
+    from chromadb.api.types import GetResult
 
 V = TypeVar("V", bound=SymbolEmbedding)
 
@@ -33,13 +36,13 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         """
         metadata = deepcopy(entry.metadata)
         metadata["symbol_uri"] = entry.symbol.uri
+        print("adding metadata = ", metadata)
         self._collection.add(
             documents=[entry.document],
             metadatas=[metadata],
             ids=[self.entry_to_key(entry)],
-            embeddings=[list([int(ele) for ele in entry.vector])],
+            embeddings=[[int(ele) for ele in entry.vector]],
         )
-        print("add success, self._collection = ", self._collection)
 
     def get(
         self,
@@ -78,11 +81,8 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
             raise KeyError(f"Get failed with {key} not in database")
         elif len(result["ids"]) > 1:
             raise KeyError(f"Get failed with {key}, multiple entries found")
-        metadatas = result["metadatas"][0]
-        metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
-        metadatas["vector"] = np.array(result["embeddings"][0]).astype(int)
-        metadatas["document"] = result["documents"][0]
-        return self._factory(**metadatas)
+
+        return self._construct_object_from_result(result)
 
     def discard(self, key: str, **kwargs: Any) -> None:
         self._collection.delete(ids=[key])
@@ -96,10 +96,17 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         result = self._collection.get(ids=[key])
         return len(result["ids"]) != 0
 
-    def get_ordered_embeddings(self, keys: List[str]) -> List[V]:
-        # Retrieve ordered embeddings by keys.
-        results = self._collection.get(ids=keys, include=["embeddings"])
-        return [self._factory(vector=embedding) for embedding in results["embeddings"]]
+    def get_ordered_embeddings(self) -> List[V]:
+        results = self._collection.get(include=["documents", "metadatas", "embeddings"])
+        embeddings = [
+            self._construct_object_from_result(
+                {"metadatas": [metadata], "documents": [document], "embeddings": [embedding]}
+            )
+            for metadata, document, embedding in zip(
+                results["metadatas"], results["documents"], results["embeddings"]
+            )
+        ]
+        return sorted(embeddings, key=lambda x: x.symbol.dotpath)
 
     def load(self) -> None:
         # As Chroma is a live database, no specific load action is required.
@@ -111,12 +118,33 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
 
     def update_database(self, entry: V):
         # Update the entry in the database.
+        metadata = deepcopy(entry.metadata)
+        metadata["symbol_uri"] = entry.symbol.uri
         self._collection.update(
             documents=[entry.document],
-            metadatas=[entry.metadata],
+            metadatas=[metadata],
             ids=[self.entry_to_key(entry)],
             embeddings=[[int(ele) for ele in entry.vector]],
         )
+
+    def _construct_object_from_result(self, result: "GetResult") -> V:
+        """
+        Constructs an object from the provided result.
+
+        Args:
+            result (Dict): Result object from the Chroma DB collection get operation.
+
+        Returns:
+            V: The constructed object.
+        """
+        metadatas = result["metadatas"][0]
+        print("result = ", result)
+        print("metadatas = ", metadatas)
+        metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
+        metadatas["vector"] = np.array(result["embeddings"][0]).astype(int)
+        metadatas["document"] = result["documents"][0]
+
+        return self._factory(**metadatas)
 
 
 class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase[str, SymbolEmbedding]):

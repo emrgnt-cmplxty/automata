@@ -64,7 +64,6 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
         most_similar_code_embedding = self.symbol_code_embedding_handler.get_embedding(
             most_similar_symbol
         )
-
         result = most_similar_code_embedding.document
 
         try:
@@ -101,7 +100,6 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                         e,
                     )
                     continue
-        print("result = ", result)
         return result
 
 

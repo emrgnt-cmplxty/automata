@@ -114,7 +114,6 @@ class SymbolSearch:
         for module_path, module in cast(
             Iterable[Tuple[str, Optional[RedBaron]]], py_module_loader.items()
         ):
-            print("Checking module = ", module)
             if module:
                 lines = module.dumps().splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]

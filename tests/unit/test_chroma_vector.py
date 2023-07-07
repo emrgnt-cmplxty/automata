@@ -81,9 +81,9 @@ def test_get_ordered_embeddings(vector_db, symbols):
     symbol2 = symbols[1]
     embedded_symbol1 = SymbolCodeEmbedding(symbol1, "x", np.array([1, 2, 3]).astype(int))
     embedded_symbol2 = SymbolCodeEmbedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
-    vector_db.add(embedded_symbol1)
     vector_db.add(embedded_symbol2)
-    embeddings = vector_db.get_ordered_embeddings([symbol1.dotpath, symbol2.dotpath])
+    vector_db.add(embedded_symbol1)
+    embeddings = vector_db.get_ordered_embeddings()  # [symbol1.dotpath, symbol2.dotpath])
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 
