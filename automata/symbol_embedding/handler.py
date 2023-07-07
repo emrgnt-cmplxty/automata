@@ -1,5 +1,5 @@
 import abc
-from typing import Any, List
+from typing import List
 
 from automata.embedding.base import EmbeddingBuilder, EmbeddingHandler
 from automata.symbol.base import ISymbolProvider, Symbol
@@ -10,7 +10,6 @@ from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVector
 class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
     """An abstract class to handle the embedding of symbols"""
 
-    @abc.abstractmethod
     def __init__(
         self,
         embedding_db: JSONSymbolEmbeddingVectorDatabase,
@@ -20,20 +19,18 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
         self.embedding_db = embedding_db
         self.embedding_builder = embedding_builder
         self.sorted_supported_symbols = [
-            ele.symbol for ele in self.embedding_db.get_ordered_embeddings()
+            ele.symbol for ele in self.embedding_db.get_ordered_entries()
         ]
-
-    @abc.abstractmethod
-    def get_embedding(self, symbol: Symbol) -> Any:
-        """An abstract method to get the embedding for a symbol"""
-        pass
 
     @abc.abstractmethod
     def process_embedding(self, symbol: Symbol) -> None:
         """An abstract method to process the embedding for a symbol"""
         pass
 
-    def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
+    def get_embedding(self, symbol: Symbol) -> SymbolEmbedding:
+        return self.embedding_db.get(symbol.dotpath)
+
+    def get_ordered_entries(self) -> List[SymbolEmbedding]:
         return [self.get_embedding(ele) for ele in self.sorted_supported_symbols]
 
     # ISymbolProvider methods

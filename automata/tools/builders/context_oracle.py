@@ -11,6 +11,7 @@ from automata.llm.providers.openai import OpenAITool
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+from automata.symbol_embedding.base import SymbolDocEmbedding
 from automata.tools.base import Tool
 
 logger = logging.getLogger(__name__)
@@ -88,10 +89,14 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                 if counter >= max_related_symbols:
                     break
                 try:
+                    doc_embedding = self.symbol_doc_embedding_handler.get_embedding(symbol)
+                    if not isinstance(doc_embedding, SymbolDocEmbedding):
+                        raise Exception(
+                            f"Embedding {doc_embedding} is not a SymbolDocEmbeddingHandler"
+                        )
+
                     result += f"{symbol.dotpath}\n\n"
-                    result += (
-                        f"{self.symbol_doc_embedding_handler.get_embedding(symbol).summary}\n\n"
-                    )
+                    result += f"{doc_embedding.summary}\n\n"
                     counter += 1
                 except Exception as e:
                     logger.error(

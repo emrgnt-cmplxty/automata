@@ -1,7 +1,6 @@
 import logging
 
 from automata.symbol.base import Symbol, SymbolDescriptor
-from automata.symbol_embedding.base import SymbolDocEmbedding
 from automata.symbol_embedding.builders import SymbolDocEmbeddingBuilder
 from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
@@ -18,9 +17,6 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_builder: SymbolDocEmbeddingBuilder,
     ) -> None:
         super().__init__(embedding_db, embedding_builder)
-
-    def get_embedding(self, symbol: Symbol) -> SymbolDocEmbedding:
-        return self.embedding_db.get(symbol.dotpath)
 
     def process_embedding(self, symbol: Symbol) -> None:
         """
