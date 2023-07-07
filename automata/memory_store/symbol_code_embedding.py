@@ -1,7 +1,6 @@
 import logging
 
 from automata.symbol.base import Symbol
-from automata.symbol_embedding.base import SymbolCodeEmbedding
 from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
 from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
@@ -18,9 +17,6 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_builder: SymbolCodeEmbeddingBuilder,
     ) -> None:
         super().__init__(embedding_db, embedding_builder)
-
-    def get_embedding(self, symbol: Symbol) -> SymbolCodeEmbedding:
-        return self.embedding_db.get(symbol.dotpath)
 
     def process_embedding(self, symbol: Symbol) -> None:
         """Process the embedding for a `Symbol` by updating if the source code has changed."""

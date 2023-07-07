@@ -52,7 +52,7 @@ class SymbolSearch:
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        ordered_embeddings = self.search_embedding_handler.get_ordered_embeddings()
+        ordered_embeddings = self.search_embedding_handler.get_ordered_entries()
 
         query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
             ordered_embeddings, query

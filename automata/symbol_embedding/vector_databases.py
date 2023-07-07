@@ -1,3 +1,4 @@
+import abc
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Callable, List, Optional, TypeVar
 
@@ -13,7 +14,15 @@ if TYPE_CHECKING:
 V = TypeVar("V", bound=SymbolEmbedding)
 
 
-class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
+class IEmbeddingLookupProvider(abc.ABC):
+    """A concrete base class an interface for embedding lookup providers."""
+
+    def embedding_to_key(self, entry: SymbolEmbedding) -> str:
+        """Concrete implementation to generate a simple hashable key from a Symbol."""
+        return entry.symbol.dotpath
+
+
+class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddingLookupProvider):
     """Concrete class to provide a vector database that saves into a Chroma db."""
 
     def __init__(
@@ -24,12 +33,6 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
     ):
         super().__init__(collection_name, persist_directory)
         self._factory = factory
-
-    def entry_to_key(self, entry: V) -> str:
-        """
-        Generates a simple hashable key from a Symbol.
-        """
-        return entry.symbol.dotpath
 
     def add(self, entry: V) -> None:
         """
@@ -43,6 +46,9 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         We have chosen to use dotpaths since they are easier to maintain
         as a commit hash change will not cause them to become stale.
         """
+        if self.contains(self.entry_to_key(entry)):
+            raise KeyError(f"Add failed with {entry} already in database")
+
         metadata = deepcopy(entry.metadata)
         metadata["symbol_uri"] = entry.symbol.uri
         self._collection.add(
@@ -50,6 +56,31 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
             metadatas=[metadata],
             ids=[self.entry_to_key(entry)],
             embeddings=[[int(ele) for ele in entry.vector]],
+        )
+
+    def batch_add(self, entries):
+        """
+        Batch add entries to the database.
+
+        Arguments:
+        entries -- list of entries to add
+        """
+        documents = []
+        metadatas = []
+        ids = []
+        embeddings = []
+
+        for entry in entries:
+            documents.append(entry.document)
+            metadatas.append(entry.metadata)
+            ids.append(self.entry_to_key(entry))
+            embeddings.append([int(ele) for ele in entry.vector])
+
+        self._collection.add(
+            documents=documents,
+            metadatas=metadatas,
+            ids=ids,
+            embeddings=embeddings,
         )
 
     def get(
@@ -92,21 +123,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
 
         return self._construct_object_from_result(result)
 
-    def discard(self, key: str, **kwargs: Any) -> None:
-        """Deletes an entry from the collection using the provided key."""
-
-        self._collection.delete(ids=[key])
-
-    def clear(self):
-        """Clears all entries in the collection."""
-        self._collection.delete(where={})
-
-    def contains(self, key: str) -> bool:
-        """Checks if a key is present in the collection."""
-        result = self._collection.get(ids=[key])
-        return len(result["ids"]) != 0
-
-    def get_ordered_embeddings(self) -> List[V]:
+    def get_ordered_entries(self) -> List[V]:
         """Retrieves all embeddings in the collection in a sorted order."""
         results = self._collection.get(include=["documents", "metadatas", "embeddings"])
         embeddings = [
@@ -119,15 +136,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
         ]
         return sorted(embeddings, key=lambda x: x.symbol.dotpath)
 
-    def load(self) -> None:
-        # As Chroma is a live database, no specific load action is required.
-        pass
-
-    def save(self) -> None:
-        # As Chroma is a live database, no specific save action is required.
-        pass
-
-    def update_database(self, entry: V):
+    def update_entry(self, entry: V):
         """Updates an entry in the database."""
         # Update the entry in the database.
         metadata = deepcopy(entry.metadata)
@@ -139,6 +148,8 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
             embeddings=[[int(ele) for ele in entry.vector]],
         )
 
+        return entry.symbol.dotpath
+
     def _construct_object_from_result(self, result: "GetResult") -> V:
         """Constructs an object from the provided result."""
         metadatas = result["metadatas"][0]
@@ -148,16 +159,101 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V]):
 
         return self._factory(**metadatas)
 
+    def entry_to_key(self, entry: V) -> str:
+        """
+        Generates a simple hashable key from a Symbol.
+        """
+        return self.embedding_to_key(entry)
 
-class JSONSymbolEmbeddingVectorDatabase(JSONVectorDatabase[str, SymbolEmbedding]):
+    def get_ordered_keys(self) -> List[str]:
+        """Retrieves all keys in the collection in a sorted order."""
+        results = self._collection.get(include=[])
+        return sorted(list(results["ids"]))
+
+    def batch_update(self, entries: List[V]) -> None:
+        """
+        Batch update entries in the database.
+
+        Arguments:
+        entries -- list of entries to update
+        """
+        documents = []
+        metadatas = []
+        ids = []
+        embeddings = []
+
+        for entry in entries:
+            documents.append(entry.document)
+            metadatas.append(entry.metadata)
+            ids.append(self.entry_to_key(entry))
+            embeddings.append([int(ele) for ele in entry.vector])
+
+        self._collection.update(
+            documents=documents,
+            metadatas=metadatas,
+            ids=ids,
+            embeddings=embeddings,
+        )
+
+    def batch_get(self, keys: List[str], *args: Any, **kwargs: Any) -> List[V]:
+        """
+        Retrieves multiple entries from the collection using the provided keys.
+
+        Keyword Args:
+            ids: The ids of the embeddings to get. Optional.
+            where: A Where type dict used to filter results by.
+                E.g. `{"color" : "red", "price": 4.20}`. Optional.
+            limit: The number of documents to return. Optional.
+            offset: The offset to start returning results from.
+                    Useful for paging results with limit. Optional.
+            where_document: A WhereDocument type dict used to filter by the documents.
+                            E.g. `{$contains: {"text": "hello"}}`. Optional.
+            include: A list of what to include in the results.
+                    Can contain `"embeddings"`, `"metadatas"`, `"documents"`.
+                    Ids are always included.
+                    Defaults to `["metadatas", "documents", "embeddings"]`. Optional.
+        """
+        kwargs = {
+            "ids": keys,
+            "where": kwargs.get("where"),
+            "limit": kwargs.get("limit"),
+            "offset": kwargs.get("offset"),
+            "where_document": kwargs.get("where_document"),
+            "include": kwargs.get("include", ["documents", "metadatas", "embeddings"]),
+        }
+
+        result = self._collection.get(**kwargs)
+        if len(result["ids"]) == 0:
+            raise KeyError(f"Get failed with {keys}, no entries found")
+
+        return [
+            self._construct_object_from_result(
+                {"metadatas": [metadata], "documents": [document], "embeddings": [embedding]}
+            )
+            for metadata, document, embedding in zip(
+                result["metadatas"], result["documents"], result["embeddings"]
+            )
+        ]
+
+
+class JSONSymbolEmbeddingVectorDatabase(
+    JSONVectorDatabase[str, SymbolEmbedding], IEmbeddingLookupProvider
+):
     """Concrete class to provide a vector database that saves into a JSON file."""
 
     def __init__(self, file_path: str):
         super().__init__(file_path)
 
-    def entry_to_key(self, entry: SymbolEmbedding) -> str:
-        """Concrete implementation to generate a simple hashable key from a Symbol."""
-        return entry.symbol.dotpath
+    def get_ordered_keys(self) -> List[str]:
+        return [
+            ele.symbol.dotpath for ele in sorted(self.data, key=lambda x: self.entry_to_key(x))
+        ]
 
-    def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
-        return sorted(self.data, key=lambda x: self.entry_to_key(x))
+    def get_ordered_entries(self) -> List[SymbolEmbedding]:
+        return [self.data[self.index[key]] for key in self.get_ordered_keys()]
+
+    def entry_to_key(self, entry: V) -> str:
+        """
+        Generates a simple hashable key from a Symbol.
+        """
+        return self.embedding_to_key(entry)

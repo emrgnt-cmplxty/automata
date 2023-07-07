@@ -34,7 +34,7 @@ class RelationalDatabase(ABC):
         pass
 
     @abstractmethod
-    def update_database(self, table_name: str, data: Dict, conditions: Dict):
+    def update_entry(self, table_name: str, data: Dict, conditions: Dict):
         """Update data in a table."""
         pass
 
@@ -79,7 +79,7 @@ class SQLDatabase(RelationalDatabase):
             self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def update_database(self, table_name: str, data: Dict, conditions: Dict = {}):
+    def update_entry(self, table_name: str, data: Dict, conditions: Dict = {}):
         data_str = ", ".join([f"{k} = ?" for k in data])
         conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
         self.cursor.execute(
