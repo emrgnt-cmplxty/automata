@@ -7,7 +7,7 @@ from typing import Dict, Iterable, Optional, Tuple, Union
 
 from redbaron import RedBaron
 
-from automata.core.base.patterns.singleton import Singleton
+from automata.core.base.patterns.singleton import Doubleton
 from automata.core.utils import get_root_fpath, get_root_py_fpath
 from automata.navigation.py.dotpath_map import DotPathMap
 
@@ -23,7 +23,12 @@ class ParsingStrategy(Enum):
 AstType = Union[RedBaron, Module]
 
 
-class PyModuleLoader(metaclass=Singleton):
+# Doubleton metaclass for ensuring at most two instances of a class.
+# This is used to ensure that we can have two different parsing strategies
+# for the same project.
+# This is just a temporary solution to avoid breaking existing code.
+# Will be changed back to Singleton in the future.
+class PyModuleLoader(metaclass=Doubleton):
     """
     A Singleton with a lazy dictionary mapping dotpaths to their corresponding RedBaron FST objects.
     Loads and caches modules in memory as they are accessed
