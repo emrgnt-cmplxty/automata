@@ -41,8 +41,8 @@ class PyModuleLoader(metaclass=Singleton):
     _loaded_modules: Dict[str, Optional[AstType]] = {}
     parsing_strategy: ParsingStrategy = ParsingStrategy.REDBARON
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, parsing_strategy: Optional[ParsingStrategy] = None) -> None:
+        self.parsing_strategy = parsing_strategy or self.parsing_strategy
 
     def initialize(
         self,
@@ -231,4 +231,7 @@ class PyModuleLoader(metaclass=Singleton):
             return None
 
 
+# Temporary solution to avoid breaking existing code
+# Will be removed in the future
+pyast_module_loader: PyModuleLoader = PyModuleLoader(parsing_strategy=ParsingStrategy.PYAST)
 py_module_loader: PyModuleLoader = PyModuleLoader()
