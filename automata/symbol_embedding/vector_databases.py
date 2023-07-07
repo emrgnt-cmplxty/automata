@@ -1,15 +1,6 @@
 import abc
 from copy import deepcopy
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, TypeVar, Union
 
 import numpy as np
 
@@ -67,10 +58,9 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         """Adds multiple entries to the collection."""
         self._collection.add(**self._prepare_entries_for_insertion(entries))
 
-    def update_entry(self, entry: V) -> str:
+    def update_entry(self, entry: V) -> None:
         """Updates an entry in the database."""
         self._collection.update(**self._prepare_entries_for_insertion([entry]))
-        return entry.symbol.dotpath
 
     def batch_update(self, entries: List[V]) -> None:
         """Updates multiple entries in the database."""
@@ -167,7 +157,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
 
         return self._factory(**metadatas)
 
-    def _sort_entries(self, results: List[Dict[str, Any]]) -> List[V]:
+    def _sort_entries(self, results: Dict[str, List[Any]]) -> List[V]:
         """Sorts the entries based on their dotpaths."""
         entries = [
             self._construct_entry_from_result(
@@ -178,10 +168,6 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
             )
         ]
         return sorted(entries, key=lambda x: x.symbol.dotpath)
-
-    def _collection_get(self, kwargs: Dict[str, Any]) -> Dict[str, Any]:
-        """Gets entries data from the collection."""
-        return self._collection.get(**kwargs)
 
 
 class JSONSymbolEmbeddingVectorDatabase(
