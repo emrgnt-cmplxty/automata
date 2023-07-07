@@ -26,6 +26,7 @@ from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
 from automata.symbol.base import ISymbolProvider
 from automata.symbol.graph import SymbolGraph
+from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 from automata.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,
@@ -186,6 +187,7 @@ class DependencyFactory(metaclass=Singleton):
             ChromaSymbolEmbeddingVectorDatabase(
                 "automata",
                 persist_directory=DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH,
+                factory=SymbolCodeEmbedding.from_args,
             ),
         )
         embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
@@ -210,6 +212,7 @@ class DependencyFactory(metaclass=Singleton):
             ChromaSymbolEmbeddingVectorDatabase(
                 "automata",
                 persist_directory=DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH,
+                factory=SymbolDocEmbedding.from_args,
             ),
         )
         embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
