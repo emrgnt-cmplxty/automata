@@ -6,7 +6,10 @@ from automata.symbol_embedding.vector_databases import (
     ChromaSymbolEmbeddingVectorDatabase,
 )
 
-db_name = "a_test_db"
+collection_name = "a_test_collection"
+
+# TODO - We need more tests around persistence
+# FIXME - We need to make sure db folder clears after running tests
 
 
 # Parameterized fixture for embedding type
@@ -38,14 +41,14 @@ def make_embedding(embedding_type):
 # Factory fixture for creating database instances
 @pytest.fixture
 def vector_db(embedding_type):
-    return ChromaSymbolEmbeddingVectorDatabase(db_name, factory=embedding_type.from_args)
+    return ChromaSymbolEmbeddingVectorDatabase(collection_name, factory=embedding_type.from_args)
 
 
 # Factory fixture for creating database instances
 @pytest.fixture
 def vector_db_persistent(embedding_type, temp_output_filename):
     return ChromaSymbolEmbeddingVectorDatabase(
-        db_name, factory=embedding_type.from_args, persist_directory=temp_output_filename
+        collection_name, factory=embedding_type.from_args, persist_directory=temp_output_filename
     )
 
 
@@ -146,7 +149,9 @@ def test_update_database(vector_db, symbols, make_embedding):
 
 @pytest.fixture
 def vector_db_old():
-    return ChromaSymbolEmbeddingVectorDatabase(db_name, factory=SymbolCodeEmbedding.from_args)
+    return ChromaSymbolEmbeddingVectorDatabase(
+        collection_name, factory=SymbolCodeEmbedding.from_args
+    )
 
 
 @pytest.fixture
