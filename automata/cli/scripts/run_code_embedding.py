@@ -7,10 +7,13 @@ from automata.config.base import ConfigCategory
 from automata.core.utils import get_config_fpath
 from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.singletons.dependency_factory import dependency_factory
+from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
+from automata.symbol_embedding.vector_databases import (
+    ChromaSymbolEmbeddingVectorDatabase,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,22 +25,10 @@ def main(*args, **kwargs) -> str:
 
     py_module_loader.initialize()
 
-    scip_fpath = os.path.join(
-        get_config_fpath(),
-        ConfigCategory.SYMBOL.to_path(),
-        kwargs.get("index-file", "automata.scip"),
-    )
-    code_embedding_fpath = os.path.join(
-        get_config_fpath(),
-        ConfigCategory.SYMBOL.to_path(),
-        kwargs.get("code-embedding-file", "symbol_code_embedding.json"),
-    )
     embedding_provider = OpenAIEmbeddingProvider()
 
     dependency_factory.set_overrides(
         **{
-            "symbol_graph_scip_fpath": scip_fpath,
-            "code_embedding_fpath": code_embedding_fpath,
             "embedding_provider": embedding_provider,
             "disable_synchronization": True,
         }

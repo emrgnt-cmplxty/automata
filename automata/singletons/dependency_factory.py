@@ -63,8 +63,8 @@ class DependencyFactory(metaclass=Singleton):
         Keyword Args (Defaults):
             disable_synchronization (False): Disable synchronization of ISymbolProvider dependencies and created classes?
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH): Filepath to the SCIP index file.
-            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH): Filepath to the code embedding database.
-            doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH): Filepath to the doc embedding database.
+            code_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for code embeddings.
+            doc_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for doc embeddings.
             coding_project_path (get_root_py_fpath()): Filepath to the root of the coding project.
             symbol_rank_config (SymbolRankConfig()): Configuration for the SymbolRank algorithm.
             py_context_retriever_config (PyContextRetrieverConfig()): Configuration for the PyContextRetriever.
@@ -178,7 +178,7 @@ class DependencyFactory(metaclass=Singleton):
     def create_symbol_code_embedding_handler(self) -> SymbolCodeEmbeddingHandler:
         """
         Associated Keyword Args:
-            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            code_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for code embeddings.
             embedding_provider (OpenAIEmbedding())
         """
         code_embedding_db = self.overrides.get(
@@ -201,7 +201,7 @@ class DependencyFactory(metaclass=Singleton):
     def create_symbol_doc_embedding_handler(self) -> SymbolDocEmbeddingHandler:
         """
         Associated Keyword Args:
-            doc_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            doc_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for doc embeddings.
             embedding_provider (OpenAIEmbedding())
         """
 
