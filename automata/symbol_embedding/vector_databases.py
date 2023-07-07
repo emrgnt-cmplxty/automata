@@ -1,6 +1,15 @@
 import abc
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 
@@ -9,6 +18,7 @@ from automata.symbol.parser import parse_symbol
 from automata.symbol_embedding.base import SymbolEmbedding
 
 if TYPE_CHECKING:
+    # TODO - How does this impact dependencies?
     from chromadb.api.types import GetResult
 
 V = TypeVar("V", bound=SymbolEmbedding)
@@ -23,7 +33,7 @@ class IEmbeddingLookupProvider(abc.ABC):
 
 
 class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddingLookupProvider):
-    """Concrete class to provide a vector database that saves into a Chroma db."""
+    """A vector database that saves into a Chroma db."""
 
     def __init__(
         self,
@@ -34,61 +44,45 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         super().__init__(collection_name, persist_directory)
         self._factory = factory
 
+    # Parameterless methods
+
+    def get_ordered_keys(self) -> List[str]:
+        """Retrieves all keys in the collection in a sorted order."""
+        results = self._collection.get(include=[])
+        return sorted(results["ids"])
+
+    def get_ordered_entries(self) -> List[V]:
+        """Retrieves all entries in the collection in a sorted order."""
+        results = self._collection.get(**{"include": ["documents", "metadatas", "embeddings"]})
+        return self._sort_entries(results)
+
+    # Value dependent methods (e.g. V dependent)
+
     def add(self, entry: V) -> None:
-        """
-        Adds a SymbolEmbedding to the collection.
+        """Adds a SymbolEmbedding to the collection, checking for existing entries."""
+        self._check_duplicate_entry(self.entry_to_key(entry))
+        self._collection.add(**self._prepare_entries_for_insertion([entry]))
 
-        Adds the specified SymbolEmbedding to the collection.
-        FIXME - Adding raw symbol to the metadata is a hack
-        to get around the fact that we are using 'dotpaths' as keys
-        rather than the raw symbols.
-        We should think of a smarter way to approach this problem.
-        We have chosen to use dotpaths since they are easier to maintain
-        as a commit hash change will not cause them to become stale.
-        """
-        if self.contains(self.entry_to_key(entry)):
-            raise KeyError(f"Add failed with {entry} already in database")
+    def batch_add(self, entries: List[V]) -> None:
+        """Adds multiple entries to the collection."""
+        self._collection.add(**self._prepare_entries_for_insertion(entries))
 
-        metadata = deepcopy(entry.metadata)
-        metadata["symbol_uri"] = entry.symbol.uri
-        self._collection.add(
-            documents=[entry.document],
-            metadatas=[metadata],
-            ids=[self.entry_to_key(entry)],
-            embeddings=[[int(ele) for ele in entry.vector]],
-        )
+    def update_entry(self, entry: V) -> str:
+        """Updates an entry in the database."""
+        self._collection.update(**self._prepare_entries_for_insertion([entry]))
+        return entry.symbol.dotpath
 
-    def batch_add(self, entries):
-        """
-        Batch add entries to the database.
+    def batch_update(self, entries: List[V]) -> None:
+        """Updates multiple entries in the database."""
+        self._collection.update(**self._prepare_entries_for_insertion(entries))
 
-        Arguments:
-        entries -- list of entries to add
-        """
-        documents = []
-        metadatas = []
-        ids = []
-        embeddings = []
+    def entry_to_key(self, entry: V) -> str:
+        """Generates a hashable key from a Symbol."""
+        return self.embedding_to_key(entry)
 
-        for entry in entries:
-            documents.append(entry.document)
-            metadatas.append(entry.metadata)
-            ids.append(self.entry_to_key(entry))
-            embeddings.append([int(ele) for ele in entry.vector])
+        # Keyed dependent methods (e.g. str dependent)
 
-        self._collection.add(
-            documents=documents,
-            metadatas=metadatas,
-            ids=ids,
-            embeddings=embeddings,
-        )
-
-    def get(
-        self,
-        key: str,
-        *args: Any,
-        **kwargs: Any,
-    ) -> V:
+    def get(self, key: str, *args: Any, **kwargs: Any) -> V:
         """
         Retrieves an entry from the collection using the provided key.
 
@@ -106,52 +100,66 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
                     Ids are always included.
                     Defaults to `["metadatas", "documents", "embeddings"]`. Optional.
         """
-        kwargs = {
-            "ids": key,
-            "where": kwargs.get("where"),
-            "limit": kwargs.get("limit"),
-            "offset": kwargs.get("offset"),
-            "where_document": kwargs.get("where_document"),
-            "include": kwargs.get("include", ["documents", "metadatas", "embeddings"]),
-        }
+        kwargs["ids"] = [key]
+        kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
 
         result = self._collection.get(**kwargs)
-        if len(result["ids"]) == 0:
-            raise KeyError(f"Get failed with {key} not in database")
-        elif len(result["ids"]) > 1:
-            raise KeyError(f"Get failed with {key}, multiple entries found")
+        self._check_result_entries(result["ids"], key)
 
-        return self._construct_object_from_result(result)
+        return self._construct_entry_from_result(result)
 
-    def get_ordered_entries(self) -> List[V]:
-        """Retrieves all embeddings in the collection in a sorted order."""
-        results = self._collection.get(include=["documents", "metadatas", "embeddings"])
-        embeddings = [
-            self._construct_object_from_result(
-                {"metadatas": [metadata], "documents": [document], "embeddings": [embedding]}
-            )
-            for metadata, document, embedding in zip(
-                results["metadatas"], results["documents"], results["embeddings"]
-            )
-        ]
-        return sorted(embeddings, key=lambda x: x.symbol.dotpath)
+    def batch_get(self, keys: List[str], *args: Any, **kwargs: Any) -> List[V]:
+        """
+        Retrieves multiple entries from the collection using the provided keys.
 
-    def update_entry(self, entry: V):
-        """Updates an entry in the database."""
-        # Update the entry in the database.
+        Check `get` for more information on accepted kwargs.
+        """
+        kwargs["ids"] = keys
+        kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
+
+        results = self._collection.get(**kwargs)
+        self._check_result_entries(results["ids"], keys)
+
+        return [self._construct_entry_from_result(result) for result in results]
+
+    # Support methods
+
+    def _check_duplicate_entry(self, key: str) -> None:
+        """Raises an error if the key already exists in the collection."""
+        if self.contains(key):
+            raise KeyError(f"Add failed with {key} already in database")
+
+    def _check_result_entries(self, ids: List[str], keys: Union[str, List[str]]) -> None:
+        """Raises an error if no entries or multiple entries are found."""
+        if not ids:
+            raise KeyError(f"Get failed with {keys}, no entries found")
+        if len(ids) > 1:
+            raise KeyError(f"Get failed with {keys}, multiple entries found")
+
+    def _prepare_entry_for_insertion(self, entry: V) -> Dict[str, Any]:
+        """Prepares an entry for insertion into the database."""
         metadata = deepcopy(entry.metadata)
         metadata["symbol_uri"] = entry.symbol.uri
-        self._collection.update(
-            documents=[entry.document],
-            metadatas=[metadata],
-            ids=[self.entry_to_key(entry)],
-            embeddings=[[int(ele) for ele in entry.vector]],
-        )
+        return {
+            "document": entry.document,
+            "metadata": metadata,
+            "id": self.entry_to_key(entry),
+            "embedding": [int(ele) for ele in entry.vector],
+        }
 
-        return entry.symbol.dotpath
+    def _prepare_entries_for_insertion(self, entries: List[V]) -> Dict[str, Any]:
+        """Prepares multiple entries for insertion into the database."""
+        entries_data = [self._prepare_entry_for_insertion(entry) for entry in entries]
+        return {
+            "documents": [entry_data["document"] for entry_data in entries_data],
+            "metadatas": [entry_data["metadata"] for entry_data in entries_data],
+            "ids": [entry_data["id"] for entry_data in entries_data],
+            "embeddings": [entry_data["embedding"] for entry_data in entries_data],
+        }
 
-    def _construct_object_from_result(self, result: "GetResult") -> V:
+    def _construct_entry_from_result(self, result: "GetResult") -> V:
         """Constructs an object from the provided result."""
+        # FIXME - Consider how to properly handle typing here.
         metadatas = result["metadatas"][0]
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
         metadatas["vector"] = np.array(result["embeddings"][0]).astype(int)
@@ -159,81 +167,21 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
 
         return self._factory(**metadatas)
 
-    def entry_to_key(self, entry: V) -> str:
-        """
-        Generates a simple hashable key from a Symbol.
-        """
-        return self.embedding_to_key(entry)
-
-    def get_ordered_keys(self) -> List[str]:
-        """Retrieves all keys in the collection in a sorted order."""
-        results = self._collection.get(include=[])
-        return sorted(list(results["ids"]))
-
-    def batch_update(self, entries: List[V]) -> None:
-        """
-        Batch update entries in the database.
-
-        Arguments:
-        entries -- list of entries to update
-        """
-        documents = []
-        metadatas = []
-        ids = []
-        embeddings = []
-
-        for entry in entries:
-            documents.append(entry.document)
-            metadatas.append(entry.metadata)
-            ids.append(self.entry_to_key(entry))
-            embeddings.append([int(ele) for ele in entry.vector])
-
-        self._collection.update(
-            documents=documents,
-            metadatas=metadatas,
-            ids=ids,
-            embeddings=embeddings,
-        )
-
-    def batch_get(self, keys: List[str], *args: Any, **kwargs: Any) -> List[V]:
-        """
-        Retrieves multiple entries from the collection using the provided keys.
-
-        Keyword Args:
-            ids: The ids of the embeddings to get. Optional.
-            where: A Where type dict used to filter results by.
-                E.g. `{"color" : "red", "price": 4.20}`. Optional.
-            limit: The number of documents to return. Optional.
-            offset: The offset to start returning results from.
-                    Useful for paging results with limit. Optional.
-            where_document: A WhereDocument type dict used to filter by the documents.
-                            E.g. `{$contains: {"text": "hello"}}`. Optional.
-            include: A list of what to include in the results.
-                    Can contain `"embeddings"`, `"metadatas"`, `"documents"`.
-                    Ids are always included.
-                    Defaults to `["metadatas", "documents", "embeddings"]`. Optional.
-        """
-        kwargs = {
-            "ids": keys,
-            "where": kwargs.get("where"),
-            "limit": kwargs.get("limit"),
-            "offset": kwargs.get("offset"),
-            "where_document": kwargs.get("where_document"),
-            "include": kwargs.get("include", ["documents", "metadatas", "embeddings"]),
-        }
-
-        result = self._collection.get(**kwargs)
-        if len(result["ids"]) == 0:
-            raise KeyError(f"Get failed with {keys}, no entries found")
-
-        return [
-            self._construct_object_from_result(
+    def _sort_entries(self, results: List[Dict[str, Any]]) -> List[V]:
+        """Sorts the entries based on their dotpaths."""
+        entries = [
+            self._construct_entry_from_result(
                 {"metadatas": [metadata], "documents": [document], "embeddings": [embedding]}
             )
             for metadata, document, embedding in zip(
-                result["metadatas"], result["documents"], result["embeddings"]
+                results["metadatas"], results["documents"], results["embeddings"]
             )
         ]
+        return sorted(entries, key=lambda x: x.symbol.dotpath)
+
+    def _collection_get(self, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+        """Gets entries data from the collection."""
+        return self._collection.get(**kwargs)
 
 
 class JSONSymbolEmbeddingVectorDatabase(
