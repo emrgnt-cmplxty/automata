@@ -91,7 +91,9 @@ def test_yaml_compatibility(file_path) -> None:
 
 if __name__ == "__main__":
     # Find all .yaml files in the specified directory
-    yaml_files = glob.glob(os.path.join(get_config_fpath(), ConfigCategory.AGENT.value, "*.yaml"))
+    yaml_files = glob.glob(
+        os.path.join(get_config_fpath(), ConfigCategory.AGENT.to_path(), "*.yaml")
+    )
 
     # Run validation and compatibility tests on each YAML file
     for yaml_file in yaml_files:

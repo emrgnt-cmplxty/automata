@@ -20,7 +20,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option(
             "--index-file",
-            default="index.scip",
+            default="automata.scip",
             help="Which index file to use for the embedding modifications.",
         ),
         click.option(

@@ -46,6 +46,7 @@ class OpenAIAutomataAgent(Agent):
     def __init__(self, instructions: str, config: OpenAIAutomataAgentConfig) -> None:
         super().__init__(instructions)
         self.config = config
+        print(" self.config = ", self.config)
         self.iteration_count = 0
         self.agent_conversation_database = OpenAIConversation()
         self.completed = False
@@ -165,7 +166,7 @@ class OpenAIAutomataAgent(Agent):
         assert "user_input_instructions" in instruction_formatter
 
         messages_config = load_config(
-            ConfigCategory.INSTRUCTION.value, self.config.instruction_version.value
+            ConfigCategory.INSTRUCTION.to_path(), self.config.instruction_version.to_path()
         )
         initial_messages = messages_config["initial_messages"]
 

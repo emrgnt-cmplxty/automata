@@ -77,7 +77,12 @@ class OpenAIAutomataAgentConfig(AgentConfig):
             return OpenAIAutomataAgentConfig()
 
         loaded_yaml = cls._load_automata_yaml_config(config_name)
-        return OpenAIAutomataAgentConfig(**loaded_yaml)
+        casted_config = OpenAIAutomataAgentConfig(**loaded_yaml)
+        # FIXME - Why is this cast necessary to ensure correct versioning?
+        casted_config.instruction_version = InstructionConfigVersion(
+            casted_config.instruction_version
+        )
+        return casted_config
 
     @staticmethod
     def get_llm_provider() -> LLMProvider:
