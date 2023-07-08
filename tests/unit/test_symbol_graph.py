@@ -37,9 +37,11 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
         synchronization_context.synchronize()
 
     py_module_loader.initialize()
+    py_module_loader.initialize()
 
     # build the subgraph
     subgraph = symbol_graph_static_test.default_rankable_subgraph
     assert len(subgraph) == 45
 
+    py_module_loader.initialized = False
     py_module_loader.initialized = False
