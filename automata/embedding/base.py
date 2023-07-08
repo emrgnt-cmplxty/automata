@@ -3,6 +3,7 @@ import logging
 from enum import Enum
 from typing import Any, Dict, Sequence
 
+import astunparse
 import numpy as np
 
 from automata.core.base.database.vector import VectorDatabaseProvider
@@ -58,7 +59,7 @@ class EmbeddingBuilder(abc.ABC):
             convert_to_ast_object,
         )
 
-        return str(convert_to_ast_object(symbol))
+        return astunparse.unparse(convert_to_ast_object(symbol))
 
 
 class EmbeddingHandler(abc.ABC):

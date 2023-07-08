@@ -33,6 +33,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         if self.embedding_db.contains(symbol.dotpath):
             self.update_existing_embedding(source_code, symbol)
             return
+        print("Building embedding for", symbol)
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
         elif isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):

@@ -33,7 +33,6 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         of the existing embedding. If there are differences, update the embedding.
         """
         existing_embedding = self.embedding_db.get(symbol.dotpath)
-
         if existing_embedding.document != source_code:
             self.embedding_db.discard(symbol.dotpath)
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
