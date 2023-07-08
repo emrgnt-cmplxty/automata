@@ -23,19 +23,19 @@ def check_hits(expected_in_top_hits, found_top_hits):
     "search, expected_in_top_hits",
     [
         ("SymbolGraph", ["Symbol", "SymbolGraph", "GraphBuilder"]),
-        # ("SymbolSearch", ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"]),
-        # ("Embedding", ["SymbolCodeEmbedding", "SymbolDocEmbedding"]),
-        # (
-        #     "OpenAI",
-        #     [
-        #         "OpenAIAutomataAgent",
-        #         "OpenAIConversation",
-        #         "OpenAIEmbeddingProvider",
-        #         "OpenAIChatCompletionProvider",
-        #     ],
-        # ),
-        # ("LLM", ["LLMProvider", "LLMChatMessage", "LLMConversation", "LLMCompletionResult"]),
-        # ("Symbol", ["Symbol", "SymbolGraph"]),
+        ("SymbolSearch", ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"]),
+        ("Embedding", ["SymbolCodeEmbedding", "SymbolDocEmbedding"]),
+        (
+            "OpenAI",
+            [
+                "OpenAIAutomataAgent",
+                "OpenAIConversation",
+                "OpenAIEmbeddingProvider",
+                "OpenAIChatCompletionProvider",
+            ],
+        ),
+        ("LLM", ["LLMProvider", "LLMChatMessage", "LLMConversation", "LLMCompletionResult"]),
+        ("Symbol", ["Symbol", "SymbolGraph"]),
     ],
 )
 def test_symbol_rank_search_on_symbol(

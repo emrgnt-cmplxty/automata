@@ -1,7 +1,7 @@
 import logging
 import os.path
 from ast import Module
-from ast import parse as pyast_parse
+from ast import parse as py_ast_parse
 from typing import Dict, Iterable, Optional, Tuple
 
 from automata.core.base.patterns.singleton import Singleton
@@ -192,7 +192,7 @@ class PyModuleLoader(metaclass=Singleton):
     @staticmethod
     def _load_module_from_fpath(path: str) -> Optional[Module]:
         """
-        Loads and returns an FST/Python's AST object for the given file path.
+        Loads and returns a AST object for the given file path.
 
         Args:
             path (str): The file path of the Python source code.
@@ -201,7 +201,7 @@ class PyModuleLoader(metaclass=Singleton):
             Module: AST object for the given file path.
         """
         try:
-            return pyast_parse(open(path).read())
+            return py_ast_parse(open(path).read())
         except Exception as e:
             logger.error(f"Failed to load module '{path}' due to: {e}")
             return None

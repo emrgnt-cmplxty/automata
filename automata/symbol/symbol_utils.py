@@ -1,51 +1,11 @@
 import ast
-from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, Module, iter_child_nodes
-from typing import List, Optional, Union
+from ast import AST, Module
+from typing import List, Optional
 
+from automata.core.base.ast import ASTNode
+from automata.navigation.py.navigation_utils import visit
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolDescriptor
-
-AstNode = Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]
-
-
-def get_descriptor_kind_from_node(node) -> Optional[SymbolDescriptor.PyKind]:
-    if isinstance(node, FunctionDef) or isinstance(node, AsyncFunctionDef):
-        return SymbolDescriptor.PyKind.Method
-    elif isinstance(node, ClassDef):
-        return SymbolDescriptor.PyKind.Class
-    elif isinstance(node, Module):
-        return SymbolDescriptor.PyKind.Module
-    else:
-        return None
-
-
-def is_node_matching_descriptor(node: AstNode, descriptor: SymbolDescriptor):
-    descriptor_kind = SymbolDescriptor.convert_scip_to_python_suffix(descriptor.suffix)
-    node_descriptor = get_descriptor_kind_from_node(node)
-    if node_descriptor == descriptor_kind:
-        if isinstance(node, Module):
-            return True
-        return node.name == descriptor.name
-
-
-def visit(node: AstNode, descriptors: List[SymbolDescriptor], level=0) -> Optional[AST]:
-    if level >= len(descriptors):
-        return None
-
-    if not is_node_matching_descriptor(node, descriptors[level]):
-        return None
-
-    if level == len(descriptors) - 1:
-        return node
-
-    for child in iter_child_nodes(node):
-        if not isinstance(child, (ClassDef, FunctionDef, AsyncFunctionDef)):
-            continue
-        result = visit(child, descriptors, level + 1)
-        if result:
-            return result
-
-    return None
 
 
 def get_source_code_of_symbol_using_py_ast(symbol: Symbol) -> AST:
@@ -72,7 +32,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
         ValueError: If the symbol is not found
     """
     descriptors = list(symbol.descriptors)
-    obj: Optional[AstNode] = None
+    obj: Optional[ASTNode] = None
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (

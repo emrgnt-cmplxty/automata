@@ -1,4 +1,4 @@
-from ast import unparse as pyast_unparse
+from ast import unparse as py_ast_unparse
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
@@ -73,7 +73,7 @@ class SymbolSearch:
     def retrieve_source_code_by_symbol(self, symbol_uri: str) -> SourceCodeResult:
         """Finds the raw text of a module, class, method, or standalone function."""
         node = convert_to_ast_object(parse_symbol(symbol_uri))
-        return str(node) if node else None
+        return py_ast_unparse(node) if node else None
 
     def exact_search(self, pattern: str) -> ExactSearchResult:
         """Performs a exact search across the indexed codebase."""
@@ -113,7 +113,7 @@ class SymbolSearch:
         matches = {}
         for module_path, module in py_module_loader.items():
             if module:
-                lines = pyast_unparse(module).splitlines()
+                lines = py_ast_unparse(module).splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
                 if line_numbers:
                     matches[module_path] = line_numbers

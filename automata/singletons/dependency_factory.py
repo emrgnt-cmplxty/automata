@@ -34,8 +34,6 @@ from automata.symbol_embedding.vector_databases import (
 )
 from automata.tools.factory import AgentToolFactory, logger
 
-# TODO - We should allow users to inject their preferred embedding vector database.
-
 
 class DependencyFactory(metaclass=Singleton):
     """Creates dependencies for input Tool construction."""
