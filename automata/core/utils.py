@@ -9,11 +9,8 @@ import colorlog
 import networkx as nx
 import openai
 import yaml
-from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
 
 from automata.symbol.base import Symbol
-
-FSTNode = Union[Node, RedBaron]
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:
@@ -165,7 +162,7 @@ def get_logging_config(
     return cast(dict[str, Any], logging_config)
 
 
-def get_docstring_from_node(node: Optional[Union[FSTNode, AST]]) -> str:
+def get_docstring_from_node(node: Optional[AST]) -> str:
     """
     Gets the docstring from the specified node
 
@@ -175,10 +172,6 @@ def get_docstring_from_node(node: Optional[Union[FSTNode, AST]]) -> str:
     if not node:
         return "No result found."
 
-    if isinstance(node, (ClassNode, DefNode, RedBaron)):
-        filtered_nodes = node.filtered()  # get rid of extra whitespace
-        if isinstance(filtered_nodes[0], StringNode):
-            return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
     elif isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef)):
         doc_string = get_docstring(node)
         if doc_string:
