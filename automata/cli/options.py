@@ -30,7 +30,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option(
             "--doc-embedding-file",
-            default="symbol_doc_embedding_l3.json",
+            default="symbol_doc_embedding_l2.json",
             help="Which embedding file to save to.",
         ),
     ]

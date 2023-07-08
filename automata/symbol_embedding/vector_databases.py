@@ -134,7 +134,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
             "document": entry.document,
             "metadata": metadata,
             "id": self.entry_to_key(entry),
-            "embedding": [int(ele) for ele in entry.vector],
+            "embedding": [float(ele) for ele in entry.vector],
         }
 
     def _prepare_entries_for_insertion(self, entries: List[V]) -> Dict[str, Any]:
@@ -154,7 +154,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         # FIXME - Consider how to properly handle typing here.
         metadatas = result["metadatas"][0]
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
-        metadatas["vector"] = np.array(result["embeddings"][0]).astype(int)
+        metadatas["vector"] = np.array(result["embeddings"][0]).astype(float)
         metadatas["document"] = result["documents"][0]
 
         return self._factory(**metadatas)

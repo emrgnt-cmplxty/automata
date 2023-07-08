@@ -21,10 +21,12 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
     def process_embedding(self, symbol: Symbol) -> None:
         """Process the embedding for a `Symbol` by updating if the source code has changed."""
         source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
-
+        # print("symbol.dotpath = ", symbol.dotpath)
         if self.embedding_db.contains(symbol.dotpath):
+            print("updating existing embedding...")
             self.update_existing_embedding(source_code, symbol)
         else:
+            print(f"doesnt contain {symbol.dotpath}")
             print("building a new embedding...")
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
             self.embedding_db.add(symbol_embedding)

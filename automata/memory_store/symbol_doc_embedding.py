@@ -35,10 +35,10 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             return
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
-        else:
-            if not isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
-                raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
+        elif isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
             symbol_embedding = self.embedding_builder.build_non_class(source_code, symbol)
+        else:
+            raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
 
         self.embedding_db.add(symbol_embedding)
 

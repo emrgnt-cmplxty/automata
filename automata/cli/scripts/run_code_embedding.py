@@ -1,5 +1,4 @@
 import logging
-import os
 
 from tqdm import tqdm
 
