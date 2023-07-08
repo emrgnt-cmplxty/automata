@@ -11,6 +11,10 @@ from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 # TODO - Unify module loader fixture
 @pytest.fixture(autouse=True)
 def module_loader():
+    # FIXME - This can't be a good pattern, let's cleanup later.
+    py_module_loader.initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None
     py_module_loader.initialize(get_root_py_fpath())
     yield py_module_loader
     py_module_loader._dotpath_map = None
