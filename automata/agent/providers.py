@@ -46,7 +46,6 @@ class OpenAIAutomataAgent(Agent):
     def __init__(self, instructions: str, config: OpenAIAutomataAgentConfig) -> None:
         super().__init__(instructions)
         self.config = config
-        print(" self.config = ", self.config)
         self.iteration_count = 0
         self.agent_conversation_database = OpenAIConversation()
         self.completed = False
