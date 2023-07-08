@@ -1,9 +1,9 @@
 import logging
 import os
 from ast import AST, AsyncFunctionDef, FunctionDef, Import, ImportFrom
-from ast import parse as pyast_parse
-from ast import unparse as pyast_unparse
-from ast import walk as pyast_walk
+from ast import parse as py_ast_parse
+from ast import unparse as py_ast_unparse
+from ast import walk as py_ast_walk
 from contextlib import contextmanager
 from typing import List, Optional, Set, Union
 
@@ -153,7 +153,7 @@ class PyContextRetriever:
         with self.IndentManager():
             if "test" in symbol.dotpath or "Config" in symbol.dotpath:
                 with self.IndentManager():
-                    self.process_message(f"{pyast_unparse(ast_object)}\n")
+                    self.process_message(f"{py_ast_unparse(ast_object)}\n")
             else:
                 if is_main_symbol:
                     self.process_imports(symbol)
@@ -177,7 +177,7 @@ class PyContextRetriever:
 
         # Load the source code with AST
         with open(f"{file_path}.py", "r") as f:
-            ast = pyast_parse(f.read())
+            ast = py_ast_parse(f.read())
 
         # Find and print import statements
         imports = PyContextRetriever._get_all_imports(ast)
@@ -185,7 +185,7 @@ class PyContextRetriever:
             self.process_message("Import Statements:")
             with self.IndentManager():
                 for import_node in imports:
-                    self.process_message(pyast_unparse(import_node))
+                    self.process_message(py_ast_unparse(import_node))
                 self.process_message("")  # Add an empty line for separation
 
     def process_docstring(self, ast_object: AST) -> None:
@@ -224,7 +224,7 @@ class PyContextRetriever:
             return
         with self.IndentManager():
             if not is_main_symbol and method.name == "__init__" or is_main_symbol:
-                for code_line in pyast_unparse(method).split("\n"):
+                for code_line in py_ast_unparse(method).split("\n"):
                     self.process_message(code_line)
             else:
                 method_definition = (
@@ -247,7 +247,7 @@ class PyContextRetriever:
     def _get_method_return_annotation(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
         return_annotation = None
         if method.returns is not None:
-            return_annotation = pyast_unparse(method.returns)
+            return_annotation = py_ast_unparse(method.returns)
             return return_annotation
         return "None"
 
@@ -275,7 +275,7 @@ class PyContextRetriever:
     @staticmethod
     def _get_all_imports(ast: AST):
         imports: List[Union[Import, ImportFrom]] = []
-        for node in pyast_walk(ast):
+        for node in py_ast_walk(ast):
             if isinstance(node, Import):
                 imports.append(node)
             elif isinstance(node, ImportFrom):
@@ -285,7 +285,7 @@ class PyContextRetriever:
     @staticmethod
     def _get_all_methods(ast: AST):
         methods: List[Union[FunctionDef, AsyncFunctionDef]] = []
-        for node in pyast_walk(ast):
+        for node in py_ast_walk(ast):
             if isinstance(node, FunctionDef):
                 methods.append(node)
             elif isinstance(node, AsyncFunctionDef):

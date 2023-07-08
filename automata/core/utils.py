@@ -167,7 +167,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
     Gets the docstring from the specified node
 
     Args:
-        node: The FST node to get the docstring from
+        node: The AST node to get the docstring from
     """
     if not node:
         return "No result found."
