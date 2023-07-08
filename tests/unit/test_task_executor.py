@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from automata.core.utils import get_root_py_fpath
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.pyast_module_loader import pyast_module_loader
 from automata.tasks.base import Task, TaskStatus
 from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 
@@ -11,12 +11,12 @@ from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 # TODO - Unify module loader fixture
 @pytest.fixture(autouse=True)
 def module_loader():
-    py_module_loader.initialize(get_root_py_fpath())
-    yield py_module_loader
-    py_module_loader._dotpath_map = None
-    py_module_loader.initialized = False
-    py_module_loader.py_fpath = None
-    py_module_loader.root_fpath = None
+    pyast_module_loader.initialize(get_root_py_fpath())
+    yield pyast_module_loader
+    pyast_module_loader._dotpath_map = None
+    pyast_module_loader.initialized = False
+    pyast_module_loader.py_fpath = None
+    pyast_module_loader.root_fpath = None
 
 
 class TestExecuteBehavior(ITaskExecution):

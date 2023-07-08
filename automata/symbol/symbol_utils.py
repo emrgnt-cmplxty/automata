@@ -6,7 +6,7 @@ from typing import List, Optional, Union, cast
 
 from redbaron import RedBaron
 
-from automata.singletons.py_module_loader import pyast_module_loader
+from automata.singletons.pyast_module_loader import pyast_module_loader
 from automata.symbol.base import Symbol, SymbolDescriptor
 
 AstNode = Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]

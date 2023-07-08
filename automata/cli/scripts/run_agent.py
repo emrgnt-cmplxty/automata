@@ -7,7 +7,7 @@ from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.github_management.client import GitHubClient
 from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.pyast_module_loader import pyast_module_loader
 from automata.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ def process_issues(issue_numbers: List[int], github_manager: GitHubClient) -> Li
 
 
 def main(*args, **kwargs):
-    py_module_loader.initialize()
+    pyast_module_loader.initialize()
     github_manager = GitHubClient(access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME)
 
     # Pre-process issues if they are passsed

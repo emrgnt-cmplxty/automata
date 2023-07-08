@@ -1,7 +1,7 @@
-from dataclasses import dataclass
 import logging
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from functools import lru_cache, partial
 from time import time
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 from automata.config import MAX_WORKERS
 from automata.core.utils import filter_multi_digraph_by_symbols
-from automata.singletons.py_module_loader import pyast_module_loader
+from automata.singletons.pyast_module_loader import pyast_module_loader
 from automata.symbol.base import (
     ISymbolProvider,
     Symbol,

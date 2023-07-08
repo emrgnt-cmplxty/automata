@@ -6,7 +6,7 @@ from redbaron import RedBaron
 
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.singletons.py_module_loader import pyast_module_loader
+from automata.singletons.pyast_module_loader import pyast_module_loader
 from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.parser import parse_symbol

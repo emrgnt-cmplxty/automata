@@ -5,7 +5,7 @@ from tqdm import tqdm
 from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.pyast_module_loader import pyast_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 
@@ -17,7 +17,7 @@ def main(*args, **kwargs) -> str:
     Update the symbol code embedding based on the specified SCIP index file.
     """
 
-    py_module_loader.initialize()
+    pyast_module_loader.initialize()
 
     embedding_provider = OpenAIEmbeddingProvider()
 
