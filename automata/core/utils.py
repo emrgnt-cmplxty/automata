@@ -31,6 +31,11 @@ def get_root_fpath() -> str:
     return os.path.join(get_root_py_fpath(), "..")
 
 
+def get_embedding_data_fpath() -> str:
+    """Get the path to the root of the Automata config directory."""
+    return os.path.join(get_root_fpath(), "embedding_data")
+
+
 def get_config_fpath() -> str:
     """Get the path to the root of the Automata config directory."""
     return os.path.join(get_root_py_fpath(), "config")
@@ -61,7 +66,7 @@ def format_text(format_variables: Dict[str, str], input_text: str) -> str:
     return input_text
 
 
-def convert_kebab_to_snake(s: str) -> str:
+def convert_kebab_to_snake_case(s: str) -> str:
     """Convert a kebab-case string to snake_case."""
     return s.replace("-", "_")
 

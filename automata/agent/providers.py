@@ -165,7 +165,7 @@ class OpenAIAutomataAgent(Agent):
         assert "user_input_instructions" in instruction_formatter
 
         messages_config = load_config(
-            ConfigCategory.INSTRUCTION.value, self.config.instruction_version.value
+            ConfigCategory.INSTRUCTION.to_path(), self.config.instruction_version.to_path()
         )
         initial_messages = messages_config["initial_messages"]
 

@@ -113,7 +113,6 @@ class SymbolSearch:
         """Finds exact line matches for a given pattern string in all modules."""
         matches = {}
         for module_path, module in py_module_loader.items():
-            print("Checking module = ", module)
             if module:
                 if isinstance(module, RedBaron):
                     lines = module.dumps().splitlines()
