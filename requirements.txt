@@ -26,4 +26,4 @@ GitPython==3.1.31
 PyGithub==1.58.2
 PyYAML==6.0
 chromadb==0.3.26
-astunparse==1.16.0
+astunparse==1.6.3
