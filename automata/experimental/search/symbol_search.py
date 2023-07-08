@@ -1,12 +1,11 @@
 from ast import unparse as pyast_unparse
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
-from redbaron import RedBaron
 
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.singletons.py_module_loader import pyast_module_loader
+from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
@@ -112,12 +111,9 @@ class SymbolSearch:
     def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
         """Finds exact line matches for a given pattern string in all modules."""
         matches = {}
-        for module_path, module in pyast_module_loader.items():
+        for module_path, module in py_module_loader.items():
             if module:
-                if isinstance(module, RedBaron):
-                    lines = module.dumps().splitlines()
-                else:
-                    lines = pyast_unparse(module).splitlines()
+                lines = pyast_unparse(module).splitlines()
                 line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
                 if line_numbers:
                     matches[module_path] = line_numbers

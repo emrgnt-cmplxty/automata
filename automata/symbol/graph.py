@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import logging
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
@@ -12,7 +11,8 @@ from tqdm import tqdm
 
 from automata.config import MAX_WORKERS
 from automata.core.utils import filter_multi_digraph_by_symbols
-from automata.singletons.py_module_loader import pyast_module_loader
+from automata.navigation.py.navigation_utils import construct_bounding_box
+from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import (
     ISymbolProvider,
     Symbol,
@@ -270,45 +270,15 @@ class GraphBuilder:
         caller_callee_manager.process()
 
 
-@dataclass
-class LineItem:
-    """A class to represent a line item in a bounding box."""
-
-    line: int
-    column: int
-
-
-@dataclass
-class BoundingBox:
-    """A class to represent the bounding box of a symbol."""
-
-    top_left: LineItem
-    bottom_right: LineItem
-
-
 def process_symbol_bounds(
     loader_args: Tuple[str, str], symbol: Symbol
 ) -> Optional[Tuple[Symbol, Any]]:
-    """Uses RedBaron FST to compute the bounding box of a `Symbol`."""
-    if not pyast_module_loader._dotpath_map:
-        pyast_module_loader.initialize(*loader_args)
+    """Uses AST to compute the bounding box of a `Symbol`."""
+    if not py_module_loader._dotpath_map:
+        py_module_loader.initialize(*loader_args)
     try:
-        # from typing import cast
-        # from redbaron import RedBaron
-        # fst_object = cast(RedBaron, convert_to_ast_object(symbol))
-        fst_object = convert_to_ast_object(symbol)
-        # bounding_box = fst_object.absolute_bounding_box
-        if fst_object:
-            print("fst_object is not None")
-            print(
-                f"fst_object.lineno={fst_object.lineno}, fst_object.col_offset={fst_object.col_offset}, fst_object.end_lineno={fst_object.end_lineno}, fst_object.end_col_offset={fst_object.end_col_offset}"
-            )
-
-        bounding_box = BoundingBox(
-            top_left=LineItem(line=fst_object.lineno, column=fst_object.col_offset),
-            bottom_right=LineItem(line=fst_object.end_lineno, column=fst_object.end_col_offset),
-        )
-        return symbol, bounding_box
+        ast_object = convert_to_ast_object(symbol)
+        return symbol, construct_bounding_box(ast_object)
     except Exception as e:
         logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
         return None
@@ -418,14 +388,13 @@ class _SymbolGraphNavigator:
         if len(self.bounding_box) > 0:
             bounding_box = self.bounding_box[symbol]
         else:
-            fst_object = convert_to_ast_object(symbol)
-            bounding_box = fst_object.absolute_bounding_box
+            ast_object = convert_to_ast_object(symbol)
+            bounding_box = construct_bounding_box(ast_object)
 
-        # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
-            bounding_box.top_left.line - 1,
-            bounding_box.top_left.column - 1,
-            bounding_box.bottom_right.line - 1,
+            bounding_box.top_left.line,
+            bounding_box.top_left.column,
+            bounding_box.bottom_right.line,
         )
 
         file_name = self._get_symbol_containing_file(symbol)
@@ -457,13 +426,13 @@ class _SymbolGraphNavigator:
         filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
 
         # prepare loader_args here (replace this comment with actual code)
-        if not pyast_module_loader.initialized:
+        if not py_module_loader.initialized:
             raise ValueError(
                 "Module loader must be initialized before pre-computing bounding boxes"
             )
         loader_args: Tuple[str, str] = (
-            pyast_module_loader.root_fpath or "",
-            pyast_module_loader.py_fpath or "",
+            py_module_loader.root_fpath or "",
+            py_module_loader.py_fpath or "",
         )
         bounding_boxes = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:

@@ -175,7 +175,7 @@ class PyContextRetriever:
         while not os.path.isdir(os.path.dirname(file_path)):
             file_path = os.path.dirname(file_path)
 
-        # Load the source code with RedBaron
+        # Load the source code with AST
         with open(f"{file_path}.py", "r") as f:
             ast = pyast_parse(f.read())
 
