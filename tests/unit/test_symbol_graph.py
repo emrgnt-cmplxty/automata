@@ -1,7 +1,7 @@
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.py_module_loader import py_module_loader, pyast_module_loader
 from automata.symbol.base import Symbol
 from automata.symbol.graph import SymbolGraph
 
@@ -37,9 +37,11 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
         synchronization_context.synchronize()
 
     py_module_loader.initialize()
+    pyast_module_loader.initialize()
 
     # build the subgraph
     subgraph = symbol_graph_static_test.default_rankable_subgraph
     assert len(subgraph) == 45
 
     py_module_loader.initialized = False
+    pyast_module_loader.initialized = False

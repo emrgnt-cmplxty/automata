@@ -55,10 +55,10 @@ class EmbeddingBuilder(abc.ABC):
     def fetch_embedding_source_code(self, symbol: Symbol) -> str:
         """An abstract method for embedding the context is the source code itself."""
         from automata.symbol.symbol_utils import (  # imported late for mocking
-            convert_to_fst_object,
+            convert_to_ast_object,
         )
 
-        return str(convert_to_fst_object(symbol))
+        return str(convert_to_ast_object(symbol))
 
 
 class EmbeddingHandler(abc.ABC):

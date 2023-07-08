@@ -7,7 +7,7 @@ from automata.symbol.parser import parse_symbol
 
 def test_retrieve_source_code_by_symbol(symbols, symbol_search):
     with patch(
-        "automata.experimental.search.symbol_search.convert_to_fst_object",
+        "automata.experimental.search.symbol_search.convert_to_ast_object",
         return_value="module1",
     ) as mock_method:
         result = symbol_search.retrieve_source_code_by_symbol(symbols[0].uri)

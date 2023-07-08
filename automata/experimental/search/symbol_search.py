@@ -6,11 +6,11 @@ from redbaron import RedBaron
 
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.py_module_loader import pyast_module_loader
 from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
-from automata.symbol.symbol_utils import convert_to_fst_object
+from automata.symbol.symbol_utils import convert_to_ast_object
 from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
@@ -73,7 +73,7 @@ class SymbolSearch:
 
     def retrieve_source_code_by_symbol(self, symbol_uri: str) -> SourceCodeResult:
         """Finds the raw text of a module, class, method, or standalone function."""
-        node = convert_to_fst_object(parse_symbol(symbol_uri))
+        node = convert_to_ast_object(parse_symbol(symbol_uri))
         return str(node) if node else None
 
     def exact_search(self, pattern: str) -> ExactSearchResult:
@@ -112,7 +112,7 @@ class SymbolSearch:
     def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
         """Finds exact line matches for a given pattern string in all modules."""
         matches = {}
-        for module_path, module in py_module_loader.items():
+        for module_path, module in pyast_module_loader.items():
             if module:
                 if isinstance(module, RedBaron):
                     lines = module.dumps().splitlines()

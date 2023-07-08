@@ -1,4 +1,9 @@
+import ast
+import pytest
 from automata.symbol.parser import Symbol, is_global_symbol, is_local_symbol
+
+from automata.symbol.symbol_utils import convert_to_ast_object
+from automata.symbol.base import Symbol, SymbolDescriptor
 
 
 def test_parse_symbol(symbols):

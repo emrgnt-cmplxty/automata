@@ -9,7 +9,7 @@ from automata.experimental.search.symbol_search import SymbolSearch
 from automata.llm.foundation import LLMChatCompletionProvider
 from automata.retrievers.py.context import PyContextRetriever
 from automata.symbol.base import Symbol
-from automata.symbol.symbol_utils import convert_to_fst_object
+from automata.symbol.symbol_utils import convert_to_ast_object
 from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 
 
@@ -115,7 +115,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         )
 
     def build_non_class(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
-        ast_object = convert_to_fst_object(symbol)
+        ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
         document = f"Symbol: {symbol.dotpath}\n{raw_doctring}"
 
