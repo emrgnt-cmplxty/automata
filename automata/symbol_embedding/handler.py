@@ -1,10 +1,10 @@
 import abc
 from typing import List
 
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.embedding.base import EmbeddingBuilder, EmbeddingHandler
 from automata.symbol.base import ISymbolProvider, Symbol
 from automata.symbol_embedding.base import SymbolEmbedding
-from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 
 class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
@@ -12,7 +12,7 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
 
     def __init__(
         self,
-        embedding_db: JSONSymbolEmbeddingVectorDatabase,
+        embedding_db: VectorDatabaseProvider,
         embedding_builder: EmbeddingBuilder,
     ) -> None:
         """An abstract constructor for SymbolEmbeddingHandler"""

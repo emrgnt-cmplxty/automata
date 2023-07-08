@@ -46,9 +46,9 @@ def vector_db(embedding_type):
 
 # Factory fixture for creating database instances
 @pytest.fixture
-def vector_db_persistent(embedding_type, temp_output_filename):
+def vector_db_persistent(embedding_type, temp_output_vector_dir):
     return ChromaSymbolEmbeddingVectorDatabase(
-        collection_name, factory=embedding_type.from_args, persist_directory=temp_output_filename
+        collection_name, factory=embedding_type.from_args, persist_directory=temp_output_vector_dir
     )
 
 
@@ -273,15 +273,7 @@ def test_get_all_symbols(vector_db, symbols, make_embedding):
         make_embedding(symbol, "x", np.array([i, i + 1, i + 2]).astype(int))
         for i, symbol in enumerate(symbols)
     ]
-    print("embedded_symbols = ", embedded_symbols)
-    for embedded_symbol in embedded_symbols:
-        symbol = embedded_symbol.symbol
-        print("symbol = ", symbol)
-        print("symbol.dotpath = ", symbol.dotpath)
-        print("-" * 100)
     vector_db.batch_add(embedded_symbols)
     all_symbols = vector_db.get_ordered_keys()
     assert len(all_symbols) == len(symbols)
-    print("all_symbols = ", all_symbols)
-    print("list(symbols) = ", list(symbols))
     assert all(symbol.dotpath in all_symbols for symbol in list(symbols))

@@ -6,11 +6,30 @@ from typing import Dict, Generic, List, Optional, TypeVar, Union
 import yaml
 from pydantic import BaseModel, PrivateAttr
 
-from automata.core.utils import convert_kebab_to_snake
+from automata.core.utils import convert_kebab_to_snake_case
 from automata.tools.base import Tool
 
 
-class ConfigCategory(Enum):
+class PathEnum(Enum):
+
+    """An abstract class for enums that represent paths"""
+
+    def to_path(self) -> str:
+        return convert_kebab_to_snake_case(self.value)
+
+
+class EmbeddingDataCategory(PathEnum):
+    """
+    A class to represent the different categories of configuration options
+    Corresponds folders in automata/configs/*
+    """
+
+    CODE_EMBEDDING = "code-embedding"
+    DOC_EMBEDDING = "doc-embedding-l2"
+    INDICES = "indices"
+
+
+class ConfigCategory(PathEnum):
     """
     A class to represent the different categories of configuration options
     Corresponds folders in automata/configs/*
@@ -19,19 +38,19 @@ class ConfigCategory(Enum):
     AGENT = "agent"
     PROMPT = "prompt"
     SYMBOL = "symbol"
-    INSTRUCTION = "instruction_configs"
+    INSTRUCTION = "instruction-configs"
 
 
-class InstructionConfigVersion(Enum):
+class InstructionConfigVersion(PathEnum):
     """
     InstructionConfigVersion: Enum of instruction versions.
     Corresponds files in automata/configs/instruction_configs/*.yaml
     """
 
-    AGENT_INTRODUCTION = "agent_introduction"
+    AGENT_INTRODUCTION = "agent-introduction"
 
 
-class AgentConfigName(Enum):
+class AgentConfigName(PathEnum):
     """
     AgentConfigName: Enum of agent config names.
     Corresponds files in automata/config/agent/*.yaml
@@ -45,7 +64,7 @@ class AgentConfigName(Enum):
     AUTOMATA_MAIN = "automata-main"
 
 
-class LLMProvider(Enum):
+class LLMProvider(PathEnum):
     OPENAI = "openai"
 
 
@@ -84,12 +103,11 @@ class AgentConfig(ABC, BaseModel):
     def _load_automata_yaml_config(cls, config_name: AgentConfigName) -> Dict:
         file_dir_path = os.path.dirname(os.path.abspath(__file__))
         # convert kebab to snake case to support file naming convention
-        config_file_name = convert_kebab_to_snake(config_name.value)
         config_abs_path = os.path.join(
             file_dir_path,
-            ConfigCategory.AGENT.value,
-            cls.get_llm_provider().value,
-            f"{config_file_name}.yaml",
+            ConfigCategory.AGENT.to_path(),
+            cls.get_llm_provider().to_path(),
+            f"{config_name.to_path()}.yaml",
         )
 
         if not os.path.isfile(config_abs_path):

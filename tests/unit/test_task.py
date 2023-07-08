@@ -103,7 +103,7 @@ def test_deterministic_vs_non_deterministic_task_id():
         test2="arg2",
         priority=5,
         generate_deterministic_id=True,
-        config_to_load=AgentConfigName.TEST.value,
+        config_to_load=AgentConfigName.TEST.to_path(),
         instructions="test1",
     )
 
@@ -113,7 +113,7 @@ def test_deterministic_vs_non_deterministic_task_id():
         test2="arg2",
         priority=5,
         generate_deterministic_id=False,
-        config_to_load=AgentConfigName.TEST.value,
+        config_to_load=AgentConfigName.TEST.to_path(),
         instructions="test1",
     )
     assert task_1.task_id != task_2.task_id

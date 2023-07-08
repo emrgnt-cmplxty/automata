@@ -1,9 +1,9 @@
 import logging
 
+from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.symbol.base import Symbol, SymbolDescriptor
 from automata.symbol_embedding.builders import SymbolDocEmbeddingBuilder
 from automata.symbol_embedding.handler import SymbolEmbeddingHandler
-from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
 
     def __init__(
         self,
-        embedding_db: JSONSymbolEmbeddingVectorDatabase,
+        embedding_db: VectorDatabaseProvider,
         embedding_builder: SymbolDocEmbeddingBuilder,
     ) -> None:
         super().__init__(embedding_db, embedding_builder)
@@ -35,10 +35,10 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             return
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             symbol_embedding = self.embedding_builder.build(source_code, symbol)
-        else:
-            if not isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
-                raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
+        elif isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
             symbol_embedding = self.embedding_builder.build_non_class(source_code, symbol)
+        else:
+            raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
 
         self.embedding_db.add(symbol_embedding)
 
