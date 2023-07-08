@@ -1,10 +1,7 @@
 import logging
-import os
 
 from tqdm import tqdm
 
-from automata.config.base import ConfigCategory
-from automata.core.utils import get_config_fpath
 from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import dependency_factory
@@ -22,20 +19,10 @@ def main(*args, **kwargs) -> str:
 
     py_module_loader.initialize()
 
-    scip_fpath = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, kwargs.get("index-file", "index.scip")
-    )
-    code_embedding_fpath = os.path.join(
-        get_config_fpath(),
-        ConfigCategory.SYMBOL.value,
-        kwargs.get("code-embedding-file", "symbol_code_embedding.json"),
-    )
     embedding_provider = OpenAIEmbeddingProvider()
 
     dependency_factory.set_overrides(
         **{
-            "symbol_graph_scip_fpath": scip_fpath,
-            "code_embedding_fpath": code_embedding_fpath,
             "embedding_provider": embedding_provider,
             "disable_synchronization": True,
         }
@@ -55,8 +42,8 @@ def main(*args, **kwargs) -> str:
     for symbol in tqdm(filtered_symbols):
         try:
             symbol_code_embedding_handler.process_embedding(symbol)
-            symbol_code_embedding_handler.embedding_db.save()
         except Exception as e:
             logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
 
+    symbol_code_embedding_handler.embedding_db.save()
     return "Success"

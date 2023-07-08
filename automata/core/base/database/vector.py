@@ -247,7 +247,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
 
     def save(self) -> None:
         """As Chroma is a live database, no specific save action is required."""
-        pass
+        self.client.persist()
 
     def clear(self) -> None:
         """Clears all entries in the collection, Use with care!"""
@@ -294,12 +294,17 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     # TODO - PyLance is complaining about the type of the ids parameter below
     # Can we constrain the TypeVar to be a Chroma compatible type (e.g. ID)?
 
-    def contains(self, key: str) -> bool:
+    def contains(self, key: K) -> bool:
         result = self._collection.get(ids=[key])
         return len(result["ids"]) != 0
 
     def discard(self, key: K) -> None:
-        self._collection.delete(ids=[key])
+        try:
+            self._collection.delete(ids=[key])
+        except RuntimeError as e:
+            # FIXME - It seems an error in Chroma is causing this to be raised falsely
+            if str(e) != "The requested to delete element is already deleted":
+                raise
 
     def batch_discard(self, keys: List[K]) -> None:
         self._collection.delete(ids=keys)

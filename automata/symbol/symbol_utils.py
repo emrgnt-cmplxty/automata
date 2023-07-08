@@ -1,11 +1,8 @@
+import ast
 from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, Module, iter_child_nodes
-from ast import parse as pyast_parse
-from ast import unparse as pyast_unparse
-from typing import List, Optional, Union, cast
+from typing import List, Optional, Union
 
-from redbaron import RedBaron
-
-from automata.singletons.py_module_loader import py_module_loader, pyast_module_loader
+from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolDescriptor
 
 AstNode = Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]
@@ -56,7 +53,7 @@ def get_source_code_of_symbol_using_py_ast(symbol: Symbol) -> AST:
     module_dotpath = descriptors[0].name
     if module_dotpath.startswith(""):
         module_dotpath = module_dotpath[len("") :]  # indexer omits this
-    tree = pyast_module_loader.fetch_module(module_dotpath)
+    tree = py_module_loader.fetch_module(module_dotpath)
     if not tree or not isinstance(tree, Module):
         raise ValueError(
             f"Either the module {module_dotpath} was not found or it is not an Python's module object"
@@ -67,28 +64,30 @@ def get_source_code_of_symbol_using_py_ast(symbol: Symbol) -> AST:
     return node
 
 
-def convert_to_fst_object(symbol: Symbol) -> RedBaron:
+def convert_to_ast_object(symbol: Symbol) -> ast.AST:
     """
-    Converts a specified symbol into it's corresponding RedBaron FST object
+    Converts a specified symbol into it's corresponding ast.AST object
 
     Raises:
         ValueError: If the symbol is not found
     """
-    # Extract the module path, class/method name from the symbol
     descriptors = list(symbol.descriptors)
-    obj = None
+    obj: Optional[AstNode] = None
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
             == SymbolDescriptor.PyKind.Module
         ):
-            module_dotpath = top_descriptor.name
-            if module_dotpath.startswith(""):
-                module_dotpath = module_dotpath[len("") :]  # indexer omits this
-            obj = cast(RedBaron, py_module_loader.fetch_module(module_dotpath))
-            # TODO - Understand why some modules might be None
-            if not obj:
+            module_path = top_descriptor.name
+            if module_path.startswith(""):
+                module_path = module_path[len("") :]  # indexer omits this
+            try:
+                module_dotpath = top_descriptor.name
+                if module_dotpath.startswith(""):
+                    module_dotpath = module_dotpath[len("") :]  # indexer omits this
+                obj = py_module_loader.fetch_module(module_dotpath)
+            except FileNotFoundError:
                 raise ValueError(f"Module descriptor {top_descriptor.name} not found")
         elif (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
@@ -96,14 +95,28 @@ def convert_to_fst_object(symbol: Symbol) -> RedBaron:
         ):
             if not obj:
                 raise ValueError("Class descriptor found without module descriptor")
-            obj = obj.find("class", name=top_descriptor.name)
+            obj = next(
+                (
+                    node
+                    for node in ast.walk(obj)
+                    if isinstance(node, ast.ClassDef) and node.name == top_descriptor.name
+                ),
+                None,
+            )
         elif (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
             == SymbolDescriptor.PyKind.Method
         ):
             if not obj:
                 raise ValueError("Method descriptor found without module or class descriptor")
-            obj = obj.find("def", name=top_descriptor.name)
+            obj = next(
+                (
+                    node
+                    for node in ast.walk(obj)
+                    if isinstance(node, ast.FunctionDef) and node.name == top_descriptor.name
+                ),
+                None,
+            )
     if not obj:
         raise ValueError(f"Symbol {symbol} not found")
     return obj

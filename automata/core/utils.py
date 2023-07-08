@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, get_docstring
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
@@ -29,6 +30,11 @@ def get_root_py_fpath() -> str:
 def get_root_fpath() -> str:
     """Get the path to the root of the Automata directory."""
     return os.path.join(get_root_py_fpath(), "..")
+
+
+def get_embedding_data_fpath() -> str:
+    """Get the path to the root of the Automata config directory."""
+    return os.path.join(get_root_fpath(), "embedding_data")
 
 
 def get_config_fpath() -> str:
@@ -61,7 +67,7 @@ def format_text(format_variables: Dict[str, str], input_text: str) -> str:
     return input_text
 
 
-def convert_kebab_to_snake(s: str) -> str:
+def convert_kebab_to_snake_case(s: str) -> str:
     """Convert a kebab-case string to snake_case."""
     return s.replace("-", "_")
 
@@ -154,6 +160,25 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
+
+
+def get_docstring_from_node(node: Optional[AST]) -> str:
+    """
+    Gets the docstring from the specified node
+
+    Args:
+        node: The FST node to get the docstring from
+    """
+    if not node:
+        return "No result found."
+
+    elif isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef)):
+        doc_string = get_docstring(node)
+        if doc_string:
+            doc_string.replace('"""', "").replace("'''", "")
+        else:
+            return "No result found."
+    return ""
 
 
 def is_sorted(lst):

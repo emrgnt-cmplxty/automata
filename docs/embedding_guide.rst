@@ -27,7 +27,7 @@ Next, we will create the index. This will be used to generate the code embedding
 
    # Create the index and move it into the default location
    node scip-python/packages/pyright-scip/index index  --project-name automata --output index_from_fork.scip  --target-only automata
-   mv index_from_fork.scip automata/config/symbol/index.scip
+   mv index_from_fork.scip automata/config/symbol/automata.scip
 
 Update the Code Embeddings
 --------------------------

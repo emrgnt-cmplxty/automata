@@ -2,8 +2,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.code_handling.py.reader import PyReader
-from automata.code_handling.py.writer import PyWriter
 from automata.core.utils import get_root_py_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks.base import Task, TaskStatus
@@ -27,21 +25,7 @@ class TestExecuteBehavior(ITaskExecution):
     """
 
     def execute(self, task: Task):
-        import os
-
-        retriever = PyReader()
-        writer = PyWriter(retriever)
-
-        # Create a new module
-        writer.create_new_module(
-            module_dotpath="core.agent.test_agent",
-            source_code="def test123(x): return True",
-            do_write=True,
-        )
         task.result = "Test result"
-
-        # Cleanup the new output file
-        os.remove(os.path.join(get_root_py_fpath(), "core", "agent", "test_agent.py"))
 
 
 @patch("logging.config.dictConfig", return_value=None)

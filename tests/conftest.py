@@ -26,6 +26,26 @@ from automata.tools.factory import AgentToolFactory
 
 
 @pytest.fixture
+def temp_output_vector_dir():
+    """Creates a temporary output filename which is deleted after the test is run"""
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(this_dir, "test_output_vec")
+    yield filename
+    try:
+        if os.path.exists(filename):
+            os.remove(filename)
+    except OSError:
+        pass
+
+    # The TemporaryDirectory context manager should already clean up the directory,
+    # but just in case it doesn't (e.g. due to an error), we'll try removing it manually as well.
+    try:
+        shutil.rmtree(filename + "/")
+    except OSError:
+        pass
+
+
+@pytest.fixture
 def temp_output_filename():
     """Creates a temporary output filename which is deleted after the test is run"""
     this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -160,7 +180,7 @@ def automata_agent_config_builder():
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
 
-    llm_toolkits_list = ["py-reader"]
+    llm_toolkits_list = ["context-oracle"]
     kwargs = {}
 
     dependencies: Set[Any] = set()
@@ -170,7 +190,7 @@ def automata_agent(mocker, automata_agent_config_builder):
 
     for dependency in dependencies:
         kwargs[dependency] = dependency_factory.get(dependency)
-    tools = AgentToolFactory.build_tools(["py-reader"], **kwargs)
+    tools = AgentToolFactory.build_tools(["context-oracle"], **kwargs)
 
     instructions = "Test instruction."
 
@@ -214,7 +234,7 @@ def task():
     repo_manager = MockRepositoryClient()
     return AutomataTask(
         repo_manager,
-        config_to_load=AgentConfigName.TEST.value,
+        config_to_load=AgentConfigName.TEST.to_path(),
         generate_deterministic_id=False,
         instructions="This is a test.",
     )
