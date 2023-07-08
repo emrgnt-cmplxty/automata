@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, get_docstring
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
@@ -159,6 +160,25 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
+
+
+def get_docstring_from_node(node: Optional[AST]) -> str:
+    """
+    Gets the docstring from the specified node
+
+    Args:
+        node: The FST node to get the docstring from
+    """
+    if not node:
+        return "No result found."
+
+    elif isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef)):
+        doc_string = get_docstring(node)
+        if doc_string:
+            doc_string.replace('"""', "").replace("'''", "")
+        else:
+            return "No result found."
+    return ""
 
 
 def is_sorted(lst):

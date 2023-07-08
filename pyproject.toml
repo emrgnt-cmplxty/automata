@@ -60,7 +60,7 @@ skip_glob = ["local_env/*", "**/sample_code/*"]
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(local_env|scip-python|__pycache__|local_tasks|sample_modules)/'
+exclude = '(local_env|scip-python|__pycache__|local_tasks|sample_modules|playground)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"
