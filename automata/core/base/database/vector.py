@@ -247,7 +247,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
 
     def save(self) -> None:
         """As Chroma is a live database, no specific save action is required."""
-        pass
+        self.client.persist()
 
     def clear(self) -> None:
         """Clears all entries in the collection, Use with care!"""

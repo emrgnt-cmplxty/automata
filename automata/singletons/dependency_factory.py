@@ -8,12 +8,12 @@ from automata.agent.agent import AgentToolkitNames
 from automata.agent.error import AgentGeneralError, UnknownToolError
 from automata.code_handling.py.reader import PyReader
 from automata.code_handling.py.writer import PyWriter
-from automata.config.base import ConfigCategory
+from automata.config.base import EmbeddingDataCategory
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
 from automata.core.base.patterns.singleton import Singleton
-from automata.core.utils import get_config_fpath
+from automata.core.utils import get_embedding_data_fpath
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.experimental.search.symbol_search import SymbolSearch
@@ -26,27 +26,34 @@ from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
 from automata.symbol.base import ISymbolProvider
 from automata.symbol.graph import SymbolGraph
+from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 from automata.symbol_embedding.builders import (
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbeddingBuilder,
 )
-from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
+from automata.symbol_embedding.vector_databases import (
+    ChromaSymbolEmbeddingVectorDatabase,
+)
 from automata.tools.factory import AgentToolFactory, logger
+
+# TODO - We should allow users to inject their preferred embedding vector database.
 
 
 class DependencyFactory(metaclass=Singleton):
     """Creates dependencies for input Tool construction."""
 
     DEFAULT_SCIP_FPATH = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, "index.scip"
+        get_embedding_data_fpath(),
+        EmbeddingDataCategory.INDICES.to_path(),
+        "automata.scip",
     )
 
     DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_code_embedding.json"
+        get_embedding_data_fpath(), EmbeddingDataCategory.CODE_EMBEDDING.to_path()
     )
 
     DEFAULT_DOC_EMBEDDING_FPATH = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l3.json"
+        get_embedding_data_fpath(), EmbeddingDataCategory.DOC_EMBEDDING.to_path()
     )
 
     # Used to cache the symbol subgraph across multiple instances
@@ -57,8 +64,8 @@ class DependencyFactory(metaclass=Singleton):
         Keyword Args (Defaults):
             disable_synchronization (False): Disable synchronization of ISymbolProvider dependencies and created classes?
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH): Filepath to the SCIP index file.
-            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH): Filepath to the code embedding database.
-            doc_embedding_fpath (DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH): Filepath to the doc embedding database.
+            code_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for code embeddings.
+            doc_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for doc embeddings.
             coding_project_path (get_root_py_fpath()): Filepath to the root of the coding project.
             symbol_rank_config (SymbolRankConfig()): Configuration for the SymbolRank algorithm.
             py_context_retriever_config (PyContextRetrieverConfig()): Configuration for the PyContextRetriever.
@@ -150,8 +157,8 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
-        return SymbolGraph(
-            self.overrides.get("symbol_graph_scip_fpath", DependencyFactory.DEFAULT_SCIP_FPATH)
+        return self.overrides.get(
+            "symbol_graph", SymbolGraph(DependencyFactory.DEFAULT_SCIP_FPATH)
         )
 
     @lru_cache()
@@ -172,13 +179,16 @@ class DependencyFactory(metaclass=Singleton):
     def create_symbol_code_embedding_handler(self) -> SymbolCodeEmbeddingHandler:
         """
         Associated Keyword Args:
-            code_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            code_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for code embeddings.
             embedding_provider (OpenAIEmbedding())
         """
-        code_embedding_db = JSONSymbolEmbeddingVectorDatabase(
-            self.overrides.get(
-                "code_embedding_fpath", DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH
-            )
+        code_embedding_db = self.overrides.get(
+            "code_embedding_db",
+            ChromaSymbolEmbeddingVectorDatabase(
+                "automata",
+                persist_directory=DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH,
+                factory=SymbolCodeEmbedding.from_args,
+            ),
         )
         embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
             "embedding_provider", OpenAIEmbeddingProvider()
@@ -193,14 +203,17 @@ class DependencyFactory(metaclass=Singleton):
     def create_symbol_doc_embedding_handler(self) -> SymbolDocEmbeddingHandler:
         """
         Associated Keyword Args:
-            doc_embedding_fpath (DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH)
+            doc_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for doc embeddings.
             embedding_provider (OpenAIEmbedding())
         """
 
-        doc_embedding_db = JSONSymbolEmbeddingVectorDatabase(
-            self.overrides.get(
-                "doc_embedding_fpath", DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH
-            )
+        doc_embedding_db = self.overrides.get(
+            "doc_embedding_fpath",
+            ChromaSymbolEmbeddingVectorDatabase(
+                "automata",
+                persist_directory=DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH,
+                factory=SymbolDocEmbedding.from_args,
+            ),
         )
         embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
             "embedding_provider", OpenAIEmbeddingProvider()

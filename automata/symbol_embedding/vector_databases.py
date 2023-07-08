@@ -29,7 +29,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
     def __init__(
         self,
         collection_name: str,
-        factory: Callable[..., V],
+        factory: Optional[Callable[..., V]] = None,
         persist_directory: Optional[str] = None,
     ):
         super().__init__(collection_name, persist_directory)
@@ -134,7 +134,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
             "document": entry.document,
             "metadata": metadata,
             "id": self.entry_to_key(entry),
-            "embedding": [int(ele) for ele in entry.vector],
+            "embedding": [float(ele) for ele in entry.vector],
         }
 
     def _prepare_entries_for_insertion(self, entries: List[V]) -> Dict[str, Any]:
@@ -149,10 +149,12 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
 
     def _construct_entry_from_result(self, result: "GetResult") -> V:
         """Constructs an object from the provided result."""
+        if not self._factory:
+            raise ValueError("No factory provided to construct entry from result")
         # FIXME - Consider how to properly handle typing here.
         metadatas = result["metadatas"][0]
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
-        metadatas["vector"] = np.array(result["embeddings"][0]).astype(int)
+        metadatas["vector"] = np.array(result["embeddings"][0]).astype(float)
         metadatas["document"] = result["documents"][0]
 
         return self._factory(**metadatas)

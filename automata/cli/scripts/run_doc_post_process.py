@@ -16,7 +16,7 @@ def main(*args, **kwargs) -> str:
     doc_writer = PyDocWriter(get_root_fpath())
 
     embedding_path = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.value, "symbol_doc_embedding_l2.json"
+        get_config_fpath(), ConfigCategory.SYMBOL.to_path(), "symbol_doc_embedding_l2.json"
     )
 
     embedding_db = JSONSymbolEmbeddingVectorDatabase(embedding_path)
