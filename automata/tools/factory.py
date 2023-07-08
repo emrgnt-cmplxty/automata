@@ -3,8 +3,6 @@ from typing import Any, Dict, List, Sequence, Tuple
 
 from automata.agent.agent import AgentToolkitNames
 from automata.agent.error import UnknownToolError
-from automata.code_handling.py.reader import PyReader
-from automata.code_handling.py.writer import PyWriter
 from automata.config.base import LLMProvider
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.symbol_search import SymbolSearch
@@ -19,8 +17,6 @@ class AgentToolFactory:
     """The AgentToolFactory class is responsible for creating tools from a given agent tool name."""
 
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolkitNames, List[Tuple[str, Any]]] = {
-        AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
-        AgentToolkitNames.PY_WRITER: [("py_writer", PyWriter)],
         AgentToolkitNames.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
         AgentToolkitNames.CONTEXT_ORACLE: [
             ("symbol_search", SymbolSearch),

@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 from automata.config import MAX_WORKERS
 from automata.core.utils import filter_multi_digraph_by_symbols
+from automata.navigation.py.navigation_utils import construct_bounding_box
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import (
     ISymbolProvider,
@@ -20,7 +21,7 @@ from automata.symbol.base import (
 )
 from automata.symbol.parser import parse_symbol
 from automata.symbol.scip_pb2 import Index, SymbolRole  # type: ignore
-from automata.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata.symbol.symbol_utils import convert_to_ast_object, get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -272,13 +273,12 @@ class GraphBuilder:
 def process_symbol_bounds(
     loader_args: Tuple[str, str], symbol: Symbol
 ) -> Optional[Tuple[Symbol, Any]]:
-    """Uses RedBaron FST to compute the bounding box of a `Symbol`."""
+    """Uses AST to compute the bounding box of a `Symbol`."""
     if not py_module_loader._dotpath_map:
         py_module_loader.initialize(*loader_args)
     try:
-        fst_object = convert_to_fst_object(symbol)
-        bounding_box = fst_object.absolute_bounding_box
-        return symbol, bounding_box
+        ast_object = convert_to_ast_object(symbol)
+        return symbol, construct_bounding_box(ast_object)
     except Exception as e:
         logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
         return None
@@ -388,14 +388,13 @@ class _SymbolGraphNavigator:
         if len(self.bounding_box) > 0:
             bounding_box = self.bounding_box[symbol]
         else:
-            fst_object = convert_to_fst_object(symbol)
-            bounding_box = fst_object.absolute_bounding_box
+            ast_object = convert_to_ast_object(symbol)
+            bounding_box = construct_bounding_box(ast_object)
 
-        # RedBaron POSITIONS ARE 1 INDEXED AND SCIP ARE 0!!!!
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
-            bounding_box.top_left.line - 1,
-            bounding_box.top_left.column - 1,
-            bounding_box.bottom_right.line - 1,
+            bounding_box.top_left.line,
+            bounding_box.top_left.column,
+            bounding_box.bottom_right.line,
         )
 
         file_name = self._get_symbol_containing_file(symbol)

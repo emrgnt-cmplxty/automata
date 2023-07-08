@@ -150,7 +150,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
     def _construct_entry_from_result(self, result: "GetResult") -> V:
         """Constructs an object from the provided result."""
         if not self._factory:
-            raise ValueError("No factory provided to construct entry from result")
+            raise ValueError("No factory provided to ChromaDB.")
         # FIXME - Consider how to properly handle typing here.
         metadatas = result["metadatas"][0]
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))

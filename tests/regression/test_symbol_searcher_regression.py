@@ -22,8 +22,6 @@ def check_hits(expected_in_top_hits, found_top_hits):
 @pytest.mark.parametrize(
     "search, expected_in_top_hits",
     [
-        ("PyReader", ["PyReader", "PyWriter", "create_py_reader"]),
-        ("PyWriter", ["PyWriter", "PyReader", "create_py_writer"]),
         ("SymbolGraph", ["Symbol", "SymbolGraph", "GraphBuilder"]),
         ("SymbolSearch", ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"]),
         ("Embedding", ["SymbolCodeEmbedding", "SymbolDocEmbedding"]),
@@ -46,6 +44,7 @@ def test_symbol_rank_search_on_symbol(
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
+
     py_module_loader.initialize()
     results = symbol_search_live.symbol_rank_search(search)
     filtered_results = [result for result in results if ".tests." not in result[0].dotpath]
@@ -123,3 +122,6 @@ def test_source_code_retrieval(symbol_search_live, search, expected_in_source): 
         assert (
             source_hit in found_source_code
         ), f"Expected to find {source_hit} in source code, but it was not found"
+    py_module_loader.initialized = False
+    py_module_loader.py_fpath = None
+    py_module_loader.root_fpath = None

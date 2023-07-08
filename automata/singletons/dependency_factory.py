@@ -6,8 +6,6 @@ import networkx as nx
 
 from automata.agent.agent import AgentToolkitNames
 from automata.agent.error import AgentGeneralError, UnknownToolError
-from automata.code_handling.py.reader import PyReader
-from automata.code_handling.py.writer import PyWriter
 from automata.config.base import EmbeddingDataCategory
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
@@ -35,8 +33,6 @@ from automata.symbol_embedding.vector_databases import (
     ChromaSymbolEmbeddingVectorDatabase,
 )
 from automata.tools.factory import AgentToolFactory, logger
-
-# TODO - We should allow users to inject their preferred embedding vector database.
 
 
 class DependencyFactory(metaclass=Singleton):
@@ -281,15 +277,6 @@ class DependencyFactory(metaclass=Singleton):
             "embedding_provider", OpenAIEmbeddingProvider()
         )
         return EmbeddingSimilarityCalculator(embedding_provider)
-
-    @lru_cache()
-    def create_py_reader(self) -> PyReader:
-        return PyReader()
-
-    @lru_cache()
-    def create_py_writer(self) -> PyWriter:
-        py_reader: PyReader = self.get("py_reader")
-        return PyWriter(py_reader)
 
 
 dependency_factory = DependencyFactory()

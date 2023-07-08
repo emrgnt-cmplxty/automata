@@ -1,17 +1,22 @@
 import logging
 import os
+from ast import AST, AsyncFunctionDef, FunctionDef, Import, ImportFrom
+from ast import parse as py_ast_parse
+from ast import unparse as py_ast_unparse
+from ast import walk as py_ast_walk
 from contextlib import contextmanager
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Union
 
 import tiktoken
-from redbaron import RedBaron
 
-from automata.code_handling.py.reader import PyReader
 from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.core.utils import get_root_py_fpath
+from automata.core.utils import get_docstring_from_node, get_root_py_fpath
 from automata.symbol.base import Symbol
 from automata.symbol.graph import SymbolGraph
-from automata.symbol.symbol_utils import convert_to_fst_object, get_rankable_symbols
+from automata.symbol.symbol_utils import (
+    get_rankable_symbols,
+    get_source_code_of_symbol_using_py_ast,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -141,14 +146,14 @@ class PyContextRetriever:
 
     def process_ast(self, symbol: Symbol) -> None:
         """Process the entire context for an AST object."""
-        ast_object = convert_to_fst_object(symbol)
+        ast_object = get_source_code_of_symbol_using_py_ast(symbol)
         is_main_symbol = self._is_main_symbol()
-        methods = sorted(ast_object.find_all("DefNode"), key=lambda x: x.name)
+        methods = sorted(PyContextRetriever._get_all_methods(ast_object), key=lambda x: x.name)
 
         with self.IndentManager():
             if "test" in symbol.dotpath or "Config" in symbol.dotpath:
                 with self.IndentManager():
-                    self.process_message(f"{ast_object.dumps()}\n")
+                    self.process_message(f"{py_ast_unparse(ast_object)}\n")
             else:
                 if is_main_symbol:
                     self.process_imports(symbol)
@@ -170,21 +175,20 @@ class PyContextRetriever:
         while not os.path.isdir(os.path.dirname(file_path)):
             file_path = os.path.dirname(file_path)
 
-        # Load the source code with RedBaron
+        # Load the source code with AST
         with open(f"{file_path}.py", "r") as f:
-            red = RedBaron(f.read())
+            ast = py_ast_parse(f.read())
 
         # Find and print import statements
-        imports = red.find_all("ImportNode")
-        from_imports = red.find_all("FromImportNode")
-        if len(imports) + len(from_imports) > 0:
+        imports = PyContextRetriever._get_all_imports(ast)
+        if len(imports) > 0:
             self.process_message("Import Statements:")
             with self.IndentManager():
-                for import_node in imports + from_imports:
-                    self.process_message(str(import_node.dumps()))
+                for import_node in imports:
+                    self.process_message(py_ast_unparse(import_node))
                 self.process_message("")  # Add an empty line for separation
 
-    def process_docstring(self, ast_object: RedBaron) -> None:
+    def process_docstring(self, ast_object: AST) -> None:
         docstring = PyContextRetriever._get_docstring(ast_object)
 
         if docstring:
@@ -209,7 +213,9 @@ class PyContextRetriever:
                 self.process_message(document)
                 self.process_message("")  # Add an empty line for separation
 
-    def process_method(self, method: RedBaron, is_main_symbol: bool) -> None:
+    def process_method(
+        self, method: Union[AsyncFunctionDef, FunctionDef], is_main_symbol: bool
+    ) -> None:
         """
         Processes a specified method by printing its name, arguments, and return type.
         If we are processing the main symbol, we also print the method's code.
@@ -218,13 +224,13 @@ class PyContextRetriever:
             return
         with self.IndentManager():
             if not is_main_symbol and method.name == "__init__" or is_main_symbol:
-                for code_line in method.dumps().split("\n"):
+                for code_line in py_ast_unparse(method).split("\n"):
                     self.process_message(code_line)
             else:
-                method_definition = f"{method.name}({method.arguments.dumps()})"
-                return_annotation = (
-                    method.return_annotation.dumps() if method.return_annotation else "None"
+                method_definition = (
+                    f"{method.name}({PyContextRetriever._get_method_arguments(method)})"
                 )
+                return_annotation = PyContextRetriever._get_method_return_annotation(method)
                 self.process_message(f"{method_definition} -> {return_annotation}\n")
 
     def _is_main_symbol(self) -> bool:
@@ -234,12 +240,24 @@ class PyContextRetriever:
         return len(self.encoding_provider.encode(self.context)) < self.config.max_context
 
     @staticmethod
-    def _is_private_method(ast_object: RedBaron) -> bool:
+    def _get_method_arguments(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
+        return ", ".join([arg.arg for arg in method.args.args])
+
+    @staticmethod
+    def _get_method_return_annotation(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
+        return_annotation = None
+        if method.returns is not None:
+            return_annotation = py_ast_unparse(method.returns)
+            return return_annotation
+        return "None"
+
+    @staticmethod
+    def _is_private_method(ast_object: Union[AsyncFunctionDef, FunctionDef]) -> bool:
         return ast_object.name[0] == "_" and ast_object.name[1] != "_"
 
     @staticmethod
-    def _get_docstring(ast_object: RedBaron) -> str:
-        raw_doctring = PyReader.get_docstring_from_node(ast_object).split("\n")
+    def _get_docstring(ast_object: AST) -> str:
+        raw_doctring = get_docstring_from_node(ast_object).split("\n")
         return "\n".join([ele.strip() for ele in raw_doctring]).strip()
 
     @staticmethod
@@ -253,3 +271,23 @@ class PyContextRetriever:
             primary_symbol_dotpath in secondary_symbol_dotpath
             or primary_package != secondary_package
         )
+
+    @staticmethod
+    def _get_all_imports(ast: AST):
+        imports: List[Union[Import, ImportFrom]] = []
+        for node in py_ast_walk(ast):
+            if isinstance(node, Import):
+                imports.append(node)
+            elif isinstance(node, ImportFrom):
+                imports.append(node)
+        return imports
+
+    @staticmethod
+    def _get_all_methods(ast: AST):
+        methods: List[Union[FunctionDef, AsyncFunctionDef]] = []
+        for node in py_ast_walk(ast):
+            if isinstance(node, FunctionDef):
+                methods.append(node)
+            elif isinstance(node, AsyncFunctionDef):
+                methods.append(node)
+        return methods

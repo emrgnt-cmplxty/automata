@@ -16,7 +16,6 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
-
     py_module_loader.initialize()
 
     embedding_provider = OpenAIEmbeddingProvider()

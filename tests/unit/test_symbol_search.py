@@ -1,3 +1,4 @@
+import ast
 from unittest.mock import patch
 
 import pytest
@@ -7,11 +8,11 @@ from automata.symbol.parser import parse_symbol
 
 def test_retrieve_source_code_by_symbol(symbols, symbol_search):
     with patch(
-        "automata.experimental.search.symbol_search.convert_to_fst_object",
-        return_value="module1",
+        "automata.experimental.search.symbol_search.convert_to_ast_object",
+        return_value=ast.parse("def f(x):\n    return True"),
     ) as mock_method:
         result = symbol_search.retrieve_source_code_by_symbol(symbols[0].uri)
-        assert result == "module1"
+        assert result.strip() == "def f(x):\n    return True".strip()
     mock_method.assert_called_once_with(symbols[0])
 
 

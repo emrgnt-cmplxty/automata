@@ -1,6 +1,8 @@
+import ast
 from unittest.mock import MagicMock
 
 import pytest
+from astunparse import unparse as py_ast_unparse
 
 from automata.tools.base import Tool
 from automata.tools.builders.symbol_search import SymbolSearchToolkitBuilder
@@ -48,13 +50,16 @@ def test_symbol_references(symbol_search_tool_builder):
 
 def test_retrieve_source_code_by_symbol(symbol_search_tool_builder):
     symbol_search_tool_builder.symbol_search.retrieve_source_code_by_symbol = MagicMock(
-        return_value="Source code"
+        return_value=ast.parse("def f(x):\n    return True")
     )
 
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "retrieve-source-code-by-symbol":
-            assert tool.function("symbol") == "Source code"
+            assert (
+                py_ast_unparse(tool.function("symbol")).strip()
+                == "\n\ndef f(x):\n    return True\n".strip()
+            )
 
 
 def test_exact_search(symbol_search_tool_builder):

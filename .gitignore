@@ -62,3 +62,5 @@ setup.sh
 .direnv
 docs/_build
 .chroma
+##FIXME- The following should be removed by tests, but isn't
+tests/test_output_vec

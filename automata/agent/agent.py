@@ -68,8 +68,6 @@ class AgentToolkitNames(Enum):
     The associated builders are located in automata/core/agent/builder/*
     """
 
-    PY_READER = "py-reader"
-    PY_WRITER = "py-writer"
     SYMBOL_SEARCH = "symbol-search"
     CONTEXT_ORACLE = "context-oracle"
 
