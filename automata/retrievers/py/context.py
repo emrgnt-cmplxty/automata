@@ -9,13 +9,11 @@ from typing import List, Optional, Set, Union
 
 import tiktoken
 
-from automata.code_handling.py.reader import PyReader
 from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.core.utils import get_root_py_fpath
+from automata.core.utils import get_docstring_from_node, get_root_py_fpath
 from automata.symbol.base import Symbol
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import (
-    convert_to_fst_object,
     get_rankable_symbols,
     get_source_code_of_symbol_using_py_ast,
 )
@@ -259,7 +257,7 @@ class PyContextRetriever:
 
     @staticmethod
     def _get_docstring(ast_object: AST) -> str:
-        raw_doctring = PyReader.get_docstring_from_node(ast_object).split("\n")
+        raw_doctring = get_docstring_from_node(ast_object).split("\n")
         return "\n".join([ele.strip() for ele in raw_doctring]).strip()
 
     @staticmethod

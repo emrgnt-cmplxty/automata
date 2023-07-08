@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, get_docstring
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
@@ -8,8 +9,11 @@ import colorlog
 import networkx as nx
 import openai
 import yaml
+from redbaron import ClassNode, DefNode, Node, RedBaron, StringNode
 
 from automata.symbol.base import Symbol
+
+FSTNode = Union[Node, RedBaron]
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:
@@ -159,6 +163,29 @@ def get_logging_config(
         logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
+
+
+def get_docstring_from_node(node: Optional[Union[FSTNode, AST]]) -> str:
+    """
+    Gets the docstring from the specified node
+
+    Args:
+        node: The FST node to get the docstring from
+    """
+    if not node:
+        return "No result found."
+
+    if isinstance(node, (ClassNode, DefNode, RedBaron)):
+        filtered_nodes = node.filtered()  # get rid of extra whitespace
+        if isinstance(filtered_nodes[0], StringNode):
+            return filtered_nodes[0].value.replace('"""', "").replace("'''", "")
+    elif isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef)):
+        doc_string = get_docstring(node)
+        if doc_string:
+            doc_string.replace('"""', "").replace("'''", "")
+        else:
+            return "No result found."
+    return ""
 
 
 def is_sorted(lst):

@@ -22,8 +22,6 @@ def check_hits(expected_in_top_hits, found_top_hits):
 @pytest.mark.parametrize(
     "search, expected_in_top_hits",
     [
-        ("PyReader", ["PyReader", "PyWriter", "create_py_reader"]),
-        ("PyWriter", ["PyWriter", "PyReader", "create_py_writer"]),
         ("SymbolGraph", ["Symbol", "SymbolGraph", "GraphBuilder"]),
         ("SymbolSearch", ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"]),
         ("Embedding", ["SymbolCodeEmbedding", "SymbolDocEmbedding"]),

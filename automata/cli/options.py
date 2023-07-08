@@ -56,7 +56,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
         ),
         click.option(
             "--toolkit-list",
-            default="py-reader,context-oracle",
+            default="context-oracle",
             help="Which LLM tools to use?",
         ),
         click.option(
