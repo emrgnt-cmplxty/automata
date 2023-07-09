@@ -45,11 +45,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
                 module_dotpath = module_dotpath[len("") :]  # indexer omits this
-            obj = py_module_loader.fetch_module(
-                module_dotpath
-                # module_dotpath.replace("llama_index.llama_index", "llama_index")
-            )
-            # replaced_dotpath = module_dotpath.replace("llama_index.llama_index", "llama_index")
+            obj = py_module_loader.fetch_module(module_dotpath)
             if not obj:
                 raise ValueError(f"Module {module_dotpath} not found")
         elif (

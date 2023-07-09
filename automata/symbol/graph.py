@@ -230,8 +230,8 @@ class GraphBuilder:
         build_caller_relationships: bool,
     ) -> None:
         self.index = index
-        self.build_relationships = build_relationships
         self.build_references = build_references
+        self.build_relationships = build_relationships
         self.build_caller_relationships = build_caller_relationships
         self._graph = nx.MultiDiGraph()
 
@@ -292,8 +292,6 @@ def process_symbol_bounds(
     except Exception as e:
         logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
         return None
-    # ast_object = convert_to_ast_object(symbol)
-    # return symbol, construct_bounding_box(ast_object)
 
 
 class _SymbolGraphNavigator:
