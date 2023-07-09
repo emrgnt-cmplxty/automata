@@ -83,7 +83,6 @@ class DependencyFactory(metaclass=Singleton):
                 self._synchronize_provider(override_obj)
 
         self.overrides = kwargs
-        print("self.overrides = ", self.overrides)
 
     def get(self, dependency: str) -> Any:
         """
@@ -144,13 +143,8 @@ class DependencyFactory(metaclass=Singleton):
 
     def _synchronize_provider(self, provider: ISymbolProvider) -> None:
         """Synchronize an ISymbolProvider instance."""
-        print(
-            'self.overrides.get("disable_synchronization", False) = ',
-            self.overrides.get("disable_synchronization", False),
-        )
         if not self.overrides.get("disable_synchronization", False):
             with SymbolProviderSynchronizationContext() as synchronization_context:
-                print("provider = ", provider)
                 synchronization_context.register_provider(provider)
                 synchronization_context.synchronize()
 
