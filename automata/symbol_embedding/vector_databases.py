@@ -53,6 +53,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         """Adds an entry to the collection, checking for existing entries."""
         self._check_duplicate_entry(self.entry_to_key(entry))
         self._collection.add(**self._prepare_entries_for_insertion([entry]))
+        self._save()
 
     def batch_add(self, entries: List[V]) -> None:
         """Adds multiple entries to the collection."""
