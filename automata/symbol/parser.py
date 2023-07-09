@@ -88,6 +88,7 @@ class _SymbolParser:
             self.index += 1
         if start == self.index:
             raise self.error("empty identifier: " + what)
+            # return ''
         return self.symbol[start : self.index]
 
     def accept_space_escaped_identifier(self, what: str) -> str:

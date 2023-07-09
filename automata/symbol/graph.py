@@ -222,8 +222,16 @@ class _CallerCalleeProcessor(GraphProcessor):
 class GraphBuilder:
     """Builds a `SymbolGraph` from a corresponding Index."""
 
-    def __init__(self, index: Index, build_caller_relationships: bool = False) -> None:
+    def __init__(
+        self,
+        index: Index,
+        build_references: bool,
+        build_relationships: bool,
+        build_caller_relationships: bool,
+    ) -> None:
         self.index = index
+        self.build_relationships = build_relationships
+        self.build_references = build_references
         self.build_caller_relationships = build_caller_relationships
         self._graph = nx.MultiDiGraph()
 
@@ -238,8 +246,10 @@ class GraphBuilder:
         """
         for document in self.index.documents:
             self._add_symbol_vertices(document)
-            self._process_relationships(document)
-            self._process_references(document)
+            if self.build_relationships:
+                self._process_relationships(document)
+            if self.build_references:
+                self._process_references(document)
             if self.build_caller_relationships:
                 self._process_caller_callee_relationships(document)
 
@@ -456,10 +466,18 @@ class SymbolGraph(ISymbolProvider):
     "contains", "reference", "relationship", "caller", or "callee".
     """
 
-    def __init__(self, index_path: str, build_caller_relationships: bool = False) -> None:
+    def __init__(
+        self,
+        index_path: str,
+        build_references: bool = True,
+        build_relationships: bool = True,
+        build_caller_relationships: bool = False,
+    ) -> None:
         super().__init__()
         index = self._load_index_protobuf(index_path)
-        builder = GraphBuilder(index, build_caller_relationships)
+        builder = GraphBuilder(
+            index, build_references, build_relationships, build_caller_relationships
+        )
         self._graph = builder.build_graph()
         self.navigator = _SymbolGraphNavigator(self._graph)
 

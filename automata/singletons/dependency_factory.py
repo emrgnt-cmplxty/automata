@@ -41,7 +41,6 @@ class DependencyFactory(metaclass=Singleton):
     DEFAULT_SCIP_FPATH = os.path.join(
         get_embedding_data_fpath(),
         EmbeddingDataCategory.INDICES.to_path(),
-        "automata.scip",
     )
 
     DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
@@ -154,7 +153,8 @@ class DependencyFactory(metaclass=Singleton):
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
         return self.overrides.get(
-            "symbol_graph", SymbolGraph(DependencyFactory.DEFAULT_SCIP_FPATH)
+            "symbol_graph",
+            SymbolGraph(os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, "automata.scip")),
         )
 
     @lru_cache()
