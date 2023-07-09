@@ -15,6 +15,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
+astunparse==1.6.3
 black = "^23.3.0"
 click = "8.1.3"
 codecov = "2.1.13"
@@ -40,9 +41,9 @@ scipy = "1.10.1"
 termcolor = "2.3.0"
 tiktoken = "0.4.0"
 types-protobuf = "4.23.0.1"
-gitpython = "3.1.31"
-pygithub = "1.58.2"
-pyyaml = "6.0"
+GitPython = "3.1.31"
+PyGithub = "1.58.2"
+PyYAML = "6.0"
 chromadb = "0.3.26"
 
 [tool.poetry.dev-dependencies]
