@@ -57,14 +57,17 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
     def batch_add(self, entries: List[V]) -> None:
         """Adds multiple entries to the collection."""
         self._collection.add(**self._prepare_entries_for_insertion(entries))
+        self._save()
 
     def update_entry(self, entry: V) -> None:
         """Updates an entry in the database."""
         self._collection.update(**self._prepare_entries_for_insertion([entry]))
+        self._save()
 
     def batch_update(self, entries: List[V]) -> None:
         """Updates multiple entries in the database."""
         self._collection.update(**self._prepare_entries_for_insertion(entries))
+        self._save()
 
     def entry_to_key(self, entry: V) -> str:
         """Generates a hashable key from a Symbol."""

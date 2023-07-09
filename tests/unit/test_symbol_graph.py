@@ -43,5 +43,5 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
     assert len(subgraph) == 38
 
     py_module_loader.initialized = False
-    py_module_loader.py_dir_fpath = None
+    py_module_loader.rel_py_path = None
     py_module_loader.root_fpath = None

@@ -215,6 +215,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     def __init__(self, collection_name: str, persist_directory: Optional[str] = None):
         self._setup_chroma_client(persist_directory)
         self._collection = self.client.get_or_create_collection(collection_name)
+        self.persist_directory = persist_directory
 
     def _setup_chroma_client(self, persist_directory: Optional[str] = None):
         """Setup the Chroma client, here we attempt to contain the Chroma dependency."""
@@ -301,6 +302,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     def discard(self, key: K) -> None:
         try:
             self._collection.delete(ids=[key])
+            self._save()
         except RuntimeError as e:
             # FIXME - It seems an error in Chroma is causing this to be raised falsely
             if str(e) != "The requested to delete element is already deleted":
@@ -308,3 +310,11 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
 
     def batch_discard(self, keys: List[K]) -> None:
         self._collection.delete(ids=keys)
+        self._save()
+
+    def _save(self):
+        # TODO - Do we need to save after every action?
+        # I experienced some bugs when not doing so, for now
+        # we will conservatively save after every action.
+        if self.persist_directory:
+            self.save()

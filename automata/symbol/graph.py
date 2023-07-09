@@ -292,6 +292,8 @@ def process_symbol_bounds(
     except Exception as e:
         logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
         return None
+    # ast_object = convert_to_ast_object(symbol)
+    # return symbol, construct_bounding_box(ast_object)
 
 
 class _SymbolGraphNavigator:
@@ -442,7 +444,7 @@ class _SymbolGraphNavigator:
             )
         loader_args: Tuple[str, str] = (
             py_module_loader.root_fpath or "",
-            py_module_loader.py_dir_fpath or "",
+            py_module_loader.rel_py_path or "",
         )
         bounding_boxes = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:

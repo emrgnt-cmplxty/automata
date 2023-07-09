@@ -10,7 +10,7 @@ from automata.singletons.dependency_factory import DependencyFactory, dependency
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
+from automata.symbol_embedding.base import SymbolCodeEmbedding
 from automata.symbol_embedding.vector_databases import (
     ChromaSymbolEmbeddingVectorDatabase,
 )
@@ -57,12 +57,11 @@ def main(*args, **kwargs) -> str:
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
 
-    print("filtered_symbols = ", filtered_symbols)
-    # for symbol in tqdm(filtered_symbols):
-    #     try:
-    #         symbol_code_embedding_handler.process_embedding(symbol)
-    #     except Exception as e:
-    #         logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
+    for symbol in tqdm(filtered_symbols):
+        try:
+            symbol_code_embedding_handler.process_embedding(symbol)
+        except Exception as e:
+            logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
 
     symbol_code_embedding_handler.embedding_db.save()
     return "Success"

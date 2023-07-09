@@ -22,8 +22,8 @@ class PyModuleLoader(metaclass=Singleton):
     """
 
     initialized = False
-    py_dir_fpath: Optional[str] = None
     root_fpath: Optional[str] = None
+    rel_py_path: Optional[str] = None
 
     _dotpath_map: Optional[DotPathMap] = None
     _loaded_modules: Dict[str, Optional[Module]] = {}
@@ -49,9 +49,6 @@ class PyModuleLoader(metaclass=Singleton):
 
         """
 
-        print("root_fpath = ", root_fpath)
-        print("rel_py_path = ", rel_py_path)
-
         py_dir_fpath = os.path.join(root_fpath, rel_py_path)
 
         if self.initialized:
@@ -59,7 +56,7 @@ class PyModuleLoader(metaclass=Singleton):
 
         self._dotpath_map = DotPathMap(py_dir_fpath, rel_py_path)
         self.root_fpath = root_fpath
-        self.py_dir_fpath = py_dir_fpath
+        self.rel_py_path = rel_py_path
         self.initialized = True
 
     def _assert_initialized(self) -> None:

@@ -123,5 +123,5 @@ def test_source_code_retrieval(symbol_search_live, search, expected_in_source): 
             source_hit in found_source_code
         ), f"Expected to find {source_hit} in source code, but it was not found"
     py_module_loader.initialized = False
-    py_module_loader.py_dir_fpath = None
+    py_module_loader.rel_py_path = None
     py_module_loader.root_fpath = None

@@ -13,13 +13,13 @@ from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 def module_loader():
     # FIXME - This can't be a good pattern, let's cleanup later.
     py_module_loader.initialized = False
-    py_module_loader.py_dir_fpath = None
+    py_module_loader.rel_py_path = None
     py_module_loader.root_fpath = None
     py_module_loader.initialize(get_root_fpath())
     yield py_module_loader
     py_module_loader._dotpath_map = None
     py_module_loader.initialized = False
-    py_module_loader.py_dir_fpath = None
+    py_module_loader.rel_py_path = None
     py_module_loader.root_fpath = None
 
 
