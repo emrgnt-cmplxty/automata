@@ -77,10 +77,13 @@ class DependencyFactory(metaclass=Singleton):
             raise AgentGeneralError("Cannot set overrides after dependencies have been created.")
 
         for override_obj in kwargs.values():
-            if isinstance(override_obj, ISymbolProvider):
+            if isinstance(override_obj, ISymbolProvider) and not kwargs.get(
+                "disable_synchronization", False
+            ):
                 self._synchronize_provider(override_obj)
 
         self.overrides = kwargs
+        print("self.overrides = ", self.overrides)
 
     def get(self, dependency: str) -> Any:
         """
@@ -141,8 +144,13 @@ class DependencyFactory(metaclass=Singleton):
 
     def _synchronize_provider(self, provider: ISymbolProvider) -> None:
         """Synchronize an ISymbolProvider instance."""
+        print(
+            'self.overrides.get("disable_synchronization", False) = ',
+            self.overrides.get("disable_synchronization", False),
+        )
         if not self.overrides.get("disable_synchronization", False):
             with SymbolProviderSynchronizationContext() as synchronization_context:
+                print("provider = ", provider)
                 synchronization_context.register_provider(provider)
                 synchronization_context.synchronize()
 

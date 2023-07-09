@@ -38,21 +38,9 @@ mkdir -p $FACTORY_PATH
 cd $FACTORY_PATH
 
 # Move the project to the factory
-mv $REPO_STORE_PATH/$project_name .
-node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_name.scip  --target-only $project_name/$project_py_dir
-
-# Determine whether on MacOS or Linux, then run the appropriate sed command
-# if [[ $(uname) == "Darwin" ]]; then
-#     sed -i '' 's/'$project_name'\.'$project_name'/'$project_name'/g' $EMBEDDING_DATA_PATH/indices/$project_name.scip
-# else
-#     sed -i 's/'$project_name'\.'$project_name'/'$project_name'/g' $EMBEDDING_DATA_PATH/indices/$project_name.scip
-# fi
-
-# We need to perform a find and replace on the project name 
-# Because we run the indexing out of FACTORY_PATH
-# e.g. automata.automata -> automata.
-# perl -pi -e 's/'$project_py_dir'\.'$project_name'/'$project_py_dir'/g' $EMBEDDING_DATA_PATH/indices/$project_name.scip
+mv $REPO_STORE_PATH/$project_name/$project_py_dir .
+node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_name.scip  --target-only $project_py_dir
 
 
 # Return the data
-mv $project_name $REPO_STORE_PATH
+mv $project_py_dir $REPO_STORE_PATH/$project_name
