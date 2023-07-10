@@ -62,15 +62,15 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
 
         most_similar_symbol = symbol_rank_search_results[0][0]
 
-        most_similar_code_embedding = self.symbol_code_embedding_handler.get_embedding(
-            most_similar_symbol
-        )
+        most_similar_code_embedding = self.symbol_code_embedding_handler.get_embeddings(
+            [most_similar_symbol]
+        )[0]
         result = most_similar_code_embedding.document
 
         try:
-            most_similar_doc_embedding = self.symbol_doc_embedding_handler.get_embedding(
-                most_similar_symbol
-            )
+            most_similar_doc_embedding = self.symbol_doc_embedding_handler.get_embeddings(
+                [most_similar_symbol]
+            )[0]
             result += f"Documentation:\n\n{most_similar_doc_embedding.document}"
         except Exception as e:
             logger.error(
@@ -89,7 +89,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                 if counter >= max_related_symbols:
                     break
                 try:
-                    doc_embedding = self.symbol_doc_embedding_handler.get_embedding(symbol)
+                    doc_embedding = self.symbol_doc_embedding_handler.get_embeddings([symbol])[0]
                     if not isinstance(doc_embedding, SymbolDocEmbedding):
                         raise Exception(
                             f"Embedding {doc_embedding} is not a SymbolDocEmbeddingHandler"
