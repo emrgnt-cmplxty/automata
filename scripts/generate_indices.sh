@@ -39,7 +39,7 @@ cd $FACTORY_PATH
 
 # Move the project to the factory
 mv $REPO_STORE_PATH/$project_name/$project_py_dir .
-node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_name.scip  --target-only $project_py_dir
+node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_py_dir.scip  --target-only $project_py_dir
 
 
 # Return the data

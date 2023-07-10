@@ -113,7 +113,17 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
 
         results = self._collection.get(**kwargs)
-        return [self._construct_entry_from_result(result) for result in results]
+        entries = []
+        for idx in range(len(results["ids"])):
+            result = {
+                "ids": results["ids"][idx],
+                "metadatas": [results["metadatas"][idx]],
+                "embeddings": [results["embeddings"][idx]],
+                "documents": [results["documents"][idx]],
+            }
+            entries.append(self._construct_entry_from_result(result))
+
+        return entries
 
     # Support methods
 
