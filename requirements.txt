@@ -17,6 +17,7 @@ pydantic==1.9.0
 pypandoc==1.11
 pytest-mock==3.11.1
 python-dotenv==1.0.0
+scikit-learn==1.2.2
 scipy==1.10.1
 termcolor==2.3.0
 tiktoken==0.4.0
