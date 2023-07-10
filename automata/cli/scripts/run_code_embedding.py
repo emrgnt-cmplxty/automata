@@ -63,5 +63,5 @@ def main(*args, **kwargs) -> str:
         except Exception as e:
             logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
 
-    symbol_code_embedding_handler.embedding_db.save()
+    symbol_code_embedding_handler.flush()  # Final flush for any remaining symbols that didn't form a complete batch
     return "Success"

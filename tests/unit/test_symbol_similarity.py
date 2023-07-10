@@ -41,7 +41,7 @@ def test_get_nearest_symbols_for_query(
     cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_builder=mock_builder)
     mock_provider = MagicMock(EmbeddingVectorProvider)
     embeddings = {symbol1: embedding1, symbol2: embedding2, symbol3: embedding3}
-    cem.get_embedding = lambda x: embeddings[x]  # MagicMock(return_value=embeddings[x])
+    cem.get_embeddings = lambda x: embeddings[x]  # MagicMock(return_value=embeddings[x])
     symbol_similarity = EmbeddingSimilarityCalculator(mock_provider)
 
     # Test with query_text that is most similar to symbol1

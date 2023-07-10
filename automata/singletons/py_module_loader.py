@@ -179,6 +179,18 @@ class PyModuleLoader(metaclass=Singleton):
         self._loaded_modules[module_dotpath] = module
         self._dotpath_map.put_module(module_dotpath)  # type: ignore
 
+    def reset(self) -> None:
+        """
+        Resets the PyModuleLoader to its initial state.
+        This will clear the cache of loaded modules and reset the dotpath map.
+        """
+        self._loaded_modules = {}
+        self._dotpath_map = None
+        self.root_fpath = None
+        self.rel_py_path = None
+        self.initialized = False
+        logger.info("PyModuleLoader has been reset.")
+
     def _load_all_modules(self) -> None:
         """
         Loads all modules in the map

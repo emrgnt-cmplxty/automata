@@ -57,6 +57,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
 
     def batch_add(self, entries: List[V]) -> None:
         """Adds multiple entries to the collection."""
+        # TODO -  Add eficient _check_duplicate_entries
         self._collection.add(**self._prepare_entries_for_insertion(entries))
         self._save()
 
@@ -112,8 +113,6 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
 
         results = self._collection.get(**kwargs)
-        self._check_result_entries(results["ids"], keys)
-
         return [self._construct_entry_from_result(result) for result in results]
 
     # Support methods

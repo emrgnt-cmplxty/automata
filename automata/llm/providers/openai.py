@@ -382,6 +382,11 @@ class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
 
         return np.array(get_embedding(source, engine=self.engine))
 
+    def batch_build_embedding_vector(self, sources: List[str]) -> List[np.ndarray]:
+        from openai.embeddings_utils import get_embeddings
+
+        return [np.array(ele) for ele in get_embeddings(sources, engine=self.engine)]
+
 
 class OpenAITool(Tool):
     """A class representing a tool that can be used by the OpenAI agent."""

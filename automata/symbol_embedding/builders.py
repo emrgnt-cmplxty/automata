@@ -20,6 +20,17 @@ class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
         embedding_vector = self.embedding_provider.build_embedding_vector(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
+    def batch_build(
+        self, source_codes: List[str], symbols: List[Symbol]
+    ) -> List[SymbolCodeEmbedding]:
+        embedding_vectors = self.embedding_provider.batch_build_embedding_vector(source_codes)
+        return [
+            SymbolCodeEmbedding(symbol, source_code, embedding_vector)
+            for symbol, source_code, embedding_vector in zip(
+                symbols, source_codes, embedding_vectors
+            )
+        ]
+
 
 class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` documentation embeddings."""
