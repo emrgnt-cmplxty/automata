@@ -3,11 +3,10 @@ import os
 
 from tqdm import tqdm
 
-from automata.core.utils import get_root_fpath
+from automata.cli.cli_utils import initialize_modules
 from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding.base import SymbolCodeEmbedding
@@ -22,10 +21,8 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
-    root_path = kwargs.get("project_root_fpath") or get_root_fpath()
     project_name = kwargs.get("project_name") or "automata"
-    rel_py_path = kwargs.get("project_rel_py_path") or project_name
-    py_module_loader.initialize(root_path, rel_py_path)
+    initialize_modules(**kwargs)
 
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,
