@@ -3,7 +3,7 @@
 ## Default values
 
 # Local environment paths
-: ${EMBEDDING_DATA_PATH:="../embedding_data"}
+: ${EMBEDDING_DATA_PATH:="../automata-embedding-data"}
 : ${REPO_STORE_PATH:="../../repo_store"}
 : ${FACTORY_PATH:="../automata_embedding_factory"}
 

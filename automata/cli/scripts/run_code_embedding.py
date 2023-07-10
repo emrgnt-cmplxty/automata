@@ -24,14 +24,14 @@ def main(*args, **kwargs) -> str:
     project_name = kwargs.get("project_name") or "automata"
     initialize_modules(**kwargs)
 
+    symbol_graph = SymbolGraph(
+        os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip")
+    )
+
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,
         persist_directory=DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH,
         factory=SymbolCodeEmbedding.from_args,
-    )
-
-    symbol_graph = SymbolGraph(
-        os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip")
     )
     embedding_provider = OpenAIEmbeddingProvider()
 
@@ -40,7 +40,7 @@ def main(*args, **kwargs) -> str:
             "symbol_graph": symbol_graph,
             "code_embedding_db": code_embedding_db,
             "embedding_provider": embedding_provider,
-            "disable_synchronization": True,
+            "disable_synchronization": True,  # We spoof synchronization locally
         }
     )
 

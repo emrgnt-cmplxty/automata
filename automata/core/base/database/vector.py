@@ -300,13 +300,8 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
         return len(result["ids"]) != 0
 
     def discard(self, key: K) -> None:
-        try:
-            self._collection.delete(ids=[key])
-            self._save()
-        except RuntimeError as e:
-            # FIXME - It seems an error in Chroma is causing this to be raised falsely
-            if str(e) != "The requested to delete element is already deleted":
-                raise
+        self._collection.delete(ids=[key])
+        self._save()
 
     def batch_discard(self, keys: List[K]) -> None:
         self._collection.delete(ids=keys)

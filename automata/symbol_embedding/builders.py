@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 from jinja2 import Template
 
@@ -32,6 +32,7 @@ class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
         ]
 
 
+# FIXME - This class is still in an `experimental` state
 class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` documentation embeddings."""
 
@@ -100,20 +101,9 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         -  How can we ensure type safety while maintaining the flexibility and
         customizability provided by ``AgentConfig``?
         """
-        abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-        search_list = self.generate_search_list(abbreviated_selected_symbol)
-        self.retriever.reset()
-        self.retriever.process_symbol(symbol, search_list)
-
-        prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
-            symbol_dotpath=abbreviated_selected_symbol,
-            symbol_context=self.retriever.get_context_buffer(),
-        )
-
-        document = self.completion_provider.standalone_call(prompt)
-        summary = self.completion_provider.standalone_call(
-            f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
-        )
+        prompt = self._build_prompt(symbol)
+        document = self._build_class_document(prompt)
+        summary = self._build_document_summary(document)
         embedding = self.embedding_provider.build_embedding_vector(document)
 
         return SymbolDocEmbedding(
@@ -141,7 +131,31 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             context="",
         )
 
-    def generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
+    def _build_document_summary(self, document: str) -> str:
+        """Build the document for a symbol."""
+        return self.completion_provider.standalone_call(
+            f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
+        )
+
+    def _build_class_document(self, prompt: str) -> str:
+        """Build the document for a symbol."""
+        return self.completion_provider.standalone_call(prompt)
+
+    def _build_prompt(self, symbol: Symbol) -> str:
+        """Build the document for a symbol."""
+        abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
+        search_list = self._generate_search_list(abbreviated_selected_symbol)
+        self.retriever.reset()
+        self.retriever.process_symbol(symbol, search_list)
+
+        prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
+            symbol_dotpath=abbreviated_selected_symbol,
+            symbol_context=self.retriever.get_context_buffer(),
+        )
+
+        return self.completion_provider.standalone_call(prompt)
+
+    def _generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
         search_results = self.symbol_search.symbol_rank_search(f"{abbreviated_selected_symbol}")
         search_results_with_tests = [ele for ele in search_results if "test" in ele[0].uri]
@@ -157,3 +171,6 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             ):
                 search_list.append(search_results_without_tests[i][0])
         return search_list
+
+    def batch_build(self, source_text: List[str], symbol: List[Symbol]) -> Any:
+        raise NotImplementedError("Batch building not yet implemented for doc embeddings.")
