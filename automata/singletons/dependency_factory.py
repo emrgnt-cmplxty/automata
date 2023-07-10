@@ -8,6 +8,7 @@ from automata.agent.agent import AgentToolkitNames
 from automata.agent.error import AgentGeneralError, UnknownToolError
 from automata.config.base import EmbeddingDataCategory
 from automata.context_providers.symbol_synchronization import (
+    SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
 )
 from automata.core.base.patterns.singleton import Singleton
@@ -279,6 +280,19 @@ class DependencyFactory(metaclass=Singleton):
             "embedding_provider", OpenAIEmbeddingProvider()
         )
         return EmbeddingSimilarityCalculator(embedding_provider)
+
+    def reset(self):
+        SymbolProviderRegistry.reset()
+        self._class_cache = {}
+        self._instances = {}
+        self.overrides = {}
+
+        # Clear the LRU caches
+        for attr_name in dir(self):
+            if attr_name.startswith("create_"):
+                attr_value = getattr(self, attr_name)
+                if callable(attr_value) and hasattr(attr_value, "cache_clear"):
+                    attr_value.cache_clear()
 
 
 dependency_factory = DependencyFactory()
