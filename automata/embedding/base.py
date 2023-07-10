@@ -25,7 +25,7 @@ class EmbeddingVectorProvider(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def batch_build_embedding_vector(self, symbol_source: List[str]) -> np.ndarray:
+    def batch_build_embedding_vector(self, symbol_source: List[str]) -> List[np.ndarray]:
         pass
 
 
