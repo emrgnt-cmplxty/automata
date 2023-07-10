@@ -48,7 +48,6 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             symbol_embedding = self.embedding_builder.build_non_class(source_code, symbol)
         else:
             raise ValueError("SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder")
-
         self.embedding_db.add(symbol_embedding)
         logger.debug("Successfully added...")
 

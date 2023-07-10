@@ -14,9 +14,9 @@ from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRankConfig
 from automata.experimental.search.symbol_search import SymbolSearch
-from automata.github_management.client import GitHubClient, RepositoryClient
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import dependency_factory
+from automata.singletons.github_client import GitHubClient, RepositoryClient
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.tasks.agent_database import AutomataTaskRegistry

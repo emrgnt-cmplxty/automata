@@ -28,7 +28,7 @@ Related Symbols
 
 -  ``automata.navigation.directory.Directory``: Represents a directory
    that contains child nodes which can be either files or directories.
--  ``automata.github_management.client.GitHubClient``: Provides an
+-  ``automata.singletons.github_client.GitHubClient``: Provides an
    interface for interacting with GitHub repositories.
 -  ``automata.tasks.environment.AutomataTaskEnvironment``: The
    environment in which the Automata tasks are conducted.

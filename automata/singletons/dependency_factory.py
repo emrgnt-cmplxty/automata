@@ -206,7 +206,7 @@ class DependencyFactory(metaclass=Singleton):
         """
 
         doc_embedding_db = self.overrides.get(
-            "doc_embedding_fpath",
+            "doc_embedding_db",
             ChromaSymbolEmbeddingVectorDatabase(
                 "automata",
                 persist_directory=DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH,

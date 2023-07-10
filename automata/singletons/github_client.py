@@ -4,6 +4,8 @@ from typing import Any, List, Optional
 from git import Git, Repo
 from github import Github, Issue, PullRequest
 
+from automata.core.base.patterns.singleton import Singleton
+
 
 class RepositoryClient(ABC):
     """An abstract class for managing repositories"""
@@ -43,7 +45,7 @@ class RepositoryClient(ABC):
         pass
 
 
-class GitHubClient:
+class GitHubClient(RepositoryClient, metaclass=Singleton):
     """The GitHub manager provides an interface for interacting with GitHub repositories"""
 
     def __init__(self, access_token: str, remote_name: str, primary_branch: str = "main") -> None:

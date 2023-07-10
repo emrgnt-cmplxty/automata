@@ -83,9 +83,11 @@ def main(*args, **kwargs) -> str:
     symbol_doc_embedding_handler, filtered_symbols = initialize_providers(**kwargs)
 
     logger.info("Looping over filtered symbols...")
-    for symbol in tqdm(filtered_symbols[0:10]):
-        logger.info(f"Caching embedding for {symbol}")
-        symbol_doc_embedding_handler.process_embedding(symbol)
-        symbol_doc_embedding_handler.embedding_db.save()
+    for symbol in tqdm(filtered_symbols):
+        try:
+            logger.info(f"Caching embedding for {symbol}")
+            symbol_doc_embedding_handler.process_embedding(symbol)
+        except Exception as e:
+            logger.info(f"Error {e} for symbol {symbol}")
 
     return "Success"
