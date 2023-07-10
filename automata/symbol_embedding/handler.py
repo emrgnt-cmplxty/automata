@@ -14,24 +14,44 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
         self,
         embedding_db: VectorDatabaseProvider,
         embedding_builder: EmbeddingBuilder,
+        batch_size: int,
     ) -> None:
         """An abstract constructor for SymbolEmbeddingHandler"""
+
+        if batch_size > 2048:
+            raise ValueError("Batch size must be less than 2048")
         self.embedding_db = embedding_db
         self.embedding_builder = embedding_builder
+        self.batch_size = batch_size
+
         self.sorted_supported_symbols = [
             ele.symbol for ele in self.embedding_db.get_ordered_entries()
         ]
+        self.to_add: List[SymbolEmbedding] = []
+        self.to_discard: List[str] = []
 
     @abc.abstractmethod
     def process_embedding(self, symbol: Symbol) -> None:
         """An abstract method to process the embedding for a symbol"""
         pass
 
-    def get_embedding(self, symbol: Symbol) -> SymbolEmbedding:
-        return self.embedding_db.get(symbol.dotpath)
+    def get_embeddings(self, symbols: List[Symbol]) -> List[SymbolEmbedding]:
+        return self.embedding_db.batch_get([symbol.dotpath for symbol in symbols])
 
     def get_ordered_entries(self) -> List[SymbolEmbedding]:
-        return [self.get_embedding(ele) for ele in self.sorted_supported_symbols]
+        return self.embedding_db.batch_get(
+            [symbol.dotpath for symbol in self.sorted_supported_symbols]
+        )
+
+    def flush(self):
+        """Perform any remaining updates that do not form a complete batch."""
+        if self.to_discard:
+            self.embedding_db.batch_discard(self.to_discard)
+        if self.to_add:
+            self.embedding_db.batch_add(self.to_add)
+        # Reset the lists for next operations
+        self.to_discard = []
+        self.to_add = []
 
     # ISymbolProvider methods
 

@@ -19,19 +19,17 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Execute script in verbose mode?",
         ),
         click.option(
-            "--index-file",
-            default="automata.scip",
-            help="Which index file to use for the embedding modifications.",
+            "--project_name",
+            default="automata",
+            help="The name of the project we are manipulating.",
         ),
         click.option(
-            "--code-embedding-file",
-            default="symbol_code_embedding.json",
-            help="Which embedding file to save to.",
+            "--project_root_fpath",
+            help="The root path to the project.",
         ),
         click.option(
-            "--doc-embedding-file",
-            default="symbol_doc_embedding_l2.json",
-            help="Which embedding file to save to.",
+            "--project_rel_py_path",
+            help="The relative py path to the project.",
         ),
     ]
     for option in reversed(options):

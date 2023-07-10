@@ -14,7 +14,7 @@ class must implement these methods as per their specific logic.
 Related Symbols
 ---------------
 
--  ``automata.github_management.client.GitHubClient``
+-  ``automata.singletons.github_client.GitHubClient``
 -  ``automata.tests.conftest.MockRepositoryClient``
 
 Dependencies

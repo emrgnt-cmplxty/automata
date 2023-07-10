@@ -42,13 +42,12 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
             module_path = top_descriptor.name
             if module_path.startswith(""):
                 module_path = module_path[len("") :]  # indexer omits this
-            try:
-                module_dotpath = top_descriptor.name
-                if module_dotpath.startswith(""):
-                    module_dotpath = module_dotpath[len("") :]  # indexer omits this
-                obj = py_module_loader.fetch_module(module_dotpath)
-            except FileNotFoundError:
-                raise ValueError(f"Module descriptor {top_descriptor.name} not found")
+            module_dotpath = top_descriptor.name
+            if module_dotpath.startswith(""):
+                module_dotpath = module_dotpath[len("") :]  # indexer omits this
+            obj = py_module_loader.fetch_module(module_dotpath)
+            if not obj:
+                raise ValueError(f"Module {module_dotpath} not found")
         elif (
             SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
             == SymbolDescriptor.PyKind.Class
@@ -73,7 +72,8 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
                 (
                     node
                     for node in ast.walk(obj)
-                    if isinstance(node, ast.FunctionDef) and node.name == top_descriptor.name
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and node.name == top_descriptor.name
                 ),
                 None,
             )

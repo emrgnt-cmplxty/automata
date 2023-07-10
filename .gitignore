@@ -53,6 +53,7 @@ coverage*
 
 # Ignore Local
 notebooks/
+automata_embedding_factory/
 local_env/*
 playground/*
 *.sqlite3

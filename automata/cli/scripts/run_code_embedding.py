@@ -1,13 +1,18 @@
 import logging
+import os
 
 from tqdm import tqdm
 
+from automata.cli.cli_utils import initialize_modules
 from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.symbol.graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
+from automata.symbol_embedding.base import SymbolCodeEmbedding
+from automata.symbol_embedding.vector_databases import (
+    ChromaSymbolEmbeddingVectorDatabase,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,18 +21,29 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
-    py_module_loader.initialize()
+    project_name = kwargs.get("project_name") or "automata"
+    initialize_modules(**kwargs)
 
+    symbol_graph = SymbolGraph(
+        os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip")
+    )
+
+    code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
+        project_name,
+        persist_directory=DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH,
+        factory=SymbolCodeEmbedding.from_args,
+    )
     embedding_provider = OpenAIEmbeddingProvider()
 
     dependency_factory.set_overrides(
         **{
+            "symbol_graph": symbol_graph,
+            "code_embedding_db": code_embedding_db,
             "embedding_provider": embedding_provider,
-            "disable_synchronization": True,
+            "disable_synchronization": True,  # We spoof synchronization locally
         }
     )
 
-    symbol_graph: SymbolGraph = dependency_factory.get("symbol_graph")
     symbol_code_embedding_handler: SymbolCodeEmbeddingHandler = dependency_factory.get(
         "symbol_code_embedding_handler"
     )
@@ -44,5 +60,5 @@ def main(*args, **kwargs) -> str:
         except Exception as e:
             logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
 
-    symbol_code_embedding_handler.embedding_db.save()
+    symbol_code_embedding_handler.flush()  # Final flush for any remaining symbols that didn't form a complete batch
     return "Success"

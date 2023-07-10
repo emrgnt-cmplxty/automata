@@ -5,7 +5,7 @@ from ast import parse as py_ast_parse
 from typing import Dict, Iterable, Optional, Tuple
 
 from automata.core.base.patterns.singleton import Singleton
-from automata.core.utils import get_root_fpath, get_root_py_fpath
+from automata.core.utils import get_root_fpath
 from automata.navigation.py.dotpath_map import DotPathMap
 
 logger = logging.getLogger(__name__)
@@ -22,8 +22,8 @@ class PyModuleLoader(metaclass=Singleton):
     """
 
     initialized = False
-    py_fpath: Optional[str] = None
     root_fpath: Optional[str] = None
+    rel_py_path: Optional[str] = None
 
     _dotpath_map: Optional[DotPathMap] = None
     _loaded_modules: Dict[str, Optional[Module]] = {}
@@ -34,7 +34,7 @@ class PyModuleLoader(metaclass=Singleton):
     def initialize(
         self,
         root_fpath: str = get_root_fpath(),
-        py_fpath: str = get_root_py_fpath(),
+        rel_py_path: str = "automata",
     ) -> None:
         """
         Initializes the loader by setting paths across the entire project
@@ -48,14 +48,15 @@ class PyModuleLoader(metaclass=Singleton):
             of the python modules, in the default case this might look something like "/Users/me/Automata/automata"
 
         """
-        path_prefix = os.path.relpath(py_fpath, root_fpath)
+
+        py_dir_fpath = os.path.join(root_fpath, rel_py_path)
 
         if self.initialized:
             raise Exception("Module loader is already initialized!")
 
-        self._dotpath_map = DotPathMap(py_fpath, path_prefix)
-        self.py_fpath = py_fpath
+        self._dotpath_map = DotPathMap(py_dir_fpath, rel_py_path)
         self.root_fpath = root_fpath
+        self.rel_py_path = rel_py_path
         self.initialized = True
 
     def _assert_initialized(self) -> None:
@@ -177,6 +178,18 @@ class PyModuleLoader(metaclass=Singleton):
         self._assert_initialized()
         self._loaded_modules[module_dotpath] = module
         self._dotpath_map.put_module(module_dotpath)  # type: ignore
+
+    def reset(self) -> None:
+        """
+        Resets the PyModuleLoader to its initial state.
+        This will clear the cache of loaded modules and reset the dotpath map.
+        """
+        self._loaded_modules = {}
+        self._dotpath_map = None
+        self.root_fpath = None
+        self.rel_py_path = None
+        self.initialized = False
+        logger.info("PyModuleLoader has been reset.")
 
     def _load_all_modules(self) -> None:
         """

@@ -87,7 +87,9 @@ class _SymbolParser:
         while self.index < len(self.symbol) and self.is_identifier_character(self.current()):
             self.index += 1
         if start == self.index:
-            raise self.error("empty identifier: " + what)
+            if what != "descriptor name":
+                raise self.error(f"Empty Identifier: {what}")
+            return ""
         return self.symbol[start : self.index]
 
     def accept_space_escaped_identifier(self, what: str) -> str:
