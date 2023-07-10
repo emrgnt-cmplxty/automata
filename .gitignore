@@ -52,7 +52,7 @@ coverage*
 .coverage*
 
 # Ignore Local
-notebooks/
+examples/
 automata_embedding_factory/
 local_env/*
 playground/*
