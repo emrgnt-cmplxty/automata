@@ -47,6 +47,11 @@ class SymbolProviderRegistry:
 
         return SymbolProviderRegistry.sorted_supported_symbols
 
+    @staticmethod
+    def reset() -> None:
+        SymbolProviderRegistry._providers = set([])
+        SymbolProviderRegistry.sorted_supported_symbols = []
+
 
 class SymbolProviderSynchronizationContext:
     """A context manager for synchronizing symbol providers."""
