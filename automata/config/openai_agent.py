@@ -78,7 +78,6 @@ class OpenAIAutomataAgentConfig(AgentConfig):
 
         loaded_yaml = cls._load_automata_yaml_config(config_name)
         casted_config = OpenAIAutomataAgentConfig(**loaded_yaml)
-        # FIXME - Why is this cast necessary to ensure correct versioning?
         casted_config.instruction_version = InstructionConfigVersion(
             casted_config.instruction_version
         )

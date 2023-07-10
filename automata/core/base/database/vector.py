@@ -215,6 +215,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     def __init__(self, collection_name: str, persist_directory: Optional[str] = None):
         self._setup_chroma_client(persist_directory)
         self._collection = self.client.get_or_create_collection(collection_name)
+        self.persist_directory = persist_directory
 
     def _setup_chroma_client(self, persist_directory: Optional[str] = None):
         """Setup the Chroma client, here we attempt to contain the Chroma dependency."""
@@ -294,12 +295,21 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     # TODO - PyLance is complaining about the type of the ids parameter below
     # Can we constrain the TypeVar to be a Chroma compatible type (e.g. ID)?
 
-    def contains(self, key: str) -> bool:
+    def contains(self, key: K) -> bool:
         result = self._collection.get(ids=[key])
         return len(result["ids"]) != 0
 
     def discard(self, key: K) -> None:
         self._collection.delete(ids=[key])
+        self._save()
 
     def batch_discard(self, keys: List[K]) -> None:
         self._collection.delete(ids=keys)
+        self._save()
+
+    def _save(self):
+        # TODO - Do we need to save after every action?
+        # I experienced some bugs when not doing so, for now
+        # we will conservatively save after every action.
+        if self.persist_directory:
+            self.save()

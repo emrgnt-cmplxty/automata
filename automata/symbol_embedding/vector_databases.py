@@ -53,18 +53,23 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         """Adds an entry to the collection, checking for existing entries."""
         self._check_duplicate_entry(self.entry_to_key(entry))
         self._collection.add(**self._prepare_entries_for_insertion([entry]))
+        self._save()
 
     def batch_add(self, entries: List[V]) -> None:
         """Adds multiple entries to the collection."""
+        # TODO -  Add eficient _check_duplicate_entries
         self._collection.add(**self._prepare_entries_for_insertion(entries))
+        self._save()
 
     def update_entry(self, entry: V) -> None:
         """Updates an entry in the database."""
         self._collection.update(**self._prepare_entries_for_insertion([entry]))
+        self._save()
 
     def batch_update(self, entries: List[V]) -> None:
         """Updates multiple entries in the database."""
         self._collection.update(**self._prepare_entries_for_insertion(entries))
+        self._save()
 
     def entry_to_key(self, entry: V) -> str:
         """Generates a hashable key from a Symbol."""
@@ -108,9 +113,17 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
 
         results = self._collection.get(**kwargs)
-        self._check_result_entries(results["ids"], keys)
+        entries = []
+        for idx in range(len(results["ids"])):
+            result = {
+                "ids": results["ids"][idx],
+                "metadatas": [results["metadatas"][idx]],
+                "embeddings": [results["embeddings"][idx]],
+                "documents": [results["documents"][idx]],
+            }
+            entries.append(self._construct_entry_from_result(result))
 
-        return [self._construct_entry_from_result(result) for result in results]
+        return entries
 
     # Support methods
 
@@ -150,7 +163,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
     def _construct_entry_from_result(self, result: "GetResult") -> V:
         """Constructs an object from the provided result."""
         if not self._factory:
-            raise ValueError("No factory provided to construct entry from result")
+            raise ValueError("No factory provided to ChromaDB.")
         # FIXME - Consider how to properly handle typing here.
         metadatas = result["metadatas"][0]
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))

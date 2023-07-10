@@ -52,7 +52,8 @@ coverage*
 .coverage*
 
 # Ignore Local
-notebooks/
+examples/
+automata_embedding_factory/
 local_env/*
 playground/*
 *.sqlite3
@@ -62,3 +63,5 @@ setup.sh
 .direnv
 docs/_build
 .chroma
+##FIXME- The following should be removed by tests, but isn't
+tests/test_output_vec

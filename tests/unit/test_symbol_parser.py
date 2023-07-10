@@ -6,7 +6,7 @@ def test_parse_symbol(symbols):
         assert symbol.scheme == "scip-python"
         assert symbol.package.manager == "python"
         assert symbol.package.name == "automata"
-        assert symbol.package.version == "75482692a6fe30c72db516201a6f47d9fb4af065"
+        assert symbol.package.version == "v0.0.0"
         assert len(symbol.descriptors) > 0
 
 

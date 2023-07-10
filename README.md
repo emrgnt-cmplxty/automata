@@ -7,8 +7,12 @@
       <img src="https://img.shields.io/static/v1?label=license&message=Apache 2.0&color=white" alt="License">
   </a> |
 [![Documentation Status](https://readthedocs.org/projects/automata/badge/?version=latest)](https://automata.readthedocs.io/en/latest/?badge=latest)
+[![GitHub star chart](https://img.shields.io/github/stars/emrgnt-cmplxty/Automata?style=social)](https://star-history.com/#emrgnt-cmplxty/Automata)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/ocolegro)
+
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/emrgnt-cmplxty/Automata)
 
 **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
 

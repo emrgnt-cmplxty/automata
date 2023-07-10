@@ -20,8 +20,8 @@ tests for functionalities that involve interactions with a
 Related Symbols
 ---------------
 
--  ``automata.github_management.client.RepositoryClient``
--  ``automata.github_management.client.GitHubClient``
+-  ``automata.singletons.github_client.RepositoryClient``
+-  ``automata.singletons.github_client.GitHubClient``
 -  ``automata.tests.conftest.environment``
 -  ``automata.tests.conftest.task``
 -  ``automata.tasks.environment.AutomataTaskEnvironment``

@@ -1,11 +1,11 @@
 import abc
 import logging
 from enum import Enum
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, List, Sequence
 
+import astunparse
 import numpy as np
 
-from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.symbol.base import Symbol
 
 logger = logging.getLogger(__name__)
@@ -22,6 +22,10 @@ class EmbeddingVectorProvider(abc.ABC):
 
     @abc.abstractmethod
     def build_embedding_vector(self, symbol_source: str) -> np.ndarray:
+        pass
+
+    @abc.abstractmethod
+    def batch_build_embedding_vector(self, symbol_source: List[str]) -> List[np.ndarray]:
         pass
 
 
@@ -52,36 +56,36 @@ class EmbeddingBuilder(abc.ABC):
         """An abstract method to build the embedding for a symbol"""
         pass
 
+    @abc.abstractmethod
+    def batch_build(self, source_text: List[str], symbol: List[Symbol]) -> Any:
+        """An abstract method to build the embedding for a symbol"""
+        pass
+
     def fetch_embedding_source_code(self, symbol: Symbol) -> str:
         """An abstract method for embedding the context is the source code itself."""
         from automata.symbol.symbol_utils import (  # imported late for mocking
-            convert_to_fst_object,
+            convert_to_ast_object,
         )
 
-        return str(convert_to_fst_object(symbol))
+        return astunparse.unparse(convert_to_ast_object(symbol))
 
 
 class EmbeddingHandler(abc.ABC):
-    """An abstract class to handle embeddings"""
+    """An abstract class to handle batch embeddings."""
 
     @abc.abstractmethod
-    def __init__(
-        self,
-        embedding_db: VectorDatabaseProvider,
-        embedding_builder: EmbeddingBuilder,
-    ) -> None:
-        """An abstract constructor for EmbeddingHandler"""
-        self.embedding_db = embedding_db
-        self.embedding_builder = embedding_builder
-
-    @abc.abstractmethod
-    def get_embedding(self, symbol: Symbol) -> Any:
-        """An abstract method to get the embedding for a symbol"""
+    def get_embeddings(self, symbols: List[Symbol]) -> List[Any]:
+        """An abstract method to get the embeddings entries for a list of symbols."""
         pass
 
     @abc.abstractmethod
-    def process_embedding(self, symbol: Symbol) -> None:
-        """An abstract method to process the embedding for a symbol"""
+    def process_embedding(self, symbols: Symbol) -> None:
+        """An abstract method to process the embeddings for a list of symbols."""
+        pass
+
+    @abc.abstractmethod
+    def flush(self) -> None:
+        """Perform any remaining updates that do not form a complete batch."""
         pass
 
 

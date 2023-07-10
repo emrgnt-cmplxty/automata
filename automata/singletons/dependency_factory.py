@@ -6,10 +6,9 @@ import networkx as nx
 
 from automata.agent.agent import AgentToolkitNames
 from automata.agent.error import AgentGeneralError, UnknownToolError
-from automata.code_handling.py.reader import PyReader
-from automata.code_handling.py.writer import PyWriter
 from automata.config.base import EmbeddingDataCategory
 from automata.context_providers.symbol_synchronization import (
+    SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
 )
 from automata.core.base.patterns.singleton import Singleton
@@ -36,8 +35,6 @@ from automata.symbol_embedding.vector_databases import (
 )
 from automata.tools.factory import AgentToolFactory, logger
 
-# TODO - We should allow users to inject their preferred embedding vector database.
-
 
 class DependencyFactory(metaclass=Singleton):
     """Creates dependencies for input Tool construction."""
@@ -45,7 +42,6 @@ class DependencyFactory(metaclass=Singleton):
     DEFAULT_SCIP_FPATH = os.path.join(
         get_embedding_data_fpath(),
         EmbeddingDataCategory.INDICES.to_path(),
-        "automata.scip",
     )
 
     DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
@@ -82,7 +78,9 @@ class DependencyFactory(metaclass=Singleton):
             raise AgentGeneralError("Cannot set overrides after dependencies have been created.")
 
         for override_obj in kwargs.values():
-            if isinstance(override_obj, ISymbolProvider):
+            if isinstance(override_obj, ISymbolProvider) and not kwargs.get(
+                "disable_synchronization", False
+            ):
                 self._synchronize_provider(override_obj)
 
         self.overrides = kwargs
@@ -158,7 +156,8 @@ class DependencyFactory(metaclass=Singleton):
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
         return self.overrides.get(
-            "symbol_graph", SymbolGraph(DependencyFactory.DEFAULT_SCIP_FPATH)
+            "symbol_graph",
+            SymbolGraph(os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, "automata.scip")),
         )
 
     @lru_cache()
@@ -208,7 +207,7 @@ class DependencyFactory(metaclass=Singleton):
         """
 
         doc_embedding_db = self.overrides.get(
-            "doc_embedding_fpath",
+            "doc_embedding_db",
             ChromaSymbolEmbeddingVectorDatabase(
                 "automata",
                 persist_directory=DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH,
@@ -282,14 +281,18 @@ class DependencyFactory(metaclass=Singleton):
         )
         return EmbeddingSimilarityCalculator(embedding_provider)
 
-    @lru_cache()
-    def create_py_reader(self) -> PyReader:
-        return PyReader()
+    def reset(self):
+        SymbolProviderRegistry.reset()
+        self._class_cache = {}
+        self._instances = {}
+        self.overrides = {}
 
-    @lru_cache()
-    def create_py_writer(self) -> PyWriter:
-        py_reader: PyReader = self.get("py_reader")
-        return PyWriter(py_reader)
+        # Clear the LRU caches
+        for attr_name in dir(self):
+            if attr_name.startswith("create_"):
+                attr_value = getattr(self, attr_name)
+                if callable(attr_value) and hasattr(attr_value, "cache_clear"):
+                    attr_value.cache_clear()
 
 
 dependency_factory = DependencyFactory()
