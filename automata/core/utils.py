@@ -34,7 +34,7 @@ def get_root_fpath() -> str:
 
 def get_embedding_data_fpath() -> str:
     """Get the path to the root of the Automata config directory."""
-    return os.path.join(get_root_fpath(), "embedding_data")
+    return os.path.join(get_root_fpath(), "automata-embedding-data")
 
 
 def get_config_fpath() -> str:
