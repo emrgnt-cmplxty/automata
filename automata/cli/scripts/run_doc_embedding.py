@@ -11,7 +11,7 @@ from automata.llm.providers.openai import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
-from automata.symbol.graph import SymbolGraph
+from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 from automata.symbol_embedding.vector_databases import (

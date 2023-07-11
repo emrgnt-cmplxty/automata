@@ -17,7 +17,7 @@ from automata.experimental.search.symbol_search import SymbolSearch
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient, RepositoryClient
-from automata.symbol.graph import SymbolGraph
+from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.tasks.agent_database import AutomataTaskRegistry
 from automata.tasks.environment import AutomataTaskEnvironment

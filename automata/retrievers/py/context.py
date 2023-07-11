@@ -9,14 +9,12 @@ from typing import List, Optional, Set, Union
 
 import tiktoken
 
+from automata.ast_helpers.py.ast_utils import get_docstring_from_node
 from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.core.utils import get_docstring_from_node, get_root_py_fpath
+from automata.core.utils import get_root_py_fpath
 from automata.symbol.base import Symbol
-from automata.symbol.graph import SymbolGraph
-from automata.symbol.symbol_utils import (
-    get_rankable_symbols,
-    get_source_code_of_symbol_using_py_ast,
-)
+from automata.symbol.graph.symbol_graph import SymbolGraph
+from automata.symbol.symbol_utils import convert_to_ast_object, get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +144,7 @@ class PyContextRetriever:
 
     def process_ast(self, symbol: Symbol) -> None:
         """Process the entire context for an AST object."""
-        ast_object = get_source_code_of_symbol_using_py_ast(symbol)
+        ast_object = convert_to_ast_object(symbol)
         is_main_symbol = self._is_main_symbol()
         methods = sorted(PyContextRetriever._get_all_methods(ast_object), key=lambda x: x.name)
 

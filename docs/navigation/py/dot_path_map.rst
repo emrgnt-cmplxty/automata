@@ -29,7 +29,7 @@ Example
 
 .. code:: python
 
-   from automata.navigation.py.dot_path_map import DotPathMap
+   from automata.ast_helpers.ast_utils.py.dot_path_map import DotPathMap
 
    # Initialize a new DotPathMap
    dpm = DotPathMap('/path/to/your/module/root', 'prefix')
