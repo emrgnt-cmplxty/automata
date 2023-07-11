@@ -27,4 +27,5 @@ jobs:
         run: |
           pip install pyyaml
           pip install jsonschema
+          pip install python-dotenv
           python -m automata.cli.scripts.run_agent_config_validation
