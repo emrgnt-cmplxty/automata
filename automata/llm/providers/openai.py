@@ -8,7 +8,7 @@ import tiktoken
 from termcolor import colored
 
 from automata.core.utils import set_openai_api_key
-from automata.embedding.base import EmbeddingVectorProvider
+from automata.embedding import EmbeddingVectorProvider
 from automata.llm.foundation import (
     LLMChatCompletionProvider,
     LLMChatMessage,

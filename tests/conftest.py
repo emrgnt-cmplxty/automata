@@ -10,7 +10,7 @@ import pytest
 from automata.agent import AgentToolkitNames, OpenAIAutomataAgent
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-from automata.embedding.base import EmbeddingSimilarityCalculator
+from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRankConfig
 from automata.experimental.search.symbol_search import SymbolSearch
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler

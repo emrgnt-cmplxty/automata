@@ -8,7 +8,7 @@ from automata.agent import (
     OpenAIAgentToolkitBuilder,
 )
 from automata.config.base import LLMProvider
-from automata.embedding.base import EmbeddingSimilarityCalculator
+from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search.symbol_search import SymbolSearch
 from automata.llm.providers.openai import OpenAITool
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler

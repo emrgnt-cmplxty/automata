@@ -1,3 +1,4 @@
+from .ast_types import ASTNode
 from .database import (
     ChromaVectorDatabase,
     JSONVectorDatabase,
@@ -13,4 +14,5 @@ __all__ = [
     "ChromaVectorDatabase",
     "Singleton",
     "Observer",
+    "ASTNode",
 ]

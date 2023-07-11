@@ -15,7 +15,7 @@ from ast import (
 from dataclasses import dataclass
 from typing import Optional, Union
 
-from automata.core.base.ast_types import ASTNode
+from automata.core.base import ASTNode
 
 logger = logging.getLogger(__name__)
 

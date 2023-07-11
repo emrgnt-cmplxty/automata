@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from automata.embedding.base import (
+from automata.embedding import (
     EmbeddingBuilder,
     EmbeddingSimilarityCalculator,
     EmbeddingVectorProvider,
