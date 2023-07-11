@@ -6,7 +6,7 @@ import networkx as nx
 from tqdm import tqdm
 
 from automata.core.utils import filter_multi_digraph_by_symbols
-from automata.symbol.base import ISymbolProvider, Symbol, SymbolReference
+from automata.symbol import ISymbolProvider, Symbol, SymbolReference
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class SymbolGraph(ISymbolProvider):
     """
-    A SymbolGraph contains the symbols and relationships between them.
+    A SymbolGraph contains the symbols and relationships between them.e
     Currently, nodes are files and symbols, and edges consist of either
     "contains", "reference", "relationship", "caller", or "callee".
     """

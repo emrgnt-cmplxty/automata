@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 import numpy as np
 
 from automata.embedding import Embedding
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 
 
 class SymbolEmbedding(Embedding):

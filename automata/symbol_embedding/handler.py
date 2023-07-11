@@ -3,8 +3,8 @@ from typing import List
 
 from automata.core.base import VectorDatabaseProvider
 from automata.embedding import EmbeddingBuilder, EmbeddingHandler
-from automata.symbol.base import ISymbolProvider, Symbol
-from automata.symbol_embedding.base import SymbolEmbedding
+from automata.symbol import ISymbolProvider, Symbol
+from automata.symbol_embedding import SymbolEmbedding
 
 
 class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):

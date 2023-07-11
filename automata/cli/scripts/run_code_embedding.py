@@ -9,9 +9,9 @@ from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
-from automata.symbol_embedding.base import SymbolCodeEmbedding
-from automata.symbol_embedding.vector_databases import (
+from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
 )
 
 logger = logging.getLogger(__name__)

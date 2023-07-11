@@ -8,8 +8,10 @@ from automata.embedding import (
     EmbeddingVectorProvider,
 )
 from automata.memory_store import SymbolCodeEmbeddingHandler
-from automata.symbol_embedding.base import SymbolCodeEmbedding
-from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
+from automata.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+)
 
 
 def test_get_nearest_symbols_for_query(

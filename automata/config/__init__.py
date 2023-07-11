@@ -16,6 +16,19 @@ import os
 
 from dotenv import load_dotenv
 
+from .base import (
+    AgentConfig,
+    AgentConfigBuilder,
+    AgentConfigName,
+    ConfigCategory,
+    EmbeddingDataCategory,
+    InstructionConfigVersion,
+    LLMProvider,
+)
+from .prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
+
+# from .openai_agent import OpenAIAutomataAgentConfig, OpenAIAutomataAgentConfigBuilder
+
 load_dotenv()
 
 # Define environment variables
@@ -28,3 +41,17 @@ TASK_DB_PATH = os.getenv("TASK_DB_PATH", os.path.join("..", "task_db.sqlite3"))
 TASK_OUTPUT_PATH = os.getenv("TASKS_OUTPUT_PATH", os.path.join("..", "local_tasks"))
 REPOSITORY_NAME = os.getenv("REPOSITORY_NAME", "emrgnt-cmplxty/Automata")
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", 8))
+
+
+__all__ = [
+    "AgentConfig",
+    "AgentConfigBuilder",
+    "AgentConfigName",
+    "ConfigCategory",
+    "EmbeddingDataCategory",
+    "InstructionConfigVersion",
+    "LLMProvider",
+    "DEFAULT_DOC_GENERATION_PROMPT"
+    # "OpenAIAutomataAgentConfig",
+    # "OpenAIAutomataAgentConfigBuilder",
+]

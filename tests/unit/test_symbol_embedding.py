@@ -5,9 +5,9 @@ import pytest
 
 from automata.embedding import EmbeddingBuilder
 from automata.memory_store import SymbolCodeEmbeddingHandler
-from automata.symbol_embedding.base import SymbolCodeEmbedding
-from automata.symbol_embedding.vector_databases import (
+from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
 )
 
 

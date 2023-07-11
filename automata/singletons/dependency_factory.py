@@ -19,13 +19,12 @@ from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbedding
 from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
 from automata.symbol import ISymbolProvider
 from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
-from automata.symbol_embedding.builders import (
-    SymbolCodeEmbeddingBuilder,
-    SymbolDocEmbeddingBuilder,
-)
-from automata.symbol_embedding.vector_databases import (
+from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolCodeEmbeddingBuilder,
+    SymbolDocEmbedding,
+    SymbolDocEmbeddingBuilder,
 )
 from automata.tools.factory import AgentToolFactory, logger
 

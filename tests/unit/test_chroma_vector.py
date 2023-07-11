@@ -1,9 +1,10 @@
 import numpy as np
 import pytest
 
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
-from automata.symbol_embedding.vector_databases import (
+from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolDocEmbedding,
 )
 
 collection_name = "a_test_collection"

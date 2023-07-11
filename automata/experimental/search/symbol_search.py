@@ -1,5 +1,5 @@
 from ast import unparse as py_ast_unparse
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -10,7 +10,9 @@ from automata.symbol import Symbol, SymbolReference
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.symbol.symbol_utils import convert_to_ast_object
-from automata.symbol_embedding.handler import SymbolEmbeddingHandler
+
+if TYPE_CHECKING:
+    from automata.symbol_embedding import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
@@ -25,7 +27,7 @@ class SymbolSearch:
         self,
         symbol_graph: SymbolGraph,
         symbol_rank_config: SymbolRankConfig,
-        search_embedding_handler: SymbolEmbeddingHandler,
+        search_embedding_handler: "SymbolEmbeddingHandler",
         embedding_similarity_calculator: EmbeddingSimilarityCalculator,
         z_score_power: float = 2.0,
     ) -> None:

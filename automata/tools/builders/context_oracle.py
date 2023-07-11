@@ -13,7 +13,7 @@ from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
 from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
-from automata.symbol_embedding.base import SymbolDocEmbedding
+from automata.symbol_embedding import SymbolDocEmbedding
 from automata.tools.base import Tool
 
 logger = logging.getLogger(__name__)

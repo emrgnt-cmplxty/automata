@@ -4,13 +4,13 @@ from unittest.mock import MagicMock
 import networkx as nx
 import numpy as np
 
-from automata.context_providers.symbol_synchronization import (
-    SymbolProviderSynchronizationContext,
-)
+from automata.context_providers import SymbolProviderSynchronizationContext
 from automata.embedding import EmbeddingBuilder
 from automata.memory_store import SymbolCodeEmbeddingHandler
-from automata.symbol_embedding.base import SymbolCodeEmbedding
-from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
+from automata.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+)
 
 from ..utils.factories import symbol_graph_static_test  # noqa: F401, F811
 

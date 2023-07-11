@@ -2,8 +2,7 @@ import logging
 from typing import List
 
 from automata.agent import OpenAIAutomataAgent
-from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
-from automata.config.base import AgentConfigName
+from automata.config import GITHUB_API_KEY, REPOSITORY_NAME, AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient

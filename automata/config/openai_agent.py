@@ -3,14 +3,14 @@ from typing import Dict, List, Optional
 
 from pydantic import PrivateAttr
 
-from automata.config.base import (
+from automata.config import (
     AgentConfig,
     AgentConfigBuilder,
     AgentConfigName,
     InstructionConfigVersion,
     LLMProvider,
 )
-from automata.experimental.search import SymbolRank
+from automata.config.formatter import TemplateFormatter
 
 
 class OpenAIAutomataAgentConfig(AgentConfig):
@@ -33,40 +33,14 @@ class OpenAIAutomataAgentConfig(AgentConfig):
     instruction_version: InstructionConfigVersion = InstructionConfigVersion.AGENT_INTRODUCTION
     system_instruction: Optional[str] = None
 
-    class TemplateFormatter:
-        @staticmethod
-        def create_default_formatter(
-            config: "OpenAIAutomataAgentConfig",
-            symbol_rank: SymbolRank,
-            max_default_overview_symbols: int = 100,
-        ) -> Dict[str, str]:
-            """
-            TODO:
-                - Re-implement this method after the new instruction configs are finalized.
-            """
-            formatter: Dict[str, str] = {}
-            if config.config_name == AgentConfigName.AUTOMATA_MAIN:
-                top_symbols = symbol_rank.get_top_symbols(max_default_overview_symbols)
-                formatter["symbol_rank_overview"] = "\n".join(
-                    f"{symbol}"
-                    for symbol, _ in sorted(top_symbols, key=lambda x: x[1], reverse=True)
-                )
-                formatter["max_iterations"] = str(config.max_iterations)
-            elif config.config_name != AgentConfigName.TEST:
-                raise NotImplementedError("Automata does not have a default template formatter.")
-
-            return formatter
-
     def setup(self) -> None:
         if not self.session_id:
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:
             from automata.singletons.dependency_factory import dependency_factory
 
-            self.system_template_formatter = (
-                OpenAIAutomataAgentConfig.TemplateFormatter.create_default_formatter(
-                    self, dependency_factory.get("symbol_rank")
-                )
+            self.system_template_formatter = TemplateFormatter.create_default_formatter(
+                self, dependency_factory.get("symbol_rank")
             )
         if not self.system_instruction:
             self.system_instruction = self._formatted_instruction()
