@@ -5,8 +5,7 @@ from automata.agent import AgentToolkitNames, UnknownToolError
 from automata.config.base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
 from automata.tools.base import Tool
 
 logger = logging.getLogger(__name__)

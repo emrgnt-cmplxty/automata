@@ -15,8 +15,7 @@ from automata.core.utils import get_embedding_data_fpath
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolRank, SymbolRankConfig, SymbolSearch
 from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
 from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
 from automata.symbol.base import ISymbolProvider
 from automata.symbol.graph.symbol_graph import SymbolGraph

@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 from automata.config.base import AgentConfigName, LLMProvider
-from automata.llm.foundation import LLMConversationDatabaseProvider, LLMIterationResult
+from automata.llm import LLMConversationDatabaseProvider, LLMIterationResult
 from automata.tools.base import Tool
 
 logger = logging.getLogger(__name__)

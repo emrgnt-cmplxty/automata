@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from automata.llm.foundation import LLMChatMessage
-from automata.memory_store.agent_conversation_database import AgentConversationDatabase
+from automata.llm import LLMChatMessage
+from automata.memory_store import AgentConversationDatabase
 
 
 @pytest.fixture(scope="module", autouse=True)

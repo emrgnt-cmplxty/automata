@@ -1,3 +1,11 @@
+from .foundation import (
+    LLMChatCompletionProvider,
+    LLMChatMessage,
+    LLMCompletionResult,
+    LLMConversation,
+    LLMConversationDatabaseProvider,
+    LLMIterationResult,
+)
 from .providers import (
     FunctionCall,
     OpenAIChatCompletionProvider,
@@ -16,4 +24,10 @@ __all__ = [
     "OpenAIEmbeddingProvider",
     "OpenAIFunction",
     "OpenAITool",
+    "LLMCompletionResult",
+    "LLMChatCompletionProvider",
+    "LLMChatMessage",
+    "LLMConversation",
+    "LLMConversationDatabaseProvider",
+    "LLMIterationResult",
 ]

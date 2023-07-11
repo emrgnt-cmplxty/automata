@@ -8,7 +8,7 @@ from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
 from automata.embedding import EmbeddingBuilder
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.symbol_embedding.base import SymbolCodeEmbedding
 from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
 

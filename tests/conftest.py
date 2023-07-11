@@ -12,7 +12,7 @@ from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolRankConfig, SymbolSearch
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
+from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient, RepositoryClient
 from automata.symbol.graph.symbol_graph import SymbolGraph

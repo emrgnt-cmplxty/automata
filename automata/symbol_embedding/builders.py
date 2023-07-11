@@ -6,7 +6,7 @@ from automata.code_parsers.py import get_docstring_from_node
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
-from automata.llm.foundation import LLMChatCompletionProvider
+from automata.llm import LLMChatCompletionProvider
 from automata.retrievers.py.context import PyContextRetriever
 from automata.symbol.base import Symbol
 from automata.symbol.symbol_utils import convert_to_ast_object
