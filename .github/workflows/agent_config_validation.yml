@@ -25,5 +25,6 @@ jobs:
           poetry install
       - name: Run Agent Config Validation
         run: |
-          pip install pyyaml
+          curl -sSL https://install.python-poetry.org | python -
+          poetry install
           python -m automata.cli.scripts.run_agent_config_validation
