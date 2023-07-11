@@ -2,7 +2,7 @@ import logging
 from typing import List, Tuple
 
 from automata.core.base import VectorDatabaseProvider
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
 from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 

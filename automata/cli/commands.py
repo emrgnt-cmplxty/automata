@@ -3,9 +3,8 @@ import logging.config
 
 import click
 
+from automata.cli.options import agent_options, common_options
 from automata.core.utils import get_logging_config
-
-from .options import agent_options, common_options
 
 logger = logging.getLogger(__name__)
 

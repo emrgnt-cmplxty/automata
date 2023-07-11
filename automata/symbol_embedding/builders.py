@@ -8,7 +8,7 @@ from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import LLMChatCompletionProvider
 from automata.retrievers.py.context import PyContextRetriever
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 from automata.symbol.symbol_utils import convert_to_ast_object
 from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
 

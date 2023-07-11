@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Sequence
 import astunparse
 import numpy as np
 
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 
 logger = logging.getLogger(__name__)
 
