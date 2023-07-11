@@ -6,7 +6,7 @@ import networkx as nx
 
 from automata.agent import AgentGeneralError, AgentToolkitNames, UnknownToolError
 from automata.config.base import EmbeddingDataCategory
-from automata.context_providers.symbol_synchronization import (
+from automata.context_providers import (
     SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
 )

@@ -50,9 +50,7 @@ def test_build_graph_and_handler_and_synchronize(
     symbol_graph_tester.navigator._graph = G
 
     with SymbolProviderSynchronizationContext() as synchronization_context:
-        from automata.context_providers.symbol_synchronization import (
-            SymbolProviderRegistry,
-        )
+        from automata.context_providers import SymbolProviderRegistry
 
         SymbolProviderRegistry._providers = set([])
         SymbolProviderRegistry.sorted_supported_symbols = []
