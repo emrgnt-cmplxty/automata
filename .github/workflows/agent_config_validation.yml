@@ -25,7 +25,5 @@ jobs:
           poetry install
       - name: Run Agent Config Validation
         run: |
-          pip install pyyaml
-          pip install jsonschema
-          pip install python-dotenv
+          pip install e .
           python -m automata.cli.scripts.run_agent_config_validation
