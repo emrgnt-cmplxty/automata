@@ -7,7 +7,7 @@ from automata.config import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 
 if TYPE_CHECKING:
-    from automata.agent import OpenAIAutomataAgent
+    from automata.agent.providers import OpenAIAutomataAgent
 
 
 class OpenAIAutomataAgentInstance(AgentInstance, BaseModel):

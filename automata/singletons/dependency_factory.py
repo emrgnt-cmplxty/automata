@@ -1,3 +1,4 @@
+import logging
 import os
 from functools import lru_cache
 from typing import Any, Dict, List, Set, Tuple
@@ -26,7 +27,9 @@ from automata.symbol_embedding import (
     SymbolDocEmbedding,
     SymbolDocEmbeddingBuilder,
 )
-from automata.tools.factory import AgentToolFactory, logger
+from automata.tools.factory import AgentToolFactory
+
+logger = logging.getLogger(__name__)
 
 
 class DependencyFactory(metaclass=Singleton):

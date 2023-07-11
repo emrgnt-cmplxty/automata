@@ -8,8 +8,7 @@ import numpy as np
 import pytest
 
 from automata.agent import AgentToolkitNames, OpenAIAutomataAgent
-from automata.config.base import AgentConfigName
-from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
+from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolRankConfig, SymbolSearch
 from automata.memory_store import SymbolCodeEmbeddingHandler

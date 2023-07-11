@@ -25,9 +25,8 @@ from .base import (
     InstructionConfigVersion,
     LLMProvider,
 )
+from .openai_agent import OpenAIAutomataAgentConfig, OpenAIAutomataAgentConfigBuilder
 from .prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-
-# from .openai_agent import OpenAIAutomataAgentConfig, OpenAIAutomataAgentConfigBuilder
 
 load_dotenv()
 
@@ -51,7 +50,7 @@ __all__ = [
     "EmbeddingDataCategory",
     "InstructionConfigVersion",
     "LLMProvider",
-    "DEFAULT_DOC_GENERATION_PROMPT"
-    # "OpenAIAutomataAgentConfig",
-    # "OpenAIAutomataAgentConfigBuilder",
+    "DEFAULT_DOC_GENERATION_PROMPT",
+    "OpenAIAutomataAgentConfig",
+    "OpenAIAutomataAgentConfigBuilder",
 ]

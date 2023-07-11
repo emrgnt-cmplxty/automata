@@ -1,13 +1,15 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
 from automata.config import AgentConfigName, LLMProvider
 from automata.llm import LLMConversationDatabaseProvider, LLMIterationResult
-from automata.tools.base import Tool
+
+if TYPE_CHECKING:
+    from automata.tools import Tool
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +86,7 @@ class AgentToolkitBuilder(ABC):
     PLATFORM: Optional[LLMProvider] = None
 
     @abstractmethod
-    def build(self) -> List[Tool]:
+    def build(self) -> List["Tool"]:
         pass
 
 
