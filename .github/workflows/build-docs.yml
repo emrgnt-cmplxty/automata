@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           curl -sSL https://install.python-poetry.org | python3 -
           poetry config virtualenvs.create false
-          poetry install --with doc
+          poetry install
 
       - name: Build docs
         run: make -C docs/ html
