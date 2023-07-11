@@ -4,9 +4,9 @@ from ast import Module
 from ast import parse as py_ast_parse
 from typing import Dict, Iterable, Optional, Tuple
 
+from automata.ast_helpers.py.dotpath_map import DotPathMap
 from automata.core.base.patterns.singleton import Singleton
 from automata.core.utils import get_root_fpath
-from automata.navigation.py.dotpath_map import DotPathMap
 
 logger = logging.getLogger(__name__)
 

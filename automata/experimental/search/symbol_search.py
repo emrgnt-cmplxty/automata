@@ -7,7 +7,7 @@ from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolReference
-from automata.symbol.graph import SymbolGraph
+from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.symbol.symbol_utils import convert_to_ast_object
 from automata.symbol_embedding.handler import SymbolEmbeddingHandler

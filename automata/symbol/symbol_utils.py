@@ -1,27 +1,9 @@
 import ast
-from ast import AST, Module
 from typing import List, Optional
 
 from automata.core.base.ast import ASTNode
-from automata.navigation.py.navigation_utils import visit
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolDescriptor
-
-
-def get_source_code_of_symbol_using_py_ast(symbol: Symbol) -> AST:
-    descriptors = list(symbol.descriptors)
-    module_dotpath = descriptors[0].name
-    if module_dotpath.startswith(""):
-        module_dotpath = module_dotpath[len("") :]  # indexer omits this
-    tree = py_module_loader.fetch_module(module_dotpath)
-    if not tree or not isinstance(tree, Module):
-        raise ValueError(
-            f"Either the module {module_dotpath} was not found or it is not an Python's module object"
-        )
-    node = visit(tree, descriptors)
-    if node is None:
-        raise ValueError(f"Failed to find {symbol.uri} in source code")
-    return node
 
 
 def convert_to_ast_object(symbol: Symbol) -> ast.AST:
