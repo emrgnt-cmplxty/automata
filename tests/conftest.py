@@ -7,8 +7,7 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-from automata.agent.agent import AgentToolkitNames
-from automata.agent.providers import OpenAIAutomataAgent
+from automata.agent import AgentToolkitNames, OpenAIAutomataAgent
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.embedding.base import EmbeddingSimilarityCalculator

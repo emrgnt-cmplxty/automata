@@ -2,8 +2,11 @@ import logging
 import textwrap
 from typing import List
 
-from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
-from automata.agent.providers import OpenAIAgentToolkitBuilder
+from automata.agent import (
+    AgentToolkitBuilder,
+    AgentToolkitNames,
+    OpenAIAgentToolkitBuilder,
+)
 from automata.config.base import LLMProvider
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.symbol_search import SymbolSearch

@@ -4,8 +4,7 @@ from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 
-from automata.agent.agent import AgentToolkitNames
-from automata.agent.error import AgentGeneralError, UnknownToolError
+from automata.agent import AgentGeneralError, AgentToolkitNames, UnknownToolError
 from automata.config.base import EmbeddingDataCategory
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderRegistry,

@@ -7,8 +7,6 @@ import yaml
 from jsonschema import ValidationError, validate
 
 from automata.config.base import ConfigCategory
-
-# from automata.agent.action import AutomataActionExtractor
 from automata.core.utils import get_config_fpath, get_logging_config
 
 logger = logging.getLogger(__name__)

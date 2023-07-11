@@ -2,7 +2,7 @@ import logging
 import logging.config
 import os
 
-from automata.agent.error import AgentTaskInstructions
+from automata.agent import AgentTaskInstructionsError
 from automata.core.utils import get_logging_config, get_root_fpath, get_root_py_fpath
 from automata.tasks.base import Task
 
@@ -22,7 +22,7 @@ class AutomataTask(Task):
         self.args = args
         self.kwargs = kwargs
         if "instructions" not in self.kwargs or self.kwargs["instructions"] == "":
-            raise AgentTaskInstructions("Task instructions cannot be empty.")
+            raise AgentTaskInstructionsError("Task instructions cannot be empty.")
         self.instructions = self.kwargs["instructions"]
         # Note, this  assumes the python folder is in the root folder
         default_python_folder = os.path.relpath(get_root_py_fpath(), get_root_fpath())

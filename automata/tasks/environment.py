@@ -2,7 +2,7 @@ import logging
 import logging.config
 import os
 
-from automata.agent.error import AgentTaskGeneralError, AgentTaskStateError
+from automata.agent import AgentTaskGeneralError, AgentTaskStateError
 from automata.singletons.github_client import GitHubClient
 from automata.tasks.base import Task, TaskEnvironment, TaskStatus
 from automata.tasks.tasks import AutomataTask

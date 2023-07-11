@@ -1,7 +1,7 @@
 import pkgutil
 from typing import List, Set, Type
 
-from automata.agent.providers import OpenAIAgentToolkitBuilder
+from automata.agent import OpenAIAgentToolkitBuilder
 from automata.core.base.patterns.singleton import Singleton
 
 

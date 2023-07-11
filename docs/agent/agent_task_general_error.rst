@@ -16,7 +16,7 @@ Related Symbols
 -  ``automata.tests.unit.test_task.test_task_inital_state``
 -  ``automata.agent.error.AgentTaskGitError``
 -  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
--  ``automata.agent.error.AgentTaskInstructions``
+-  ``automata.agent.error.AgentTaskInstructionsError``
 -  ``automata.tests.unit.test_task_environment.TestURL``
 -  ``automata.agent.error.AgentTaskStateError``
 -  ``automata.tests.unit.test_task_executor.TestExecuteBehavior``

@@ -24,7 +24,7 @@ Related Symbols
    the task encounters a git related error.
 -  ``automata.agent.error.AgentTaskGeneralError``: An exception raised
    when a general error occurs during task execution.
--  ``automata.agent.error.AgentTaskInstructions``: An exception raised
+-  ``automata.agent.error.AgentTaskInstructionsError``: An exception raised
    when there is an error with the task instructions.
 
 Example

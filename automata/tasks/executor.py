@@ -2,8 +2,11 @@ import logging
 import logging.config
 import time
 
-from automata.agent.error import AgentTaskGeneralError, AgentTaskStateError
-from automata.agent.providers import OpenAIAutomataAgent
+from automata.agent import (
+    AgentTaskGeneralError,
+    AgentTaskStateError,
+    OpenAIAutomataAgent,
+)
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 from automata.tasks.base import ITaskExecution, Task, TaskStatus
 from automata.tasks.tasks import AutomataTask

@@ -2,14 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Sequence
 
-from automata.agent.agent import Agent, AgentToolkitBuilder
-from automata.agent.error import (
-    AgentDatabaseError,
-    AgentGeneralError,
-    AgentMaxIterError,
-    AgentResultError,
-    AgentStopIteration,
-)
 from automata.config.base import ConfigCategory
 from automata.config.openai_agent import OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, load_config
@@ -25,6 +17,15 @@ from automata.llm.providers.openai import (
     OpenAIConversation,
     OpenAIFunction,
     OpenAITool,
+)
+
+from .agent import Agent, AgentToolkitBuilder
+from .error import (
+    AgentDatabaseError,
+    AgentGeneralError,
+    AgentMaxIterError,
+    AgentResultError,
+    AgentStopIteration,
 )
 
 logger = logging.getLogger(__name__)

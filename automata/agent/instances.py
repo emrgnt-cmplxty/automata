@@ -2,12 +2,13 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from pydantic import BaseModel
 
-from automata.agent.agent import AgentInstance
 from automata.config.base import AgentConfigName
 from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
 
+from .agent import AgentInstance
+
 if TYPE_CHECKING:
-    from automata.agent.providers import OpenAIAutomataAgent
+    from .providers import OpenAIAutomataAgent
 
 
 class OpenAIAutomataAgentInstance(AgentInstance, BaseModel):

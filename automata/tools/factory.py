@@ -1,8 +1,7 @@
 import logging
 from typing import Any, Dict, List, Sequence, Tuple
 
-from automata.agent.agent import AgentToolkitNames
-from automata.agent.error import UnknownToolError
+from automata.agent import AgentToolkitNames, UnknownToolError
 from automata.config.base import LLMProvider
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.symbol_search import SymbolSearch
