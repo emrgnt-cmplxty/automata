@@ -147,7 +147,6 @@ class Symbol:
     <escaped-characters>   ::= any UTF-8 character, escape backticks with double backtick.
 
     Examples -
-    from automata.experimental.search.symbol_parser import parse_symbol
 
     symbol_class = parse_symbol(
         "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#"

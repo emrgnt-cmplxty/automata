@@ -13,8 +13,7 @@ from automata.context_providers import (
 from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
 from automata.embedding import EmbeddingSimilarityCalculator
-from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.experimental.search.symbol_search import SymbolSearch
+from automata.experimental.search import SymbolRank, SymbolRankConfig, SymbolSearch
 from automata.llm.providers.openai import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,

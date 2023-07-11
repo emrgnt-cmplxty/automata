@@ -10,7 +10,7 @@ from automata.config.base import (
     InstructionConfigVersion,
     LLMProvider,
 )
-from automata.experimental.search.rank import SymbolRank
+from automata.experimental.search import SymbolRank
 from automata.singletons.dependency_factory import dependency_factory
 
 

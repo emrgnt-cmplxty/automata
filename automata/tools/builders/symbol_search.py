@@ -8,7 +8,7 @@ from automata.agent import (
     UnknownToolError,
 )
 from automata.config.base import LLMProvider
-from automata.experimental.search.symbol_search import (
+from automata.experimental.search import (
     ExactSearchResult,
     SourceCodeResult,
     SymbolRankResult,
