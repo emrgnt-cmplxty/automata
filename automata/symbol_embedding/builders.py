@@ -2,7 +2,7 @@ from typing import Any, List
 
 from jinja2 import Template
 
-from automata.ast_helpers.py.ast_utils import get_docstring_from_node
+from automata.code_parsers.py import get_docstring_from_node
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding.base import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search.symbol_search import SymbolSearch

@@ -15,6 +15,8 @@ from ast import (
 from dataclasses import dataclass
 from typing import Optional, Union
 
+from automata.core.base.ast_types import ASTNode
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,13 +72,17 @@ class DocstringRemover(NodeTransformer):
 
     def visit(self, node):
         # If this node is a function, class, or module, remove its docstring.
-        if isinstance(node, (FunctionDef, AsyncFunctionDef, ClassDef, Module)):
-            if isinstance(node.body[0], Expr) and isinstance(node.body[0].value, Str):
-                node.body.pop(0)
+        if (
+            isinstance(node, Union[AsyncFunctionDef, ClassDef, FunctionDef, Module])
+            and isinstance(node.body[0], Expr)
+            and isinstance(node.body[0].value, Str)
+        ):
+            node.body.pop(0)
         return super().visit(node)
 
 
-def remove_docstrings(tree: Union[FunctionDef, AsyncFunctionDef, ClassDef, Module]):
+def get_node_without_docstrings(node: ASTNode) -> ASTNode:
+    """Creates a copy of the specified node without docstrings."""
     remover = DocstringRemover()
-    remover.visit(tree)
-    return tree
+    remover.visit(node)
+    return node

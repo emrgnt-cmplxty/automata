@@ -1,7 +1,7 @@
 import ast
 from typing import List, Optional
 
-from automata.core.base.ast import ASTNode
+from automata.core.base.ast_types import ASTNode
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolDescriptor
 

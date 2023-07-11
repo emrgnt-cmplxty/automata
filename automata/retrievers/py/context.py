@@ -9,7 +9,7 @@ from typing import List, Optional, Set, Union
 
 import tiktoken
 
-from automata.ast_helpers.py.ast_utils import get_docstring_from_node
+from automata.code_parsers.py import get_docstring_from_node
 from automata.core.base.database.vector import VectorDatabaseProvider
 from automata.core.utils import get_root_py_fpath
 from automata.symbol.base import Symbol
