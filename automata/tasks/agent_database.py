@@ -6,7 +6,7 @@ import jsonpickle
 
 from automata.agent import AgentTaskGeneralError, AgentTaskStateError
 from automata.config import TASK_DB_PATH
-from automata.core.base.database.relational import SQLDatabase
+from automata.core.base import SQLDatabase
 from automata.tasks.base import TaskStatus
 from automata.tasks.tasks import AutomataTask
 

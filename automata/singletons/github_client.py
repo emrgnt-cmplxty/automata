@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 from git import Git, Repo
 from github import Github, Issue, PullRequest
 
-from automata.core.base.patterns.singleton import Singleton
+from automata.core.base import Singleton
 
 
 class RepositoryClient(ABC):

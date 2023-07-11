@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, TypeVar, 
 
 import numpy as np
 
-from automata.core.base.database.vector import ChromaVectorDatabase, JSONVectorDatabase
+from automata.core.base import ChromaVectorDatabase, JSONVectorDatabase
 from automata.symbol.parser import parse_symbol
 from automata.symbol_embedding.base import SymbolEmbedding
 

@@ -10,7 +10,7 @@ from automata.context_providers import (
     SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
 )
-from automata.core.base.patterns.singleton import Singleton
+from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
 from automata.embedding.base import EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig

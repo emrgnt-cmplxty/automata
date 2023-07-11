@@ -1,7 +1,7 @@
 import abc
 from typing import List
 
-from automata.core.base.database.vector import VectorDatabaseProvider
+from automata.core.base import VectorDatabaseProvider
 from automata.embedding.base import EmbeddingBuilder, EmbeddingHandler
 from automata.symbol.base import ISymbolProvider, Symbol
 from automata.symbol_embedding.base import SymbolEmbedding

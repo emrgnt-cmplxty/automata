@@ -3,8 +3,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from pydantic import BaseModel
 
-from automata.core.base.database.relational import SQLDatabase
-from automata.core.base.patterns.observer import Observer
+from automata.core.base import Observer, SQLDatabase
 
 
 class LLMCompletionResult(BaseModel):
