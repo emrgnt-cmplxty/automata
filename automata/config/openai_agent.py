@@ -11,7 +11,6 @@ from automata.config.base import (
     LLMProvider,
 )
 from automata.experimental.search import SymbolRank
-from automata.singletons.dependency_factory import dependency_factory
 
 
 class OpenAIAutomataAgentConfig(AgentConfig):
@@ -62,6 +61,8 @@ class OpenAIAutomataAgentConfig(AgentConfig):
         if not self.session_id:
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:
+            from automata.singletons.dependency_factory import dependency_factory
+
             self.system_template_formatter = (
                 OpenAIAutomataAgentConfig.TemplateFormatter.create_default_formatter(
                     self, dependency_factory.get("symbol_rank")

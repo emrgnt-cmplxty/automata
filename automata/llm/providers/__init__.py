@@ -1,4 +1,4 @@
-from .providers import (
+from .openai import (
     FunctionCall,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,

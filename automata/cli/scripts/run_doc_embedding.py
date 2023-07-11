@@ -7,7 +7,7 @@ from automata.cli.cli_utils import initialize_modules
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
-from automata.llm.providers.openai import OpenAIEmbeddingProvider
+from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.singletons.dependency_factory import DependencyFactory, dependency_factory

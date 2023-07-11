@@ -5,18 +5,18 @@ from typing import Dict, Final, List, Sequence
 from automata.config.base import ConfigCategory
 from automata.config.openai_agent import OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, load_config
-from automata.llm.foundation import (
-    LLMChatMessage,
-    LLMConversationDatabaseProvider,
-    LLMIterationResult,
-)
-from automata.llm.providers.openai import (
+from automata.llm import (
     FunctionCall,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
     OpenAIConversation,
     OpenAIFunction,
     OpenAITool,
+)
+from automata.llm.foundation import (
+    LLMChatMessage,
+    LLMConversationDatabaseProvider,
+    LLMIterationResult,
 )
 
 from .agent import Agent, AgentToolkitBuilder

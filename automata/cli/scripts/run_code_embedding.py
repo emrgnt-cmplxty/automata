@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_modules
-from automata.llm.providers.openai import OpenAIEmbeddingProvider
+from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.symbol.graph.symbol_graph import SymbolGraph

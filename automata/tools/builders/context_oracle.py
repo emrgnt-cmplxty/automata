@@ -10,7 +10,7 @@ from automata.agent import (
 from automata.config.base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
-from automata.llm.providers.openai import OpenAITool
+from automata.llm import OpenAITool
 from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
 from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
