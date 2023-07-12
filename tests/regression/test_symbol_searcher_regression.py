@@ -24,7 +24,16 @@ def check_hits(expected_in_top_hits, found_top_hits):
     [
         ("SymbolGraph", ["Symbol", "SymbolGraph", "GraphBuilder"]),
         ("SymbolSearch", ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"]),
-        ("Embedding", ["SymbolCodeEmbedding", "SymbolDocEmbedding"]),
+        (
+            "Embedding",
+            [
+                "SymbolEmbeddingHandler",
+                "EmbeddingBuilder",
+                "SymbolDocEmbeddingHandler",
+                "SymbolEmbedding",
+                "Embedding",
+            ],
+        ),
         (
             "OpenAI",
             [

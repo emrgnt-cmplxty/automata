@@ -5,7 +5,9 @@ from .base import (
     SymbolPackage,
     SymbolReference,
 )
+from .graph import SymbolGraph
 from .parser import parse_symbol
+from .symbol_utils import convert_to_ast_object, get_rankable_symbols
 
 __all__ = [
     "ISymbolProvider",
@@ -14,4 +16,7 @@ __all__ = [
     "SymbolPackage",
     "SymbolReference",
     "parse_symbol",
+    "SymbolGraph",
+    "get_rankable_symbols",
+    "convert_to_ast_object",
 ]
