@@ -10,7 +10,6 @@ from automata.symbol_embedding import (
 collection_name = "a_test_collection"
 
 # TODO - We need more tests around persistence
-# FIXME - We need to make sure db folder clears after running tests
 
 
 # Parameterized fixture for embedding type
@@ -55,6 +54,13 @@ def vector_db_persistent(embedding_type, temp_output_vector_dir):
         factory=embedding_type.from_args,
         persist_directory=temp_output_vector_dir,
     )
+
+    yield db
+
+    db.clear()
+
+    for file in temp_output_vector_dir.iterdir():
+        file.unlink()
 
 
 @pytest.fixture
