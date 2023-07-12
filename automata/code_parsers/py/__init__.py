@@ -4,7 +4,11 @@ from .ast_utils import (
     get_node_without_docstrings,
     get_node_without_imports,
 )
-from .context_retriever import PyContextRetriever, PyContextRetrieverConfig
+from .context_retriever import (
+    ContextComponent,
+    PyContextRetriever,
+    PyContextRetrieverConfig,
+)
 from .dotpath_map import DotPathMap
 
 __all__ = [
@@ -15,4 +19,5 @@ __all__ = [
     "DotPathMap",
     "PyContextRetriever",
     "PyContextRetrieverConfig",
+    "ContextComponent",
 ]
