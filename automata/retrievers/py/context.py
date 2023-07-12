@@ -1,15 +1,9 @@
 import logging
 import os
-from ast import (
-    AST,
-    AsyncFunctionDef,
-    FunctionDef,
-    Import,
-    ImportFrom,
-    parse as py_ast_parse,
-    unparse as py_ast_unparse,
-    walk as py_ast_walk,
-)
+from ast import AST, AsyncFunctionDef, FunctionDef, Import, ImportFrom
+from ast import parse as py_ast_parse
+from ast import unparse as py_ast_unparse
+from ast import walk as py_ast_walk
 from contextlib import contextmanager
 from typing import List, Optional, Set, Union
 
@@ -18,7 +12,12 @@ import tiktoken
 from automata.code_parsers.py import get_docstring_from_node
 from automata.core.base import VectorDatabaseProvider
 from automata.core.utils import get_root_py_fpath
-from automata.symbol import Symbol, SymbolGraph, convert_to_ast_object, get_rankable_symbols
+from automata.symbol import (
+    Symbol,
+    SymbolGraph,
+    convert_to_ast_object,
+    get_rankable_symbols,
+)
 
 logger = logging.getLogger(__name__)
 
