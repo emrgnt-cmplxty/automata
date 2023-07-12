@@ -54,7 +54,6 @@ coverage*
 # Ignore Local
 examples/
 automata_embedding_factory/
-local_env/*
 playground/*
 *.sqlite3
 local_tasks/

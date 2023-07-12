@@ -7,15 +7,15 @@ from automata.cli.cli_utils import initialize_modules
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
-from automata.llm.providers.openai import OpenAIEmbeddingProvider
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.llm import OpenAIEmbeddingProvider
+from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
 from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
-from automata.symbol_embedding.vector_databases import (
+from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolDocEmbedding,
 )
 
 logger = logging.getLogger(__name__)

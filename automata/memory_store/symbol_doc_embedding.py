@@ -1,9 +1,8 @@
 import logging
 
-from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.symbol.base import Symbol, SymbolDescriptor
-from automata.symbol_embedding.builders import SymbolDocEmbeddingBuilder
-from automata.symbol_embedding.handler import SymbolEmbeddingHandler
+from automata.core.base import VectorDatabaseProvider
+from automata.symbol import Symbol, SymbolDescriptor
+from automata.symbol_embedding import SymbolDocEmbeddingBuilder, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
     def __init__(
         self,
         embedding_db: VectorDatabaseProvider,
-        embedding_builder: SymbolDocEmbeddingBuilder,
+        embedding_builder: "SymbolDocEmbeddingBuilder",
         batch_size: int = 1,
     ) -> None:
         if batch_size != 1:

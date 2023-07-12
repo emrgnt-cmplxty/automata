@@ -1,7 +1,6 @@
 import pytest
 
-from automata.config.base import AgentConfigName
-from automata.config.openai_agent import OpenAIAutomataAgentConfig
+from automata.config import AgentConfigName, OpenAIAutomataAgentConfig
 from automata.tools.factory import AgentToolFactory
 
 

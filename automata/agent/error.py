@@ -46,7 +46,7 @@ class AgentTaskGitError(Exception):
     pass
 
 
-class AgentTaskInstructions(Exception):
+class AgentTaskInstructionsError(Exception):
     """An exception raised when there is an error with the task instructions."""
 
     pass

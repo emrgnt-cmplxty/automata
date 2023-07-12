@@ -3,14 +3,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
-from automata.embedding.base import EmbeddingSimilarityCalculator
+from automata.embedding import EmbeddingHandler, EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol.base import Symbol, SymbolReference
+from automata.symbol import Symbol, SymbolReference
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.symbol.symbol_utils import convert_to_ast_object
-from automata.symbol_embedding.handler import SymbolEmbeddingHandler
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
@@ -25,7 +24,7 @@ class SymbolSearch:
         self,
         symbol_graph: SymbolGraph,
         symbol_rank_config: SymbolRankConfig,
-        search_embedding_handler: SymbolEmbeddingHandler,
+        search_embedding_handler: EmbeddingHandler,
         embedding_similarity_calculator: EmbeddingSimilarityCalculator,
         z_score_power: float = 2.0,
     ) -> None:
@@ -52,7 +51,7 @@ class SymbolSearch:
 
     def symbol_rank_search(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        ordered_embeddings = self.search_embedding_handler.get_ordered_entries()
+        ordered_embeddings = self.search_embedding_handler.get_ordered_embeddings()
 
         query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
             ordered_embeddings, query

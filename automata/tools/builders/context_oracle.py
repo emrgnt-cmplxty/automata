@@ -2,16 +2,18 @@ import logging
 import textwrap
 from typing import List
 
-from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
-from automata.agent.providers import OpenAIAgentToolkitBuilder
+from automata.agent import (
+    AgentToolkitBuilder,
+    AgentToolkitNames,
+    OpenAIAgentToolkitBuilder,
+)
 from automata.config.base import LLMProvider
-from automata.embedding.base import EmbeddingSimilarityCalculator
-from automata.experimental.search.symbol_search import SymbolSearch
-from automata.llm.providers.openai import OpenAITool
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.embedding import EmbeddingSimilarityCalculator
+from automata.experimental.search import SymbolSearch
+from automata.llm import OpenAITool
+from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
-from automata.symbol_embedding.base import SymbolDocEmbedding
+from automata.symbol_embedding import SymbolDocEmbedding
 from automata.tools.base import Tool
 
 logger = logging.getLogger(__name__)

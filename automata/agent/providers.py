@@ -10,16 +10,14 @@ from automata.agent.error import (
     AgentResultError,
     AgentStopIteration,
 )
-from automata.config.base import ConfigCategory
+from automata.config import ConfigCategory
 from automata.config.openai_agent import OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, load_config
-from automata.llm.foundation import (
+from automata.llm import (
+    FunctionCall,
     LLMChatMessage,
     LLMConversationDatabaseProvider,
     LLMIterationResult,
-)
-from automata.llm.providers.openai import (
-    FunctionCall,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
     OpenAIConversation,

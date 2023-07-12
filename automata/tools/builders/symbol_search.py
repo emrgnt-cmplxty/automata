@@ -1,18 +1,21 @@
 from enum import Enum
 from typing import List, Optional, Union
 
-from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
-from automata.agent.error import UnknownToolError
-from automata.agent.providers import OpenAIAgentToolkitBuilder
+from automata.agent import (
+    AgentToolkitBuilder,
+    AgentToolkitNames,
+    OpenAIAgentToolkitBuilder,
+    UnknownToolError,
+)
 from automata.config.base import LLMProvider
-from automata.experimental.search.symbol_search import (
+from automata.experimental.search import (
     ExactSearchResult,
     SourceCodeResult,
     SymbolRankResult,
     SymbolReferencesResult,
     SymbolSearch,
 )
-from automata.llm.providers.openai import OpenAITool
+from automata.llm import OpenAITool
 from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
 from automata.tools.base import Tool
 

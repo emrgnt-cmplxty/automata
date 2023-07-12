@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# activate the local_env
-source ../local_env/bin/activate
-
 # Update documentation files
-automata run-doc-post-process
+poetry run automata run-doc-post-process
 
 # Change into docs directory
 cd ../docs 
@@ -16,5 +13,3 @@ python3 generate_faq.py
 cd -
 
 # Optional command to build docs locally - 'sphinx-build -a ../docs ../../docs'
-
-deactivate

@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from pydantic import BaseModel
 
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 
 
 class SymbolRankConfig(BaseModel):

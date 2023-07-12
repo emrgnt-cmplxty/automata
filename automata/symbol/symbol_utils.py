@@ -1,9 +1,10 @@
 import ast
 from typing import List, Optional
 
-from automata.core.base.ast import ASTNode
+from automata.core.base import ASTNode
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol.base import Symbol, SymbolDescriptor
+
+from .base import Symbol, SymbolDescriptor
 
 
 def convert_to_ast_object(symbol: Symbol) -> ast.AST:

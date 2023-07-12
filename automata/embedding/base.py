@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Sequence
 import astunparse
 import numpy as np
 
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +77,10 @@ class EmbeddingHandler(abc.ABC):
     def get_embeddings(self, symbols: List[Symbol]) -> List[Any]:
         """An abstract method to get the embeddings entries for a list of symbols."""
         pass
+
+    @abc.abstractmethod
+    def get_ordered_embeddings(self) -> List[Any]:
+        """An abstract method to get all the embeddings entries in a sorted order."""
 
     @abc.abstractmethod
     def process_embedding(self, symbols: Symbol) -> None:

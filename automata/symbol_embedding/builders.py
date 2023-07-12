@@ -2,15 +2,15 @@ from typing import Any, List
 
 from jinja2 import Template
 
-from automata.ast_helpers.py.ast_utils import get_docstring_from_node
-from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-from automata.embedding.base import EmbeddingBuilder, EmbeddingVectorProvider
-from automata.experimental.search.symbol_search import SymbolSearch
-from automata.llm.foundation import LLMChatCompletionProvider
+from automata.code_parsers.py import get_docstring_from_node
+from automata.config import DEFAULT_DOC_GENERATION_PROMPT
+from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
+from automata.experimental.search import SymbolSearch
+from automata.llm import LLMChatCompletionProvider
 from automata.retrievers.py.context import PyContextRetriever
-from automata.symbol.base import Symbol
+from automata.symbol import Symbol
 from automata.symbol.symbol_utils import convert_to_ast_object
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
+from automata.symbol_embedding import SymbolCodeEmbedding, SymbolDocEmbedding
 
 
 class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):

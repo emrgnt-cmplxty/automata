@@ -1,39 +1,35 @@
+import logging
 import os
 from functools import lru_cache
 from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 
-from automata.agent.agent import AgentToolkitNames
-from automata.agent.error import AgentGeneralError, UnknownToolError
+from automata.agent import AgentGeneralError, AgentToolkitNames, UnknownToolError
 from automata.config.base import EmbeddingDataCategory
-from automata.context_providers.symbol_synchronization import (
+from automata.context_providers import (
     SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
 )
-from automata.core.base.patterns.singleton import Singleton
+from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
-from automata.embedding.base import EmbeddingSimilarityCalculator
-from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
-from automata.experimental.search.symbol_search import SymbolSearch
-from automata.llm.providers.openai import (
-    OpenAIChatCompletionProvider,
-    OpenAIEmbeddingProvider,
-)
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
+from automata.embedding import EmbeddingSimilarityCalculator
+from automata.experimental.search import SymbolRank, SymbolRankConfig, SymbolSearch
+from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
+from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
 from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
-from automata.symbol.base import ISymbolProvider
+from automata.symbol import ISymbolProvider
 from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
-from automata.symbol_embedding.builders import (
+from automata.symbol_embedding import (
+    ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
     SymbolCodeEmbeddingBuilder,
+    SymbolDocEmbedding,
     SymbolDocEmbeddingBuilder,
 )
-from automata.symbol_embedding.vector_databases import (
-    ChromaSymbolEmbeddingVectorDatabase,
-)
-from automata.tools.factory import AgentToolFactory, logger
+from automata.tools.factory import AgentToolFactory
+
+logger = logging.getLogger(__name__)
 
 
 class DependencyFactory(metaclass=Singleton):

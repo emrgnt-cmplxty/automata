@@ -3,10 +3,11 @@ from typing import Any, Dict
 
 import networkx as nx
 
-from automata.symbol.base import SymbolReference
+from automata.symbol import SymbolReference
 from automata.symbol.graph.base import GraphProcessor
 from automata.symbol.parser import parse_symbol
-from automata.symbol.scip_pb2 import SymbolRole  # type: ignore
+
+from ..scip_pb2 import SymbolRole  # type: ignore
 
 logger = logging.getLogger(__name__)
 

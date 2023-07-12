@@ -109,9 +109,8 @@ Sometimes the best way to understand a complicated system is to start by underst
 
 ```python
 
-from automata.config.base import AgentConfigName
-from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-from automata.agent.providers import OpenAIAutomataAgent
+from automata.config.base import AgentConfigName, OpenAIAutomataAgentConfigBuilder
+from automata.agent import OpenAIAutomataAgent
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tools.factory import AgentToolFactory

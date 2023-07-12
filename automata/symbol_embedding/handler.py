@@ -1,10 +1,10 @@
 import abc
 from typing import List
 
-from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.embedding.base import EmbeddingBuilder, EmbeddingHandler
-from automata.symbol.base import ISymbolProvider, Symbol
-from automata.symbol_embedding.base import SymbolEmbedding
+from automata.core.base import VectorDatabaseProvider
+from automata.embedding import EmbeddingBuilder, EmbeddingHandler
+from automata.symbol import ISymbolProvider, Symbol
+from automata.symbol_embedding import SymbolEmbedding
 
 
 class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
@@ -25,7 +25,7 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
         self.batch_size = batch_size
 
         self.sorted_supported_symbols = [
-            ele.symbol for ele in self.embedding_db.get_ordered_entries()
+            ele.symbol for ele in self.embedding_db.get_ordered_embeddings()
         ]
         self.to_add: List[SymbolEmbedding] = []
         self.to_discard: List[str] = []
@@ -38,7 +38,7 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
     def get_embeddings(self, symbols: List[Symbol]) -> List[SymbolEmbedding]:
         return self.embedding_db.batch_get([symbol.dotpath for symbol in symbols])
 
-    def get_ordered_entries(self) -> List[SymbolEmbedding]:
+    def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
         return self.embedding_db.batch_get(
             [symbol.dotpath for symbol in self.sorted_supported_symbols]
         )

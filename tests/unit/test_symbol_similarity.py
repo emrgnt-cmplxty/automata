@@ -2,14 +2,16 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from automata.embedding.base import (
+from automata.embedding import (
     EmbeddingBuilder,
     EmbeddingSimilarityCalculator,
     EmbeddingVectorProvider,
 )
-from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-from automata.symbol_embedding.base import SymbolCodeEmbedding
-from automata.symbol_embedding.vector_databases import JSONSymbolEmbeddingVectorDatabase
+from automata.memory_store import SymbolCodeEmbeddingHandler
+from automata.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+)
 
 
 def test_get_nearest_symbols_for_query(
@@ -48,7 +50,7 @@ def test_get_nearest_symbols_for_query(
     symbol_similarity.embedding_provider.build_embedding_vector.return_value = np.array(
         [1, 0, 0, 0]
     )
-    ordered_embeddings = embedding_db.get_ordered_entries()
+    ordered_embeddings = embedding_db.get_ordered_embeddings()
     result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, "symbol1")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol1
 

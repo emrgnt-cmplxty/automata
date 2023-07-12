@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, TypeVar, 
 
 import numpy as np
 
-from automata.core.base.database.vector import ChromaVectorDatabase, JSONVectorDatabase
-from automata.symbol.parser import parse_symbol
-from automata.symbol_embedding.base import SymbolEmbedding
+from automata.core.base import ChromaVectorDatabase, JSONVectorDatabase
+from automata.symbol import parse_symbol
+from automata.symbol_embedding import SymbolEmbedding
 
 if TYPE_CHECKING:
     # TODO - How does this impact dependencies?
@@ -42,7 +42,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         results = self._collection.get(include=[])
         return sorted(results["ids"])
 
-    def get_ordered_entries(self) -> List[V]:
+    def get_ordered_embeddings(self) -> List[V]:
         """Retrieves all entries in the collection in a sorted order."""
         results = self._collection.get(**{"include": ["documents", "metadatas", "embeddings"]})
         return self._sort_entries(results)
@@ -198,7 +198,7 @@ class JSONSymbolEmbeddingVectorDatabase(
             ele.symbol.dotpath for ele in sorted(self.data, key=lambda x: self.entry_to_key(x))
         ]
 
-    def get_ordered_entries(self) -> List[SymbolEmbedding]:
+    def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
         return [self.data[self.index[key]] for key in self.get_ordered_keys()]
 
     def entry_to_key(self, entry: V) -> str:

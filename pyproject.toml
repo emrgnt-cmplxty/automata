@@ -5,6 +5,9 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 automata = 'automata.cli.__main__:cli'
 
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+
 [tool.poetry]
 name = "automata"
 version = "0.1.0"
@@ -44,6 +47,7 @@ PyGithub = "1.58.2"
 PyYAML = "6.0"
 chromadb = "0.3.26"
 astunparse = "^1.6.3"
+ipykernel = "^6.24.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
@@ -70,7 +74,6 @@ exclude = '''
     | build
     | dist
     | random
-    | local_env
     | build
     | scip-python
     | local_tasks
@@ -85,13 +88,13 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 line_length = 99
-skip_glob = ["local_env/*", "**/sample_code/*"]
+skip_glob = ["**/sample_code/*"]
 
 [tool.mypy]
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(local_env|scip-python|__pycache__|local_tasks|sample_modules|playground)/'
+exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"

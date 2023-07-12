@@ -1,10 +1,9 @@
 import logging
 from typing import List, Tuple
 
-from automata.core.base.database.vector import VectorDatabaseProvider
-from automata.symbol.base import Symbol
-from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
-from automata.symbol_embedding.handler import SymbolEmbeddingHandler
+from automata.core.base import VectorDatabaseProvider
+from automata.symbol import Symbol
+from automata.symbol_embedding import SymbolCodeEmbeddingBuilder, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
     def __init__(
         self,
         embedding_db: VectorDatabaseProvider,
-        embedding_builder: SymbolCodeEmbeddingBuilder,
+        embedding_builder: "SymbolCodeEmbeddingBuilder",
         batch_size: int = 512,
     ) -> None:
         super().__init__(embedding_db, embedding_builder, batch_size)

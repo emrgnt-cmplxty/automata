@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # activate local env
-source ../local_env/bin/activate
-
 # cd into root directory
 cd ../
 
@@ -13,5 +11,3 @@ mv index_from_fork.scip automata-embedding-data/indices/automata.scip
 
 # cd back
 cd -
-
-deactivate

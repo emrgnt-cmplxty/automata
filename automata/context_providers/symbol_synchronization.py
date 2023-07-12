@@ -1,6 +1,6 @@
 from typing import List, Set
 
-from automata.symbol.base import ISymbolProvider, Symbol
+from automata.symbol import ISymbolProvider, Symbol
 
 
 class SymbolProviderRegistry:

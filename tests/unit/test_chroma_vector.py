@@ -1,9 +1,10 @@
 import numpy as np
 import pytest
 
-from automata.symbol_embedding.base import SymbolCodeEmbedding, SymbolDocEmbedding
-from automata.symbol_embedding.vector_databases import (
+from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolDocEmbedding,
 )
 
 collection_name = "a_test_collection"
@@ -131,7 +132,7 @@ def test_get_ordered_embeddings(vector_db, symbols, make_embedding):
     embedded_symbol2 = make_embedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
     vector_db.add(embedded_symbol2)
     vector_db.add(embedded_symbol1)
-    embeddings = vector_db.get_ordered_entries()
+    embeddings = vector_db.get_ordered_embeddings()
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 
@@ -223,7 +224,7 @@ def test_get_ordered_embeddings_old(vector_db_old, symbols):
     embedded_symbol2 = SymbolCodeEmbedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
     vector_db_old.add(embedded_symbol2)
     vector_db_old.add(embedded_symbol1)
-    embeddings = vector_db_old.get_ordered_entries()  # [symbol1.dotpath, symbol2.dotpath])
+    embeddings = vector_db_old.get_ordered_embeddings()  # [symbol1.dotpath, symbol2.dotpath])
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 
