@@ -7,7 +7,7 @@ from automata.config import AgentConfigName
 from automata.tasks.base import TaskStatus
 from automata.tasks.tasks import AutomataTask
 
-from ..conftest import MockRepositoryClient
+from conftest import MockRepositoryClient
 
 
 @patch("logging.config.dictConfig", return_value=None)
