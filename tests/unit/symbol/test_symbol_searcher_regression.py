@@ -1,7 +1,6 @@
 import pytest
 
 from automata.singletons.py_module_loader import py_module_loader
-
 from tests.utils.factories import symbol_search_live  # noqa
 
 
