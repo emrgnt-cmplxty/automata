@@ -79,6 +79,10 @@ class EmbeddingHandler(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_ordered_embeddings(self) -> List[Any]:
+        """An abstract method to get all the embeddings entries in a sorted order."""
+
+    @abc.abstractmethod
     def process_embedding(self, symbols: Symbol) -> None:
         """An abstract method to process the embeddings for a list of symbols."""
         pass

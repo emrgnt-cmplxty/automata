@@ -1,11 +1,11 @@
 import logging
+from copy import deepcopy
 from functools import lru_cache
 from typing import Dict, List, Optional, Set
 
 import networkx as nx
 from tqdm import tqdm
 
-from automata.core.utils import filter_multi_digraph_by_symbols
 from automata.symbol import ISymbolProvider, Symbol, SymbolReference
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.navigator import SymbolGraphNavigator
@@ -115,7 +115,10 @@ class SymbolGraph(ISymbolProvider):
 
     def filter_symbols(self, sorted_supported_symbols: List[Symbol]):
         if self._graph:
-            filter_multi_digraph_by_symbols(self._graph, sorted_supported_symbols)
+            graph_nodes_and_data = deepcopy(self._graph.nodes(data=True))
+            for node, data in graph_nodes_and_data:
+                if data.get("label") == "symbol" and node not in sorted_supported_symbols:
+                    self._graph.remove_node(node)
 
     @staticmethod
     def _load_index_protobuf(path: str) -> Index:

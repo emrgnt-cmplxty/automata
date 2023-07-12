@@ -42,7 +42,7 @@ class VectorDatabaseProvider(abc.ABC, Generic[K, V]):
         pass
 
     @abc.abstractmethod
-    def get_ordered_entries(self) -> List[V]:
+    def get_ordered_embeddings(self) -> List[V]:
         """
         Abstract method to get an ordered list entries in the database.
         These vectors should be ordered in the same way as the keys returned by get_ordered_keys.
@@ -152,7 +152,7 @@ class JSONVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
         """We need specificity for the ordering of keys in the JSON database."""
         pass
 
-    def get_ordered_entries(self) -> List[V]:
+    def get_ordered_embeddings(self) -> List[V]:
         return [self.data[self.index[key]] for key in self.get_ordered_keys()]
 
     # Value dependent methods (e.g. V dependent)
@@ -260,7 +260,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
         pass
 
     @abc.abstractmethod
-    def get_ordered_entries(self) -> List[V]:
+    def get_ordered_embeddings(self) -> List[V]:
         """Specificity required to get the ordered entries efficiently."""
         pass
 

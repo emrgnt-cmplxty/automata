@@ -50,7 +50,7 @@ def test_get_nearest_symbols_for_query(
     symbol_similarity.embedding_provider.build_embedding_vector.return_value = np.array(
         [1, 0, 0, 0]
     )
-    ordered_embeddings = embedding_db.get_ordered_entries()
+    ordered_embeddings = embedding_db.get_ordered_embeddings()
     result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, "symbol1")
     assert list(result.keys())[np.argmax(list(result.values()))] == symbol1
 

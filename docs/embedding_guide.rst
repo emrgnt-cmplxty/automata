@@ -8,8 +8,6 @@ Configure the pyright-scip repository
 Before you start, make sure that you have properly configured the pyright-scip repository. The below steps are needed to create the index using pyright-scip.
 
 .. code-block:: bash
-
-   source local_env/bin/activate
    # Ensure that submodules have been initialized
    git submodule update --init --recursive
    # Install the indexing software

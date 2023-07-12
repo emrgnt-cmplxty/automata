@@ -1,15 +1,13 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
 from automata.config import AgentConfigName, LLMProvider
 from automata.llm import LLMConversationDatabaseProvider, LLMIterationResult
-
-if TYPE_CHECKING:
-    from automata.tools import Tool
+from automata.tools import Tool
 
 logger = logging.getLogger(__name__)
 
