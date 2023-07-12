@@ -6,7 +6,6 @@ import pytest
 from automata.config import AgentConfigName
 from automata.tasks.base import TaskStatus
 from automata.tasks.tasks import AutomataTask
-
 from tests.conftest import MockRepositoryClient
 
 
