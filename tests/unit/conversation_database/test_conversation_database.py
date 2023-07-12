@@ -46,7 +46,7 @@ def test_multiple_put_message_increments_interaction_id(db, interaction):
     assert db.last_interaction_id == initial_interaction_id + 2
 
 
-def test_get_messages_returns_all_messages_for_session(db, interaction):
+def test_get_messages_returns_single_message_for_session(db, interaction):
     db.cursor.execute("DELETE FROM interactions")
     db.conn.commit()
 
@@ -62,7 +62,15 @@ def test_get_messages_returns_all_messages_for_session(db, interaction):
     assert messages[0].role == interaction["role"]
     assert messages[0].content == interaction["content"]
 
-    # When another message is added
+def test_get_messages_returns_multiple_messages_in_order(db, interaction):
+    db.cursor.execute("DELETE FROM interactions")
+    db.conn.commit()
+
+    # Given no initial messages
+    assert len(db.get_messages()) == 0
+
+    # When two messages are added
+    db.save_message(LLMChatMessage(**interaction))
     db.save_message(LLMChatMessage(**interaction))
 
     # Then get_messages should return both messages in the correct order
