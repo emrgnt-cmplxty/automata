@@ -12,11 +12,8 @@ import tiktoken
 from automata.code_parsers.py import get_docstring_from_node
 from automata.core.base import VectorDatabaseProvider
 from automata.core.utils import get_root_py_fpath
-from automata.symbol import (
+from automata.symbol import (  # SymbolGraph,; convert_to_ast_object,; get_rankable_symbols,
     Symbol,
-    SymbolGraph,
-    convert_to_ast_object,
-    get_rankable_symbols,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,12 +40,12 @@ class PyContextRetriever:
 
     def __init__(
         self,
-        graph: SymbolGraph,
+        # graph: SymbolGraph,
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
         encoding_provider: tiktoken.Encoding = tiktoken.encoding_for_model("gpt-4"),
     ) -> None:
-        self.graph = graph
+        # self.graph = graph
         self.config = config
         self.indent_level = 0
         self.doc_embedding_db = doc_embedding_db
@@ -114,27 +111,27 @@ class PyContextRetriever:
 
                 dependencies_processed = 0
                 self.process_message(f"Building context for dependencies -\n")
-                all_dependencies = list(self.graph.get_symbol_dependencies(symbol))
-                filtered_dependencies = get_rankable_symbols(all_dependencies)
+                # all_dependencies = list(self.graph.get_symbol_dependencies(symbol))
+                # filtered_dependencies = get_rankable_symbols(all_dependencies)
 
-                for dependency in filtered_dependencies:
-                    if dependencies_processed >= self.config.max_dependencies_to_process:
-                        break
+                # for dependency in filtered_dependencies:
+                #     if dependencies_processed >= self.config.max_dependencies_to_process:
+                #         break
 
-                    # Check that the dependency passes filter requirements
-                    if not PyContextRetriever._pass_symbol_filter(symbol, dependency):
-                        continue
+                #     # Check that the dependency passes filter requirements
+                #     if not PyContextRetriever._pass_symbol_filter(symbol, dependency):
+                #         continue
 
-                    if not self._below_context_limit():
-                        break
+                #     if not self._below_context_limit():
+                #         break
 
-                    if dependency not in self.obs_symbols:
-                        try:
-                            self.process_symbol(dependency)
-                        except Exception as e:
-                            logger.error(f"Failure processing dependent {dependency} with {e}")
-                            continue
-                        dependencies_processed += 1
+                #     if dependency not in self.obs_symbols:
+                #         try:
+                #             self.process_symbol(dependency)
+                #         except Exception as e:
+                #             logger.error(f"Failure processing dependent {dependency} with {e}")
+                #             continue
+                #         dependencies_processed += 1
 
         self.obs_symbols.add(symbol)
 
@@ -147,7 +144,9 @@ class PyContextRetriever:
 
     def process_ast(self, symbol: Symbol) -> None:
         """Process the entire context for an AST object."""
-        ast_object = convert_to_ast_object(symbol)
+        from automata.symbol import convert_to_ast_object
+
+        # ast_object = convert_to_ast_object(symbol)
         is_main_symbol = self._is_main_symbol()
         methods = sorted(PyContextRetriever._get_all_methods(ast_object), key=lambda x: x.name)
 

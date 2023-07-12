@@ -6,6 +6,10 @@ from typing import Any, Dict, List, Set, Tuple
 import networkx as nx
 
 from automata.agent import AgentGeneralError, AgentToolkitNames, UnknownToolError
+from automata.code_parsers.py.context_retriever import (
+    PyContextRetriever,
+    PyContextRetrieverConfig,
+)
 from automata.config.base import EmbeddingDataCategory
 from automata.context_providers import (
     SymbolProviderRegistry,
@@ -17,7 +21,6 @@ from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolRank, SymbolRankConfig, SymbolSearch
 from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
-from automata.retrievers.py.context import PyContextRetriever, PyContextRetrieverConfig
 from automata.symbol import ISymbolProvider, SymbolGraph
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,

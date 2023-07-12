@@ -3,11 +3,11 @@ from typing import Any, List
 from jinja2 import Template
 
 from automata.code_parsers.py import get_docstring_from_node
+from automata.code_parsers.py.context_retriever import PyContextRetriever
 from automata.config import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import LLMChatCompletionProvider
-from automata.retrievers.py.context import PyContextRetriever
 from automata.symbol import Symbol, convert_to_ast_object
 from automata.symbol_embedding import SymbolCodeEmbedding, SymbolDocEmbedding
 
