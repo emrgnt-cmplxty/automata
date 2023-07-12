@@ -57,7 +57,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
     if not node:
         return "No result found."
 
-    elif isinstance(node, Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]):
+    elif isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)):
         doc_string = get_docstring(node)
         if doc_string:
             doc_string.replace('"""', "").replace("'''", "")

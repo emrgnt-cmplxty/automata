@@ -258,14 +258,11 @@ class DependencyFactory(metaclass=Singleton):
             py_context_retriever_config (PyContextRetrieverConfig())
             py_retriever_doc_embedding_db (None)
         """
-        symbol_graph: SymbolGraph = self.get("symbol_graph")
         py_context_retriever_config: PyContextRetrieverConfig = self.overrides.get(
             "py_context_retriever_config", PyContextRetrieverConfig()
         )
         return PyContextRetriever(
-            symbol_graph,
             py_context_retriever_config,
-            self.overrides.get("py_retriever_doc_embedding_db"),
         )
 
     @lru_cache()
