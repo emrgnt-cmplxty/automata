@@ -1,0 +1,96 @@
+import pytest
+
+from automata.symbol import Symbol, SymbolDescriptor, parse_symbol
+
+
+# Test to ensure that a symbol is parsed correctly
+def test_parse_symbol():
+    symbol = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    assert isinstance(symbol, Symbol)
+    assert symbol.package.manager == "python"
+    assert symbol.package.name == "automata"
+    assert symbol.package.version == "v0.0.0"
+    assert symbol.module_path == "config.automata_agent_config"
+    assert symbol.full_dotpath == "config.automata_agent_config.AutomataAgentConfig.description"
+    assert symbol.descriptors[-1].name == "description"
+    assert symbol.parent().descriptors[-1].name == "AutomataAgentConfig"
+
+
+# Test that symbols with different descriptors are parsed correctly
+@pytest.mark.parametrize(
+    "symbol_str, expected_descriptor",
+    [
+        (
+            "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#load().(config_name)",
+            SymbolDescriptor.PyKind.Parameter,
+        ),
+        (
+            "scip-python python automata v0.0.0 `core.tasks.automata_task_executor`/logger.",
+            SymbolDescriptor.PyKind.Value,
+        ),
+        (
+            "scip-python python automata v0.0.0 `core.agent.automata_agent_enums`/ActionIndicator#CODE.",
+            SymbolDescriptor.PyKind.Value,
+        ),
+        (
+            "scip-python python automata v0.0.0 `core.agent.automata_agent_enums`/ActionIndicator#",
+            SymbolDescriptor.PyKind.Class,
+        ),
+        (
+            "scip-python python automata v0.0.0 `core.tools.base`/ToolNotFoundError#__init__().",
+            SymbolDescriptor.PyKind.Method,
+        ),
+    ],
+)
+def test_parse_symbol_descriptor(symbol_str, expected_descriptor):
+    symbol = parse_symbol(symbol_str)
+    assert (
+        SymbolDescriptor.convert_scip_to_python_suffix(symbol.descriptors[-1].suffix)
+        == expected_descriptor
+    )
+
+
+# Test the __str__ method of the Symbol class
+def test_symbol_str():
+    symbol = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    assert (
+        str(symbol)
+        == "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+
+
+# Test the equality of two symbols
+def test_symbol_equality():
+    symbol1 = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    symbol2 = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    assert symbol1 == symbol2
+
+
+# Test the inequality of two symbols
+def test_symbol_inequality():
+    symbol1 = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    symbol2 = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#load().(config_name)"
+    )
+    assert symbol1 != symbol2
+
+
+# Test the hash function of Symbol
+def test_symbol_hash():
+    symbol1 = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    symbol2 = parse_symbol(
+        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
+    )
+    assert hash(symbol1) == hash(symbol2)

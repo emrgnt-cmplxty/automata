@@ -28,7 +28,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
-        if self.embedding_db.contains(symbol.dotpath):
+        if self.embedding_db.contains(symbol.full_dotpath):
             self._update_existing_embedding(source_code, symbol)
         else:
             self._queue_for_building(source_code, symbol)
@@ -43,13 +43,13 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         Check for differences between the source code of the symbol and the source code
         of the existing embedding. If there are differences, update the embedding.
         """
-        existing_embedding = self.embedding_db.get(symbol.dotpath)
+        existing_embedding = self.embedding_db.get(symbol.full_dotpath)
 
         if existing_embedding.document != source_code:
-            self.to_discard.append(symbol.dotpath)
+            self.to_discard.append(symbol.full_dotpath)
             self.to_build.append((source_code, symbol))
         elif existing_embedding.symbol != symbol:
-            self.to_discard.append(symbol.dotpath)
+            self.to_discard.append(symbol.full_dotpath)
             existing_embedding.symbol = symbol
             self.to_add.append(existing_embedding)
         else:

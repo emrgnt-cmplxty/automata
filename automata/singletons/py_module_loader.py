@@ -91,7 +91,7 @@ class PyModuleLoader(metaclass=Singleton):
         self._load_all_modules()
         return self._loaded_modules.items()
 
-    def fetch_module(self, module_dotpath: str) -> Optional[Module]:
+    def fetch_ast_module(self, module_dotpath: str) -> Optional[Module]:
         """
         Gets the module with the given dotpath.
 
@@ -101,6 +101,8 @@ class PyModuleLoader(metaclass=Singleton):
         self._assert_initialized()
         if not self._dotpath_map.contains_dotpath(module_dotpath):  # type: ignore
             return None
+
+        print("module_dotpath = ", module_dotpath)
 
         if module_dotpath not in self._loaded_modules:
             module_fpath = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)  # type: ignore
@@ -149,6 +151,7 @@ class PyModuleLoader(metaclass=Singleton):
         return None
 
     def get_module_dotpath_by_fpath(self, module_fpath: str) -> str:
+        # FIXME - This fails if the path is not rooted in the base directory
         """
         Gets the module dotpath for the specified module fpath.
 

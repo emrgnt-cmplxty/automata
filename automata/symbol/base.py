@@ -165,6 +165,9 @@ class Symbol:
     def __repr__(self) -> str:
         return f"Symbol({self.uri}, {self.scheme}, {self.package}, {self.descriptors})"
 
+    def __str__(self) -> str:
+        return self.uri
+
     def __hash__(self) -> int:
         return hash(self.uri)
 
@@ -206,12 +209,12 @@ class Symbol:
         return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
 
     @property
-    def dotpath(self) -> str:
-        """Returns the dotpath of the symbol."""
+    def full_dotpath(self) -> str:
+        """Returns the full dotpath of the symbol."""
         return ".".join([ele.name for ele in self.descriptors])
 
     @property
-    def module_name(self) -> str:
+    def module_path(self) -> str:
         """Returns the module name of the symbol."""
         return self.descriptors[0].name
 
@@ -233,7 +236,7 @@ class Symbol:
     @staticmethod
     def is_protobuf(symbol: "Symbol") -> bool:
         """Returns True if the symbol is a protobuf symbol."""
-        return symbol.module_name.endswith("pb2")
+        return symbol.module_path.endswith("pb2")
 
     @classmethod
     def from_string(cls, symbol_str: str) -> "Symbol":
@@ -292,7 +295,7 @@ class ISymbolProvider(abc.ABC):
 
         sorted_symbols = self._get_sorted_supported_symbols()
 
-        if not is_sorted([symbol.dotpath for symbol in sorted_symbols]):
+        if not is_sorted([symbol.full_dotpath for symbol in sorted_symbols]):
             raise ValueError("sorted_supported_symbols must be sorted")
 
         return sorted_symbols
