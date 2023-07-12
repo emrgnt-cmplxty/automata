@@ -6,10 +6,13 @@ import numpy as np
 from automata.embedding import EmbeddingHandler, EmbeddingSimilarityCalculator
 from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol import Symbol, SymbolReference
-from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol.parser import parse_symbol
-from automata.symbol.symbol_utils import convert_to_ast_object
+from automata.symbol import (
+    Symbol,
+    SymbolReference,
+    SymbolGraph,
+    convert_to_ast_object,
+    parse_symbol,
+)
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
