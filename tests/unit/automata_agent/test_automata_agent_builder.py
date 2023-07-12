@@ -3,13 +3,13 @@ import pytest
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfig
 from automata.tools.factory import AgentToolFactory
 
-gpt_4 = "gpt-4"
-gpt_3 = "gpt-3.5-turbo"
+default_model = "gpt-4"
+default_model_2 = "gpt-3.5-turbo"
 
 
 def test_automata_agent_init(automata_agent):
     assert automata_agent is not None
-    assert automata_agent.config.model == gpt_4
+    assert automata_agent.config.model == default_model
     assert automata_agent.config.session_id is not None
     assert len(automata_agent.config.tools) > 0
     assert len(automata_agent.agent_conversation_database) == 5
@@ -18,7 +18,7 @@ def test_automata_agent_init(automata_agent):
 def test_builder_default_config(automata_agent_config_builder):
     config = automata_agent_config_builder.build()
 
-    assert config.model == gpt_4
+    assert config.model == default_model
     assert config.stream is False
     assert config.verbose is True
     assert config.max_iterations == 50
@@ -28,7 +28,7 @@ def test_builder_default_config(automata_agent_config_builder):
 
 def test_builder_provided_parameters_override_defaults(automata_agent_config_builder):
     config = (
-        automata_agent_config_builder.with_model(gpt_3)
+        automata_agent_config_builder.with_model(default_model_2)
         .with_stream(True)
         .with_verbose(True)
         .with_max_iterations(500)
@@ -37,7 +37,7 @@ def test_builder_provided_parameters_override_defaults(automata_agent_config_bui
         .build()
     )
 
-    assert config.model == gpt_3
+    assert config.model == default_model_2
     assert config.stream is True
     assert config.verbose is True
     assert config.max_iterations == 500
@@ -54,7 +54,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
 
     config = (
         automata_agent_config_builder.with_tools(tools)
-        .with_model(gpt_3)
+        .with_model(default_model_2)
         .with_stream(True)
         .with_verbose(True)
         .with_max_iterations(500)
@@ -63,7 +63,7 @@ def test_builder_accepts_all_fields(automata_agent_config_builder):
         .build()
     )
     assert config.tools == tools
-    assert config.model == gpt_3
+    assert config.model == default_model_2
     assert config.stream is True
     assert config.verbose is True
     assert config.max_iterations == 500
