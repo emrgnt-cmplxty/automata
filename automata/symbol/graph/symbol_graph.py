@@ -87,7 +87,7 @@ class SymbolGraph(ISymbolProvider):
 
         if path_filter is not None:
             filtered_symbols = [
-                sym for sym in filtered_symbols if sym.dotpath.startswith(path_filter)  # type: ignore
+                sym for sym in filtered_symbols if sym.full_dotpath.startswith(path_filter)  # type: ignore
             ]
 
         self.navigator._pre_compute_rankable_bounding_boxes()

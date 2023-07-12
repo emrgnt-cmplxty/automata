@@ -1,15 +1,16 @@
 from typing import Any, List
 
-from jinja2 import Template
-
 from automata.code_parsers.py import get_docstring_from_node
 from automata.code_parsers.py.context_retriever import PyContextRetriever
-from automata.config import DEFAULT_DOC_GENERATION_PROMPT
+
+# from automata.config import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import LLMChatCompletionProvider
 from automata.symbol import Symbol, convert_to_ast_object
 from automata.symbol_embedding import SymbolCodeEmbedding, SymbolDocEmbedding
+
+# from jinja2 import Template
 
 
 class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
@@ -117,7 +118,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     def build_non_class(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
         ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
-        document = f"Symbol: {symbol.dotpath}\n{raw_doctring}"
+        document = f"Symbol: {symbol.full_dotpath}\n{raw_doctring}"
 
         embedding = self.embedding_provider.build_embedding_vector(document)
 
@@ -142,17 +143,16 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
 
     def _build_prompt(self, symbol: Symbol) -> str:
         """Build the document for a symbol."""
-        abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-        search_list = self._generate_search_list(abbreviated_selected_symbol)
-        self.retriever.reset()
-        self.retriever.process_symbol(symbol, search_list)
+        # abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
+        # self.retriever.process_symbol(symbol)
 
-        prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
-            symbol_dotpath=abbreviated_selected_symbol,
-            symbol_context=self.retriever.get_context_buffer(),
-        )
+        # prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
+        #     symbol_dotpath=abbreviated_selected_symbol,
+        #     symbol_context=self.retriever.get_context_buffer(),
+        # )
 
-        return self.completion_provider.standalone_call(prompt)
+        # return self.completion_provider.standalone_call(prompt)
+        raise NotImplementedError("Document generation needs to be reimplemented.")
 
     def _generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""

@@ -23,7 +23,7 @@ def test_build_real_graph(symbol_graph_static_test):  # noqa: F811
         synchronization_context.synchronize()
 
     all_symbols = sorted(
-        symbol_graph_static_test.get_sorted_supported_symbols(), key=lambda x: x.dotpath
+        symbol_graph_static_test.get_sorted_supported_symbols(), key=lambda x: x.full_dotpath
     )
 
     assert isinstance(symbol_graph_static_test, SymbolGraph)
@@ -34,13 +34,11 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
     with SymbolProviderSynchronizationContext() as synchronization_context:
         synchronization_context.register_provider(symbol_graph_static_test)
         synchronization_context.synchronize()
-
+    py_module_loader.reset()
     py_module_loader.initialize()
 
     # build the subgraph
     subgraph = symbol_graph_static_test.default_rankable_subgraph
     assert len(subgraph) == 29
 
-    py_module_loader.initialized = False
-    py_module_loader.rel_py_path = None
-    py_module_loader.root_fpath = None
+    py_module_loader.reset()

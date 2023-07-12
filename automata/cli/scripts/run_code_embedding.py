@@ -52,13 +52,15 @@ def main(*args, **kwargs) -> str:
     symbol_code_embedding_handler.is_synchronized = True
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
-    filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
+    filtered_symbols = sorted(
+        get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
+    )
 
     for symbol in tqdm(filtered_symbols):
         try:
             symbol_code_embedding_handler.process_embedding(symbol)
         except Exception as e:
-            logger.error(f"Failed to update embedding for {symbol.dotpath}: {e}")
+            logger.error(f"Failed to update embedding for {symbol.full_dotpath}: {e}")
 
     symbol_code_embedding_handler.flush()  # Final flush for any remaining symbols that didn't form a complete batch
     return "Success"

@@ -97,7 +97,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                             f"Embedding {doc_embedding} is not a SymbolDocEmbeddingHandler"
                         )
 
-                    result += f"{symbol.dotpath}\n\n"
+                    result += f"{symbol.full_dotpath}\n\n"
                     result += f"{doc_embedding.summary}\n\n"
                     counter += 1
                 except Exception as e:

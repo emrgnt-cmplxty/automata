@@ -67,7 +67,7 @@ def test_add_single_symbol(vector_db, symbol_set, make_embedding):
     symbol = symbol_set[0]
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db.add(embedded_symbol)
-    result = vector_db.get(symbol.dotpath)
+    result = vector_db.get(symbol.full_dotpath)
     assert result.symbol == embedded_symbol.symbol
 
 
@@ -76,7 +76,7 @@ def test_add_single_symbol_persistent(vector_db_persistent, symbol_set, make_emb
     symbol = symbol_set[0]
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_persistent.add(embedded_symbol)
-    result = vector_db_persistent.get(symbol.dotpath)
+    result = vector_db_persistent.get(symbol.full_dotpath)
     assert result.symbol == embedded_symbol.symbol
     vector_db_persistent.clear()
 
@@ -85,9 +85,9 @@ def test_delete_single_symbol(vector_db, symbol_set, make_embedding):
     symbol = symbol_set[0]
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db.add(embedded_symbol)
-    vector_db.discard(symbol.dotpath)
+    vector_db.discard(symbol.full_dotpath)
     with pytest.raises(KeyError):
-        vector_db.get(symbol.dotpath)
+        vector_db.get(symbol.full_dotpath)
 
 
 @pytest.mark.parametrize("index", [0, 1])
@@ -95,7 +95,7 @@ def test_add_and_get_single_symbol(vector_db, symbols, index, make_embedding):
     symbol = symbols[index]
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db.add(embedded_symbol)
-    result = vector_db.get(symbol.dotpath)
+    result = vector_db.get(symbol.full_dotpath)
     assert result.symbol == embedded_symbol.symbol
 
 
@@ -104,9 +104,9 @@ def test_add_and_discard_single_symbol(vector_db, symbols, index, make_embedding
     symbol = symbols[index]
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db.add(embedded_symbol)
-    vector_db.discard(symbol.dotpath)
+    vector_db.discard(symbol.full_dotpath)
     with pytest.raises(KeyError):
-        vector_db.get(symbol.dotpath)
+        vector_db.get(symbol.full_dotpath)
 
 
 def test_clear(vector_db, symbols, make_embedding):
@@ -115,14 +115,14 @@ def test_clear(vector_db, symbols, make_embedding):
     vector_db.add(embedded_symbol)
     vector_db.clear()
     with pytest.raises(KeyError):
-        vector_db.get(symbol.dotpath)
+        vector_db.get(symbol.full_dotpath)
 
 
 def test_contains(vector_db, symbols, make_embedding):
     symbol = symbols[0]
     embedded_symbol = make_embedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db.add(embedded_symbol)
-    assert vector_db.contains(symbol.dotpath)
+    assert vector_db.contains(symbol.full_dotpath)
 
 
 def test_get_ordered_embeddings(vector_db, symbols, make_embedding):
@@ -143,7 +143,7 @@ def test_update_database(vector_db, symbols, make_embedding):
     vector_db.add(embedded_symbol)
     updated_embedded_symbol = make_embedding(symbol, "y", np.array([4, 5, 6]).astype(int))
     vector_db.update_entry(updated_embedded_symbol)
-    result = vector_db.get(symbol.dotpath)
+    result = vector_db.get(symbol.full_dotpath)
     assert np.array_equal(result.vector, updated_embedded_symbol.vector)
     assert result.document == updated_embedded_symbol.document
 
@@ -169,7 +169,7 @@ def test_add_single_symbol_old(vector_db_old, symbol_set_old):
     symbol = symbol_set_old[0]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_old.add(embedded_symbol)
-    result = vector_db_old.get(symbol.dotpath)
+    result = vector_db_old.get(symbol.full_dotpath)
     assert result.symbol == embedded_symbol.symbol
 
 
@@ -177,9 +177,9 @@ def test_delete_single_symbol_old(vector_db_old, symbol_set_old):
     symbol = symbol_set_old[0]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_old.add(embedded_symbol)
-    vector_db_old.discard(symbol.dotpath)
+    vector_db_old.discard(symbol.full_dotpath)
     with pytest.raises(KeyError):
-        vector_db_old.get(symbol.dotpath)
+        vector_db_old.get(symbol.full_dotpath)
 
 
 @pytest.mark.parametrize("index", [0, 1])
@@ -187,7 +187,7 @@ def test_add_and_get_single_symbol_old(vector_db_old, symbols, index):
     symbol = symbols[index]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_old.add(embedded_symbol)
-    result = vector_db_old.get(symbol.dotpath)
+    result = vector_db_old.get(symbol.full_dotpath)
     assert result.symbol == embedded_symbol.symbol
 
 
@@ -196,9 +196,9 @@ def test_add_and_discard_single_symbol_old(vector_db_old, symbols, index):
     symbol = symbols[index]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_old.add(embedded_symbol)
-    vector_db_old.discard(symbol.dotpath)
+    vector_db_old.discard(symbol.full_dotpath)
     with pytest.raises(KeyError):
-        vector_db_old.get(symbol.dotpath)
+        vector_db_old.get(symbol.full_dotpath)
 
 
 def test_clear_old(vector_db_old, symbols):
@@ -207,14 +207,14 @@ def test_clear_old(vector_db_old, symbols):
     vector_db_old.add(embedded_symbol)
     vector_db_old.clear()
     with pytest.raises(KeyError):
-        vector_db_old.get(symbol.dotpath)
+        vector_db_old.get(symbol.full_dotpath)
 
 
 def test_contains_old(vector_db_old, symbols):
     symbol = symbols[0]
     embedded_symbol = SymbolCodeEmbedding(symbol, "x", np.array([1, 2, 3]).astype(int))
     vector_db_old.add(embedded_symbol)
-    assert vector_db_old.contains(symbol.dotpath)
+    assert vector_db_old.contains(symbol.full_dotpath)
 
 
 def test_get_ordered_embeddings_old(vector_db_old, symbols):
@@ -224,7 +224,9 @@ def test_get_ordered_embeddings_old(vector_db_old, symbols):
     embedded_symbol2 = SymbolCodeEmbedding(symbol2, "y", np.array([4, 5, 6]).astype(int))
     vector_db_old.add(embedded_symbol2)
     vector_db_old.add(embedded_symbol1)
-    embeddings = vector_db_old.get_ordered_embeddings()  # [symbol1.dotpath, symbol2.dotpath])
+    embeddings = (
+        vector_db_old.get_ordered_embeddings()
+    )  # [symbol1.full_dotpath, symbol2.full_dotpath])
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 
@@ -235,7 +237,7 @@ def test_update_database_old(vector_db_old, symbols):
     vector_db_old.add(embedded_symbol)
     updated_embedded_symbol = SymbolCodeEmbedding(symbol, "y", np.array([4, 5, 6]).astype(int))
     vector_db_old.update_entry(updated_embedded_symbol)
-    result = vector_db_old.get(symbol.dotpath)
+    result = vector_db_old.get(symbol.full_dotpath)
     assert np.array_equal(result.vector, updated_embedded_symbol.vector)
     assert result.document == updated_embedded_symbol.document
 
@@ -256,9 +258,9 @@ def test_batch_add_and_remove(vector_db, symbols, make_embedding):
         for i, symbol in enumerate(symbols)
     ]
     vector_db.batch_add(embedded_symbols)
-    assert all(vector_db.contains(symbol.dotpath) for symbol in symbols)
-    vector_db.batch_discard([symbol.dotpath for symbol in symbols])
-    assert not any(vector_db.contains(symbol.dotpath) for symbol in symbols)
+    assert all(vector_db.contains(symbol.full_dotpath) for symbol in symbols)
+    vector_db.batch_discard([symbol.full_dotpath for symbol in symbols])
+    assert not any(vector_db.contains(symbol.full_dotpath) for symbol in symbols)
 
 
 def test_add_duplicate_symbol(vector_db, symbols, make_embedding):
@@ -277,4 +279,4 @@ def test_get_all_symbols(vector_db, symbols, make_embedding):
     vector_db.batch_add(embedded_symbols)
     all_symbols = vector_db.get_ordered_keys()
     assert len(all_symbols) == len(symbols)
-    assert all(symbol.dotpath in all_symbols for symbol in list(symbols))
+    assert all(symbol.full_dotpath in all_symbols for symbol in list(symbols))

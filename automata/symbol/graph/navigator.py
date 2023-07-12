@@ -41,7 +41,7 @@ class SymbolGraphNavigator:
         unsorted_symbols = [
             node for node, data in self._graph.nodes(data=True) if data.get("label") == "symbol"
         ]
-        return sorted(unsorted_symbols, key=lambda x: x.dotpath)
+        return sorted(unsorted_symbols, key=lambda x: x.full_dotpath)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         references_in_range = self._get_symbol_references_in_scope(symbol)
@@ -150,9 +150,9 @@ class SymbolGraphNavigator:
             and ref.column_number >= parent_symbol_start_col
         ]
 
-    def _get_references_to_module(self, module_name: str) -> List[SymbolReference]:
+    def _get_references_to_module(self, module_path: str) -> List[SymbolReference]:
         """Gets all references to a module in the graph."""
-        reference_edges_in_module = self._graph.in_edges(module_name, data=True)
+        reference_edges_in_module = self._graph.in_edges(module_path, data=True)
         return [
             data.get("symbol_reference")
             for _, __, data in reference_edges_in_module

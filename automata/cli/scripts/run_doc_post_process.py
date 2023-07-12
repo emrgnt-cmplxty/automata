@@ -23,7 +23,7 @@ def main(*args, **kwargs) -> str:
 
     symbols = [embedding.symbol for embedding in embedding_db.get_ordered_embeddings()]
 
-    docs = {symbol: embedding_db.get(symbol.dotpath) for symbol in symbols}
+    docs = {symbol: embedding_db.get(symbol.full_dotpath) for symbol in symbols}
 
     doc_writer.write_documentation(docs, symbols, os.path.join(get_root_fpath(), "docs"))  # type: ignore
     return "Success"

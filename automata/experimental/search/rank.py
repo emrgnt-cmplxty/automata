@@ -115,7 +115,7 @@ class SymbolRank:
             A list of tuples each containing the dotpath of a symbol and its rank.
         """
         ranks = self.get_ranks()
-        return [(".".join(symbol.dotpath.split(".")[1:]), rank) for symbol, rank in ranks[:n]]
+        return [(".".join(symbol.full_dotpath.split(".")[1:]), rank) for symbol, rank in ranks[:n]]
 
     def _prepare_graph(self) -> nx.DiGraph:
         """

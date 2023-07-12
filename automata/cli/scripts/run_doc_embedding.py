@@ -70,7 +70,9 @@ def initialize_providers(embedding_level, **kwargs):
     symbol_doc_embedding_handler.is_synchronized = True
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
-    filtered_symbols = sorted(get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath)
+    filtered_symbols = sorted(
+        get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
+    )
 
     return symbol_doc_embedding_handler, filtered_symbols
 

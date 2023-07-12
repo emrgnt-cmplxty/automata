@@ -20,7 +20,7 @@ class IEmbeddingLookupProvider(abc.ABC):
 
     def embedding_to_key(self, entry: SymbolEmbedding) -> str:
         """Concrete implementation to generate a simple hashable key from a Symbol."""
-        return entry.symbol.dotpath
+        return entry.symbol.full_dotpath
 
 
 class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddingLookupProvider):
@@ -182,7 +182,7 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
                 results["metadatas"], results["documents"], results["embeddings"]
             )
         ]
-        return sorted(entries, key=lambda x: x.symbol.dotpath)
+        return sorted(entries, key=lambda x: x.symbol.full_dotpath)
 
 
 class JSONSymbolEmbeddingVectorDatabase(
@@ -195,7 +195,8 @@ class JSONSymbolEmbeddingVectorDatabase(
 
     def get_ordered_keys(self) -> List[str]:
         return [
-            ele.symbol.dotpath for ele in sorted(self.data, key=lambda x: self.entry_to_key(x))
+            ele.symbol.full_dotpath
+            for ele in sorted(self.data, key=lambda x: self.entry_to_key(x))
         ]
 
     def get_ordered_embeddings(self) -> List[SymbolEmbedding]:

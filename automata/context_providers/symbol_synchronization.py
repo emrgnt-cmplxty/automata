@@ -28,7 +28,7 @@ class SymbolProviderRegistry:
         ]
         supported_symbols = set.intersection(*all_symbols)
 
-        sorted_supported_symbols = sorted(list(supported_symbols), key=lambda x: x.dotpath)
+        sorted_supported_symbols = sorted(list(supported_symbols), key=lambda x: x.full_dotpath)
 
         for provider in SymbolProviderRegistry._providers:
             provider.filter_symbols(sorted_supported_symbols)
