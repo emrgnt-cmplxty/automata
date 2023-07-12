@@ -26,7 +26,7 @@ def test_build(symbol_search_tool_builder):
 
 
 def test_symbol_rank_search(symbols, symbol_search_tool_builder):
-    symbol_search_tool_builder.symbol_search.symbol_rank_search = MagicMock(
+    symbol_search_tool_builder.symbol_search.get_symbol_rank_results = MagicMock(
         return_value=[(symbols[0], 1)]
     )
 

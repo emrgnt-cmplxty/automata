@@ -55,7 +55,7 @@ def test_process_queries(symbols, symbol_search, symbol_graph_mock):
     mock_method_2.assert_called_once_with(symbols[0].uri)
 
     with patch.object(
-        symbol_search, "symbol_rank_search", return_value=[("ref1", 0.5), ("ref2", 0.4)]
+        symbol_search, "get_symbol_rank_results", return_value=[("ref1", 0.5), ("ref2", 0.4)]
     ) as mock_method_4:
         result = symbol_search.process_query("type:symbol_rank %s" % symbols[0].uri)
         assert result == [("ref1", 0.5), ("ref2", 0.4)]
