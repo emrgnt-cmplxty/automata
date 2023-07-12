@@ -66,10 +66,10 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
 
 def get_rankable_symbols(
     symbols: List[Symbol],
-    filter_strings=(
+    symbols_strings_to_filter: List[str] = [
         "setup",
         "stdlib",
-    ),
+    ],
     accepted_kinds=(SymbolDescriptor.PyKind.Method, SymbolDescriptor.PyKind.Class),
 ) -> List[Symbol]:
     """
@@ -81,7 +81,10 @@ def get_rankable_symbols(
     filtered_symbols = []
 
     for symbol in symbols:
-        do_continue = any(filter_string in symbol.uri for filter_string in filter_strings)
+        do_continue = any(
+            filter_string in symbol.uri for filter_string in symbols_strings_to_filter
+        )
+        print(f"symbol = {symbol}, do_continue={do_continue}")
         if do_continue:
             continue
 
