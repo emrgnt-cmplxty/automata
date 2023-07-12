@@ -13,7 +13,7 @@ from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import parse_symbol
 
-from .sample_modules.my_project.core.calculator import Calculator
+from sample_modules.my_project.core.calculator import Calculator
 
 
 # TODO - Unify module loader fixture
