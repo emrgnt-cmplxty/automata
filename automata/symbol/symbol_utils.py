@@ -1,7 +1,6 @@
 import ast
 from typing import List, Optional
 
-from automata.core.base import ASTNode
 from automata.singletons.py_module_loader import py_module_loader
 
 from .base import Symbol, SymbolDescriptor
@@ -15,7 +14,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
         ValueError: If the symbol is not found
     """
     descriptors = list(symbol.descriptors)
-    obj: Optional[ASTNode] = None
+    obj: Optional[ast.AST] = None
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
@@ -28,7 +27,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
                 module_dotpath = module_dotpath[len("") :]  # indexer omits this
-            obj = py_module_loader.fetch_module(module_dotpath)
+            obj = py_module_loader.fetch_ast_module(module_dotpath)
             if not obj:
                 raise ValueError(f"Module {module_dotpath} not found")
         elif (
