@@ -50,7 +50,7 @@ def vector_db_persistent(embedding_type, temp_output_vector_dir):
     db = ChromaSymbolEmbeddingVectorDatabase(
         collection_name, factory=embedding_type.from_args, persist_directory=temp_output_vector_dir
     )
-    
+
     yield db
 
     db.clear()

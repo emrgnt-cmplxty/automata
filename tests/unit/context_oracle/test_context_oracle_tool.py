@@ -7,12 +7,32 @@ from automata.tools.builders.context_oracle import ContextOracleToolkitBuilder
 
 
 @pytest.fixture
-def context_oracle_tool_builder():
-    symbol_search = MagicMock()
-    symbol_code_embedding_handler = MagicMock()
-    symbol_doc_embedding_handler = MagicMock()
-    embedding_similarity_calculator = MagicMock()
+def symbol_search():
+    return MagicMock()
 
+
+@pytest.fixture
+def symbol_code_embedding_handler():
+    return MagicMock()
+
+
+@pytest.fixture
+def symbol_doc_embedding_handler():
+    return MagicMock()
+
+
+@pytest.fixture
+def embedding_similarity_calculator():
+    return MagicMock()
+
+
+@pytest.fixture
+def context_oracle_tool_builder(
+    symbol_search,
+    symbol_code_embedding_handler,
+    symbol_doc_embedding_handler,
+    embedding_similarity_calculator,
+):
     return ContextOracleToolkitBuilder(
         symbol_search=symbol_search,
         symbol_doc_embedding_handler=symbol_doc_embedding_handler,
