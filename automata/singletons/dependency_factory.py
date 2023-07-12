@@ -6,11 +6,12 @@ from typing import Any, Dict, List, Set, Tuple
 import networkx as nx
 
 from automata.agent import AgentGeneralError, AgentToolkitNames, UnknownToolError
-from automata.code_parsers.py.context_retriever import (
+from automata.code_parsers.py import (
+    PyContextHandler,
+    PyContextHandlerConfig,
     PyContextRetriever,
-    PyContextRetrieverConfig,
 )
-from automata.config.base import EmbeddingDataCategory
+from automata.config import EmbeddingDataCategory
 from automata.context_providers import (
     SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
@@ -62,10 +63,10 @@ class DependencyFactory(metaclass=Singleton):
             doc_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for doc embeddings.
             coding_project_path (get_root_py_fpath()): Filepath to the root of the coding project.
             symbol_rank_config (SymbolRankConfig()): Configuration for the SymbolRank algorithm.
-            py_context_retriever_config (PyContextRetrieverConfig()): Configuration for the PyContextRetriever.
             embedding_provider (OpenAIEmbedding()): The embedding provider to use.
             llm_completion_provider (OpenAIChatCompletionProvider()): The LLM completion provider to use.
             py_retriever_doc_embedding_db (None): The doc embedding database to use for the PyContextRetriever.
+            py_context_handler_config (PyContextHandlerConfig())
         }
         """
         self._instances: Dict[str, Any] = {}
@@ -219,10 +220,10 @@ class DependencyFactory(metaclass=Singleton):
             "llm_completion_provider", OpenAIChatCompletionProvider()
         )
         symbol_search: SymbolSearch = self.get("symbol_search")
-        retriver: PyContextRetriever = self.get("py_context_retriever")
+        handler: PyContextHandler = self.get("py_context_handler")
 
         embedding_builder = SymbolDocEmbeddingBuilder(
-            embedding_provider, llm_completion_provider, symbol_search, retriver
+            embedding_provider, llm_completion_provider, symbol_search, handler
         )
 
         return SymbolDocEmbeddingHandler(doc_embedding_db, embedding_builder)
@@ -253,17 +254,23 @@ class DependencyFactory(metaclass=Singleton):
 
     @lru_cache()
     def create_py_context_retriever(self) -> PyContextRetriever:
+        """Creates PyContextRetriever for use in all dependencies."""
+        return PyContextRetriever()
+
+    def create_py_context_handler(self) -> PyContextHandler:
         """
+        Creates PyContextHandler for use in all dependencies.
+
         Associated Keyword Args:
-            py_context_retriever_config (PyContextRetrieverConfig())
-            py_retriever_doc_embedding_db (None)
+            py_context_handler_config (PyContextHandlerConfig())
         """
-        py_context_retriever_config: PyContextRetrieverConfig = self.overrides.get(
-            "py_context_retriever_config", PyContextRetrieverConfig()
+
+        py_context_handler_config = self.overrides.get(
+            "py_context_handler_config", PyContextHandlerConfig()
         )
-        return PyContextRetriever(
-            py_context_retriever_config,
-        )
+        retriever = self.get("py_context_retriever")
+        symbol_search = self.get("symbol_search")
+        return PyContextHandler(py_context_handler_config, retriever, symbol_search)
 
     @lru_cache()
     def create_embedding_similarity_calculator(self) -> EmbeddingSimilarityCalculator:

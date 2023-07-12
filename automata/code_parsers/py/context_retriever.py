@@ -14,18 +14,6 @@ from automata.symbol import Symbol
 logger = logging.getLogger(__name__)
 
 
-class PyContextRetrieverConfig:
-    """The configuration for the PyContextRetriever"""
-
-    def __init__(
-        self,
-        indent_level: int = 0,
-        spacer: str = "  ",
-    ) -> None:
-        self.indent_level = indent_level
-        self.spacer = spacer
-
-
 class ContextComponent(Enum):
     HEADLINE = "headline"
     SOURCE_CODE = "source_code"
@@ -44,11 +32,12 @@ class PyContextRetriever:
 
     def __init__(
         self,
-        config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
+        indent_level: int = 0,
+        spacer: str = "  ",
         process_entry: Optional[Callable[[str], str]] = None,
     ) -> None:
-        self.spacer = config.spacer
-        self.indent_level = config.indent_level
+        self.spacer = spacer
+        self.indent_level = indent_level
         self.process_entry = (
             process_entry if process_entry is not None else self._default_process_entry
         )
@@ -75,11 +64,15 @@ class PyContextRetriever:
         self,
         symbol: Symbol,
         ordered_active_components: Dict[ContextComponent, Dict],
+        indent_level=0,
     ) -> str:
         """
         Process the context of a specified `Symbol`. The caller has the responsibility
         to decide the indent level and context components to be processed.
         """
+        if indent_level != 0:
+            self.indent_level = indent_level
+
         from automata.symbol import convert_to_ast_object
 
         ast_object = convert_to_ast_object(symbol)

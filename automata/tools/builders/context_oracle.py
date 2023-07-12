@@ -60,7 +60,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
         when populated.
         """
 
-        symbol_rank_search_results = self.symbol_search.symbol_rank_search(query)
+        symbol_rank_search_results = self.symbol_search.get_symbol_rank_results(query)
 
         most_similar_symbol = symbol_rank_search_results[0][0]
 

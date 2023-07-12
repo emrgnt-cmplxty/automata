@@ -4,11 +4,7 @@ import os
 
 import pytest
 
-from automata.code_parsers.py import (
-    ContextComponent,
-    PyContextRetriever,
-    PyContextRetrieverConfig,
-)
+from automata.code_parsers.py import ContextComponent, PyContextRetriever
 from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import parse_symbol
@@ -29,7 +25,7 @@ def local_module_loader():
 
 @pytest.fixture
 def context_retriever():
-    return PyContextRetriever(PyContextRetrieverConfig())
+    return PyContextRetriever()
 
 
 def test_process_symbol(context_retriever):

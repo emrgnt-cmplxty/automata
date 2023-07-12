@@ -52,7 +52,7 @@ class SymbolSearch:
             )
         return self._symbol_rank
 
-    def symbol_rank_search(self, query: str) -> SymbolRankResult:
+    def get_symbol_rank_results(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
         ordered_embeddings = self.search_embedding_handler.get_ordered_embeddings()
 
@@ -62,7 +62,7 @@ class SymbolSearch:
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, self.shifted_z_score_powered
         )
-        return self.symbol_rank.get_ranks(query_to_symbol_similarity=transformed_query_vec)
+        return self.symbol_rank.get_ordered_ranks(query_to_symbol_similarity=transformed_query_vec)
 
     def symbol_references(self, symbol_uri: str) -> SymbolReferencesResult:
         """
@@ -102,7 +102,7 @@ class SymbolSearch:
         if search_type == "symbol_references":
             return self.symbol_references(query_remainder)
         elif search_type == "symbol_rank":
-            return self.symbol_rank_search(query_remainder)
+            return self.get_symbol_rank_results(query_remainder)
         elif search_type == "exact":
             return self.exact_search(query_remainder)
         elif search_type == "source":
