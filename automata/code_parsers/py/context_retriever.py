@@ -5,16 +5,17 @@ from ast import parse as py_ast_parse
 from ast import unparse as py_ast_unparse
 from ast import walk as py_ast_walk
 from contextlib import contextmanager
-from typing import List, Optional, Set, Union
+from typing import TYPE_CHECKING, List, Optional, Set, Union
 
 import tiktoken
 
 from automata.code_parsers.py import get_docstring_from_node
 from automata.core.base import VectorDatabaseProvider
 from automata.core.utils import get_root_py_fpath
-from automata.symbol import (  # SymbolGraph,; convert_to_ast_object,; get_rankable_symbols,
-    Symbol,
-)
+from automata.symbol import Symbol
+
+if TYPE_CHECKING:
+    from automata.symbol import SymbolGraph
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class PyContextRetriever:
 
     def __init__(
         self,
-        # graph: SymbolGraph,
+        graph: "SymbolGraph",
         config: PyContextRetrieverConfig = PyContextRetrieverConfig(),
         doc_embedding_db: Optional[VectorDatabaseProvider] = None,
         encoding_provider: tiktoken.Encoding = tiktoken.encoding_for_model("gpt-4"),
@@ -109,7 +110,7 @@ class PyContextRetriever:
                         self.process_symbol(related_symbol)
                         related_symbols_processed += 1
 
-                dependencies_processed = 0
+                # dependencies_processed = 0
                 self.process_message(f"Building context for dependencies -\n")
                 # all_dependencies = list(self.graph.get_symbol_dependencies(symbol))
                 # filtered_dependencies = get_rankable_symbols(all_dependencies)
@@ -146,7 +147,7 @@ class PyContextRetriever:
         """Process the entire context for an AST object."""
         from automata.symbol import convert_to_ast_object
 
-        # ast_object = convert_to_ast_object(symbol)
+        ast_object = convert_to_ast_object(symbol)
         is_main_symbol = self._is_main_symbol()
         methods = sorted(PyContextRetriever._get_all_methods(ast_object), key=lambda x: x.name)
 
