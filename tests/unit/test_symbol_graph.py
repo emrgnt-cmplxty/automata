@@ -2,8 +2,7 @@ from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol import Symbol
-from automata.symbol.graph.symbol_graph import SymbolGraph
+from automata.symbol import Symbol, SymbolGraph
 
 from ..utils.factories import symbol_graph_static_test  # noqa: F401
 
