@@ -2,7 +2,7 @@ import logging
 from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, unparse, walk
 from contextlib import contextmanager
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Protocol, Union
+from typing import Any, Callable, Dict, List, Optional, Protocol, Set, Union
 
 from automata.code_parsers.py import (
     get_docstring_from_node,
@@ -113,18 +113,18 @@ class PyContextRetriever:
         self,
         symbol: Symbol,
         ast_object: AST,
-        remove_imports: bool = True,
-        remove_docstrings: bool = False,
+        include_imports: bool = False,
+        include_docstrings: bool = True,
         max_length: Optional[int] = None,
         *args,
         **kwargs,
     ) -> str:
         """Convert a symbol into underlying source code."""
 
-        if remove_docstrings:
+        if not include_docstrings:
             ast_object = get_node_without_docstrings(ast_object)
 
-        if remove_imports:
+        if not include_imports:
             ast_object = get_node_without_imports(ast_object)
 
         source = unparse(ast_object)
@@ -140,12 +140,22 @@ class PyContextRetriever:
         header: str = "Interface:\n\n",
         class_header: str = "class ",
         recursion_depth: int = 0,
+        processed_classes: Optional[Set[int]] = None,  # add this argument
         *args,
         **kwargs,
     ) -> str:
         """Convert a symbol into an interface, skipping 'private' methods/classes if indicated."""
         if recursion_depth > self.MAX_RECURSION_DEPTH:
             raise RecursionError(f"Max recursion depth of {self.MAX_RECURSION_DEPTH} exceeded.")
+
+        if processed_classes is None:
+            processed_classes = set()
+
+        if id(ast_object) in processed_classes:
+            return ""
+
+        # add the class so that we do not process it twice
+        processed_classes.add(id(ast_object))
 
         # indent according to indent_level
         interface = self.process_entry(header)
@@ -167,6 +177,7 @@ class PyContextRetriever:
                     header,
                     class_header,
                     recursion_depth=recursion_depth + 1,
+                    processed_classes=processed_classes,
                 )
 
         methods = sorted(self._get_all_methods(ast_object), key=lambda x: x.name)
@@ -213,9 +224,9 @@ class PyContextRetriever:
 
         for arg in method.args.args:
             if arg.arg in defaults:
-                args.append(f"{arg.arg}={unparse(defaults[arg.arg])}")
+                args.append(f"{unparse(arg)}={unparse(defaults[arg.arg])}")
             else:
-                args.append(arg.arg)
+                args.append(unparse(arg))
 
         # Handle keyword-only arguments
         if method.args.kwonlyargs:
@@ -232,8 +243,8 @@ class PyContextRetriever:
                 )
 
                 if default is not None:
-                    args.append(f"{kwarg.arg}={unparse(default)}")
+                    args.append(f"{unparse(kwarg)}={unparse(default)}")
                 else:
-                    args.append(kwarg.arg)
+                    args.append(unparse(kwarg))
 
         return ", ".join(args)

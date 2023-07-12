@@ -15,7 +15,7 @@ from ast import (
     get_docstring,
 )
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ class DocstringRemover(NodeTransformer):
     def visit(self, node):
         # If this node is a function, class, or module, remove its docstring.
         if (
-            isinstance(node, Union[AsyncFunctionDef, ClassDef, FunctionDef, Module])
+            isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module))
             and isinstance(node.body[0], Expr)
             and isinstance(node.body[0].value, Str)
         ):
@@ -94,7 +94,7 @@ class ImportRemover(NodeTransformer):
     def visit(self, node):
         # If this node is a function, class, or module, and its first child is an import statement,
         # remove the import statement.
-        if isinstance(node, Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]) and (
+        if isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)) and (
             isinstance(node.body[0], (Import, ImportFrom))
         ):
             node.body.pop(0)

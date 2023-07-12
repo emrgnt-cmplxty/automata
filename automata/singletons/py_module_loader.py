@@ -102,8 +102,6 @@ class PyModuleLoader(metaclass=Singleton):
         if not self._dotpath_map.contains_dotpath(module_dotpath):  # type: ignore
             return None
 
-        print("module_dotpath = ", module_dotpath)
-
         if module_dotpath not in self._loaded_modules:
             module_fpath = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)  # type: ignore
             self._loaded_modules[module_dotpath] = self._load_module_from_fpath(module_fpath)
