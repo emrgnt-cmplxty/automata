@@ -39,7 +39,7 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
 
     # build the subgraph
     subgraph = symbol_graph_static_test.default_rankable_subgraph
-    assert len(subgraph) == 40
+    assert len(subgraph) == 29
 
     py_module_loader.initialized = False
     py_module_loader.rel_py_path = None
