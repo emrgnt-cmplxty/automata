@@ -7,6 +7,8 @@ from ast import (
     ClassDef,
     Expr,
     FunctionDef,
+    Import,
+    ImportFrom,
     Module,
     NodeTransformer,
     Str,
@@ -14,8 +16,6 @@ from ast import (
 )
 from dataclasses import dataclass
 from typing import Optional, Union
-
-from automata.core.base import ASTNode
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
     if not node:
         return "No result found."
 
-    elif isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef)):
+    elif isinstance(node, Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]):
         doc_string = get_docstring(node)
         if doc_string:
             doc_string.replace('"""', "").replace("'''", "")
@@ -81,8 +81,28 @@ class DocstringRemover(NodeTransformer):
         return super().visit(node)
 
 
-def get_node_without_docstrings(node: ASTNode) -> ASTNode:
+def get_node_without_docstrings(node: AST) -> AST:
     """Creates a copy of the specified node without docstrings."""
     remover = DocstringRemover()
+    remover.visit(node)
+    return node
+
+
+class ImportRemover(NodeTransformer):
+    """Removes import statements from a module, class or function."""
+
+    def visit(self, node):
+        # If this node is a function, class, or module, and its first child is an import statement,
+        # remove the import statement.
+        if isinstance(node, Union[AsyncFunctionDef, ClassDef, FunctionDef, Module]) and (
+            isinstance(node.body[0], (Import, ImportFrom))
+        ):
+            node.body.pop(0)
+        return super().visit(node)
+
+
+def get_node_without_imports(node: AST) -> AST:
+    """Creates a copy of the specified node without import statements."""
+    remover = ImportRemover()
     remover.visit(node)
     return node
