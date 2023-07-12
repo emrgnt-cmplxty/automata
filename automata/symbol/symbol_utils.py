@@ -84,7 +84,6 @@ def get_rankable_symbols(
         do_continue = any(
             filter_string in symbol.uri for filter_string in symbols_strings_to_filter
         )
-        print(f"symbol = {symbol}, do_continue={do_continue}")
         if do_continue:
             continue
 
