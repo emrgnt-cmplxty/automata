@@ -221,7 +221,11 @@ def test_get_all_classes(context_retriever):
     assert all(isinstance(cls, ast.ClassDef) for cls in classes)
 
 
-def test_interface_include_docstrings(context_retriever):
+@pytest.mark.parametrize(
+    "context_retriever, include_docstrings_boolean",
+    [(context_retriever, True), (context_retriever, False)],
+)
+def test_interface_docstrings(context_retriever, include_docstrings_boolean):
     symbol = parse_symbol(
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
