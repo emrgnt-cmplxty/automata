@@ -93,13 +93,19 @@ def test_get_node_without_imports():
     "source,expected",
     [
         ('def foo():\n    """This is a docstring."""\n    pass\n', "This is a docstring."),
-        ('class Foo:\n    """This is a class docstring."""\n    pass\n', "This is a class docstring."),
+        (
+            'class Foo:\n    """This is a class docstring."""\n    pass\n',
+            "This is a class docstring.",
+        ),
         ("foo = 10", "No result found."),
         ("import os", "No result found."),
         ("from os import path", "No result found."),
         ("# this is a comment", "No result found."),
-        ('"""This is a standalone docstring."""\n"""Another standalone string."""', "This is a standalone docstring."),
-    ]
+        (
+            '"""This is a standalone docstring."""\n"""Another standalone string."""',
+            "This is a standalone docstring.",
+        ),
+    ],
 )
 def test_get_docstring_from_node_with_various_nodes(source, expected):
     module = parse(source)
@@ -120,7 +126,7 @@ def test_get_docstring_from_node_with_various_nodes(source, expected):
         'class Foo:\n    """This is a class docstring."""\n    pass\n',
         "foo = 10",
         '"""This is a standalone docstring."""',
-    ]
+    ],
 )
 def test_get_node_without_docstrings_with_various_nodes(source):
     node = parse(source)
@@ -134,7 +140,7 @@ def test_get_node_without_docstrings_with_various_nodes(source):
         "import os\ndef foo():\n    pass\n",
         "from os import path\ndef foo():\n    pass\n",
         "def foo():\n    pass\n",
-    ]
+    ],
 )
 def test_get_node_without_imports_with_various_nodes(source):
     node = parse(source)
