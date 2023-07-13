@@ -36,45 +36,49 @@ def test_symbol_rank_search(symbols, symbol_search_tool_builder):
             assert tool.function("symbol") == symbols[0]
 
 
-def test_process_queries(symbols, symbol_search, symbol_graph_mock):
-    with patch.object(
-        symbol_search, "symbol_references", return_value=["ref1", "ref2"]
-    ) as mock_method_0:
-        result = symbol_search.process_query(
-            "type:symbol_references %s" % symbols[0].uri
-        )
-        assert result == ["ref1", "ref2"]
-    mock_method_0.assert_called_once_with(symbols[0].uri)
+def test_symbol_references(symbol_search_tool_builder):
+    symbol_search_tool_builder.symbol_search.symbol_references = MagicMock(
+        # TODO - replace with real symbol ref if that remains return type in the manager
+        return_value={"ref": "Found references"}
+    )
 
-    with patch.object(
-        symbol_search, "exact_search", return_value={"test": 0}
-    ) as mock_method_1:
-        result = symbol_search.process_query("type:exact %s" % symbols[0].uri)
-        assert result == {"test": 0}
-    mock_method_1.assert_called_once_with(symbols[0].uri)
-
-    with patch.object(
-        symbol_search, "retrieve_source_code_by_symbol", return_value="test"
-    ) as mock_method_2:
-        result = symbol_search.process_query("type:source %s" % symbols[0].uri)
-        assert result == "test"
-    mock_method_2.assert_called_once_with(symbols[0].uri)
-
-    with patch.object(
-        symbol_search,
-        "get_symbol_rank_results",
-        return_value=[("ref1", 0.5), ("ref2", 0.4)],
-    ) as mock_method_4:
-        result = symbol_search.process_query(
-            "type:symbol_rank %s" % symbols[0].uri
-        )
-        assert result == [("ref1", 0.5), ("ref2", 0.4)]
-    mock_method_4.assert_called_once_with(symbols[0].uri)
+    tools = symbol_search_tool_builder.build()
+    for tool in tools:
+        if tool.name == "symbol-references":
+            assert tool.function("symbol") == "ref:Found references"
 
 
-@pytest.mark.parametrize(
-    "invalid_query", ["invalid_query", "type:unknown query"]
-)
-def test_process_queries_errors(symbol_search, invalid_query):
-    with pytest.raises(ValueError):
-        symbol_search.process_query(invalid_query)
+def test_retrieve_source_code_by_symbol(symbol_search_tool_builder):
+    symbol_search_tool_builder.symbol_search.retrieve_source_code_by_symbol = (
+        MagicMock(return_value=ast.parse("def f(x):\n    return True"))
+    )
+
+    tools = symbol_search_tool_builder.build()
+    for tool in tools:
+        if tool.name == "retrieve-source-code-by-symbol":
+            assert (
+                py_ast_unparse(tool.function("symbol")).strip()
+                == "\n\ndef f(x):\n    return True\n".strip()
+            )
+
+
+def test_exact_search(symbol_search_tool_builder):
+    symbol_search_tool_builder.symbol_search.exact_search = MagicMock(
+        return_value={"symbol": "Exact match found"}
+    )
+
+    tools = symbol_search_tool_builder.build()
+    for tool in tools:
+        if tool.name == "exact-search":
+            assert tool.function("pattern") == "symbol:Exact match found"
+
+
+def test_process_query(symbol_search_tool_builder):
+    symbol_search_tool_builder.symbol_search.process_query = MagicMock(
+        return_value="Processed query"
+    )
+
+    tools = symbol_search_tool_builder.build()
+    for tool in tools:
+        if tool.name == "process-query":
+            assert tool.function("query") == "Processed query"

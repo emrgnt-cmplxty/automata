@@ -15,11 +15,9 @@ from automata.symbol_embedding import (
 from tests.utils.factories import symbol_graph_static_test  # noqa: F401, F811
 
 
-def test_build_graph_and_handler_and_synchronize(
-    temp_output_filename,
-    mock_simple_method_symbols,
-    symbol_graph_static_test,  # noqa: F811
-):
+# Use fixtures for common setup
+@pytest.fixture
+def symbols_and_embeddings(mock_simple_method_symbols):
     symbol1 = mock_simple_method_symbols[0]
     symbol2 = mock_simple_method_symbols[1]
     symbol3 = mock_simple_method_symbols[2]
@@ -47,12 +45,13 @@ def embedding_db(temp_output_filename, symbols_and_embeddings):
     return embedding_db
 
 
-def test_build_graph_and_handler(
+@pytest.fixture
+def cem_and_symbol_graph_tester(
     embedding_db,
-    mock_simple_method_symbols,
-    symbol_graph_static_test,  # noqa: F811
+    symbols_and_embeddings,
+    symbol_graph_static_test,  # noqa: F401, F811
 ):
-    symbol1, symbol2, _, _, _, _ = mock_simple_method_symbols
+    symbol1, symbol2, _, _, _, _ = symbols_and_embeddings
 
     # Create an instance of the class
     mock_builder = MagicMock(EmbeddingBuilder)

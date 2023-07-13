@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -17,9 +17,21 @@ class TestExecuteBehavior(ITaskExecution):
         task.result = "Test result"
 
 
-@patch("logging.config.dictConfig", return_value=None)
+@pytest.fixture(autouse=True)
+def module_loader():
+    # FIXME - This can't be a good pattern, let's cleanup later.
+    py_module_loader.reset()
+    py_module_loader.initialize(get_root_fpath())
+    yield py_module_loader
+
+
+@pytest.fixture
+def patch_logging(mocker):
+    return mocker.patch("logging.config.dictConfig", return_value=None)
+
+
 def test_execute_automata_task_success(
-    _, module_loader, task, environment, registry
+    patch_logging, module_loader, task, environment, registry
 ):
     registry.register(task)
     environment.setup(task)
@@ -34,9 +46,8 @@ def test_execute_automata_task_success(
     assert result is None
 
 
-@patch("logging.config.dictConfig", return_value=None)
 def test_execute_automata_task_fail(
-    _, module_loader, task, environment, registry
+    patch_logging, module_loader, task, environment, registry
 ):
     registry.register(task)
     environment.setup(task)
