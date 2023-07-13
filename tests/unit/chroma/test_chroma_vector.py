@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -59,7 +61,7 @@ def vector_db_persistent(embedding_type, temp_output_vector_dir):
 
     db.clear()
 
-    for file in temp_output_vector_dir.iterdir():
+    for file in Path(temp_output_vector_dir).iterdir():
         file.unlink()
 
 

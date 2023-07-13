@@ -2850,41 +2850,6 @@ qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
 testing = ["docopt", "pytest (<6.0.0)"]
 
 [[package]]
-name = "path"
-version = "16.7.1"
-description = "A module wrapper for os.path"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "path-16.7.1-py3-none-any.whl", hash = "sha256:57f6ac8209c2b8fd3c515cf013e3b288af43460dddacf1d0249839aabcc14517"},
-    {file = "path-16.7.1.tar.gz", hash = "sha256:2b477f5887033f3cbea1cfd8553ee6a6a498eb2540a19f4aa082822aadcea30a"},
-]
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["appdirs", "packaging", "pygments", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy (>=0.9.1)", "pytest-ruff", "pywin32"]
-
-[[package]]
-name = "path-py"
-version = "12.5.0"
-description = "A module wrapper for os.path"
-category = "main"
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "path.py-12.5.0-py3-none-any.whl", hash = "sha256:a43e82eb2c344c3fd0b9d6352f6b856f40b8b7d3d65cc05978b42c3715668496"},
-    {file = "path.py-12.5.0.tar.gz", hash = "sha256:8d885e8b2497aed005703d94e0fd97943401f035e42a136810308bff034529a8"},
-]
-
-[package.dependencies]
-path = "*"
-
-[package.extras]
-docs = ["jaraco.packaging (>=3.2)", "rst.linker (>=1.9)", "sphinx"]
-testing = ["appdirs", "packaging", "pygments", "pytest (>=3.5,!=3.7.3)", "pytest-black-multipy", "pytest-checkdocs (>=1.2.3)", "pytest-cov", "pytest-flake8"]
-
-[[package]]
 name = "pathlib"
 version = "1.0.1"
 description = "Object-oriented filesystem paths"
@@ -4987,4 +4952,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "0da46d06988d41d58a281a4b7d009ccc90763b48d25a00a90b056526045138d8"
+content-hash = "7e4aa9fb9e4d2e3d67c84090393eb13520340092eac8a164666958237527e582"
