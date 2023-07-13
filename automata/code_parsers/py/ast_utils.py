@@ -38,12 +38,10 @@ class BoundingBox:
     bottom_right: LineItem
 
 
-def construct_bounding_box(node: AST) -> BoundingBox:
-    if not node.end_lineno:
-        raise ValueError(f"{node} does not have an end line number")
-    elif not node.end_col_offset:
-        raise ValueError(f"{node} does not have an end column offset")
-
+def construct_bounding_box(node: AST) -> Optional[BoundingBox]:
+    if not node.end_lineno or not node.end_col_offset:
+        logger.warning(f"{node} does not have an end line number or column offset")
+        return None
     return BoundingBox(
         top_left=LineItem(line=node.lineno, column=node.col_offset),
         bottom_right=LineItem(line=node.end_lineno, column=node.end_col_offset),
@@ -108,3 +106,4 @@ def get_node_without_imports(node: AST) -> AST:
     remover = ImportRemover()
     remover.visit(node)
     return node
+
