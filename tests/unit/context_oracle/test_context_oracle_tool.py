@@ -33,6 +33,7 @@ def context_oracle_tool_builder(
     symbol_doc_embedding_handler,
     embedding_similarity_calculator,
 ):
+
     return ContextOracleToolkitBuilder(
         symbol_search=symbol_search,
         symbol_doc_embedding_handler=symbol_doc_embedding_handler,
