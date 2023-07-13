@@ -53,7 +53,7 @@ class PyContextRetriever:
         yield
         self.indent_level -= 1
 
-    def _default_process_entry(self, message: str) -> str:
+    def _default_process_entry(self, message: str, include_newline=True) -> str:
         spacer = self.spacer * self.indent_level
         indented_lines = [
             f"{spacer}{line}" if line.strip() else line for line in message.split("\n")
@@ -95,12 +95,12 @@ class PyContextRetriever:
         self,
         symbol: Symbol,
         ast_object: AST,
-        headline_prefix="Building context for symbol - ",
+        headline="Building symbol context: ",
         *args,
         **kwargs,
     ) -> str:
         """Convert a symbol into a headline."""
-        return f"{headline_prefix}{symbol.full_dotpath}\n"
+        return headline
 
     def _source_code(
         self,
@@ -130,7 +130,7 @@ class PyContextRetriever:
         ast_object: AST,
         skip_private: bool = True,
         include_docstrings: bool = True,
-        header: str = "Interface:\n\n",
+        header_suffix: str = "Interface:",
         class_header: str = "class ",
         recursion_depth: int = 0,
         processed_classes: Optional[Set[int]] = None,  # add this argument
@@ -151,13 +151,16 @@ class PyContextRetriever:
         processed_classes.add(id(ast_object))
 
         # indent according to indent_level
-        interface = self.process_entry(header)
+        interface = self.process_entry(f"\n{symbol.full_dotpath}{header_suffix}")
 
-        if include_docstrings:
-            interface += self.process_entry(get_docstring_from_node(ast_object) + "\n")
-
-        classes = self._get_all_classes(ast_object)
         with self.increased_indentation():
+            if include_docstrings:
+                interface += self.process_entry(
+                    f'"""{get_docstring_from_node(ast_object)}"""' + "\n"
+                )
+
+            classes = self._get_all_classes(ast_object)
+
             for cls in classes:
                 decorators = [f"@{unparse(dec)}" for dec in cls.decorator_list]
                 class_header = f"{class_header}{cls.name}:\n\n"
@@ -167,18 +170,21 @@ class PyContextRetriever:
                     cls,
                     skip_private,
                     include_docstrings,
-                    header,
+                    header_suffix,
                     class_header,
                     recursion_depth=recursion_depth + 1,
                     processed_classes=processed_classes,
                 )
 
-        methods = sorted(self._get_all_methods(ast_object), key=lambda x: x.name)
-        for method in methods:
-            if not skip_private or not self._is_private_method(method):
-                interface += self.process_entry(self._process_method(method))
-                if include_docstrings:
-                    interface += self.process_entry(get_docstring_from_node(method) + "\n")
+            methods = sorted(self._get_all_methods(ast_object), key=lambda x: x.name)
+            for method in methods:
+                if not skip_private or not self._is_private_method(method):
+                    interface += self.process_entry(self._process_method(method))
+                    if include_docstrings:
+                        with self.increased_indentation():
+                            interface += self.process_entry(
+                                f'"""{get_docstring_from_node(method)}"""' + "\n"
+                            )
 
         return interface
 
@@ -194,7 +200,7 @@ class PyContextRetriever:
         decorators = [f"@{unparse(dec)}" for dec in method.decorator_list]
         method_definition = f"{method.name}({self._get_method_arguments(method)})"
         return_annotation = self._get_method_return_annotation(method)
-        return "\n".join(decorators + [f"{method_definition} -> {return_annotation}\n"])
+        return "\n".join(decorators + [f"{method_definition} -> {return_annotation}"])
 
     @staticmethod
     def _get_method_return_annotation(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
