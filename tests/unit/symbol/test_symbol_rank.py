@@ -56,7 +56,6 @@ def test_prepare_initial_ranks(random_graph, symbol_rank):
     assert sum(initial_ranks.values()) == pytest.approx(1.0)
 
 
-
 def test_get_ranks(random_graph, symbol_rank):
     ranks = symbol_rank.get_ranks()
     assert len(ranks) == random_graph.number_of_nodes()
