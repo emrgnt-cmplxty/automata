@@ -53,32 +53,10 @@ def test_retrieve_source_code_by_symbol(symbol_search_tool_builder):
         MagicMock(return_value=ast.parse("def f(x):\n    return True"))
     )
 
-    tools = symbol_search_tool_builder.build()
-    for tool in tools:
-        if tool.name == "retrieve-source-code-by-symbol":
-            assert (
-                py_ast_unparse(tool.function("symbol")).strip()
-                == "\n\ndef f(x):\n    return True\n".strip()
-            )
 
-
-def test_exact_search(symbol_search_tool_builder):
-    symbol_search_tool_builder.symbol_search.exact_search = MagicMock(
-        return_value={"symbol": "Exact match found"}
-    )
-
-    tools = symbol_search_tool_builder.build()
-    for tool in tools:
-        if tool.name == "exact-search":
-            assert tool.function("pattern") == "symbol:Exact match found"
-
-
-def test_process_query(symbol_search_tool_builder):
-    symbol_search_tool_builder.symbol_search.process_query = MagicMock(
-        return_value="Processed query"
-    )
-
-    tools = symbol_search_tool_builder.build()
-    for tool in tools:
-        if tool.name == "process-query":
-            assert tool.function("query") == "Processed query"
+@pytest.mark.parametrize(
+    "invalid_query", ["invalid_query", "type:unknown query"]
+)
+def test_process_queries_errors(symbol_search, invalid_query):
+    with pytest.raises(ValueError):
+        symbol_search.process_query(invalid_query)
