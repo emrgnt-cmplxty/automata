@@ -18,8 +18,12 @@ def test_tool(request) -> TestTool:
 
     return TestTool(
         name=name.args[0] if name else "TestTool",
-        description=description.args[0] if description else "A test tool for testing purposes",
-        function=function.args[0] if function else (lambda x: "TestTool response"),
+        description=description.args[0]
+        if description
+        else "A test tool for testing purposes",
+        function=function.args[0]
+        if function
+        else (lambda x: "TestTool response"),
     )
 
 

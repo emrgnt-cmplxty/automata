@@ -46,12 +46,16 @@ def embedding_db(temp_output_filename, symbols_and_embeddings):
 
 
 @pytest.fixture
-def cem_and_symbol_graph_tester(embedding_db, symbols_and_embeddings, symbol_graph_static_test):
+def cem_and_symbol_graph_tester(
+    embedding_db, symbols_and_embeddings, symbol_graph_static_test
+):
     symbol1, symbol2, _, _, _, _ = symbols_and_embeddings
 
     # Create an instance of the class
     mock_builder = MagicMock(EmbeddingBuilder)
-    cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_builder=mock_builder)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_db=embedding_db, embedding_builder=mock_builder
+    )
 
     G = nx.DiGraph()
     G.add_node(symbol1, label="symbol")

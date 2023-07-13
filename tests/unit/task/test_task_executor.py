@@ -30,7 +30,9 @@ def patch_logging(mocker):
     return mocker.patch("logging.config.dictConfig", return_value=None)
 
 
-def test_execute_automata_task_success(patch_logging, module_loader, task, environment, registry):
+def test_execute_automata_task_success(
+    patch_logging, module_loader, task, environment, registry
+):
     registry.register(task)
     environment.setup(task)
 
@@ -44,7 +46,9 @@ def test_execute_automata_task_success(patch_logging, module_loader, task, envir
     assert result is None
 
 
-def test_execute_automata_task_fail(patch_logging, module_loader, task, environment, registry):
+def test_execute_automata_task_fail(
+    patch_logging, module_loader, task, environment, registry
+):
     registry.register(task)
     environment.setup(task)
 

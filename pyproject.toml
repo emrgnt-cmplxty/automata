@@ -53,10 +53,9 @@ pytest-shutil = "^1.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
-sphinx = "7.0.1"
-sphinx-panels = "0.6.0" # Used on Linux
-sphinx-rtd-dark-mode = "1.2.4" # Used on Windows
-sphinx_panels = "0.6.0" # Used on Windows
+sphinx = "^4.0"
+sphinx-panels = "0.6.0"
+sphinx-rtd-dark-mode = "1.2.4"
 
 
 [tool.pytest.ini_options]

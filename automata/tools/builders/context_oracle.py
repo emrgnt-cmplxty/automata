@@ -11,8 +11,13 @@ from automata.config.base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
-from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
-from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+from automata.memory_store import (
+    SymbolCodeEmbeddingHandler,
+    SymbolDocEmbeddingHandler,
+)
+from automata.singletons.toolkit_registries import (
+    OpenAIAutomataAgentToolkitRegistry,
+)
 from automata.symbol_embedding import SymbolDocEmbedding
 from automata.tools.base import Tool
 

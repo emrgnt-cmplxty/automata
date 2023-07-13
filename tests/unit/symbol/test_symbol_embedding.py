@@ -13,7 +13,9 @@ from automata.symbol_embedding import (
 
 @pytest.fixture
 def cem(mock_provider, mock_db):
-    cem = SymbolCodeEmbeddingHandler(embedding_builder=mock_provider, embedding_db=mock_db)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
     return cem
 
 
@@ -79,7 +81,9 @@ def test_get_embedding(
 
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
     mock_db.batch_get.return_value = [
-        SymbolCodeEmbedding(mock_simple_method_symbols[0], "symbol_source", mock_embedding)
+        SymbolCodeEmbedding(
+            mock_simple_method_symbols[0], "symbol_source", mock_embedding
+        )
     ]
 
     # Call the method
@@ -89,7 +93,9 @@ def test_get_embedding(
     assert embedding[0].vector.all() == mock_embedding.all()
 
 
-def test_add_new_embedding(cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols):
+def test_add_new_embedding(
+    cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols
+):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.symbol.symbol_utils.convert_to_ast_object",
@@ -111,7 +117,9 @@ def test_add_new_embedding(cem, monkeypatch, mock_db, mock_provider, mock_simple
         cem.flush()
 
 
-def test_update_embedding(cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols):
+def test_update_embedding(
+    cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols
+):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.symbol.symbol_utils.convert_to_ast_object",
@@ -133,7 +141,9 @@ def test_update_embedding(cem, monkeypatch, mock_db, mock_provider, mock_simple_
     )
 
     cem.embedding_builder.build.return_value = SymbolCodeEmbedding(
-        key=mock_simple_method_symbols[0], document="xx", vector=np.array([1, 2, 3, 4])
+        key=mock_simple_method_symbols[0],
+        document="xx",
+        vector=np.array([1, 2, 3, 4]),
     )
     cem.embedding_db.contains = lambda x: True
     cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]
@@ -168,4 +178,6 @@ def test_get_embedding_exception(
     except Exception:
         pass
 
-    assert len(cem.embedding_db.data) == 0  # Expect empty embedding map because of exception
+    assert (
+        len(cem.embedding_db.data) == 0
+    )  # Expect empty embedding map because of exception
