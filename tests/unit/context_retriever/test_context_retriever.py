@@ -206,24 +206,29 @@ def test_get_all_classes(context_retriever):
     assert all(isinstance(cls, ast.ClassDef) for cls in classes)
 
 
-@pytest.mark.parametrize(
-    "include_docstrings_boolean",
-    [True, False],
-)
-def test_interface_docstrings(context_retriever, include_docstrings_boolean):
+def test_interface_include_docstrings(context_retriever):
     symbol = parse_symbol(
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
     interface = context_retriever.context_components[ContextComponent.INTERFACE].generate(
-        symbol, ast_object, skip_private=True, include_docstrings=include_docstrings_boolean
+        symbol, ast_object, include_docstrings=True
     )
     assert "Interface:" in interface
     assert "add(self, a: int, b: int) -> int" in interface
+    assert "Docstring for Calculator class" in interface
+    assert "Docstring for add method" in interface
 
-    if include_docstrings_boolean:
-        assert "Docstring for Calculator class" in interface
-        assert "Docstring for add method" in interface
-    else:
-        assert "Docstring for Calculator class" not in interface
-        assert "Docstring for add method" not in interface
+
+def test_interface_exclude_docstrings(context_retriever):
+    symbol = parse_symbol(
+        "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
+    )
+    ast_object = ast.parse(inspect.getsource(Calculator))
+    interface = context_retriever.context_components[ContextComponent.INTERFACE].generate(
+        symbol, ast_object, include_docstrings=False
+    )
+    assert "Interface:" in interface
+    assert "add(self, a: int, b: int) -> int" in interface
+    assert "Docstring for Calculator class" not in interface
+    assert "Docstring for add method" not in interface
