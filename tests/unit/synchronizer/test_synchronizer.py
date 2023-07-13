@@ -70,7 +70,9 @@ def test_build_graph_and_handler(
     return cem, symbol_graph_tester
 
 
-def test_synchronize(cem, symbol_graph_tester):
+def test_synchronize(cem_and_symbol_graph_tester):
+    cem, symbol_graph_tester = cem_and_symbol_graph_tester
+
     with SymbolProviderSynchronizationContext() as synchronization_context:
         from automata.context_providers import SymbolProviderRegistry
 
