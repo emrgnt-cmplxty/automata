@@ -78,7 +78,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     # TODO - Cleanup these processors to ensure they behave well.
     # -- Right now these are just simplest implementations I can rattle off
     def _symbol_rank_search_processor(self, query: str) -> str:
-        query_result = self.symbol_search.symbol_rank_search(query)
+        query_result = self.symbol_search.get_symbol_rank_results(query)
         return "\n".join([symbol.uri for symbol, _rank in query_result])
 
     def _symbol_symbol_references_processor(self, query: str) -> str:

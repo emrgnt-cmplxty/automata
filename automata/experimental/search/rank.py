@@ -36,7 +36,7 @@ class SymbolRank:
         self.config = config
         self.config.validate_config(self.config)
 
-    def get_ranks(
+    def get_ordered_ranks(
         self,
         query_to_symbol_similarity: Optional[Dict[Symbol, float]] = None,
         initial_weights: Optional[Dict[Symbol, float]] = None,
@@ -114,7 +114,7 @@ class SymbolRank:
         Returns:
             A list of tuples each containing the dotpath of a symbol and its rank.
         """
-        ranks = self.get_ranks()
+        ranks = self.get_ordered_ranks()
         return [(".".join(symbol.full_dotpath.split(".")[1:]), rank) for symbol, rank in ranks[:n]]
 
     def _prepare_graph(self) -> nx.DiGraph:

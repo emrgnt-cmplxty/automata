@@ -1,7 +1,6 @@
 from typing import Any, List
 
-from automata.code_parsers.py import get_docstring_from_node
-from automata.code_parsers.py.context_retriever import PyContextRetriever
+from automata.code_parsers.py import PyContextHandler, get_docstring_from_node
 
 # from automata.config import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
@@ -42,12 +41,12 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         embedding_provider: EmbeddingVectorProvider,
         completion_provider: LLMChatCompletionProvider,
         symbol_search: SymbolSearch,
-        retriever: PyContextRetriever,
+        handler: PyContextHandler,
     ) -> None:
         super().__init__(embedding_provider)
-        self.symbol_search = symbol_search
-        self.retriever = retriever
         self.completion_provider = completion_provider
+        self.symbol_search = symbol_search
+        self.handler = handler
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
         """
@@ -144,19 +143,21 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     def _build_prompt(self, symbol: Symbol) -> str:
         """Build the document for a symbol."""
         # abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-        # self.retriever.process_symbol(symbol)
+        # context = self.retriever.process_symbol(symbol)
 
         # prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
         #     symbol_dotpath=abbreviated_selected_symbol,
-        #     symbol_context=self.retriever.get_context_buffer(),
+        #     symbol_context=context,
         # )
 
         # return self.completion_provider.standalone_call(prompt)
-        raise NotImplementedError("Document generation needs to be reimplemented.")
+        raise NotImplementedError("Prompt generation not yet implemented for doc embeddings.")
 
     def _generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
-        search_results = self.symbol_search.symbol_rank_search(f"{abbreviated_selected_symbol}")
+        search_results = self.symbol_search.get_symbol_rank_results(
+            f"{abbreviated_selected_symbol}"
+        )
         search_results_with_tests = [ele for ele in search_results if "test" in ele[0].uri]
         search_results_without_tests = [ele for ele in search_results if "test" not in ele[0].uri]
         search_list: List[Symbol] = []

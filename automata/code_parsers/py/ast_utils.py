@@ -19,6 +19,8 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
+AST_NO_RESULT_FOUND = "No result found."
+
 
 @dataclass
 class LineItem:
@@ -55,7 +57,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
         node: The AST node to get the docstring from
     """
     if not node:
-        return "No result found."
+        return AST_NO_RESULT_FOUND
 
     elif isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)):
         doc_string = get_docstring(node)
@@ -63,7 +65,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
             doc_string.replace('"""', "").replace("'''", "")
             return doc_string
         else:
-            return "No result found."
+            return AST_NO_RESULT_FOUND
     return ""
 
 
