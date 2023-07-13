@@ -36,11 +36,19 @@ def test_get_nearest_symbols_for_query(
         key=symbol3, vector=np.array([0, 0, 1, 0]), document="symbol3"
     )
 
+    return {
+        symbol1: embedding1,
+        symbol2: embedding2,
+        symbol3: embedding3,
+    }
+
+
+@pytest.fixture
+def embedding_db(temp_output_filename, embeddings):
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     embedding_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
-    embedding_db.add(embedding1)
-    embedding_db.add(embedding2)
-    embedding_db.add(embedding3)
+    for embedding in embeddings.values():
+        embedding_db.add(embedding)
 
     # Create an instance of the class
     mock_builder = MagicMock(EmbeddingBuilder)
