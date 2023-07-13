@@ -6,18 +6,12 @@ foundation
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
+.. note::
+
+.. toctree::
+   :maxdepth: 1
+
+   llm_empty_conversation_error
 
 
-..  AUTO-GENERATED CONTENT START
-..
-
-    .. toctree::
-       :maxdepth: 1
-
-       llm_empty_conversation_error
-
-..  AUTO-GENERATED CONTENT END
-..
-
-
-
+Summary of content

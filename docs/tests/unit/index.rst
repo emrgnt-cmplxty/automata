@@ -8,43 +8,14 @@ how to :ref:`installation` the project.
 
 .. note::
 
+.. toctree::
+   :maxdepth: 1
+
+   sample_modules/index
+   mock_code_generator
+   test_execute_behavior
+   test_tool
+   test_url
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-..  AUTO-GENERATED CONTENT START
-..
-
-    .. toctree::
-       :maxdepth: 1
-
-       mock_code_generator
-       test_execute_behavior
-       test_tool
-       test_url
-       sample_modules/index
-
-..  AUTO-GENERATED CONTENT END
-..
-
-
-
+Summary of content

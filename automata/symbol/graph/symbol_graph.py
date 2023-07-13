@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class SymbolGraph(ISymbolProvider):
     """
-    A SymbolGraph contains the symbols and relationships between them.e
+    A `SymbolGraph` contains the symbols and relationships between them.e
     Currently, nodes are files and symbols, and edges consist of either
     "contains", "reference", "relationship", "caller", or "callee".
     """
