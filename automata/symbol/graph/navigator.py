@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 
-from automata.code_parsers.py import construct_bounding_box
+from automata.code_parsers.py import fetch_bounding_box
 from automata.config import MAX_WORKERS
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolReference
@@ -23,7 +23,7 @@ def process_symbol_bounds(
         py_module_loader.initialize(*loader_args)
     try:
         ast_object = convert_to_ast_object(symbol)
-        return symbol, construct_bounding_box(ast_object)
+        return symbol, fetch_bounding_box(ast_object)
     except Exception as e:
         logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
         return None
@@ -133,7 +133,7 @@ class SymbolGraphNavigator:
             bounding_box = self.bounding_box[symbol]
         else:
             ast_object = convert_to_ast_object(symbol)
-            bounding_box = construct_bounding_box(ast_object)
+            bounding_box = fetch_bounding_box(ast_object)
 
         parent_symbol_start_line, parent_symbol_start_col, parent_symbol_end_line = (
             bounding_box.top_left.line,
