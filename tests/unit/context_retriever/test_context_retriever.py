@@ -197,5 +197,10 @@ def test_interface_docstrings(context_retriever, include_docstrings_boolean):
     )
     assert "Interface:" in interface
     assert "add(self, a: int, b: int) -> int" in interface
-    assert "Docstring for Calculator class" in interface
-    assert "Docstring for add method" in interface
+
+    if include_docstrings_boolean:
+        assert "Docstring for Calculator class" in interface
+        assert "Docstring for add method" in interface
+    else:
+        assert "Docstring for Calculator class" not in interface
+        assert "Docstring for add method" not in interface
