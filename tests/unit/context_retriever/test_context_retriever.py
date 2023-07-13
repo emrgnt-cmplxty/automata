@@ -184,8 +184,8 @@ def test_get_all_classes(context_retriever):
 
 
 @pytest.mark.parametrize(
-    "context_retriever, include_docstrings_boolean",
-    [(context_retriever, True), (context_retriever, False)],
+    "include_docstrings_boolean",
+    [True, False],
 )
 def test_interface_docstrings(context_retriever, include_docstrings_boolean):
     symbol = parse_symbol(
