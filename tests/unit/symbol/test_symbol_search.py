@@ -1,37 +1,39 @@
 import ast
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 import pytest
+from astunparse import unparse as py_ast_unparse
 
-from automata.symbol.parser import parse_symbol
-
-
-def test_retrieve_source_code_by_symbol(symbols, symbol_search):
-    with patch(
-        "automata.experimental.search.symbol_search.convert_to_ast_object",
-        return_value=ast.parse("def f(x):\n    return True"),
-    ) as mock_method:
-        result = symbol_search.retrieve_source_code_by_symbol(symbols[0].uri)
-        assert result.strip() == "def f(x):\n    return True".strip()
-    mock_method.assert_called_once_with(symbols[0])
+from automata.tools.base import Tool
+from automata.tools.builders.symbol_search import SymbolSearchToolkitBuilder
 
 
-def test_symbol_references(symbols, symbol_search, symbol_graph_mock):
-    symbol_graph_mock.get_references_to_symbol.return_value = ["ref1", "ref2"]
-    result = symbol_search.symbol_references(symbols[0].uri)
-    assert result == ["ref1", "ref2"]
-    symbol_graph_mock.get_references_to_symbol.assert_called_once_with(
-        parse_symbol(symbols[0].uri)
+@pytest.fixture
+def symbol_search_tool_builder():
+    symbol_search_mock = MagicMock()
+    return SymbolSearchToolkitBuilder(symbol_search=symbol_search_mock)
+
+
+def test_init(symbol_search_tool_builder):
+    assert isinstance(symbol_search_tool_builder.symbol_search, MagicMock)
+
+
+def test_build(symbol_search_tool_builder):
+    tools = symbol_search_tool_builder.build()
+    assert len(tools) == 4
+    for tool in tools:
+        assert isinstance(tool, Tool)
+
+
+def test_symbol_rank_search(symbols, symbol_search_tool_builder):
+    symbol_search_tool_builder.symbol_search.get_symbol_rank_results = (
+        MagicMock(return_value=[(symbols[0], 1)])
     )
 
-
-def test_exact_search(symbol_search):
-    with patch(
-        "automata.experimental.search.symbol_search.SymbolSearch._find_pattern_in_modules",
-        return_value=["file1", "file2"],
-    ):
-        result = symbol_search.exact_search("pattern1")
-        assert result == ["file1", "file2"]
+    tools = symbol_search_tool_builder.build()
+    for tool in tools:
+        if tool.name == "symbol-rank-search":
+            assert tool.function("symbol") == symbols[0]
 
 
 def test_process_queries(symbols, symbol_search, symbol_graph_mock):
