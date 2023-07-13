@@ -186,10 +186,15 @@ symbol_doc_embedding = SymbolDocEmbedding(symbol, document, vector)
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
 
+The contribution guidelines include detailed instructions on how to set up the project locally, how to create an issue, how to create a pull request, and commit message guidelines. We encourage all contributors to follow these guidelines to make the process of contributing to Automata more streamlined and efficient.
+
 **We use [GitHub issues](https://github.com/emrgnt-cmplxty/automata/issues) for
 tracking requests and bugs, please see
 [Automata Discussions](https://github.com/emrgnt-cmplxty/Automata/discussions/) for general questions and
 discussion, and please direct specific questions.**
+
+The Automata project strives to abide by generally accepted best practices in
+open-source software development.
 
 The Automata project strives to abide by generally accepted best practices in
 open-source software development.
