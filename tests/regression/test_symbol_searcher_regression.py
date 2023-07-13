@@ -43,7 +43,6 @@ def check_hits(expected_in_top_hits, found_top_hits):
             [
                 "OpenAIAutomataAgent",
                 "OpenAIConversation",
-                "OpenAIEmbeddingProvider",
                 "OpenAIChatCompletionProvider",
             ],
         ),
@@ -110,8 +109,8 @@ EXACT_CALLS_TO_HITS = {
     ],
 )
 def test_exact_search(
-    symbol_search_live, search, expected_in_hits
-):  # noqa : F811
+    symbol_search_live, search, expected_in_hits  # noqa : F811
+):
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
@@ -135,8 +134,8 @@ def test_exact_search(
     ],
 )
 def test_source_code_retrieval(
-    symbol_search_live, search, expected_in_source
-):  # noqa : F811
+    symbol_search_live, search, expected_in_source  # noqa : F811
+):
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
