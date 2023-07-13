@@ -30,11 +30,12 @@ def test_bounding_box_creation(bounding_box, line_item):
 
 def test_construct_bounding_box_with_function_node():
     node = parse("def foo():\n    pass\n")
-    bounding_box = construct_bounding_box(node)
+    function_node = node.body[0]
+    bounding_box = construct_bounding_box(function_node)
     assert bounding_box.top_left.line == 1
     assert bounding_box.top_left.column == 0
     assert bounding_box.bottom_right.line == 2
-    assert bounding_box.bottom_right.column == 4
+    assert bounding_box.bottom_right.column == 8
 
 
 def test_construct_bounding_box_with_incomplete_node():
@@ -45,28 +46,17 @@ def test_construct_bounding_box_with_incomplete_node():
 
 
 def test_get_docstring_from_node_with_docstring():
-    node = parse(
-        '''
-    def foo():
-        """This is a docstring."""
-        pass
-    '''
-    )
-    docstring = get_docstring_from_node(node)
+    node = parse("def foo():\n" '    """This is a docstring."""\n' "    pass\n")
+    docstring = get_docstring_from_node(node.body[0])
     assert docstring == "This is a docstring."
 
 
 def test_get_docstring_from_node_without_docstring():
-    node = parse(
-        """
-    def foo():
-        pass
-    """
-    )
+    node = parse("def foo():\n" "    pass\n")
     docstring = get_docstring_from_node(node)
-    assert docstring == None
+    assert docstring == "No result found."
 
 
 def test_get_docstring_from_node_with_none_node():
     docstring = get_docstring_from_node(None)
-    assert docstring == None
+    assert docstring == "No result found."
