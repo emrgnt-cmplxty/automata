@@ -4,10 +4,10 @@ from automata.code_parsers.py.context_retriever import (
     ContextComponent,
     PyContextRetriever,
 )
-from automata.symbol import Symbol
 
 if TYPE_CHECKING:
     from automata.experimental.search import SymbolSearch
+    from automata.symbol import Symbol
 
 
 class PyContextHandlerConfig:
@@ -15,8 +15,8 @@ class PyContextHandlerConfig:
 
     def __init__(
         self,
-        top_n_symbol_rank_matches: int = 10,
-        top_n_dependency_matches: int = 10,
+        top_n_symbol_rank_matches: int = 5,
+        top_n_dependency_matches: int = 5,
     ) -> None:
         self.top_n_symbol_rank_matches = top_n_symbol_rank_matches
         self.top_n_dependency_matches = top_n_dependency_matches
@@ -32,11 +32,11 @@ class PyContextHandler:
         self.config = config
         self.retriever = retriever
         self.symbol_search = symbol_search
-        self.obs_symbols: Set[Symbol] = set([])
+        self.obs_symbols: Set["Symbol"] = set([])
 
     def construct_symbol_context(
         self,
-        symbol: Symbol,
+        symbol: "Symbol",
         primary_active_components: Dict[ContextComponent, Dict],
         tertiary_active_components: Dict[ContextComponent, Dict],
         related_symbols_header="Related Symbols:",
@@ -65,13 +65,13 @@ class PyContextHandler:
 
         return base_context
 
-    def get_top_n_symbol_rank_matches(self, symbol: Symbol) -> List[Symbol]:
+    def get_top_n_symbol_rank_matches(self, symbol: "Symbol") -> List["Symbol"]:
         """Get the top N symbols according to their ranks."""
         query = symbol.descriptors[-1].name
         symbol_rank_results = self.symbol_search.get_symbol_rank_results(query)
         return [ele[0] for ele in symbol_rank_results[: self.config.top_n_symbol_rank_matches]]
 
-    def get_top_n_symbol_dependencies(self, symbol: Symbol) -> List[Symbol]:
+    def get_top_n_symbol_dependencies(self, symbol: "Symbol") -> List["Symbol"]:
         """
         Get the tpo N symbols that the given symbol depends on.
         TODO - Sort results by some metric like similarity or ranked search.

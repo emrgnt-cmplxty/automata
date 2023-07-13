@@ -1,15 +1,18 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
-from automata.code_parsers.py import PyContextHandler, get_docstring_from_node
+from jinja2 import Template
 
-# from automata.config import DEFAULT_DOC_GENERATION_PROMPT
+from automata.code_parsers.py import (
+    ContextComponent,
+    PyContextHandler,
+    get_docstring_from_node,
+)
+from automata.config import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import LLMChatCompletionProvider
 from automata.symbol import Symbol, convert_to_ast_object
 from automata.symbol_embedding import SymbolCodeEmbedding, SymbolDocEmbedding
-
-# from jinja2 import Template
 
 
 class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
@@ -142,16 +145,27 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
 
     def _build_prompt(self, symbol: Symbol) -> str:
         """Build the document for a symbol."""
-        # abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-        # context = self.retriever.process_symbol(symbol)
+        abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
+        primary_active_components: Dict[ContextComponent, Any] = {
+            ContextComponent.HEADLINE: {},
+            ContextComponent.SOURCE_CODE: {},
+        }
+        tertiary_active_components: Dict[ContextComponent, Any] = {
+            ContextComponent.HEADLINE: {},
+            ContextComponent.INTERFACE: {},
+        }
+        context = self.handler.construct_symbol_context(
+            symbol,
+            primary_active_components=primary_active_components,
+            tertiary_active_components=tertiary_active_components,
+        )
 
-        # prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
-        #     symbol_dotpath=abbreviated_selected_symbol,
-        #     symbol_context=context,
-        # )
+        prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
+            symbol_dotpath=abbreviated_selected_symbol,
+            symbol_context=context,
+        )
 
-        # return self.completion_provider.standalone_call(prompt)
-        raise NotImplementedError("Prompt generation not yet implemented for doc embeddings.")
+        return self.completion_provider.standalone_call(prompt)
 
     def _generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""

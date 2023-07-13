@@ -4,7 +4,7 @@ from ast import Module
 from ast import parse as py_ast_parse
 from typing import Dict, Iterable, Optional, Tuple
 
-from automata.code_parsers.py import DotPathMap
+from automata.code_parsers.py.dotpath_map import DotPathMap
 from automata.core.base import Singleton
 from automata.core.utils import get_root_fpath
 
