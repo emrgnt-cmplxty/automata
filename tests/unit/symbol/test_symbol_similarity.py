@@ -16,7 +16,7 @@ from automata.symbol_embedding import (
 
 
 @pytest.fixture
-def embedding_db(temp_output_filename, mock_simple_method_symbols):
+def embeddings(mock_simple_method_symbols):
     # Mocking symbols and their embeddings
     symbol1 = mock_simple_method_symbols[0]
     symbol2 = mock_simple_method_symbols[1]
@@ -32,26 +32,44 @@ def embedding_db(temp_output_filename, mock_simple_method_symbols):
         key=symbol3, vector=np.array([0, 0, 1, 0]), document="symbol3"
     )
 
+    return {
+        symbol1: embedding1,
+        symbol2: embedding2,
+        symbol3: embedding3,
+    }
+
+
+@pytest.fixture
+def embedding_db(temp_output_filename, embeddings):
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     embedding_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
-    embedding_db.add(embedding1)
-    embedding_db.add(embedding2)
-    embedding_db.add(embedding3)
+    for embedding in embeddings.values():
+        embedding_db.add(embedding)
 
     return embedding_db
 
 
 @pytest.fixture
-def embedding_handler(embedding_db):
-    mock_builder = MagicMock(EmbeddingBuilder)
-    cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_builder=mock_builder)
+def mock_embedding_builder():
+    return MagicMock(EmbeddingBuilder)
+
+
+@pytest.fixture
+def mock_embedding_vector_provider():
+    return MagicMock(EmbeddingVectorProvider)
+
+
+@pytest.fixture
+def embedding_handler(embedding_db, mock_embedding_builder):
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_db=embedding_db, embedding_builder=mock_embedding_builder
+    )
     return cem
 
 
 @pytest.fixture
-def symbol_similarity(embedding_handler):
-    mock_provider = MagicMock(EmbeddingVectorProvider)
-    symbol_similarity = EmbeddingSimilarityCalculator(mock_provider)
+def symbol_similarity(mock_embedding_vector_provider):
+    symbol_similarity = EmbeddingSimilarityCalculator(mock_embedding_vector_provider)
     return symbol_similarity
 
 
@@ -64,14 +82,12 @@ def symbol_similarity(embedding_handler):
     ],
 )
 def test_get_nearest_symbols_for_query(
-    embedding_handler, symbol_similarity, symbol_key, query_text
+    embedding_handler, symbol_similarity, symbol_key, query_text, embeddings
 ):
-    embedding_handler.get_embeddings = lambda x: embedding_handler.embedding_db[
-        x
-    ]  # MagicMock(return_value=embeddings[x])
+    embedding_handler.get_embeddings = lambda x: embedding_handler.embedding_db[x]
     symbol_similarity.embedding_provider.build_embedding_vector.return_value = query_text
     ordered_embeddings = embedding_handler.embedding_db.get_ordered_embeddings()
 
     result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, symbol_key)
 
-    assert list(result.keys())[np.argmax(list(result.values()))] == symbol_key
+    assert list(result.keys())[np.argmax(list(result.values()))].key == symbol_key
