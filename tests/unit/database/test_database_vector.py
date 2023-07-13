@@ -52,11 +52,10 @@ def test_save(vector_db, embedded_symbol):
     vector_db.save()
 
 
-def test_load(temp_output_filename, symbols, embedded_symbol):
-    vector_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
+def test_load(vector_db, temp_output_filename, symbols, embedded_symbol):
     vector_db.add(embedded_symbol)
     vector_db.save()
-
+    
     vector_db_2 = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     vector_db_2.add(embedded_symbol)
     vector_db_2.save()
