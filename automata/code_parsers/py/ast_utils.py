@@ -106,4 +106,3 @@ def get_node_without_imports(node: AST) -> AST:
     remover = ImportRemover()
     remover.visit(node)
     return node
-
