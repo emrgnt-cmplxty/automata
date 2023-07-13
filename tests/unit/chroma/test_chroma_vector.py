@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -56,13 +57,14 @@ def vector_db_persistent(embedding_type, temp_output_vector_dir):
         factory=embedding_type.from_args,
         persist_directory=temp_output_vector_dir,
     )
-
     yield db
-
     db.clear()
 
     for file in Path(temp_output_vector_dir).iterdir():
-        file.unlink()
+        if file.is_file():
+            file.unlink()
+        elif file.is_dir():
+            shutil.rmtree(file)
 
 
 @pytest.fixture
