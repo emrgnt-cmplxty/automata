@@ -69,8 +69,10 @@ def test_process_queries(symbols, symbol_search, symbol_graph_mock):
         assert result == [("ref1", 0.5), ("ref2", 0.4)]
     mock_method_4.assert_called_once_with(symbols[0].uri)
 
-    with pytest.raises(ValueError):
-        symbol_search.process_query("invalid_query")
 
+@pytest.mark.parametrize(
+    "invalid_query", ["invalid_query", "type:unknown query"]
+)
+def test_process_queries_errors(symbol_search, invalid_query):
     with pytest.raises(ValueError):
-        symbol_search.process_query("type:unknown query")
+        symbol_search.process_query(invalid_query)
