@@ -13,7 +13,10 @@ def test_parse_symbol():
     assert symbol.package.name == "automata"
     assert symbol.package.version == "v0.0.0"
     assert symbol.module_path == "config.automata_agent_config"
-    assert symbol.full_dotpath == "config.automata_agent_config.AutomataAgentConfig.description"
+    assert (
+        symbol.full_dotpath
+        == "config.automata_agent_config.AutomataAgentConfig.description"
+    )
     assert symbol.descriptors[-1].name == "description"
     assert symbol.parent().descriptors[-1].name == "AutomataAgentConfig"
 
@@ -47,7 +50,9 @@ def test_parse_symbol():
 def test_parse_symbol_descriptor(symbol_str, expected_descriptor):
     symbol = parse_symbol(symbol_str)
     assert (
-        SymbolDescriptor.convert_scip_to_python_suffix(symbol.descriptors[-1].suffix)
+        SymbolDescriptor.convert_scip_to_python_suffix(
+            symbol.descriptors[-1].suffix
+        )
         == expected_descriptor
     )
 

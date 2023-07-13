@@ -24,7 +24,10 @@ class SymbolDescriptor:
         TypeParameter = "type_parameter"
 
     def __init__(
-        self, name: str, suffix: DescriptorProto, disambiguator: Optional[str] = None
+        self,
+        name: str,
+        suffix: DescriptorProto,
+        disambiguator: Optional[str] = None,
     ) -> None:
         self.name = name
         self.suffix = suffix
@@ -180,7 +183,9 @@ class Symbol:
 
     def symbol_kind_by_suffix(self) -> SymbolDescriptor.PyKind:
         """Converts the suffix of the URI into a PyKind."""
-        return SymbolDescriptor.convert_scip_to_python_suffix(self.symbol_raw_kind_by_suffix())
+        return SymbolDescriptor.convert_scip_to_python_suffix(
+            self.symbol_raw_kind_by_suffix()
+        )
 
     def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
         """Converts the suffix of the URI into a DescriptorProto."""
@@ -206,7 +211,9 @@ class Symbol:
     def parent(self) -> "Symbol":
         """Returns the parent symbol of the current symbol."""
         parent_descriptors = list(self.descriptors)[:-1]
-        return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
+        return Symbol(
+            self.uri, self.scheme, self.package, tuple(parent_descriptors)
+        )
 
     @property
     def full_dotpath(self) -> str:
@@ -221,7 +228,9 @@ class Symbol:
     @staticmethod
     def is_local(symbol: "Symbol") -> bool:
         """Returns True if the symbol is local."""
-        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
+        return (
+            symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
+        )
 
     @staticmethod
     def is_meta(symbol: "Symbol") -> bool:
@@ -231,7 +240,10 @@ class Symbol:
     @staticmethod
     def is_parameter(symbol: "Symbol") -> bool:
         """Returns True if the symbol is parameter."""
-        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
+        return (
+            symbol.descriptors[0].suffix
+            == SymbolDescriptor.ScipSuffix.Parameter
+        )
 
     @staticmethod
     def is_protobuf(symbol: "Symbol") -> bool:
@@ -243,7 +255,9 @@ class Symbol:
         """Creates a Symbol instance from a string representation."""
         # Assuming symbol_str is in the format: "Symbol({uri}, {scheme}, Package({manager} {name} {version}), [{Descriptor},...])"
         # Parse the symbol_str to extract the uri, scheme, package_str, and descriptors_str
-        match = re.search(r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str)
+        match = re.search(
+            r"Symbol\((.*?), (.*?), Package\((.*?)\), \((.*?)\)\)", symbol_str
+        )
         if not match:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __, ___ = match.groups()
@@ -264,7 +278,9 @@ class SymbolReference:
 
     def __hash__(self) -> int:
         # This could cause collisions if the same symbol is referenced in different files at the same location
-        return hash(f"{self.symbol.uri}-{self.line_number}-{self.column_number}")
+        return hash(
+            f"{self.symbol.uri}-{self.line_number}-{self.column_number}"
+        )
 
     def __eq__(self, other) -> bool:
         if isinstance(other, SymbolReference):

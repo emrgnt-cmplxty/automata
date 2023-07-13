@@ -15,7 +15,8 @@ def local_module_loader():
     py_module_loader.reset()
 
     py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"), "my_project"
+        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+        "my_project",
     )
     yield py_module_loader
 
@@ -51,21 +52,27 @@ def test_get_rankable_symbols(local_module_loader):
         parse_symbol(
             "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#add()."
         ),
-        parse_symbol("scip-python python automata v0.0.0 `my_project.core.calculator`#"),
+        parse_symbol(
+            "scip-python python automata v0.0.0 `my_project.core.calculator`#"
+        ),
         parse_symbol(
             "scip-python python automata v0.0.0 `my_project.core.calculator2`/Calculator2#__init__()."
         ),
         parse_symbol(
             "scip-python python automata v0.0.0 `my_project.core.calculator2`/Calculator2#__add__()."
         ),
-        parse_symbol("scip-python python automata v0.0.0 `my_project.core.calculator2`#"),
+        parse_symbol(
+            "scip-python python automata v0.0.0 `my_project.core.calculator2`#"
+        ),
         parse_symbol(
             "scip-python python automata v0.0.0 `my_project.core.extended.calculator3`/Calculator3#__init__()."
         ),
         parse_symbol(
             "scip-python python automata v0.0.0 `my_project.core.extended.calculator3`/Calculator3#__add__()."
         ),
-        parse_symbol("scip-python python automata v0.0.0 `my_project.core.extended.calculator3`#"),
+        parse_symbol(
+            "scip-python python automata v0.0.0 `my_project.core.extended.calculator3`#"
+        ),
         parse_symbol(  # include a symbol that will be ignored, e.g. not a method or class
             "scip-python python automata v0.0.0 `my_project.core.extended.calculator3`/Calculator3#__add__().(self)"
         ),

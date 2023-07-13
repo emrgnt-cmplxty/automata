@@ -22,7 +22,8 @@ def test_build_real_graph(symbol_graph_static_test):  # noqa: F811
         synchronization_context.synchronize()
 
     all_symbols = sorted(
-        symbol_graph_static_test.get_sorted_supported_symbols(), key=lambda x: x.full_dotpath
+        symbol_graph_static_test.get_sorted_supported_symbols(),
+        key=lambda x: x.full_dotpath,
     )
 
     assert isinstance(symbol_graph_static_test, SymbolGraph)
@@ -38,6 +39,6 @@ def test_build_real_graph_and_subgraph(symbol_graph_static_test):  # noqa: F811
 
     # build the subgraph
     subgraph = symbol_graph_static_test.default_rankable_subgraph
-    assert len(subgraph) == 29
+    assert len(subgraph) == 33
 
     py_module_loader.reset()

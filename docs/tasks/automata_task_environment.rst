@@ -38,7 +38,7 @@ commit ``AutomataTask``:
 
 .. code:: python
 
-   from automata.singletons.github_client import GitHubClient
+   from automata.github_management.client import GitHubClient
    from automata.tasks.environment import AutomataTaskEnvironment
    from automata.tasks.tasks import AutomataTask
 

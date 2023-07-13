@@ -14,7 +14,8 @@ def local_module_loader():
     py_module_loader.reset()
 
     py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"), "my_project"
+        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+        "my_project",
     )
     yield py_module_loader
 
@@ -52,19 +53,26 @@ def test_dotpath_map(local_module_loader):
     assert (
         "my_project.core.calculator"
         in local_module_loader._dotpath_map.get_module_dotpath_by_fpath(
-            os.path.join(abs_path, "sample_modules/my_project/core/calculator.py")
+            os.path.join(
+                abs_path, "sample_modules/my_project/core/calculator.py"
+            )
         )
     )
     assert (
         "my_project.core.calculator2"
         in local_module_loader._dotpath_map.get_module_dotpath_by_fpath(
-            os.path.join(abs_path, "sample_modules/my_project/core/calculator2.py")
+            os.path.join(
+                abs_path, "sample_modules/my_project/core/calculator2.py"
+            )
         )
     )
     assert (
         "my_project.core.extended.calculator3"
         in local_module_loader._dotpath_map.get_module_dotpath_by_fpath(
-            os.path.join(abs_path, "sample_modules/my_project/core/extended/calculator3.py")
+            os.path.join(
+                abs_path,
+                "sample_modules/my_project/core/extended/calculator3.py",
+            )
         )
     )
 
@@ -74,7 +82,9 @@ def test_load_module(local_module_loader):
         # Test that we can correctly load modules using dotpaths
         calculator_module = local_module_loader.fetch_ast_module(arg1)
         result = [
-            node.name for node in ast.walk(calculator_module) if isinstance(node, ast.ClassDef)
+            node.name
+            for node in ast.walk(calculator_module)
+            if isinstance(node, ast.ClassDef)
         ]
         assert arg2 in result
 
@@ -93,7 +103,10 @@ def test_load_module(local_module_loader):
 
 def test_invalid_dotpath(local_module_loader):
     # Test that an error is raised when trying to load a non-existent module
-    assert local_module_loader.fetch_ast_module("my_project.core.non_existent") is None
+    assert (
+        local_module_loader.fetch_ast_module("my_project.core.non_existent")
+        is None
+    )
 
 
 def test_empty_dotpath(local_module_loader):
@@ -126,7 +139,8 @@ def test_multiple_initializations(local_module_loader):
     # Test behavior when initialize is called more than once without setting initialized = False
     with pytest.raises(Exception):  # replace with your actual exception
         local_module_loader.initialize(
-            os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"), "my_project"
+            os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+            "my_project",
         )
 
 

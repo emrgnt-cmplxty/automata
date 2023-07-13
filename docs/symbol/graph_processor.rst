@@ -22,14 +22,14 @@ Related Symbols
 ---------------
 
 -  ``automata.symbol.graph.SymbolGraph``
--  ``automata.symbol.graph.CallerCalleeProcessor``
--  ``automata.symbol.graph.ReferenceProcessor``
+-  ``automata.symbol.graph._CallerCalleeProcessor``
+-  ``automata.symbol.graph._ReferenceProcessor``
 -  ``automata.symbol.graph.GraphBuilder``
 
 These classes interact with ``GraphProcessor`` in different ways. The
 ``SymbolGraph`` class represents a graph of symbols and their
-relationships. The other classes (``CallerCalleeProcessor``,
-``ReferenceProcessor``, and ``GraphBuilder``) are examples of types
+relationships. The other classes (``_CallerCalleeProcessor``,
+``_ReferenceProcessor``, and ``GraphBuilder``) are examples of types
 that can be used to process (add edges to) a graph.
 
 Usage Example
@@ -42,13 +42,13 @@ example could be:
 .. code:: python
 
    from networkx import MultiDiGraph
-   from automata.symbol.graph.ReferenceProcessor import ReferenceProcessor
+   from automata.symbol.graph._ReferenceProcessor import ReferenceProcessor
 
    graph = MultiDiGraph()
    graph_processor = ReferenceProcessor(graph, document)
    graph_processor.process()
 
-In this example, ``ReferenceProcessor`` is a concrete class inheriting
+In this example, ``_ReferenceProcessor`` is a concrete class inheriting
 from ``GraphProcessor`` that adds reference relationship edges to the
 graph.
 

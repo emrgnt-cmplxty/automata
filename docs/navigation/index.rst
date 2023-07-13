@@ -6,22 +6,16 @@ navigation
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
+.. note::
+
+.. toctree::
+   :maxdepth: 1
+
+   py/index
+   directory
+   directory_manager
+   file
+   node
 
 
-..  AUTO-GENERATED CONTENT START
-..
-
-    .. toctree::
-       :maxdepth: 1
-
-       directory
-       directory_manager
-       file
-       node
-       py/index
-
-..  AUTO-GENERATED CONTENT END
-..
-
-
-
+Summary of content

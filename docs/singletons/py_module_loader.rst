@@ -57,18 +57,18 @@ Example
 Related Symbols
 ---------------
 
--  ``automata.ast_helpers.ast_utils.py.dot_path_map.DotPathMap``
+-  ``automata.navigation.py.dot_path_map.DotPathMap``
 -  ``automata.core.base.patterns.singleton.Singleton``
--  ``automata.ast_helpers.ast_utils.py.dot_path_map.DotPathMap``
--  ``automata.ast_helpers.ast_utils.py.dot_path_map.DotPathMap.contains_dotpath``
+-  ``automata.navigation.py.dot_path_map.DotPathMap``
+-  ``automata.navigation.py.dot_path_map.DotPathMap.contains_dotpath``
 -  ``automata.core.utils.get_root_fpath``
 -  ``automata.core.utils.get_root_py_fpath``
 
 Dependencies
 ------------
 
--  ``automata.ast_helpers.ast_utils.py.dot_path_map.DotPathMap.put_module``
--  ``automata.ast_helpers.ast_utils.py.dot_path_map.DotPathMap.get_module_dotpath_by_fpath``
+-  ``automata.navigation.py.dot_path_map.DotPathMap.put_module``
+-  ``automata.navigation.py.dot_path_map.DotPathMap.get_module_dotpath_by_fpath``
 
 Limitations
 -----------

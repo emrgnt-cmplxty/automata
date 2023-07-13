@@ -33,14 +33,18 @@ class FunctionCall(NamedTuple):
         }
 
     @classmethod
-    def from_response_dict(cls, response_dict: Dict[str, str]) -> "FunctionCall":
+    def from_response_dict(
+        cls, response_dict: Dict[str, str]
+    ) -> "FunctionCall":
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
         ):
             return cls(
                 name=response_dict["name"],
-                arguments=FunctionCall.handle_termination(response_dict["arguments"]),
+                arguments=FunctionCall.handle_termination(
+                    response_dict["arguments"]
+                ),
             )
         return cls(
             name=response_dict["name"],
@@ -62,10 +66,14 @@ class FunctionCall(NamedTuple):
         except json.decoder.JSONDecodeError as e:
             split_result = arguments.split('{"result":')
             if len(split_result) <= 1:
-                raise ValueError("Invalid arguments for call_termination") from e
+                raise ValueError(
+                    "Invalid arguments for call_termination"
+                ) from e
             result_str = split_result[1].strip().replace('"}', "")
             if result_str[0] != '"':
-                raise ValueError("Invalid format for call_termination arguments") from e
+                raise ValueError(
+                    "Invalid format for call_termination arguments"
+                ) from e
             result_str = result_str[1:]
             return {"result": result_str}
 
@@ -81,7 +89,9 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
         content = raw_message["content"]
         super().__init__(role=role, content=content)
         self.function_call = (
-            raw_message["function_call"] if "function_call" in raw_message else None
+            raw_message["function_call"]
+            if "function_call" in raw_message
+            else None
         )
 
     def __str__(self) -> str:
@@ -95,12 +105,21 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
 
     @classmethod
     def from_args(
-        cls, role: str, content: str, function_call: Optional[FunctionCall] = None
+        cls,
+        role: str,
+        content: str,
+        function_call: Optional[FunctionCall] = None,
     ) -> "OpenAIChatCompletionResult":
         return cls(
             raw_data={
                 "choices": [
-                    {"message": {"role": role, "content": content, "function_call": function_call}}
+                    {
+                        "message": {
+                            "role": role,
+                            "content": content,
+                            "function_call": function_call,
+                        }
+                    }
                 ]
             }
         )
@@ -183,7 +202,9 @@ class OpenAIFunction:
         self,
         name: str,
         description: str,
-        properties: Dict[str, Dict[str, str]],  # TODO - We can probably make this more specific
+        properties: Dict[
+            str, Dict[str, str]
+        ],  # TODO - We can probably make this more specific
         required: Optional[List[str]] = None,
     ):
         self.name = name
@@ -241,7 +262,9 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                 stream=self.stream,
             )
         if self.stream:
-            response = OpenAIChatCompletionProvider._stream_message(response_summary=response)
+            response = OpenAIChatCompletionProvider._stream_message(
+                response_summary=response
+            )
             return response
 
         return OpenAIChatMessage.from_completion_result(
@@ -304,13 +327,15 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                 delta_function_call = delta["function_call"]
                 if delta_function_call:
                     if "name" in delta_function_call:
-                        response["function_call"]["name"] = delta_function_call["name"]
-                        latest_accumulation += (
-                            f'Function Call:\n{delta_function_call["name"]}\n\nArguments:\n'
-                        )
+                        response["function_call"][
+                            "name"
+                        ] = delta_function_call["name"]
+                        latest_accumulation += f'Function Call:\n{delta_function_call["name"]}\n\nArguments:\n'
 
                     if "arguments" in delta_function_call:
-                        response["function_call"]["arguments"] += delta_function_call["arguments"]
+                        response["function_call"][
+                            "arguments"
+                        ] += delta_function_call["arguments"]
                         latest_accumulation += delta_function_call["arguments"]
 
             if stream_separator in latest_accumulation:
@@ -324,7 +349,11 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             process_delta(delta, response)
 
         if latest_accumulation != "":
-            print(colored(f"{latest_accumulation}\n\n", "green"), end=" ", flush=True)
+            print(
+                colored(f"{latest_accumulation}\n\n", "green"),
+                end=" ",
+                flush=True,
+            )
         else:
             print(colored("\n\n", "green"), end=" ", flush=True)
 
@@ -382,10 +411,15 @@ class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
 
         return np.array(get_embedding(source, engine=self.engine))
 
-    def batch_build_embedding_vector(self, sources: List[str]) -> List[np.ndarray]:
+    def batch_build_embedding_vector(
+        self, sources: List[str]
+    ) -> List[np.ndarray]:
         from openai.embeddings_utils import get_embeddings
 
-        return [np.array(ele) for ele in get_embeddings(sources, engine=self.engine)]
+        return [
+            np.array(ele)
+            for ele in get_embeddings(sources, engine=self.engine)
+        ]
 
 
 class OpenAITool(Tool):

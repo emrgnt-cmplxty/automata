@@ -46,7 +46,7 @@ Import Statements
    from typing import Dict, List, Optional, Union, cast
    from redbaron import ClassNode, DefNode, Node, NodeList, RedBaron
    from automata.code_handling.py.reader import PyReader
-   from automata.ast_helpers.ast_utils.directory import DirectoryManager
+   from automata.navigation.directory import DirectoryManager
 
 Methods
 -------

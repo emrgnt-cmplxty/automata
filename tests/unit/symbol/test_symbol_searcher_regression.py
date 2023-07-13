@@ -10,7 +10,9 @@ def get_top_n_results_desc_name(result, n=0):
 
 def check_hits(expected_in_top_hits, found_top_hits):
     for expected_hit in expected_in_top_hits:
-        expected_and_found = any(expected_hit in found_hit for found_hit in found_top_hits)
+        expected_and_found = any(
+            expected_hit in found_hit for found_hit in found_top_hits
+        )
         if not expected_and_found:
             assert (
                 False
@@ -22,7 +24,10 @@ def check_hits(expected_in_top_hits, found_top_hits):
     "search, expected_in_top_hits",
     [
         ("SymbolGraph", ["Symbol", "SymbolGraph", "GraphBuilder"]),
-        ("SymbolSearch", ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"]),
+        (
+            "SymbolSearch",
+            ["Symbol", "SymbolSearchToolkitBuilder", "SymbolSearch"],
+        ),
         (
             "Embedding",
             [
@@ -42,7 +47,15 @@ def check_hits(expected_in_top_hits, found_top_hits):
                 "OpenAIChatCompletionProvider",
             ],
         ),
-        ("LLM", ["LLMProvider", "LLMChatMessage", "LLMConversation", "LLMCompletionResult"]),
+        (
+            "LLM",
+            [
+                "LLMProvider",
+                "LLMChatMessage",
+                "LLMConversation",
+                "LLMCompletionResult",
+            ],
+        ),
         ("Symbol", ["Symbol", "SymbolGraph"]),
     ],
 )
@@ -55,7 +68,9 @@ def test_symbol_rank_search_on_symbol(
 
     py_module_loader.initialize()
     results = symbol_search_live.get_symbol_rank_results(search)
-    filtered_results = [result for result in results if ".tests." not in result[0].full_dotpath]
+    filtered_results = [
+        result for result in results if ".tests." not in result[0].full_dotpath
+    ]
     found_top_hits = get_top_n_results_desc_name(filtered_results, 10)
     check_hits(expected_in_top_hits, found_top_hits)
 
@@ -94,7 +109,9 @@ EXACT_CALLS_TO_HITS = {
         ),
     ],
 )
-def test_exact_search(symbol_search_live, search, expected_in_hits):  # noqa : F811
+def test_exact_search(
+    symbol_search_live, search, expected_in_hits
+):  # noqa : F811
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
@@ -117,15 +134,23 @@ def test_exact_search(symbol_search_live, search, expected_in_hits):  # noqa : F
         ),
     ],
 )
-def test_source_code_retrieval(symbol_search_live, search, expected_in_source):  # noqa : F811
+def test_source_code_retrieval(
+    symbol_search_live, search, expected_in_source
+):  # noqa : F811
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
     py_module_loader.initialize()
     symbols = symbol_search_live.symbol_graph.get_sorted_supported_symbols()
 
-    symbol = [symbol for symbol in symbols if search[:-1] == symbol.descriptors[-1].name][0]
-    found_source_code = symbol_search_live.retrieve_source_code_by_symbol(symbol.uri)
+    symbol = [
+        symbol
+        for symbol in symbols
+        if search[:-1] == symbol.descriptors[-1].name
+    ][0]
+    found_source_code = symbol_search_live.retrieve_source_code_by_symbol(
+        symbol.uri
+    )
     for source_hit in expected_in_source:
         assert (
             source_hit in found_source_code

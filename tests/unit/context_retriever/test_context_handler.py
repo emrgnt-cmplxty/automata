@@ -20,14 +20,17 @@ def local_module_loader():
     # FIXME - This can't be a good pattern, let's cleanup later.
     py_module_loader.reset()
     py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"), "my_project"
+        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+        "my_project",
     )
     yield py_module_loader
 
 
 @pytest.fixture
 def context_handler():
-    config = PyContextHandlerConfig(top_n_symbol_rank_matches=3, top_n_dependency_matches=3)
+    config = PyContextHandlerConfig(
+        top_n_symbol_rank_matches=3, top_n_dependency_matches=3
+    )
     retriever = PyContextRetriever()
     symbol_search = MagicMock()
     return PyContextHandler(config, retriever, symbol_search)
@@ -37,7 +40,10 @@ def test_construct_symbol_context_no_interface(context_handler):
     symbol = parse_symbol(
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
-    primary_active_components = {ContextComponent.HEADLINE: {}, ContextComponent.INTERFACE: {}}
+    primary_active_components = {
+        ContextComponent.HEADLINE: {},
+        ContextComponent.INTERFACE: {},
+    }
     tertiary_active_components = {ContextComponent.HEADLINE: {}}
 
     context_handler.symbol_search.get_symbol_rank_results.return_value = [
@@ -74,8 +80,14 @@ def test_construct_symbol_context_interface(context_handler):
     symbol = parse_symbol(
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
-    primary_active_components = {ContextComponent.HEADLINE: {}, ContextComponent.INTERFACE: {}}
-    tertiary_active_components = {ContextComponent.HEADLINE: {}, ContextComponent.INTERFACE: {}}
+    primary_active_components = {
+        ContextComponent.HEADLINE: {},
+        ContextComponent.INTERFACE: {},
+    }
+    tertiary_active_components = {
+        ContextComponent.HEADLINE: {},
+        ContextComponent.INTERFACE: {},
+    }
 
     context_handler.symbol_search.get_symbol_rank_results.return_value = [
         (

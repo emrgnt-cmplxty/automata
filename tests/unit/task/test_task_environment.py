@@ -12,7 +12,9 @@ def test_commit_task(task, mocker, environment):
     os.makedirs(task.task_dir, exist_ok=True)
     task.status = TaskStatus.SUCCESS
 
-    environment.github_manager.create_pull_request = MagicMock(return_value=TestURL())
+    environment.github_manager.create_pull_request = MagicMock(
+        return_value=TestURL()
+    )
     environment.github_manager.branch_exists = MagicMock(return_value=False)
     mocker.spy(environment.github_manager, "create_branch")
     mocker.spy(environment.github_manager, "checkout_branch")
@@ -28,11 +30,15 @@ def test_commit_task(task, mocker, environment):
         pull_branch_name="test_branch__ZZ__",
     )
 
-    environment.github_manager.create_branch.assert_called_once_with("test_branch__ZZ__")
+    environment.github_manager.create_branch.assert_called_once_with(
+        "test_branch__ZZ__"
+    )
     environment.github_manager.checkout_branch.assert_called_once_with(
         task.task_dir, "test_branch__ZZ__"
     )
-    environment.github_manager.stage_all_changes.assert_called_once_with(task.task_dir)
+    environment.github_manager.stage_all_changes.assert_called_once_with(
+        task.task_dir
+    )
     environment.github_manager.commit_and_push_changes.assert_called_once_with(
         task.task_dir, "test_branch__ZZ__", "This is a commit message"
     )

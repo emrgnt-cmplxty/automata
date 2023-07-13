@@ -19,12 +19,19 @@ class TemplateFormatter:
         """
         formatter: Dict[str, str] = {}
         if config.config_name == AgentConfigName.AUTOMATA_MAIN:
-            top_symbols = symbol_rank.get_top_symbols(max_default_overview_symbols)
+            top_symbols = symbol_rank.get_top_symbols(
+                max_default_overview_symbols
+            )
             formatter["symbol_rank_overview"] = "\n".join(
-                f"{symbol}" for symbol, _ in sorted(top_symbols, key=lambda x: x[1], reverse=True)
+                f"{symbol}"
+                for symbol, _ in sorted(
+                    top_symbols, key=lambda x: x[1], reverse=True
+                )
             )
             formatter["max_iterations"] = str(config.max_iterations)
         elif config.config_name != AgentConfigName.TEST:
-            raise NotImplementedError("Automata does not have a default template formatter.")
+            raise NotImplementedError(
+                "Automata does not have a default template formatter."
+            )
 
         return formatter

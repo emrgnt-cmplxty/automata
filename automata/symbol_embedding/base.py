@@ -10,7 +10,14 @@ from automata.symbol import Symbol
 class SymbolEmbedding(Embedding):
     """An abstract class for symbol code embeddings"""
 
-    def __init__(self, key: Symbol, document: str, vector: np.ndarray, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        key: Symbol,
+        document: str,
+        vector: np.ndarray,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(key, document, vector)
 
     @property

@@ -13,7 +13,9 @@ def generate_random_graph(nodes, edges):
     for i in range(nodes):
         graph.add_node(i)
     for _ in range(edges):
-        graph.add_edge(random.randint(0, nodes - 1), random.randint(0, nodes - 1))
+        graph.add_edge(
+            random.randint(0, nodes - 1), random.randint(0, nodes - 1)
+        )
     return graph
 
 
@@ -23,12 +25,16 @@ def test_generate_random_graph():
     G = generate_random_graph(nodes, edges)
 
     assert G.number_of_nodes() == nodes
-    assert G.number_of_edges() <= edges  # It can be less because of randomly identical edges
+    assert (
+        G.number_of_edges() <= edges
+    )  # It can be less because of randomly identical edges
 
 
 def test_pagerank_config_validation():
     with pytest.raises(ValueError):
-        invalid_config_alpha = SymbolRankConfig(alpha=1.5, max_iterations=100, tolerance=1.0e-5)
+        invalid_config_alpha = SymbolRankConfig(
+            alpha=1.5, max_iterations=100, tolerance=1.0e-5
+        )
         invalid_config_alpha.validate_config(invalid_config_alpha)
     with pytest.raises(ValueError):
         invalid_config_tolerance = SymbolRankConfig(

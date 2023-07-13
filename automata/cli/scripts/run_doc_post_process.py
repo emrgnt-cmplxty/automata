@@ -1,10 +1,14 @@
 import logging
 import os
 
-from automata.code_handling.py.writer import PyDocWriter
-from automata.config import ConfigCategory
-from automata.core.utils import get_config_fpath, get_root_fpath
-from automata.symbol_embedding import JSONSymbolEmbeddingVectorDatabase
+from automata.cli.cli_utils import initialize_modules
+from automata.code_parsers.py import PyDocWriter
+from automata.core.utils import get_root_fpath
+from automata.singletons.dependency_factory import DependencyFactory
+from automata.symbol_embedding import (
+    ChromaSymbolEmbeddingVectorDatabase,
+    SymbolDocEmbedding,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -13,17 +17,25 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
+    project_name = kwargs.get("project_name") or "automata"
+    initialize_modules(**kwargs)
+
     doc_writer = PyDocWriter(get_root_fpath())
 
-    embedding_path = os.path.join(
-        get_config_fpath(), ConfigCategory.SYMBOL.to_path(), "symbol_doc_embedding_l2.json"
+    doc_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
+        project_name,
+        persist_directory=DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH,
+        factory=SymbolDocEmbedding.from_args,
     )
 
-    embedding_db = JSONSymbolEmbeddingVectorDatabase(embedding_path)
+    symbols = [
+        embedding.symbol
+        for embedding in doc_embedding_db.get_ordered_embeddings()
+    ]
 
-    symbols = [embedding.symbol for embedding in embedding_db.get_ordered_embeddings()]
-
-    docs = {symbol: embedding_db.get(symbol.full_dotpath) for symbol in symbols}
+    docs = {
+        symbol: doc_embedding_db.get(symbol.full_dotpath) for symbol in symbols
+    }
 
     doc_writer.write_documentation(docs, symbols, os.path.join(get_root_fpath(), "docs"))  # type: ignore
     return "Success"

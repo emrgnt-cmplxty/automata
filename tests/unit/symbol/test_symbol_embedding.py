@@ -39,7 +39,9 @@ def test_update_embeddings(
     mock_provider.fetch_embedding_source_code.return_value = "X"
     mock_db.contains.return_value = False
     # Create an instance of the class
-    cem = SymbolCodeEmbeddingHandler(embedding_builder=mock_provider, embedding_db=mock_db)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
 
     # Update embeddings for half of the symbols
     symbols_to_update = mock_symbols[: len(mock_symbols) // 2]
@@ -64,11 +66,15 @@ def test_get_embedding(
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
     mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
     mock_db.batch_get.return_value = [
-        SymbolCodeEmbedding(mock_simple_method_symbols[0], "symbol_source", mock_embedding)
+        SymbolCodeEmbedding(
+            mock_simple_method_symbols[0], "symbol_source", mock_embedding
+        )
     ]
 
     # Create an instance of the class
-    cem = SymbolCodeEmbeddingHandler(embedding_builder=mock_provider, embedding_db=mock_db)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
 
     # Call the method
     embedding = cem.get_embeddings([mock_simple_method_symbols[0]])
@@ -94,7 +100,9 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
 
-    cem = SymbolCodeEmbeddingHandler(embedding_builder=mock_provider, embedding_db=mock_db)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
     cem.process_embedding(mock_simple_method_symbols[0])
@@ -122,7 +130,9 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     mock_db.discard = lambda x: mock_db.data.pop(0)
     mock_db.batch_get = lambda x: mock_db.data[0]
 
-    cem = SymbolCodeEmbeddingHandler(embedding_builder=mock_provider, embedding_db=mock_db)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
     cem.process_embedding(mock_simple_method_symbols[0])
@@ -132,7 +142,9 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     )
 
     cem.embedding_builder.build.return_value = SymbolCodeEmbedding(
-        key=mock_simple_method_symbols[0], document="xx", vector=np.array([1, 2, 3, 4])
+        key=mock_simple_method_symbols[0],
+        document="xx",
+        vector=np.array([1, 2, 3, 4]),
     )
     cem.embedding_db.contains = lambda x: True
     cem.embedding_db.get_all_symbols = lambda: [mock_simple_method_symbols[0]]
@@ -162,7 +174,9 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
 
-    cem = SymbolCodeEmbeddingHandler(embedding_builder=mock_provider, embedding_db=mock_db)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
 
     # If exception occurs during the get_embedding operation, the database should not contain any new entries
     try:
@@ -170,4 +184,6 @@ def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
     except Exception:
         pass
 
-    assert len(cem.embedding_db.data) == 0  # Expect empty embedding map because of exception
+    assert (
+        len(cem.embedding_db.data) == 0
+    )  # Expect empty embedding map because of exception
