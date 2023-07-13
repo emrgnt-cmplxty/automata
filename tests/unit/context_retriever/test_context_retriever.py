@@ -215,8 +215,8 @@ def test_interface_docstrings(context_retriever, include_docstrings_boolean):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    interface = context_retriever._interface(
-        symbol, ast_object, include_docstrings=include_docstrings_boolean
+    interface = context_retriever.context_components[ContextComponent.INTERFACE].generate(
+        symbol, ast_object, skip_private=True, include_docstrings=include_docstrings_boolean
     )
     assert "Interface:" in interface
     assert "add(self, a: int, b: int) -> int" in interface
