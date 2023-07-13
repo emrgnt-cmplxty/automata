@@ -8,40 +8,11 @@ how to :ref:`installation` the project.
 
 .. note::
 
+.. toctree::
+   :maxdepth: 1
+
+   database/index
+   patterns/index
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-..  AUTO-GENERATED CONTENT START
-..
-
-    .. toctree::
-       :maxdepth: 1
-
-       database/index
-       patterns/index
-
-..  AUTO-GENERATED CONTENT END
-..
-
-
-
+Summary of content

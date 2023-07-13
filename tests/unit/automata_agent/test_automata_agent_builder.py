@@ -26,7 +26,9 @@ def test_builder_default_config(automata_agent_config_builder):
     assert config.session_id is not None  # session id defaults if not set
 
 
-def test_builder_provided_parameters_override_defaults(automata_agent_config_builder):
+def test_builder_provided_parameters_override_defaults(
+    automata_agent_config_builder,
+):
     config = (
         automata_agent_config_builder.with_model(default_model_2)
         .with_stream(True)

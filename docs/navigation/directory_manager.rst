@@ -9,7 +9,7 @@ obtain list of subdirectories inside a particular directory.
 Overview
 --------
 
-``DirectoryManager``, part of ``automata.ast_helpers.ast_utils.directory``,
+``DirectoryManager``, part of ``automata.navigation.directory``,
 conducts operations related to directory structure. It initiates with a
 base path and contains a ``root`` attribute representing the root
 directory of the structure, as an instance of ``Directory``.
@@ -26,9 +26,9 @@ DirectoryManager provides several methods including:
 Related Symbols
 ---------------
 
--  ``automata.ast_helpers.ast_utils.directory.Directory``: Represents a directory
+-  ``automata.navigation.directory.Directory``: Represents a directory
    that contains child nodes which can be either files or directories.
--  ``automata.singletons.github_client.GitHubClient``: Provides an
+-  ``automata.github_management.client.GitHubClient``: Provides an
    interface for interacting with GitHub repositories.
 -  ``automata.tasks.environment.AutomataTaskEnvironment``: The
    environment in which the Automata tasks are conducted.
@@ -44,7 +44,7 @@ instantiated and used.
 .. code:: python
 
    # Import the necessary modules
-   from automata.ast_helpers.ast_utils.directory import DirectoryManager
+   from automata.navigation.directory import DirectoryManager
 
    # Define the base directory
    base_dir = "/home/user/documents"

@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 class RelationshipProcessor(GraphProcessor):
     """Adds edges to the `MultiDiGraph` for relationships between `Symbol` nodes."""
 
-    def __init__(self, graph: nx.MultiDiGraph, symbol_information: Any) -> None:
+    def __init__(
+        self, graph: nx.MultiDiGraph, symbol_information: Any
+    ) -> None:
         self._graph = graph
         self.symbol_information = symbol_information
 

@@ -24,7 +24,8 @@ def local_module_loader():
     # FIXME - This can't be a good pattern, let's cleanup later.
     py_module_loader.reset()
     py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"), "my_project"
+        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+        "my_project",
     )
     yield py_module_loader
 
@@ -67,7 +68,10 @@ def test_process_symbol_error(context_retriever):
     symbol = parse_symbol(
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
-    components = {ContextComponent.SOURCE_CODE: {}, ContextComponent.INTERFACE: {}}
+    components = {
+        ContextComponent.SOURCE_CODE: {},
+        ContextComponent.INTERFACE: {},
+    }
     with pytest.raises(ValueError):
         context_retriever.process_symbol(symbol, components)
 
@@ -78,7 +82,10 @@ def test_process_symbol_invalid_component(context_retriever, caplog):
     )
     components = {ContextComponent.HEADLINE: {}, "invalid_component": {}}
     context_retriever.process_symbol(symbol, components)
-    assert "Warning: invalid_component is not a valid context component." in caplog.text
+    assert (
+        "Warning: invalid_component is not a valid context component."
+        in caplog.text
+    )
 
 
 def test_source_code(context_retriever):
@@ -86,7 +93,9 @@ def test_source_code(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    source_code = context_retriever.context_components[ContextComponent.SOURCE_CODE].generate(
+    source_code = context_retriever.context_components[
+        ContextComponent.SOURCE_CODE
+    ].generate(
         symbol, ast_object, include_imports=False, include_docstrings=True
     )
     assert "class Calculator:" in source_code
@@ -99,7 +108,9 @@ def test_source_code_2(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    source_code = context_retriever.context_components[ContextComponent.SOURCE_CODE].generate(
+    source_code = context_retriever.context_components[
+        ContextComponent.SOURCE_CODE
+    ].generate(
         symbol, ast_object, include_imports=True, include_docstrings=True
     )
     assert "import math" in source_code
@@ -113,9 +124,9 @@ def test_interface(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    interface = context_retriever.context_components[ContextComponent.INTERFACE].generate(
-        symbol, ast_object, skip_private=True
-    )
+    interface = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(symbol, ast_object, skip_private=True)
     assert "Interface:" in interface
     assert "add(self, a: int, b: int) -> int" in interface
 
@@ -126,9 +137,9 @@ def test_interface_recursion_error(context_retriever):
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
     with pytest.raises(RecursionError):
-        context_retriever.context_components[ContextComponent.INTERFACE].generate(
-            symbol, ast_object, recursion_depth=3
-        )
+        context_retriever.context_components[
+            ContextComponent.INTERFACE
+        ].generate(symbol, ast_object, recursion_depth=3)
 
 
 def test_process_headline(context_retriever):
@@ -136,9 +147,9 @@ def test_process_headline(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    headline = context_retriever.context_components[ContextComponent.HEADLINE].generate(
-        symbol, ast_object
-    )
+    headline = context_retriever.context_components[
+        ContextComponent.HEADLINE
+    ].generate(symbol, ast_object)
     assert headline == "my_project.core.calculator.Calculator\n"
 
 
@@ -181,7 +192,10 @@ def test_get_all_methods(context_retriever):
     ast_object = ast.parse(source_code)
     methods = _get_all_methods(ast_object)
     assert len(methods) == 3
-    assert all(isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)) for method in methods)
+    assert all(
+        isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+        for method in methods
+    )
 
 
 def test_get_all_classes(context_retriever):
@@ -211,9 +225,9 @@ def test_interface_include_docstrings(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    interface = context_retriever.context_components[ContextComponent.INTERFACE].generate(
-        symbol, ast_object, include_docstrings=True
-    )
+    interface = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(symbol, ast_object, include_docstrings=True)
     assert "Interface:" in interface
     assert "add(self, a: int, b: int) -> int" in interface
     assert "Docstring for Calculator class" in interface
@@ -225,9 +239,9 @@ def test_interface_exclude_docstrings(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    interface = context_retriever.context_components[ContextComponent.INTERFACE].generate(
-        symbol, ast_object, include_docstrings=False
-    )
+    interface = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(symbol, ast_object, include_docstrings=False)
     assert "Interface:" in interface
     assert "add(self, a: int, b: int) -> int" in interface
     assert "Docstring for Calculator class" not in interface

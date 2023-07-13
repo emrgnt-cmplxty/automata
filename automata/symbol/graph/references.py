@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import networkx as nx
 
-from automata.symbol import SymbolReference
+from automata.symbol.base import SymbolReference
 from automata.symbol.graph.base import GraphProcessor
 from automata.symbol.parser import parse_symbol
 
@@ -30,11 +30,15 @@ class ReferenceProcessor(GraphProcessor):
             try:
                 occurrence_symbol = parse_symbol(occurrence.symbol)
             except Exception as e:
-                logger.error(f"Parsing symbol {occurrence.symbol} failed with error {e}")
+                logger.error(
+                    f"Parsing symbol {occurrence.symbol} failed with error {e}"
+                )
                 continue
 
             occurrence_range = tuple(occurrence.range)
-            occurrence_roles = ReferenceProcessor._process_symbol_roles(occurrence.symbol_roles)
+            occurrence_roles = ReferenceProcessor._process_symbol_roles(
+                occurrence.symbol_roles
+            )
             occurrence_reference = SymbolReference(
                 symbol=occurrence_symbol,
                 line_number=occurrence_range[0],
@@ -51,7 +55,9 @@ class ReferenceProcessor(GraphProcessor):
                 # TODO this is gross
                 incorrect_contains_edges = [
                     (source, target)
-                    for source, target, data in self._graph.in_edges(occurrence_symbol, data=True)
+                    for source, target, data in self._graph.in_edges(
+                        occurrence_symbol, data=True
+                    )
                     if data.get("label") == "contains"
                 ]
                 for source, target in incorrect_contains_edges:

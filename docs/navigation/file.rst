@@ -7,7 +7,7 @@ structure.
 Overview
 --------
 
-``File`` is positioned within the ``automata.ast_helpers.ast_utils.directory``
+``File`` is positioned within the ``automata.navigation.directory``
 module of the Automata Library. It acts as a symbol that stands for a
 file in a tree-like directory structure. This class gets instantiated
 with a name and an optional parent node. It inherits properties and
@@ -16,7 +16,7 @@ behavior from the ``Node`` class.
 Related Symbols
 ---------------
 
--  ``automata.ast_helpers.ast_utils.directory.Node``
+-  ``automata.navigation.directory.Node``
 
 Examples
 --------
@@ -26,7 +26,7 @@ The following example demonstrates how to create an instance of
 
 .. code:: python
 
-   from automata.ast_helpers.ast_utils.directory import File, Node
+   from automata.navigation.directory import File, Node
 
    root = Node('root')
    file = File('file1', parent=root)

@@ -25,7 +25,9 @@ class AgentToolFactory:
     }
 
     @staticmethod
-    def create_tools_from_builder(agent_tool: AgentToolkitNames, **kwargs) -> Sequence[Tool]:
+    def create_tools_from_builder(
+        agent_tool: AgentToolkitNames, **kwargs
+    ) -> Sequence[Tool]:
         """Uses the Builder Registry to create tools from a given agent tool name."""
         from automata.singletons.toolkit_registries import (  # import here for easy mocking
             OpenAIAutomataAgentToolkitRegistry,
@@ -52,6 +54,10 @@ class AgentToolFactory:
             if agent_tool_manager is None:
                 raise UnknownToolError(agent_tool_manager)
 
-            tools.extend(AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs))
+            tools.extend(
+                AgentToolFactory.create_tools_from_builder(
+                    agent_tool_manager, **kwargs
+                )
+            )
 
         return tools

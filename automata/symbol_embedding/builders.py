@@ -1,28 +1,35 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
-from automata.code_parsers.py import PyContextHandler, get_docstring_from_node
+from jinja2 import Template
 
-# from automata.config import DEFAULT_DOC_GENERATION_PROMPT
+from automata.code_parsers.py import (
+    ContextComponent,
+    PyContextHandler,
+    get_docstring_from_node,
+)
+from automata.config import DEFAULT_DOC_GENERATION_PROMPT
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import LLMChatCompletionProvider
 from automata.symbol import Symbol, convert_to_ast_object
 from automata.symbol_embedding import SymbolCodeEmbedding, SymbolDocEmbedding
 
-# from jinja2 import Template
-
 
 class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` source code embeddings."""
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
-        embedding_vector = self.embedding_provider.build_embedding_vector(source_code)
+        embedding_vector = self.embedding_provider.build_embedding_vector(
+            source_code
+        )
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
     def batch_build(
         self, source_codes: List[str], symbols: List[Symbol]
     ) -> List[SymbolCodeEmbedding]:
-        embedding_vectors = self.embedding_provider.batch_build_embedding_vector(source_codes)
+        embedding_vectors = (
+            self.embedding_provider.batch_build_embedding_vector(source_codes)
+        )
         return [
             SymbolCodeEmbedding(symbol, source_code, embedding_vector)
             for symbol, source_code, embedding_vector in zip(
@@ -114,7 +121,9 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             context=prompt,
         )
 
-    def build_non_class(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
+    def build_non_class(
+        self, source_code: str, symbol: Symbol
+    ) -> SymbolDocEmbedding:
         ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
         document = f"Symbol: {symbol.full_dotpath}\n{raw_doctring}"
@@ -142,28 +151,53 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
 
     def _build_prompt(self, symbol: Symbol) -> str:
         """Build the document for a symbol."""
-        # abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-        # context = self.retriever.process_symbol(symbol)
+        abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
+        primary_active_components: Dict[ContextComponent, Any] = {
+            ContextComponent.HEADLINE: {},
+            ContextComponent.SOURCE_CODE: {},
+        }
+        tertiary_active_components: Dict[ContextComponent, Any] = {
+            ContextComponent.HEADLINE: {},
+            ContextComponent.INTERFACE: {},
+        }
+        context = self.handler.construct_symbol_context(
+            symbol,
+            primary_active_components=primary_active_components,
+            tertiary_active_components=tertiary_active_components,
+        )
 
-        # prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
-        #     symbol_dotpath=abbreviated_selected_symbol,
-        #     symbol_context=context,
-        # )
+        prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
+            symbol_dotpath=abbreviated_selected_symbol,
+            symbol_context=context,
+        )
 
-        # return self.completion_provider.standalone_call(prompt)
-        raise NotImplementedError("Prompt generation not yet implemented for doc embeddings.")
+        return self.completion_provider.standalone_call(prompt)
 
-    def _generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
+    def _generate_search_list(
+        self, abbreviated_selected_symbol: str
+    ) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
         search_results = self.symbol_search.get_symbol_rank_results(
             f"{abbreviated_selected_symbol}"
         )
-        search_results_with_tests = [ele for ele in search_results if "test" in ele[0].uri]
-        search_results_without_tests = [ele for ele in search_results if "test" not in ele[0].uri]
+        search_results_with_tests = [
+            ele for ele in search_results if "test" in ele[0].uri
+        ]
+        search_results_without_tests = [
+            ele for ele in search_results if "test" not in ele[0].uri
+        ]
         search_list: List[Symbol] = []
-        for i in range(max(len(search_results_with_tests), len(search_results_without_tests))):
+        for i in range(
+            max(
+                len(search_results_with_tests),
+                len(search_results_without_tests),
+            )
+        ):
             set_list = set(search_list)
-            if i < len(search_results_with_tests) and search_results_with_tests[i] not in set_list:
+            if (
+                i < len(search_results_with_tests)
+                and search_results_with_tests[i] not in set_list
+            ):
                 search_list.append(search_results_with_tests[i][0])
             if (
                 i < len(search_results_without_tests)
@@ -173,4 +207,6 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         return search_list
 
     def batch_build(self, source_text: List[str], symbol: List[Symbol]) -> Any:
-        raise NotImplementedError("Batch building not yet implemented for doc embeddings.")
+        raise NotImplementedError(
+            "Batch building not yet implemented for doc embeddings."
+        )

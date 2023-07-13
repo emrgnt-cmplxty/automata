@@ -42,9 +42,15 @@ def context_oracle_tool_builder(
 
 
 def test_init(context_oracle_tool_builder):
-    assert isinstance(context_oracle_tool_builder.embedding_similarity_calculator, MagicMock)
-    assert isinstance(context_oracle_tool_builder.symbol_doc_embedding_handler, MagicMock)
-    assert isinstance(context_oracle_tool_builder.symbol_code_embedding_handler, MagicMock)
+    assert isinstance(
+        context_oracle_tool_builder.embedding_similarity_calculator, MagicMock
+    )
+    assert isinstance(
+        context_oracle_tool_builder.symbol_doc_embedding_handler, MagicMock
+    )
+    assert isinstance(
+        context_oracle_tool_builder.symbol_code_embedding_handler, MagicMock
+    )
 
 
 def test_build(context_oracle_tool_builder):

@@ -51,15 +51,21 @@ class GraphBuilder:
             try:
                 symbol = parse_symbol(symbol_information.symbol)
             except Exception as e:
-                logger.error(f"Parsing symbol {symbol_information.symbol} failed with error {e}")
+                logger.error(
+                    f"Parsing symbol {symbol_information.symbol} failed with error {e}"
+                )
                 continue
 
             self._graph.add_node(symbol, label="symbol")
-            self._graph.add_edge(document.relative_path, symbol, label="contains")
+            self._graph.add_edge(
+                document.relative_path, symbol, label="contains"
+            )
 
     def _process_relationships(self, document: Any) -> None:
         for symbol_information in document.symbols:
-            relationship_manager = RelationshipProcessor(self._graph, symbol_information)
+            relationship_manager = RelationshipProcessor(
+                self._graph, symbol_information
+            )
             relationship_manager.process()
 
     def _process_references(self, document: Any) -> None:

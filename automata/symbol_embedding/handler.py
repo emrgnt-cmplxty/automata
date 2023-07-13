@@ -36,7 +36,9 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
         pass
 
     def get_embeddings(self, symbols: List[Symbol]) -> List[SymbolEmbedding]:
-        return self.embedding_db.batch_get([symbol.full_dotpath for symbol in symbols])
+        return self.embedding_db.batch_get(
+            [symbol.full_dotpath for symbol in symbols]
+        )
 
     def get_ordered_embeddings(self) -> List[SymbolEmbedding]:
         return self.embedding_db.batch_get(
@@ -58,6 +60,8 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
     def _get_sorted_supported_symbols(self) -> List[Symbol]:
         return self.sorted_supported_symbols
 
-    def filter_symbols(self, new_sorted_supported_symbols: List[Symbol]) -> None:
+    def filter_symbols(
+        self, new_sorted_supported_symbols: List[Symbol]
+    ) -> None:
         """Filter the symbols to only those in the new sorted_supported_symbols set"""
         self.sorted_supported_symbols = new_sorted_supported_symbols

@@ -43,13 +43,17 @@ class _SymbolParser:
         if next_char == "(":
             self.index += 1
             name = self.accept_identifier("parameter name")
-            descriptor = SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Parameter)
+            descriptor = SymbolDescriptor(
+                name, SymbolDescriptor.ScipSuffix.Parameter
+            )
             self.accept_character(")", "closing parameter name")
             return descriptor
         elif next_char == "[":
             self.index += 1
             name = self.accept_identifier("type parameter name")
-            descriptor = SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.TypeParameter)
+            descriptor = SymbolDescriptor(
+                name, SymbolDescriptor.ScipSuffix.TypeParameter
+            )
             self.accept_character("]", "closing type parameter name")
             return descriptor
         else:
@@ -59,7 +63,9 @@ class _SymbolParser:
             if suffix == "(":
                 disambiguator = ""
                 if self.current() != ")":
-                    disambiguator = self.accept_identifier("method disambiguator")
+                    disambiguator = self.accept_identifier(
+                        "method disambiguator"
+                    )
                 descriptor = SymbolDescriptor(
                     name, SymbolDescriptor.ScipSuffix.Method, disambiguator
                 )
@@ -67,7 +73,9 @@ class _SymbolParser:
                 self.accept_character(".", "closing method")
                 return descriptor
             elif suffix == "/":
-                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Namespace)
+                return SymbolDescriptor(
+                    name, SymbolDescriptor.ScipSuffix.Namespace
+                )
             elif suffix == ".":
                 return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Term)
             elif suffix == "#":
@@ -75,7 +83,9 @@ class _SymbolParser:
             elif suffix == ":":
                 return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Meta)
             elif suffix == "!":
-                return SymbolDescriptor(name, SymbolDescriptor.ScipSuffix.Macro)
+                return SymbolDescriptor(
+                    name, SymbolDescriptor.ScipSuffix.Macro
+                )
             else:
                 raise self.error("Expected a descriptor suffix")
 
@@ -84,7 +94,9 @@ class _SymbolParser:
             self.index += 1
             return self.accept_backtick_escaped_identifier(what)
         start = self.index
-        while self.index < len(self.symbol) and self.is_identifier_character(self.current()):
+        while self.index < len(self.symbol) and self.is_identifier_character(
+            self.current()
+        ):
             self.index += 1
         if start == self.index:
             if what != "descriptor name":
@@ -106,7 +118,9 @@ class _SymbolParser:
         """
         return self.accept_escaped_identifier(what, "`")
 
-    def accept_escaped_identifier(self, what: str, escape_character: str) -> str:
+    def accept_escaped_identifier(
+        self, what: str, escape_character: str
+    ) -> str:
         """
         Accepts an identifier from the `Symbol`,
         where the identifier is escaped by a given character.
@@ -133,7 +147,9 @@ class _SymbolParser:
         if self.current() == r:
             self.index += 1
         else:
-            raise self.error(f"expected '{r}', obtained '{self.current()}', while parsing {what}")
+            raise self.error(
+                f"expected '{r}', obtained '{self.current()}', while parsing {what}"
+            )
 
     @staticmethod
     def is_identifier_character(c: str) -> bool:

@@ -3,7 +3,7 @@ from typing import Any
 
 import networkx as nx
 
-from automata.symbol import SymbolDescriptor
+from automata.symbol.base import SymbolDescriptor
 from automata.symbol.graph.base import GraphProcessor
 from automata.symbol.graph.navigator import SymbolGraphNavigator
 from automata.symbol.parser import parse_symbol
@@ -30,14 +30,23 @@ class CallerCalleeProcessor(GraphProcessor):
             try:
                 symbol_object = parse_symbol(symbol.symbol)
             except Exception as e:
-                logger.error(f"Parsing symbol {symbol.symbol} failed with error {e}")
+                logger.error(
+                    f"Parsing symbol {symbol.symbol} failed with error {e}"
+                )
                 continue
 
-            if symbol_object.symbol_kind_by_suffix() != SymbolDescriptor.PyKind.Method:
+            if (
+                symbol_object.symbol_kind_by_suffix()
+                != SymbolDescriptor.PyKind.Method
+            ):
                 continue
 
             try:
-                references_in_scope = self.navigator._get_symbol_references_in_scope(symbol_object)
+                references_in_scope = (
+                    self.navigator._get_symbol_references_in_scope(
+                        symbol_object
+                    )
+                )
             except Exception as e:
                 logger.error(
                     f"Failed to get references in scope for symbol {symbol} with error {e}"
@@ -74,5 +83,7 @@ class CallerCalleeProcessor(GraphProcessor):
                             label="callee",
                         )
                 except Exception as e:
-                    logger.error(f"Failed to add caller-callee edge for {symbol} with error {e} ")
+                    logger.error(
+                        f"Failed to add caller-callee edge for {symbol} with error {e} "
+                    )
                     continue

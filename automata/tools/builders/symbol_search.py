@@ -70,7 +70,12 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
 
     def process_query(
         self, tool_type: SearchTool, query: str
-    ) -> Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult,]:
+    ) -> Union[
+        SymbolReferencesResult,
+        SymbolRankResult,
+        SourceCodeResult,
+        ExactSearchResult,
+    ]:
         """Processes a query by routing it to the appropriate sub-tool."""
         tools_dict = {tool.name: tool.function for tool in self.build()}
         return tools_dict[tool_type.value](query)
@@ -84,7 +89,10 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def _symbol_symbol_references_processor(self, query: str) -> str:
         query_result = self.symbol_search.symbol_references(query)
         return "\n".join(
-            [f"{symbol}:{str(reference)}" for symbol, reference in query_result.items()]
+            [
+                f"{symbol}:{str(reference)}"
+                for symbol, reference in query_result.items()
+            ]
         )
 
     def _retrieve_source_code_by_symbol_processor(self, query: str) -> str:
@@ -94,12 +102,17 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def _exact_search_processor(self, query: str) -> str:
         query_result = self.symbol_search.exact_search(query)
         return "\n".join(
-            [f"{symbol}:{str(references)}" for symbol, references in query_result.items()]
+            [
+                f"{symbol}:{str(references)}"
+                for symbol, references in query_result.items()
+            ]
         )
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class SymbolSearchOpenAIToolkitBuilder(SymbolSearchToolkitBuilder, OpenAIAgentToolkitBuilder):
+class SymbolSearchOpenAIToolkitBuilder(
+    SymbolSearchToolkitBuilder, OpenAIAgentToolkitBuilder
+):
     TOOL_TYPE = AgentToolkitNames.SYMBOL_SEARCH
     PLATFORM = LLMProvider.OPENAI
 
@@ -108,7 +121,10 @@ class SymbolSearchOpenAIToolkitBuilder(SymbolSearchToolkitBuilder, OpenAIAgentTo
 
         # Predefined properties and required parameters
         properties = {
-            "query": {"type": "string", "description": "The query string to search for."},
+            "query": {
+                "type": "string",
+                "description": "The query string to search for.",
+            },
         }
         required = ["query"]
 
