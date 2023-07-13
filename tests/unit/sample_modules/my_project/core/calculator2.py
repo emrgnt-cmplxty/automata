@@ -2,8 +2,8 @@
 
 
 class Calculator2:
-    def add(self, a, b):
+    def add2(self, a, b):
         return a + b
 
-    def subtract(self, a, b):
+    def subtract2(self, a, b):
         return a - b

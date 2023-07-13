@@ -2,10 +2,10 @@
 
 
 class Calculator3:
-    def add(self, a, b):
+    def add3(self, a, b):
         return a + b
 
-    def subtract(self, a, b):
+    def subtract3(self, a, b):
         return a - b
 
     class Calculator4:

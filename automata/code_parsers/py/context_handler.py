@@ -39,28 +39,28 @@ class PyContextHandler:
         symbol: Symbol,
         primary_active_components: Dict[ContextComponent, Dict],
         tertiary_active_components: Dict[ContextComponent, Dict],
-        primary_symbols_header="Primary Symbols",
-        related_symbols_header="Primary Symbols",
-        dependent_symbols_header="Dependent Symbols",
+        related_symbols_header="Related Symbols:",
+        dependent_symbols_header="Dependent Symbols:",
     ) -> str:
         """Construct the context for a symbol."""
         self.obs_symbols.add(symbol)
-        base_context = f"{primary_symbols_header}:\n\n{self.retriever.process_symbol(symbol, primary_active_components)}"
+        base_context = f"{self.retriever.process_symbol(symbol, primary_active_components)}"
 
         if self.config.top_n_symbol_rank_matches > 0:
-            base_context += f"{related_symbols_header}:\n\n"
+            base_context += f"\n{self.retriever.spacer}{related_symbols_header}\n\n"
             secondary_symbols = self.get_top_n_symbol_rank_matches(symbol)
-            for symbol in secondary_symbols:
+            for secondary_symbol in secondary_symbols:
                 base_context += self.retriever.process_symbol(
-                    symbol, tertiary_active_components, indent_level=1
+                    secondary_symbol, tertiary_active_components, indent_level=2
                 )
 
         if self.config.top_n_dependency_matches > 0:
-            base_context += f"{dependent_symbols_header}:\n\n"
-            secondary_symbols = self.get_top_n_symbol_dependencies(symbol)
-            for symbol in secondary_symbols:
+            base_context += f"\n{self.retriever.spacer}{dependent_symbols_header}\n\n"
+
+            dependent_symbols = self.get_top_n_symbol_dependencies(symbol)
+            for dependent_symbol in dependent_symbols:
                 base_context += self.retriever.process_symbol(
-                    symbol, tertiary_active_components, indent_level=1
+                    dependent_symbol, tertiary_active_components, indent_level=2
                 )
 
         return base_context
