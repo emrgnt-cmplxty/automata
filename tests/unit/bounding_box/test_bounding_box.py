@@ -89,63 +89,63 @@ def test_get_node_without_imports():
     assert isinstance(node_without_imports.body[0], ast.FunctionDef)  # skip the import statement
 
 
-def test_get_docstring_from_node_with_various_nodes():
-    nodes = [
+@pytest.mark.parametrize(
+    "source,expected",
+    [
         ('def foo():\n    """This is a docstring."""\n    pass\n', "This is a docstring."),
-        (
-            'class Foo:\n    """This is a class docstring."""\n    pass\n',
-            "This is a class docstring.",
-        ),
+        ('class Foo:\n    """This is a class docstring."""\n    pass\n', "This is a class docstring."),
         ("foo = 10", "No result found."),
         ("import os", "No result found."),
         ("from os import path", "No result found."),
         ("# this is a comment", "No result found."),
-        (
-            '"""This is a standalone docstring."""\n"""Another standalone string."""',
-            "This is a standalone docstring.",
-        ),  # Change here
+        ('"""This is a standalone docstring."""\n"""Another standalone string."""', "This is a standalone docstring."),
     ]
-    for source, expected in nodes:
-        module = parse(source)
-        if module.body and isinstance(
-            module.body[0], (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef, ast.Module)
-        ):
-            node = module.body[0]
-        else:
-            node = module
-        docstring = get_docstring_from_node(node)
-        assert docstring == expected
+)
+def test_get_docstring_from_node_with_various_nodes(source, expected):
+    module = parse(source)
+    if module.body and isinstance(
+        module.body[0], (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef, ast.Module)
+    ):
+        node = module.body[0]
+    else:
+        node = module
+    docstring = get_docstring_from_node(node)
+    assert docstring == expected
 
 
-def test_get_node_without_docstrings_with_various_nodes():
-    nodes = [
+@pytest.mark.parametrize(
+    "source",
+    [
         'def foo():\n    """This is a docstring."""\n    pass\n',
         'class Foo:\n    """This is a class docstring."""\n    pass\n',
         "foo = 10",
         '"""This is a standalone docstring."""',
     ]
-    for source in nodes:
-        node = parse(source)
-        node_without_docstrings = get_node_without_docstrings(node)
-        assert get_docstring_from_node(node_without_docstrings) == "No result found."
+)
+def test_get_node_without_docstrings_with_various_nodes(source):
+    node = parse(source)
+    node_without_docstrings = get_node_without_docstrings(node)
+    assert get_docstring_from_node(node_without_docstrings) == "No result found."
 
 
-def test_get_node_without_imports_with_various_nodes():
-    nodes = [
+@pytest.mark.parametrize(
+    "source",
+    [
         "import os\ndef foo():\n    pass\n",
         "from os import path\ndef foo():\n    pass\n",
         "def foo():\n    pass\n",
     ]
-    for source in nodes:
-        node = parse(source)
-        node_without_imports = get_node_without_imports(node)
-        if "import" in source:
-            assert not isinstance(node_without_imports.body[0], (ast.Import, ast.ImportFrom))
-        else:
-            assert isinstance(node_without_imports.body[0], ast.FunctionDef)
+)
+def test_get_node_without_imports_with_various_nodes(source):
+    node = parse(source)
+    node_without_imports = get_node_without_imports(node)
+    if "import" in source:
+        assert not isinstance(node_without_imports.body[0], (ast.Import, ast.ImportFrom))
+    else:
+        assert isinstance(node_without_imports.body[0], ast.FunctionDef)
 
 
-def test_fetch_bounding_box_with_class_node():
+def test_fetch_bounding_box_with_class_node_in_file():
     with open("tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
@@ -176,7 +176,7 @@ def test_fetch_bounding_box_with_method_node():
     assert bounding_box.bottom_right.column == 12
 
 
-def test_fetch_bounding_box_with_function_node():
+def test_fetch_bounding_box_with_function_node_in_file():
     with open("tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
