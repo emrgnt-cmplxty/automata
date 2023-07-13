@@ -1,20 +1,32 @@
 # Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+We're glad you're thinking about contributing to Automata! Before you do, please read these guidelines.
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+Please note we have a code of conduct; please follow it in all your interactions with the project.
 
-## Pull Request Process
+## Setting Up The Project Locally
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the README.md to the new version that this
-   Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
-4. You may merge the Pull Request in once you have the sign-off of two other developers, or if you 
-   do not have permission to do that, you may request the second reviewer to merge it for you.
+Please refer to the [README.md](./README.md) file for detailed instructions on how to clone the repository, install the dependencies, and run the project locally.
+
+## Proposing Changes
+
+We encourage contributors to discuss the changes they want to make via an issue labeled as a feature or bug. Although this discussion can be through email or any other method of communication, using issues helps us keep the discussion about changes organized and link the PRs with their respective issues. 
+
+## Creating an Issue
+
+Issues are a great way to keep track of tasks, enhancements, and bugs for projects. We recommend using our bug/feature templates to describe the issue in an organized manner. When creating an issue, please provide a clear title and a detailed description of the problem or feature request. Also, consider the possibility to add appropriate labels to help categorize your issue. Tip: PRs and commits can be linked to an issue by using a hashtag "#" followed by the issue number.
+
+## Creating a Pull Request
+
+1. Create a new branch for your changes. To do so, use the command `git checkout -b branch-name`, replacing `branch-name` with your desired branch name. This command creates a new branch and automatically switches you to it. The branch should be properly paired with a remote branch of the same name, which allows you to pull the latest changes from the remote branch. This pairing is established by pushing your new branch to the remote repository with the command `git push -u origin branch-name`. This command pushes your branch to the remote repository and sets the local branch to track the remote one, allowing you to easily push and pull changes. Note that the latest changes can also be pulled through the PR via the remote repository page, which is extremely useful when using Github Desktop.
+2. Ensure any install or build dependencies are removed before the end of the layer when doing a build. The .gitignore file usually takes care of this, but we need to be careful.
+3. Consider updating the README.md if the changes need to be mentioned there. This includes details of changes to the interface, including new environment variables, exposed ports, useful file locations, and container parameters.
+4. Increase the version numbers in any examples files and the README.md to the new version that this Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
+5. You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+
+## Commit Message Guidelines
+
+We recommend following the [Conventional Commits](https://www.conventionalcommits.org/) specification. It provides an easy set of rules for creating an explicit commit history, which makes writing automated releases and navigating the history easier. Here's an example of the syntax for a commit: `fix: correct minor typos in code, resolves #42`.
 
 ## Code of Conduct
 
