@@ -1,5 +1,7 @@
 import pytest
+
 from automata.code_parsers import DirectoryManager
+
 
 @pytest.fixture
 def dir_manager_and_path(tmp_path):
@@ -19,7 +21,6 @@ def test_load_directory_structure(dir_manager_and_path):
     dir_manager, path_str = dir_manager_and_path
     assert dir_manager.root.name == path_str
     assert len(dir_manager.root.children) == 2  # 2 directories: dir1, dir2
-
 
 
 def test_get_node_for_path(dir_manager_and_path):
