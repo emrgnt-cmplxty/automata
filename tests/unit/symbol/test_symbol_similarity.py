@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import numpy as np
+import pytest
 
 from automata.embedding import (
     EmbeddingBuilder,
@@ -52,9 +53,7 @@ def test_get_nearest_symbols_for_query(
         symbol2: embedding2,
         symbol3: embedding3,
     }
-    cem.get_embeddings = lambda x: embeddings[
-        x
-    ]  # MagicMock(return_value=embeddings[x])
+    cem.get_embeddings = lambda x: embeddings[x]
     symbol_similarity = EmbeddingSimilarityCalculator(mock_provider)
 
     # Test with query_text that is most similar to symbol1
