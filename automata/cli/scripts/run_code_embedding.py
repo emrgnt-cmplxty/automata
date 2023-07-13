@@ -6,10 +6,7 @@ from tqdm import tqdm
 from automata.cli.cli_utils import initialize_modules
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
-from automata.singletons.dependency_factory import (
-    DependencyFactory,
-    dependency_factory,
-)
+from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.symbol import SymbolGraph, get_rankable_symbols
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,

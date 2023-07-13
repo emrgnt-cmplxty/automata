@@ -3,10 +3,7 @@ from typing import List, Tuple
 
 from automata.core.base import VectorDatabaseProvider
 from automata.symbol import Symbol
-from automata.symbol_embedding import (
-    SymbolCodeEmbeddingBuilder,
-    SymbolEmbeddingHandler,
-)
+from automata.symbol_embedding import SymbolCodeEmbeddingBuilder, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 

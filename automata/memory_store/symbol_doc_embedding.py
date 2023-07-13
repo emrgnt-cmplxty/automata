@@ -2,10 +2,7 @@ import logging
 
 from automata.core.base import VectorDatabaseProvider
 from automata.symbol import Symbol, SymbolDescriptor
-from automata.symbol_embedding import (
-    SymbolDocEmbeddingBuilder,
-    SymbolEmbeddingHandler,
-)
+from automata.symbol_embedding import SymbolDocEmbeddingBuilder, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 

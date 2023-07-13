@@ -8,14 +8,8 @@ from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
 from automata.llm import OpenAIEmbeddingProvider
-from automata.memory_store import (
-    SymbolCodeEmbeddingHandler,
-    SymbolDocEmbeddingHandler,
-)
-from automata.singletons.dependency_factory import (
-    DependencyFactory,
-    dependency_factory,
-)
+from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
+from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding import (
