@@ -11,14 +11,20 @@ class TestTool(Tool):
 
 
 @pytest.fixture
-def test_tool():
+def test_tool(request) -> TestTool:
+    name = request.node.get_closest_marker("tool_name")
+    description = request.node.get_closest_marker("tool_description")
+    function = request.node.get_closest_marker("tool_function")
+
     return TestTool(
-        name="TestTool",
-        description="A test tool for testing purposes",
-        function=lambda x: "TestTool response",
+        name=name.args[0] if name else "TestTool",
+        description=description.args[0] if description else "A test tool for testing purposes",
+        function=function.args[0] if function else (lambda x: "TestTool response"),
     )
 
 
+@pytest.mark.tool_name("TestTool")
+@pytest.mark.tool_description("A test tool for testing purposes")
 def test_tool_instantiation(test_tool):
     assert test_tool.name == "TestTool"
     assert test_tool.description == "A test tool for testing purposes"
