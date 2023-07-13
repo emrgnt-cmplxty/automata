@@ -32,7 +32,10 @@ class SymbolGraph(ISymbolProvider):
         super().__init__()
         index = self._load_index_protobuf(index_path)
         builder = GraphBuilder(
-            index, build_references, build_relationships, build_caller_relationships
+            index,
+            build_references,
+            build_relationships,
+            build_caller_relationships,
         )
         self._graph = builder.build_graph()
         self.navigator = SymbolGraphNavigator(self._graph)
@@ -47,21 +50,27 @@ class SymbolGraph(ISymbolProvider):
         """
         return self.navigator.get_symbol_relationships(symbol)
 
-    def get_potential_symbol_callers(self, symbol: Symbol) -> Dict[SymbolReference, Symbol]:
+    def get_potential_symbol_callers(
+        self, symbol: Symbol
+    ) -> Dict[SymbolReference, Symbol]:
         """
         Gets the callees of the given symbol.
         Downstream filtering must be applied to remove non-call relationships.
         """
         return self.navigator.get_potential_symbol_callers(symbol)
 
-    def get_potential_symbol_callees(self, symbol: Symbol) -> Dict[Symbol, SymbolReference]:
+    def get_potential_symbol_callees(
+        self, symbol: Symbol
+    ) -> Dict[Symbol, SymbolReference]:
         """
         Gets the callees of the given symbol.
         Downstream filtering must be applied to remove non-callee relationships.
         """
         return self.navigator.get_potential_symbol_callees(symbol)
 
-    def get_references_to_symbol(self, symbol: Symbol) -> Dict[str, List[SymbolReference]]:
+    def get_references_to_symbol(
+        self, symbol: Symbol
+    ) -> Dict[str, List[SymbolReference]]:
         return self.navigator.get_references_to_symbol(symbol)
 
     @property
@@ -72,7 +81,9 @@ class SymbolGraph(ISymbolProvider):
     def _build_default_rankable_subgraph(self) -> nx.DiGraph:
         return self._build_rankable_subgraph()
 
-    def _build_rankable_subgraph(self, path_filter: Optional[str] = None) -> nx.DiGraph:
+    def _build_rankable_subgraph(
+        self, path_filter: Optional[str] = None
+    ) -> nx.DiGraph:
         """
         Creates a subgraph of the original `SymbolGraph` which
         contains only rankable symbols. The nodes in the subgraph
@@ -83,7 +94,9 @@ class SymbolGraph(ISymbolProvider):
         """
         G = nx.DiGraph()
 
-        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
+        filtered_symbols = get_rankable_symbols(
+            self.get_sorted_supported_symbols()
+        )
 
         if path_filter is not None:
             filtered_symbols = [
@@ -117,7 +130,10 @@ class SymbolGraph(ISymbolProvider):
         if self._graph:
             graph_nodes_and_data = deepcopy(self._graph.nodes(data=True))
             for node, data in graph_nodes_and_data:
-                if data.get("label") == "symbol" and node not in sorted_supported_symbols:
+                if (
+                    data.get("label") == "symbol"
+                    and node not in sorted_supported_symbols
+                ):
                     self._graph.remove_node(node)
 
     @staticmethod

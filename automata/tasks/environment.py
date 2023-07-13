@@ -33,7 +33,9 @@ class AutomataTaskEnvironment(TaskEnvironment):
                 "AutomataTaskEnvironment requires an AutomataTask instance"
             )
 
-        logger.debug(f"Setting up the task environment in directory {task.task_dir}.")
+        logger.debug(
+            f"Setting up the task environment in directory {task.task_dir}."
+        )
         # TODO - Consider more methods for environment initlization than git clone
         self.github_manager.clone_repository(task.task_dir)
 
@@ -85,10 +87,16 @@ class AutomataTaskEnvironment(TaskEnvironment):
             self.github_manager.create_branch(pull_branch_name)
         # Checkout the new branch
         try:
-            self.github_manager.checkout_branch(task.task_dir, pull_branch_name)
+            self.github_manager.checkout_branch(
+                task.task_dir, pull_branch_name
+            )
         except Exception as e:
-            logger.debug(f"Checkout failed with exception: {e}, Trying with b=False")
-            self.github_manager.checkout_branch(task.task_dir, pull_branch_name, b=False)
+            logger.debug(
+                f"Checkout failed with exception: {e}, Trying with b=False"
+            )
+            self.github_manager.checkout_branch(
+                task.task_dir, pull_branch_name, b=False
+            )
 
         # Stage all changes
         self.github_manager.stage_all_changes(task.task_dir)
@@ -110,7 +118,13 @@ class AutomataTaskEnvironment(TaskEnvironment):
 
         logger.info(
             "Task %s committed successfully with Title:\n%s\n\nBody:\n%s\n\nBranch:\n%s\nAt URL:\n%s\n"
-            % (task.task_id, pull_title, pull_body, pull_branch_name, pull_url),
+            % (
+                task.task_id,
+                pull_title,
+                pull_body,
+                pull_branch_name,
+                pull_url,
+            ),
         )
 
         return pull_request.html_url

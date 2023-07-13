@@ -58,7 +58,7 @@ addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]
-line-length = 99
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 (

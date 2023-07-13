@@ -23,7 +23,9 @@ class IEmbeddingLookupProvider(abc.ABC):
         return entry.symbol.full_dotpath
 
 
-class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddingLookupProvider):
+class ChromaSymbolEmbeddingVectorDatabase(
+    ChromaVectorDatabase[str, V], IEmbeddingLookupProvider
+):
     """A vector database that saves into a Chroma db."""
 
     def __init__(
@@ -44,7 +46,9 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
 
     def get_ordered_embeddings(self) -> List[V]:
         """Retrieves all entries in the collection in a sorted order."""
-        results = self._collection.get(**{"include": ["documents", "metadatas", "embeddings"]})
+        results = self._collection.get(
+            **{"include": ["documents", "metadatas", "embeddings"]}
+        )
         return self._sort_entries(results)
 
     # Value dependent methods (e.g. V dependent)
@@ -96,7 +100,9 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
                     Defaults to `["metadatas", "documents", "embeddings"]`. Optional.
         """
         kwargs["ids"] = [key]
-        kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
+        kwargs["include"] = kwargs.get(
+            "include", ["documents", "metadatas", "embeddings"]
+        )
 
         result = self._collection.get(**kwargs)
         self._check_result_entries(result["ids"], key)
@@ -110,7 +116,9 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         Check `get` for more information on accepted kwargs.
         """
         kwargs["ids"] = keys
-        kwargs["include"] = kwargs.get("include", ["documents", "metadatas", "embeddings"])
+        kwargs["include"] = kwargs.get(
+            "include", ["documents", "metadatas", "embeddings"]
+        )
 
         results = self._collection.get(**kwargs)
         entries = []
@@ -132,7 +140,9 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         if self.contains(key):
             raise KeyError(f"Add failed with {key} already in database")
 
-    def _check_result_entries(self, ids: List[str], keys: Union[str, List[str]]) -> None:
+    def _check_result_entries(
+        self, ids: List[str], keys: Union[str, List[str]]
+    ) -> None:
         """Raises an error if no entries or multiple entries are found."""
         if not ids:
             raise KeyError(f"Get failed with {keys}, no entries found")
@@ -150,14 +160,24 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
             "embedding": [float(ele) for ele in entry.vector],
         }
 
-    def _prepare_entries_for_insertion(self, entries: List[V]) -> Dict[str, Any]:
+    def _prepare_entries_for_insertion(
+        self, entries: List[V]
+    ) -> Dict[str, Any]:
         """Prepares multiple entries for insertion into the database."""
-        entries_data = [self._prepare_entry_for_insertion(entry) for entry in entries]
+        entries_data = [
+            self._prepare_entry_for_insertion(entry) for entry in entries
+        ]
         return {
-            "documents": [entry_data["document"] for entry_data in entries_data],
-            "metadatas": [entry_data["metadata"] for entry_data in entries_data],
+            "documents": [
+                entry_data["document"] for entry_data in entries_data
+            ],
+            "metadatas": [
+                entry_data["metadata"] for entry_data in entries_data
+            ],
             "ids": [entry_data["id"] for entry_data in entries_data],
-            "embeddings": [entry_data["embedding"] for entry_data in entries_data],
+            "embeddings": [
+                entry_data["embedding"] for entry_data in entries_data
+            ],
         }
 
     def _construct_entry_from_result(self, result: "GetResult") -> V:
@@ -176,10 +196,16 @@ class ChromaSymbolEmbeddingVectorDatabase(ChromaVectorDatabase[str, V], IEmbeddi
         """Sorts the entries based on their dotpaths."""
         entries = [
             self._construct_entry_from_result(
-                {"metadatas": [metadata], "documents": [document], "embeddings": [embedding]}
+                {
+                    "metadatas": [metadata],
+                    "documents": [document],
+                    "embeddings": [embedding],
+                }
             )
             for metadata, document, embedding in zip(
-                results["metadatas"], results["documents"], results["embeddings"]
+                results["metadatas"],
+                results["documents"],
+                results["embeddings"],
             )
         ]
         return sorted(entries, key=lambda x: x.symbol.full_dotpath)

@@ -60,20 +60,28 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
         when populated.
         """
 
-        symbol_rank_search_results = self.symbol_search.get_symbol_rank_results(query)
+        symbol_rank_search_results = (
+            self.symbol_search.get_symbol_rank_results(query)
+        )
 
         most_similar_symbol = symbol_rank_search_results[0][0]
 
-        most_similar_code_embedding = self.symbol_code_embedding_handler.get_embeddings(
-            [most_similar_symbol]
-        )[0]
+        most_similar_code_embedding = (
+            self.symbol_code_embedding_handler.get_embeddings(
+                [most_similar_symbol]
+            )[0]
+        )
         result = most_similar_code_embedding.document
 
         try:
-            most_similar_doc_embedding = self.symbol_doc_embedding_handler.get_embeddings(
-                [most_similar_symbol]
-            )[0]
-            result += f"Documentation:\n\n{most_similar_doc_embedding.document}"
+            most_similar_doc_embedding = (
+                self.symbol_doc_embedding_handler.get_embeddings(
+                    [most_similar_symbol]
+                )[0]
+            )
+            result += (
+                f"Documentation:\n\n{most_similar_doc_embedding.document}"
+            )
         except Exception as e:
             logger.error(
                 "Failed to get embedding for symbol %s with error: %s",
@@ -91,7 +99,11 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
                 if counter >= max_related_symbols:
                     break
                 try:
-                    doc_embedding = self.symbol_doc_embedding_handler.get_embeddings([symbol])[0]
+                    doc_embedding = (
+                        self.symbol_doc_embedding_handler.get_embeddings(
+                            [symbol]
+                        )[0]
+                    )
                     if not isinstance(doc_embedding, SymbolDocEmbedding):
                         raise Exception(
                             f"Embedding {doc_embedding} is not a SymbolDocEmbeddingHandler"
@@ -111,7 +123,9 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class ContextOracleOpenAIToolkitBuilder(ContextOracleToolkitBuilder, OpenAIAgentToolkitBuilder):
+class ContextOracleOpenAIToolkitBuilder(
+    ContextOracleToolkitBuilder, OpenAIAgentToolkitBuilder
+):
     TOOL_TYPE = AgentToolkitNames.CONTEXT_ORACLE
     PLATFORM = LLMProvider.OPENAI
 
@@ -120,7 +134,10 @@ class ContextOracleOpenAIToolkitBuilder(ContextOracleToolkitBuilder, OpenAIAgent
 
         # Predefined properties and required parameters
         properties = {
-            "query": {"type": "string", "description": "The query string to search for."},
+            "query": {
+                "type": "string",
+                "description": "The query string to search for.",
+            },
             "max_additional_related_symbols": {
                 "type": "integer",
                 "description": "The maximum number of additional related symbols to return documentation for.",

@@ -27,7 +27,9 @@ class TestExecuteBehavior(ITaskExecution):
 
 
 @patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_success(_, module_loader, task, environment, registry):
+def test_execute_automata_task_success(
+    _, module_loader, task, environment, registry
+):
     registry.register(task)
     environment.setup(task)
 
@@ -42,7 +44,9 @@ def test_execute_automata_task_success(_, module_loader, task, environment, regi
 
 
 @patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_fail(_, module_loader, task, environment, registry):
+def test_execute_automata_task_fail(
+    _, module_loader, task, environment, registry
+):
     registry.register(task)
     environment.setup(task)
 

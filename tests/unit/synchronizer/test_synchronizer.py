@@ -15,7 +15,9 @@ from tests.utils.factories import symbol_graph_static_test  # noqa: F401, F811
 
 
 def test_build_graph_and_handler_and_synchronize(
-    temp_output_filename, mock_simple_method_symbols, symbol_graph_static_test  # noqa: F811
+    temp_output_filename,
+    mock_simple_method_symbols,
+    symbol_graph_static_test,  # noqa: F811
 ):
     symbol1 = mock_simple_method_symbols[0]
     symbol2 = mock_simple_method_symbols[1]
@@ -39,7 +41,9 @@ def test_build_graph_and_handler_and_synchronize(
 
     # Create an instance of the class
     mock_builder = MagicMock(EmbeddingBuilder)
-    cem = SymbolCodeEmbeddingHandler(embedding_db=embedding_db, embedding_builder=mock_builder)
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_db=embedding_db, embedding_builder=mock_builder
+    )
 
     G = nx.DiGraph()
     G.add_node(symbol1, label="symbol")
