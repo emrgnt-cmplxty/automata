@@ -7,16 +7,26 @@ from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 
 
-# TODO - Unify module loader fixture
-@pytest.fixture(autouse=True)
-def local_module_loader():
-    # FIXME - This can't be a good pattern, let's cleanup later.
-    py_module_loader.reset()
+@pytest.fixture()
+def root_path():
+    return os.path.join(get_root_fpath(), "tests", "unit", "sample_modules")
 
-    py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"), "my_project"
-    )
-    yield py_module_loader
+
+@pytest.fixture()
+def setup_module_loader(root_path):
+    py_module_loader.reset()
+    py_module_loader.initialize(root_path, "my_project")
+    return py_module_loader
+
+
+@pytest.fixture()
+def local_module_loader(setup_module_loader):
+    yield setup_module_loader
+
+
+@pytest.fixture(autouse=True)
+def cleanup():
+    yield
 
 
 def test_get_items(local_module_loader):
@@ -69,26 +79,19 @@ def test_dotpath_map(local_module_loader):
     )
 
 
-def test_load_module(local_module_loader):
-    def _extracted_from_test_load_module(local_module_loader, arg1, arg2):
-        # Test that we can correctly load modules using dotpaths
-        calculator_module = local_module_loader.fetch_ast_module(arg1)
-        result = [
-            node.name for node in ast.walk(calculator_module) if isinstance(node, ast.ClassDef)
-        ]
-        assert arg2 in result
-
-    _extracted_from_test_load_module(
-        local_module_loader, "my_project.core.calculator", "Calculator"
-    )
-    _extracted_from_test_load_module(
-        local_module_loader, "my_project.core.calculator2", "Calculator2"
-    )
-    _extracted_from_test_load_module(
-        local_module_loader,
-        "my_project.core.extended.calculator3",
-        "Calculator3",
-    )
+@pytest.mark.parametrize(
+    "module, class_name",
+    [
+        ("my_project.core.calculator", "Calculator"),
+        ("my_project.core.calculator2", "Calculator2"),
+        ("my_project.core.extended.calculator3", "Calculator3"),
+    ],
+)
+def test_load_module(local_module_loader, module, class_name):
+    # Test that we can correctly load modules using dotpaths
+    calculator_module = local_module_loader.fetch_ast_module(module)
+    result = [node.name for node in ast.walk(calculator_module) if isinstance(node, ast.ClassDef)]
+    assert class_name in result
 
 
 def test_invalid_dotpath(local_module_loader):
