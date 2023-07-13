@@ -9,27 +9,28 @@ from automata.tasks.tasks import AutomataTask
 from tests.conftest import MockRepositoryClient
 
 
-@patch("logging.config.dictConfig", return_value=None)
-def test_task_inital_state(_, task):
+@pytest.fixture(autouse=True)
+def mock_logging_config_dict(mocker):
+    return mocker.patch("logging.config.dictConfig", return_value=None)
+
+
+def test_task_inital_state(mock_logging_config_dict, task):
     assert task.status == TaskStatus.CREATED
 
 
-@patch("logging.config.dictConfig", return_value=None)
-def test_register_task(_, task, registry):
+def test_register_task(mock_logging_config_dict, task, registry):
     registry.register(task)
     assert task.status == TaskStatus.REGISTERED
 
 
-@patch("logging.config.dictConfig", return_value=None)
-def test_setup_environment(_, task, environment, registry):
+def test_setup_environment(mock_logging_config_dict, task, environment, registry):
     registry.register(task)
     environment.setup(task)
     assert task.observer is not None
     assert task.status == TaskStatus.PENDING
 
 
-@patch("logging.config.dictConfig", return_value=None)
-def test_setup_task_no_setup(_, task, registry):
+def test_setup_task_no_setup(mock_logging_config_dict, task, registry):
     with pytest.raises(Exception):
         registry.setup(task)
 
@@ -48,71 +49,31 @@ def test_callback(mock_notify_observer, task, environment, registry):
     assert mock_notify_observer.call_count == 2
 
 
-def test_deterministic_task_id(automata_agent_config_builder):
-    task_1 = AutomataTask(
-        test1="arg1",
-        test2="arg2",
-        priority=5,
-        generate_deterministic_id=True,
-        config=automata_agent_config_builder,
-        helper_agent_names="test",
-        instructions="test1",
-    )
+def test_task_id_determinism(automata_agent_config_builder):
+    common_args = {
+        "test1": "arg1",
+        "priority": 5,
+        "config": automata_agent_config_builder,
+        "helper_agent_names": "test",
+        "instructions": "test1",
+    }
 
-    task_2 = AutomataTask(
-        test1="arg1",
-        test2="arg2",
-        priority=5,
-        generate_deterministic_id=True,
-        config=automata_agent_config_builder,
-        helper_agent_names="test",
-        instructions="test1",
-    )
-
-    task_3 = AutomataTask(
-        test1="arg1",
-        test2="arg3",
-        priority=5,
-        generate_deterministic_id=True,
-        config=automata_agent_config_builder,
-        helper_agent_names="test",
-        instructions="test1",
-    )
-
-    task_4 = AutomataTask(
-        test1="arg1",
-        test2="arg2",
-        priority=5,
-        generate_deterministic_id=False,
-        config=automata_agent_config_builder,
-        helper_agent_names="test",
-        instructions="test1",
-    )
+    task_1 = AutomataTask(**common_args, test2="arg2", generate_deterministic_id=True)
+    task_2 = AutomataTask(**common_args, test2="arg2", generate_deterministic_id=True)
+    task_3 = AutomataTask(**common_args, test2="arg3", generate_deterministic_id=True)
+    task_4 = AutomataTask(**common_args, test2="arg2", generate_deterministic_id=False)
 
     assert task_1.task_id == task_2.task_id
     assert task_1.task_id != task_3.task_id
     assert task_1.task_id != task_4.task_id
     assert isinstance(task_4.task_id, uuid.UUID)
 
-
-def test_deterministic_vs_non_deterministic_task_id():
-    task_1 = AutomataTask(
+    task_5 = AutomataTask(
         MockRepositoryClient(),
-        test1="arg1",
+        **common_args,
         test2="arg2",
-        priority=5,
-        generate_deterministic_id=True,
-        config_to_load=AgentConfigName.TEST.to_path(),
-        instructions="test1",
-    )
-
-    task_2 = AutomataTask(
-        MockRepositoryClient(),
-        test1="arg1",
-        test2="arg2",
-        priority=5,
         generate_deterministic_id=False,
         config_to_load=AgentConfigName.TEST.to_path(),
-        instructions="test1",
     )
-    assert task_1.task_id != task_2.task_id
+
+    assert task_1.task_id != task_5.task_id

@@ -60,17 +60,14 @@ def check_hits(expected_in_top_hits, found_top_hits):
     ],
 )
 def test_symbol_rank_search_on_symbol(
-    initialized_module_loader,
-    symbol_search_live,
-    search,
-    expected_in_top_hits,  # noqa : F811
+    symbol_search_live, search, expected_in_top_hits  # noqa : F811
 ):
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
 
     py_module_loader.initialize()
-    results = symbol_search_live.symbol_rank_search(search)
+    results = symbol_search_live.get_symbol_rank_results(search)
     filtered_results = [
         result for result in results if ".tests." not in result[0].full_dotpath
     ]

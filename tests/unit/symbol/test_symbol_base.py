@@ -3,9 +3,9 @@ import pytest
 from automata.symbol import Symbol, SymbolDescriptor, parse_symbol
 
 
-# Test to ensure that a symbol is parsed correctly
-def test_parse_symbol():
-    symbol = parse_symbol(
+@pytest.fixture
+def parsed_symbol():
+    return parse_symbol(
         "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
     )
     assert isinstance(symbol, Symbol)
@@ -58,44 +58,33 @@ def test_parse_symbol_descriptor(symbol_str, expected_descriptor):
 
 
 # Test the __str__ method of the Symbol class
-def test_symbol_str():
-    symbol = parse_symbol(
-        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
-    )
+def test_symbol_str(parsed_symbol):
     assert (
-        str(symbol)
+        str(parsed_symbol)
         == "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
     )
 
 
-# Test the equality of two symbols
-def test_symbol_equality():
-    symbol1 = parse_symbol(
-        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
-    )
-    symbol2 = parse_symbol(
-        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
-    )
-    assert symbol1 == symbol2
-
-
-# Test the inequality of two symbols
-def test_symbol_inequality():
-    symbol1 = parse_symbol(
-        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
-    )
-    symbol2 = parse_symbol(
-        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#load().(config_name)"
-    )
-    assert symbol1 != symbol2
+@pytest.mark.parametrize(
+    "symbol2, expected",
+    [
+        (
+            "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description.",
+            True,
+        ),
+        (
+            "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#load().(config_name)",
+            False,
+        ),
+    ],
+)
+def test_symbol_equality(parsed_symbol, symbol2, expected):
+    assert (parsed_symbol == parse_symbol(symbol2)) == expected
 
 
 # Test the hash function of Symbol
-def test_symbol_hash():
-    symbol1 = parse_symbol(
+def test_symbol_hash(parsed_symbol):
+    symbol = parse_symbol(
         "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
     )
-    symbol2 = parse_symbol(
-        "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
-    )
-    assert hash(symbol1) == hash(symbol2)
+    assert hash(parsed_symbol) == hash(symbol)
