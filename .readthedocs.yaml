@@ -18,10 +18,12 @@ build:
 
 # Installs Sphinx with pip
 python:
-  version: 3.9
   install:
-    - method: poetry
+    - method: pip
       path: .
+      extra_requirements:
+        - docs
+    - method: pip
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
