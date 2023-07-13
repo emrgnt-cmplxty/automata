@@ -5,34 +5,17 @@
 # Required
 version: 2
 
-# Set the OS, Python version, and install dependencies with Poetry
+# Set the OS, Python version and other tools you might need
 build:
   os: ubuntu-22.04
   tools:
     python: "3.9"
-  jobs:
-    post_install:
-      - curl -sSL https://install.python-poetry.org | python3 -
-      - poetry install
-
-# Installs Sphinx with pip
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
-    - method: pip
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
-  builder: html
   configuration: docs/conf.py
-  fail_on_warning: false
 
-# Add Poetry's bin directory to the PATH
-conda:
-  environment: environment.yml
-
-submodules:
-  include: all
+# Specify requirements
+python:
+  install:
+    - requirements: docs/requirements.txt
