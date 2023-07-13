@@ -6,7 +6,6 @@ from automata.code_parsers.py.ast_utils import (
     LineItem,
     BoundingBox,
     fetch_bounding_box,
-    get_docstring,
     get_docstring_from_node,
     get_node_without_docstrings,
     get_node_without_imports,
@@ -76,10 +75,11 @@ def test_fetch_bounding_box_with_class_node():
     assert bounding_box.bottom_right.line == 2
     assert bounding_box.bottom_right.column == 8
 
+
 def test_get_node_without_docstrings():
     node = parse("def foo():\n" '    """This is a docstring."""\n' "    pass\n")
     node_without_docstrings = get_node_without_docstrings(node.body[0])
-    assert get_docstring_from_node(node_without_docstrings) == 'No result found.'
+    assert get_docstring_from_node(node_without_docstrings) == "No result found."
 
 
 def test_get_node_without_imports():
@@ -87,3 +87,105 @@ def test_get_node_without_imports():
     module_node = cast(ast.Module, node)
     node_without_imports = get_node_without_imports(module_node)
     assert isinstance(node_without_imports.body[0], ast.FunctionDef)  # skip the import statement
+
+
+def test_get_docstring_from_node_with_various_nodes():
+    nodes = [
+        ('def foo():\n    """This is a docstring."""\n    pass\n', "This is a docstring."),
+        (
+            'class Foo:\n    """This is a class docstring."""\n    pass\n',
+            "This is a class docstring.",
+        ),
+        ("foo = 10", "No result found."),
+        ("import os", "No result found."),
+        ("from os import path", "No result found."),
+        ("# this is a comment", "No result found."),
+        (
+            '"""This is a standalone docstring."""\n"""Another standalone string."""',
+            "This is a standalone docstring.",
+        ),  # Change here
+    ]
+    for source, expected in nodes:
+        module = parse(source)
+        if module.body and isinstance(
+            module.body[0], (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef, ast.Module)
+        ):
+            node = module.body[0]
+        else:
+            node = module
+        docstring = get_docstring_from_node(node)
+        assert docstring == expected
+
+
+def test_get_node_without_docstrings_with_various_nodes():
+    nodes = [
+        'def foo():\n    """This is a docstring."""\n    pass\n',
+        'class Foo:\n    """This is a class docstring."""\n    pass\n',
+        "foo = 10",
+        '"""This is a standalone docstring."""',
+    ]
+    for source in nodes:
+        node = parse(source)
+        node_without_docstrings = get_node_without_docstrings(node)
+        assert get_docstring_from_node(node_without_docstrings) == "No result found."
+
+
+def test_get_node_without_imports_with_various_nodes():
+    nodes = [
+        "import os\ndef foo():\n    pass\n",
+        "from os import path\ndef foo():\n    pass\n",
+        "def foo():\n    pass\n",
+    ]
+    for source in nodes:
+        node = parse(source)
+        node_without_imports = get_node_without_imports(node)
+        if "import" in source:
+            assert not isinstance(node_without_imports.body[0], (ast.Import, ast.ImportFrom))
+        else:
+            assert isinstance(node_without_imports.body[0], ast.FunctionDef)
+
+
+def test_construct_bounding_box_with_class_node():
+    with open("tests/unit/sample_modules/sample3.py") as f:
+        file_content = f.read()
+
+    module = ast.parse(file_content)
+
+    class_node = module.body[0]
+    bounding_box = fetch_bounding_box(class_node)
+
+    assert bounding_box.top_left.line == 1
+    assert bounding_box.top_left.column == 0
+    assert bounding_box.bottom_right.line == 6
+    assert bounding_box.bottom_right.column == 12
+
+
+def test_construct_bounding_box_with_method_node():
+    with open("tests/unit/sample_modules/sample3.py") as f:
+        file_content = f.read()
+
+    module = ast.parse(file_content)
+
+    class_node = module.body[0]
+    method_node = class_node.body[1]
+    bounding_box = fetch_bounding_box(method_node)
+
+    assert bounding_box.top_left.line == 4
+    assert bounding_box.top_left.column == 4
+    assert bounding_box.bottom_right.line == 6
+    assert bounding_box.bottom_right.column == 12
+
+
+def test_construct_bounding_box_with_function_node():
+    with open("tests/unit/sample_modules/sample3.py") as f:
+        file_content = f.read()
+
+    module = ast.parse(file_content)
+
+    function_node = module.body[1]
+    bounding_box = fetch_bounding_box(function_node)
+
+    assert bounding_box.top_left.line == 8
+    assert bounding_box.top_left.column == 0
+    assert bounding_box.bottom_right.line == 10
+    assert bounding_box.bottom_right.column == 8

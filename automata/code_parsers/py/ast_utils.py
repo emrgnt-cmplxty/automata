@@ -66,7 +66,6 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
     return ""
 
 
-
 class DocstringRemover(NodeTransformer):
     """Removes docstrings from a class or function."""
 
