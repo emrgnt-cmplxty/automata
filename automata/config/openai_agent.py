@@ -39,7 +39,9 @@ class OpenAIAutomataAgentConfig(AgentConfig):
         if not self.session_id:
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:
-            from automata.singletons.dependency_factory import dependency_factory
+            from automata.singletons.dependency_factory import (
+                dependency_factory,
+            )
 
             self.system_template_formatter = (
                 TemplateFormatter.create_default_formatter(

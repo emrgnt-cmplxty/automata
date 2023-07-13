@@ -25,7 +25,10 @@ from .base import (
     InstructionConfigVersion,
     LLMProvider,
 )
-from .openai_agent import OpenAIAutomataAgentConfig, OpenAIAutomataAgentConfigBuilder
+from .openai_agent import (
+    OpenAIAutomataAgentConfig,
+    OpenAIAutomataAgentConfigBuilder,
+)
 from .prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 
 load_dotenv()

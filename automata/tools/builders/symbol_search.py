@@ -16,7 +16,9 @@ from automata.experimental.search import (
     SymbolSearch,
 )
 from automata.llm import OpenAITool
-from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+from automata.singletons.toolkit_registries import (
+    OpenAIAutomataAgentToolkitRegistry,
+)
 from automata.tools.base import Tool
 
 

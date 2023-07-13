@@ -3,7 +3,11 @@ import logging.config
 import os
 
 from automata.agent import AgentTaskInstructionsError
-from automata.core.utils import get_logging_config, get_root_fpath, get_root_py_fpath
+from automata.core.utils import (
+    get_logging_config,
+    get_root_fpath,
+    get_root_py_fpath,
+)
 from automata.tasks.base import Task
 
 logger = logging.getLogger(__name__)
