@@ -7,6 +7,19 @@ from networkx import DiGraph
 from automata.experimental.search import SymbolRank, SymbolRankConfig
 
 
+@pytest.fixture
+def random_graph():
+    nodes = 10
+    edges = 20
+    return generate_random_graph(nodes, edges)
+
+
+@pytest.fixture
+def symbol_rank(random_graph):
+    config = SymbolRankConfig()
+    return SymbolRank(random_graph, config)
+
+
 def generate_random_graph(nodes, edges):
     """Generate a directed random graph with specified nodes and edges."""
     graph = nx.DiGraph()
@@ -43,15 +56,9 @@ def test_pagerank_config_validation():
         invalid_config_tolerance.validate_config(invalid_config_tolerance)
 
 
-def test_prepare_initial_ranks():
-    nodes = 10
-    edges = 20
-    G = generate_random_graph(nodes, edges)
-    config = SymbolRankConfig()
-    rank = SymbolRank(G, config)
-
-    initial_ranks = rank._prepare_initial_ranks(G, None)
-    assert len(initial_ranks) == nodes
+def test_prepare_initial_ranks(random_graph, symbol_rank):
+    initial_ranks = symbol_rank._prepare_initial_ranks(random_graph, None)
+    assert len(initial_ranks) == random_graph.number_of_nodes()
     assert sum(initial_ranks.values()) == pytest.approx(1.0)
 
 
