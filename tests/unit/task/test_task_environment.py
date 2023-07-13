@@ -1,6 +1,8 @@
 import os
 from unittest.mock import MagicMock
 
+import pytest
+
 from automata.tasks.base import TaskStatus
 
 
@@ -8,17 +10,23 @@ class TestURL:
     html_url = "test_url"
 
 
-def test_commit_task(task, mocker, environment):
+@pytest.fixture
+def github_manager_mock(mocker):
+    mock = MagicMock()
+    mock.create_pull_request.return_value = TestURL()
+    mock.branch_exists.return_value = False
+    mocker.spy(mock, "create_branch")
+    mocker.spy(mock, "checkout_branch")
+    mocker.spy(mock, "stage_all_changes")
+    mocker.spy(mock, "commit_and_push_changes")
+    mocker.spy(mock, "create_pull_request")
+    return mock
+
+
+def test_commit_task(task, mocker, environment, github_manager_mock):
     os.makedirs(task.task_dir, exist_ok=True)
     task.status = TaskStatus.SUCCESS
-
-    environment.github_manager.create_pull_request = MagicMock(return_value=TestURL())
-    environment.github_manager.branch_exists = MagicMock(return_value=False)
-    mocker.spy(environment.github_manager, "create_branch")
-    mocker.spy(environment.github_manager, "checkout_branch")
-    mocker.spy(environment.github_manager, "stage_all_changes")
-    mocker.spy(environment.github_manager, "commit_and_push_changes")
-    mocker.spy(environment.github_manager, "create_pull_request")
+    environment.github_manager = github_manager_mock
 
     environment.commit_task(
         task,
