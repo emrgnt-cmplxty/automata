@@ -56,6 +56,7 @@ def test_prepare_initial_ranks(random_graph, symbol_rank):
     assert sum(initial_ranks.values()) == pytest.approx(1.0)
 
 
+
 def test_get_ranks(random_graph, symbol_rank):
     ranks = symbol_rank.get_ranks()
     assert len(ranks) == random_graph.number_of_nodes()
@@ -70,6 +71,6 @@ def test_get_ranks_small_graph():
     config = SymbolRankConfig()
     pagerank = SymbolRank(G, config)
 
-    ranks = pagerank.get_ranks()
+    ranks = pagerank.get_ordered_ranks()
     assert len(ranks) == 3
     assert sum(ele[1] for ele in ranks) == pytest.approx(1.0)
