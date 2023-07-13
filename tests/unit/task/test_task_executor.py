@@ -8,15 +8,6 @@ from automata.tasks.base import Task, TaskStatus
 from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 
 
-# TODO - Unify module loader fixture
-@pytest.fixture(autouse=True)
-def module_loader():
-    # FIXME - This can't be a good pattern, let's cleanup later.
-    py_module_loader.reset()
-    py_module_loader.initialize(get_root_fpath())
-    yield py_module_loader
-
-
 class TestExecuteBehavior(ITaskExecution):
     """
     Class for executing test tasks.
@@ -26,8 +17,20 @@ class TestExecuteBehavior(ITaskExecution):
         task.result = "Test result"
 
 
-@patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_success(_, module_loader, task, environment, registry):
+@pytest.fixture(autouse=True)
+def module_loader():
+    # FIXME - This can't be a good pattern, let's cleanup later.
+    py_module_loader.reset()
+    py_module_loader.initialize(get_root_fpath())
+    yield py_module_loader
+
+
+@pytest.fixture
+def patch_logging(mocker):
+    return mocker.patch("logging.config.dictConfig", return_value=None)
+
+
+def test_execute_automata_task_success(patch_logging, module_loader, task, environment, registry):
     registry.register(task)
     environment.setup(task)
 
@@ -41,8 +44,7 @@ def test_execute_automata_task_success(_, module_loader, task, environment, regi
     assert result is None
 
 
-@patch("logging.config.dictConfig", return_value=None)
-def test_execute_automata_task_fail(_, module_loader, task, environment, registry):
+def test_execute_automata_task_fail(patch_logging, module_loader, task, environment, registry):
     registry.register(task)
     environment.setup(task)
 
