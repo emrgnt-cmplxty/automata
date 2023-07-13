@@ -62,6 +62,7 @@ def test_get_messages_returns_single_message_for_session(db, interaction):
     assert messages[0].role == interaction["role"]
     assert messages[0].content == interaction["content"]
 
+
 def test_get_messages_returns_multiple_messages_in_order(db, interaction):
     db.cursor.execute("DELETE FROM interactions")
     db.conn.commit()
