@@ -4,18 +4,6 @@ from automata.singletons.py_module_loader import py_module_loader
 from tests.utils.factories import symbol_search_live  # noqa
 
 
-@pytest.fixture
-def initialized_module_loader():
-    py_module_loader.initialized = (
-        False  # This is a hacky way to avoid any risk of initialization error
-    )
-    py_module_loader.initialize()
-    yield py_module_loader
-    py_module_loader.initialized = False
-    py_module_loader.rel_py_path = None
-    py_module_loader.root_fpath = None
-
-
 def get_top_n_results_desc_name(result, n=0):
     return [ele[0].descriptors[-1].name for ele in result[:n]]
 
@@ -125,8 +113,12 @@ EXACT_CALLS_TO_HITS = {
     ],
 )
 def test_exact_search(
-    initialized_module_loader, symbol_search_live, search, expected_in_hits
+    symbol_search_live, search, expected_in_hits
 ):  # noqa : F811
+    py_module_loader.initialized = (
+        False  # This is a hacky way to avoid any risk of initialization error
+    )
+    py_module_loader.initialize()
     expected_in_exact_hits = EXACT_CALLS_TO_HITS[search]
     found_in_exact_hits = list(symbol_search_live.exact_search(search).keys())
     check_hits(expected_in_exact_hits, found_in_exact_hits)
@@ -146,8 +138,12 @@ def test_exact_search(
     ],
 )
 def test_source_code_retrieval(
-    initialized_module_loader, symbol_search_live, search, expected_in_source
+    symbol_search_live, search, expected_in_source
 ):  # noqa : F811
+    py_module_loader.initialized = (
+        False  # This is a hacky way to avoid any risk of initialization error
+    )
+    py_module_loader.initialize()
     symbols = symbol_search_live.symbol_graph.get_sorted_supported_symbols()
 
     symbol = [
@@ -162,3 +158,6 @@ def test_source_code_retrieval(
         assert (
             source_hit in found_source_code
         ), f"Expected to find {source_hit} in source code, but it was not found"
+    py_module_loader.initialized = False
+    py_module_loader.rel_py_path = None
+    py_module_loader.root_fpath = None
