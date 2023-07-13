@@ -9,7 +9,7 @@ import networkx as nx
 from automata.code_parsers.py import construct_bounding_box
 from automata.config import MAX_WORKERS
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol import Symbol, SymbolReference
+from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.symbol_utils import convert_to_ast_object, get_rankable_symbols
 
 logger = logging.getLogger(__name__)

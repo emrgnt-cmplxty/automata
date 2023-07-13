@@ -105,21 +105,3 @@ def test_construct_symbol_context_interface(context_handler):
     assert "add" in context
     assert "add2" in context
     assert "add3" in context
-
-
-# def test_get_top_n_symbol_rank_matches(context_handler):
-#     symbol = parse_symbol(
-#         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
-#     )
-#     top_symbols = context_handler.get_top_n_symbol_rank_matches(symbol)
-#     assert len(top_symbols) == context_handler.config.top_n_symbol_rank_matches
-#     assert all(isinstance(s, Symbol) for s in top_symbols)
-
-
-# def test_get_top_n_symbol_dependencies(context_handler):
-#     symbol = parse_symbol(
-#         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
-#     )
-#     top_dependencies = context_handler.get_top_n_symbol_dependencies(symbol)
-#     assert len(top_dependencies) == context_handler.config.top_n_dependency_matches
-#     assert all(isinstance(s, Symbol) for s in top_dependencies)

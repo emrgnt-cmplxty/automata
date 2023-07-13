@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
-from automata.symbol import ISymbolProvider, Symbol, SymbolReference
+from automata.symbol.base import ISymbolProvider, Symbol, SymbolReference
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore

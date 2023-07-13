@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, unparse, walk
 from contextlib import contextmanager
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, Set, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Set, Union
 
 from automata.code_parsers.py import (
     AST_NO_RESULT_FOUND,
@@ -11,7 +11,9 @@ from automata.code_parsers.py import (
     get_node_without_docstrings,
     get_node_without_imports,
 )
-from automata.symbol import Symbol
+
+if TYPE_CHECKING:
+    from automata.symbol.base import Symbol  # avoid circular dependencies
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +85,7 @@ class ContextComponent(Enum):
 
 
 class ContextComponentCallable(Protocol):
-    def __call__(self, symbol: Symbol, ast_object: AST, **kwargs: Any) -> str:
+    def __call__(self, symbol: "Symbol", ast_object: AST, **kwargs: Any) -> str:
         ...
 
 
@@ -103,14 +105,14 @@ class BaseContextComponent(ABC):
         return "".join(f"{spacer}{line.strip()}\n" for line in message.split("\n"))
 
     @abstractmethod
-    def generate(self, symbol: Symbol, ast_object: AST, **kwargs: Any) -> str:
+    def generate(self, symbol: "Symbol", ast_object: AST, **kwargs: Any) -> str:
         pass
 
 
 class HeadlineContextComponent(BaseContextComponent):
     def generate(
         self,
-        symbol: Symbol,
+        symbol: "Symbol",
         ast_object: AST,
         # headline="Building symbol context: ",
         *args,
@@ -123,7 +125,7 @@ class HeadlineContextComponent(BaseContextComponent):
 class SourceCodeContextComponent(BaseContextComponent):
     def generate(
         self,
-        symbol: Symbol,
+        symbol: "Symbol",
         ast_object: AST,
         include_imports: bool = False,
         include_docstrings: bool = True,
@@ -148,7 +150,7 @@ class InterfaceContextComponent(BaseContextComponent):
 
     def generate(
         self,
-        symbol: Optional[Symbol],
+        symbol: Optional["Symbol"],
         ast_object: AST,
         skip_private: bool = True,
         include_docstrings: bool = True,
@@ -255,7 +257,7 @@ class PyContextRetriever:
 
     def process_symbol(
         self,
-        symbol: Symbol,
+        symbol: "Symbol",
         ordered_active_components: Dict[ContextComponent, Dict],
         indent_level=0,
     ) -> str:

@@ -3,7 +3,7 @@ from typing import Any
 
 import networkx as nx
 
-from automata.symbol import SymbolDescriptor
+from automata.symbol.base import SymbolDescriptor
 from automata.symbol.graph.base import GraphProcessor
 from automata.symbol.graph.navigator import SymbolGraphNavigator
 from automata.symbol.parser import parse_symbol
