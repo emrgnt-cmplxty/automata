@@ -8,15 +8,6 @@ from automata.tasks.base import Task, TaskStatus
 from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 
 
-# TODO - Unify module loader fixture
-@pytest.fixture(autouse=True)
-def module_loader():
-    # FIXME - This can't be a good pattern, let's cleanup later.
-    py_module_loader.reset()
-    py_module_loader.initialize(get_root_fpath())
-    yield py_module_loader
-
-
 class TestExecuteBehavior(ITaskExecution):
     """
     Class for executing test tasks.
