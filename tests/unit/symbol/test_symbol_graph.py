@@ -3,8 +3,7 @@ from automata.context_providers.symbol_synchronization import (
 )
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import Symbol, SymbolGraph
-
-from ..utils.factories import symbol_graph_static_test  # noqa: F401
+from tests.utils.factories import symbol_graph_static_test  # noqa: F401
 
 
 def test_get_all_symbols(symbol_graph_static_test):  # noqa: F811

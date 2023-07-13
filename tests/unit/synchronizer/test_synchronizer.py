@@ -11,8 +11,7 @@ from automata.symbol_embedding import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
 )
-
-from ..utils.factories import symbol_graph_static_test  # noqa: F401, F811
+from tests.utils.factories import symbol_graph_static_test  # noqa: F401, F811
 
 
 def test_build_graph_and_handler_and_synchronize(
