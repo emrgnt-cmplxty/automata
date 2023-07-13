@@ -60,11 +60,11 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
     elif isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)):
         doc_string = get_docstring(node)
         if doc_string:
-            doc_string.replace('"""', "").replace("'''", "")
-            return doc_string
+            return doc_string.replace('"""', "").replace("'''", "")
         else:
             return AST_NO_RESULT_FOUND
     return ""
+
 
 
 class DocstringRemover(NodeTransformer):
