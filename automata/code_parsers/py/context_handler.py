@@ -39,13 +39,16 @@ class PyContextHandler:
         symbol: Symbol,
         primary_active_components: Dict[ContextComponent, Dict],
         tertiary_active_components: Dict[ContextComponent, Dict],
+        primary_symbols_header="Primary Symbols",
+        related_symbols_header="Primary Symbols",
+        dependent_symbols_header="Dependent Symbols",
     ) -> str:
         """Construct the context for a symbol."""
         self.obs_symbols.add(symbol)
-        base_context = f"Primary Symbols:\n\n{self.retriever.process_symbol(symbol, primary_active_components)}"
+        base_context = f"{primary_symbols_header}:\n\n{self.retriever.process_symbol(symbol, primary_active_components)}"
 
         if self.config.top_n_symbol_rank_matches > 0:
-            base_context += "Related Symbols:\n\n"
+            base_context += f"{related_symbols_header}:\n\n"
             secondary_symbols = self.get_top_n_symbol_rank_matches(symbol)
             for symbol in secondary_symbols:
                 base_context += self.retriever.process_symbol(
@@ -53,7 +56,7 @@ class PyContextHandler:
                 )
 
         if self.config.top_n_dependency_matches > 0:
-            base_context += "Dependent Symbols:\n\n"
+            base_context += f"{dependent_symbols_header}:\n\n"
             secondary_symbols = self.get_top_n_symbol_dependencies(symbol)
             for symbol in secondary_symbols:
                 base_context += self.retriever.process_symbol(
@@ -75,41 +78,3 @@ class PyContextHandler:
         """
         symbol_dependencies = self.symbol_search.symbol_graph.get_symbol_dependencies(symbol)
         return list(symbol_dependencies)[: self.config.top_n_dependency_matches]
-
-    # def handle_context(
-    #     self,
-    #     query: str,
-    #     primary_symbol_components: Dict[ContextComponent, Dict],
-    #     secondary_symbol_components: Dict[ContextComponent, Dict],
-    # ) -> None:
-    #     related_symbols = self.get_related_symbols(query)
-    #     for symbol in related_symbols:
-    #         self.retrieve_symbol_context(
-    #             symbol,
-    #             self.get_symbol_dependencies(symbol),
-    #             primary_symbol_components,
-    #             secondary_symbol_components,
-    #         )
-
-
-# class PyContextHandler:
-#     def __init__(
-#         self,
-#         retriever: PyContextRetriever,
-#         related_symbols: List[Symbol] = [],
-#     ) -> None:
-#         self.retriever = retriever
-#         self.related_symbols = related_symbols
-#         self.obs_symbols: Set[Symbol] = set([])
-
-#     def retrieve_symbol_context(
-#         self,
-#         symbol: Symbol,
-#         secondary_symbols: List[Symbol],
-#         primary_symbol_components: Dict[ContextComponent, Dict],
-#         secondary_symbol_components: Dict[ContextComponent, Dict],
-#     ) -> None:
-#         base_context = self.retriever.process_symbol(symbol, primary_symbol_components)
-
-#         for symbol in secondary_symbols:
-#             base_context += self.retriever.process_symbol(symbol, secondary_symbol_components)
