@@ -30,6 +30,10 @@ how to :ref:`installation` the project.
    tasks/index
    tests/index
    tools/index
+   agent_guide
+   embedding_guide
+   faq
+   setup_guide
 
 
 Summary of content
