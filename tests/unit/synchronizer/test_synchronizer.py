@@ -45,10 +45,9 @@ def embedding_db(temp_output_filename, symbols_and_embeddings):
     return embedding_db
 
 
-def test_build_graph_and_handler(
-    embedding_db, mock_simple_method_symbols, symbol_graph_static_test  # noqa: F811
-):
-    symbol1, symbol2, _, _, _, _ = mock_simple_method_symbols
+@pytest.fixture
+def cem_and_symbol_graph_tester(embedding_db, symbols_and_embeddings, symbol_graph_static_test):
+    symbol1, symbol2, _, _, _, _ = symbols_and_embeddings
 
     # Create an instance of the class
     mock_builder = MagicMock(EmbeddingBuilder)
@@ -64,7 +63,9 @@ def test_build_graph_and_handler(
     return cem, symbol_graph_tester
 
 
-def test_synchronize(cem, symbol_graph_tester):
+def test_synchronize(cem_and_symbol_graph_tester):
+    cem, symbol_graph_tester = cem_and_symbol_graph_tester
+
     with SymbolProviderSynchronizationContext() as synchronization_context:
         from automata.context_providers import SymbolProviderRegistry
 
