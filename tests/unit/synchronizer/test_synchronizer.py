@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 import networkx as nx
 import numpy as np
+import pytest
 
 from automata.context_providers import SymbolProviderSynchronizationContext
 from automata.embedding import EmbeddingBuilder
@@ -32,12 +33,26 @@ def test_build_graph_and_handler_and_synchronize(
     embedding3 = SymbolCodeEmbedding(
         key=symbol3, vector=np.array([0, 0, 1, 0]), document="symbol3"
     )
+    return symbol1, symbol2, symbol3, embedding1, embedding2, embedding3
 
+
+@pytest.fixture
+def embedding_db(temp_output_filename, symbols_and_embeddings):
+    _, _, _, embedding1, embedding2, embedding3 = symbols_and_embeddings
     # Mock JSONSymbolEmbeddingVectorDatabase methods
     embedding_db = JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
     embedding_db.add(embedding1)
     embedding_db.add(embedding2)
     embedding_db.add(embedding3)
+    return embedding_db
+
+
+def test_build_graph_and_handler(
+    embedding_db,
+    mock_simple_method_symbols,
+    symbol_graph_static_test,  # noqa: F811
+):
+    symbol1, symbol2, _, _, _, _ = mock_simple_method_symbols
 
     # Create an instance of the class
     mock_builder = MagicMock(EmbeddingBuilder)
@@ -52,6 +67,10 @@ def test_build_graph_and_handler_and_synchronize(
     symbol_graph_tester._graph = G
     symbol_graph_tester.navigator._graph = G
 
+    return cem, symbol_graph_tester
+
+
+def test_synchronize(cem, symbol_graph_tester):
     with SymbolProviderSynchronizationContext() as synchronization_context:
         from automata.context_providers import SymbolProviderRegistry
 
