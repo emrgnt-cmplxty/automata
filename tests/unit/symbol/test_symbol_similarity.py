@@ -90,4 +90,4 @@ def test_get_nearest_symbols_for_query(
 
     result = symbol_similarity.calculate_query_similarity_dict(ordered_embeddings, symbol_key)
 
-    assert list(result.keys())[np.argmax(list(result.values()))].key == symbol_key
+    assert list(result.keys())[np.argmax(list(result.values()))] == embeddings[symbol_key]
