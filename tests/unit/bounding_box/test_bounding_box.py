@@ -145,7 +145,7 @@ def test_get_node_without_imports_with_various_nodes():
             assert isinstance(node_without_imports.body[0], ast.FunctionDef)
 
 
-def test_construct_bounding_box_with_class_node():
+def test_fetch_bounding_box_with_class_node():
     with open("tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
@@ -160,7 +160,7 @@ def test_construct_bounding_box_with_class_node():
     assert bounding_box.bottom_right.column == 12
 
 
-def test_construct_bounding_box_with_method_node():
+def test_fetch_bounding_box_with_method_node():
     with open("tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
@@ -176,7 +176,7 @@ def test_construct_bounding_box_with_method_node():
     assert bounding_box.bottom_right.column == 12
 
 
-def test_construct_bounding_box_with_function_node():
+def test_fetch_bounding_box_with_function_node():
     with open("tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
@@ -185,7 +185,7 @@ def test_construct_bounding_box_with_function_node():
     function_node = module.body[1]
     bounding_box = fetch_bounding_box(function_node)
 
-    assert bounding_box.top_left.line == 8
+    assert bounding_box.top_left.line == 9
     assert bounding_box.top_left.column == 0
-    assert bounding_box.bottom_right.line == 10
+    assert bounding_box.bottom_right.line == 11
     assert bounding_box.bottom_right.column == 8
