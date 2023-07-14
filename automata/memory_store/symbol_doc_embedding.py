@@ -46,7 +46,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             self._create_new_embedding(source_code, symbol)
 
     def _create_new_embedding(self, source_code: str, symbol: Symbol) -> None:
-        if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
+        if symbol.py_kind == SymbolDescriptor.PyKind.Class:
             logger.debug(f"Creating a new class embedding for {symbol}")
             symbol_embedding = self.embedding_builder.build(
                 source_code, symbol

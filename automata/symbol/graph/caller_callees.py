@@ -35,10 +35,7 @@ class CallerCalleeProcessor(GraphProcessor):
                 )
                 continue
 
-            if (
-                symbol_object.symbol_kind_by_suffix()
-                != SymbolDescriptor.PyKind.Method
-            ):
+            if symbol_object.py_kind != SymbolDescriptor.PyKind.Method:
                 continue
 
             try:
@@ -55,7 +52,7 @@ class CallerCalleeProcessor(GraphProcessor):
 
             for ref in references_in_scope:
                 try:
-                    if ref.symbol.symbol_kind_by_suffix() in [
+                    if ref.symbol.py_kind in [
                         SymbolDescriptor.PyKind.Method,
                         SymbolDescriptor.PyKind.Class,
                     ]:

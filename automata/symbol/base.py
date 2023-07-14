@@ -181,38 +181,18 @@ class Symbol:
             return self.uri == other
         return False
 
-    def symbol_kind_by_suffix(self) -> SymbolDescriptor.PyKind:
-        """Converts the suffix of the URI into a PyKind."""
-        return SymbolDescriptor.convert_scip_to_python_suffix(
-            self.symbol_raw_kind_by_suffix()
-        )
-
-    def symbol_raw_kind_by_suffix(self) -> DescriptorProto:
-        """Converts the suffix of the URI into a DescriptorProto."""
-        if self.uri.startswith("local"):
-            return SymbolDescriptor.ScipSuffix.Local
-        if self.uri.endswith("/"):
-            return SymbolDescriptor.ScipSuffix.Namespace
-        elif self.uri.endswith("#"):
-            return SymbolDescriptor.ScipSuffix.Type
-        elif self.uri.endswith(")."):
-            return SymbolDescriptor.ScipSuffix.Method
-        elif self.uri.endswith("."):
-            return SymbolDescriptor.ScipSuffix.Term
-        elif self.uri.endswith(":"):
-            return SymbolDescriptor.ScipSuffix.Meta
-        elif self.uri.endswith(")"):
-            return SymbolDescriptor.ScipSuffix.Parameter
-        elif self.uri.endswith("]"):
-            return SymbolDescriptor.ScipSuffix.TypeParameter
-        else:
-            raise ValueError(f"Invalid descriptor suffix: {self.uri}")
-
+    @property
     def parent(self) -> "Symbol":
         """Returns the parent symbol of the current symbol."""
         parent_descriptors = list(self.descriptors)[:-1]
         return Symbol(
             self.uri, self.scheme, self.package, tuple(parent_descriptors)
+        )
+
+    @property
+    def py_kind(self) -> SymbolDescriptor.PyKind:
+        return SymbolDescriptor.convert_scip_to_python_suffix(
+            self.descriptors[-1].suffix
         )
 
     @property
@@ -225,30 +205,27 @@ class Symbol:
         """Returns the module name of the symbol."""
         return self.descriptors[0].name
 
-    @staticmethod
-    def is_local(symbol: "Symbol") -> bool:
+    @property
+    def is_local(self) -> bool:
         """Returns True if the symbol is local."""
-        return (
-            symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
-        )
+        return self.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
 
-    @staticmethod
-    def is_meta(symbol: "Symbol") -> bool:
+    @property
+    def is_meta(self) -> bool:
         """Returns True if the symbol is meta."""
-        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Meta
+        return self.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Meta
 
-    @staticmethod
-    def is_parameter(symbol: "Symbol") -> bool:
+    @property
+    def is_parameter(self) -> bool:
         """Returns True if the symbol is parameter."""
         return (
-            symbol.descriptors[0].suffix
-            == SymbolDescriptor.ScipSuffix.Parameter
+            self.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
         )
 
-    @staticmethod
-    def is_protobuf(symbol: "Symbol") -> bool:
+    @property
+    def is_protobuf(self) -> bool:
         """Returns True if the symbol is a protobuf symbol."""
-        return symbol.module_path.endswith("pb2")
+        return self.module_path.endswith("pb2")
 
     @classmethod
     def from_string(cls, symbol_str: str) -> "Symbol":

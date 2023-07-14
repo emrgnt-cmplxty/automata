@@ -106,14 +106,13 @@ def get_rankable_symbols(
         if do_continue:
             continue
 
-        symbol_kind = symbol.symbol_kind_by_suffix()
-        if symbol_kind not in accepted_kinds:
+        if symbol.py_kind not in accepted_kinds:
             continue
         if (
-            Symbol.is_protobuf(symbol)
-            or Symbol.is_local(symbol)
-            or Symbol.is_meta(symbol)
-            or Symbol.is_parameter(symbol)
+            symbol.is_protobuf
+            or symbol.is_local
+            or symbol.is_meta
+            or symbol.is_parameter
         ):
             continue
 

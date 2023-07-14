@@ -21,7 +21,7 @@ def test_parsed_symbol(parsed_symbol):
         == "config.automata_agent_config.AutomataAgentConfig.description"
     )
     assert parsed_symbol.descriptors[-1].name == "description"
-    assert parsed_symbol.parent().descriptors[-1].name == "AutomataAgentConfig"
+    assert parsed_symbol.parent.descriptors[-1].name == "AutomataAgentConfig"
 
 
 # Test that symbols with different descriptors are parsed correctly
