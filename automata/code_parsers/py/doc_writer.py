@@ -115,9 +115,7 @@ class PyDocWriter:
                     existing_content = ""
 
                 # Identify start and end of the auto-generated content
-                auto_start_marker = (
-                    "\n..  AUTO-GENERATED CONTENT START\n..\n\n"
-                )
+                auto_start_marker = "\n..  AUTO-GENERATED CONTENT START\n..\n\n"
                 auto_end_marker = "\n..  AUTO-GENERATED CONTENT END\n..\n\n"
 
                 # Remove the auto-generated part if it already exists
@@ -130,8 +128,7 @@ class PyDocWriter:
                         auto_end_marker
                     )
                     existing_content = (
-                        existing_content[:start_idx]
-                        + existing_content[end_idx:]
+                        existing_content[:start_idx] + existing_content[end_idx:]
                     )
 
                 # Add new auto-generated content
@@ -144,9 +141,7 @@ class PyDocWriter:
                 )
                 for file in sorted(rst_files):
                     if file != "index.rst":
-                        auto_content += (
-                            f"       {file[:-4]}\n"  # Remove .rst extension
-                        )
+                        auto_content += f"       {file[:-4]}\n"  # Remove .rst extension
                 for sub_dir_ in sorted(dirs):
                     auto_content += f"       {sub_dir_}/index\n"
                 auto_content += auto_end_marker
@@ -154,9 +149,7 @@ class PyDocWriter:
                 # Write everything back to the file
                 with open(index_path, "w") as index_file:
                     if existing_content.strip() == "":
-                        index_file.write(
-                            PyDocWriter.get_payload(root) + auto_content
-                        )
+                        index_file.write(PyDocWriter.get_payload(root) + auto_content)
                     else:
                         index_file.write(existing_content + auto_content)
 
