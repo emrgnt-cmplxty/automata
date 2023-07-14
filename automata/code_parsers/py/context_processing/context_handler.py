@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Set
 
-from automata.code_parsers.py.context_retriever import (
+from automata.code_parsers.py.context_processing.context_retriever import (
     ContextComponent,
     PyContextRetriever,
 )

@@ -5,8 +5,14 @@ from .ast_utils import (
     get_node_without_docstrings,
     get_node_without_imports,
 )
-from .context_handler import PyContextHandler, PyContextHandlerConfig
-from .context_retriever import ContextComponent, PyContextRetriever
+from .context_processing.context_handler import (
+    PyContextHandler,
+    PyContextHandlerConfig,
+)
+from .context_processing.context_retriever import (
+    ContextComponent,
+    PyContextRetriever,
+)
 from .doc_writer import PyDocWriter
 from .dotpath_map import DotPathMap
 
