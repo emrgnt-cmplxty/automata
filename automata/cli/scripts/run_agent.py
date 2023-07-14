@@ -42,13 +42,8 @@ def process_issues(issue_numbers: List[int], github_manager: GitHubClient) -> Li
     return issue_infos
 
 
-def main(*args, **kwargs):
-    py_module_loader.initialize()
-    github_manager = GitHubClient(
-        access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME
-    )
-
-    # Pre-process issues if they are passsed
+def process_instructions(kwargs, github_manager):
+    # Pre-process issues if they are passed
     issue_numbers = kwargs.get("fetch_issues", "")
     issue_numbers = list(map(int, issue_numbers.split(","))) if issue_numbers else []
     if len(issue_numbers):
@@ -61,11 +56,11 @@ def main(*args, **kwargs):
             + DEFAULT_ISSUES_PROMPT_SUFFIX
         )
 
-    instructions = (
-        kwargs.get("instructions") or "This is a dummy instruction, return True."
-    )
-    toolkit_list = kwargs.get("toolkit_list", "context-oracle").split(",")
+    return kwargs.get("instructions") or "This is a dummy instruction, return True."
 
+
+def build_agent_config(kwargs):
+    toolkit_list = kwargs.get("toolkit_list", "context-oracle").split(",")
     tool_dependencies = dependency_factory.build_dependencies_for_tools(toolkit_list)
     tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
     logger.info("Done building tools...")
@@ -80,7 +75,19 @@ def main(*args, **kwargs):
     if max_iterations is not None:
         agent_config_builder = agent_config_builder.with_max_iterations(max_iterations)
 
-    agent = OpenAIAutomataAgent(instructions, config=agent_config_builder.build())
+    return agent_config_builder.build()
+
+
+def main(*args, **kwargs):
+    py_module_loader.initialize()
+    github_manager = GitHubClient(
+        access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME
+    )
+
+    instructions = process_instructions(kwargs, github_manager)
+    agent_config = build_agent_config(kwargs)
+
+    agent = OpenAIAutomataAgent(instructions, config=agent_config)
     result = agent.run()
     print("Final result:\n\n", result)
     return result

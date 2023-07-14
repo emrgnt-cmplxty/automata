@@ -3,7 +3,16 @@ from abc import ABC, abstractmethod
 from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, unparse, walk
 from contextlib import contextmanager
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Set, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+    Set,
+    Union,
+)
 
 from automata.code_parsers.py import (
     AST_NO_RESULT_FOUND,

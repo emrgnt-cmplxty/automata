@@ -4,7 +4,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-from automata.symbol.scip_pb2 import Descriptor as DescriptorProto  # type: ignore
+from automata.symbol.scip_pb2 import (
+    Descriptor as DescriptorProto,  # type: ignore
+)
 
 
 class SymbolDescriptor:
