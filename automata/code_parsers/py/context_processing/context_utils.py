@@ -1,4 +1,13 @@
-from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, unparse, walk
+from ast import (
+    AST,
+    AnnAssign,
+    AsyncFunctionDef,
+    ClassDef,
+    FunctionDef,
+    iter_child_nodes,
+    unparse,
+    walk,
+)
 from typing import List, Union
 
 
@@ -30,6 +39,12 @@ def get_all_methods(ast: AST) -> List[Union[FunctionDef, AsyncFunctionDef]]:
 
 def get_all_classes(ast: AST) -> List[ClassDef]:
     return [node for node in walk(ast) if isinstance(node, ClassDef)]
+
+
+def get_all_attributes(cls: ClassDef):
+    return [
+        node for node in iter_child_nodes(cls) if isinstance(node, AnnAssign)
+    ]
 
 
 def _get_method_arguments(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
