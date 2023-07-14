@@ -10,17 +10,23 @@ import automata.cli.commands
 def test_reconfigure_logging_debug():
     with patch(
         "automata.cli.commands.get_logging_config"
-    ) as mock_get_logging_config, patch("logging.config.dictConfig") as mock_dictConfig:
+    ) as mock_get_logging_config, patch(
+        "logging.config.dictConfig"
+    ) as mock_dictConfig:
         mock_get_logging_config.return_value = {}
         automata.cli.commands.reconfigure_logging("DEBUG")
-        mock_get_logging_config.assert_called_once_with(log_level=logging.DEBUG)
+        mock_get_logging_config.assert_called_once_with(
+            log_level=logging.DEBUG
+        )
         mock_dictConfig.assert_called_once_with({})
 
 
 def test_reconfigure_logging_info():
     with patch(
         "automata.cli.commands.get_logging_config"
-    ) as mock_get_logging_config, patch("logging.config.dictConfig") as mock_dictConfig:
+    ) as mock_get_logging_config, patch(
+        "logging.config.dictConfig"
+    ) as mock_dictConfig:
         mock_get_logging_config.return_value = {}
         automata.cli.commands.reconfigure_logging("INFO")
         mock_get_logging_config.assert_called_once_with(log_level=logging.INFO)

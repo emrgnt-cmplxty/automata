@@ -44,8 +44,13 @@ def process_issues(
     return issue_infos
 
 
-def process_instructions(kwargs, github_manager):
-    # Pre-process issues if they are passed
+def main(*args, **kwargs):
+    py_module_loader.initialize()
+    github_manager = GitHubClient(
+        access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME
+    )
+
+    # Pre-process issues if they are passsed
     issue_numbers = kwargs.get("fetch_issues", "")
     issue_numbers = (
         list(map(int, issue_numbers.split(","))) if issue_numbers else []

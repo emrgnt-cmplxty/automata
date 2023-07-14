@@ -15,7 +15,10 @@ from automata.symbol_embedding import (
 @pytest.fixture
 def mock_initialize_modules():
     def _initialize_modules(*args, **kwargs):
-        if "project_name" in kwargs and kwargs["project_name"] != "test_project":
+        if (
+            "project_name" in kwargs
+            and kwargs["project_name"] != "test_project"
+        ):
             raise ValueError(
                 "Incorrect project_name argument received by initialize_modules"
             )
@@ -41,7 +44,9 @@ def mock_get_root_fpath():
 
 @pytest.fixture
 def mock_chromasymbolembeddingvectordatabase():
-    with patch("automata.symbol_embedding.ChromaSymbolEmbeddingVectorDatabase") as mock:
+    with patch(
+        "automata.symbol_embedding.ChromaSymbolEmbeddingVectorDatabase"
+    ) as mock:
         instance = mock.return_value
         instance.get_ordered_embeddings.return_value = [
             MagicMock(spec=SymbolDocEmbedding)

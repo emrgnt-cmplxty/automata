@@ -5,7 +5,6 @@ import pytest
 from automata.cli.scripts.run_agent import (
     DEFAULT_ISSUES_PROMPT_PREFIX,
     DEFAULT_ISSUES_PROMPT_SUFFIX,
-    build_agent_config,
     process_instructions,
 )
 from automata.config import AgentConfig
@@ -13,7 +12,9 @@ from automata.config import AgentConfig
 
 @pytest.fixture
 def mock_github_manager():
-    with patch("automata.singletons.github_client.GitHubClient") as mock_github_client:
+    with patch(
+        "automata.singletons.github_client.GitHubClient"
+    ) as mock_github_client:
         yield mock_github_client.return_value
 
 
@@ -23,9 +24,13 @@ def test_process_instructions_without_issues(mock_github_manager):
 
 
 @patch("automata.cli.scripts.run_agent.process_issues")
-def test_process_instructions_with_issues(mock_process_issues, mock_github_manager):
+def test_process_instructions_with_issues(
+    mock_process_issues, mock_github_manager
+):
     mock_process_issues.return_value = ["issue1", "issue2"]
-    instructions = process_instructions({"fetch_issues": "1,2"}, mock_github_manager)
+    instructions = process_instructions(
+        {"fetch_issues": "1,2"}, mock_github_manager
+    )
     assert (
         instructions
         == DEFAULT_ISSUES_PROMPT_PREFIX
@@ -45,7 +50,9 @@ def mock_dependencies():
     ) as mock_dependency_get:
         mock_build_dependencies.return_value = {}
         mock_build_tools.return_value = []
-        mock_dependency_get.return_value = Mock()  # Return a mock when get is called
+        mock_dependency_get.return_value = (
+            Mock()
+        )  # Return a mock when get is called
         mock_dependency_get.return_value.get_top_symbols.return_value = [
             ("symbol1", 1)
         ]  # Simulate the behavior of get_top_symbols
