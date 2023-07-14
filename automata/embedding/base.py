@@ -65,7 +65,9 @@ class EmbeddingBuilder(abc.ABC):
 
     def fetch_embedding_source_code(self, symbol: Symbol) -> str:
         """An abstract method for embedding the context is the source code itself."""
-        from automata.symbol import convert_to_ast_object  # imported late for mocking
+        from automata.symbol import (  # imported late for mocking
+            convert_to_ast_object,
+        )
 
         return astunparse.unparse(convert_to_ast_object(symbol))
 
@@ -114,8 +116,8 @@ class EmbeddingSimilarityCalculator:
         of the query embedding and the symbol embeddings.
         Return result is sorted in descending order by default.
         """
-        query_embedding_vector = self.embedding_provider.build_embedding_vector(
-            query_text
+        query_embedding_vector = (
+            self.embedding_provider.build_embedding_vector(query_text)
         )
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(
@@ -124,7 +126,8 @@ class EmbeddingSimilarityCalculator:
         )
 
         similarity_dict = {
-            ele.key: similarity_scores[i] for i, ele in enumerate(ordered_embeddings)
+            ele.key: similarity_scores[i]
+            for i, ele in enumerate(ordered_embeddings)
         }
 
         if return_sorted:
@@ -144,7 +147,9 @@ class EmbeddingSimilarityCalculator:
     ) -> np.ndarray:
         """Calculate the similarity score between the embedding with all symbol embeddings"""
         # Normalize the embeddings and the query embedding
-        embeddings_norm = self._normalize_embeddings(ordered_embeddings, self.norm_type)
+        embeddings_norm = self._normalize_embeddings(
+            ordered_embeddings, self.norm_type
+        )
         normed_embedding = self._normalize_embeddings(
             embedding_array[np.newaxis, :], self.norm_type
         )[0]
@@ -164,7 +169,8 @@ class EmbeddingSimilarityCalculator:
             )
         elif norm_type == EmbeddingNormType.SOFTMAX:
             e_x = np.exp(
-                embeddings_array - np.max(embeddings_array, axis=1, keepdims=True)
+                embeddings_array
+                - np.max(embeddings_array, axis=1, keepdims=True)
             )
             return e_x / np.sum(e_x, axis=1, keepdims=True)
         else:

@@ -62,7 +62,9 @@ class Directory(Node):
             List[str]: List of file names in the directory
         """
         return [
-            name for name, child in self.children.items() if isinstance(child, File)
+            name
+            for name, child in self.children.items()
+            if isinstance(child, File)
         ]
 
     def get_subdirectories(self) -> List[str]:
@@ -183,7 +185,9 @@ class DirectoryManager:
             os.makedirs(directory_path)
             self.root = self._load_directory_structure(directory_path)
 
-    def _get_node_for_path(self, root: "Directory", path: str) -> Optional["Node"]:
+    def _get_node_for_path(
+        self, root: "Directory", path: str
+    ) -> Optional["Node"]:
         """
         Find the node for a given path
 

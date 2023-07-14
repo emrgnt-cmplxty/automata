@@ -57,7 +57,9 @@ class GraphBuilder:
                 continue
 
             self._graph.add_node(symbol, label="symbol")
-            self._graph.add_edge(document.relative_path, symbol, label="contains")
+            self._graph.add_edge(
+                document.relative_path, symbol, label="contains"
+            )
 
     def _process_relationships(self, document: Any) -> None:
         for symbol_information in document.symbols:

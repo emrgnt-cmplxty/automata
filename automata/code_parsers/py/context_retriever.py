@@ -3,7 +3,16 @@ from abc import ABC, abstractmethod
 from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, unparse, walk
 from contextlib import contextmanager
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Set, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+    Set,
+    Union,
+)
 
 from automata.code_parsers.py import (
     AST_NO_RESULT_FOUND,
@@ -23,13 +32,17 @@ def _is_private_method(method: Union[AsyncFunctionDef, FunctionDef]) -> bool:
     return method.name.startswith("_")
 
 
-def _get_method_return_annotation(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
+def _get_method_return_annotation(
+    method: Union[AsyncFunctionDef, FunctionDef]
+) -> str:
     return unparse(method.returns) if method.returns is not None else "None"
 
 
 def _get_all_methods(ast: AST) -> List[Union[FunctionDef, AsyncFunctionDef]]:
     return [
-        node for node in walk(ast) if isinstance(node, (FunctionDef, AsyncFunctionDef))
+        node
+        for node in walk(ast)
+        if isinstance(node, (FunctionDef, AsyncFunctionDef))
     ]
 
 
@@ -82,7 +95,9 @@ def _process_method(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
     decorators = [f"@{unparse(dec)}" for dec in method.decorator_list]
     method_definition = f"{method.name}({_get_method_arguments(method)})"
     return_annotation = _get_method_return_annotation(method)
-    return "\n".join(decorators + [f"{method_definition} -> {return_annotation}"])
+    return "\n".join(
+        decorators + [f"{method_definition} -> {return_annotation}"]
+    )
 
 
 class ContextComponent(Enum):
@@ -92,7 +107,9 @@ class ContextComponent(Enum):
 
 
 class ContextComponentCallable(Protocol):
-    def __call__(self, symbol: "Symbol", ast_object: AST, **kwargs: Any) -> str:
+    def __call__(
+        self, symbol: "Symbol", ast_object: AST, **kwargs: Any
+    ) -> str:
         ...
 
 
@@ -109,10 +126,14 @@ class BaseContextComponent(ABC):
 
     def process_entry(self, message: str, include_newline=True) -> str:
         spacer = self.spacer * self.indent_level
-        return "".join(f"{spacer}{line.strip()}\n" for line in message.split("\n"))
+        return "".join(
+            f"{spacer}{line.strip()}\n" for line in message.split("\n")
+        )
 
     @abstractmethod
-    def generate(self, symbol: "Symbol", ast_object: AST, **kwargs: Any) -> str:
+    def generate(
+        self, symbol: "Symbol", ast_object: AST, **kwargs: Any
+    ) -> str:
         pass
 
 
@@ -144,6 +165,7 @@ class SourceCodeContextComponent(BaseContextComponent):
         if not include_docstrings:
             ast_object = get_node_without_docstrings(ast_object)
 
+        print("ast_object = ", ast_object)
         if not include_imports:
             ast_object = get_node_without_imports(ast_object)
 
@@ -242,7 +264,10 @@ class InterfaceContextComponent(BaseContextComponent):
             if not skip_private or not _is_private_method(method):
                 interface += self.process_entry(_process_method(method))
                 method_docstring = get_docstring_from_node(method)
-                if include_docstrings and method_docstring != AST_NO_RESULT_FOUND:
+                if (
+                    include_docstrings
+                    and method_docstring != AST_NO_RESULT_FOUND
+                ):
                     with self.increased_indentation():
                         interface += self.process_entry(
                             f'"""{method_docstring}"""' + "\n"
@@ -260,7 +285,9 @@ class PyContextRetriever:
         spacer: str = "  ",
     ) -> None:
         self.spacer = spacer
-        self.context_components: Dict[ContextComponent, BaseContextComponent] = {
+        self.context_components: Dict[
+            ContextComponent, BaseContextComponent
+        ] = {
             ContextComponent.HEADLINE: HeadlineContextComponent(spacer),
             ContextComponent.SOURCE_CODE: SourceCodeContextComponent(spacer),
             ContextComponent.INTERFACE: InterfaceContextComponent(spacer),
@@ -295,5 +322,7 @@ class PyContextRetriever:
                     symbol, ast_object, **kwargs
                 )
             else:
-                logger.warn(f"Warning: {component} is not a valid context component.")
+                logger.warn(
+                    f"Warning: {component} is not a valid context component."
+                )
         return context

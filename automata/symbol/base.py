@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-from automata.symbol.scip_pb2 import Descriptor as DescriptorProto  # type: ignore
+from automata.symbol.scip_pb2 import Descriptor as DescriptorProto  # type: ignore # isort:skip
 
 
 class SymbolDescriptor:
@@ -211,7 +211,9 @@ class Symbol:
     def parent(self) -> "Symbol":
         """Returns the parent symbol of the current symbol."""
         parent_descriptors = list(self.descriptors)[:-1]
-        return Symbol(self.uri, self.scheme, self.package, tuple(parent_descriptors))
+        return Symbol(
+            self.uri, self.scheme, self.package, tuple(parent_descriptors)
+        )
 
     @property
     def full_dotpath(self) -> str:
@@ -226,7 +228,9 @@ class Symbol:
     @staticmethod
     def is_local(symbol: "Symbol") -> bool:
         """Returns True if the symbol is local."""
-        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
+        return (
+            symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
+        )
 
     @staticmethod
     def is_meta(symbol: "Symbol") -> bool:
@@ -236,7 +240,10 @@ class Symbol:
     @staticmethod
     def is_parameter(symbol: "Symbol") -> bool:
         """Returns True if the symbol is parameter."""
-        return symbol.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
+        return (
+            symbol.descriptors[0].suffix
+            == SymbolDescriptor.ScipSuffix.Parameter
+        )
 
     @staticmethod
     def is_protobuf(symbol: "Symbol") -> bool:
@@ -271,7 +278,9 @@ class SymbolReference:
 
     def __hash__(self) -> int:
         # This could cause collisions if the same symbol is referenced in different files at the same location
-        return hash(f"{self.symbol.uri}-{self.line_number}-{self.column_number}")
+        return hash(
+            f"{self.symbol.uri}-{self.line_number}-{self.column_number}"
+        )
 
     def __eq__(self, other) -> bool:
         if isinstance(other, SymbolReference):

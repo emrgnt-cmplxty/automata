@@ -18,3 +18,19 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       agent_tool_factory
+       tool
+       base/index
+       builders/index
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

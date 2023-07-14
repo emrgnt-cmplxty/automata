@@ -21,7 +21,9 @@ def test_tool(request) -> TestTool:
         description=description.args[0]
         if description
         else "A test tool for testing purposes",
-        function=function.args[0] if function else (lambda x: "TestTool response"),
+        function=function.args[0]
+        if function
+        else (lambda x: "TestTool response"),
     )
 
 

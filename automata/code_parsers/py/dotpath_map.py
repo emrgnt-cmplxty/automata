@@ -9,7 +9,11 @@ def convert_fpath_to_module_dotpath(
     prefix = "" if prefix == "." else f"{prefix}."
     return (
         prefix
-        + (os.path.relpath(module_path, root_abs_path).replace(os.path.sep, "."))[:-3]
+        + (
+            os.path.relpath(module_path, root_abs_path).replace(
+                os.path.sep, "."
+            )
+        )[:-3]
     )
 
 
@@ -30,7 +34,9 @@ class DotPathMap:
         if self.prefix.endswith(DotPathMap.DOT_SEP):
             self.prefix = self.prefix[:-1]
         self.path = path
-        self._module_dotpath_to_fpath_map = self._build_module_dotpath_to_fpath_map()
+        self._module_dotpath_to_fpath_map = (
+            self._build_module_dotpath_to_fpath_map()
+        )
         self._module_fpath_to_dotpath_map = {
             v: k for k, v in self._module_dotpath_to_fpath_map.items()
         }
@@ -70,7 +76,9 @@ class DotPathMap:
             Exception: If the module already exists in the map
         """
         if self.contains_dotpath(module_dotpath):
-            raise Exception(f"Module with dotpath {module_dotpath} already exists!")
+            raise Exception(
+                f"Module with dotpath {module_dotpath} already exists!"
+            )
         module_os_rel_path = os.path.relpath(
             module_dotpath.replace(DotPathMap.DOT_SEP, os.path.sep),
             self.prefix,

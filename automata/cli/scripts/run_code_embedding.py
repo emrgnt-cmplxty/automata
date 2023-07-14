@@ -6,7 +6,10 @@ from tqdm import tqdm
 from automata.cli.cli_utils import initialize_modules
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
-from automata.singletons.dependency_factory import DependencyFactory, dependency_factory
+from automata.singletons.dependency_factory import (
+    DependencyFactory,
+    dependency_factory,
+)
 from automata.symbol import SymbolGraph, get_rankable_symbols
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
@@ -24,7 +27,9 @@ def main(*args, **kwargs) -> str:
     initialize_modules(**kwargs)
 
     symbol_graph = SymbolGraph(
-        os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip")
+        os.path.join(
+            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
+        )
     )
 
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
@@ -43,8 +48,8 @@ def main(*args, **kwargs) -> str:
         }
     )
 
-    symbol_code_embedding_handler: SymbolCodeEmbeddingHandler = dependency_factory.get(
-        "symbol_code_embedding_handler"
+    symbol_code_embedding_handler: SymbolCodeEmbeddingHandler = (
+        dependency_factory.get("symbol_code_embedding_handler")
     )
     # Mock synchronization to allow us to build the initial embedding handler
     symbol_graph.is_synchronized = True
@@ -59,7 +64,9 @@ def main(*args, **kwargs) -> str:
         try:
             symbol_code_embedding_handler.process_embedding(symbol)
         except Exception as e:
-            logger.error(f"Failed to update embedding for {symbol.full_dotpath}: {e}")
+            logger.error(
+                f"Failed to update embedding for {symbol.full_dotpath}: {e}"
+            )
 
     symbol_code_embedding_handler.flush()  # Final flush for any remaining symbols that didn't form a complete batch
     return "Success"

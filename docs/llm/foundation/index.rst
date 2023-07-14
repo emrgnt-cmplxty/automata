@@ -15,3 +15,16 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       llm_empty_conversation_error
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

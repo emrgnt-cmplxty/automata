@@ -81,7 +81,9 @@ class SymbolGraph(ISymbolProvider):
     def _build_default_rankable_subgraph(self) -> nx.DiGraph:
         return self._build_rankable_subgraph()
 
-    def _build_rankable_subgraph(self, path_filter: Optional[str] = None) -> nx.DiGraph:
+    def _build_rankable_subgraph(
+        self, path_filter: Optional[str] = None
+    ) -> nx.DiGraph:
         """
         Creates a subgraph of the original `SymbolGraph` which
         contains only rankable symbols. The nodes in the subgraph
@@ -92,7 +94,9 @@ class SymbolGraph(ISymbolProvider):
         """
         G = nx.DiGraph()
 
-        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
+        filtered_symbols = get_rankable_symbols(
+            self.get_sorted_supported_symbols()
+        )
 
         if path_filter is not None:
             filtered_symbols = [

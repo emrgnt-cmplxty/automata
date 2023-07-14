@@ -16,7 +16,9 @@ from automata.experimental.search import (
     SymbolSearch,
 )
 from automata.llm import OpenAITool
-from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
+from automata.singletons.toolkit_registries import (
+    OpenAIAutomataAgentToolkitRegistry,
+)
 from automata.tools.base import Tool
 
 
@@ -89,7 +91,10 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def _symbol_symbol_references_processor(self, query: str) -> str:
         query_result = self.symbol_search.symbol_references(query)
         return "\n".join(
-            [f"{symbol}:{str(reference)}" for symbol, reference in query_result.items()]
+            [
+                f"{symbol}:{str(reference)}"
+                for symbol, reference in query_result.items()
+            ]
         )
 
     def _retrieve_source_code_by_symbol_processor(self, query: str) -> str:
