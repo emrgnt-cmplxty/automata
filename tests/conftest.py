@@ -109,14 +109,18 @@ def symbols():
     return symbols
 
 
-EXAMPLE_SYMBOL_PREFIX = "scip-python python automata v0.0.0 `config.automata_agent_config`/"
+EXAMPLE_SYMBOL_PREFIX = (
+    "scip-python python automata v0.0.0 `config.automata_agent_config`/"
+)
 
 
 @pytest.fixture
 def mock_simple_method_symbols():
     """Returns a list of 100 mock symbols with a simple method"""
     return [
-        parse_symbol(EXAMPLE_SYMBOL_PREFIX + str(random.random()) + "_uri_ex_method().")
+        parse_symbol(
+            EXAMPLE_SYMBOL_PREFIX + str(random.random()) + "_uri_ex_method()."
+        )
         for _ in range(100)
     ]
 
@@ -125,7 +129,9 @@ def mock_simple_method_symbols():
 def mock_simple_class_symbols():
     """Returns a list of 100 mock symbols with a simple class"""
     return [
-        parse_symbol(EXAMPLE_SYMBOL_PREFIX + str(random.random()) + "_uri_ex_method#")
+        parse_symbol(
+            EXAMPLE_SYMBOL_PREFIX + str(random.random()) + "_uri_ex_method#"
+        )
         for _ in range(100)
     ]
 
@@ -145,10 +151,16 @@ def symbol_graph_mock(mocker):
 @pytest.fixture
 def symbol_search(mocker, symbol_graph_mock):
     """Creates a SymbolSearch object with Mock dependencies for testing"""
-    symbol_similarity_mock = mocker.MagicMock(spec=EmbeddingSimilarityCalculator)
-    symbol_similarity_mock.embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
+    symbol_similarity_mock = mocker.MagicMock(
+        spec=EmbeddingSimilarityCalculator
+    )
+    symbol_similarity_mock.embedding_handler = mocker.MagicMock(
+        spec=SymbolCodeEmbeddingHandler
+    )
 
-    symbol_code_embedding_handler = mocker.MagicMock(spec=SymbolCodeEmbeddingHandler)
+    symbol_code_embedding_handler = mocker.MagicMock(
+        spec=SymbolCodeEmbeddingHandler
+    )
 
     symbol_rank_config_mock = mocker.MagicMock(spec=SymbolRankConfig)
     symbol_rank_config_mock.validate_config = mocker.MagicMock()
@@ -182,7 +194,9 @@ def automata_agent(mocker, automata_agent_config_builder):
 
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
-        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[AgentToolkitNames(tool)]:
+        for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[
+            AgentToolkitNames(tool)
+        ]:
             dependencies.add(dependency_name)
 
     for dependency in dependencies:
@@ -213,7 +227,9 @@ class MockRepositoryClient(RepositoryClient):
     def stage_all_changes(self, repo_local_path: str):
         pass
 
-    def commit_and_push_changes(self, repo_local_path: str, branch_name: str, commit_message: str):
+    def commit_and_push_changes(
+        self, repo_local_path: str, branch_name: str, commit_message: str
+    ):
         pass
 
     def create_pull_request(self, branch_name: str, title: str, body: str):

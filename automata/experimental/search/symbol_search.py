@@ -42,19 +42,24 @@ class SymbolSearch:
         self.search_embedding_handler = search_embedding_handler
         self.symbol_rank_config = symbol_rank_config
         self.z_score_power = z_score_power
-        self._symbol_rank = None  # Create a placeholder for the lazy loaded SymbolRank
+        self._symbol_rank = (
+            None  # Create a placeholder for the lazy loaded SymbolRank
+        )
 
     @property
     def symbol_rank(self):
         if self._symbol_rank is None:
             self._symbol_rank = SymbolRank(
-                self.symbol_graph.default_rankable_subgraph, config=self.symbol_rank_config
+                self.symbol_graph.default_rankable_subgraph,
+                config=self.symbol_rank_config,
             )
         return self._symbol_rank
 
     def get_symbol_rank_results(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
-        ordered_embeddings = self.search_embedding_handler.get_ordered_embeddings()
+        ordered_embeddings = (
+            self.search_embedding_handler.get_ordered_embeddings()
+        )
 
         query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
             ordered_embeddings, query
@@ -62,7 +67,9 @@ class SymbolSearch:
         transformed_query_vec = SymbolSearch.transform_dict_values(
             query_vec, self.shifted_z_score_powered
         )
-        return self.symbol_rank.get_ordered_ranks(query_to_symbol_similarity=transformed_query_vec)
+        return self.symbol_rank.get_ordered_ranks(
+            query_to_symbol_similarity=transformed_query_vec
+        )
 
     def symbol_references(self, symbol_uri: str) -> SymbolReferencesResult:
         """
@@ -70,9 +77,13 @@ class SymbolSearch:
 
         TODO - Add parsing upstream or here to parse references
         """
-        return self.symbol_graph.get_references_to_symbol(parse_symbol(symbol_uri))
+        return self.symbol_graph.get_references_to_symbol(
+            parse_symbol(symbol_uri)
+        )
 
-    def retrieve_source_code_by_symbol(self, symbol_uri: str) -> SourceCodeResult:
+    def retrieve_source_code_by_symbol(
+        self, symbol_uri: str
+    ) -> SourceCodeResult:
         """Finds the raw text of a module, class, method, or standalone function."""
         node = convert_to_ast_object(parse_symbol(symbol_uri))
         return py_ast_unparse(node) if node else None
@@ -83,7 +94,12 @@ class SymbolSearch:
 
     def process_query(
         self, query: str
-    ) -> Union[SymbolReferencesResult, SymbolRankResult, SourceCodeResult, ExactSearchResult,]:
+    ) -> Union[
+        SymbolReferencesResult,
+        SymbolRankResult,
+        SourceCodeResult,
+        ExactSearchResult,
+    ]:
         """
         Processes an NLP-formatted query and returns the results of the appropriate downstream search.
 
@@ -116,12 +132,18 @@ class SymbolSearch:
         for module_path, module in py_module_loader.items():
             if module:
                 lines = py_ast_unparse(module).splitlines()
-                line_numbers = [i + 1 for i, line in enumerate(lines) if pattern in line.strip()]
+                line_numbers = [
+                    i + 1
+                    for i, line in enumerate(lines)
+                    if pattern in line.strip()
+                ]
                 if line_numbers:
                     matches[module_path] = line_numbers
         return matches
 
-    def shifted_z_score_powered(self, values: Union[List[float], np.ndarray]) -> np.ndarray:
+    def shifted_z_score_powered(
+        self, values: Union[List[float], np.ndarray]
+    ) -> np.ndarray:
         """
         Calculates the z-score, shifts them to be positive,
         and then raises the values to the specified power.

@@ -16,7 +16,10 @@ logging.config.dictConfig(get_logging_config())
 yaml_schema = {
     "type": "object",
     "properties": {
-        "system_template_variables": {"type": "array", "items": {"type": "string"}},
+        "system_template_variables": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
         "system_template": {"type": "string"},
         "template_format": {"type": "string"},
         "description": {"type": "string"},
@@ -71,7 +74,9 @@ def test_yaml_compatibility(file_path) -> None:
                 f"Compatibility test '{test['test_name']}' for {file_path} failed."
             )
         else:
-            logger.debug(f"Compatibility test '{test['test_name']}' for {file_path} passed.")
+            logger.debug(
+                f"Compatibility test '{test['test_name']}' for {file_path} passed."
+            )
 
 
 # def test_action_extraction(file_path) -> None:
@@ -90,7 +95,9 @@ def test_yaml_compatibility(file_path) -> None:
 if __name__ == "__main__":
     # Find all .yaml files in the specified directory
     yaml_files = glob.glob(
-        os.path.join(get_config_fpath(), ConfigCategory.AGENT.to_path(), "*.yaml")
+        os.path.join(
+            get_config_fpath(), ConfigCategory.AGENT.to_path(), "*.yaml"
+        )
     )
 
     # Run validation and compatibility tests on each YAML file

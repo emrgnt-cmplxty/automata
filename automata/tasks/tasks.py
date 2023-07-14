@@ -3,7 +3,11 @@ import logging.config
 import os
 
 from automata.agent import AgentTaskInstructionsError
-from automata.core.utils import get_logging_config, get_root_fpath, get_root_py_fpath
+from automata.core.utils import (
+    get_logging_config,
+    get_root_fpath,
+    get_root_py_fpath,
+)
 from automata.tasks.base import Task
 
 logger = logging.getLogger(__name__)
@@ -21,12 +25,21 @@ class AutomataTask(Task):
         super().__init__(*args, **kwargs)
         self.args = args
         self.kwargs = kwargs
-        if "instructions" not in self.kwargs or self.kwargs["instructions"] == "":
-            raise AgentTaskInstructionsError("Task instructions cannot be empty.")
+        if (
+            "instructions" not in self.kwargs
+            or self.kwargs["instructions"] == ""
+        ):
+            raise AgentTaskInstructionsError(
+                "Task instructions cannot be empty."
+            )
         self.instructions = self.kwargs["instructions"]
         # Note, this  assumes the python folder is in the root folder
-        default_python_folder = os.path.relpath(get_root_py_fpath(), get_root_fpath())
-        self.path_to_root_py = kwargs.get("path_to_root_py", default_python_folder)
+        default_python_folder = os.path.relpath(
+            get_root_py_fpath(), get_root_fpath()
+        )
+        self.path_to_root_py = kwargs.get(
+            "path_to_root_py", default_python_folder
+        )
 
     def initialize_logging(self) -> None:
         """
@@ -37,14 +50,22 @@ class AutomataTask(Task):
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
 
-        log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
-        log_level = logging.DEBUG if self.kwargs.get("verbose") else logging.INFO
-        logging.config.dictConfig(get_logging_config(log_level=log_level, log_file=log_file))
+        log_file = os.path.join(
+            log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id))
+        )
+        log_level = (
+            logging.DEBUG if self.kwargs.get("verbose") else logging.INFO
+        )
+        logging.config.dictConfig(
+            get_logging_config(log_level=log_level, log_file=log_file)
+        )
         logging.debug("Logging initialized.")
 
     def get_logs(self) -> str:
         log_dir = self._get_log_dir()
-        log_file = os.path.join(log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id)))
+        log_file = os.path.join(
+            log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id))
+        )
 
         if not os.path.exists(log_file):
             raise FileNotFoundError(f"Log file {log_file} not found.")

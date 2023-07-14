@@ -104,10 +104,14 @@ class PyModuleLoader(metaclass=Singleton):
 
         if module_dotpath not in self._loaded_modules:
             module_fpath = self._dotpath_map.get_module_fpath_by_dotpath(module_dotpath)  # type: ignore
-            self._loaded_modules[module_dotpath] = self._load_module_from_fpath(module_fpath)
+            self._loaded_modules[
+                module_dotpath
+            ] = self._load_module_from_fpath(module_fpath)
         return self._loaded_modules[module_dotpath]
 
-    def fetch_existing_module_dotpath(self, module_obj: Module) -> Optional[str]:
+    def fetch_existing_module_dotpath(
+        self, module_obj: Module
+    ) -> Optional[str]:
         """
         Gets the module dotpath for the specified module object.
 
@@ -130,7 +134,9 @@ class PyModuleLoader(metaclass=Singleton):
             None,
         )
 
-    def fetch_existing_module_fpath_by_dotpath(self, module_dotpath: str) -> Optional[str]:
+    def fetch_existing_module_fpath_by_dotpath(
+        self, module_dotpath: str
+    ) -> Optional[str]:
         """
         Gets the module fpath for the specified module dotpath.
 
@@ -201,7 +207,9 @@ class PyModuleLoader(metaclass=Singleton):
         """
         for module_dotpath, fpath in self._dotpath_map.items():  # type: ignore
             if module_dotpath not in self._loaded_modules:
-                self._loaded_modules[module_dotpath] = self._load_module_from_fpath(fpath)
+                self._loaded_modules[
+                    module_dotpath
+                ] = self._load_module_from_fpath(fpath)
 
     @staticmethod
     def _load_module_from_fpath(path: str) -> Optional[Module]:

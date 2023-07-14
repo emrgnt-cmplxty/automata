@@ -48,9 +48,16 @@ PyYAML = "6.0"
 chromadb = "0.3.26"
 astunparse = "^1.6.3"
 ipykernel = "^6.24.0"
+pathlib = "^1.0.1"
+pytest-shutil = "^1.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
+sphinx = "^3.5"
+sphinx-panels = "0.6.0" # Used on Linux
+sphinx-rtd-dark-mode = "1.2.4" # Used on Windows
+sphinx_panels = "0.6.0" # Used on Windows
+
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
@@ -58,7 +65,7 @@ addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]
-line-length = 99
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 (
@@ -125,4 +132,3 @@ ignore = ["E501", "W503"]
 reportGeneralTypeIssues = true
 reportMissingTypeStubs = false
 useLibraryCodeForTypes = true
-

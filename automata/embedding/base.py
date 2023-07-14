@@ -25,7 +25,9 @@ class EmbeddingVectorProvider(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def batch_build_embedding_vector(self, symbol_source: List[str]) -> List[np.ndarray]:
+    def batch_build_embedding_vector(
+        self, symbol_source: List[str]
+    ) -> List[np.ndarray]:
         pass
 
 
@@ -63,7 +65,9 @@ class EmbeddingBuilder(abc.ABC):
 
     def fetch_embedding_source_code(self, symbol: Symbol) -> str:
         """An abstract method for embedding the context is the source code itself."""
-        from automata.symbol import convert_to_ast_object  # imported late for mocking
+        from automata.symbol import (
+            convert_to_ast_object,
+        )  # imported late for mocking
 
         return astunparse.unparse(convert_to_ast_object(symbol))
 
@@ -102,27 +106,38 @@ class EmbeddingSimilarityCalculator:
         self.norm_type = norm_type
 
     def calculate_query_similarity_dict(
-        self, ordered_embeddings: Sequence[Embedding], query_text: str, return_sorted: bool = True
+        self,
+        ordered_embeddings: Sequence[Embedding],
+        query_text: str,
+        return_sorted: bool = True,
     ) -> Dict[Symbol, float]:
         """
         Similarity is calculated between the dot product
         of the query embedding and the symbol embeddings.
         Return result is sorted in descending order by default.
         """
-        query_embedding_vector = self.embedding_provider.build_embedding_vector(query_text)
+        query_embedding_vector = (
+            self.embedding_provider.build_embedding_vector(query_text)
+        )
         # Compute the similarity of the query to all symbols
         similarity_scores = self._calculate_embedding_similarity(
-            np.array([ele.vector for ele in ordered_embeddings]), query_embedding_vector
+            np.array([ele.vector for ele in ordered_embeddings]),
+            query_embedding_vector,
         )
 
         similarity_dict = {
-            ele.key: similarity_scores[i] for i, ele in enumerate(ordered_embeddings)
+            ele.key: similarity_scores[i]
+            for i, ele in enumerate(ordered_embeddings)
         }
 
         if return_sorted:
             # Sort the dictionary by values in descending order
             similarity_dict = dict(
-                sorted(similarity_dict.items(), key=lambda item: item[1], reverse=True)
+                sorted(
+                    similarity_dict.items(),
+                    key=lambda item: item[1],
+                    reverse=True,
+                )
             )
 
         return similarity_dict
@@ -132,7 +147,9 @@ class EmbeddingSimilarityCalculator:
     ) -> np.ndarray:
         """Calculate the similarity score between the embedding with all symbol embeddings"""
         # Normalize the embeddings and the query embedding
-        embeddings_norm = self._normalize_embeddings(ordered_embeddings, self.norm_type)
+        embeddings_norm = self._normalize_embeddings(
+            ordered_embeddings, self.norm_type
+        )
         normed_embedding = self._normalize_embeddings(
             embedding_array[np.newaxis, :], self.norm_type
         )[0]
@@ -147,9 +164,14 @@ class EmbeddingSimilarityCalculator:
             norm = np.sum(np.abs(embeddings_array), axis=1, keepdims=True)
             return embeddings_array / norm
         elif norm_type == EmbeddingNormType.L2:
-            return embeddings_array / np.linalg.norm(embeddings_array, axis=1, keepdims=True)
+            return embeddings_array / np.linalg.norm(
+                embeddings_array, axis=1, keepdims=True
+            )
         elif norm_type == EmbeddingNormType.SOFTMAX:
-            e_x = np.exp(embeddings_array - np.max(embeddings_array, axis=1, keepdims=True))
+            e_x = np.exp(
+                embeddings_array
+                - np.max(embeddings_array, axis=1, keepdims=True)
+            )
             return e_x / np.sum(e_x, axis=1, keepdims=True)
         else:
             raise ValueError(f"Invalid normalization type {norm_type}")

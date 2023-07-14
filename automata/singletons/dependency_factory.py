@@ -5,7 +5,11 @@ from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 
-from automata.agent import AgentGeneralError, AgentToolkitNames, UnknownToolError
+from automata.agent import (
+    AgentGeneralError,
+    AgentToolkitNames,
+    UnknownToolError,
+)
 from automata.code_parsers.py import (
     PyContextHandler,
     PyContextHandlerConfig,
@@ -19,9 +23,16 @@ from automata.context_providers import (
 from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
 from automata.embedding import EmbeddingSimilarityCalculator
-from automata.experimental.search import SymbolRank, SymbolRankConfig, SymbolSearch
+from automata.experimental.search import (
+    SymbolRank,
+    SymbolRankConfig,
+    SymbolSearch,
+)
 from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
-from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
+from automata.memory_store import (
+    SymbolCodeEmbeddingHandler,
+    SymbolDocEmbeddingHandler,
+)
 from automata.symbol import ISymbolProvider, SymbolGraph
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
@@ -44,11 +55,13 @@ class DependencyFactory(metaclass=Singleton):
     )
 
     DEFAULT_CODE_EMBEDDING_FPATH = os.path.join(
-        get_embedding_data_fpath(), EmbeddingDataCategory.CODE_EMBEDDING.to_path()
+        get_embedding_data_fpath(),
+        EmbeddingDataCategory.CODE_EMBEDDING.to_path(),
     )
 
     DEFAULT_DOC_EMBEDDING_FPATH = os.path.join(
-        get_embedding_data_fpath(), EmbeddingDataCategory.DOC_EMBEDDING.to_path()
+        get_embedding_data_fpath(),
+        EmbeddingDataCategory.DOC_EMBEDDING.to_path(),
     )
 
     # Used to cache the symbol subgraph across multiple instances
@@ -74,7 +87,9 @@ class DependencyFactory(metaclass=Singleton):
 
     def set_overrides(self, **kwargs) -> None:
         if self._class_cache:
-            raise AgentGeneralError("Cannot set overrides after dependencies have been created.")
+            raise AgentGeneralError(
+                "Cannot set overrides after dependencies have been created."
+            )
 
         for override_obj in kwargs.values():
             if isinstance(override_obj, ISymbolProvider) and not kwargs.get(
@@ -118,7 +133,9 @@ class DependencyFactory(metaclass=Singleton):
 
         return instance
 
-    def build_dependencies_for_tools(self, toolkit_list: List[str]) -> Dict[str, Any]:
+    def build_dependencies_for_tools(
+        self, toolkit_list: List[str]
+    ) -> Dict[str, Any]:
         """Builds and returns a dictionary of all dependencies required by the given list of tools."""
         # Identify all unique dependencies
         dependencies: Set[str] = set()
@@ -129,12 +146,16 @@ class DependencyFactory(metaclass=Singleton):
             if agent_tool is None:
                 raise UnknownToolError(agent_tool)
 
-            for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[agent_tool]:
+            for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[
+                agent_tool
+            ]:
                 dependencies.add(dependency_name)
 
         # Build dependencies
         tool_dependencies = {}
-        logger.info(f"Building dependencies for toolkit_list {toolkit_list}...")
+        logger.info(
+            f"Building dependencies for toolkit_list {toolkit_list}..."
+        )
         for dependency in dependencies:
             logger.info(f"Building {dependency}...")
             tool_dependencies[dependency] = self.get(dependency)
@@ -156,7 +177,11 @@ class DependencyFactory(metaclass=Singleton):
         """
         return self.overrides.get(
             "symbol_graph",
-            SymbolGraph(os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, "automata.scip")),
+            SymbolGraph(
+                os.path.join(
+                    DependencyFactory.DEFAULT_SCIP_FPATH, "automata.scip"
+                )
+            ),
         )
 
     @lru_cache()
@@ -171,10 +196,15 @@ class DependencyFactory(metaclass=Singleton):
             symbol_rank_config (SymbolRankConfig())
         """
         subgraph: nx.DiGraph = self.get("subgraph")
-        return SymbolRank(subgraph, self.overrides.get("symbol_rank_config", SymbolRankConfig()))
+        return SymbolRank(
+            subgraph,
+            self.overrides.get("symbol_rank_config", SymbolRankConfig()),
+        )
 
     @lru_cache()
-    def create_symbol_code_embedding_handler(self) -> SymbolCodeEmbeddingHandler:
+    def create_symbol_code_embedding_handler(
+        self,
+    ) -> SymbolCodeEmbeddingHandler:
         """
         Associated Keyword Args:
             code_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for code embeddings.
@@ -191,8 +221,8 @@ class DependencyFactory(metaclass=Singleton):
         embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
             "embedding_provider", OpenAIEmbeddingProvider()
         )
-        embedding_builder: SymbolCodeEmbeddingBuilder = SymbolCodeEmbeddingBuilder(
-            embedding_provider
+        embedding_builder: SymbolCodeEmbeddingBuilder = (
+            SymbolCodeEmbeddingBuilder(embedding_provider)
         )
 
         return SymbolCodeEmbeddingHandler(code_embedding_db, embedding_builder)
@@ -216,8 +246,10 @@ class DependencyFactory(metaclass=Singleton):
         embedding_provider: OpenAIEmbeddingProvider = self.overrides.get(
             "embedding_provider", OpenAIEmbeddingProvider()
         )
-        llm_completion_provider: OpenAIChatCompletionProvider = self.overrides.get(
-            "llm_completion_provider", OpenAIChatCompletionProvider()
+        llm_completion_provider: OpenAIChatCompletionProvider = (
+            self.overrides.get(
+                "llm_completion_provider", OpenAIChatCompletionProvider()
+            )
         )
         symbol_search: SymbolSearch = self.get("symbol_search")
         handler: PyContextHandler = self.get("py_context_handler")
@@ -241,8 +273,8 @@ class DependencyFactory(metaclass=Singleton):
         symbol_code_embedding_handler: SymbolCodeEmbeddingBuilder = self.get(
             "symbol_code_embedding_handler"
         )
-        embedding_similarity_calculator: EmbeddingSimilarityCalculator = self.get(
-            "embedding_similarity_calculator"
+        embedding_similarity_calculator: EmbeddingSimilarityCalculator = (
+            self.get("embedding_similarity_calculator")
         )
         return SymbolSearch(
             symbol_graph,
@@ -270,10 +302,14 @@ class DependencyFactory(metaclass=Singleton):
         )
         retriever = self.get("py_context_retriever")
         symbol_search = self.get("symbol_search")
-        return PyContextHandler(py_context_handler_config, retriever, symbol_search)
+        return PyContextHandler(
+            py_context_handler_config, retriever, symbol_search
+        )
 
     @lru_cache()
-    def create_embedding_similarity_calculator(self) -> EmbeddingSimilarityCalculator:
+    def create_embedding_similarity_calculator(
+        self,
+    ) -> EmbeddingSimilarityCalculator:
         """
         Associated Keyword Args:
             embedding_provider (OpenAIEmbedding())

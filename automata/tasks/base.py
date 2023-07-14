@@ -52,7 +52,9 @@ class Task:
         self._status = TaskStatus.CREATED
         self.retry_count = 0
         self.observer: Optional[Callable] = None
-        self.task_dir = self._get_task_dir(kwargs.get("task_dir", TASK_OUTPUT_PATH))
+        self.task_dir = self._get_task_dir(
+            kwargs.get("task_dir", TASK_OUTPUT_PATH)
+        )
         self.result: Optional[str] = None
         self.error: Optional[str] = None
 
@@ -101,7 +103,9 @@ class Task:
             kwargs (dict): The keyword arguments passed to the task.
         """
         # Generate the hash of the hashable kwargs
-        hashable_items = sorted([item for item in kwargs.items() if isinstance(item[1], Hashable)])
+        hashable_items = sorted(
+            [item for item in kwargs.items() if isinstance(item[1], Hashable)]
+        )
         kwargs_hash = hash(tuple(hashable_items))
 
         # Combine the hashes and use it as a seed for generating a deterministic UUID

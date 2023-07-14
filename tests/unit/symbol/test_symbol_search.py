@@ -38,11 +38,15 @@ def test_process_queries(symbols, symbol_search, symbol_graph_mock):
     with patch.object(
         symbol_search, "symbol_references", return_value=["ref1", "ref2"]
     ) as mock_method_0:
-        result = symbol_search.process_query("type:symbol_references %s" % symbols[0].uri)
+        result = symbol_search.process_query(
+            "type:symbol_references %s" % symbols[0].uri
+        )
         assert result == ["ref1", "ref2"]
     mock_method_0.assert_called_once_with(symbols[0].uri)
 
-    with patch.object(symbol_search, "exact_search", return_value={"test": 0}) as mock_method_1:
+    with patch.object(
+        symbol_search, "exact_search", return_value={"test": 0}
+    ) as mock_method_1:
         result = symbol_search.process_query("type:exact %s" % symbols[0].uri)
         assert result == {"test": 0}
     mock_method_1.assert_called_once_with(symbols[0].uri)
@@ -55,9 +59,13 @@ def test_process_queries(symbols, symbol_search, symbol_graph_mock):
     mock_method_2.assert_called_once_with(symbols[0].uri)
 
     with patch.object(
-        symbol_search, "get_symbol_rank_results", return_value=[("ref1", 0.5), ("ref2", 0.4)]
+        symbol_search,
+        "get_symbol_rank_results",
+        return_value=[("ref1", 0.5), ("ref2", 0.4)],
     ) as mock_method_4:
-        result = symbol_search.process_query("type:symbol_rank %s" % symbols[0].uri)
+        result = symbol_search.process_query(
+            "type:symbol_rank %s" % symbols[0].uri
+        )
         assert result == [("ref1", 0.5), ("ref2", 0.4)]
     mock_method_4.assert_called_once_with(symbols[0].uri)
 

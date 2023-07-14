@@ -57,14 +57,17 @@ class SQLDatabase(RelationalDatabase):
 
     def create_table(self, table_name: str, fields: Dict):
         fields_str = ", ".join([f"{k} {v}" for k, v in fields.items()])
-        self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({fields_str})")
+        self.cursor.execute(
+            f"CREATE TABLE IF NOT EXISTS {table_name} ({fields_str})"
+        )
         self.conn.commit()
 
     def insert(self, table_name: str, data: Dict):
         keys_str = ", ".join(data.keys())
         values_str = ", ".join(["?" for _ in data.values()])
         self.cursor.execute(
-            f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})", tuple(data.values())
+            f"INSERT INTO {table_name} ({keys_str}) VALUES ({values_str})",
+            tuple(data.values()),
         )
         self.conn.commit()
 
@@ -91,6 +94,7 @@ class SQLDatabase(RelationalDatabase):
     def delete(self, table_name: str, conditions: Dict = {}):
         conditions_str = " AND ".join([f"{k} = ?" for k in conditions])
         self.cursor.execute(
-            f"DELETE FROM {table_name} WHERE {conditions_str}", tuple(conditions.values())
+            f"DELETE FROM {table_name} WHERE {conditions_str}",
+            tuple(conditions.values()),
         )
         self.conn.commit()
