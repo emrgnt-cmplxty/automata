@@ -65,7 +65,7 @@ addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python
 markers = ["regression: marks tests as regression tests"]
 
 [tool.black]
-line-length = 79
+max-line-length = 79
 include = '\.pyi?$'
 exclude = '''
 (
@@ -94,7 +94,7 @@ multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
-line_length = 79
+line-length = 79
 skip_glob = ["**/sample_code/*"]
 
 [tool.mypy]
@@ -132,4 +132,3 @@ ignore = ["E501", "W503"]
 reportGeneralTypeIssues = true
 reportMissingTypeStubs = false
 useLibraryCodeForTypes = true
-
