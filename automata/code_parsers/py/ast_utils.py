@@ -40,7 +40,9 @@ class BoundingBox:
 
 def fetch_bounding_box(node: AST) -> Optional[BoundingBox]:
     if not node.end_lineno or not node.end_col_offset:
-        logger.warning(f"{node} does not have an end line number or column offset")
+        logger.warning(
+            f"{node} does not have an end line number or column offset"
+        )
         return None
     return BoundingBox(
         top_left=LineItem(line=node.lineno, column=node.col_offset),
