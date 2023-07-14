@@ -62,13 +62,17 @@ def test_dotpath_map(local_module_loader):
     assert (
         "my_project.core.calculator"
         in local_module_loader._dotpath_map.get_module_dotpath_by_fpath(
-            os.path.join(abs_path, "sample_modules/my_project/core/calculator.py")
+            os.path.join(
+                abs_path, "sample_modules/my_project/core/calculator.py"
+            )
         )
     )
     assert (
         "my_project.core.calculator2"
         in local_module_loader._dotpath_map.get_module_dotpath_by_fpath(
-            os.path.join(abs_path, "sample_modules/my_project/core/calculator2.py")
+            os.path.join(
+                abs_path, "sample_modules/my_project/core/calculator2.py"
+            )
         )
     )
     assert (
@@ -103,7 +107,10 @@ def test_load_module(local_module_loader, module, class_name):
 
 def test_invalid_dotpath(local_module_loader):
     # Test that an error is raised when trying to load a non-existent module
-    assert local_module_loader.fetch_ast_module("my_project.core.non_existent") is None
+    assert (
+        local_module_loader.fetch_ast_module("my_project.core.non_existent")
+        is None
+    )
 
 
 def test_empty_dotpath(local_module_loader):

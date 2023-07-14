@@ -30,15 +30,19 @@ class CallerCalleeProcessor(GraphProcessor):
             try:
                 symbol_object = parse_symbol(symbol.symbol)
             except Exception as e:
-                logger.error(f"Parsing symbol {symbol.symbol} failed with error {e}")
+                logger.error(
+                    f"Parsing symbol {symbol.symbol} failed with error {e}"
+                )
                 continue
 
-            if symbol_object.symbol_kind_by_suffix() != SymbolDescriptor.PyKind.Method:
+            if symbol_object.py_kind != SymbolDescriptor.PyKind.Method:
                 continue
 
             try:
-                references_in_scope = self.navigator._get_symbol_references_in_scope(
-                    symbol_object
+                references_in_scope = (
+                    self.navigator._get_symbol_references_in_scope(
+                        symbol_object
+                    )
                 )
             except Exception as e:
                 logger.error(
@@ -48,7 +52,7 @@ class CallerCalleeProcessor(GraphProcessor):
 
             for ref in references_in_scope:
                 try:
-                    if ref.symbol.symbol_kind_by_suffix() in [
+                    if ref.symbol.py_kind in [
                         SymbolDescriptor.PyKind.Method,
                         SymbolDescriptor.PyKind.Class,
                     ]:

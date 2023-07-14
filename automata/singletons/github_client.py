@@ -33,7 +33,9 @@ class RepositoryClient(ABC):
         pass
 
     @abstractmethod
-    def create_pull_request(self, branch_name: str, title: str, body: str) -> Any:
+    def create_pull_request(
+        self, branch_name: str, title: str, body: str
+    ) -> Any:
         pass
 
     @abstractmethod
@@ -69,11 +71,15 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
 
     def create_branch(self, branch_name: str) -> None:
         # Get the reference to the HEAD commit of the primary_branch
-        base_sha = self.repo.get_git_ref(f"heads/{self.primary_branch}").object.sha
+        base_sha = self.repo.get_git_ref(
+            f"heads/{self.primary_branch}"
+        ).object.sha
         # Create a new branch pointing to the HEAD commit of the primary_branch
         self.repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=base_sha)
 
-    def checkout_branch(self, repo_local_path: str, branch_name: str, b=True) -> None:
+    def checkout_branch(
+        self, repo_local_path: str, branch_name: str, b=True
+    ) -> None:
         repo = Repo(repo_local_path)
         repo.git.checkout(branch_name, b=b)
 

@@ -21,3 +21,22 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       caller_callee_processor
+       graph_builder
+       graph_processor
+       reference_processor
+       relationship_processor
+       symbol_graph
+       symbol_graph_navigator
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

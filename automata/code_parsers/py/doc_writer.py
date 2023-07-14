@@ -66,7 +66,9 @@ class PyDocWriter:
         for symbol in np.array(symbols):
             symbol_name = symbol.descriptors[-1].name
 
-            if symbol_name[0] == "_" or not PyDocWriter.check_camel_case(symbol_name):
+            if symbol_name[0] == "_" or not PyDocWriter.check_camel_case(
+                symbol_name
+            ):
                 continue
 
             snaked_symbol_name = PyDocWriter.camel_to_snake(symbol_name)
@@ -98,32 +100,71 @@ class PyDocWriter:
         doc_directory_manager = DirectoryManager(docs_dir)
         for root, dirs, _ in os.walk(docs_dir, topdown=False):
             root_relative_to_base = os.path.relpath(root, start=docs_dir)
-            files = doc_directory_manager.get_files_in_dir(root_relative_to_base)
-            dirs = doc_directory_manager.get_subdirectories(root_relative_to_base)
+            files = doc_directory_manager.get_files_in_dir(
+                root_relative_to_base
+            )
+            dirs = doc_directory_manager.get_subdirectories(
+                root_relative_to_base
+            )
 
             rst_files = [f for f in files if f.endswith(".rst")]
             root_dir_node = doc_directory_manager._get_node_for_path(
                 doc_directory_manager.root, root_relative_to_base
             )
 
+            index_path = os.path.join(root, "index.rst")
             if rst_files or dirs:
-                with open(os.path.join(root, "index.rst"), "w") as index_file:
-                    index_file.write(PyDocWriter.get_payload(root))
+                if os.path.exists(index_path):
+                    with open(index_path, "r") as index_file:
+                        existing_content = index_file.read()
+                else:
+                    existing_content = ""
 
-                    index_file.write(".. toctree::\n")
-                    index_file.write(
-                        "   :maxdepth: 2\n\n"
-                        if not root_dir_node or root_dir_node.is_root_dir()  # type: ignore
-                        else "   :maxdepth: 1\n\n"
+                # Identify start and end of the auto-generated content
+                auto_start_marker = (
+                    "\n..  AUTO-GENERATED CONTENT START\n..\n\n"
+                )
+                auto_end_marker = "\n..  AUTO-GENERATED CONTENT END\n..\n\n"
+
+                # Remove the auto-generated part if it already exists
+                if (
+                    auto_start_marker in existing_content
+                    and auto_end_marker in existing_content
+                ):
+                    start_idx = existing_content.index(auto_start_marker)
+                    end_idx = existing_content.index(auto_end_marker) + len(
+                        auto_end_marker
+                    )
+                    existing_content = (
+                        existing_content[:start_idx]
+                        + existing_content[end_idx:]
                     )
 
-                    for sub_dir_ in sorted(dirs):
-                        index_file.write(f"   {sub_dir_}/index\n")
-                    for file in sorted(rst_files):
-                        if file != "index.rst":
-                            index_file.write(
-                                f"   {file[:-4]}\n"
-                            )  # Remove .rst extension
+                # Add new auto-generated content
+                auto_content = auto_start_marker
+                auto_content += "    .. toctree::\n"
+                auto_content += (
+                    "       :maxdepth: 2\n\n"
+                    if not root_dir_node or root_dir_node.is_root_dir()  # type: ignore
+                    else "       :maxdepth: 1\n\n"
+                )
+                for file in sorted(rst_files):
+                    if file != "index.rst":
+                        auto_content += (
+                            f"       {file[:-4]}\n"  # Remove .rst extension
+                        )
+                for sub_dir_ in sorted(dirs):
+                    auto_content += f"       {sub_dir_}/index\n"
+                auto_content += auto_end_marker
+
+                # Write everything back to the file
+                with open(index_path, "w") as index_file:
+                    if existing_content.strip() == "":
+                        index_file.write(
+                            PyDocWriter.get_payload(root) + auto_content
+                        )
+                    else:
+                        index_file.write(existing_content + auto_content)
 
                 self.generate_module_summary(root)
 
@@ -155,7 +196,6 @@ class PyDocWriter:
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
-.. note::
 
 """
 
@@ -163,7 +203,7 @@ how to :ref:`installation` the project.
     def generate_summary(content: str) -> str:
         """This method should implement the logic to generate summary from the content."""
         # TODO: Implement summary generation function.
-        return "Summary of content"
+        return ""
 
     @staticmethod
     def camel_to_snake(name: str) -> str:
@@ -192,4 +232,6 @@ how to :ref:`installation` the project.
         Returns:
             bool: True if the string is camel case, False otherwise
         """
-        return text != text.lower() and text != text.upper() and "_" not in text
+        return (
+            text != text.lower() and text != text.upper() and "_" not in text
+        )

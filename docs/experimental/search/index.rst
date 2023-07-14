@@ -17,3 +17,18 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       symbol_rank
+       symbol_rank_config
+       symbol_search
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

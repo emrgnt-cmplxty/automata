@@ -8,17 +8,20 @@ def parsed_symbol():
     return parse_symbol(
         "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
     )
-    assert isinstance(symbol, Symbol)
-    assert symbol.package.manager == "python"
-    assert symbol.package.name == "automata"
-    assert symbol.package.version == "v0.0.0"
-    assert symbol.module_path == "config.automata_agent_config"
+
+
+def test_parsed_symbol(parsed_symbol):
+    assert isinstance(parsed_symbol, Symbol)
+    assert parsed_symbol.package.manager == "python"
+    assert parsed_symbol.package.name == "automata"
+    assert parsed_symbol.package.version == "v0.0.0"
+    assert parsed_symbol.module_path == "config.automata_agent_config"
     assert (
-        symbol.full_dotpath
+        parsed_symbol.full_dotpath
         == "config.automata_agent_config.AutomataAgentConfig.description"
     )
-    assert symbol.descriptors[-1].name == "description"
-    assert symbol.parent().descriptors[-1].name == "AutomataAgentConfig"
+    assert parsed_symbol.descriptors[-1].name == "description"
+    assert parsed_symbol.parent.descriptors[-1].name == "AutomataAgentConfig"
 
 
 # Test that symbols with different descriptors are parsed correctly
@@ -50,7 +53,9 @@ def parsed_symbol():
 def test_parse_symbol_descriptor(symbol_str, expected_descriptor):
     symbol = parse_symbol(symbol_str)
     assert (
-        SymbolDescriptor.convert_scip_to_python_suffix(symbol.descriptors[-1].suffix)
+        SymbolDescriptor.convert_scip_to_python_suffix(
+            symbol.descriptors[-1].suffix
+        )
         == expected_descriptor
     )
 

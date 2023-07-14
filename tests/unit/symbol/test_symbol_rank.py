@@ -13,7 +13,9 @@ def generate_random_graph(nodes, edges):
     for i in range(nodes):
         graph.add_node(i)
     for _ in range(edges):
-        graph.add_edge(random.randint(0, nodes - 1), random.randint(0, nodes - 1))
+        graph.add_edge(
+            random.randint(0, nodes - 1), random.randint(0, nodes - 1)
+        )
     return graph
 
 

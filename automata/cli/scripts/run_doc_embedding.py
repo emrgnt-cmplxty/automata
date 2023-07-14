@@ -32,7 +32,9 @@ def initialize_providers(embedding_level, **kwargs):
     initialize_modules(**kwargs)
 
     symbol_graph = SymbolGraph(
-        os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip")
+        os.path.join(
+            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
+        )
     )
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,
@@ -59,18 +61,22 @@ def initialize_providers(embedding_level, **kwargs):
     )
 
     if embedding_level == 3:
-        raise NotImplementedError("Embedding level 3 is not supported at this moment.")
+        raise NotImplementedError(
+            "Embedding level 3 is not supported at this moment."
+        )
 
-    symbol_code_embedding_handler: SymbolCodeEmbeddingHandler = dependency_factory.get(
-        "symbol_code_embedding_handler"
+    symbol_code_embedding_handler: SymbolCodeEmbeddingHandler = (
+        dependency_factory.get("symbol_code_embedding_handler")
     )
-    symbol_doc_embedding_handler: SymbolDocEmbeddingHandler = dependency_factory.get(
-        "symbol_doc_embedding_handler"
+    symbol_doc_embedding_handler: SymbolDocEmbeddingHandler = (
+        dependency_factory.get("symbol_doc_embedding_handler")
     )
 
     with SymbolProviderSynchronizationContext() as synchronization_context:
         synchronization_context.register_provider(symbol_graph)
-        synchronization_context.register_provider(symbol_code_embedding_handler)
+        synchronization_context.register_provider(
+            symbol_code_embedding_handler
+        )
         synchronization_context.synchronize()
 
     symbol_doc_embedding_handler.is_synchronized = True
@@ -88,7 +94,9 @@ def main(*args, **kwargs) -> str:
     Update the symbol code embedding based on the specified SCIP index file.
     """
 
-    symbol_doc_embedding_handler, filtered_symbols = initialize_providers(**kwargs)
+    symbol_doc_embedding_handler, filtered_symbols = initialize_providers(
+        **kwargs
+    )
 
     logger.info("Looping over filtered symbols...")
     for symbol in tqdm(filtered_symbols):

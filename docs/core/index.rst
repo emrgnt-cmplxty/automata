@@ -18,3 +18,19 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       handler_dict
+       logging_config
+       root_dict
+       base/index
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+

@@ -41,7 +41,9 @@ class OpenAIAutomataAgent(Agent):
     GENERAL_SUFFIX: Final = "NOTE - you are at iteration {iteration_count} out of a maximum of {max_iterations}. Please return a result with call_termination when ready."
     STOPPING_SUFFIX: Final = "NOTE - YOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS, RETURN A RESULT NOW WITH call_termination."
 
-    def __init__(self, instructions: str, config: OpenAIAutomataAgentConfig) -> None:
+    def __init__(
+        self, instructions: str, config: OpenAIAutomataAgentConfig
+    ) -> None:
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
@@ -66,7 +68,10 @@ class OpenAIAutomataAgent(Agent):
             - Add support for multiple assistants.
             - Can we cleanup the logging?
         """
-        if self.completed or self.iteration_count >= self.config.max_iterations:
+        if (
+            self.completed
+            or self.iteration_count >= self.config.max_iterations
+        ):
             raise AgentStopIteration
 
         logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
@@ -134,23 +139,32 @@ class OpenAIAutomataAgent(Agent):
                 break
 
         last_message = self.agent_conversation_database.get_latest_message()
-        if not self.completed and self.iteration_count >= self.config.max_iterations:
+        if (
+            not self.completed
+            and self.iteration_count >= self.config.max_iterations
+        ):
             raise AgentMaxIterError(
                 "The agent exceeded the maximum number of iterations."
             )
-        elif not self.completed or not isinstance(last_message, OpenAIChatMessage):
+        elif not self.completed or not isinstance(
+            last_message, OpenAIChatMessage
+        ):
             raise AgentResultError("The agent did not produce a result.")
         elif not last_message.content:
             raise AgentResultError("The agent produced an empty result.")
         return last_message.content
 
-    def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
+    def set_database_provider(
+        self, provider: LLMConversationDatabaseProvider
+    ) -> None:
         if not isinstance(provider, LLMConversationDatabaseProvider):
             raise AgentDatabaseError(
                 f"Invalid database provider type: {type(provider)}"
             )
         if self.database_provider:
-            raise AgentDatabaseError("The database provider has already been set.")
+            raise AgentDatabaseError(
+                "The database provider has already been set."
+            )
         self.database_provider = provider
         self.agent_conversation_database.register_observer(provider)
 
@@ -214,8 +228,13 @@ class OpenAIAutomataAgent(Agent):
 
         if assistant_message.function_call:
             for tool in self.tools:
-                if assistant_message.function_call.name == tool.openai_function.name:
-                    result = tool.run(assistant_message.function_call.arguments)
+                if (
+                    assistant_message.function_call.name
+                    == tool.openai_function.name
+                ):
+                    result = tool.run(
+                        assistant_message.function_call.arguments
+                    )
                     # Completion can occur from running `call_terminate` in the block above.
                     function_iteration_message = (
                         "" if self.completed else f"\n\n{iteration_message}"
@@ -241,10 +260,14 @@ class OpenAIAutomataAgent(Agent):
         """
         logger.debug(f"Setting up agent with tools = {self.config.tools}")
         self.agent_conversation_database.add_message(
-            OpenAIChatMessage(role="system", content=self.config.system_instruction)
+            OpenAIChatMessage(
+                role="system", content=self.config.system_instruction
+            )
         )
         for message in list(
-            self._build_initial_messages({"user_input_instructions": self.instructions})
+            self._build_initial_messages(
+                {"user_input_instructions": self.instructions}
+            )
         ):
             logger.debug(
                 f"Adding the following initial mesasge to the conversation {message}"

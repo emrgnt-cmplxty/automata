@@ -169,14 +169,24 @@ class ChromaSymbolEmbeddingVectorDatabase(
             "embedding": [float(ele) for ele in entry.vector],
         }
 
-    def _prepare_entries_for_insertion(self, entries: List[V]) -> Dict[str, Any]:
+    def _prepare_entries_for_insertion(
+        self, entries: List[V]
+    ) -> Dict[str, Any]:
         """Prepares multiple entries for insertion into the database."""
-        entries_data = [self._prepare_entry_for_insertion(entry) for entry in entries]
+        entries_data = [
+            self._prepare_entry_for_insertion(entry) for entry in entries
+        ]
         return {
-            "documents": [entry_data["document"] for entry_data in entries_data],
-            "metadatas": [entry_data["metadata"] for entry_data in entries_data],
+            "documents": [
+                entry_data["document"] for entry_data in entries_data
+            ],
+            "metadatas": [
+                entry_data["metadata"] for entry_data in entries_data
+            ],
             "ids": [entry_data["id"] for entry_data in entries_data],
-            "embeddings": [entry_data["embedding"] for entry_data in entries_data],
+            "embeddings": [
+                entry_data["embedding"] for entry_data in entries_data
+            ],
         }
 
     def _construct_entry_from_result(self, result: "GetResult") -> V:

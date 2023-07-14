@@ -21,3 +21,22 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+..  AUTO-GENERATED CONTENT START
+..
+
+    .. toctree::
+       :maxdepth: 1
+
+       bounding_box
+       context_component
+       context_component_callable
+       docstring_remover
+       dot_path_map
+       line_item
+       py_context_retriever
+
+..  AUTO-GENERATED CONTENT END
+..
+
+
+
