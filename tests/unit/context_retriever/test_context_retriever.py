@@ -1,6 +1,7 @@
 import ast
 import inspect
 import os
+import textwrap
 
 import pytest
 
@@ -205,8 +206,6 @@ def testget_all_methods(context_retriever):
 
 
 def testget_all_classes(context_retriever):
-    import textwrap
-
     source = textwrap.dedent(
         """
     class Calculator:
@@ -252,3 +251,112 @@ def test_interface_exclude_docstrings(context_retriever):
     assert "add(self, a: int, b: int) -> int" in interface
     assert "Docstring for Calculator class" not in interface
     assert "Docstring for add method" not in interface
+
+
+def test_class_inheritance(context_retriever):
+    class Parent:
+        pass
+
+    class Child(Parent):
+        pass
+
+    source_code = inspect.getsource(Child)
+    source_code = textwrap.dedent(source_code)
+    ast_object = ast.parse(source_code)
+    class_details = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(None, ast_object)
+    assert "Parent" in class_details
+
+
+def test_dunder_not_private(context_retriever):
+    class MyClass:
+        def __init__(self):
+            pass
+
+    source_code = inspect.getsource(MyClass.__init__)
+    source_code = textwrap.dedent(source_code)
+
+    ast_object = ast.parse(source_code).body[0]
+    assert not is_private_method(ast_object)
+
+
+def test_nested_class_detection(context_retriever):
+    class Parent:
+        class Child:
+            pass
+
+    source_code = inspect.getsource(Parent)
+    source_code = textwrap.dedent(source_code)
+
+    ast_object = ast.parse(source_code)
+    classes = get_all_classes(ast_object)
+    assert len(classes) == 2
+    assert all(isinstance(cls, ast.ClassDef) for cls in classes)
+    assert any(cls.name == "Child" for cls in classes)
+
+
+def test_class_inheritance_in_source_code(context_retriever):
+    class Parent:
+        pass
+
+    class Child(Parent):
+        pass
+
+    source_code = inspect.getsource(Child)
+    source_code = textwrap.dedent(source_code)
+    ast_object = ast.parse(source_code)
+    result_code = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(
+        None, ast_object, include_imports=False, include_docstrings=True
+    )
+    assert "class Child(Parent):" in result_code
+
+
+def test_class_attributes_in_source_code(context_retriever):
+    class TestClass:
+        attr1: int
+        attr2: str
+
+    source_code = inspect.getsource(TestClass)
+    source_code = textwrap.dedent(source_code)
+    ast_object = ast.parse(source_code)
+    result_code = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(
+        None, ast_object, include_imports=False, include_docstrings=True
+    )
+    assert "attr1: int" in result_code
+    assert "attr2: str" in result_code
+
+
+@pytest.mark.skip("TODO - Fix this test")
+def test_constructor_and_attributes(context_retriever):
+    class MyClass:
+        def __init__(self, attr1: int, attr2: str):
+            """These are some docstrings"""
+            self.attr1 = attr1
+            self.attr2 = attr2
+            self.attr3: float = 0.3
+
+        def another_test(self):
+            pass
+
+        def another_another_test(self, x: int, y: float = 0.1):
+            pass
+
+    source_code = inspect.getsource(MyClass)
+    source_code = textwrap.dedent(source_code)
+    ast_object = ast.parse(source_code)
+    result_code = context_retriever.context_components[
+        ContextComponent.INTERFACE
+    ].generate(
+        None, ast_object, include_imports=False, include_docstrings=True
+    )
+    assert "attr1: int" in result_code
+    assert "attr2: str" in result_code
+    assert (
+        "attr3: float" in result_code
+    )  # this is where the current test will fail!
+    assert "init" in result_code

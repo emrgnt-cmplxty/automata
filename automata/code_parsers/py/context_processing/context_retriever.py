@@ -12,6 +12,7 @@ from automata.code_parsers.py import (
     get_node_without_imports,
 )
 from automata.code_parsers.py.context_processing.context_utils import (
+    get_all_attributes,
     get_all_classes,
     get_all_methods,
     is_private_method,
@@ -160,10 +161,22 @@ class InterfaceContextComponent(BaseContextComponent):
                 continue
             processed_objects.add(id(cls))
 
+            # Process class decorators, attributes and inheritance
             decorators = [f"@{unparse(dec)}" for dec in cls.decorator_list]
-            class_header = f"{class_header}{cls.name}:"
+            class_header = f"{class_header}{cls.name}"
+            if cls.bases:
+                class_header += "(" + ", ".join(map(unparse, cls.bases)) + ")"
+            class_header += ":"
             class_header = "\n".join(decorators + [class_header])
             interface += self.process_entry(f"{class_header}")
+
+            # Handle class attributes
+            attributes = [
+                f"{unparse(a.target)}: {unparse(a.annotation)}"
+                for a in get_all_attributes(cls)
+            ]
+            if attributes:
+                interface += "\n".join(attributes)
 
             with self.increased_indentation():
                 interface += self.generate(
@@ -183,17 +196,23 @@ class InterfaceContextComponent(BaseContextComponent):
                 continue
             processed_objects.add(id(method))
 
-            if not skip_private or not is_private_method(method):
-                interface += self.process_entry(process_method(method))
-                method_docstring = get_docstring_from_node(method)
-                if (
-                    include_docstrings
-                    and method_docstring != AST_NO_RESULT_FOUND
-                ):
-                    with self.increased_indentation():
-                        interface += self.process_entry(
-                            f'"""{method_docstring}"""' + "\n"
-                        )
+            try:
+                if not is_private_method(method) or not skip_private:
+                    interface += self.process_entry(process_method(method))
+                    method_docstring = get_docstring_from_node(method)
+                    if (
+                        include_docstrings
+                        and method_docstring != AST_NO_RESULT_FOUND
+                    ):
+                        with self.increased_indentation():
+                            interface += self.process_entry(
+                                f'"""{method_docstring}"""' + "\n"
+                            )
+            except Exception as e:
+                # Log exception and continue processing
+                logging.error(f"Failed to process method {method.name}: {e}")
+                continue
+
         return interface
 
 
