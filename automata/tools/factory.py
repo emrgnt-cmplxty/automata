@@ -55,9 +55,7 @@ class AgentToolFactory:
                 raise UnknownToolError(agent_tool_manager)
 
             tools.extend(
-                AgentToolFactory.create_tools_from_builder(
-                    agent_tool_manager, **kwargs
-                )
+                AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs)
             )
 
         return tools

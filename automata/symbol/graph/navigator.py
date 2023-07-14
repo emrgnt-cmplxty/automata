@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 
-from automata.code_parsers.py import construct_bounding_box
+from automata.code_parsers.py import fetch_bounding_box
 from automata.config import MAX_WORKERS
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolReference
@@ -23,7 +23,7 @@ def process_symbol_bounds(
         py_module_loader.initialize(*loader_args)
     try:
         ast_object = convert_to_ast_object(symbol)
-        return symbol, construct_bounding_box(ast_object)
+        return symbol, fetch_bounding_box(ast_object)
     except Exception as e:
         logger.error(f"Error computing bounding box for {symbol.uri}: {e}")
         return None
@@ -35,9 +35,7 @@ class SymbolGraphNavigator:
     def __init__(self, graph: nx.MultiDiGraph) -> None:
         self._graph = graph
         # TODO - Find the correct way to define a bounding box
-        self.bounding_box: Dict[
-            Symbol, Any
-        ] = {}  # Default to empty bounding boxes
+        self.bounding_box: Dict[Symbol, Any] = {}  # Default to empty bounding boxes
 
     def get_sorted_supported_symbols(self) -> List[Symbol]:
         unsorted_symbols = [
@@ -94,9 +92,7 @@ class SymbolGraphNavigator:
                 column_number=data.get("column_number"),
                 roles=data.get("roles"),
             ): callee
-            for callee, caller, data in self._graph.out_edges(
-                symbol, data=True
-            )
+            for callee, caller, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "callee"
         }
 
@@ -114,9 +110,7 @@ class SymbolGraphNavigator:
                 column_number=data.get("column_number"),
                 roles=data.get("roles"),
             )
-            for caller, callee, data in self._graph.out_edges(
-                symbol, data=True
-            )
+            for caller, callee, data in self._graph.out_edges(symbol, data=True)
             if data.get("label") == "caller"
         }
 
@@ -131,9 +125,7 @@ class SymbolGraphNavigator:
         ), f"{symbol.uri} should have exactly one parent file, but has {len(parent_file_list)}"
         return parent_file_list.pop()
 
-    def _get_symbol_references_in_scope(
-        self, symbol: Symbol
-    ) -> List[SymbolReference]:
+    def _get_symbol_references_in_scope(self, symbol: Symbol) -> List[SymbolReference]:
         """
         Gets all symbol references in the scope of a symbol.
         This is done by finding the bounding box of the symbol,
@@ -149,7 +141,7 @@ class SymbolGraphNavigator:
             bounding_box = self.bounding_box[symbol]
         else:
             ast_object = convert_to_ast_object(symbol)
-            bounding_box = construct_bounding_box(ast_object)
+            bounding_box = fetch_bounding_box(ast_object)
 
         (
             parent_symbol_start_line,
@@ -166,19 +158,13 @@ class SymbolGraphNavigator:
         return [
             ref
             for ref in references_in_parent_module
-            if parent_symbol_start_line
-            <= ref.line_number
-            < parent_symbol_end_line
+            if parent_symbol_start_line <= ref.line_number < parent_symbol_end_line
             and ref.column_number >= parent_symbol_start_col
         ]
 
-    def _get_references_to_module(
-        self, module_path: str
-    ) -> List[SymbolReference]:
+    def _get_references_to_module(self, module_path: str) -> List[SymbolReference]:
         """Gets all references to a module in the graph."""
-        reference_edges_in_module = self._graph.in_edges(
-            module_path, data=True
-        )
+        reference_edges_in_module = self._graph.in_edges(module_path, data=True)
         return [
             data.get("symbol_reference")
             for _, __, data in reference_edges_in_module
@@ -193,9 +179,7 @@ class SymbolGraphNavigator:
             return
 
         logger.info("Pre-computing bounding boxes for all rankable symbols")
-        filtered_symbols = get_rankable_symbols(
-            self.get_sorted_supported_symbols()
-        )
+        filtered_symbols = get_rankable_symbols(self.get_sorted_supported_symbols())
 
         # prepare loader_args here (replace this comment with actual code)
         if not py_module_loader.initialized:

@@ -73,15 +73,11 @@ class SymbolRank:
         stochastic_graph = self._prepare_graph()
         node_count = stochastic_graph.number_of_nodes()
 
-        rank_vec = self._prepare_initial_ranks(
-            stochastic_graph, initial_weights
-        )
+        rank_vec = self._prepare_initial_ranks(stochastic_graph, initial_weights)
         prepared_similarity = self._prepare_query_to_symbol_similarity(
             node_count, stochastic_graph, query_to_symbol_similarity
         )
-        dangling_weights = self._prepare_dangling_weights(
-            dangling, prepared_similarity
-        )
+        dangling_weights = self._prepare_dangling_weights(dangling, prepared_similarity)
         dangling_nodes = self._get_dangling_nodes(stochastic_graph)
 
         for _ in range(self.config.max_iterations):
@@ -100,13 +96,9 @@ class SymbolRank:
                     + (1.0 - self.config.alpha) * prepared_similarity[node]
                 )
 
-            err = sum(
-                abs(rank_vec[node] - last_rank_vec[node]) for node in rank_vec
-            )
+            err = sum(abs(rank_vec[node] - last_rank_vec[node]) for node in rank_vec)
             if err < node_count * self.config.tolerance:
-                sorted_dict = sorted(
-                    rank_vec.items(), key=lambda x: x[1], reverse=True
-                )
+                sorted_dict = sorted(rank_vec.items(), key=lambda x: x[1], reverse=True)
                 return sorted_dict
 
         raise NetworkXError(
@@ -205,12 +197,9 @@ class SymbolRank:
         s = sum(dangling.values())
         return {k: v / s for k, v in dangling.items()}
 
-    def _get_dangling_nodes(
-        self, stochastic_graph: nx.DiGraph
-    ) -> List[Hashable]:
+    def _get_dangling_nodes(self, stochastic_graph: nx.DiGraph) -> List[Hashable]:
         return [
             node
             for node in stochastic_graph
-            if stochastic_graph.out_degree(node, weight=self.config.weight_key)
-            == 0.0
+            if stochastic_graph.out_degree(node, weight=self.config.weight_key) == 0.0
         ]

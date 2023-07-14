@@ -19,9 +19,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         batch_size: int = 1,
     ) -> None:
         if batch_size != 1:
-            raise ValueError(
-                "SymbolDocEmbeddingHandler only supports batch_size=1"
-            )
+            raise ValueError("SymbolDocEmbeddingHandler only supports batch_size=1")
         super().__init__(embedding_db, embedding_builder, batch_size)
 
     def process_embedding(self, symbol: Symbol) -> None:
@@ -30,9 +28,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         Currently we do nothing except update symbol commit hash and source code
         if the symbol is already in the database.
         """
-        source_code = self.embedding_builder.fetch_embedding_source_code(
-            symbol
-        )
+        source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
 
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
@@ -45,9 +41,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
     def _create_new_embedding(self, source_code: str, symbol: Symbol) -> None:
         if symbol.symbol_kind_by_suffix() == SymbolDescriptor.PyKind.Class:
             logger.debug(f"Creating a new class embedding for {symbol}")
-            symbol_embedding = self.embedding_builder.build(
-                source_code, symbol
-            )
+            symbol_embedding = self.embedding_builder.build(source_code, symbol)
         elif isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
             logger.debug(f"Creating a new non-class embedding for {symbol}")
             symbol_embedding = self.embedding_builder.build_non_class(
@@ -60,9 +54,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         self.embedding_db.add(symbol_embedding)
         logger.debug("Successfully added...")
 
-    def _update_existing_embedding(
-        self, source_code: str, symbol: Symbol
-    ) -> None:
+    def _update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         existing_embedding = self.embedding_db.get(symbol.full_dotpath)
         if (
             existing_embedding.symbol != symbol

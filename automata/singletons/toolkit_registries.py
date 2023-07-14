@@ -37,9 +37,7 @@ class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
         # Import all builder modules to ensure the classes get registered
         import automata.tools.builders as builder_package
 
-        for _, module_path, _ in pkgutil.iter_modules(
-            builder_package.__path__
-        ):
+        for _, module_path, _ in pkgutil.iter_modules(builder_package.__path__):
             __import__(f"automata.tools.builders.{module_path}", fromlist=[""])
 
         # Mark the registry as initialized

@@ -108,9 +108,7 @@ EXACT_CALLS_TO_HITS = {
         ),
     ],
 )
-def test_exact_search(
-    symbol_search_live, search, expected_in_hits  # noqa : F811
-):
+def test_exact_search(symbol_search_live, search, expected_in_hits):  # noqa : F811
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )
@@ -143,13 +141,9 @@ def test_source_code_retrieval(
     symbols = symbol_search_live.symbol_graph.get_sorted_supported_symbols()
 
     symbol = [
-        symbol
-        for symbol in symbols
-        if search[:-1] == symbol.descriptors[-1].name
+        symbol for symbol in symbols if search[:-1] == symbol.descriptors[-1].name
     ][0]
-    found_source_code = symbol_search_live.retrieve_source_code_by_symbol(
-        symbol.uri
-    )
+    found_source_code = symbol_search_live.retrieve_source_code_by_symbol(symbol.uri)
     for source_hit in expected_in_source:
         assert (
             source_hit in found_source_code

@@ -7,9 +7,7 @@ from automata.llm import LLMChatMessage, LLMConversationDatabaseProvider
 class AgentConversationDatabase(LLMConversationDatabaseProvider):
     """A conversation database for an Automata agent."""
 
-    def __init__(
-        self, session_id: str, db_path: str = CONVERSATION_DB_PATH
-    ) -> None:
+    def __init__(self, session_id: str, db_path: str = CONVERSATION_DB_PATH) -> None:
         self.connect(db_path)
         self.session_id = session_id
         self.create_table(
@@ -49,15 +47,10 @@ class AgentConversationDatabase(LLMConversationDatabaseProvider):
         self,
     ) -> List[LLMChatMessage]:
         """TODO - Test ordering and etc. around this method."""
-        result = self.select(
-            "interactions", ["*"], {"session_id": self.session_id}
-        )
+        result = self.select("interactions", ["*"], {"session_id": self.session_id})
 
         # Sort the results by interaction_id, which is the second element of each row
         sorted_result = sorted(result, key=lambda row: row[1])
 
         # Convert the sorted results to a list of LLMChatMessage instances
-        return [
-            LLMChatMessage(role=row[2], content=row[3])
-            for row in sorted_result
-        ]
+        return [LLMChatMessage(role=row[2], content=row[3]) for row in sorted_result]

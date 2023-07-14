@@ -38,17 +38,13 @@ class BoundingBox:
     bottom_right: LineItem
 
 
-def construct_bounding_box(node: AST) -> BoundingBox:
-    if not node.end_lineno:
-        raise ValueError(f"{node} does not have an end line number")
-    elif not node.end_col_offset:
-        raise ValueError(f"{node} does not have an end column offset")
-
+def fetch_bounding_box(node: AST) -> Optional[BoundingBox]:
+    if not node.end_lineno or not node.end_col_offset:
+        logger.warning(f"{node} does not have an end line number or column offset")
+        return None
     return BoundingBox(
         top_left=LineItem(line=node.lineno, column=node.col_offset),
-        bottom_right=LineItem(
-            line=node.end_lineno, column=node.end_col_offset
-        ),
+        bottom_right=LineItem(line=node.end_lineno, column=node.end_col_offset),
     )
 
 
@@ -64,8 +60,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
     elif isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)):
         doc_string = get_docstring(node)
         if doc_string:
-            doc_string.replace('"""', "").replace("'''", "")
-            return doc_string
+            return doc_string.replace('"""', "").replace("'''", "")
         else:
             return AST_NO_RESULT_FOUND
     return ""
@@ -98,9 +93,9 @@ class ImportRemover(NodeTransformer):
     def visit(self, node):
         # If this node is a function, class, or module, and its first child is an import statement,
         # remove the import statement.
-        if isinstance(
-            node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)
-        ) and (isinstance(node.body[0], (Import, ImportFrom))):
+        if isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)) and (
+            isinstance(node.body[0], (Import, ImportFrom))
+        ):
             node.body.pop(0)
         return super().visit(node)
 

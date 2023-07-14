@@ -19,16 +19,14 @@ class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` source code embeddings."""
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
-        embedding_vector = self.embedding_provider.build_embedding_vector(
-            source_code
-        )
+        embedding_vector = self.embedding_provider.build_embedding_vector(source_code)
         return SymbolCodeEmbedding(symbol, source_code, embedding_vector)
 
     def batch_build(
         self, source_codes: List[str], symbols: List[Symbol]
     ) -> List[SymbolCodeEmbedding]:
-        embedding_vectors = (
-            self.embedding_provider.batch_build_embedding_vector(source_codes)
+        embedding_vectors = self.embedding_provider.batch_build_embedding_vector(
+            source_codes
         )
         return [
             SymbolCodeEmbedding(symbol, source_code, embedding_vector)
@@ -121,9 +119,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             context=prompt,
         )
 
-    def build_non_class(
-        self, source_code: str, symbol: Symbol
-    ) -> SymbolDocEmbedding:
+    def build_non_class(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
         ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
         document = f"Symbol: {symbol.full_dotpath}\n{raw_doctring}"
@@ -173,9 +169,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
 
         return self.completion_provider.standalone_call(prompt)
 
-    def _generate_search_list(
-        self, abbreviated_selected_symbol: str
-    ) -> List[Symbol]:
+    def _generate_search_list(self, abbreviated_selected_symbol: str) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
         search_results = self.symbol_search.get_symbol_rank_results(
             f"{abbreviated_selected_symbol}"

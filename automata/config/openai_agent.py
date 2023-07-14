@@ -41,10 +41,8 @@ class OpenAIAutomataAgentConfig(AgentConfig):
         if not self.system_template_formatter:
             from automata.singletons.dependency_factory import dependency_factory
 
-            self.system_template_formatter = (
-                TemplateFormatter.create_default_formatter(
-                    self, dependency_factory.get("symbol_rank")
-                )
+            self.system_template_formatter = TemplateFormatter.create_default_formatter(
+                self, dependency_factory.get("symbol_rank")
             )
         if not self.system_instruction:
             self.system_instruction = self._formatted_instruction()
@@ -132,9 +130,7 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
         self, instruction_version: str
     ) -> "OpenAIAutomataAgentConfigBuilder":
         self._validate_type(instruction_version, str, "Instruction version")
-        self._config.instruction_version = InstructionConfigVersion(
-            instruction_version
-        )
+        self._config.instruction_version = InstructionConfigVersion(instruction_version)
         return self
 
     @staticmethod
@@ -148,9 +144,7 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
             raise ValueError("Config to load or config must be specified.")
 
         if config_to_load and config:
-            raise ValueError(
-                "Config to load and config cannot both be specified."
-            )
+            raise ValueError("Config to load and config cannot both be specified.")
 
         if config_to_load:
             builder = OpenAIAutomataAgentConfigBuilder.from_name(
