@@ -322,25 +322,17 @@ _sym_db.RegisterMessage(Diagnostic)
 
 if _descriptor._USE_C_DESCRIPTORS is False:
     DESCRIPTOR._options = None
-    DESCRIPTOR._serialized_options = (
-        b"Z-github.com/sourcegraph/scip/bindings/go/scip/"
-    )
+    DESCRIPTOR._serialized_options = b"Z-github.com/sourcegraph/scip/bindings/go/scip/"
     _SYNTAXKIND._options = None
     _SYNTAXKIND._serialized_options = b"\020\001"
     _SYNTAXKIND.values_by_name["IdentifierKeyword"]._options = None
-    _SYNTAXKIND.values_by_name[
-        "IdentifierKeyword"
-    ]._serialized_options = b"\010\001"
+    _SYNTAXKIND.values_by_name["IdentifierKeyword"]._serialized_options = b"\010\001"
     _SYNTAXKIND.values_by_name["IdentifierModule"]._options = None
-    _SYNTAXKIND.values_by_name[
-        "IdentifierModule"
-    ]._serialized_options = b"\010\001"
+    _SYNTAXKIND.values_by_name["IdentifierModule"]._serialized_options = b"\010\001"
     _DESCRIPTOR_SUFFIX._options = None
     _DESCRIPTOR_SUFFIX._serialized_options = b"\020\001"
     _DESCRIPTOR_SUFFIX.values_by_name["Package"]._options = None
-    _DESCRIPTOR_SUFFIX.values_by_name[
-        "Package"
-    ]._serialized_options = b"\010\001"
+    _DESCRIPTOR_SUFFIX.values_by_name["Package"]._serialized_options = b"\010\001"
     _PROTOCOLVERSION._serialized_start = 1495
     _PROTOCOLVERSION._serialized_end = 1544
     _TEXTENCODING._serialized_start = 1546

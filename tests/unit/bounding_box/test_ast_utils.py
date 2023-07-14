@@ -12,9 +12,7 @@ from automata.code_parsers.py.ast_utils import (
 
 
 def test_get_docstring_from_node_with_docstring():
-    node = parse(
-        "def foo():\n" '    """This is a docstring."""\n' "    pass\n"
-    )
+    node = parse("def foo():\n" '    """This is a docstring."""\n' "    pass\n")
     docstring = get_docstring_from_node(node.body[0])
     assert docstring == "This is a docstring."
 
@@ -31,20 +29,14 @@ def test_get_docstring_from_node_with_none_node():
 
 
 def test_get_node_without_docstrings():
-    node = parse(
-        "def foo():\n" '    """This is a docstring."""\n' "    pass\n"
-    )
+    node = parse("def foo():\n" '    """This is a docstring."""\n' "    pass\n")
     node_without_docstrings = get_node_without_docstrings(node.body[0])
-    assert (
-        get_docstring_from_node(node_without_docstrings) == "No result found."
-    )
+    assert get_docstring_from_node(node_without_docstrings) == "No result found."
 
 
 def test_get_node_without_imports():
     node = parse(
-        "import os\ndef foo():\n"
-        '    """This is a docstring."""\n'
-        "    pass\n"
+        "import os\ndef foo():\n" '    """This is a docstring."""\n' "    pass\n"
     )
     module_node = cast(ast.Module, node)
     node_without_imports = get_node_without_imports(module_node)
@@ -99,9 +91,7 @@ def test_get_docstring_from_node_with_various_nodes(source, expected):
 def test_get_node_without_docstrings_with_various_nodes(source):
     node = parse(source)
     node_without_docstrings = get_node_without_docstrings(node)
-    assert (
-        get_docstring_from_node(node_without_docstrings) == "No result found."
-    )
+    assert get_docstring_from_node(node_without_docstrings) == "No result found."
 
 
 @pytest.mark.parametrize(

@@ -111,17 +111,13 @@ class AgentConfig(ABC, BaseModel):
         )
 
         if not os.path.isfile(config_abs_path):
-            raise FileNotFoundError(
-                f"Config file not found: {config_abs_path}"
-            )
+            raise FileNotFoundError(f"Config file not found: {config_abs_path}")
 
         with open(config_abs_path, "r") as file:
             try:
                 loaded_yaml = yaml.safe_load(file)
             except yaml.YAMLError as e:
-                raise ValueError(
-                    f"Invalid YAML file: {config_abs_path}"
-                ) from e
+                raise ValueError(f"Invalid YAML file: {config_abs_path}") from e
 
         if "config_name" in loaded_yaml:
             raise ValueError(
@@ -179,9 +175,7 @@ class AgentConfigBuilder(Generic[T]):
         self._config.temperature = temperature
         return self
 
-    def with_session_id(
-        self, session_id: Optional[str]
-    ) -> "AgentConfigBuilder":
+    def with_session_id(self, session_id: Optional[str]) -> "AgentConfigBuilder":
         if session_id:
             self._validate_type(session_id, str, "Session Id")
         self._config.session_id = session_id
@@ -201,9 +195,7 @@ class AgentConfigBuilder(Generic[T]):
             try:
                 config_name = AgentConfigName(config_name)
             except ValueError as e:
-                raise ValueError(
-                    f"Invalid AgentConfigName value: {config_name}"
-                ) from e
+                raise ValueError(f"Invalid AgentConfigName value: {config_name}") from e
 
         return cls(cls.create_config(config_name))
 
@@ -211,6 +203,4 @@ class AgentConfigBuilder(Generic[T]):
     def _validate_type(value, expected_type, param_name: str) -> None:
         """Validate the type of the provided value and raise a ValueError if it doesn't match the expected type."""
         if not isinstance(value, expected_type):
-            raise ValueError(
-                f"{param_name} must be a {expected_type.__name__}."
-            )
+            raise ValueError(f"{param_name} must be a {expected_type.__name__}.")

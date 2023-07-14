@@ -169,9 +169,7 @@ class JSONVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     def update_entry(self, entry: V) -> None:
         key = self.entry_to_key(entry)
         if key not in self.index:
-            raise KeyError(
-                f"Update database failed with key {key} not in database"
-            )
+            raise KeyError(f"Update database failed with key {key} not in database")
         self.data[self.index[key]] = entry
 
     def batch_update(self, entries: List[V]) -> None:
@@ -203,9 +201,7 @@ class JSONVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
         del self.data[index]
         del self.index[key]
         # Recalculate indices after deletion
-        self.index = {
-            self.entry_to_key(entry): i for i, entry in enumerate(self.data)
-        }
+        self.index = {self.entry_to_key(entry): i for i, entry in enumerate(self.data)}
 
     def batch_discard(self, keys: List[K]) -> None:
         # TODO - This implementation is super inefficient, we should think
@@ -217,13 +213,9 @@ class JSONVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
 class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
     """Concrete class to provide a vector database that uses Chroma."""
 
-    def __init__(
-        self, collection_name: str, persist_directory: Optional[str] = None
-    ):
+    def __init__(self, collection_name: str, persist_directory: Optional[str] = None):
         self._setup_chroma_client(persist_directory)
-        self._collection = self.client.get_or_create_collection(
-            collection_name
-        )
+        self._collection = self.client.get_or_create_collection(collection_name)
         self.persist_directory = persist_directory
 
     def _setup_chroma_client(self, persist_directory: Optional[str] = None):
@@ -233,8 +225,7 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
             from chromadb.config import Settings
         except ImportError as e:
             raise ImportError(
-                "Please install Chroma Python client first: "
-                "`pip install chromadb`"
+                "Please install Chroma Python client first: " "`pip install chromadb`"
             ) from e
         if persist_directory:
             self.client = chromadb.Client(

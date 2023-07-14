@@ -26,8 +26,8 @@ def test_build(symbol_search_tool_builder):
 
 
 def test_symbol_rank_search(symbols, symbol_search_tool_builder):
-    symbol_search_tool_builder.symbol_search.get_symbol_rank_results = (
-        MagicMock(return_value=[(symbols[0], 1)])
+    symbol_search_tool_builder.symbol_search.get_symbol_rank_results = MagicMock(
+        return_value=[(symbols[0], 1)]
     )
 
     tools = symbol_search_tool_builder.build()
@@ -49,8 +49,8 @@ def test_symbol_references(symbol_search_tool_builder):
 
 
 def test_retrieve_source_code_by_symbol(symbol_search_tool_builder):
-    symbol_search_tool_builder.symbol_search.retrieve_source_code_by_symbol = (
-        MagicMock(return_value=ast.parse("def f(x):\n    return True"))
+    symbol_search_tool_builder.symbol_search.retrieve_source_code_by_symbol = MagicMock(
+        return_value=ast.parse("def f(x):\n    return True")
     )
 
     tools = symbol_search_tool_builder.build()

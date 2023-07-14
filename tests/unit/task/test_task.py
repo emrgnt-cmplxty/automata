@@ -23,9 +23,7 @@ def test_register_task(mock_logging_config_dict, task, registry):
     assert task.status == TaskStatus.REGISTERED
 
 
-def test_setup_environment(
-    mock_logging_config_dict, task, environment, registry
-):
+def test_setup_environment(mock_logging_config_dict, task, environment, registry):
     registry.register(task)
     environment.setup(task)
     assert task.observer is not None
@@ -60,18 +58,10 @@ def test_task_id_determinism(automata_agent_config_builder):
         "instructions": "test1",
     }
 
-    task_1 = AutomataTask(
-        **common_args, test2="arg2", generate_deterministic_id=True
-    )
-    task_2 = AutomataTask(
-        **common_args, test2="arg2", generate_deterministic_id=True
-    )
-    task_3 = AutomataTask(
-        **common_args, test2="arg3", generate_deterministic_id=True
-    )
-    task_4 = AutomataTask(
-        **common_args, test2="arg2", generate_deterministic_id=False
-    )
+    task_1 = AutomataTask(**common_args, test2="arg2", generate_deterministic_id=True)
+    task_2 = AutomataTask(**common_args, test2="arg2", generate_deterministic_id=True)
+    task_3 = AutomataTask(**common_args, test2="arg3", generate_deterministic_id=True)
+    task_4 = AutomataTask(**common_args, test2="arg2", generate_deterministic_id=False)
 
     assert task_1.task_id == task_2.task_id
     assert task_1.task_id != task_3.task_id

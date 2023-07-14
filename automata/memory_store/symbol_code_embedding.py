@@ -3,10 +3,7 @@ from typing import List, Tuple
 
 from automata.core.base import VectorDatabaseProvider
 from automata.symbol import Symbol
-from automata.symbol_embedding import (
-    SymbolCodeEmbeddingBuilder,
-    SymbolEmbeddingHandler,
-)
+from automata.symbol_embedding import SymbolCodeEmbeddingBuilder, SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +25,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         Process the embedding for a list of `Symbol`s by updating if the
         source code has changed.
         """
-        source_code = self.embedding_builder.fetch_embedding_source_code(
-            symbol
-        )
+        source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
         if self.embedding_db.contains(symbol.full_dotpath):
@@ -43,9 +38,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
             self._build_and_add_embeddings()
         super().flush()
 
-    def _update_existing_embedding(
-        self, source_code: str, symbol: Symbol
-    ) -> None:
+    def _update_existing_embedding(self, source_code: str, symbol: Symbol) -> None:
         """
         Check for differences between the source code of the symbol and the source code
         of the existing embedding. If there are differences, update the embedding.
@@ -81,9 +74,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
         """Build and add the embeddings for the queued symbols."""
         sources = [ele[0] for ele in self.to_build]
         symbols = [ele[1] for ele in self.to_build]
-        symbol_embeddings = self.embedding_builder.batch_build(
-            sources, symbols
-        )
+        symbol_embeddings = self.embedding_builder.batch_build(sources, symbols)
         self.to_build = []
 
         self.to_add.extend(symbol_embeddings)

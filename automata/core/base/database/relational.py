@@ -57,9 +57,7 @@ class SQLDatabase(RelationalDatabase):
 
     def create_table(self, table_name: str, fields: Dict):
         fields_str = ", ".join([f"{k} {v}" for k, v in fields.items()])
-        self.cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS {table_name} ({fields_str})"
-        )
+        self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({fields_str})")
         self.conn.commit()
 
     def insert(self, table_name: str, data: Dict):

@@ -4,11 +4,7 @@ from typing import cast
 
 import pytest
 
-from automata.code_parsers.py.ast_utils import (
-    BoundingBox,
-    LineItem,
-    fetch_bounding_box,
-)
+from automata.code_parsers.py.ast_utils import BoundingBox, LineItem, fetch_bounding_box
 
 
 @pytest.fixture

@@ -45,9 +45,7 @@ def load_config(
 ) -> Any:
     """Loads a config file from the config directory"""
     with open(
-        os.path.join(
-            get_config_fpath(), config_name, f"{file_name}.{config_type}"
-        ),
+        os.path.join(get_config_fpath(), config_name, f"{file_name}.{config_type}"),
         "r",
     ) as file:
         if config_type == "yaml":
@@ -136,9 +134,7 @@ def get_logging_config(
             "formatter": "standard",
             "level": log_level,
         }
-        logging_config["root"]["handlers"].append(
-            "file"
-        )  # add "file" to handlers
+        logging_config["root"]["handlers"].append("file")  # add "file" to handlers
 
     return cast(dict[str, Any], logging_config)
 

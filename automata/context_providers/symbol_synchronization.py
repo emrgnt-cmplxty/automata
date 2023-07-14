@@ -36,14 +36,10 @@ class SymbolProviderRegistry:
             provider.filter_symbols(sorted_supported_symbols)
             provider.set_synchronized(True)
 
-        SymbolProviderRegistry.sorted_supported_symbols = (
-            sorted_supported_symbols
-        )
+        SymbolProviderRegistry.sorted_supported_symbols = sorted_supported_symbols
 
         if not SymbolProviderRegistry.sorted_supported_symbols:
-            raise RuntimeError(
-                "No symbols are supported by any symbol provider"
-            )
+            raise RuntimeError("No symbols are supported by any symbol provider")
 
     @staticmethod
     def get_sorted_supported_symbols() -> List[Symbol]:

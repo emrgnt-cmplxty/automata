@@ -21,9 +21,7 @@ class Agent(ABC):
     def __init__(self, instructions: str) -> None:
         self.instructions = instructions
         self.completed = False
-        self.database_provider: Optional[
-            LLMConversationDatabaseProvider
-        ] = None
+        self.database_provider: Optional[LLMConversationDatabaseProvider] = None
 
     @abstractmethod
     def __iter__(self):
@@ -54,9 +52,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def set_database_provider(
-        self, provider: LLMConversationDatabaseProvider
-    ) -> None:
+    def set_database_provider(self, provider: LLMConversationDatabaseProvider) -> None:
         pass
 
     @abstractmethod
@@ -110,6 +106,4 @@ class AgentInstance(BaseModel):
     def create(
         cls, config_name: AgentConfigName, description: str = "", **kwargs
     ) -> "AgentInstance":
-        return cls(
-            config_name=config_name, description=description, kwargs=kwargs
-        )
+        return cls(config_name=config_name, description=description, kwargs=kwargs)

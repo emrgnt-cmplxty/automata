@@ -50,9 +50,7 @@ def parsed_symbol():
 def test_parse_symbol_descriptor(symbol_str, expected_descriptor):
     symbol = parse_symbol(symbol_str)
     assert (
-        SymbolDescriptor.convert_scip_to_python_suffix(
-            symbol.descriptors[-1].suffix
-        )
+        SymbolDescriptor.convert_scip_to_python_suffix(symbol.descriptors[-1].suffix)
         == expected_descriptor
     )
 

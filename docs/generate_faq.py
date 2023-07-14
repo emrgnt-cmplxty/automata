@@ -27,9 +27,7 @@ def fill_faq(faq_json_path: str, faq_rst_path: str) -> None:
 
             faq_rst_file.write(f".. dropdown:: Q: {question}\n")
             faq_rst_file.write("   :container: + shadow\n")
-            faq_rst_file.write(
-                "   :title: bg-primary text-white text-center\n"
-            )
+            faq_rst_file.write("   :title: bg-primary text-white text-center\n")
             faq_rst_file.write("   :body: bg-dark font-weight-light \n\n")
             faq_rst_file.write(f"   A: {answer}\n\n")
 

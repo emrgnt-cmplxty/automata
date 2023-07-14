@@ -66,9 +66,7 @@ class PyDocWriter:
         for symbol in np.array(symbols):
             symbol_name = symbol.descriptors[-1].name
 
-            if symbol_name[0] == "_" or not PyDocWriter.check_camel_case(
-                symbol_name
-            ):
+            if symbol_name[0] == "_" or not PyDocWriter.check_camel_case(symbol_name):
                 continue
 
             snaked_symbol_name = PyDocWriter.camel_to_snake(symbol_name)
@@ -100,12 +98,8 @@ class PyDocWriter:
         doc_directory_manager = DirectoryManager(docs_dir)
         for root, dirs, _ in os.walk(docs_dir, topdown=False):
             root_relative_to_base = os.path.relpath(root, start=docs_dir)
-            files = doc_directory_manager.get_files_in_dir(
-                root_relative_to_base
-            )
-            dirs = doc_directory_manager.get_subdirectories(
-                root_relative_to_base
-            )
+            files = doc_directory_manager.get_files_in_dir(root_relative_to_base)
+            dirs = doc_directory_manager.get_subdirectories(root_relative_to_base)
 
             rst_files = [f for f in files if f.endswith(".rst")]
             root_dir_node = doc_directory_manager._get_node_for_path(
@@ -198,6 +192,4 @@ how to :ref:`installation` the project.
         Returns:
             bool: True if the string is camel case, False otherwise
         """
-        return (
-            text != text.lower() and text != text.upper() and "_" not in text
-        )
+        return text != text.lower() and text != text.upper() and "_" not in text

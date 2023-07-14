@@ -16,9 +16,7 @@ def test_build_initial_messages(automata_agent):
 
 
 @patch("openai.ChatCompletion.create")
-def test_iter_step_without_api_call(
-    mock_openai_chatcompletion_create, automata_agent
-):
+def test_iter_step_without_api_call(mock_openai_chatcompletion_create, automata_agent):
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = {
         "choices": [
@@ -35,18 +33,13 @@ def test_iter_step_without_api_call(
     result = next(automata_agent)
     # Check if the result is as expected
     assistant_message, user_message = result
-    assert (
-        assistant_message.content
-        == "The dummy_tool has been tested successfully."
-    )
+    assert assistant_message.content == "The dummy_tool has been tested successfully."
     assert user_message.content, OpenAIAutomataAgent.CONTINUE_PREFIX
     assert automata_agent.iteration_count == 1
 
 
 @patch("openai.ChatCompletion.create")
-def test_run_with_no_completion(
-    mock_openai_chatcompletion_create, automata_agent
-):
+def test_run_with_no_completion(mock_openai_chatcompletion_create, automata_agent):
     max_iterations = 5
     automata_agent.config.max_iterations = max_iterations
     # Mock the API response
