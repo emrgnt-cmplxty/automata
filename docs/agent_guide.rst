@@ -60,4 +60,3 @@ Limitations
 -----------
 
 OpenAIAutomataAgent's full functionality depends on the integration with OpenAI API requirements and limitations. Improvements might be needed in logging and exception handling. It currently does not support multiple assistants.
-

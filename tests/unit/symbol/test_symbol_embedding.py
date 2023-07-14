@@ -11,9 +11,32 @@ from automata.symbol_embedding import (
 )
 
 
+@pytest.fixture
+def cem(mock_provider, mock_db):
+    cem = SymbolCodeEmbeddingHandler(
+        embedding_builder=mock_provider, embedding_db=mock_db
+    )
+    return cem
+
+
+@pytest.fixture
+def mock_db():
+    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
+    return mock_db
+
+
+@pytest.fixture
+def mock_provider():
+    mock_provider = Mock(EmbeddingBuilder)
+    return mock_provider
+
+
 def test_update_embeddings(
+    cem,
     monkeypatch,
+    mock_db,
     mock_embedding,
+    mock_provider,
     mock_simple_method_symbols,
     mock_simple_class_symbols,
 ):
@@ -22,12 +45,9 @@ def test_update_embeddings(
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingVectorProvider methods
-    mock_provider = Mock(EmbeddingBuilder)
     # mock_provider.build_embedding_vector.return_value = mock_embedding
 
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
-    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
     mock_db.get.return_value = SymbolCodeEmbedding(
         mock_simple_method_symbols[0], mock_embedding, "symbol_source"
     )
@@ -55,16 +75,15 @@ def test_update_embeddings(
 
 
 def test_get_embedding(
-    monkeypatch,
+    cem,
+    mock_db,
     mock_embedding,
+    mock_provider,
     mock_simple_method_symbols,
 ):
-    # Mock EmbeddingVectorProvider methods
-    mock_provider = Mock(EmbeddingBuilder)
     # mock_provider.build_embedding_vector.return_value = mock_embedding
 
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
-    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
     mock_db.batch_get.return_value = [
         SymbolCodeEmbedding(
             mock_simple_method_symbols[0], "symbol_source", mock_embedding
@@ -83,19 +102,18 @@ def test_get_embedding(
     assert embedding[0].vector.all() == mock_embedding.all()
 
 
-def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
+def test_add_new_embedding(
+    cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols
+):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.symbol.symbol_utils.convert_to_ast_object",
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingVectorProvider methods
-    mock_provider = Mock(EmbeddingBuilder)
     # mock_provider.build_embedding_vector.return_value = [1, 2, 3]
 
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
-    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
@@ -112,18 +130,16 @@ def test_add_new_embedding(monkeypatch, mock_simple_method_symbols):
         cem.flush()
 
 
-def test_update_embedding(monkeypatch, mock_simple_method_symbols):
+def test_update_embedding(
+    cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols
+):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.symbol.symbol_utils.convert_to_ast_object",
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingVectorProvider methods
-    mock_provider = Mock(EmbeddingBuilder)
-
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
-    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)
@@ -157,19 +173,18 @@ def test_update_embedding(monkeypatch, mock_simple_method_symbols):
     # assert list(embedding) == [1, 2, 3, 4]
 
 
-def test_get_embedding_exception(monkeypatch, mock_simple_method_symbols):
+def test_get_embedding_exception(
+    cem, monkeypatch, mock_db, mock_provider, mock_simple_method_symbols
+):
     # Test exception in build_embedding_vector function
     monkeypatch.setattr(
         "automata.symbol.symbol_utils.convert_to_ast_object",
         lambda args: "symbol_source",
     )
 
-    # Mock EmbeddingVectorProvider methods
-    mock_provider = Mock(EmbeddingBuilder)
     mock_provider.build.side_effect = Exception("Test exception")
 
     # Mock ChromaSymbolEmbeddingVectorDatabase methods
-    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
     mock_db.data = []
     mock_db.contains = lambda x: False
     mock_db.add = lambda x: mock_db.data.append(x)

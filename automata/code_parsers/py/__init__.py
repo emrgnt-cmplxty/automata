@@ -7,6 +7,7 @@ from .ast_utils import (
 )
 from .context_handler import PyContextHandler, PyContextHandlerConfig
 from .context_retriever import ContextComponent, PyContextRetriever
+from .doc_writer import PyDocWriter
 from .dotpath_map import DotPathMap
 
 __all__ = [
@@ -18,6 +19,7 @@ __all__ = [
     "PyContextRetriever",
     "PyContextHandler",
     "PyContextHandlerConfig",
+    "PyDocWriter",
     "ContextComponent",
     "DotPathMap",
 ]

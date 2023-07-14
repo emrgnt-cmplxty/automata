@@ -6,21 +6,15 @@ tools
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
+.. note::
+
+.. toctree::
+   :maxdepth: 1
+
+   base/index
+   builders/index
+   agent_tool_factory
+   tool
 
 
-..  AUTO-GENERATED CONTENT START
-..
-
-    .. toctree::
-       :maxdepth: 1
-
-       agent_tool_factory
-       tool
-       base/index
-       builders/index
-
-..  AUTO-GENERATED CONTENT END
-..
-
-
-
+Summary of content
