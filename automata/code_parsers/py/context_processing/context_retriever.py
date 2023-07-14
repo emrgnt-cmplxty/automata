@@ -1,18 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
-from ast import AST, AsyncFunctionDef, ClassDef, FunctionDef, unparse, walk
+from ast import AST, unparse
 from contextlib import contextmanager
 from enum import Enum
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Protocol,
-    Set,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, Optional, Protocol, Set
 
 from automata.code_parsers.py import (
     AST_NO_RESULT_FOUND,
@@ -20,84 +11,17 @@ from automata.code_parsers.py import (
     get_node_without_docstrings,
     get_node_without_imports,
 )
+from automata.code_parsers.py.context_processing.context_utils import (
+    get_all_classes,
+    get_all_methods,
+    is_private_method,
+    process_method,
+)
 
 if TYPE_CHECKING:
     from automata.symbol.base import Symbol  # avoid circular dependencies
 
 logger = logging.getLogger(__name__)
-
-
-def _is_private_method(method: Union[AsyncFunctionDef, FunctionDef]) -> bool:
-    """Checks if a method is private, i.e., starts with '_'."""
-    return method.name.startswith("_")
-
-
-def _get_method_return_annotation(
-    method: Union[AsyncFunctionDef, FunctionDef]
-) -> str:
-    return unparse(method.returns) if method.returns is not None else "None"
-
-
-def _get_all_methods(ast: AST) -> List[Union[FunctionDef, AsyncFunctionDef]]:
-    return [
-        node
-        for node in walk(ast)
-        if isinstance(node, (FunctionDef, AsyncFunctionDef))
-    ]
-
-
-def _get_all_classes(ast: AST) -> List[ClassDef]:
-    return [node for node in walk(ast) if isinstance(node, ClassDef)]
-
-
-def _get_method_arguments(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
-    args = []
-    defaults = dict(
-        zip(
-            [arg.arg for arg in reversed(method.args.args)],
-            reversed(method.args.defaults),
-        )
-    )
-
-    for arg in method.args.args:
-        if arg.arg in defaults:
-            args.append(f"{unparse(arg)}={unparse(defaults[arg.arg])}")
-        else:
-            args.append(unparse(arg))
-
-    # Handle keyword-only arguments
-    if method.args.kwonlyargs:
-        for kwarg in method.args.kwonlyargs:
-            default = next(
-                (
-                    kw_default
-                    for kw_default, kw_arg in zip(
-                        method.args.kw_defaults, method.args.kwonlyargs
-                    )
-                    if kw_arg.arg == kwarg.arg
-                ),
-                None,
-            )
-
-            if default is not None:
-                args.append(f"{unparse(kwarg)}={unparse(default)}")
-            else:
-                args.append(unparse(kwarg))
-
-    return ", ".join(args)
-
-
-def _process_method(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
-    """
-    Processes a specified method by printing its name, arguments, and return type.
-    If we are processing the main symbol, we also print the method's code.
-    """
-    decorators = [f"@{unparse(dec)}" for dec in method.decorator_list]
-    method_definition = f"{method.name}({_get_method_arguments(method)})"
-    return_annotation = _get_method_return_annotation(method)
-    return "\n".join(
-        decorators + [f"{method_definition} -> {return_annotation}"]
-    )
 
 
 class ContextComponent(Enum):
@@ -142,7 +66,6 @@ class HeadlineContextComponent(BaseContextComponent):
         self,
         symbol: "Symbol",
         ast_object: AST,
-        # headline="Building symbol context: ",
         *args,
         **kwargs,
     ) -> str:
@@ -165,7 +88,6 @@ class SourceCodeContextComponent(BaseContextComponent):
         if not include_docstrings:
             ast_object = get_node_without_docstrings(ast_object)
 
-        print("ast_object = ", ast_object)
         if not include_imports:
             ast_object = get_node_without_imports(ast_object)
 
@@ -231,7 +153,7 @@ class InterfaceContextComponent(BaseContextComponent):
         if include_docstrings and obj_docstring != AST_NO_RESULT_FOUND:
             interface += self.process_entry(f'"""{obj_docstring}"""' + "\n")
 
-        classes = _get_all_classes(ast_object)
+        classes = get_all_classes(ast_object)
 
         for cls in classes:
             if id(cls) in processed_objects:
@@ -255,14 +177,14 @@ class InterfaceContextComponent(BaseContextComponent):
                     processed_objects=processed_objects,
                 )
 
-        methods = sorted(_get_all_methods(ast_object), key=lambda x: x.name)
+        methods = sorted(get_all_methods(ast_object), key=lambda x: x.name)
         for method in methods:
             if id(method) in processed_objects:
                 continue
             processed_objects.add(id(method))
 
-            if not skip_private or not _is_private_method(method):
-                interface += self.process_entry(_process_method(method))
+            if not skip_private or not is_private_method(method):
+                interface += self.process_entry(process_method(method))
                 method_docstring = get_docstring_from_node(method)
                 if (
                     include_docstrings

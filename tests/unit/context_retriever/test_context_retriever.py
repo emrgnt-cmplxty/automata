@@ -5,12 +5,12 @@ import os
 import pytest
 
 from automata.code_parsers.py import ContextComponent, PyContextRetriever
-from automata.code_parsers.py.context_retriever import (
-    _get_all_classes,
-    _get_all_methods,
+from automata.code_parsers.py.context_processing.context_utils import (
     _get_method_return_annotation,
-    _is_private_method,
-    _process_method,
+    get_all_classes,
+    get_all_methods,
+    is_private_method,
+    process_method,
 )
 from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
@@ -153,7 +153,7 @@ def test_process_headline(context_retriever):
     assert headline == "my_project.core.calculator.Calculator\n"
 
 
-def test_process_method(context_retriever):
+def testprocess_method(context_retriever):
     source_code = inspect.getsource(Calculator.add)
     # Remove the leading spaces from the source code
     source_code = "\n".join(
@@ -163,7 +163,7 @@ def test_process_method(context_retriever):
         ]
     )
     ast_object = ast.parse(source_code).body[0]
-    processed_method = _process_method(ast_object)
+    processed_method = process_method(ast_object)
     assert processed_method == "add(self, a: int, b: int) -> int"
 
 
@@ -181,16 +181,22 @@ def test_get_method_return_annotation(context_retriever):
     assert return_annotation == "int"
 
 
-def test_is_private_method(context_retriever):
+def testis_private_method(context_retriever):
     source_code = "def _private_method(): pass"
     ast_object = ast.parse(source_code).body[0]
-    assert _is_private_method(ast_object)
+    assert is_private_method(ast_object)
 
 
-def test_get_all_methods(context_retriever):
+def test_dunder_is_not_private(context_retriever):
+    source_code = "def __init__(self): pass"
+    ast_object = ast.parse(source_code).body[0]
+    assert not is_private_method(ast_object)
+
+
+def testget_all_methods(context_retriever):
     source_code = inspect.getsource(Calculator)
     ast_object = ast.parse(source_code)
-    methods = _get_all_methods(ast_object)
+    methods = get_all_methods(ast_object)
     assert len(methods) == 3
     assert all(
         isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
@@ -198,7 +204,7 @@ def test_get_all_methods(context_retriever):
     )
 
 
-def test_get_all_classes(context_retriever):
+def testget_all_classes(context_retriever):
     import textwrap
 
     source = textwrap.dedent(
@@ -215,7 +221,7 @@ def test_get_all_classes(context_retriever):
     """
     )
     ast_object = ast.parse(source)
-    classes = _get_all_classes(ast_object)
+    classes = get_all_classes(ast_object)
     assert len(classes) == 2
     assert all(isinstance(cls, ast.ClassDef) for cls in classes)
 
