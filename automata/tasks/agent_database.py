@@ -57,7 +57,9 @@ class AutomataAgentTaskDatabase(SQLDatabase):
             {"id": str(task.task_id)},
         )
 
-    def get_tasks_by_query(self, query: str, params: Tuple = ()) -> List[AutomataTask]:
+    def get_tasks_by_query(
+        self, query: str, params: Tuple = ()
+    ) -> List[AutomataTask]:
         """Gets the list of tasks by applying the specified query."""
         rows = self.select(
             self.TABLE_NAME, ["json"], conditions=dict(zip(query, params))
@@ -100,7 +102,9 @@ class AutomataTaskRegistry:
             )
         task.observer = self.update_task
         if self.fetch_task_by_id(str(task.task_id)):
-            raise AgentTaskGeneralError(f"Task with id {task.task_id} already exists")
+            raise AgentTaskGeneralError(
+                f"Task with id {task.task_id} already exists"
+            )
         self.db.insert_task(task)
         task.status = TaskStatus.REGISTERED
         logger.info(f"Task {task.task_id} registered successfully.")
@@ -113,7 +117,9 @@ class AutomataTaskRegistry:
             Exception: If the task does not exist in the registry.
         """
         if not self.db.contains(task):
-            raise AgentTaskStateError(f"Task with id {task.task_id} does not exist")
+            raise AgentTaskStateError(
+                f"Task with id {task.task_id} does not exist"
+            )
         task.observer = None
         self.db.update_task(task)
         task.observer = self.update_task
@@ -129,7 +135,9 @@ class AutomataTaskRegistry:
         if not results:
             return None
         if len(results) != 1:
-            raise AgentTaskGeneralError(f"Found multiple tasks with id {task_id}")
+            raise AgentTaskGeneralError(
+                f"Found multiple tasks with id {task_id}"
+            )
         task = results[0]
         task.observer = self.update_task
         return task

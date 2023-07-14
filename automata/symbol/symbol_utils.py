@@ -18,7 +18,9 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
-            SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
+            SymbolDescriptor.convert_scip_to_python_suffix(
+                top_descriptor.suffix
+            )
             == SymbolDescriptor.PyKind.Module
         ):
             module_path = top_descriptor.name
@@ -26,16 +28,22 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
                 module_path = module_path[len("") :]  # indexer omits this
             module_dotpath = top_descriptor.name
             if module_dotpath.startswith(""):
-                module_dotpath = module_dotpath[len("") :]  # indexer omits this
+                module_dotpath = module_dotpath[
+                    len("") :
+                ]  # indexer omits this
             obj = py_module_loader.fetch_ast_module(module_dotpath)
             if not obj:
                 raise ValueError(f"Module {module_dotpath} not found")
         elif (
-            SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
+            SymbolDescriptor.convert_scip_to_python_suffix(
+                top_descriptor.suffix
+            )
             == SymbolDescriptor.PyKind.Class
         ):
             if not obj:
-                raise ValueError("Class descriptor found without module descriptor")
+                raise ValueError(
+                    "Class descriptor found without module descriptor"
+                )
             obj = next(
                 (
                     node
@@ -46,7 +54,9 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
                 None,
             )
         elif (
-            SymbolDescriptor.convert_scip_to_python_suffix(top_descriptor.suffix)
+            SymbolDescriptor.convert_scip_to_python_suffix(
+                top_descriptor.suffix
+            )
             == SymbolDescriptor.PyKind.Method
         ):
             if not obj:
@@ -57,7 +67,9 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
                 (
                     node
                     for node in ast.walk(obj)
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    if isinstance(
+                        node, (ast.FunctionDef, ast.AsyncFunctionDef)
+                    )
                     and node.name == top_descriptor.name
                 ),
                 None,
@@ -88,7 +100,8 @@ def get_rankable_symbols(
 
     for symbol in symbols:
         do_continue = any(
-            filter_string in symbol.uri for filter_string in symbols_strings_to_filter
+            filter_string in symbol.uri
+            for filter_string in symbols_strings_to_filter
         )
         if do_continue:
             continue

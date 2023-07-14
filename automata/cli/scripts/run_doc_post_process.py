@@ -29,10 +29,13 @@ def main(*args, **kwargs) -> str:
     )
 
     symbols = [
-        embedding.symbol for embedding in doc_embedding_db.get_ordered_embeddings()
+        embedding.symbol
+        for embedding in doc_embedding_db.get_ordered_embeddings()
     ]
 
-    docs = {symbol: doc_embedding_db.get(symbol.full_dotpath) for symbol in symbols}
+    docs = {
+        symbol: doc_embedding_db.get(symbol.full_dotpath) for symbol in symbols
+    }
 
     doc_writer.write_documentation(docs, symbols, os.path.join(get_root_fpath(), "docs"))  # type: ignore
     return "Success"

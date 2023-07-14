@@ -5,7 +5,11 @@ import pytest
 
 from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol import convert_to_ast_object, get_rankable_symbols, parse_symbol
+from automata.symbol import (
+    convert_to_ast_object,
+    get_rankable_symbols,
+    parse_symbol,
+)
 
 
 # TODO - Unify module loader fixture

@@ -33,14 +33,18 @@ class FunctionCall(NamedTuple):
         }
 
     @classmethod
-    def from_response_dict(cls, response_dict: Dict[str, str]) -> "FunctionCall":
+    def from_response_dict(
+        cls, response_dict: Dict[str, str]
+    ) -> "FunctionCall":
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
         ):
             return cls(
                 name=response_dict["name"],
-                arguments=FunctionCall.handle_termination(response_dict["arguments"]),
+                arguments=FunctionCall.handle_termination(
+                    response_dict["arguments"]
+                ),
             )
         return cls(
             name=response_dict["name"],
@@ -62,10 +66,14 @@ class FunctionCall(NamedTuple):
         except json.decoder.JSONDecodeError as e:
             split_result = arguments.split('{"result":')
             if len(split_result) <= 1:
-                raise ValueError("Invalid arguments for call_termination") from e
+                raise ValueError(
+                    "Invalid arguments for call_termination"
+                ) from e
             result_str = split_result[1].strip().replace('"}', "")
             if result_str[0] != '"':
-                raise ValueError("Invalid format for call_termination arguments") from e
+                raise ValueError(
+                    "Invalid format for call_termination arguments"
+                ) from e
             result_str = result_str[1:]
             return {"result": result_str}
 
@@ -81,13 +89,13 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
         content = raw_message["content"]
         super().__init__(role=role, content=content)
         self.function_call = (
-            raw_message["function_call"] if "function_call" in raw_message else None
+            raw_message["function_call"]
+            if "function_call" in raw_message
+            else None
         )
 
     def __str__(self) -> str:
-        return (
-            f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
-        )
+        return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def get_function_call(self) -> Optional[FunctionCall]:
         if not self.function_call:
@@ -132,9 +140,7 @@ class OpenAIChatMessage(LLMChatMessage):
         self.function_call = function_call
 
     def __str__(self) -> str:
-        return (
-            f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
-        )
+        return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def to_dict(self) -> Dict[str, Any]:
         if self.function_call is None:
@@ -321,13 +327,15 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                 delta_function_call = delta["function_call"]
                 if delta_function_call:
                     if "name" in delta_function_call:
-                        response["function_call"]["name"] = delta_function_call["name"]
+                        response["function_call"][
+                            "name"
+                        ] = delta_function_call["name"]
                         latest_accumulation += f'Function Call:\n{delta_function_call["name"]}\n\nArguments:\n'
 
                     if "arguments" in delta_function_call:
-                        response["function_call"]["arguments"] += delta_function_call[
+                        response["function_call"][
                             "arguments"
-                        ]
+                        ] += delta_function_call["arguments"]
                         latest_accumulation += delta_function_call["arguments"]
 
             if stream_separator in latest_accumulation:
@@ -403,10 +411,15 @@ class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
 
         return np.array(get_embedding(source, engine=self.engine))
 
-    def batch_build_embedding_vector(self, sources: List[str]) -> List[np.ndarray]:
+    def batch_build_embedding_vector(
+        self, sources: List[str]
+    ) -> List[np.ndarray]:
         from openai.embeddings_utils import get_embeddings
 
-        return [np.array(ele) for ele in get_embeddings(sources, engine=self.engine)]
+        return [
+            np.array(ele)
+            for ele in get_embeddings(sources, engine=self.engine)
+        ]
 
 
 class OpenAITool(Tool):

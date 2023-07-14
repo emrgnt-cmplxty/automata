@@ -82,7 +82,10 @@ def test_process_symbol_invalid_component(context_retriever, caplog):
     )
     components = {ContextComponent.HEADLINE: {}, "invalid_component": {}}
     context_retriever.process_symbol(symbol, components)
-    assert "Warning: invalid_component is not a valid context component." in caplog.text
+    assert (
+        "Warning: invalid_component is not a valid context component."
+        in caplog.text
+    )
 
 
 def test_source_code(context_retriever):
@@ -92,7 +95,9 @@ def test_source_code(context_retriever):
     ast_object = ast.parse(inspect.getsource(Calculator))
     source_code = context_retriever.context_components[
         ContextComponent.SOURCE_CODE
-    ].generate(symbol, ast_object, include_imports=False, include_docstrings=True)
+    ].generate(
+        symbol, ast_object, include_imports=False, include_docstrings=True
+    )
     assert "class Calculator:" in source_code
     assert "def add(self, a: int, b: int) -> int:" in source_code
     assert "return a + b" in source_code
@@ -105,7 +110,9 @@ def test_source_code_2(context_retriever):
     ast_object = ast.parse(inspect.getsource(Calculator))
     source_code = context_retriever.context_components[
         ContextComponent.SOURCE_CODE
-    ].generate(symbol, ast_object, include_imports=True, include_docstrings=True)
+    ].generate(
+        symbol, ast_object, include_imports=True, include_docstrings=True
+    )
     assert "import math" in source_code
     assert "class Calculator:" in source_code
     assert "def add(self, a: int, b: int) -> int:" in source_code
@@ -130,9 +137,9 @@ def test_interface_recursion_error(context_retriever):
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
     with pytest.raises(RecursionError):
-        context_retriever.context_components[ContextComponent.INTERFACE].generate(
-            symbol, ast_object, recursion_depth=3
-        )
+        context_retriever.context_components[
+            ContextComponent.INTERFACE
+        ].generate(symbol, ast_object, recursion_depth=3)
 
 
 def test_process_headline(context_retriever):
@@ -140,9 +147,9 @@ def test_process_headline(context_retriever):
         "scip-python python automata v0.0.0 `my_project.core.calculator`/Calculator#"
     )
     ast_object = ast.parse(inspect.getsource(Calculator))
-    headline = context_retriever.context_components[ContextComponent.HEADLINE].generate(
-        symbol, ast_object
-    )
+    headline = context_retriever.context_components[
+        ContextComponent.HEADLINE
+    ].generate(symbol, ast_object)
     assert headline == "my_project.core.calculator.Calculator\n"
 
 

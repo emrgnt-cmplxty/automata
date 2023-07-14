@@ -5,7 +5,10 @@ from automata.agent import AgentToolkitNames, UnknownToolError
 from automata.config.base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
-from automata.memory_store import SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler
+from automata.memory_store import (
+    SymbolCodeEmbeddingHandler,
+    SymbolDocEmbeddingHandler,
+)
 from automata.tools.base import Tool
 
 logger = logging.getLogger(__name__)
@@ -55,7 +58,9 @@ class AgentToolFactory:
                 raise UnknownToolError(agent_tool_manager)
 
             tools.extend(
-                AgentToolFactory.create_tools_from_builder(agent_tool_manager, **kwargs)
+                AgentToolFactory.create_tools_from_builder(
+                    agent_tool_manager, **kwargs
+                )
             )
 
         return tools

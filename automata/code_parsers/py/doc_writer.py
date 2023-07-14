@@ -66,7 +66,9 @@ class PyDocWriter:
         for symbol in np.array(symbols):
             symbol_name = symbol.descriptors[-1].name
 
-            if symbol_name[0] == "_" or not PyDocWriter.check_camel_case(symbol_name):
+            if symbol_name[0] == "_" or not PyDocWriter.check_camel_case(
+                symbol_name
+            ):
                 continue
 
             snaked_symbol_name = PyDocWriter.camel_to_snake(symbol_name)
@@ -98,8 +100,12 @@ class PyDocWriter:
         doc_directory_manager = DirectoryManager(docs_dir)
         for root, dirs, _ in os.walk(docs_dir, topdown=False):
             root_relative_to_base = os.path.relpath(root, start=docs_dir)
-            files = doc_directory_manager.get_files_in_dir(root_relative_to_base)
-            dirs = doc_directory_manager.get_subdirectories(root_relative_to_base)
+            files = doc_directory_manager.get_files_in_dir(
+                root_relative_to_base
+            )
+            dirs = doc_directory_manager.get_subdirectories(
+                root_relative_to_base
+            )
 
             rst_files = [f for f in files if f.endswith(".rst")]
             root_dir_node = doc_directory_manager._get_node_for_path(
@@ -115,7 +121,9 @@ class PyDocWriter:
                     existing_content = ""
 
                 # Identify start and end of the auto-generated content
-                auto_start_marker = "\n..  AUTO-GENERATED CONTENT START\n..\n\n"
+                auto_start_marker = (
+                    "\n..  AUTO-GENERATED CONTENT START\n..\n\n"
+                )
                 auto_end_marker = "\n..  AUTO-GENERATED CONTENT END\n..\n\n"
 
                 # Remove the auto-generated part if it already exists
@@ -128,7 +136,8 @@ class PyDocWriter:
                         auto_end_marker
                     )
                     existing_content = (
-                        existing_content[:start_idx] + existing_content[end_idx:]
+                        existing_content[:start_idx]
+                        + existing_content[end_idx:]
                     )
 
                 # Add new auto-generated content
@@ -141,7 +150,9 @@ class PyDocWriter:
                 )
                 for file in sorted(rst_files):
                     if file != "index.rst":
-                        auto_content += f"       {file[:-4]}\n"  # Remove .rst extension
+                        auto_content += (
+                            f"       {file[:-4]}\n"  # Remove .rst extension
+                        )
                 for sub_dir_ in sorted(dirs):
                     auto_content += f"       {sub_dir_}/index\n"
                 auto_content += auto_end_marker
@@ -149,7 +160,9 @@ class PyDocWriter:
                 # Write everything back to the file
                 with open(index_path, "w") as index_file:
                     if existing_content.strip() == "":
-                        index_file.write(PyDocWriter.get_payload(root) + auto_content)
+                        index_file.write(
+                            PyDocWriter.get_payload(root) + auto_content
+                        )
                     else:
                         index_file.write(existing_content + auto_content)
 
@@ -219,4 +232,6 @@ how to :ref:`installation` the project.
         Returns:
             bool: True if the string is camel case, False otherwise
         """
-        return text != text.lower() and text != text.upper() and "_" not in text
+        return (
+            text != text.lower() and text != text.upper() and "_" not in text
+        )

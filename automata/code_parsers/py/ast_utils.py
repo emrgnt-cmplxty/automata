@@ -44,7 +44,9 @@ def fetch_bounding_box(node: AST) -> Optional[BoundingBox]:
         return None
     return BoundingBox(
         top_left=LineItem(line=node.lineno, column=node.col_offset),
-        bottom_right=LineItem(line=node.end_lineno, column=node.end_col_offset),
+        bottom_right=LineItem(
+            line=node.end_lineno, column=node.end_col_offset
+        ),
     )
 
 
@@ -93,9 +95,9 @@ class ImportRemover(NodeTransformer):
     def visit(self, node):
         # If this node is a function, class, or module, and its first child is an import statement,
         # remove the import statement.
-        if isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)) and (
-            isinstance(node.body[0], (Import, ImportFrom))
-        ):
+        if isinstance(
+            node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)
+        ) and (isinstance(node.body[0], (Import, ImportFrom))):
             node.body.pop(0)
         return super().visit(node)
 

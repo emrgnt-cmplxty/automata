@@ -52,7 +52,9 @@ class Task:
         self._status = TaskStatus.CREATED
         self.retry_count = 0
         self.observer: Optional[Callable] = None
-        self.task_dir = self._get_task_dir(kwargs.get("task_dir", TASK_OUTPUT_PATH))
+        self.task_dir = self._get_task_dir(
+            kwargs.get("task_dir", TASK_OUTPUT_PATH)
+        )
         self.result: Optional[str] = None
         self.error: Optional[str] = None
 
