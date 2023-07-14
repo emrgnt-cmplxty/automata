@@ -2,6 +2,7 @@ from unittest.mock import MagicMock, Mock, call, patch
 
 import pytest
 
+
 from automata.cli.scripts.run_code_embedding import main
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.symbol import Symbol
