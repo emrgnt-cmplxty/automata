@@ -3,9 +3,10 @@
 ![Banner](https://github.com/emrgnt-cmplxty/Automata/assets/68796651/61fe3c33-9b7a-4c1b-9726-a77140476b83)
 
 [![codecov](https://codecov.io/github/emrgnt-cmplxty/Automata/branch/main/graph/badge.svg?token=ZNE7RDUJQD)](https://codecov.io/github/emrgnt-cmplxty/Automata)
+[![CodeFactor](https://www.codefactor.io/repository/github/emrgnt-cmplxty/automata/badge)](https://www.codefactor.io/repository/github/emrgnt-cmplxty/automata)
   <a href="https://github.com/emrgnt-cmplxty/automata/blob/main/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=Apache 2.0&color=white" alt="License">
-  </a> |
+  </a> 
 [![Documentation Status](https://readthedocs.org/projects/automata/badge/?version=latest)](https://automata.readthedocs.io/en/latest/?badge=latest)
 [![GitHub star chart](https://img.shields.io/github/stars/emrgnt-cmplxty/Automata?style=social)](https://star-history.com/#emrgnt-cmplxty/Automata)
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
