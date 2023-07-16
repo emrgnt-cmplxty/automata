@@ -1,4 +1,4 @@
-FROM python:3.9 as python-base
+FROM python:3.10 as python-base
 
 WORKDIR /automata
 
@@ -34,12 +34,12 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 FROM python-base as builder-base
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-        # deps for installing poetry
-        curl \
-        # deps for building python deps
-        build-essential \
-        # git for cloning the repository
-        git
+    # deps for installing poetry
+    curl \
+    # deps for building python deps
+    build-essential \
+    # git for cloning the repository
+    git
 
 # install poetry - respects $POETRY_VERSION & $POETRY_HOME
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/8a506eceb90e7b7d1bc1cd837d303c32e8b03bec/install-poetry.py | python

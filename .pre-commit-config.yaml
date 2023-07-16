@@ -13,7 +13,7 @@ repos:
     rev: 23.1.0 # Replace with the desired version of black
     hooks:
       - id: black
-        language_version: python3.9 # Replace with your Python version
+        language_version: python3.10 # Replace with your Python version
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0 # Replace with the desired version of flake8
     hooks:
@@ -22,7 +22,7 @@ repos:
     rev: 5.12.0 # Replace with the desired version of isort
     hooks:
       - id: isort
-        language_version: python3.9 # Replace with your Python version
+        language_version: python3.10 # Replace with your Python version
   - repo: local
     hooks:
       - id: pytest
