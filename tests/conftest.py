@@ -241,6 +241,11 @@ class MockRepositoryClient(RepositoryClient):
     def fetch_issue(self, issue_number: int) -> Any:
         pass
 
+    def merge_pull_request(
+        self, pull_request_number: int, commit_message: str
+    ) -> Any:
+        pass
+
 
 @pytest.fixture
 def task():

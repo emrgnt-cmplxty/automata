@@ -29,5 +29,5 @@ setup(
             "automata=automata.cli.__main__:cli",
         ],
     },
-    python_requires=">=3.9",  # Adjust this to your desired minimum Python version
+    python_requires=">=3.10",  # Adjust this to your desired minimum Python version
 )
