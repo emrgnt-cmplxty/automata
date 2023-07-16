@@ -1,33 +1,147 @@
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.cli.scripts.run_code_embedding import main
-from automata.memory_store import SymbolCodeEmbeddingHandler
-from automata.symbol import Symbol
+from automata.cli.scripts.run_code_embedding import (
+    collect_symbols,
+    initialize_resources,
+    logger,
+    main,
+    process_embeddings,
+)
 
 
-@pytest.mark.skip(reason="Test not implemented yet")
+@pytest.fixture
+def symbol_graph_mock():
+    return MagicMock()
+
+
+@pytest.fixture
+def symbol_code_embedding_handler_mock():
+    return MagicMock()
+
+
+@patch("automata.cli.scripts.run_code_embedding.SymbolGraph")
 @patch(
-    "automata.cli.scripts.run_code_embedding.main", return_value="Success"
-)  # Mock main function to return 'Success'
-@patch(
-    "automata.cli.scripts.run_code_embedding.initialize_resources",
-    return_value=(Mock(), Mock()),
+    "automata.cli.scripts.run_code_embedding.ChromaSymbolEmbeddingVectorDatabase"
 )
+@patch("automata.cli.scripts.run_code_embedding.OpenAIEmbeddingProvider")
 @patch(
-    "automata.cli.scripts.run_code_embedding.collect_symbols",
-    return_value=[Mock(spec=Symbol)],
+    "automata.cli.scripts.run_code_embedding.DependencyFactory.set_overrides"
 )
-@patch("automata.cli.scripts.run_code_embedding.process_embeddings")
-@patch("automata.cli.cli_utils.initialize_modules")
-def test_main(
-    mock_initialize, mock_process, mock_collect, mock_resources, mock_main
+@patch("automata.cli.scripts.run_code_embedding.DependencyFactory.get")
+def test_initialize_resources(
+    get_mock,
+    set_overrides_mock,
+    OpenAIEmbeddingProvider_mock,
+    ChromaSymbolEmbeddingVectorDatabase_mock,
+    SymbolGraph_mock,
+    symbol_graph_mock,
 ):
-    main()
-    mock_initialize.assert_has_calls(
-        [call()]
-    )  # ensure initialize_modules is called
-    mock_resources.assert_called_once()
-    mock_collect.assert_called_once()
-    mock_process.assert_called_once()
+    SymbolGraph_mock.return_value = symbol_graph_mock
+    ChromaSymbolEmbeddingVectorDatabase_mock.return_value = MagicMock()
+    OpenAIEmbeddingProvider_mock.return_value = MagicMock()
+    get_mock.return_value = (
+        MagicMock()
+    )  # return a MagicMock for SymbolCodeEmbeddingHandler
+
+    symbol_graph, symbol_code_embedding_handler = initialize_resources(
+        "test_project"
+    )
+
+    assert symbol_graph.is_synchronized
+    assert symbol_code_embedding_handler.is_synchronized
+
+    overrides = {
+        "symbol_graph": symbol_graph_mock,
+        "code_embedding_db": ChromaSymbolEmbeddingVectorDatabase_mock.return_value,
+        "embedding_provider": OpenAIEmbeddingProvider_mock.return_value,
+        "disable_synchronization": True,
+    }
+    set_overrides_mock.assert_called_once_with(**overrides)
+
+
+@patch(
+    "automata.cli.scripts.run_code_embedding.get_rankable_symbols",
+    side_effect=lambda x: x,
+)
+def test_collect_symbols(get_rankable_symbols_mock, symbol_graph_mock):
+    mock_symbol = MagicMock()
+    mock_symbol.full_dotpath = "test_path"
+    mock_symbol.uri = "test_uri"
+    mock_symbol.py_kind = "Method"
+    mock_symbol.is_protobuf = False
+    mock_symbol.is_local = False
+    mock_symbol.is_meta = False
+    mock_symbol.is_parameter = False
+
+    symbol_graph_mock.get_sorted_supported_symbols.return_value = [mock_symbol]
+
+    filtered_symbols = collect_symbols(symbol_graph_mock)
+
+    assert filtered_symbols
+
+
+@patch("automata.cli.scripts.run_code_embedding.tqdm")
+def test_process_embeddings(tqdm_mock, symbol_code_embedding_handler_mock):
+    symbol_mock = MagicMock()
+    symbol_mock.full_dotpath = "test_path"
+    tqdm_mock.return_value = [symbol_mock]
+
+    process_embeddings(symbol_code_embedding_handler_mock, [symbol_mock])
+
+    symbol_code_embedding_handler_mock.process_embedding.assert_called_once_with(
+        symbol_mock
+    )
+    symbol_code_embedding_handler_mock.flush.assert_called_once()
+
+
+@patch("automata.cli.scripts.run_code_embedding.initialize_modules")
+@patch("automata.cli.scripts.run_code_embedding.initialize_resources")
+@patch("automata.cli.scripts.run_code_embedding.collect_symbols")
+@patch("automata.cli.scripts.run_code_embedding.process_embeddings")
+def test_main_1(
+    process_embeddings_mock,
+    collect_symbols_mock,
+    initialize_resources_mock,
+    initialize_modules_mock,
+    symbol_graph_mock,
+    symbol_code_embedding_handler_mock,
+):
+    initialize_resources_mock.return_value = (
+        symbol_graph_mock,
+        symbol_code_embedding_handler_mock,
+    )
+    collect_symbols_mock.return_value = [MagicMock()]
+
+    result = main(project_name="test_project")
+
+    assert result == "Success"
+    initialize_modules_mock.assert_called_once()
+    initialize_resources_mock.assert_called_once_with(
+        "test_project", project_name="test_project"
+    )
+    collect_symbols_mock.assert_called_once_with(symbol_graph_mock)
+    process_embeddings_mock.assert_called_once_with(
+        symbol_code_embedding_handler_mock, collect_symbols_mock.return_value
+    )
+
+
+@patch("automata.cli.scripts.run_code_embedding.tqdm")
+def test_process_embeddings_exception(
+    tqdm_mock, symbol_code_embedding_handler_mock
+):
+    symbol_mock = MagicMock()
+    symbol_mock.full_dotpath = "test_path"
+    tqdm_mock.return_value = [symbol_mock]
+    symbol_code_embedding_handler_mock.process_embedding.side_effect = (
+        Exception("Test exception")
+    )
+
+    with patch.object(logger, "error") as logger_error_mock:
+        process_embeddings(symbol_code_embedding_handler_mock, [symbol_mock])
+        logger_error_mock.assert_called_once_with(
+            f"Failed to update embedding for {symbol_mock.full_dotpath}: Test exception"
+        )
+
+    symbol_code_embedding_handler_mock.flush.assert_called_once()
