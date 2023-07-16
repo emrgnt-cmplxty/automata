@@ -55,10 +55,9 @@ def initialize_resources(project_name, **kwargs):
 
 def collect_symbols(symbol_graph):
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
-    filtered_symbols = sorted(
+    return sorted(
         get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
     )
-    return filtered_symbols
 
 
 def process_embeddings(symbol_code_embedding_handler, filtered_symbols):
@@ -74,11 +73,10 @@ def process_embeddings(symbol_code_embedding_handler, filtered_symbols):
 
 
 def main(*args, **kwargs):
-    project_name = kwargs.get("project_name") or "automata"
     initialize_modules(**kwargs)
 
     symbol_graph, symbol_code_embedding_handler = initialize_resources(
-        project_name, **kwargs
+        **kwargs
     )
     filtered_symbols = collect_symbols(symbol_graph)
     process_embeddings(symbol_code_embedding_handler, filtered_symbols)
