@@ -43,9 +43,7 @@ def test_initialize_resources(
     SymbolGraph_mock.return_value = symbol_graph_mock
     ChromaSymbolEmbeddingVectorDatabase_mock.return_value = MagicMock()
     OpenAIEmbeddingProvider_mock.return_value = MagicMock()
-    get_mock.return_value = (
-        MagicMock()
-    )  # return a MagicMock for SymbolCodeEmbeddingHandler
+    get_mock.return_value = MagicMock()
 
     symbol_graph, symbol_code_embedding_handler = initialize_resources(
         "test_project"
@@ -69,7 +67,6 @@ def test_initialize_resources(
         ("Method", False, False, False, False),
         ("Other", False, False, False, False),
         ("Method", True, False, False, False),
-        # Add other cases as needed
     ],
 )
 @patch(
