@@ -18,7 +18,9 @@ def symbol_graph_mock():
 
 @pytest.fixture
 def symbol_code_embedding_handler_mock():
-    return MagicMock()
+    mock = MagicMock()
+    mock.process_embedding.side_effect = Exception("Test exception")
+    return mock
 
 
 @patch("automata.cli.scripts.run_code_embedding.SymbolGraph")
@@ -61,19 +63,36 @@ def test_initialize_resources(
     set_overrides_mock.assert_called_once_with(**overrides)
 
 
+@pytest.mark.parametrize(
+    "py_kind,is_protobuf,is_local,is_meta,is_parameter",
+    [
+        ("Method", False, False, False, False),
+        ("Other", False, False, False, False),
+        ("Method", True, False, False, False),
+        # Add other cases as needed
+    ],
+)
 @patch(
     "automata.cli.scripts.run_code_embedding.get_rankable_symbols",
     side_effect=lambda x: x,
 )
-def test_collect_symbols(get_rankable_symbols_mock, symbol_graph_mock):
+def test_collect_symbols(
+    get_rankable_symbols_mock,
+    py_kind,
+    is_protobuf,
+    is_local,
+    is_meta,
+    is_parameter,
+    symbol_graph_mock,
+):
     mock_symbol = MagicMock()
     mock_symbol.full_dotpath = "test_path"
     mock_symbol.uri = "test_uri"
-    mock_symbol.py_kind = "Method"
-    mock_symbol.is_protobuf = False
-    mock_symbol.is_local = False
-    mock_symbol.is_meta = False
-    mock_symbol.is_parameter = False
+    mock_symbol.py_kind = py_kind
+    mock_symbol.is_protobuf = is_protobuf
+    mock_symbol.is_local = is_local
+    mock_symbol.is_meta = is_meta
+    mock_symbol.is_parameter = is_parameter
 
     symbol_graph_mock.get_sorted_supported_symbols.return_value = [mock_symbol]
 
@@ -134,9 +153,6 @@ def test_process_embeddings_exception(
     symbol_mock = MagicMock()
     symbol_mock.full_dotpath = "test_path"
     tqdm_mock.return_value = [symbol_mock]
-    symbol_code_embedding_handler_mock.process_embedding.side_effect = (
-        Exception("Test exception")
-    )
 
     with patch.object(logger, "error") as logger_error_mock:
         process_embeddings(symbol_code_embedding_handler_mock, [symbol_mock])
