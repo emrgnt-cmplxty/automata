@@ -1,51 +1,113 @@
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from automata.cli.scripts.run_doc_embedding import initialize_providers, main
+from automata.symbol.base import SymbolDescriptor
 
 
-@pytest.mark.skip(reason="Test not implemented yet")
-@patch("automata.cli.scripts.run_doc_embedding.initialize_modules")
+class FakeSymbol:
+    def __init__(
+        self,
+        full_dotpath,
+        uri="some_uri",
+        py_kind=SymbolDescriptor.PyKind.Method,
+        is_protobuf=False,
+        is_local=False,
+        is_meta=False,
+        is_parameter=False,
+    ):
+        self.full_dotpath = full_dotpath
+        self.uri = uri
+        self.py_kind = py_kind
+        self.is_protobuf = is_protobuf
+        self.is_local = is_local
+        self.is_meta = is_meta
+        self.is_parameter = is_parameter
+
+
+@pytest.fixture
+def symbol_graph_mock():
+    mock = MagicMock()
+    mock.get_sorted_supported_symbols.return_value = [
+        FakeSymbol("symbol1"),
+        FakeSymbol("symbol2"),
+    ]
+    return mock
+
+
+@pytest.fixture
+def symbol_doc_embedding_handler_mock():
+    mock = MagicMock()
+    mock.process_embedding.side_effect = Exception("Test exception")
+    return mock
+
+
 @patch("automata.cli.scripts.run_doc_embedding.SymbolGraph")
 @patch(
     "automata.cli.scripts.run_doc_embedding.ChromaSymbolEmbeddingVectorDatabase"
 )
 @patch("automata.cli.scripts.run_doc_embedding.OpenAIEmbeddingProvider")
 @patch(
-    "automata.cli.scripts.run_doc_embedding.dependency_factory.set_overrides"
+    "automata.cli.scripts.run_doc_embedding.DependencyFactory.set_overrides"
 )
-@patch("os.path.join", return_value="mock_directory")
-@patch("builtins.open", new_callable=mock_open, read_data=b"binary data")
+@patch("automata.cli.scripts.run_doc_embedding.DependencyFactory.get")
 def test_initialize_providers(
-    mock_open_file,
-    mock_path_join,
-    mock_set_overrides,
-    mock_provider,
-    mock_db,
-    mock_symbol_graph,
-    mock_initialize,
+    get_mock,
+    set_overrides_mock,
+    OpenAIEmbeddingProvider_mock,
+    ChromaSymbolEmbeddingVectorDatabase_mock,
+    SymbolGraph_mock,
+    symbol_graph_mock,
 ):
-    symbol_handler, filtered_symbols = initialize_providers(
-        embedding_level=2, project_name="test"
+    SymbolGraph_mock.return_value = symbol_graph_mock
+    ChromaSymbolEmbeddingVectorDatabase_mock.return_value = MagicMock()
+    OpenAIEmbeddingProvider_mock.return_value = MagicMock()
+    symbol_code_embedding_handler = MagicMock()
+    symbol_code_embedding_handler._get_sorted_supported_symbols.return_value = [
+        FakeSymbol("symbol1"),
+        FakeSymbol("symbol2"),
+    ]
+    symbol_doc_embedding_handler = MagicMock()
+    get_mock.side_effect = [
+        symbol_code_embedding_handler,
+        symbol_doc_embedding_handler,
+    ]
+    symbol_doc_embedding_handler.is_synchronized = True
+
+    symbol_graph_mock._get_sorted_supported_symbols.return_value = (
+        symbol_code_embedding_handler._get_sorted_supported_symbols.return_value
     )
-    mock_initialize.assert_called_once()
-    mock_symbol_graph.assert_called_once()
-    mock_db.assert_called()
-    mock_provider.assert_called_once()
-    mock_set_overrides.assert_called_once()
-    mock_path_join.assert_called()
+
+    symbol_doc_embedding_handler, filtered_symbols = initialize_providers(
+        embedding_level=2, project_name="test_project"
+    )
+
+    assert symbol_doc_embedding_handler.is_synchronized
+    assert filtered_symbols
+
+    overrides = {
+        "symbol_graph": symbol_graph_mock,
+        "code_embedding_db": ChromaSymbolEmbeddingVectorDatabase_mock.return_value,
+        "doc_embedding_db": ChromaSymbolEmbeddingVectorDatabase_mock.return_value,
+        "embedding_provider": OpenAIEmbeddingProvider_mock.return_value,
+        "disable_synchronization": True,
+    }
+    set_overrides_mock.assert_called_once_with(**overrides)
 
 
 @patch("automata.cli.scripts.run_doc_embedding.initialize_providers")
-@patch("automata.cli.scripts.run_doc_embedding.tqdm")
-def test_main(mock_tqdm, mock_initialize):
+def test_main(initialize_providers_mock, symbol_doc_embedding_handler_mock):
     symbol_mock = MagicMock()
-    symbol_mock.full_dotpath = "symbol1"
-    mock_initialize.return_value = (
-        MagicMock(),
-        [symbol_mock, symbol_mock, symbol_mock],
+    initialize_providers_mock.return_value = (
+        symbol_doc_embedding_handler_mock,
+        [symbol_mock],
     )
-    mock_tqdm.return_value = [symbol_mock, symbol_mock, symbol_mock]
-    assert main() == "Success"
-    mock_tqdm.assert_called_once()
+
+    result = main()
+
+    assert result == "Success"
+    initialize_providers_mock.assert_called_once()
+    symbol_doc_embedding_handler_mock.process_embedding.assert_called_once_with(
+        symbol_mock
+    )
