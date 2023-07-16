@@ -51,6 +51,7 @@ ipykernel = "^6.24.0"
 pathlib = "^1.0.1"
 pytest-shutil = "^1.7.0"
 flask = "^2.3.2"
+responses = "^0.23.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
