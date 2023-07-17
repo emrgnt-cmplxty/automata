@@ -11,9 +11,10 @@ from tests.utils.regression_utils import initialize_automata
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.flaky(
-    reruns=5
-)  # allowing up to 5 retries if using gpt-3.5-turbo-16k
+# Uncomment if using gpt-3.5-turbo-16k
+# @pytest.mark.flaky(
+#     reruns=5
+# )  # allowing up to 5 retries if using gpt-3.5-turbo-16k
 @pytest.mark.regression
 @pytest.mark.parametrize(
     "instructions, toolkit_list, model, agent_config_name, max_iterations, allowable_results",
@@ -31,7 +32,7 @@ logger = logging.getLogger(__name__)
         (
             "What class should we instantiate to search the codebase for relevant symbols? Please return just the class name.",
             ["context-oracle"],
-            "gpt-3.5-turbo-16k",
+            "gpt-4",
             "automata-main",
             2,
             ["SymbolSearch", "`SymbolSearch`"],
@@ -40,7 +41,7 @@ logger = logging.getLogger(__name__)
         (
             "What class is responsible for building OpenAI Agent configurations? Please jsut return the class name.",
             ["context-oracle"],
-            "gpt-3.5-turbo-16k",
+            "gpt-4",
             "automata-main",
             2,
             [
