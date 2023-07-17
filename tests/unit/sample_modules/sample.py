@@ -4,7 +4,7 @@ import math
 
 def sample_function(name):
     """This is a sample function."""
-    return f"Hello, {name}! Sqrt(2) = " + str(math.sqrt(2))
+    return f"Hello, {name}! Sqrt(2) = {str(math.sqrt(2))}"
 
 
 class Person:

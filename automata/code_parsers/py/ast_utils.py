@@ -62,8 +62,7 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
         return AST_NO_RESULT_FOUND
 
     elif isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module)):
-        doc_string = get_docstring(node)
-        if doc_string:
+        if doc_string := get_docstring(node):
             return doc_string.replace('"""', "").replace("'''", "")
         else:
             return AST_NO_RESULT_FOUND
