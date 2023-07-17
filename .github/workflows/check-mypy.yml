@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          poetry run python -m pip install --upgrade pip
           poetry install
           poetry add mypy
           poetry add types-setuptools
