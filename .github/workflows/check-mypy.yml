@@ -19,8 +19,8 @@ jobs:
           python -m pip install --upgrade pip
           curl -sSL https://install.python-poetry.org | python -
           poetry install
-          pip install mypy
-          pip install types-setuptools
+          poetry add mypy
+          poetry add types-setuptools
 
       - name: Run type checker
         run: |

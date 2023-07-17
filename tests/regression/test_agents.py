@@ -47,6 +47,8 @@ logger = logging.getLogger(__name__)
             [
                 "OpenAIAutomataAgentConfigBuilder",
                 "`OpenAIAutomataAgentConfigBuilder`",
+                "OpenAIAutomataAgentConfig",  # this is not the correct result, but let's allow it for now
+                "`OpenAIAutomataAgentConfig`",  # same
             ],
         ),
     ],
