@@ -24,4 +24,4 @@ jobs:
 
       - name: Run type checker
         run: |
-          mypy --config-file pyproject.toml .
+          poetry run mypy --config-file pyproject.toml .

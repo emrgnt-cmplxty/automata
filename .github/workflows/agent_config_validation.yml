@@ -25,4 +25,4 @@ jobs:
           poetry install
       - name: Run Agent Config Validation
         run: |
-          python -m automata.cli.scripts.run_agent_config_validation
+          poetry run python -m automata.cli.scripts.run_agent_config_validation
