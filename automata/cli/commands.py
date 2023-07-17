@@ -3,6 +3,13 @@ import logging.config
 
 import click
 
+from automata.cli.cli_utils import ask_choice, get_custom_style, setup_files
+from automata.cli.env_operations import (
+    delete_key_value,
+    load_env_vars,
+    show_key_value,
+    update_key_value,
+)
 from automata.cli.options import agent_options, common_options
 from automata.core.utils import get_logging_config
 
@@ -29,6 +36,40 @@ def reconfigure_logging(log_level_str: str) -> None:
 @click.pass_context
 def cli(ctx) -> None:
     pass
+
+
+@common_options
+@cli.command()
+@click.pass_context
+def configure(ctx, *args, **kwargs) -> None:
+    """Configure Automata"""
+
+    DOTENV_PATH = ".env"
+    SCRIPTS_PATH = "scripts/"
+    DEFAULT_KEYS = {
+        "GITHUB_API_KEY": "your_github_api_key",
+        "OPENAI_API_KEY": "your_openai_api_key",
+    }
+
+    setup_files(SCRIPTS_PATH=SCRIPTS_PATH, DOTENV_PATH=DOTENV_PATH)
+    load_env_vars(DOTENV_PATH=DOTENV_PATH, DEFAULT_KEYS=DEFAULT_KEYS)
+
+    logger.info("Configuring Automata:")
+
+    custom_style = get_custom_style()
+    config_choice = ask_choice(
+        "Select key to configure", list(DEFAULT_KEYS.keys())
+    )
+    operation_choice = ask_choice(
+        "Select operation", ["Show", "Update", "Delete"]
+    )
+
+    if operation_choice == "Show":
+        show_key_value(DOTENV_PATH, config_choice)
+    elif operation_choice == "Update":
+        update_key_value(DOTENV_PATH, config_choice)
+    elif operation_choice == "Delete":
+        delete_key_value(DOTENV_PATH, config_choice)
 
 
 @common_options

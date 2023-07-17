@@ -16,12 +16,23 @@ cd -
 
 # Set up .env
 cp ../.env.example ../.env
-OPEN_API_KEY=your_openai_api_key_here
-GITHUB_API_KEY=your_github_api_key
+OPEN_API_KEY=${OPEN_API_KEY}
+GITHUB_API_KEY=${GITHUB_API_KEY}
 CONVERSATION_DB_PATH="$PWD/conversation_db.sqlite3"
 TASK_DB_PATH="$PWD/task_db.sqlite3"
 TASKS_OUTPUT_PATH="$PWD/local_tasks"
 REPOSITORY_NAME="emrgnt-cmplxty/Automata"
+
+# Safeguard to check if the variables are set
+if [[ -z "${OPEN_API_KEY}" ]]; then
+  echo "OPEN_API_KEY is unset. Please set the environment variable and run the script again."
+  exit 1
+fi
+
+if [[ -z "${GITHUB_API_KEY}" ]]; then
+  echo "GITHUB_API_KEY is unset. Please set the environment variable and run the script again."
+  exit 1
+fi
 
 # Detect the operating system
 if [[ "$OSTYPE" == "darwin"* ]]; then
