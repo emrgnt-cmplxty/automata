@@ -38,13 +38,81 @@ def test_reconfigure_logging_invalid():
         automata.cli.commands.reconfigure_logging("INVALID")
 
 
-@pytest.mark.skip(reason="Test not implemented yet")
 def test_cli_run_code_embedding():
-    with patch("automata.cli.scripts.run_code_embedding.main") as mock_main:
+    with patch(
+        "automata.cli.scripts.run_code_embedding.main"
+    ) as mock_main, patch(
+        "automata.cli.commands.reconfigure_logging"
+    ) as mock_reconfigure_logging, patch(
+        "logging.getLogger"
+    ) as mock_getLogger:
+        mock_getLogger.return_value = MagicMock(spec=logging.Logger)
+
+        runner = click.testing.CliRunner()
+        result = runner.invoke(
+            automata.cli.commands.cli, ["run-code-embedding"]
+        )
+
+        assert result.exit_code == 0
+        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        mock_main.assert_called_once()
+
+
+def test_cli_run_doc_embedding():
+    with patch(
+        "automata.cli.scripts.run_doc_embedding.main"
+    ) as mock_main, patch(
+        "automata.cli.commands.reconfigure_logging"
+    ) as mock_reconfigure_logging, patch(
+        "logging.getLogger"
+    ) as mock_getLogger:
+        mock_getLogger.return_value = MagicMock(spec=logging.Logger)
+        mock_main.return_value = "doc_embedding_result"
+
         runner = click.testing.CliRunner()
         result = runner.invoke(
             automata.cli.commands.cli,
             ["run-doc-embedding", "--embedding-level", "2"],
         )
+
         assert result.exit_code == 0
+        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        assert mock_main.called
+
+
+def test_cli_run_doc_post_process():
+    with patch(
+        "automata.cli.scripts.run_doc_post_process.main"
+    ) as mock_main, patch(
+        "automata.cli.commands.reconfigure_logging"
+    ) as mock_reconfigure_logging, patch(
+        "logging.getLogger"
+    ) as mock_getLogger:
+        mock_getLogger.return_value = MagicMock(spec=logging.Logger)
+
+        runner = click.testing.CliRunner()
+        result = runner.invoke(
+            automata.cli.commands.cli, ["run-doc-post-process"]
+        )
+
+        assert result.exit_code == 0
+        mock_reconfigure_logging.assert_called_once_with("DEBUG")
         mock_main.assert_called_once()
+
+
+def test_cli_run_agent():
+    with patch("automata.cli.scripts.run_agent.main") as mock_main, patch(
+        "automata.cli.commands.reconfigure_logging"
+    ) as mock_reconfigure_logging, patch(
+        "logging.getLogger"
+    ) as mock_getLogger:
+        mock_getLogger.return_value = MagicMock(spec=logging.Logger)
+
+        runner = click.testing.CliRunner()
+        result = runner.invoke(
+            automata.cli.commands.cli, ["run-agent", "--fetch-issues", "1,2,3"]
+        )
+
+        assert result.exit_code == 0
+        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        assert mock_main.called
