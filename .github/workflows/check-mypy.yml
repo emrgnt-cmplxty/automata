@@ -24,6 +24,7 @@ jobs:
           poetry install
           poetry add mypy
           poetry add types-setuptools
+          poetry run python -m pip install -e .
 
       - name: Run type checker
         run: |
