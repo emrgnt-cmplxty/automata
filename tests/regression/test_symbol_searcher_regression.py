@@ -61,6 +61,7 @@ def check_hits(expected_in_top_hits, found_top_hits):
 def test_symbol_rank_search_on_symbol(
     symbol_search_live, search, expected_in_top_hits  # noqa : F811
 ):
+    py_module_loader.reset()
     py_module_loader.initialized = (
         False  # This is a hacky way to avoid any risk of initialization error
     )

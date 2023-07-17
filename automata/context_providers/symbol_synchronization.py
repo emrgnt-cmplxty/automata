@@ -27,6 +27,10 @@ class SymbolProviderRegistry:
             for provider in SymbolProviderRegistry._providers
         ]
         supported_symbols = set.intersection(*all_symbols)
+        if not supported_symbols:
+            raise RuntimeError(
+                f"Symbol overlap across {SymbolProviderRegistry._providers} is empty."
+            )
 
         sorted_supported_symbols = sorted(
             list(supported_symbols), key=lambda x: x.full_dotpath
@@ -39,11 +43,6 @@ class SymbolProviderRegistry:
         SymbolProviderRegistry.sorted_supported_symbols = (
             sorted_supported_symbols
         )
-
-        if not SymbolProviderRegistry.sorted_supported_symbols:
-            raise RuntimeError(
-                "No symbols are supported by any symbol provider"
-            )
 
     @staticmethod
     def get_sorted_supported_symbols() -> List[Symbol]:
