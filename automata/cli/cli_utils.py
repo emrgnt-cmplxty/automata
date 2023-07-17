@@ -1,6 +1,5 @@
 import os
 import shutil
-import subprocess
 
 from questionary import Style, prompt
 
@@ -38,7 +37,7 @@ def setup_files(SCRIPTS_PATH, DOTENV_PATH):
             )
 
     # Allow for execution
-    subprocess.run(["chmod", "755", os.path.join(SCRIPTS_PATH, "setup.sh")])
+    os.chmod(os.path.join(SCRIPTS_PATH, "setup.sh"), 0o755)
 
 
 def get_custom_style():
