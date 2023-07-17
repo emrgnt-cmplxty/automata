@@ -24,6 +24,7 @@ from .base import (
     EmbeddingDataCategory,
     InstructionConfigVersion,
     LLMProvider,
+    ModelInformation,
 )
 from .openai_agent import (
     OpenAIAutomataAgentConfig,
@@ -55,6 +56,7 @@ __all__ = [
     "EmbeddingDataCategory",
     "InstructionConfigVersion",
     "LLMProvider",
+    "ModelInformation",
     "DEFAULT_DOC_GENERATION_PROMPT",
     "OpenAIAutomataAgentConfig",
     "OpenAIAutomataAgentConfigBuilder",
