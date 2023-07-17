@@ -91,6 +91,6 @@ def test_reset(dependency_factory):
 
     dependency_factory.reset()
 
-    assert dependency_factory._class_cache == {}
-    assert dependency_factory._instances == {}
-    assert dependency_factory.overrides == {}
+    assert not dependency_factory._class_cache
+    assert not dependency_factory._instances
+    assert not dependency_factory.overrides

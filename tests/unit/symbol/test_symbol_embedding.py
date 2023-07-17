@@ -13,22 +13,19 @@ from automata.symbol_embedding import (
 
 @pytest.fixture
 def cem(mock_provider, mock_db):
-    cem = SymbolCodeEmbeddingHandler(
+    return SymbolCodeEmbeddingHandler(
         embedding_builder=mock_provider, embedding_db=mock_db
     )
-    return cem
 
 
 @pytest.fixture
 def mock_db():
-    mock_db = MagicMock(ChromaSymbolEmbeddingVectorDatabase)
-    return mock_db
+    return MagicMock(ChromaSymbolEmbeddingVectorDatabase)
 
 
 @pytest.fixture
 def mock_provider():
-    mock_provider = Mock(EmbeddingBuilder)
-    return mock_provider
+    return Mock(EmbeddingBuilder)
 
 
 def test_update_embeddings(

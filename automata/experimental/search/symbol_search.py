@@ -132,12 +132,11 @@ class SymbolSearch:
         for module_path, module in py_module_loader.items():
             if module:
                 lines = py_ast_unparse(module).splitlines()
-                line_numbers = [
+                if line_numbers := [
                     i + 1
                     for i, line in enumerate(lines)
                     if pattern in line.strip()
-                ]
-                if line_numbers:
+                ]:
                     matches[module_path] = line_numbers
         return matches
 

@@ -37,7 +37,7 @@ def temp_output_vector_dir():
     # The TemporaryDirectory context manager should already clean up the directory,
     # but just in case it doesn't (e.g. due to an error), we'll try removing it manually as well.
     try:
-        shutil.rmtree(filename + "/")
+        shutil.rmtree(f"{filename}/")
     except OSError:
         pass
 
@@ -57,7 +57,7 @@ def temp_output_filename():
     # The TemporaryDirectory context manager should already clean up the directory,
     # but just in case it doesn't (e.g. due to an error), we'll try removing it manually as well.
     try:
-        shutil.rmtree(filename + "/")
+        shutil.rmtree(f"{filename}/")
     except OSError:
         pass
 
@@ -71,7 +71,7 @@ def symbols():
         These symbols at one point reflected existing code
         but they are not guaranteed to be up to date.
     """
-    symbols = [
+    return [
         # Symbol with a simple attribute
         parse_symbol(
             "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description."
@@ -105,8 +105,6 @@ def symbols():
             "scip-python python automata v0.0.0 `core.tools.base`/ToolNotFoundError#__init__()."
         ),
     ]
-
-    return symbols
 
 
 EXAMPLE_SYMBOL_PREFIX = (
@@ -190,8 +188,6 @@ def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
 
     llm_toolkits_list = ["context-oracle"]
-    kwargs = {}
-
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[
@@ -199,8 +195,10 @@ def automata_agent(mocker, automata_agent_config_builder):
         ]:
             dependencies.add(dependency_name)
 
-    for dependency in dependencies:
-        kwargs[dependency] = dependency_factory.get(dependency)
+    kwargs = {
+        dependency: dependency_factory.get(dependency)
+        for dependency in dependencies
+    }
     tools = AgentToolFactory.build_tools(["context-oracle"], **kwargs)
 
     instructions = "Test instruction."
@@ -267,10 +265,7 @@ def environment():
 @pytest.fixture
 def registry(task):
     def mock_get_tasks_by_query(query, params):
-        if params[0] == task.task_id:
-            return [task]
-        else:
-            return []
+        return [task] if params[0] == task.task_id else []
 
     db = MagicMock()
     db.get_tasks_by_query.side_effect = (

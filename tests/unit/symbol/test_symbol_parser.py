@@ -17,7 +17,7 @@ def test_is_global_symbol(symbols):
 
 def test_is_local_symbol(symbols):
     for symbol in symbols:
-        assert is_local_symbol("local " + symbol.uri)
+        assert is_local_symbol(f"local {symbol.uri}")
 
 
 def _unparse(symbol: Symbol):
