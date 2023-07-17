@@ -32,6 +32,6 @@ jobs:
 
       - name: Run regression tests
         run: |
-          pytest -m regression
+          poetry run pytest -m regression
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
