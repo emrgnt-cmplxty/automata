@@ -16,7 +16,7 @@ cd -
 
 # Set up .env
 cp ../.env.example ../.env
-OPEN_API_KEY=${OPEN_API_KEY}
+OPENAI_API_KEY=${OPENAI_API_KEY}
 GITHUB_API_KEY=${GITHUB_API_KEY}
 CONVERSATION_DB_PATH="$PWD/conversation_db.sqlite3"
 TASK_DB_PATH="$PWD/task_db.sqlite3"
@@ -24,8 +24,8 @@ TASKS_OUTPUT_PATH="$PWD/local_tasks"
 REPOSITORY_NAME="emrgnt-cmplxty/Automata"
 
 # Safeguard to check if the variables are set
-if [[ -z "${OPEN_API_KEY}" ]]; then
-  echo "OPEN_API_KEY is unset. Please set the environment variable and run the script again."
+if [[ -z "${OPENAI_API_KEY}" ]]; then
+  echo "OPENAI_API_KEY is unset. Please set the environment variable and run the script again."
   exit 1
 fi
 
@@ -37,7 +37,7 @@ fi
 # Detect the operating system
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
-    sed -i '' "s|your_openai_api_key|$OPEN_API_KEY|" ../.env
+    sed -i '' "s|your_openai_api_key|$OPENAI_API_KEY|" ../.env
     sed -i '' "s|your_github_api_key|$GITHUB_API_KEY|" ../.env
     sed -i '' "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" ../.env
     sed -i '' "s|your_task_db_path|$TASK_DB_PATH|" ../.env
@@ -45,7 +45,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "s|your_repository_name|$REPOSITORY_NAME|" ../.env
 else
     # Linux and others
-    sed -i "s|your_openai_api_key|$OPEN_API_KEY|" ../.env
+    sed -i "s|your_openai_api_key|$OPENAI_API_KEY|" ../.env
     sed -i "s|your_github_api_key|$GITHUB_API_KEY|" ../.env
     sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" ../.env
     sed -i "s|your_task_db_path|$TASK_DB_PATH|" ../.env
