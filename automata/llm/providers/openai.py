@@ -223,6 +223,66 @@ class OpenAIFunction:
             "required": self.required,
         }
 
+    # prompt format logic taken from Auto-GPT
+    # https://github.com/Significant-Gravitas/Auto-GPT/blob/3425b061b5e55b6b655d59d320c8c36895156830/autogpt/llm/providers/openai.py#L359-L408
+    @property
+    def prompt_format(self) -> str:
+        """Returns the function formatted similarly to the way OpenAI does it internally:
+        https://community.openai.com/t/how-to-calculate-the-tokens-when-using-function-call/266573/18
+
+        Example:
+        ```ts
+        // Get the current weather in a given location
+        type get_current_weather = (_: {
+        // The city and state, e.g. San Francisco, CA
+        location: string,
+        unit?: "celsius" | "fahrenheit",
+        }) => any;
+        ```
+
+        ->
+        OpenAITool(
+            name="call_termination",
+            description="Terminates the conversation.",
+            properties={
+                "result": {
+                    "type": "string",
+                    "description": "The final result of the conversation.",
+                }
+            },
+            required=["result"],
+            function=terminate,
+        ).prompt_format
+        ==
+
+        ```ts
+        // Terminates the conversation.
+        type call_termination = (_: {
+        // The final result of the conversation.
+        result: string,
+        }) => any;
+        ```
+
+        """
+
+        def param_signature(properties: Dict[str, Dict[str, str]]) -> str:
+            # TODO: enum type support, fix approximations
+            return "\n".join(
+                [
+                    f"{property_name}:{fields['type']},"
+                    for property_name, fields in properties.items()
+                ]
+            )
+
+        return "\n".join(
+            [
+                f"// {self.description}",
+                f"type {self.name} = (_ :{{",
+                param_signature(self.properties),
+                "}) => any;",
+            ]
+        )
+
 
 class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     """A class to provide chat messages from the OpenAI API."""
@@ -242,10 +302,30 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.agent_conversation_database = conversation
         set_openai_api_key()
 
+    @property
+    def approximate_tokens_consumed(self) -> int:
+        """
+        A method for approximating the total tokens consumed by the chat instance.
+
+        Note:
+            This method can be made handling chat messages and functions identically to OpenAI.
+        """
+        encoding = tiktoken.encoding_for_model(self.model)
+        result = ""
+        for (
+            ele
+        ) in (
+            self.agent_conversation_database.get_messages_for_next_completion()
+        ):
+            result += f"{ele['role']}:\n{ele['content']}\n\n"
+
+        result += "\n".join(ele.prompt_format for ele in self.functions)
+        return len(encoding.encode(result))
+
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
         functions = [ele.to_dict() for ele in self.functions]
         logger.debug(
-            f"Approximately {self.get_approximate_tokens_consumed()} tokens were consumed prior to completion generation."
+            f"Approximately {self.approximate_tokens_consumed} tokens were consumed prior to completion generation."
         )
         if functions:
             response = openai.ChatCompletion.create(
@@ -295,7 +375,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         else:
             self.agent_conversation_database.add_message(message)
         logger.debug(
-            f"Approximately {self.get_approximate_tokens_consumed()} tokens were after adding the latest message."
+            f"Approximately {self.approximate_tokens_consumed} tokens were after adding the latest message."
         )
 
     @staticmethod
@@ -375,25 +455,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             function_call=FunctionCall.from_response_dict(function_call)  # type: ignore
             if function_call["name"] is not None
             else None,
-        )
-
-    def get_approximate_tokens_consumed(self) -> int:
-        """
-        A method for approximating the total tokens consumed by the chat instance.
-
-        Note:
-            This method can be made handling chat messages and functions identically to OpenAI.
-        """
-        encoding = tiktoken.encoding_for_model(self.model)
-        return len(
-            encoding.encode(
-                "\n".join(
-                    [
-                        json.dumps(ele)
-                        for ele in self.agent_conversation_database.get_messages_for_next_completion()
-                    ]
-                )
-            )
         )
 
 

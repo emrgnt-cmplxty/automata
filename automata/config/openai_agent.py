@@ -9,22 +9,33 @@ from automata.config import (
     AgentConfigName,
     InstructionConfigVersion,
     LLMProvider,
+    ModelInformation,
 )
 from automata.config.formatter import TemplateFormatter
+
+SUPPORTED_MODEL_INFORMATION = {
+    "gpt-4": ModelInformation(
+        prompt_token_cost=0.03, completion_token_cost=0.06, max_tokens=8192
+    ),
+    "gpt-4-0314": ModelInformation(
+        prompt_token_cost=0.03, completion_token_cost=0.06, max_tokens=8192
+    ),
+    "gpt-4-0613": ModelInformation(
+        prompt_token_cost=0.03, completion_token_cost=0.06, max_tokens=8192
+    ),
+    "gpt-3.5-turbo": ModelInformation(
+        prompt_token_cost=0.0015, completion_token_cost=0.002, max_tokens=4096
+    ),
+    "gpt-3.5-turbo-16k": ModelInformation(
+        prompt_token_cost=0.003, completion_token_cost=0.004, max_tokens=16384
+    ),
+}
 
 
 class OpenAIAutomataAgentConfig(AgentConfig):
     """A class to hold the configuration for the Automata OpenAI Agent."""
 
-    class Config:
-        SUPPORTED_MODELS = [
-            "gpt-4",
-            "gpt-3.5-turbo",
-            "gpt-3.5-turbo-16k",
-            "gpt-3.5-turbo-0613",
-            "gpt-4-0613",
-        ]
-        arbitrary_types_allowed = True
+    arbitrary_types_allowed = True
 
     # System Template
     system_template: str = ""
@@ -108,11 +119,12 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
         return OpenAIAutomataAgentConfig()
 
     def with_model(self, model: str) -> AgentConfigBuilder:
-        if model not in OpenAIAutomataAgentConfig.Config.SUPPORTED_MODELS:
+        if model not in SUPPORTED_MODEL_INFORMATION:
             raise ValueError(
                 f"Model {model} not found in Supported OpenAI list of models."
             )
         self._config.model = model
+        self._config.max_tokens = SUPPORTED_MODEL_INFORMATION[model].max_tokens
         return self
 
     def with_system_template_formatter(
@@ -173,8 +185,11 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
         if "verbose" in kwargs:
             builder = builder.with_verbose(kwargs["verbose"])
 
-        if "max_iters" in kwargs:
-            builder = builder.with_max_iterations(kwargs["max_iters"])
+        if "max_iterations" in kwargs:
+            builder = builder.with_max_iterations(kwargs["max_iterations"])
+
+        if "max_tokens" in kwargs:
+            builder = builder.with_max_tokens(kwargs["max_tokens"])
 
         if "tools" in kwargs:
             builder = builder.with_tools(kwargs["tools"])
