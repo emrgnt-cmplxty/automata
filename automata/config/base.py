@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Generic, List, Optional, TypeVar, Union
 
@@ -68,6 +69,13 @@ class LLMProvider(PathEnum):
     OPENAI = "openai"
 
 
+@dataclass
+class ModelInformation:
+    prompt_token_cost: float
+    completion_token_cost: float
+    max_tokens: int
+
+
 class AgentConfig(ABC, BaseModel):
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     tools: List[Tool] = []
@@ -77,6 +85,7 @@ class AgentConfig(ABC, BaseModel):
     stream: bool = False
     verbose: bool = False
     max_iterations: int = 50
+    max_tokens: int = 8192
     temperature: float = 0.7
     session_id: Optional[str] = None
 
@@ -170,8 +179,13 @@ class AgentConfigBuilder(Generic[T]):
         return self
 
     def with_max_iterations(self, max_iters: int) -> "AgentConfigBuilder":
-        self._validate_type(max_iters, int, "Max iters")
+        self._validate_type(max_iters, int, "Max iterations")
         self._config.max_iterations = max_iters
+        return self
+
+    def with_max_tokens(self, max_tokens: int) -> "AgentConfigBuilder":
+        self._validate_type(max_tokens, int, "Max iterations")
+        self._config.max_tokens = max_tokens
         return self
 
     def with_temperature(self, temperature: float) -> "AgentConfigBuilder":
