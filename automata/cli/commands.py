@@ -56,7 +56,6 @@ def configure(ctx, *args, **kwargs) -> None:
 
     logger.info("Configuring Automata:")
 
-    custom_style = get_custom_style()
     config_choice = ask_choice(
         "Select key to configure", list(DEFAULT_KEYS.keys())
     )
