@@ -28,4 +28,5 @@ def symbol_search_live() -> SymbolSearch:
     Creates a non-mock SymbolRank object to be used for testing the search
 
     """
+    dependency_factory.reset()
     return dependency_factory.get("symbol_search")

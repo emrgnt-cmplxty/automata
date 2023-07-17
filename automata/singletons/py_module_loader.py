@@ -53,6 +53,9 @@ class PyModuleLoader(metaclass=Singleton):
 
         if self.initialized:
             raise Exception("Module loader is already initialized!")
+        logger.info(
+            f"Loading modules with root path: {root_fpath} and py path: {py_dir_fpath}"
+        )
 
         self._dotpath_map = DotPathMap(py_dir_fpath, rel_py_path)
         self.root_fpath = root_fpath
