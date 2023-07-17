@@ -118,13 +118,12 @@ class DependencyFactory(metaclass=Singleton):
             return self._instances[dependency]
 
         method_name = f"create_{dependency}"
-        if hasattr(self, method_name):
-            creation_method = getattr(self, method_name)
-            logger.info(f"Creating dependency {dependency}")
-            instance = creation_method()
-        else:
+        if not hasattr(self, method_name):
             raise AgentGeneralError(f"Dependency {dependency} not found.")
 
+        creation_method = getattr(self, method_name)
+        logger.info(f"Creating dependency {dependency}")
+        instance = creation_method()
         self._instances[dependency] = instance
 
         # Perform synchronization

@@ -140,9 +140,7 @@ class PyDocWriter:
                         + existing_content[end_idx:]
                     )
 
-                # Add new auto-generated content
-                auto_content = auto_start_marker
-                auto_content += "    .. toctree::\n"
+                auto_content = auto_start_marker + "    .. toctree::\n"
                 auto_content += (
                     "       :maxdepth: 2\n\n"
                     if not root_dir_node or root_dir_node.is_root_dir()  # type: ignore

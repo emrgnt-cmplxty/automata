@@ -170,12 +170,10 @@ class InterfaceContextComponent(BaseContextComponent):
             class_header = "\n".join(decorators + [class_header])
             interface += self.process_entry(f"{class_header}")
 
-            # Handle class attributes
-            attributes = [
+            if attributes := [
                 f"{unparse(a.target)}: {unparse(a.annotation)}"
                 for a in get_all_attributes(cls)
-            ]
-            if attributes:
+            ]:
                 interface += "\n".join(attributes)
 
             with self.increased_indentation():

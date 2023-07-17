@@ -153,7 +153,7 @@ class _SymbolParser:
 
     @staticmethod
     def is_identifier_character(c: str) -> bool:
-        return c.isalpha() or c.isdigit() or c in ["-", "+", "$", "_"]
+        return c.isalpha() or c.isdigit() or c in {"-", "+", "$", "_"}
 
 
 def parse_symbol(symbol_uri: str) -> Symbol:
