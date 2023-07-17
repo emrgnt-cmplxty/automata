@@ -15,7 +15,6 @@ description = "Automata: The Self-Coding Machine"
 authors = ["Owen Colegrove <owen@emergentagi.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "test"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
