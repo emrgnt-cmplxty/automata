@@ -36,7 +36,7 @@ def cli(ctx) -> None:
 
 
 @common_options
-@cli.command()
+@cli.command() # type: ignore
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
     """Configure Automata"""
@@ -69,7 +69,7 @@ def configure(ctx, *args, **kwargs) -> None:
 
 
 @common_options
-@cli.command()
+@cli.command() # type: ignore
 @click.pass_context
 def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
@@ -81,7 +81,7 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
 
 
 @common_options
-@cli.command()
+@cli.command() # type: ignore
 @click.pass_context
 @click.option(
     "--embedding-level", type=int, default=2, help="Level of the embedding."
@@ -97,7 +97,7 @@ def run_doc_embedding(ctx, *args, **kwargs) -> None:
 
 
 @common_options
-@cli.command()
+@cli.command() # type: ignore
 @click.pass_context
 def run_doc_post_process(ctx, *args, **kwargs) -> None:
     """Run the document post-processor."""
@@ -110,7 +110,7 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
 
 @common_options
 @agent_options
-@cli.command()
+@cli.command() # type: ignore
 @click.option(
     "--fetch-issues",
     default="",
