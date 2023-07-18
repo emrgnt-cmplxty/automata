@@ -27,12 +27,12 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: pytest
+        entry: poetry run pytest
         language: system
         types: [python]
         pass_filenames: false
       - id: config_validation
         name: Config Validation
-        entry: python -m automata.cli.scripts.run_agent_config_validation
+        entry: poetry run python -m automata.cli.scripts.run_agent_config_validation
         language: system
         types: [python]

@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 
-from automata.code_parsers.py import fetch_bounding_box
 from automata.config import MAX_WORKERS
+from automata.core import fetch_bounding_box
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.base import Symbol, SymbolReference
 from automata.symbol.symbol_utils import (

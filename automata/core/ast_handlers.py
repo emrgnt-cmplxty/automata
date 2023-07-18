@@ -13,9 +13,10 @@ from ast import (
     NodeTransformer,
     Str,
     get_docstring,
+    iter_child_nodes,
 )
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -108,3 +109,50 @@ def get_node_without_imports(node: AST) -> AST:
     remover = ImportRemover()
     remover.visit(node)
     return node
+
+
+def find_syntax_tree_node(
+    code_obj: Optional[AST],
+    object_path: Optional[str],
+) -> Optional[AST]:
+    """
+    Find a module, or find a function, method, or class inside a module.
+
+    Args:
+        code_obj (RedBaron): The  red baron FST object.
+        object_path (Optional[str]): The dot-separated object path (e.g., 'ClassName.method_name'). If None,
+            the module is returned.
+
+    Returns:
+        Optional[Union[Def, Class, Module]]: The found def, or class node, or None if not found.
+    """
+    if not code_obj:
+        return None
+
+    if not object_path:
+        return code_obj
+
+    obj_parts = object_path.split(".")
+
+    def find_syntax_tree_node_pyast(code_obj: AST, object_path: List[str]):
+        def find_subnode(node, obj_name):
+            for child in iter_child_nodes(node):
+                if (
+                    isinstance(
+                        child,
+                        (Module, ClassDef, FunctionDef, AsyncFunctionDef),
+                    )
+                    and child.name == obj_name
+                ):
+                    return child
+            return None
+
+        if isinstance(code_obj, (Module, ClassDef)):
+            node = code_obj
+            while node and object_path:
+                obj_name = object_path.pop(0)
+                node = find_subnode(node, obj_name)
+            return node
+        return None
+
+    return find_syntax_tree_node_pyast(code_obj, obj_parts)

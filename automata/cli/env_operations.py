@@ -1,4 +1,8 @@
+import logging
+
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 
 def get_key(dotenv_path, key_to_get):
@@ -42,13 +46,13 @@ def load_env_vars(DOTENV_PATH, DEFAULT_KEYS):
 
 def show_key_value(DOTENV_PATH, key):
     value = get_key(DOTENV_PATH, key)
-    print(f"The value of {key} is: {value}")
+    logging.info(f"The value of {key} is: {value}")
 
 
 def update_key_value(DOTENV_PATH, key):
     new_value = input(f"Enter new value for {key}: ")
     replace_key(DOTENV_PATH, key, new_value)
-    print(f"The value of {key} has been updated.")
+    logging.info(f"The value of {key} has been updated.")
 
 
 def delete_key_value(DOTENV_PATH, key):
@@ -57,6 +61,8 @@ def delete_key_value(DOTENV_PATH, key):
     )
     if user_confirmation.lower() == "y":
         replace_key(DOTENV_PATH, key, "")
-        print(f"The value of {key} has been deleted.")
+        logging.info(f"The value of {key} has been deleted.")
     else:
-        print(f"Operation cancelled. The value of {key} has not been deleted.")
+        logging.info(
+            f"Operation cancelled. The value of {key} has not been deleted."
+        )
