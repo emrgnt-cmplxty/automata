@@ -45,6 +45,9 @@ Follow these steps to setup the Automata environment
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/
 
+# Install dependencies
+poetry install
+
 # Configure the environment and setup files
 automata configure
 ```
