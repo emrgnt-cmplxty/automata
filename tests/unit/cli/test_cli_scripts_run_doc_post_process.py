@@ -55,7 +55,6 @@ def mock_chromasymbolembeddingvectordatabase():
 
 
 @pytest.fixture
-@pytest.mark.skip("Fixme")
 def main_dependencies(
     mock_initialize_modules,
     mock_pydocwriter,
@@ -70,6 +69,7 @@ def main_dependencies(
     }
 
 
+@pytest.mark.skip("Fixme")
 def test_main_without_kwargs(main_dependencies):
     from automata.cli.scripts.run_doc_post_process import main
 
