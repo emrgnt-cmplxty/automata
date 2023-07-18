@@ -156,8 +156,10 @@ def test_configure_load_env_vars_called(runner, mock_logger):
 
 
 def test_configure_ask_choice_called(runner, mock_ask_choice, mock_logger):
+    mock_ask_choice.return_value = "GITHUB_API_KEY"
     runner.invoke(automata.cli.commands.cli, ["configure"])
     assert mock_ask_choice.call_count == 2
+
 
 
 @pytest.mark.parametrize(
