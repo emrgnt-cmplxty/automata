@@ -20,12 +20,14 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_db: VectorDatabaseProvider,
         embedding_builder: "SymbolDocEmbeddingBuilder",
         batch_size: int = 1,
+        overwrite: bool = False,
     ) -> None:
         if batch_size != 1:
             raise ValueError(
                 "SymbolDocEmbeddingHandler only supports batch_size=1"
             )
         super().__init__(embedding_db, embedding_builder, batch_size)
+        self.overwrite = overwrite
 
     def process_embedding(self, symbol: Symbol) -> None:
         """
@@ -68,7 +70,8 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
     ) -> None:
         existing_embedding = self.embedding_db.get(symbol.full_dotpath)
         if (
-            existing_embedding.symbol != symbol
+            self.overwrite
+            or existing_embedding.symbol != symbol
             or existing_embedding.source_code != source_code
         ):
             logger.debug(

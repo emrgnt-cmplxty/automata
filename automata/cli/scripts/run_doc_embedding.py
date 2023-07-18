@@ -27,7 +27,9 @@ from automata.symbol_embedding import (
 logger = logging.getLogger(__name__)
 
 
-def initialize_providers(embedding_level, **kwargs):
+def initialize_providers(
+    embedding_level, symbols=None, overwrite=False, **kwargs
+):
     project_name = kwargs.get("project_name") or "automata"
     initialize_modules(**kwargs)
 
@@ -72,6 +74,8 @@ def initialize_providers(embedding_level, **kwargs):
         dependency_factory.get("symbol_doc_embedding_handler")
     )
 
+    symbol_doc_embedding_handler.overwrite = overwrite
+
     with SymbolProviderSynchronizationContext() as synchronization_context:
         synchronization_context.register_provider(symbol_graph)
         synchronization_context.register_provider(
@@ -82,6 +86,11 @@ def initialize_providers(embedding_level, **kwargs):
     symbol_doc_embedding_handler.is_synchronized = True
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
+    if symbols:
+        all_defined_symbols = [
+            sym for sym in all_defined_symbols if sym.full_dotpath in symbols
+        ]
+
     filtered_symbols = sorted(
         get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
     )
@@ -89,13 +98,13 @@ def initialize_providers(embedding_level, **kwargs):
     return symbol_doc_embedding_handler, filtered_symbols
 
 
-def main(*args, **kwargs) -> str:
+def main(symbols=None, *args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
 
     symbol_doc_embedding_handler, filtered_symbols = initialize_providers(
-        **kwargs
+        symbols=symbols, **kwargs
     )
 
     logger.info("Looping over filtered symbols...")
