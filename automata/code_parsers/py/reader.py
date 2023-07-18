@@ -118,7 +118,7 @@ class PyReader:
 
         if isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef, Module)):
             if doc_string := get_ast_docstring(node):
-                doc_string.replace('"""', "").replace("'''", "")
+                return doc_string.replace('"""', "").replace("'''", "")
             else:
                 return PyReader.NO_RESULT_FOUND_STR
         return ""

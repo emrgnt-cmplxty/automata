@@ -458,3 +458,89 @@ def test_write_and_retrieve_mock_code(py_writer):
     retriever = PyReader()
     module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
+
+
+def test_create_new_module(py_writer):
+    mock_generator = MockCodeGenerator(has_function=True)
+    source_code = mock_generator.generate_code()
+    py_writer.create_new_module("test_module_3", ast.parse(source_code))
+    module_obj = py_module_loader.fetch_ast_module("test_module_3")
+    assert module_obj is not None
+    with pytest.raises(PyCodeWriter.InvalidArguments):
+        py_writer.create_new_module("test_module_3", ast.parse(source_code))
+
+
+def test_write_module_to_disk(py_writer):
+    mock_generator = MockCodeGenerator(has_function=True)
+    source_code = mock_generator.generate_code()
+    py_writer.create_new_module("test_module_4", ast.parse(source_code))
+    py_writer._write_module_to_disk("test_module_4")
+    assert os.path.exists(
+        os.path.join(py_module_loader.root_fpath, "test_module_4.py")
+    )
+    py_writer.delete_module("test_module_4")
+    with pytest.raises(PyCodeWriter.ModuleNotFound):
+        py_writer._write_module_to_disk("non_existent_module")
+
+
+def test_write_to_disk_and_format(py_writer):
+    mock_generator = MockCodeGenerator(has_function=True)
+    source_code = mock_generator.generate_code()
+    module_fpath = os.path.join(
+        py_module_loader.root_fpath, "test_module_5.py"
+    )
+    py_writer.create_new_module("test_module_5", ast.parse(source_code))
+    py_writer._write_to_disk_and_format(module_fpath, source_code)
+    with open(module_fpath, "r") as f:
+        content = f.read()
+    py_writer.delete_module("test_module_5")
+
+    assert content.strip().replace("\n", "") == source_code.strip().replace(
+        "\n", ""
+    )
+
+
+def test_upsert_to_module_update_existing_nodes(py_writer):
+    # Arrange
+    mock_generator = MockCodeGenerator(has_function=True)
+    source_code = mock_generator.generate_code()
+    py_writer.create_new_module("test_module_update", ast.parse(source_code))
+
+    # Modify the function and create a new ast module with the modified function
+    source_code_modified = source_code.replace("pass", 'return "Updated"')
+    module_modified = ast.parse(source_code_modified)
+
+    # Act: Update the existing module with the modified function
+    module = py_module_loader.fetch_ast_module("test_module_update")
+    py_writer.upsert_to_module(module, module_modified)
+
+    # Assert: Check if the function is updated correctly
+    module_updated = py_module_loader.fetch_ast_module("test_module_update")
+    function_node = module_updated.body[
+        0
+    ]  # assuming function is the first node in the module
+    assert isinstance(function_node, ast.FunctionDef)
+    assert isinstance(function_node.body[0], ast.Return)
+    assert function_node.body[0].value.s == "Updated"
+
+
+def test_delete_from_module_non_existent_node(py_writer):
+    # Arrange
+    mock_generator = MockCodeGenerator(has_function=True)
+    source_code = mock_generator.generate_code()
+    py_writer.create_new_module("test_module_delete", ast.parse(source_code))
+
+    # Create an AST module with a non-existent function
+    non_existent_function_code = "def non_existent_function(): pass"
+    deletion_module = ast.parse(non_existent_function_code)
+
+    # Act & Assert: Attempt to delete a non-existent node should raise an exception
+    module = py_module_loader.fetch_ast_module("test_module_delete")
+    with pytest.raises(PyCodeWriter.StatementNotFound):
+        py_writer.delete_from_module(module, deletion_module)
+
+
+def test_delete_module_non_existent_module(py_writer):
+    # Act & Assert: Attempt to delete a non-existent module should raise an exception
+    with pytest.raises(PyCodeWriter.InvalidArguments):
+        py_writer.delete_module("non_existent_module")

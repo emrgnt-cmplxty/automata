@@ -1,4 +1,5 @@
 import os
+import textwrap
 
 import pytest
 
@@ -119,4 +120,108 @@ def test_get_docstring_nested_class_method(getter):
     object_path = "OuterClass.InnerClass.inner_method"
     result = getter.get_docstring(module_name, object_path)
     expected_match = "Inner method doc strings"
+    assert result == expected_match
+
+
+def test_get_source_code_module(getter):
+    module_name = "sample_modules.sample"
+    object_path = None
+    result = getter.get_source_code(module_name, object_path)
+    print("result = ", result)
+    expected_match = textwrap.dedent(
+        '''"""This is a sample module"""
+import math
+
+def sample_function(name):
+    """This is a sample function."""
+    return f'Hello, {name}! Sqrt(2) = {str(math.sqrt(2))}'
+
+class Person:
+    """This is a sample class."""
+
+    def __init__(self, name):
+        """This is the constructor."""
+        self.name = name
+
+    def say_hello(self):
+        """This is a sample method."""
+        return f'Hello, I am {self.name}.'
+
+    def run(self) -> str:
+        return 'run'
+
+def f(x) -> int:
+    """This is my new function"""
+    return x + 1
+
+class EmptyClass:
+    pass
+
+class OuterClass:
+
+    class InnerClass:
+        """Inner doc strings"""
+
+        def inner_method(self):
+            """Inner method doc strings"""'''
+    )
+    assert result == expected_match
+
+
+def test_get_source_code_class(getter):
+    module_name = "sample_modules.sample"
+    object_path = "Person"
+    result = getter.get_source_code(module_name, object_path)
+    print("result = ", result)
+    expected_match = textwrap.dedent(
+        '''class Person:
+    """This is a sample class."""
+
+    def __init__(self, name):
+        """This is the constructor."""
+        self.name = name
+
+    def say_hello(self):
+        """This is a sample method."""
+        return f'Hello, I am {self.name}.'
+
+    def run(self) -> str:
+        return 'run\''''
+    )
+    assert result == expected_match
+
+
+def test_get_source_code_function(getter):
+    module_name = "sample_modules.sample"
+    object_path = "sample_function"
+    result = getter.get_source_code(module_name, object_path)
+    expected_match = textwrap.dedent(
+        '''def sample_function(name):
+    """This is a sample function."""
+    return f'Hello, {name}! Sqrt(2) = {str(math.sqrt(2))}\''''
+    )
+    assert result.strip() == expected_match
+
+
+def test_get_docstring_from_node(getter):
+    from ast import parse
+
+    node = parse('def function():\n    """This is a docstring."""\n    pass')
+    result = getter.get_docstring_from_node(node.body[0])
+    expected_match = "This is a docstring."
+    assert result == expected_match
+
+
+def test_get_docstring_from_node_no_docstring(getter):
+    from ast import parse
+
+    node = parse("def function():\n    pass")
+    result = getter.get_docstring_from_node(node.body[0])
+    expected_match = PyReader.NO_RESULT_FOUND_STR
+    assert result == expected_match
+
+
+def test_get_docstring_from_node_no_node(getter):
+    result = getter.get_docstring_from_node(None)
+    expected_match = PyReader.NO_RESULT_FOUND_STR
     assert result == expected_match
