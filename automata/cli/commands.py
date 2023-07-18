@@ -99,7 +99,7 @@ def run_doc_embedding(ctx, symbols, overwrite, *args, **kwargs) -> None:
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Calling run_doc_embedding")
 
-    result = main(symbols=symbols, overwrite=overwrite, *args, **kwargs)
+    result = main(overwrite=overwrite, *args, **kwargs)
     logger.info(f"Result = {result}")
 
 
