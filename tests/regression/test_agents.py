@@ -136,7 +136,7 @@ def test_agent_py_reader_and_context(
             "gpt-4",
             "automata-main",
             2,
-            "automata.test_module",
+            "automata.test_output.test_module",
             "def hello_world():\n    print('Hello, world!')",
             0.9,
         ),

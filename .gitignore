@@ -64,3 +64,4 @@ docs/_build
 .chroma
 ##FIXME- The following should be removed by tests, but isn't
 tests/test_output_vec
+automata/test_output

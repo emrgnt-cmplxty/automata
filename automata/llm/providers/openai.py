@@ -299,7 +299,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.temperature = temperature
         self.stream = stream
         self.functions = functions
-        self.agent_conversation_database = conversation
+        self.conversation = conversation
         set_openai_api_key()
 
     @property
@@ -312,11 +312,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         """
         encoding = tiktoken.encoding_for_model(self.model)
         result = ""
-        for (
-            ele
-        ) in (
-            self.agent_conversation_database.get_messages_for_next_completion()
-        ):
+        for ele in self.conversation.get_messages_for_next_completion():
             result += f"{ele['role']}:\n{ele['content']}\n\n"
 
         result += "\n".join(ele.prompt_format for ele in self.functions)
@@ -330,7 +326,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         if functions:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=self.agent_conversation_database.get_messages_for_next_completion(),
+                messages=self.conversation.get_messages_for_next_completion(),
                 functions=functions,
                 function_call="auto",  # auto is default, but we'll be explicit
                 stream=self.stream,
@@ -338,7 +334,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         else:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=self.agent_conversation_database.get_messages_for_next_completion(),
+                messages=self.conversation.get_messages_for_next_completion(),
                 stream=self.stream,
             )
         if self.stream:
@@ -352,11 +348,11 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         )
 
     def reset(self) -> None:
-        self.agent_conversation_database.reset_conversation()
+        self.conversation.reset_conversation()
 
     def standalone_call(self, prompt: str) -> str:
         """Return the completion message based on the provided prompt."""
-        if self.agent_conversation_database.messages:
+        if self.conversation.messages:
             raise ValueError(
                 "The conversation is not empty. Please call reset() before calling standalone_call()."
             )
@@ -369,11 +365,11 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):
-            self.agent_conversation_database.add_message(
+            self.conversation.add_message(
                 OpenAIChatMessage(role=message.role, content=message.content)
             )
         else:
-            self.agent_conversation_database.add_message(message)
+            self.conversation.add_message(message)
         logger.debug(
             f"Approximately {self.approximate_tokens_consumed} tokens were after adding the latest message."
         )
