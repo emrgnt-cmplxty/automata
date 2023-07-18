@@ -325,7 +325,7 @@ class DependencyFactory(metaclass=Singleton):
         return PyReader()
 
     @lru_cache()
-    def create_py_code_writer(self) -> PyCodeWriter:
+    def create_py_writer(self) -> PyCodeWriter:
         return PyCodeWriter(self.get("py_reader"))
 
     def reset(self):

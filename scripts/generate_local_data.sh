@@ -20,7 +20,10 @@ cd $FACTORY_PATH
 rm -rf $project_name && cp -rf ../$project_name .
 node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_py_dir.scip  --target-only $project_py_dir
 
-cd .. && poetry run automata run-code-embedding
+cd ..
+poetry run automata run-code-embedding
+poetry run automata run-doc-embedding
+
 # Return to root
 cd -
 rm -rf $FACTORY_PATH
