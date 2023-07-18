@@ -189,6 +189,21 @@ class PyModuleLoader(metaclass=Singleton):
         self._loaded_modules[module_dotpath] = module
         self._dotpath_map.put_module(module_dotpath)  # type: ignore
 
+    def delete_module(self, module_dotpath: str) -> None:
+        """
+        Put a module with the given dotpath in the map
+
+        Args:
+            module_dotpath: The dotpath of the module
+            module: The module to put in the map
+
+        Raises:
+            Exception: If the map or python directory have not been initialized
+        """
+        self._assert_initialized()
+        self._loaded_modules.pop(module_dotpath)
+        self._dotpath_map.delete_module(module_dotpath)  # type: ignore
+
     def reset(self) -> None:
         """
         Resets the PyModuleLoader to its initial state.

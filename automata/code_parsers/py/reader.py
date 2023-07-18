@@ -9,8 +9,8 @@ from ast import (
     FunctionDef,
     Module,
     fix_missing_locations,
-    get_docstring,
 )
+from ast import get_docstring as get_ast_docstring
 from ast import unparse as pyast_unparse
 from typing import Optional
 
@@ -68,11 +68,15 @@ class PyReader:
         from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
+            if not object_path:
+                return (
+                    get_ast_docstring(module) or PyReader.NO_RESULT_FOUND_STR
+                )
             obj = find_syntax_tree_node(module, object_path)
             if isinstance(
                 obj, (AsyncFunctionDef, FunctionDef, ClassDef, Module)
             ):
-                return get_docstring(obj) or PyReader.NO_RESULT_FOUND_STR
+                return get_ast_docstring(obj) or PyReader.NO_RESULT_FOUND_STR
         return PyReader.NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(
@@ -113,7 +117,7 @@ class PyReader:
             return PyReader.NO_RESULT_FOUND_STR
 
         if isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef, Module)):
-            if doc_string := get_docstring(node):
+            if doc_string := get_ast_docstring(node):
                 doc_string.replace('"""', "").replace("'''", "")
             else:
                 return PyReader.NO_RESULT_FOUND_STR

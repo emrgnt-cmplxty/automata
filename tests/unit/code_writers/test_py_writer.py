@@ -1,3 +1,4 @@
+import ast
 import os
 import random
 import string
@@ -10,16 +11,21 @@ from automata.code_writers.py.code_writer import PyCodeWriter
 from automata.core import find_syntax_tree_node
 from automata.singletons.py_module_loader import py_module_loader
 
-# from redbaron import (
-#     ClassNode,
-#     DefNode,
-#     EndlNode,
-#     PassNode,
-#     RedBaron,
-#     ReturnNode,
-#     StringNode,
-# )
 
+@pytest.fixture(autouse=True)
+def module_loader():
+    py_module_loader.reset()
+    py_module_loader.initialize(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."),
+        "sample_modules",
+    )
+    yield py_module_loader
+
+
+@pytest.fixture
+def py_writer():
+    retriever = PyReader()
+    return PyCodeWriter(retriever)
 
 
 class MockCodeGenerator:
@@ -112,89 +118,58 @@ class MockCodeGenerator:
     def _check_function_obj(self, function_obj=None):
         if function_obj is None:
             source_code = self.generate_code()
-            function_obj = RedBaron(source_code).find("def")
+            function_obj = ast.parse(source_code).body[0]
+
         assert function_obj.name == self.function_name
         if self.has_function_docstring:
-            assert (
-                function_obj[0].value.replace('"""', "")
-                == self.function_docstring
-            )
-            assert isinstance(function_obj[0], StringNode)
-            assert isinstance(function_obj[1], EndlNode)
-            assert isinstance(function_obj[2], PassNode)
+            assert function_obj.body[0].value.s == self.function_docstring
+            assert isinstance(function_obj.body[0], ast.Expr)
+            assert isinstance(function_obj.body[1], ast.Pass)
         else:
-            assert isinstance(function_obj[0], EndlNode)
-            assert isinstance(function_obj[1], PassNode)
+            assert isinstance(function_obj.body[0], ast.Pass)
 
     def _check_class_obj(self, class_obj=None):
         if class_obj is None:
             source_code = self.generate_code()
-            class_obj = RedBaron(source_code).find("class")
+            class_obj = ast.parse(source_code).body[0]
 
         assert class_obj.name == self.class_name
         if self.has_class_docstring:
-            assert isinstance(class_obj, ClassNode)
-            assert isinstance(class_obj[0], StringNode)
-            assert isinstance(class_obj[1], EndlNode)
-            assert isinstance(class_obj[2], DefNode)
+            assert isinstance(class_obj, ast.ClassDef)
+            assert isinstance(class_obj.body[0], ast.Expr)
+            assert isinstance(class_obj.body[1], ast.FunctionDef)
         else:
-            assert isinstance(class_obj, ClassNode)
-            assert isinstance(class_obj[0], EndlNode)
-            assert isinstance(class_obj[1], DefNode)
+            assert isinstance(class_obj, ast.ClassDef)
+            assert isinstance(class_obj.body[0], ast.FunctionDef)
 
         if self.has_method:
             method_obj = (
-                class_obj[3] if self.has_class_docstring else class_obj[2]
+                class_obj.body[2]
+                if self.has_class_docstring
+                else class_obj.body[1]
             )
             assert method_obj.name == "method"
             if self.has_method_docstring:
-                assert isinstance(method_obj[0], StringNode)  # docstring
-                assert isinstance(method_obj[1], EndlNode)  # pass
-                assert isinstance(method_obj[2], PassNode)  # pass
+                assert isinstance(method_obj.body[0], ast.Expr)  # docstring
+                assert isinstance(method_obj.body[1], ast.Pass)  # pass
             else:
-                assert isinstance(method_obj[0], EndlNode)
-                assert isinstance(method_obj[1], PassNode)
+                assert isinstance(method_obj.body[0], ast.Pass)
 
     def _check_module_obj(self, module_obj=None):
         if module_obj is None:
             source_code = self.generate_code()
-            module_obj = RedBaron(source_code)
+            module_obj = ast.parse(source_code)
         if self.has_module_docstring:
-            assert isinstance(module_obj[0], StringNode)
-            assert isinstance(module_obj[1], ClassNode)
+            assert isinstance(module_obj.body[0], ast.Expr)
+            assert isinstance(module_obj.body[1], ast.ClassDef)
         else:
-            if isinstance(module_obj[0], EndlNode):
-                assert isinstance(module_obj[1], ClassNode)
-            else:
-                assert isinstance(module_obj[0], ClassNode)
+            assert isinstance(module_obj.body[0], ast.ClassDef)
 
     @staticmethod
     def random_string(length: int):
         return "".join(
             random.choice(string.ascii_letters) for _ in range(length)
         )
-
-
-# TODO - Unify module loader fixtures
-@pytest.fixture(autouse=True)
-def module_loader():
-    py_module_loader.initialize(
-        os.path.join(os.path.dirname(os.path.abspath(__file__))),
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "sample_modules"
-        ),
-    )
-    yield py_module_loader
-    py_module_loader._dotpath_map = None
-    py_module_loader.initialized = False
-    py_module_loader.py_fpath = None
-    py_module_loader.root_fpath = None
-
-
-@pytest.fixture
-def py_writer():
-    retriever = PyReader()
-    return PyWriter(retriever)
 
 
 def test_create_function_source_function():
@@ -233,7 +208,7 @@ def test_create_class_source_class():
     mock_generator._check_class_obj()
 
 
-def test_extend_module(py_writer):
+def test_upsert_to_module(py_writer, module_loader):
     # Arrange
     # create module
     mock_generator = MockCodeGenerator(
@@ -243,7 +218,7 @@ def test_extend_module(py_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
-    py_writer.create_new_module("sample_module_22", source_code)
+    py_writer.create_new_module("sample_module_22", ast.parse(source_code))
     mock_generator_2 = MockCodeGenerator(
         has_class=True,
         has_class_docstring=True,
@@ -251,19 +226,20 @@ def test_extend_module(py_writer):
         has_function_docstring=True,
     )
     source_code_2 = mock_generator_2.generate_code()
-
-    py_writer.update_existing_module("sample_module_22", source_code_2)
+    module_obj = module_loader.fetch_ast_module("sample_module_22")
+    py_writer.upsert_to_module(module_obj, ast.parse(source_code_2))
 
     # Check module 2 is merged into module 1
-    module_obj = py_module_loader.fetch_ast_module("sample_module_22")
     mock_generator._check_module_obj(module_obj)
-    mock_generator._check_class_obj(module_obj[0])
-    mock_generator._check_function_obj(module_obj[1])
-    mock_generator_2._check_class_obj(module_obj[2])
-    mock_generator_2._check_function_obj(module_obj[3])
+    mock_generator._check_class_obj(module_obj.body[0])
+    mock_generator._check_function_obj(module_obj.body[1])
+    mock_generator_2._check_class_obj(module_obj.body[2])
+    mock_generator_2._check_function_obj(module_obj.body[3])
 
 
-def test_reduce_module(py_writer):
+def test_create_delete_module(py_writer, module_loader):
+    # Arrange
+    # create module
     mock_generator = MockCodeGenerator(
         has_class=True,
         has_class_docstring=True,
@@ -271,13 +247,34 @@ def test_reduce_module(py_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
-    py_writer.create_new_module("sample_module_2", source_code)
-    module_obj = py_module_loader.fetch_ast_module("sample_module_2")
-    class_obj = module_obj.find("class")
+    py_writer.create_new_module(
+        "sample_module_22", ast.parse(source_code), do_write=True
+    )
+    assert os.path.exists(
+        os.path.join(py_module_loader.root_fpath, "sample_module_22.py")
+    )
+    py_writer.delete_module("sample_module_22")
+    assert not os.path.exists(
+        os.path.join(py_module_loader.root_fpath, "sample_module_22.py")
+    )
 
-    function_obj = module_obj.find_all("def")[-1]
-    py_writer.delete_from_existing__module("sample_module_2", class_obj.name)
-    assert module_obj[0] == function_obj
+
+def test_delete_from_module(py_writer):
+    mock_generator = MockCodeGenerator(
+        has_class=True,
+        has_class_docstring=True,
+        has_function=True,
+        has_function_docstring=True,
+    )
+    source_code = mock_generator.generate_code()
+    py_writer.create_new_module("test_module_2", ast.parse(source_code))
+    module_obj = py_module_loader.fetch_ast_module("test_module_2")
+    function_obj = module_obj.body[1]
+    new_module_obj = ast.Module(body=[function_obj], type_ignores=[])
+    assert len(module_obj.body) == 2
+    py_writer.delete_from_module(module_obj, new_module_obj)
+    mock_generator._check_class_obj(module_obj.body[0])
+    assert len(module_obj.body) == 1
 
 
 def assert_code_lines_equal(code_1: str, code_2: str):
@@ -288,7 +285,7 @@ def assert_code_lines_equal(code_1: str, code_2: str):
     )
 
 
-def test_create_update_write_module(py_writer):
+def test_create_write_update_delete_module(py_writer):
     mock_generator = MockCodeGenerator(
         has_class=True,
         has_class_docstring=True,
@@ -297,12 +294,13 @@ def test_create_update_write_module(py_writer):
     )
     source_code = mock_generator.generate_code()
     py_writer.create_new_module(
-        "sample_modules.sample_module_write", source_code, do_write=True
+        "sample_modules.sample_module_write",
+        ast.parse(source_code),
+        do_write=True,
     )
-    root_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "sample_modules"
+    fpath = os.path.join(
+        py_module_loader.root_fpath, "sample_modules", "sample_module_write.py"
     )
-    fpath = os.path.join(root_dir, "sample_module_write.py")
     assert os.path.exists(fpath)
     with open(fpath, "r") as f:
         contents = f.read()
@@ -317,19 +315,20 @@ def test_create_update_write_module(py_writer):
     source_code_2 = mock_generator_2.generate_code()
 
     assert source_code != source_code_2
-    py_writer.update_existing_module(
-        source_code=source_code_2,
-        module_dotpath="sample_modules.sample_module_write",
-        do_write=True,
+    py_writer.upsert_to_module(
+        ast.parse(source_code), ast.parse(source_code_2)
     )
 
+    assert os.path.exists(fpath)
     with open(fpath, "r") as f:
         contents = f.read()
         assert_code_lines_equal(
             "\n".join([source_code, source_code_2]), contents
         )
 
-    os.remove(fpath)
+    py_writer.delete_module("sample_modules.sample_module_write")
+    # check deletion succeeded
+    assert not os.path.exists(fpath)
 
 
 def test_create_function_with_arguments():
@@ -344,22 +343,17 @@ def test_create_function_with_arguments():
             pass
         """
     )
-    module_obj = RedBaron(source_code)
+    module_obj = ast.parse(source_code)
     function_obj = find_syntax_tree_node(
         module_obj, f"{mock_generator.function_name}_with_args"
     )
     assert function_obj.name == f"{mock_generator.function_name}_with_args"
-    def_arg_nodes = module_obj.find_all("def_argument")
-    assert len(def_arg_nodes) == 2
-    assert def_arg_nodes[0].name.value == "pos_arg"
-    assert def_arg_nodes[1].name.value == "kw_arg"
-    assert def_arg_nodes[1].value.value == "None"
-    list_arg_nodes = module_obj.find_all("list_argument")
-    assert len(list_arg_nodes) == 1
-    assert list_arg_nodes[0].name.value == "args"
-    dict_arg_nodes = module_obj.find_all("dict_argument")
-    assert len(dict_arg_nodes) == 1
-    assert dict_arg_nodes[0].name.value == "kwargs"
+    assert len(function_obj.args.args) == 2
+    assert function_obj.args.args[0].arg == "pos_arg"
+    assert function_obj.args.args[1].arg == "kw_arg"
+    assert not function_obj.args.defaults[0].value
+    assert function_obj.args.vararg.arg == "args"
+    assert function_obj.args.kwarg.arg == "kwargs"
 
 
 def test_create_class_with_multiple_methods_properties_attributes():
@@ -384,12 +378,12 @@ def test_create_class_with_multiple_methods_properties_attributes():
                 return self.class_attribute
         """
     )
-    module_obj = RedBaron(source_code)
+    module_obj = ast.parse(source_code)
     class_obj = find_syntax_tree_node(
         module_obj, f"{mock_generator.class_name}_extended"
     )
     assert (
-        len(class_obj.filtered()) == 4
+        len(class_obj.body) == 4
     )  # class_attribute, method_1, method_2, some_property
 
 
@@ -403,11 +397,11 @@ def test_create_class_inheritance():
             pass
         """
     )
-    module_obj = RedBaron(source_code)
+    module_obj = ast.parse(source_code)
     class_obj = find_syntax_tree_node(
         module_obj, f"{mock_generator.class_name}_child"
     )
-    assert class_obj.inherit_from.name.value == mock_generator.class_name
+    assert class_obj.bases[0].id == mock_generator.class_name
 
 
 def test_reduce_module_remove_function(py_writer):
@@ -419,18 +413,16 @@ def test_reduce_module_remove_function(py_writer):
     )
     source_code = mock_generator.generate_code()
 
-    module_obj = py_writer._create_module_from_source_code(
-        "sample_module_2", source_code
-    )
-    class_obj = module_obj[1]
-    function_obj = module_obj[2]
+    module_obj = ast.parse(source_code)
+    assert len(module_obj.body) == 2
+    py_writer.create_new_module("test_module_2", module_obj)
 
-    py_writer.delete_from_existing__module(
-        "sample_module_2", function_obj.name
-    )
-
-    assert module_obj[0] == class_obj
-    assert len(module_obj.filtered()) == 1
+    class_obj = module_obj.body[0]
+    function_obj = ast.Module(body=[module_obj.body[1]], type_ignores=[])
+    py_writer.delete_from_module(module_obj, function_obj)
+    module_obj = py_module_loader.fetch_ast_module("test_module_2")
+    assert module_obj.body[0] == class_obj
+    assert len(module_obj.body) == 1
 
 
 def test_update_existing_function(py_writer):
@@ -443,17 +435,11 @@ def test_update_existing_function(py_writer):
             return "Updated"
         """
     )
-    module_obj = py_writer._create_module_from_source_code(
-        "sample_module_2", source_code
-    )
-    py_writer.update_existing_module(
-        source_code=source_code_updated, module_dotpath="sample_module_2"
-    )
-    updated_function_obj = find_syntax_tree_node(
-        module_obj, mock_generator.function_name
-    )
-    assert len(updated_function_obj) == 1
-    assert isinstance(updated_function_obj[0], ReturnNode)
+    py_writer.create_new_module("sample_module_2", ast.parse(source_code))
+    module_obj = py_module_loader.fetch_ast_module("sample_module_2")
+    py_writer.upsert_to_module(module_obj, ast.parse(source_code_updated))
+    assert len(module_obj.body) == 1
+    assert isinstance(module_obj.body[0], ast.FunctionDef)
 
 
 def test_write_and_retrieve_mock_code(py_writer):
@@ -468,20 +454,8 @@ def test_write_and_retrieve_mock_code(py_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
-    py_writer._create_module_from_source_code(
-        "sample_modules.sample_module_2", source_code
-    )
-
-    py_writer._write_module_to_disk("sample_modules.sample_module_2")
+    py_writer.create_new_module("sample_module_2", ast.parse(source_code))
 
     retriever = PyReader()
-    module_docstring = retriever.get_docstring(
-        "sample_modules.sample_module_2", None
-    )
+    module_docstring = retriever.get_docstring("sample_module_2", None)
     assert module_docstring == mock_generator.module_docstring
-
-    root_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "sample_modules"
-    )
-    fpath = os.path.join(root_dir, "sample_module_2.py")
-    os.remove(fpath)

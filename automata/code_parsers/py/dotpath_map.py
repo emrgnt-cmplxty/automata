@@ -75,10 +75,6 @@ class DotPathMap:
         Raises:
             Exception: If the module already exists in the map
         """
-        if self.contains_dotpath(module_dotpath):
-            raise Exception(
-                f"Module with dotpath {module_dotpath} already exists!"
-            )
         module_os_rel_path = os.path.relpath(
             module_dotpath.replace(DotPathMap.DOT_SEP, os.path.sep),
             self.prefix,
@@ -88,6 +84,23 @@ class DotPathMap:
         file_path = f"{module_os_path}.py"
         self._module_dotpath_to_fpath_map[module_dotpath] = file_path
         self._module_fpath_to_dotpath_map[file_path] = module_dotpath
+
+    def delete_module(self, module_dotpath: str) -> None:
+        """
+        Puts a module with the given dotpath in the local store
+
+        Raises:
+            Exception: If the module already exists in the map
+        """
+        module_os_rel_path = os.path.relpath(
+            module_dotpath.replace(DotPathMap.DOT_SEP, os.path.sep),
+            self.prefix,
+        )
+        module_os_path = os.path.join(self.path, module_os_rel_path)
+        file_path = f"{module_os_path}.py"
+        os.remove(file_path)
+        self._module_dotpath_to_fpath_map.pop(module_dotpath)
+        self._module_fpath_to_dotpath_map.pop(file_path)
 
     def items(self) -> Iterable[Tuple[str, str]]:
         """
