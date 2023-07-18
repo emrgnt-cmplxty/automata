@@ -38,8 +38,7 @@ class Eval(abc.ABC):
         observed_actions: List[Action] = []
 
         for message in agent.conversation.messages:
-            extracted_actions = self._extract_action(message)
-            if extracted_actions:
+            if extracted_actions := self._extract_action(message):
                 observed_actions.extend(extracted_actions)
 
         match_result: Dict[Action, bool] = {

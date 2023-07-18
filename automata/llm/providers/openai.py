@@ -324,11 +324,10 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             This method can be made handling chat messages and functions identically to OpenAI.
         """
         encoding = tiktoken.encoding_for_model(self.model)
-        result = ""
-        for ele in self.conversation.get_messages_for_next_completion():
-            result += f"{ele['role']}:\n{ele['content']}\n\n"
-
-        result += "\n".join(ele.prompt_format for ele in self.functions)
+        result = "".join(
+            f"{ele['role']}:\n{ele['content']}\n\n"
+            for ele in self.conversation.get_messages_for_next_completion()
+        ) + "\n".join(ele.prompt_format for ele in self.functions)
         return len(encoding.encode(result))
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
