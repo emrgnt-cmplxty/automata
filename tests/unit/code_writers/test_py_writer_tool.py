@@ -207,7 +207,7 @@ class PythonAgentToolkit:
     with open(file_abs_path, "r", encoding="utf-8") as f:
         new_sample_text = f.read()
 
-    file2_rel_path = os.path.join(package, f"sample2.py")
+    file2_rel_path = os.path.join(package, "sample2.py")
     file2_abs_path = os.path.join(absolute_path, file2_rel_path)
     with open(file2_abs_path, "r", encoding="utf-8") as f:
         old_sample_text = f.read().replace("# type: ignore\n", "")
