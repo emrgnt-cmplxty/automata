@@ -2,12 +2,9 @@ from typing import Any, Dict, List
 
 from jinja2 import Template
 
-from automata.code_parsers.py import (
-    ContextComponent,
-    PyContextHandler,
-    get_docstring_from_node,
-)
+from automata.code_parsers.py import ContextComponent, PyContextHandler
 from automata.config import DEFAULT_DOC_GENERATION_PROMPT
+from automata.core import get_docstring_from_node
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import LLMChatCompletionProvider

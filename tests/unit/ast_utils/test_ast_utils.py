@@ -4,7 +4,7 @@ from typing import cast
 
 import pytest
 
-from automata.code_parsers.py.ast_utils import (
+from automata.core.ast_handlers import (
     get_docstring_from_node,
     get_node_without_docstrings,
     get_node_without_imports,
