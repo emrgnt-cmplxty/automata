@@ -33,6 +33,10 @@ def reconfigure_logging(log_level_str: str) -> None:
 
     logger.info("Configuring Automata:")
 
+    # External libraries we want to quiet down
+    for library in ["urllib3", "matplotlib", "openai", "github"]:
+        logging.getLogger(library).setLevel(logging.INFO)
+
 
 @click.group()
 @click.pass_context
