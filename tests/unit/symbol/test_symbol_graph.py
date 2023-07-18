@@ -40,6 +40,6 @@ def test_build_real_graph_and_subgraph(
 
     # build the subgraph
     subgraph = symbol_graph_static_test.default_rankable_subgraph
-    assert len(subgraph) == 34
+    assert len(subgraph) == 37
 
     py_module_loader.reset()
