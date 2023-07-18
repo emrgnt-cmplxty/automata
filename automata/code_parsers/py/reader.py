@@ -43,10 +43,8 @@ class PyReader:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
-        module = py_module_loader.fetch_ast_module(module_dotpath)
-        if module:
-            result = find_syntax_tree_node(module, object_path)
-            if result:
+        if module := py_module_loader.fetch_ast_module(module_dotpath):
+            if result := find_syntax_tree_node(module, object_path):
                 return pyast_unparse(result)
 
         return PyReader.NO_RESULT_FOUND_STR
@@ -66,8 +64,7 @@ class PyReader:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
-        module = py_module_loader.fetch_ast_module(module_dotpath)
-        if module:
+        if module := py_module_loader.fetch_ast_module(module_dotpath):
             obj = find_syntax_tree_node(module, object_path)
             if isinstance(
                 obj, (AsyncFunctionDef, FunctionDef, ClassDef, Module)
@@ -91,13 +88,9 @@ class PyReader:
                 if not found
         """
 
-        module = py_module_loader.fetch_ast_module(module_dotpath)
-
-        if module:
+        if module := py_module_loader.fetch_ast_module(module_dotpath):
             module_copy = copy.deepcopy(module)
-            result = find_syntax_tree_node(module_copy, object_path)
-
-            if result:
+            if result := find_syntax_tree_node(module_copy, object_path):
                 result = get_node_without_docstrings(result)
                 fix_missing_locations(result)
                 return pyast_unparse(result)
@@ -116,8 +109,7 @@ class PyReader:
             return PyReader.NO_RESULT_FOUND_STR
 
         if isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef, Module)):
-            doc_string = get_docstring(node)
-            if doc_string:
+            if doc_string := get_docstring(node):
                 doc_string.replace('"""', "").replace("'''", "")
             else:
                 return PyReader.NO_RESULT_FOUND_STR
