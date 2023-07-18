@@ -59,7 +59,7 @@ Detect Operating System
 
    if [[ "$OSTYPE" == "darwin"* ]]; then
       # Mac OSX
-      sed -i '' "s|your_openai_api_key|$OPEN_API_KEY|" .env
+      sed -i '' "s|your_openai_api_key|$OPENAI_API_KEY|" .env
       sed -i '' "s|your_github_api_key|$GITHUB_API_KEY|" .env
       sed -i '' "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" .env
       sed -i '' "s|your_task_db_path|$TASK_DB_PATH|" .env
@@ -67,7 +67,7 @@ Detect Operating System
       sed -i '' "s|your_repository_name|$REPOSITORY_NAME|" .env
    else
       # Linux and others
-      sed -i "s|your_openai_api_key|$OPEN_API_KEY|" .env
+      sed -i "s|your_openai_api_key|$OPENAI_API_KEY|" .env
       sed -i "s|your_github_api_key|$GITHUB_API_KEY|" .env
       sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" .env
       sed -i "s|your_task_db_path|$TASK_DB_PATH|" .env
