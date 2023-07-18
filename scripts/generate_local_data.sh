@@ -9,8 +9,10 @@
 project_name="automata"
 project_py_dir="automata"
 
-# Remove the old index
-rm $EMBEDDING_DATA_PATH/indices/$project_name.scip
+# Remove the old index if it exists
+if [ -f "$EMBEDDING_DATA_PATH/indices/$project_name.scip" ]; then
+    rm $EMBEDDING_DATA_PATH/indices/$project_name.scip
+fi
 
 # Change directory to FACTORY_PATH
 mkdir -p $FACTORY_PATH
