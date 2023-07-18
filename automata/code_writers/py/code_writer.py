@@ -1,4 +1,3 @@
-# import astor
 import ast
 import logging
 import subprocess
@@ -61,22 +60,25 @@ class PyCodeWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        if module_ast := py_module_loader.fetch_ast_module(module_dotpath):
-            source_code = ast.unparse(module_ast)
-
-            module_fpath = (
-                py_module_loader.fetch_existing_module_fpath_by_dotpath(
-                    module_dotpath
-                )
+        if not (
+            module_ast := py_module_loader.fetch_ast_module(module_dotpath)
+        ):
+            raise PyCodeWriter.ModuleNotFound(
+                f"Module fpath found in module map for dotpath: {module_dotpath}"
             )
+        source_code = ast.unparse(module_ast)
 
-            if not module_fpath:
-                raise PyCodeWriter.ModuleNotFound(
-                    f"Module fpath found in module map for dotpath: {module_dotpath}"
-                )
-            module_fpath = cast(str, module_fpath)
+        module_fpath = py_module_loader.fetch_existing_module_fpath_by_dotpath(
+            module_dotpath
+        )
 
-            self._write_to_disk_and_format(module_fpath, source_code)
+        if not module_fpath:
+            raise PyCodeWriter.ModuleNotFound(
+                f"Module fpath found in module map for dotpath: {module_dotpath}"
+            )
+        module_fpath = cast(str, module_fpath)
+
+        self._write_to_disk_and_format(module_fpath, source_code)
 
     def _write_to_disk_and_format(self, module_fpath: str, source_code: str):
         """Write the source code to disk and format it using black and isort."""
