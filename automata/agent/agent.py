@@ -6,7 +6,11 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 from automata.config import AgentConfigName, LLMProvider
-from automata.llm import LLMConversationDatabaseProvider, LLMIterationResult
+from automata.llm import (
+    LLMConversation,
+    LLMConversationDatabaseProvider,
+    LLMIterationResult,
+)
 from automata.tools import Tool
 
 logger = logging.getLogger(__name__)
@@ -24,6 +28,11 @@ class Agent(ABC):
         self.database_provider: Optional[
             LLMConversationDatabaseProvider
         ] = None
+
+    @property
+    @abstractmethod
+    def conversation(self) -> LLMConversation:
+        pass
 
     @abstractmethod
     def __iter__(self):

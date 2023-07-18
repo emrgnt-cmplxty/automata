@@ -1,4 +1,4 @@
-from .agent import AgentToolkitBuilder, AgentToolkitNames
+from .agent import Agent, AgentToolkitBuilder, AgentToolkitNames
 from .error import (
     AgentGeneralError,
     AgentMaxIterError,
@@ -11,6 +11,7 @@ from .instances import OpenAIAutomataAgentInstance
 from .providers import OpenAIAgentToolkitBuilder, OpenAIAutomataAgent
 
 __all__ = [
+    "Agent",
     "AgentToolkitBuilder",
     "AgentToolkitNames",
     "AgentGeneralError",

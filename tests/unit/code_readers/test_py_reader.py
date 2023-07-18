@@ -121,7 +121,6 @@ def test_get_source_code_module(getter):
     module_name = "sample_modules.sample"
     node_path = None
     result = getter.get_source_code(module_name, node_path)
-    print("result = ", result)
     expected_match = textwrap.dedent(
         '''"""This is a sample module"""
 import math
@@ -166,7 +165,6 @@ def test_get_source_code_class(getter):
     module_name = "sample_modules.sample"
     node_path = "Person"
     result = getter.get_source_code(module_name, node_path)
-    print("result = ", result)
     expected_match = textwrap.dedent(
         '''class Person:
     """This is a sample class."""

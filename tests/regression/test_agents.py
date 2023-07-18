@@ -4,45 +4,14 @@ import logging
 
 import pytest
 
-from automata.agent import OpenAIAutomataAgent
-from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.core.utils import calculate_similarity
 from automata.llm import OpenAIEmbeddingProvider
-from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
-from automata.tools.factory import AgentToolFactory
-from tests.utils.regression_utils import initialize_automata
+from tests.utils.regression_utils import run_agent_and_get_result
 
 logger = logging.getLogger(__name__)
 
 EMBEDDING_PROVIDER = OpenAIEmbeddingProvider()
-
-
-def run_agent_and_get_result(
-    instructions, toolkit_list, model, agent_config_name, max_iterations
-):
-    initialize_automata()
-
-    tool_dependencies = dependency_factory.build_dependencies_for_tools(
-        toolkit_list
-    )
-    tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
-    config_name = AgentConfigName(agent_config_name)
-    agent_config_builder = (
-        OpenAIAutomataAgentConfigBuilder.from_name(config_name)
-        .with_tools(tools)
-        .with_model(model)
-    )
-
-    agent_config_builder = agent_config_builder.with_max_iterations(
-        max_iterations
-    )
-
-    agent = OpenAIAutomataAgent(
-        instructions, config=agent_config_builder.build()
-    )
-    result = agent.run()
-    return result.replace("Execution Result:\n", "").strip()
 
 
 @pytest.mark.regression
@@ -136,7 +105,7 @@ def test_agent_py_reader_and_context(
             "gpt-4",
             "automata-main",
             2,
-            "automata.test_module",
+            "automata.test_output.test_module",
             "def hello_world():\n    print('Hello, world!')",
             0.9,
         ),
