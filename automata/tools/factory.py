@@ -2,6 +2,8 @@ import logging
 from typing import Any, Dict, List, Sequence, Tuple
 
 from automata.agent import AgentToolkitNames, UnknownToolError
+from automata.code_parsers.py import PyReader
+from automata.code_writers.py import PyCodeWriter
 from automata.config.base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
@@ -25,6 +27,8 @@ class AgentToolFactory:
             ("symbol_code_embedding_handler", SymbolCodeEmbeddingHandler),
             ("embedding_similarity_calculator", EmbeddingSimilarityCalculator),
         ],
+        AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
+        AgentToolkitNames.PY_WRITER: [("py_writer", PyCodeWriter)],
     }
 
     @staticmethod

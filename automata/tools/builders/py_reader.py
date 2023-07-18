@@ -28,33 +28,30 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
 
         return [
             Tool(
-                name="py-retriever-retrieve-code",
+                name="py-retriever-retrieve-raw-code",
                 function=self._run_indexer_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
-                f" or method at the given python path, without docstrings."
+                f" or method at the given module path and sub-module (e.g. node) path."
                 f' If no match is found, then "{PyReader.NO_RESULT_FOUND_STR}" is returned.\n\n'
-                f'For example - suppose the function "my_function" is defined in the file "my_file.py" located in the main working directory,'
+                f'For example - suppose we want the entire source code of a module located in "target_module.py" of the root directory,'
                 f"then the correct tool input is:\n"
-                f'arguments: {{"module_path": "my_file", "object_path": "my_file"}}'
-                f"Suppose instead the file is located in a subdirectory called my_directory:\n"
-                f'arguments: {{"module_path": "my_directory.my_file", "object_path": "my_function"}}'
-                f"Lastly, if the function is defined in a class, MyClass, then the correct tool input is:\n"
-                f'arguments: {{"module_path": "my_file", "object_path": "MyClass.my_function"}}',
+                f'arguments: {{"module_path": "target_module"}}'
+                f"Suppose instead the file is located in a subdirectory called module_directory:\n"
+                f'arguments: {{"module_path": "module_directory.target_module"}}'
+                f"Next, suppose that we just want to retrieve 'target_function' in target_module:"
+                f'arguments: {{"module_path": "module_directory.target_module", "node_path": "target_function"}}'
+                f"Lastly, if the function is defined in a class, TargetClass, then the correct tool input is:\n"
+                f'arguments: {{"module_path": "module_directory.target_module", "node_path": "TargetClass.target_function"}}',
             ),
             Tool(
                 name="py-retriever-retrieve-docstring",
                 function=self._run_indexer_retrieve_docstring,
                 description="Identical to py-retriever-retrieve-code, except returns the docstring instead of raw code.",
             ),
-            Tool(
-                name="py-retriever-retrieve-raw-code",
-                function=self._run_indexer_retrieve_raw_code,
-                description="Identical to py-retriever-retrieve-code, except returns the raw text (e.g. code + docstrings) of the module.",
-            ),
         ]
 
     def _run_indexer_retrieve_code(
-        self, module_path: str, object_path: Optional[str] = None
+        self, module_path: str, node_path: Optional[str] = None
     ) -> str:
         """
         Retrieves the code of the python package, module,
@@ -63,13 +60,13 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
         """
         try:
             return self.py_reader.get_source_code_without_docstrings(
-                module_path, object_path
+                module_path, node_path
             )
         except Exception as e:
             return f"Failed to retrieve code with error - {str(e)}"
 
     def _run_indexer_retrieve_docstring(
-        self, module_path: str, object_path: Optional[str] = None
+        self, module_path: str, node_path: Optional[str] = None
     ) -> str:
         """
         Retrieves the docstrings python package, module,
@@ -77,12 +74,12 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
         python path, without docstrings.
         """
         try:
-            return self.py_reader.get_docstring(module_path, object_path)
+            return self.py_reader.get_docstring(module_path, node_path)
         except Exception as e:
             return f"Failed to retrieve docstring with error - {str(e)}"
 
     def _run_indexer_retrieve_raw_code(
-        self, module_path: str, object_path: Optional[str] = None
+        self, module_path: str, node_path: Optional[str] = None
     ) -> str:
         """
         Retrieves the raw code of the python package,
@@ -90,7 +87,7 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
         python path, with docstrings.
         """
         try:
-            return self.py_reader.get_source_code(module_path, object_path)
+            return self.py_reader.get_source_code(module_path, node_path)
         except Exception as e:
             return f"Failed to retrieve raw code with error - {str(e)}"
 
@@ -108,7 +105,7 @@ class PyReaderOpenAIToolkit(PyReaderToolkitBuilder, OpenAIAgentToolkitBuilder):
                 "type": "string",
                 "description": "The path to the module to retrieve code from.",
             },
-            "object_path": {
+            "node_path": {
                 "type": "string",
                 "description": "The path to the object to retrieve code from.",
             },

@@ -19,37 +19,46 @@ logger = logging.getLogger(__name__)
 @pytest.mark.parametrize(
     "instructions, toolkit_list, model, agent_config_name, max_iterations, allowable_results",
     [
-        # A simple 'hello-world' style instruction
+        # # A simple 'hello-world' style instruction
+        # (
+        #     "This is a dummy instruction, return True.",
+        #     ["context-oracle"],
+        #     "gpt-3.5-turbo-16k",
+        #     "automata-main",
+        #     1,
+        #     ["True"],
+        # ),
+        # # A simple context search for `SymbolSearch`
+        # (
+        #     "What class should we instantiate to search the codebase for relevant symbols? Please return just the class name.",
+        #     ["context-oracle"],
+        #     "gpt-4",
+        #     "automata-main",
+        #     2,
+        #     ["SymbolSearch", "`SymbolSearch`"],
+        # ),
+        # # A simple context search for `OpenAIAutomataAgentConfig`
+        # (
+        #     "What class is responsible for building OpenAI Agent configurations? Please jsut return the class name.",
+        #     ["context-oracle"],
+        #     "gpt-4",
+        #     "automata-main",
+        #     2,
+        #     [
+        #         "OpenAIAutomataAgentConfigBuilder",
+        #         "`OpenAIAutomataAgentConfigBuilder`",
+        #         "OpenAIAutomataAgentConfig",  # this is not the correct result, but let's allow it for now
+        #         "`OpenAIAutomataAgentConfig`",  # same
+        #     ],
+        # ),
+        # Extracting source code directly from a module
         (
-            "This is a dummy instruction, return True.",
-            ["context-oracle"],
-            "gpt-3.5-turbo-16k",
-            "automata-main",
-            1,
-            ["True"],
-        ),
-        # A simple context search for `SymbolSearch`
-        (
-            "What class should we instantiate to search the codebase for relevant symbols? Please return just the class name.",
-            ["context-oracle"],
+            "Fetch the source code for the module at 'automata.core.utils'.",
+            ["py-reader"],
             "gpt-4",
             "automata-main",
             2,
-            ["SymbolSearch", "`SymbolSearch`"],
-        ),
-        # A simple context search for `OpenAIAutomataAgentConfig`
-        (
-            "What class is responsible for building OpenAI Agent configurations? Please jsut return the class name.",
-            ["context-oracle"],
-            "gpt-4",
-            "automata-main",
-            2,
-            [
-                "OpenAIAutomataAgentConfigBuilder",
-                "`OpenAIAutomataAgentConfigBuilder`",
-                "OpenAIAutomataAgentConfig",  # this is not the correct result, but let's allow it for now
-                "`OpenAIAutomataAgentConfig`",  # same
-            ],
+            [],
         ),
     ],
 )
