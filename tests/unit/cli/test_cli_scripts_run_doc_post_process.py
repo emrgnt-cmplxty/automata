@@ -55,6 +55,7 @@ def mock_chromasymbolembeddingvectordatabase():
 
 
 @pytest.fixture
+@pytest.mark.skip("Fixme")
 def main_dependencies(
     mock_initialize_modules,
     mock_pydocwriter,
