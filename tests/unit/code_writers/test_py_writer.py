@@ -135,13 +135,12 @@ class MockCodeGenerator:
 
         assert class_obj.name == self.class_name
         if self.has_class_docstring:
-            assert isinstance(class_obj, ast.ClassDef)
             assert isinstance(class_obj.body[0], ast.Expr)
             assert isinstance(class_obj.body[1], ast.FunctionDef)
         else:
-            assert isinstance(class_obj, ast.ClassDef)
             assert isinstance(class_obj.body[0], ast.FunctionDef)
 
+        assert isinstance(class_obj, ast.ClassDef)
         if self.has_method:
             method_obj = (
                 class_obj.body[2]
