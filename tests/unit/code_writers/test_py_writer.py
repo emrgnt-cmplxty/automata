@@ -292,6 +292,10 @@ def test_create_write_update_delete_module(py_writer):
         has_function_docstring=True,
     )
     source_code = mock_generator.generate_code()
+    # TODO - Find a real fix to this hacky workaround for file persistence
+    if "sample_modules.sample_module_write" in py_module_loader:
+        py_writer.delete_module("sample_modules.sample_module_write")
+
     py_writer.create_new_module(
         "sample_modules.sample_module_write",
         ast.parse(source_code),

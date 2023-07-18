@@ -201,8 +201,9 @@ class PyModuleLoader(metaclass=Singleton):
             Exception: If the map or python directory have not been initialized
         """
         self._assert_initialized()
-        self._loaded_modules.pop(module_dotpath)
         self._dotpath_map.delete_module(module_dotpath)  # type: ignore
+        if module_dotpath in self._loaded_modules:
+            self._loaded_modules.pop(module_dotpath)
 
     def reset(self) -> None:
         """

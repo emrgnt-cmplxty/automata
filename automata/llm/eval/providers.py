@@ -1,6 +1,7 @@
 import json
 from typing import Any, Dict, List
 
+from automata.agent import Agent
 from automata.config import AgentConfig, OpenAIAutomataAgentConfig
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
@@ -45,3 +46,19 @@ class OpenAIEval(Eval):
                 )
                 actions.append(action)
         return actions
+
+    def _build_and_run_agent(self, instructions: str) -> Agent:
+        from automata.agent.providers import (  # import late for mocking in tests
+            OpenAIAutomataAgent,
+        )
+
+        if not isinstance(self.config, OpenAIAutomataAgentConfig):
+            raise TypeError(
+                "Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
+            )
+
+        agent = OpenAIAutomataAgent(
+            instructions=instructions, config=self.config
+        )
+        agent.run()
+        return agent

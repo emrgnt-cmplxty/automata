@@ -1,6 +1,15 @@
 import json
 import logging
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Union,
+)
 
 import numpy as np
 import openai
@@ -175,24 +184,28 @@ class OpenAIConversation(LLMConversation):
 
     def __init__(self) -> None:
         super().__init__()
-        self.messages: List[OpenAIChatMessage] = []
+        self._messages: List[OpenAIChatMessage] = []
+
+    @property
+    def messages(self) -> Sequence[LLMChatMessage]:
+        return self._messages
 
     def __len__(self) -> int:
-        return len(self.messages)
+        return len(self._messages)
 
     def add_message(self, message: LLMChatMessage) -> None:
         if not isinstance(message, OpenAIChatMessage):
             raise OpenAIIncorrectMessageTypeError(message)
-        self.messages.append(message)
+        self._messages.append(message)
 
     def get_messages_for_next_completion(self) -> List[Dict[str, Any]]:
-        return [message.to_dict() for message in self.messages]
+        return [message.to_dict() for message in self._messages]
 
     def get_latest_message(self) -> LLMChatMessage:
-        return self.messages[-1]
+        return self._messages[-1]
 
     def reset_conversation(self) -> None:
-        self.messages = []
+        self._messages = []
 
 
 class OpenAIFunction:

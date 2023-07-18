@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 from pydantic import BaseModel
 
@@ -45,6 +45,12 @@ class LLMConversation(ABC):
 
     def __init__(self) -> None:
         self._observers: Set[Observer] = set()
+
+    @property
+    @abstractmethod
+    def messages(self) -> Sequence[LLMChatMessage]:
+        """Abstract property to get the conversation's messages."""
+        pass
 
     def register_observer(self, observer: Observer) -> None:
         self._observers.add(observer)

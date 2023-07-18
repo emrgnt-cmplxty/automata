@@ -2,6 +2,7 @@ import abc
 import logging
 from typing import Dict, List, NamedTuple
 
+from automata.agent import Agent
 from automata.config import AgentConfig
 from automata.llm.foundation import LLMChatMessage
 
@@ -33,15 +34,7 @@ class Eval(abc.ABC):
     def generate_eval_result(
         self, instructions: str, expected_actions: List[Action]
     ) -> EvalResult:
-        from automata.agent.providers import (  # import late for mocking in tests
-            OpenAIAutomataAgent,
-        )
-
-        agent = OpenAIAutomataAgent(
-            instructions=instructions, config=self.config
-        )
-        agent.run()
-
+        agent = self._build_and_run_agent(instructions)
         observed_actions: List[Action] = []
 
         for message in agent.conversation.messages:
@@ -65,6 +58,10 @@ class Eval(abc.ABC):
             match_result=match_result,
             extra_actions=extra_actions,
         )
+
+    @abc.abstractmethod
+    def _build_and_run_agent(self, instructions: str) -> Agent:
+        pass
 
     @abc.abstractmethod
     def _extract_action(self, message: LLMChatMessage) -> List[Action]:
