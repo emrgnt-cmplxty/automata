@@ -23,19 +23,17 @@ def getter():
 
 def test_get_docstring_function(getter):
     module_name = "sample_modules.sample"
-    object_path = "sample_function"
+    node_path = "sample_function"
 
-    result = getter.get_docstring(module_name, object_path)
+    result = getter.get_docstring(module_name, node_path)
     expected_match = "This is a sample function."
     assert result == expected_match
 
 
 def test_get_code_no_docstring_method(getter):
     module_name = "sample_modules.sample"
-    object_path = "Person.say_hello"
-    result = getter.get_source_code_without_docstrings(
-        module_name, object_path
-    )
+    node_path = "Person.say_hello"
+    result = getter.get_source_code_without_docstrings(module_name, node_path)
     expected_match = (
         "def say_hello(self):\n    return f'Hello, I am {self.name}.'"
     )
@@ -44,18 +42,16 @@ def test_get_code_no_docstring_method(getter):
 
 def test_get_docstring_no_docstring_class(getter):
     module_name = "sample_modules.sample"
-    object_path = "Person"
-    result = getter.get_docstring(module_name, object_path)
+    node_path = "Person"
+    result = getter.get_docstring(module_name, node_path)
     expected_match = "This is a sample class."
     assert result == expected_match
 
 
 def test_get_code_module(getter):
     module_name = "sample_modules.sample"
-    object_path = None
-    result = getter.get_source_code_without_docstrings(
-        module_name, object_path
-    )
+    node_path = None
+    result = getter.get_source_code_without_docstrings(module_name, node_path)
     expected_match = [
         "import math",
         "",
@@ -91,42 +87,40 @@ def test_get_code_module(getter):
 
 def test_get_docstring_multiline(getter):
     module_name = "sample_modules.sample2"
-    object_path = "PythonAgentToolkit.__init__"
-    result = getter.get_docstring(module_name, object_path).strip()
+    node_path = "PythonAgentToolkit.__init__"
+    result = getter.get_docstring(module_name, node_path).strip()
     expected = "\n        Initializes a PythonAgentToolkit with the given PythonAgent.\n\nArgs:\n    python_agent (PythonAgent): A PythonAgent instance representing the agent to work with.\n        ".strip()
     assert result == expected
 
 
 def test_get_code_no_docstring_no_code(getter):
     module_name = "sample_modules.sample"
-    object_path = "EmptyClass"
-    result = getter.get_source_code_without_docstrings(
-        module_name, object_path
-    )
+    node_path = "EmptyClass"
+    result = getter.get_source_code_without_docstrings(module_name, node_path)
     expected_match = "class EmptyClass:\n    pass"
     assert result.strip() == expected_match.strip()
 
 
 def test_get_docstring_nested_class(getter):
     module_name = "sample_modules.sample"
-    object_path = "OuterClass.InnerClass"
-    result = getter.get_docstring(module_name, object_path)
+    node_path = "OuterClass.InnerClass"
+    result = getter.get_docstring(module_name, node_path)
     expected_match = "Inner doc strings"
     assert result == expected_match
 
 
 def test_get_docstring_nested_class_method(getter):
     module_name = "sample_modules.sample"
-    object_path = "OuterClass.InnerClass.inner_method"
-    result = getter.get_docstring(module_name, object_path)
+    node_path = "OuterClass.InnerClass.inner_method"
+    result = getter.get_docstring(module_name, node_path)
     expected_match = "Inner method doc strings"
     assert result == expected_match
 
 
 def test_get_source_code_module(getter):
     module_name = "sample_modules.sample"
-    object_path = None
-    result = getter.get_source_code(module_name, object_path)
+    node_path = None
+    result = getter.get_source_code(module_name, node_path)
     print("result = ", result)
     expected_match = textwrap.dedent(
         '''"""This is a sample module"""
@@ -170,8 +164,8 @@ class OuterClass:
 
 def test_get_source_code_class(getter):
     module_name = "sample_modules.sample"
-    object_path = "Person"
-    result = getter.get_source_code(module_name, object_path)
+    node_path = "Person"
+    result = getter.get_source_code(module_name, node_path)
     print("result = ", result)
     expected_match = textwrap.dedent(
         '''class Person:
@@ -193,8 +187,8 @@ def test_get_source_code_class(getter):
 
 def test_get_source_code_function(getter):
     module_name = "sample_modules.sample"
-    object_path = "sample_function"
-    result = getter.get_source_code(module_name, object_path)
+    node_path = "sample_function"
+    result = getter.get_source_code(module_name, node_path)
     expected_match = textwrap.dedent(
         '''def sample_function(name):
     """This is a sample function."""

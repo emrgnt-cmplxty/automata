@@ -28,14 +28,14 @@ class PyReader:
         pass
 
     def get_source_code(
-        self, module_dotpath: str, object_path: Optional[str] = None
+        self, module_dotpath: str, node_path: Optional[str] = None
     ) -> str:
         """
         Gets code for a specified module, class, or function/method
 
         Args:
             module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
-            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+            node_path (Optional[str]): The path of the class, function, or method in dot-separated format
                 (e.g. 'ClassName.method_name'). If None, the entire module code will be returned
 
         Returns:
@@ -45,20 +45,20 @@ class PyReader:
         from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
-            if result := find_syntax_tree_node(module, object_path):
+            if result := find_syntax_tree_node(module, node_path):
                 return pyast_unparse(result)
 
         return PyReader.NO_RESULT_FOUND_STR
 
     def get_docstring(
-        self, module_dotpath: str, object_path: Optional[str]
+        self, module_dotpath: str, node_path: Optional[str]
     ) -> str:
         """
         Gets the docstring for a specified module, class, or function/method
 
         Args:
             module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
-            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+            node_path (Optional[str]): The path of the class, function, or method in dot-separated format
                 (e.g. 'ClassName.method_name'). If None, the module-level docstring will be returned
 
         Returns:
@@ -68,11 +68,11 @@ class PyReader:
         from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
-            if not object_path:
+            if not node_path:
                 return (
                     get_ast_docstring(module) or PyReader.NO_RESULT_FOUND_STR
                 )
-            obj = find_syntax_tree_node(module, object_path)
+            obj = find_syntax_tree_node(module, node_path)
             if isinstance(
                 obj, (AsyncFunctionDef, FunctionDef, ClassDef, Module)
             ):
@@ -80,14 +80,14 @@ class PyReader:
         return PyReader.NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(
-        self, module_dotpath: str, object_path: Optional[str]
+        self, module_dotpath: str, node_path: Optional[str]
     ) -> str:
         """
         Gets code for a specified module, class, or function/method
 
         Args:
             module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
-            object_path (Optional[str]): The path of the class, function, or method in dot-separated format
+            node_path (Optional[str]): The path of the class, function, or method in dot-separated format
                 (e.g. 'ClassName.method_name'). If None, the entire module code will be returned
 
         Returns:
@@ -98,7 +98,7 @@ class PyReader:
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
             module_copy = copy.deepcopy(module)
-            if result := find_syntax_tree_node(module_copy, object_path):
+            if result := find_syntax_tree_node(module_copy, node_path):
                 result = get_node_without_docstrings(result)
                 fix_missing_locations(result)
                 return pyast_unparse(result)

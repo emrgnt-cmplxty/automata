@@ -21,12 +21,12 @@ class EmbeddingVectorProvider(abc.ABC):
     """A class to provide embeddings for symbols"""
 
     @abc.abstractmethod
-    def build_embedding_vector(self, symbol_source: str) -> np.ndarray:
+    def build_embedding_vector(self, document: str) -> np.ndarray:
         pass
 
     @abc.abstractmethod
     def batch_build_embedding_vector(
-        self, symbol_source: List[str]
+        self, documents: List[str]
     ) -> List[np.ndarray]:
         pass
 

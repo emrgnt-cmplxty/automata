@@ -119,14 +119,14 @@ def find_imports(module: Module) -> List[AST]:
 
 def find_syntax_tree_node(
     code_obj: Optional[AST],
-    object_path: Optional[str],
+    node_path: Optional[str],
 ) -> Optional[AST]:
     """
     Find a module, or find a function, method, or class inside a module.
 
     Args:
         code_obj (RedBaron): The  red baron FST object.
-        object_path (Optional[str]): The dot-separated object path (e.g., 'ClassName.method_name'). If None,
+        node_path (Optional[str]): The dot-separated object path (e.g., 'ClassName.method_name'). If None,
             the module is returned.
 
     Returns:
@@ -135,12 +135,12 @@ def find_syntax_tree_node(
     if not code_obj:
         return None
 
-    if not object_path:
+    if not node_path:
         return code_obj
 
-    obj_parts = object_path.split(".")
+    obj_parts = node_path.split(".")
 
-    def find_syntax_tree_node_pyast(code_obj: AST, object_path: List[str]):
+    def find_syntax_tree_node_pyast(code_obj: AST, node_path: List[str]):
         def find_subnode(node, obj_name):
             for child in iter_child_nodes(node):
                 if (
@@ -155,8 +155,8 @@ def find_syntax_tree_node(
 
         if isinstance(code_obj, (Module, ClassDef)):
             node = code_obj
-            while node and object_path:
-                obj_name = object_path.pop(0)
+            while node and node_path:
+                obj_name = node_path.pop(0)
                 node = find_subnode(node, obj_name)
             return node
         return None

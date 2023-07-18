@@ -1,11 +1,24 @@
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional, TypedDict, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    TypedDict,
+    Union,
+    cast,
+)
 
 import colorlog
+import numpy as np
 import openai
 import yaml
+
+if TYPE_CHECKING:
+    from automata.embedding.base import EmbeddingVectorProvider
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:
@@ -145,3 +158,15 @@ def get_logging_config(
 
 def is_sorted(lst):
     return all(a <= b for a, b in zip(lst, lst[1:]))
+
+
+def calculate_similarity(
+    content_a: str, content_b: str, provider: "EmbeddingVectorProvider"
+) -> float:
+    """Calculate the similarity between two strings."""
+    embedding_a = provider.build_embedding_vector(content_a)
+    embedding_b = provider.build_embedding_vector(content_b)
+    dot_product = np.dot(embedding_a, embedding_b)
+    magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
+    magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
+    return dot_product / (magnitude_a * magnitude_b)
