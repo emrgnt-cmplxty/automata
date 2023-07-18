@@ -61,8 +61,7 @@ class PyCodeWriter:
         Raises:
             ModuleNotFound: If the module is not found in the module dictionary
         """
-        module_ast = py_module_loader.fetch_ast_module(module_dotpath)
-        if module_ast:
+        if module_ast := py_module_loader.fetch_ast_module(module_dotpath):
             source_code = ast.unparse(module_ast)
 
             module_fpath = (
