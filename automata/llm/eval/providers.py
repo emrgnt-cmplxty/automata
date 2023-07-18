@@ -37,7 +37,9 @@ class OpenAIEval(Eval):
         actions: List[Action] = []
         if isinstance(message, OpenAIChatMessage):
             function_call = message.function_call
-            if function_call:
+            if (
+                function_call and not function_call.name == "initializer"
+            ):  # initialize is a dummy method call
                 action = OpenAIFunctionCallAction(
                     name=function_call.name, arguments=function_call.arguments
                 )
