@@ -3,7 +3,7 @@ import logging.config
 
 import click
 
-from automata.cli.cli_utils import ask_choice, get_custom_style, setup_files
+from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
     load_env_vars,
