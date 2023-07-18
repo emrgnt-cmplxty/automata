@@ -111,6 +111,12 @@ def get_node_without_imports(node: AST) -> AST:
     return node
 
 
+def find_imports(module: Module) -> List[AST]:
+    return [
+        node for node in module.body if isinstance(node, (Import, ImportFrom))
+    ]
+
+
 def find_syntax_tree_node(
     code_obj: Optional[AST],
     object_path: Optional[str],

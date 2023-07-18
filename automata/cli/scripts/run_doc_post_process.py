@@ -2,7 +2,7 @@ import logging
 import os
 
 from automata.cli.cli_utils import initialize_modules
-from automata.code_parsers.py import PyDocWriter
+from automata.code_writers.py.doc_writer import PyDocWriter
 from automata.core.utils import get_root_fpath
 from automata.singletons.dependency_factory import DependencyFactory
 from automata.symbol_embedding import (

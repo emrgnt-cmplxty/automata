@@ -1,4 +1,3 @@
-from ...code_writers.py.doc_writer import PyDocWriter
 from .context_processing.context_handler import (
     PyContextHandler,
     PyContextHandlerConfig,
@@ -8,12 +7,13 @@ from .context_processing.context_retriever import (
     PyContextRetriever,
 )
 from .dotpath_map import DotPathMap
+from .reader import PyReader
 
 __all__ = [
     "PyContextRetriever",
     "PyContextHandler",
     "PyContextHandlerConfig",
-    "PyDocWriter",
+    "PyReader",
     "ContextComponent",
     "DotPathMap",
 ]

@@ -15,7 +15,6 @@ from ast import unparse as pyast_unparse
 from typing import Optional
 
 from automata.core import find_syntax_tree_node, get_node_without_docstrings
-from automata.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +42,8 @@ class PyReader:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
+        from automata.singletons.py_module_loader import py_module_loader
+
         if module := py_module_loader.fetch_ast_module(module_dotpath):
             if result := find_syntax_tree_node(module, object_path):
                 return pyast_unparse(result)
@@ -64,6 +65,8 @@ class PyReader:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
+        from automata.singletons.py_module_loader import py_module_loader
+
         if module := py_module_loader.fetch_ast_module(module_dotpath):
             obj = find_syntax_tree_node(module, object_path)
             if isinstance(
@@ -87,6 +90,7 @@ class PyReader:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
+        from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
             module_copy = copy.deepcopy(module)
