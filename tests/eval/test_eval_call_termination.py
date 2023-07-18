@@ -23,7 +23,7 @@ from tests.utils.regression_utils import run_agent_and_get_eval
         ),
     ],
 )
-def test_eval(
+def test_eval_call_termination(
     instructions,
     agent_config_name,
     toolkit_list,
