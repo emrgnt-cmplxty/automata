@@ -52,9 +52,9 @@ class PyCodeWriter:
             )
         py_module_loader.put_module(module_dotpath, module)
         if do_write:
-            self._write_module_to_disk(module_dotpath)
+            self.write_module_to_disk(module_dotpath)
 
-    def _write_module_to_disk(self, module_dotpath: str) -> None:
+    def write_module_to_disk(self, module_dotpath: str) -> None:
         """Write the modified module to a file at the specified output path
 
         Raises:

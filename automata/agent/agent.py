@@ -74,6 +74,8 @@ class AgentToolkitNames(Enum):
 
     SYMBOL_SEARCH = "symbol-search"
     CONTEXT_ORACLE = "context-oracle"
+    PY_READER = "py-reader"
+    PY_WRITER = "py-writer"
 
 
 class AgentToolkitBuilder(ABC):

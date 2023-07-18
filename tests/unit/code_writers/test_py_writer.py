@@ -474,13 +474,13 @@ def test_write_module_to_disk(py_writer):
     mock_generator = MockCodeGenerator(has_function=True)
     source_code = mock_generator.generate_code()
     py_writer.create_new_module("test_module_4", ast.parse(source_code))
-    py_writer._write_module_to_disk("test_module_4")
+    py_writer.write_module_to_disk("test_module_4")
     assert os.path.exists(
         os.path.join(py_module_loader.root_fpath, "test_module_4.py")
     )
     py_writer.delete_module("test_module_4")
     with pytest.raises(PyCodeWriter.ModuleNotFound):
-        py_writer._write_module_to_disk("non_existent_module")
+        py_writer.write_module_to_disk("non_existent_module")
 
 
 def test_write_to_disk_and_format(py_writer):
