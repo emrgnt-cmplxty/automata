@@ -1,14 +1,24 @@
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional, TypedDict, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    TypedDict,
+    Union,
+    cast,
+)
 
 import colorlog
 import numpy as np
 import openai
 import yaml
 
-from automata.embedding.base import EmbeddingVectorProvider
+if TYPE_CHECKING:
+    from automata.embedding.base import EmbeddingVectorProvider
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:
@@ -151,7 +161,7 @@ def is_sorted(lst):
 
 
 def calculate_similarity(
-    content_a: str, content_b: str, provider: EmbeddingVectorProvider
+    content_a: str, content_b: str, provider: "EmbeddingVectorProvider"
 ) -> float:
     """Calculate the similarity between two strings."""
     embedding_a = provider.build_embedding_vector(content_a)

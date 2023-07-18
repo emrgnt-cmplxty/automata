@@ -30,7 +30,7 @@ def test_init(python_retriever_tool_builder):
 
 def test_build(python_retriever_tool_builder):
     tools = python_retriever_tool_builder.build()
-    assert len(tools) == 3
+    assert len(tools) == 2
     for tool in tools:
         assert isinstance(tool, Tool)
 
