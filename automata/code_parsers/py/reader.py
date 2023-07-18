@@ -9,13 +9,12 @@ from ast import (
     FunctionDef,
     Module,
     fix_missing_locations,
-    get_docstring,
 )
+from ast import get_docstring as get_ast_docstring
 from ast import unparse as pyast_unparse
 from typing import Optional
 
 from automata.core import find_syntax_tree_node, get_node_without_docstrings
-from automata.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +42,8 @@ class PyReader:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
+        from automata.singletons.py_module_loader import py_module_loader
+
         if module := py_module_loader.fetch_ast_module(module_dotpath):
             if result := find_syntax_tree_node(module, object_path):
                 return pyast_unparse(result)
@@ -64,12 +65,18 @@ class PyReader:
             str: The docstring for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
+        from automata.singletons.py_module_loader import py_module_loader
+
         if module := py_module_loader.fetch_ast_module(module_dotpath):
+            if not object_path:
+                return (
+                    get_ast_docstring(module) or PyReader.NO_RESULT_FOUND_STR
+                )
             obj = find_syntax_tree_node(module, object_path)
             if isinstance(
                 obj, (AsyncFunctionDef, FunctionDef, ClassDef, Module)
             ):
-                return get_docstring(obj) or PyReader.NO_RESULT_FOUND_STR
+                return get_ast_docstring(obj) or PyReader.NO_RESULT_FOUND_STR
         return PyReader.NO_RESULT_FOUND_STR
 
     def get_source_code_without_docstrings(
@@ -87,6 +94,7 @@ class PyReader:
             str: The code for the specified module, class, or function/method, or "No Result Found."
                 if not found
         """
+        from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
             module_copy = copy.deepcopy(module)
@@ -109,7 +117,7 @@ class PyReader:
             return PyReader.NO_RESULT_FOUND_STR
 
         if isinstance(node, (FunctionDef, ClassDef, AsyncFunctionDef, Module)):
-            if doc_string := get_docstring(node):
+            if doc_string := get_ast_docstring(node):
                 doc_string.replace('"""', "").replace("'''", "")
             else:
                 return PyReader.NO_RESULT_FOUND_STR
