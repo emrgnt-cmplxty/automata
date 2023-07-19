@@ -134,7 +134,9 @@ class CodeWritingEval(Eval):
 
         actions: List[Action] = []
         md_code_snippet = (
-            message.split("```python")[1] if "```python" in message else None
+            message.content.split("```python")[1]
+            if "```python" in message
+            else None
         )
 
         # Parse the code snippet to extract set variables and their types

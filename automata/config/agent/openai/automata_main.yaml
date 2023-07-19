@@ -73,7 +73,7 @@ system_template: >
       function_call:
         {
           'name': 'py-retriever-retrieve-code', 
-          'arguments': '{"module_path": "automata.core.base.agent", "object_path": "AgentToolProviders"}'
+          'arguments': '{"module_path": "automata.core.base.agent", "node_path": "AgentToolProviders"}'
         }
 
   *User*

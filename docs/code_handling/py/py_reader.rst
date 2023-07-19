@@ -37,9 +37,9 @@ The following example demonstrates how to create an instance of
 
    py_reader = PyReader()
    module_dotpath = "package.module"
-   object_path = "ClassName.method_name"
+   node_path = "ClassName.method_name"
 
-   source_code = py_reader.get_source_code(module_dotpath, object_path)
+   source_code = py_reader.get_source_code(module_dotpath, node_path)
    print(source_code)
 
 Limitations
