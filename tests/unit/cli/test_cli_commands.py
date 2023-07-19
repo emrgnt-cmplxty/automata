@@ -206,6 +206,7 @@ def test_reconfigure_logging_quiet_libraries():
 
         mock_logger.setLevel.assert_called_with(logging.INFO)
 
+
 def test_cli_index():
     with patch("automata.cli.scripts.run_indexing.main") as mock_main, patch(
         "automata.cli.commands.reconfigure_logging"
@@ -215,9 +216,7 @@ def test_cli_index():
         mock_getLogger.return_value = MagicMock(spec=logging.Logger)
 
         runner = click.testing.CliRunner()
-        result = runner.invoke(
-            automata.cli.commands.cli, ["index"]
-        )
+        result = runner.invoke(automata.cli.commands.cli, ["index"])
 
         assert result.exit_code == 0
         mock_reconfigure_logging.assert_called_once_with("DEBUG")
