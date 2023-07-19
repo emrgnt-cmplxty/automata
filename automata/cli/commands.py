@@ -16,7 +16,6 @@ from automata.core.utils import get_logging_config
 
 logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
-logger.setLevel(CLI_OUTPUT_LEVEL)
 
 
 def reconfigure_logging(log_level_str: str) -> None:
@@ -28,10 +27,8 @@ def reconfigure_logging(log_level_str: str) -> None:
     logging_config = get_logging_config(log_level=log_level)
     logging.config.dictConfig(logging_config)
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(CLI_OUTPUT_LEVEL)
-
-    logger.info("Configuring Automata:")
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
 
     # External libraries we want to quiet down
     for library in ["urllib3", "matplotlib", "openai", "github"]:
@@ -49,6 +46,8 @@ def cli(ctx) -> None:
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
     """Configure Automata"""
+    logger.info("Configuring Automata:")
+
     reconfigure_logging(kwargs.get("log-level", "INFO"))
 
     DOTENV_PATH = ".env"
