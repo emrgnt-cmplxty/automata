@@ -17,6 +17,8 @@ import numpy as np
 import openai
 import yaml
 
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
+
 if TYPE_CHECKING:
     from automata.embedding.base import EmbeddingVectorProvider
 
@@ -118,6 +120,7 @@ def get_logging_config(
         "WARNING": "yellow",
         "ERROR": "red",
         "CRITICAL": "bold_red",
+        "CLI_OUTPUT": "bold_white",
     }
     logging_config: LoggingConfig = {
         "version": 1,
@@ -125,10 +128,10 @@ def get_logging_config(
         "formatters": {
             "colored": {
                 "()": colorlog.ColoredFormatter,
-                "format": "%(log_color)s%(levelname)s:%(name)s:%(message)s",
+                "format": "%(log_color)s%(message)s",
                 "log_colors": color_scheme,
             },
-            "standard": {  # a standard formatter for file handler
+            "standard": {
                 "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
             },
         },
@@ -136,22 +139,25 @@ def get_logging_config(
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "colored",
-                "level": log_level,
-            }
+                "level": logging.INFO,
+            },
+            "cli_output": {
+                "class": "logging.StreamHandler",
+                "formatter": "colored",
+                "level": CLI_OUTPUT_LEVEL,
+            },
         },
         "root": {"handlers": ["console"], "level": log_level},
     }
 
-    if log_file:  # if log_file is provided, add file handler
+    if log_file:
         logging_config["handlers"]["file"] = {
             "class": "logging.FileHandler",
             "filename": log_file,
             "formatter": "standard",
             "level": log_level,
         }
-        logging_config["root"]["handlers"].append(
-            "file"
-        )  # add "file" to handlers
+        logging_config["root"]["handlers"].append("file")
 
     return cast(dict[str, Any], logging_config)
 

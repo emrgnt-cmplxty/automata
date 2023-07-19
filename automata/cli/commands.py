@@ -3,6 +3,7 @@ import logging.config
 
 import click
 
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
 from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
@@ -13,7 +14,9 @@ from automata.cli.env_operations import (
 from automata.cli.options import agent_options, common_options
 from automata.core.utils import get_logging_config
 
+logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
+logger.setLevel(CLI_OUTPUT_LEVEL)
 
 
 def reconfigure_logging(log_level_str: str) -> None:
@@ -24,6 +27,12 @@ def reconfigure_logging(log_level_str: str) -> None:
         raise ValueError(f"Unknown log level: {log_level_str}")
     logging_config = get_logging_config(log_level=log_level)
     logging.config.dictConfig(logging_config)
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(CLI_OUTPUT_LEVEL)
+
+    logger.info("Configuring Automata:")
+
     # External libraries we want to quiet down
     for library in ["urllib3", "matplotlib", "openai", "github"]:
         logging.getLogger(library).setLevel(logging.INFO)
@@ -40,6 +49,7 @@ def cli(ctx) -> None:
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
     """Configure Automata"""
+    reconfigure_logging(kwargs.get("log-level", "INFO"))
 
     DOTENV_PATH = ".env"
     SCRIPTS_PATH = "scripts/"
