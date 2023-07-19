@@ -8,22 +8,24 @@ from tests.utils.regression_utils import run_agent_and_get_eval
 @pytest.mark.parametrize(
     "instructions, agent_config_name, toolkit_list, model, max_iterations, expected_actions",
     [
-        # A simple instruction set with expected actions
         (
-            "This is a dummy instruction, return True.",
+            "Return what looks like to be the most relevant class for searching the codebase for relevant symbols, with no additional context",
             "automata-main",
-            [],
-            "gpt-3.5-turbo-16k",
-            1,
+            ["symbol-search"],
+            "gpt-4",
+            2,
             [
                 OpenAIFunctionCallAction(
-                    name="call_termination", arguments={"result": "True"}
+                    name="call_termination",
+                    arguments={
+                        "result": "automata.experimental.search.symbol_search.SymbolSearch"
+                    },
                 )
             ],
         ),
     ],
 )
-def test_eval_call_termination(
+def test_eval_search(
     instructions,
     agent_config_name,
     toolkit_list,
@@ -39,12 +41,9 @@ def test_eval_call_termination(
         max_iterations,
         expected_actions,
     )
-    # check if all expected actions were performed
+
+    # TODO - Add support for 'partial' matches, since the agent seems to enjoy
+    # returning results with extra text, like `autom...arching the codebase for relevant symbols appears to be `automata.experimental.search.symbol_search.SymbolSearch`....
     assert (
         eval_result.full_match
     ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
-
-    # check if no extra actions were performed
-    assert (
-        not eval_result.extra_actions
-    ), f"Extra actions were performed: {eval_result.extra_actions}"

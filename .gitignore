@@ -65,3 +65,4 @@ docs/_build
 ##FIXME- The following should be removed by tests, but isn't
 tests/test_output_vec
 automata/test_output
+automata/test_module.py
