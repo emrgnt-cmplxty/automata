@@ -80,6 +80,18 @@ def configure(ctx, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
+def index(ctx, *args, **kwargs) -> None:
+    """Run the indexing scripts."""
+    from automata.cli.scripts.run_indexing import main
+
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    logger.info("Running indexing")
+    main()
+
+
+@common_options
+@cli.command()
+@click.pass_context
 def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
     from automata.cli.scripts.run_code_embedding import main
