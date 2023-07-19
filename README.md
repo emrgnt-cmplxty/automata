@@ -59,7 +59,7 @@ automata configure
 ```bash
 # Make sure you are in /scripts
 # Install dependencies and run indexing on the local codebase
-./install_indexing.sh && ./regenerate_index.sh
+automata index
 ```
 
 ### Build the embeddings + docs
