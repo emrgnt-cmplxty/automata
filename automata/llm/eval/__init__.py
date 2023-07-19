@@ -1,4 +1,9 @@
 from .base import Action, EvalResult
-from .providers import OpenAIEval, OpenAIFunctionCallAction
+from .providers import OpenAIFunctionCallAction, OpenAIFunctionEval
 
-__all__ = ["Action", "EvalResult", "OpenAIFunctionCallAction", "OpenAIEval"]
+__all__ = [
+    "Action",
+    "EvalResult",
+    "OpenAIFunctionCallAction",
+    "OpenAIFunctionEval",
+]

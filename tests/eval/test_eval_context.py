@@ -8,22 +8,22 @@ from tests.utils.regression_utils import run_agent_and_get_eval
 @pytest.mark.parametrize(
     "instructions, agent_config_name, toolkit_list, model, max_iterations, expected_actions",
     [
-        # A simple instruction set with expected actions
         (
-            "This is a dummy instruction, return True.",
+            "What class should we instantiate to search the codebase for relevant symbols? Please return just the class name with no extra formatting.",
             "automata-main",
-            [],
-            "gpt-3.5-turbo-16k",
-            1,
+            ["context-oracle"],
+            "gpt-4",
+            2,
             [
                 OpenAIFunctionCallAction(
-                    name="call_termination", arguments={"result": "True"}
+                    name="call_termination",
+                    arguments={"result": "SymbolSearch"},
                 )
             ],
         ),
     ],
 )
-def test_eval_call_termination(
+def test_eval_context(
     instructions,
     agent_config_name,
     toolkit_list,
@@ -39,12 +39,8 @@ def test_eval_call_termination(
         max_iterations,
         expected_actions,
     )
-    # check if all expected actions were performed
+
+    # TODO - Move to utils and avoid copy pasta across eval tests
     assert (
         eval_result.full_match
     ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
-
-    # check if no extra actions were performed
-    assert (
-        not eval_result.extra_actions
-    ), f"Extra actions were performed: {eval_result.extra_actions}"

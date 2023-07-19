@@ -1,10 +1,11 @@
 import abc
+import json
 import logging
-from typing import Dict, List, NamedTuple
+from typing import Any, Dict, List, NamedTuple
 
 from automata.agent import Agent
 from automata.config import AgentConfig
-from automata.llm.foundation import LLMChatMessage
+from automata.llm.foundation import LLMChatMessage, LLMConversation
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,25 @@ class Action(abc.ABC):
     pass
 
 
+class CodeWritingAction(Action):
+    """An action represented by writing a specific class."""
+
+    def __init__(self, class_name: str, variables: Dict[str, Any]):
+        self.class_name = class_name
+        self.variables = variables
+
+    def __eq__(self, other):
+        if isinstance(other, CodeWritingAction):
+            return (
+                self.class_name == other.class_name
+                and self.variables == other.variables
+            )
+        return False
+
+    def __hash__(self):
+        return hash((self.class_name, json.dumps(self.variables)))
+
+
 class EvalResult(NamedTuple):
     """
     A class to represent the result of an eval.
@@ -23,6 +43,7 @@ class EvalResult(NamedTuple):
     full_match: bool
     match_result: Dict[Action, bool]
     extra_actions: List[Action]
+    conversation: LLMConversation
 
 
 class Eval(abc.ABC):
@@ -56,6 +77,7 @@ class Eval(abc.ABC):
             full_match=full_match,
             match_result=match_result,
             extra_actions=extra_actions,
+            conversation=agent.conversation,
         )
 
     @abc.abstractmethod

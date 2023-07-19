@@ -59,9 +59,7 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
         python path, without docstrings.
         """
         try:
-            return self.py_reader.get_source_code_without_docstrings(
-                module_path, node_path
-            )
+            return self.py_reader.get_source_code(module_path, node_path)
         except Exception as e:
             return f"Failed to retrieve code with error - {str(e)}"
 
@@ -77,19 +75,6 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
             return self.py_reader.get_docstring(module_path, node_path)
         except Exception as e:
             return f"Failed to retrieve docstring with error - {str(e)}"
-
-    def _run_indexer_retrieve_raw_code(
-        self, module_path: str, node_path: Optional[str] = None
-    ) -> str:
-        """
-        Retrieves the raw code of the python package,
-        module, standalone function, class, or method at the given
-        python path, with docstrings.
-        """
-        try:
-            return self.py_reader.get_source_code(module_path, node_path)
-        except Exception as e:
-            return f"Failed to retrieve raw code with error - {str(e)}"
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager

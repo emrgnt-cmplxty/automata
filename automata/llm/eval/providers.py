@@ -27,7 +27,7 @@ class OpenAIFunctionCallAction(Action):
         return hash((self.name, json.dumps(self.arguments)))
 
 
-class OpenAIEval(Eval):
+class OpenAIFunctionEval(Eval):
     """A class for evaluating an OpenAI LLM."""
 
     def __init__(self, config: AgentConfig, *args, **kwargs):

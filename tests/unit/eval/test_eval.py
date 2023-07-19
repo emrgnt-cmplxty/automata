@@ -3,7 +3,10 @@ import pytest
 from automata.agent.providers import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfig
 from automata.llm import OpenAIChatMessage, OpenAIConversation
-from automata.llm.eval.providers import OpenAIEval, OpenAIFunctionCallAction
+from automata.llm.eval.providers import (
+    OpenAIFunctionCallAction,
+    OpenAIFunctionEval,
+)
 
 
 @pytest.fixture
@@ -37,7 +40,7 @@ def test_generate_eval_result_match(agent, mocker):
 
     agent.conversation.messages = [mock_message1, mock_message2]
     mock_config = mocker.MagicMock(spec=OpenAIAutomataAgentConfig)
-    evaluator = OpenAIEval(config=mock_config)
+    evaluator = OpenAIFunctionEval(config=mock_config)
 
     with mocker.patch(
         "automata.agent.providers.OpenAIAutomataAgent", return_value=agent
@@ -69,7 +72,7 @@ def test_generate_eval_result_no_match(agent, mocker):
 
     agent.conversation.messages = [mock_message]
     mock_config = mocker.MagicMock(spec=OpenAIAutomataAgentConfig)
-    evaluator = OpenAIEval(config=mock_config)
+    evaluator = OpenAIFunctionEval(config=mock_config)
 
     with mocker.patch(
         "automata.agent.providers.OpenAIAutomataAgent", return_value=agent
@@ -107,7 +110,7 @@ def test_generate_eval_result_partial_match(agent, mocker):
 
     agent.conversation.messages = [mock_message]
     mock_config = mocker.MagicMock(spec=OpenAIAutomataAgentConfig)
-    evaluator = OpenAIEval(config=mock_config)
+    evaluator = OpenAIFunctionEval(config=mock_config)
 
     with mocker.patch(
         "automata.agent.providers.OpenAIAutomataAgent", return_value=agent
