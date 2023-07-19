@@ -3,6 +3,7 @@ import logging.config
 
 import click
 
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
 from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
@@ -13,6 +14,7 @@ from automata.cli.env_operations import (
 from automata.cli.options import agent_options, common_options
 from automata.core.utils import get_logging_config
 
+logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
 
 
@@ -24,6 +26,10 @@ def reconfigure_logging(log_level_str: str) -> None:
         raise ValueError(f"Unknown log level: {log_level_str}")
     logging_config = get_logging_config(log_level=log_level)
     logging.config.dictConfig(logging_config)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+
     # External libraries we want to quiet down
     for library in ["urllib3", "matplotlib", "openai", "github"]:
         logging.getLogger(library).setLevel(logging.INFO)
@@ -36,10 +42,13 @@ def cli(ctx) -> None:
 
 
 @common_options
-@cli.command()  # type: ignore
+@cli.command()
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
     """Configure Automata"""
+    logger.info("Configuring Automata:")
+
+    reconfigure_logging(kwargs.get("log-level", "INFO"))
 
     DOTENV_PATH = ".env"
     SCRIPTS_PATH = "scripts/"
@@ -69,7 +78,7 @@ def configure(ctx, *args, **kwargs) -> None:
 
 
 @common_options
-@cli.command()  # type: ignore
+@cli.command()
 @click.pass_context
 def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
@@ -81,7 +90,7 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
 
 
 @common_options
-@cli.command()  # type: ignore
+@cli.command()
 @click.pass_context
 @click.argument("symbols", nargs=-1)
 @click.option(
@@ -104,7 +113,7 @@ def run_doc_embedding(ctx, symbols, overwrite, *args, **kwargs) -> None:
 
 
 @common_options
-@cli.command()  # type: ignore
+@cli.command()
 @click.pass_context
 def run_doc_post_process(ctx, *args, **kwargs) -> None:
     """Run the document post-processor."""
@@ -117,7 +126,7 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
 
 @common_options
 @agent_options
-@cli.command()  # type: ignore
+@cli.command()
 @click.option(
     "--fetch-issues",
     default="",

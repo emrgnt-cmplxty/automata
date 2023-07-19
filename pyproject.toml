@@ -19,7 +19,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
 black = "^23.3.0"
-click = "8.1.5"
+click = "8.1.6"
 codecov = "2.1.13"
 colorlog = "6.7.0"
 isort = "5.12.0"
@@ -65,8 +65,9 @@ sphinx_panels = "0.6.0" # Used on Windows
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=local_tasks/"
-markers = ["regression: marks tests as regression tests"]
+addopts = "-m 'not regression and not evaluation' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=local_tasks/"
+markers = ["regression: marks tests as regression tests", "evaluation: mark a test as part of the evaluation suite"]
+    
 
 [tool.black]
 line-length = 79

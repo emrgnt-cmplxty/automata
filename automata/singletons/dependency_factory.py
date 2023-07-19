@@ -14,7 +14,9 @@ from automata.code_parsers.py import (
     PyContextHandler,
     PyContextHandlerConfig,
     PyContextRetriever,
+    PyReader,
 )
+from automata.code_writers.py import PyCodeWriter
 from automata.config import EmbeddingDataCategory
 from automata.context_providers import (
     SymbolProviderRegistry,
@@ -317,6 +319,14 @@ class DependencyFactory(metaclass=Singleton):
             "embedding_provider", OpenAIEmbeddingProvider()
         )
         return EmbeddingSimilarityCalculator(embedding_provider)
+
+    @lru_cache()
+    def create_py_reader(self) -> PyReader:
+        return PyReader()
+
+    @lru_cache()
+    def create_py_writer(self) -> PyCodeWriter:
+        return PyCodeWriter(self.get("py_reader"))
 
     def reset(self):
         SymbolProviderRegistry.reset()
