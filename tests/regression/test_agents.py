@@ -127,7 +127,7 @@ def test_agent_py_writer(
 
     module = py_module_loader.fetch_ast_module(expected_output_module)
     if not module:
-        raise ValueError("Failed to crate expected output modle")
+        raise ValueError("Failed to create expected output modle")
     result = ast.unparse(module)
     py_module_loader.delete_module(expected_output_module)
 

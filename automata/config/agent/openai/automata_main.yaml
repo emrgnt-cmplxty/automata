@@ -14,7 +14,9 @@ system_template: >
 
   Persistently execute multiple actions until you have amassed enough information to ensure an high likelihood of successfully completing the given task.
 
+
   IMPORTANT - Note that you have a maxiumum of {max_iterations} iterations to complete the task, after which point the session terminates. If you are approaching the limit, then promptly return a result.
+
 
   An example of the Thoughts->Function Call --> Observations --> Thoughts->Function Call --> ... chain follows below.
 
@@ -71,7 +73,7 @@ system_template: >
       function_call:
         {
           'name': 'py-retriever-retrieve-code', 
-          'arguments': '{"module_path": "automata.core.base.agent", "object_path": "AgentToolProviders"}'
+          'arguments': '{"module_path": "automata.core.base.agent", "node_path": "AgentToolProviders"}'
         }
 
   *User*

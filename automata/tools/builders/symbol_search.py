@@ -41,6 +41,8 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
         self,
         symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
+        *args,
+        **kwargs,
     ) -> None:
         self.symbol_search = symbol_search
         self.search_tools = search_tools or list(SearchTool)

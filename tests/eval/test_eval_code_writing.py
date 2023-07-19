@@ -1,6 +1,6 @@
 import pytest
 
-from automata.llm.eval.providers import OpenAIFunctionCallAction
+from automata.llm.eval import CodeWritingAction, OpenAICodeWritingEval
 from tests.utils.regression_utils import run_agent_and_get_eval
 
 
@@ -10,20 +10,16 @@ from tests.utils.regression_utils import run_agent_and_get_eval
     [
         # A simple instruction set with expected actions
         (
-            "This is a dummy instruction, return True.",
+            "Return a valid executable code snippet in markdown, which when extracted and executed will set the variable `x` to the integer 10",
             "automata-main",
             [],
-            "gpt-3.5-turbo-16k",
-            1,
-            [
-                OpenAIFunctionCallAction(
-                    name="call_termination", arguments={"result": "True"}
-                )
-            ],
+            "gpt-3.5-turbo",
+            5,
+            [CodeWritingAction(object_type="int", object_value=10)],
         ),
     ],
 )
-def test_eval_call_termination(
+def test_eval_writing(
     instructions,
     agent_config_name,
     toolkit_list,
@@ -38,13 +34,9 @@ def test_eval_call_termination(
         model,
         max_iterations,
         expected_actions,
+        OpenAICodeWritingEval,
     )
     # check if all expected actions were performed
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
-
-    # check if no extra actions were performed
-    assert (
-        not eval_result.extra_actions
-    ), f"Extra actions were performed: {eval_result.extra_actions}"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"

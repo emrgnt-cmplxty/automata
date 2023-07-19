@@ -6,7 +6,7 @@ from automata.config import AgentConfig, OpenAIAutomataAgentConfig
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
-from .base import Action, Eval
+from .base import Action, CodeWritingEval, Eval
 
 
 class OpenAIFunctionCallAction(Action):
@@ -28,6 +28,26 @@ class OpenAIFunctionCallAction(Action):
 
 
 class OpenAIEval(Eval):
+    "An abstract class for evaluating an OpenAI LLM."
+
+    def _build_and_run_agent(self, instructions: str) -> Agent:
+        from automata.agent.providers import (  # import late for mocking in tests
+            OpenAIAutomataAgent,
+        )
+
+        if not isinstance(self.config, OpenAIAutomataAgentConfig):
+            raise TypeError(
+                "Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
+            )
+
+        agent = OpenAIAutomataAgent(
+            instructions=instructions, config=self.config
+        )
+        agent.run()
+        return agent
+
+
+class OpenAIFunctionEval(OpenAIEval):
     """A class for evaluating an OpenAI LLM."""
 
     def __init__(self, config: AgentConfig, *args, **kwargs):
@@ -47,18 +67,6 @@ class OpenAIEval(Eval):
                 actions.append(action)
         return actions
 
-    def _build_and_run_agent(self, instructions: str) -> Agent:
-        from automata.agent.providers import (  # import late for mocking in tests
-            OpenAIAutomataAgent,
-        )
 
-        if not isinstance(self.config, OpenAIAutomataAgentConfig):
-            raise TypeError(
-                "Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
-            )
-
-        agent = OpenAIAutomataAgent(
-            instructions=instructions, config=self.config
-        )
-        agent.run()
-        return agent
+class OpenAICodeWritingEval(OpenAIEval, CodeWritingEval):
+    pass
