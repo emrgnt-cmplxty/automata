@@ -19,7 +19,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
 black = "^23.3.0"
-click = "8.1.5"
+click = "8.1.6"
 codecov = "2.1.13"
 colorlog = "6.7.0"
 isort = "5.12.0"
