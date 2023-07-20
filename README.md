@@ -41,6 +41,28 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 
 Follow these steps to setup the Automata environment
 
+<details>
+<summary>Windows Tips</summary>
+<br>
+Windows users may need to install C++ support through [Visual Studio's "Desktop development with C++"](https://visualstudio.microsoft.com/downloads/?q=build+tools) for certain dependencies.
+
+Additionally, updating to gcc-11 and g++-11 may be required. This can be done by running the following commands:
+```bash
+# Adds the test toolchain repository, which contains newer versions of software
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+
+# Updates the list of packages on your system
+sudo apt update
+
+# Installs gcc-11 and g++-11 packages
+sudo apt install gcc-11 g++-11
+
+# Sets gcc-11 and g++-11 as the default gcc and g++ versions for your system
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /usr/bin/g++ g++ /usr/bin/g++-11
+```
+
+</details>
+
 ```bash
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/
