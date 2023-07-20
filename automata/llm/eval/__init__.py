@@ -1,4 +1,5 @@
-from .base import Action, CodeWritingAction, CodeWritingEval, Eval, EvalResult
+from .code_writing import CodeWritingAction, CodeWritingEval
+from .base import Action, CompositeEval, Eval, EvalResult
 from .providers import (
     OpenAICodeWritingEval,
     OpenAIFunctionCallAction,
@@ -7,6 +8,7 @@ from .providers import (
 
 __all__ = [
     "Action",
+    "CompositeEval",
     "EvalResult",
     "Eval",
     "CodeWritingEval",

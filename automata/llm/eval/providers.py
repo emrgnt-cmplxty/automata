@@ -1,16 +1,17 @@
 import json
 from typing import Any, Dict, List
 
-from automata.agent import Agent
+from automata.agent import Agent, AgentProvider
 from automata.config import AgentConfig, OpenAIAutomataAgentConfig
+from .code_writing import CodeWritingEval
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
-from .base import Action, CodeWritingEval, Eval
+from .base import Action, Eval
 
 
 class OpenAIFunctionCallAction(Action):
-    """An action represented by a function call."""
+    """A concrete action represented by an OpenAI function call."""
 
     def __init__(self, name: str, arguments: Dict[str, Any]):
         self.name = name
@@ -48,13 +49,13 @@ class OpenAIEval(Eval):
 
 
 class OpenAIFunctionEval(OpenAIEval):
-    """A class for evaluating an OpenAI LLM."""
+    """A concrete class for evaluating an OpenAI messages for function call actions."""
 
     def __init__(self, config: AgentConfig, *args, **kwargs):
         assert isinstance(config, OpenAIAutomataAgentConfig)
         super().__init__(config, *args, **kwargs)
 
-    def _extract_action(self, message: LLMChatMessage) -> List[Action]:
+    def extract_action(self, message: LLMChatMessage) -> List[Action]:
         actions: List[Action] = []
         if isinstance(message, OpenAIChatMessage):
             function_call = message.function_call
@@ -69,4 +70,6 @@ class OpenAIFunctionEval(OpenAIEval):
 
 
 class OpenAICodeWritingEval(OpenAIEval, CodeWritingEval):
+    """A concrete class for evaluating an OpenAI LLM's code writing actions."""
+
     pass

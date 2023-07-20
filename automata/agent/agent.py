@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from automata.config import AgentConfigName, LLMProvider
+from automata.config import AgentConfig, AgentConfigName, LLMProvider
 from automata.llm import (
     LLMConversation,
     LLMConversationDatabaseProvider,
@@ -124,3 +124,13 @@ class AgentInstance(BaseModel):
         return cls(
             config_name=config_name, description=description, kwargs=kwargs
         )
+
+
+class AgentProvider(ABC):
+    def __init__(self, config: AgentConfig):
+        self.config = config
+
+    @abstractmethod
+    def build_and_run_agent(self, instructions: str) -> Agent:
+        """Builds and runs an agent for a given set of instructions."""
+        pass

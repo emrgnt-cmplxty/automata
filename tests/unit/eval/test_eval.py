@@ -1,6 +1,6 @@
 import pytest
 
-from automata.agent.providers import OpenAIAutomataAgent
+from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfig
 from automata.llm import OpenAIChatMessage, OpenAIConversation
 from automata.llm.eval.providers import (

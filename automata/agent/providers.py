@@ -2,8 +2,10 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Sequence
 
-from automata.agent.agent import Agent, AgentToolkitBuilder
-from automata.agent.error import (
+from automata.agent import (
+    Agent,
+    AgentToolkitBuilder,
+    AgentProvider,
     AgentDatabaseError,
     AgentGeneralError,
     AgentMaxIterError,
@@ -333,3 +335,17 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
     @classmethod
     def can_handle(cls, tool_manager):
         return cls.TOOL_TYPE == tool_manager
+
+
+class OpenAIAgentProvider(AgentProvider):
+    def build_and_run_agent(self, instructions: str) -> Agent:
+        if not isinstance(self.config, OpenAIAutomataAgentConfig):
+            raise TypeError(
+                f"Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
+            )
+
+        agent = OpenAIAutomataAgent(
+            instructions=instructions, config=self.config
+        )
+        agent.run()
+        return agent
