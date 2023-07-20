@@ -8,8 +8,8 @@ from automata.agent import (
     OpenAIAutomataAgent,
 )
 from automata.config import OpenAIAutomataAgentConfigBuilder
+from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import ITaskExecution, Task, TaskStatus
-from automata.tasks.tasks import AutomataTask
 
 logger = logging.getLogger(__name__)
 
