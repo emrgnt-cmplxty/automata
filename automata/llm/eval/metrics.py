@@ -21,6 +21,7 @@ class EvaluationMetrics:
 
     @property
     def total_successful_actions(self) -> int:
+        print('self.results = ', self.results)
         return sum(
             action
             for result in self.results
