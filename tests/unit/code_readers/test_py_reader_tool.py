@@ -36,7 +36,7 @@ def test_build(python_retriever_tool_builder):
 
 
 def test_tool_execution(python_retriever_tool_builder):
-    python_retriever_tool_builder.py_reader.get_source_code_without_docstrings = MagicMock(
+    python_retriever_tool_builder.py_reader.get_source_code = MagicMock(
         return_value="Sample code"
     )
     python_retriever_tool_builder.py_reader.get_docstring = MagicMock(

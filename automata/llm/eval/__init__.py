@@ -1,5 +1,5 @@
-from .code_writing import CodeWritingAction, CodeWritingEval
 from .base import Action, CompositeEval, Eval, EvalResult
+from .code_writing import CodeWritingAction, CodeWritingEval
 from .providers import (
     OpenAICodeWritingEval,
     OpenAIFunctionCallAction,

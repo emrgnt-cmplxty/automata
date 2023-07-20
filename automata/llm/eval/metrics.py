@@ -5,7 +5,8 @@
 
 from collections import Counter
 from typing import List
-from automata.llm.eval.base import EvalResult, Action
+
+from automata.llm.eval.base import EvalResult
 
 
 class EvaluationMetrics:

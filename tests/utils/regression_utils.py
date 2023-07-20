@@ -1,12 +1,12 @@
-from typing import Type, List
+from typing import List, Type
 
-from automata.agent import OpenAIAutomataAgent, OpenAIAgentProvider
+from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.llm.eval import (
+    CompositeEval,
     Eval,
     EvalResult,
     OpenAIFunctionEval,
-    CompositeEval,
 )
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
@@ -48,7 +48,9 @@ def run_agent_and_get_eval(
         evaluators=evaluator_classes,
     )
 
-    return composite_evaluator.generate_eval_result(instructions, expected_actions)
+    return composite_evaluator.generate_eval_result(
+        instructions, expected_actions
+    )
 
 
 def run_agent_and_get_result(

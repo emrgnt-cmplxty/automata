@@ -1,13 +1,12 @@
 import json
 from typing import Any, Dict, List
 
-from automata.agent import Agent, AgentProvider
-from automata.config import AgentConfig, OpenAIAutomataAgentConfig
-from .code_writing import CodeWritingEval
+from automata.agent import AgentProvider, OpenAIAgentProvider
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
 from .base import Action, Eval
+from .code_writing import CodeWritingEval
 
 
 class OpenAIFunctionCallAction(Action):
@@ -31,29 +30,13 @@ class OpenAIFunctionCallAction(Action):
 class OpenAIEval(Eval):
     "An abstract class for evaluating an OpenAI LLM."
 
-    def _build_and_run_agent(self, instructions: str) -> Agent:
-        from automata.agent.providers import (  # import late for mocking in tests
-            OpenAIAutomataAgent,
-        )
-
-        if not isinstance(self.config, OpenAIAutomataAgentConfig):
-            raise TypeError(
-                "Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
-            )
-
-        agent = OpenAIAutomataAgent(
-            instructions=instructions, config=self.config
-        )
-        agent.run()
-        return agent
-
 
 class OpenAIFunctionEval(OpenAIEval):
     """A concrete class for evaluating an OpenAI messages for function call actions."""
 
-    def __init__(self, config: AgentConfig, *args, **kwargs):
-        assert isinstance(config, OpenAIAutomataAgentConfig)
-        super().__init__(config, *args, **kwargs)
+    def __init__(self, agent_provider: AgentProvider, *args, **kwargs):
+        assert isinstance(agent_provider, OpenAIAgentProvider)
+        super().__init__(agent_provider, *args, **kwargs)
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         actions: List[Action] = []

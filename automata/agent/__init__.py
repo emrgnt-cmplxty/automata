@@ -1,4 +1,4 @@
-from .agent import Agent, AgentToolkitBuilder, AgentToolkitNames, AgentProvider
+from .agent import Agent, AgentProvider, AgentToolkitBuilder, AgentToolkitNames
 from .error import (
     AgentDatabaseError,
     AgentGeneralError,
@@ -12,9 +12,9 @@ from .error import (
 )
 from .instances import OpenAIAutomataAgentInstance
 from .providers import (
+    OpenAIAgentProvider,
     OpenAIAgentToolkitBuilder,
     OpenAIAutomataAgent,
-    OpenAIAgentProvider,
 )
 
 __all__ = [

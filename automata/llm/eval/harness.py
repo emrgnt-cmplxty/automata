@@ -1,5 +1,6 @@
 from typing import List
-from automata.llm.eval.base import Action, Eval
+
+from automata.llm.eval.base import Action
 from automata.llm.eval.metrics import EvaluationMetrics
 
 

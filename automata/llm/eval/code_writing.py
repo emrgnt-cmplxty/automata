@@ -1,9 +1,8 @@
 import json
+from typing import Any, Dict, List, Optional
+
 from automata.llm.eval.base import Action, Eval, logger
 from automata.llm.foundation import LLMChatMessage
-
-
-from typing import Any, Dict, List, Optional
 
 
 class CodeExecutionError(Exception):

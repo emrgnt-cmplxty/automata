@@ -1,7 +1,6 @@
 import pytest
 
-from automata.agent import OpenAIAutomataAgent
-from automata.config import OpenAIAutomataAgentConfig
+from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
 from automata.llm import OpenAIChatMessage, OpenAIConversation
 from automata.llm.eval.providers import (
     OpenAIFunctionCallAction,
@@ -17,7 +16,7 @@ def agent(mocker):
     return agent
 
 
-def test_generate_eval_result_match(agent, mocker):
+def test_generate_function_eval_result_match(agent, mocker):
     # Arrange
     expected_actions = [
         OpenAIFunctionCallAction(
@@ -39,15 +38,11 @@ def test_generate_eval_result_match(agent, mocker):
     )
 
     agent.conversation.messages = [mock_message1, mock_message2]
-    mock_config = mocker.MagicMock(spec=OpenAIAutomataAgentConfig)
-    evaluator = OpenAIFunctionEval(config=mock_config)
+    provider = mocker.MagicMock(spec=OpenAIAgentProvider)
+    provider.build_and_run_agent = mocker.MagicMock(return_value=agent)
+    evaluator = OpenAIFunctionEval(provider)
 
-    with mocker.patch(
-        "automata.agent.providers.OpenAIAutomataAgent", return_value=agent
-    ):
-        result = evaluator.generate_eval_result(
-            "instructions", expected_actions
-        )
+    result = evaluator.generate_eval_result("instructions", expected_actions)
 
     assert result.full_match
     assert result.match_result == {action: True for action in expected_actions}
@@ -71,15 +66,12 @@ def test_generate_eval_result_no_match(agent, mocker):
     )
 
     agent.conversation.messages = [mock_message]
-    mock_config = mocker.MagicMock(spec=OpenAIAutomataAgentConfig)
-    evaluator = OpenAIFunctionEval(config=mock_config)
 
-    with mocker.patch(
-        "automata.agent.providers.OpenAIAutomataAgent", return_value=agent
-    ):
-        result = evaluator.generate_eval_result(
-            "instructions", expected_actions
-        )
+    provider = mocker.MagicMock(spec=OpenAIAgentProvider)
+    provider.build_and_run_agent = mocker.MagicMock(return_value=agent)
+    evaluator = OpenAIFunctionEval(provider)
+
+    result = evaluator.generate_eval_result("instructions", expected_actions)
 
     assert not result.full_match
     assert result.match_result == {
@@ -109,8 +101,10 @@ def test_generate_eval_result_partial_match(agent, mocker):
     )
 
     agent.conversation.messages = [mock_message]
-    mock_config = mocker.MagicMock(spec=OpenAIAutomataAgentConfig)
-    evaluator = OpenAIFunctionEval(config=mock_config)
+
+    provider = mocker.MagicMock(spec=OpenAIAgentProvider)
+    provider.build_and_run_agent = mocker.MagicMock(return_value=agent)
+    evaluator = OpenAIFunctionEval(provider)
 
     with mocker.patch(
         "automata.agent.providers.OpenAIAutomataAgent", return_value=agent

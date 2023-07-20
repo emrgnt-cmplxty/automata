@@ -1,9 +1,8 @@
 import abc
 import logging
-from typing import Dict, List, NamedTuple, Type, List
+from typing import Dict, List, NamedTuple, Type
 
-from automata.agent import Agent, AgentProvider
-from automata.config import AgentConfig
+from automata.agent import AgentProvider
 from automata.llm.foundation import LLMChatMessage, LLMConversation
 
 logger = logging.getLogger(__name__)
@@ -33,7 +32,6 @@ class Eval(abc.ABC):
         *args,
         **kwargs,
     ):
-        self.config = config
         self.agent_provider = agent_provider
 
     def generate_eval_result(
@@ -98,8 +96,6 @@ class CompositeEval(Eval):
         actions = []
         for evaluator in self.evaluators:
             actions.extend(
-                evaluator(self.config, self.agent_provider).extract_action(
-                    message
-                )
+                evaluator(self.agent_provider).extract_action(message)
             )
         return actions
