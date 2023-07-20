@@ -121,7 +121,7 @@ class CompositeEval(Eval):
         # Merge all match_result dictionaries
         aggregated_match_result = {}
         for result in results:
-            aggregated_match_result.update(result.match_result)
+            aggregated_match_result |= result.match_result
 
         # Concatenate all extra_actions lists
         aggregated_extra_actions = []
