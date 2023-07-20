@@ -19,6 +19,7 @@ class EvaluationMetrics:
         return sum(len(result.match_result) for result in self.results)
 
     def total_successful_actions(self) -> int:
+        print('self.results = ', self.results)
         return sum(
             action
             for result in self.results
