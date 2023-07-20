@@ -2,14 +2,14 @@ import os
 
 import pytest
 
-from automata.llm import LLMChatMessage
-from automata.memory_store import AgentConversationDatabase
+from automata.llm import OpenAIChatMessage
+from automata.memory_store import OpenAIAutomataConversationDatabase
 
 
 @pytest.fixture(scope="module", autouse=True)
 def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
-    db = AgentConversationDatabase("session1", str(db_file))
+    db = OpenAIAutomataConversationDatabase("session1", str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):
@@ -32,7 +32,7 @@ def test_put_message_increments_interaction_id(db, interaction):
     db.conn.commit()
 
     initial_interaction_id = db.last_interaction_id
-    db.save_message(LLMChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction))
     assert db.last_interaction_id == initial_interaction_id + 1
 
 
@@ -41,8 +41,8 @@ def test_multiple_put_message_increments_interaction_id(db, interaction):
     db.conn.commit()
 
     initial_interaction_id = db.last_interaction_id
-    db.save_message(LLMChatMessage(**interaction))
-    db.save_message(LLMChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction))
     assert db.last_interaction_id == initial_interaction_id + 2
 
 
@@ -54,7 +54,7 @@ def test_get_messages_returns_single_message_for_session(db, interaction):
     assert len(db.get_messages()) == 0
 
     # When a message is added
-    db.save_message(LLMChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction))
 
     # Then get_messages should return that message
     messages = db.get_messages()
@@ -71,8 +71,8 @@ def test_get_messages_returns_multiple_messages_in_order(db, interaction):
     assert len(db.get_messages()) == 0
 
     # When two messages are added
-    db.save_message(LLMChatMessage(**interaction))
-    db.save_message(LLMChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction))
 
     # Then get_messages should return both messages in the correct order
     messages = db.get_messages()

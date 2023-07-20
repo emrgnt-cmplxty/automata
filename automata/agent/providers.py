@@ -146,7 +146,10 @@ class OpenAIAutomataAgent(Agent):
             except AgentStopIteration:
                 break
 
+        print("in run...")
+
         last_message = self._conversation.get_latest_message()
+        print("last_message = ", last_message)
         if (
             not self.completed
             and self.iteration_count >= self.config.max_iterations
@@ -226,6 +229,9 @@ class OpenAIAutomataAgent(Agent):
         If it does, then the corresponding tool is run and the result is returned.
         Otherwise, the user is prompted to continue the conversation.
         """
+
+        print("assistant_message = ", assistant_message)
+
         if self.iteration_count != self.config.max_iterations - 1:
             iteration_message = OpenAIAutomataAgent.GENERAL_SUFFIX.format(
                 iteration_count=self.iteration_count,

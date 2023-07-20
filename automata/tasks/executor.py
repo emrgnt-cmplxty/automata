@@ -8,6 +8,7 @@ from automata.agent import (
     OpenAIAutomataAgent,
 )
 from automata.config import OpenAIAutomataAgentConfigBuilder
+from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import ITaskExecution, Task, TaskStatus
 
@@ -30,7 +31,6 @@ class IAutomataTaskExecution(ITaskExecution):
             raise AgentTaskGeneralError(
                 "AutomataTaskEnvironment requires an AutomataTask instance"
             )
-
         task.status = TaskStatus.RUNNING
         try:
             agent = IAutomataTaskExecution._build_agent(task)
@@ -52,13 +52,24 @@ class IAutomataTaskExecution(ITaskExecution):
         TODO - Consider explicitly passing args to the ConfigFactory
                Instead of passing kwargs to the create_config method.
         """
+        print("in build agent, task = ", task)
         agent_config = OpenAIAutomataAgentConfigBuilder.create_from_args(
-            **task.kwargs
+            session_id=str(task.task_id), **task.kwargs
         )
-        return OpenAIAutomataAgent(
+
+        agent = OpenAIAutomataAgent(
             task.instructions,
             agent_config,
         )
+
+        if task.record_conversation:
+            # Initialize the OpenAIAutomataConversationDatabase and set it to the agent
+            db_provider = OpenAIAutomataConversationDatabase(
+                session_id=str(task.task_id)
+            )
+            agent.set_database_provider(db_provider)
+
+        return agent
 
 
 class AutomataTaskExecutor:

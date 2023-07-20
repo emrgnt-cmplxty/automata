@@ -33,6 +33,8 @@ class AutomataTask(Task):
                 "Task instructions cannot be empty."
             )
         self.instructions = self.kwargs["instructions"]
+        self.record_conversation = self.kwargs.get("record_conversation", True)
+
         # Note, this  assumes the python folder is in the root folder
         default_python_folder = os.path.relpath(
             get_root_py_fpath(), get_root_fpath()
