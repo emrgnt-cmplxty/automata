@@ -1,7 +1,6 @@
 import pytest
 
-from automata.llm.eval import OpenAICodeWritingEval
-from automata.llm.eval.code_writing import CodeWritingAction
+from automata.llm.eval.code_writing import CodeWritingEval, CodeWritingAction
 from tests.utils.regression_utils import run_agent_and_get_eval
 
 
@@ -35,7 +34,7 @@ def test_eval_writing(
         model,
         max_iterations,
         expected_actions,
-        OpenAICodeWritingEval,
+        [CodeWritingEval],
     )
     # check if all expected actions were performed
     assert (

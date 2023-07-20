@@ -1,10 +1,24 @@
-import pytest
+# import pytest
 
+# from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
+# from automata.llm import OpenAIChatMessage, OpenAIConversation
+# from automata.llm.eval.providers import (
+#     OpenAIFunctionCallAction,
+#     OpenAIFunctionEval,
+# )
+
+import pytest
 from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
 from automata.llm import OpenAIChatMessage, OpenAIConversation
-from automata.llm.eval.providers import (
+from automata.llm.eval import (
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
+    CodeWritingEval,
+    CodeWritingAction,
+    EvalResult,
+    CompositeEval,
+    EvaluationHarness, 
+    EvaluationMetrics
 )
 
 
@@ -15,107 +29,272 @@ def agent(mocker):
     agent.conversation = mocker.MagicMock(spec=OpenAIConversation)
     return agent
 
-
-def test_generate_function_eval_result_match(agent, mocker):
-    # Arrange
-    expected_actions = [
-        OpenAIFunctionCallAction(
-            name="function1", arguments={"arg1": "value1"}
-        ),
-        OpenAIFunctionCallAction(
-            name="function2", arguments={"arg2": "value2"}
-        ),
-    ]
-
-    mock_message1 = mocker.MagicMock(spec=OpenAIChatMessage)
-    mock_message1.function_call = OpenAIFunctionCallAction(
-        name="function1", arguments={"arg1": "value1"}
-    )
-
-    mock_message2 = mocker.MagicMock(spec=OpenAIChatMessage)
-    mock_message2.function_call = OpenAIFunctionCallAction(
-        name="function2", arguments={"arg2": "value2"}
-    )
-
-    agent.conversation.messages = [mock_message1, mock_message2]
+@pytest.fixture
+def provider(agent, mocker):
     provider = mocker.MagicMock(spec=OpenAIAgentProvider)
     provider.build_and_run_agent = mocker.MagicMock(return_value=agent)
-    evaluator = OpenAIFunctionEval(provider)
+    return provider
 
-    result = evaluator.generate_eval_result("instructions", expected_actions)
+@pytest.fixture
+def evaluator(agent, provider):
+    return OpenAIFunctionEval(provider)
 
+@pytest.fixture
+def code_evaluator(agent, provider):
+    return CodeWritingEval(provider, target_variables=["x", "y", "z"])
+
+@pytest.fixture
+def composite_evaluator(agent, provider):
+    evaluators = [OpenAIFunctionEval, CodeWritingEval]
+    return CompositeEval(provider, evaluators)
+
+
+@pytest.fixture
+def eval_harness(evaluator, provider):
+    return EvaluationHarness(evaluator.__class__, provider)
+
+EXPECTED_ACTIONS = [
+    OpenAIFunctionCallAction(name="function1", arguments={"arg1": "value1"}),
+    OpenAIFunctionCallAction(name="function2", arguments={"arg2": "value2"}),
+]
+
+def test_eval_result_init(mocker):
+    full_match = True
+    match_result = {"action": True}
+    extra_actions = ["action"]
+    conversation = mocker.MagicMock(spec=OpenAIConversation)
+    eval_result = EvalResult(
+        full_match=full_match,
+        match_result=match_result,
+        extra_actions=extra_actions,
+        conversation=conversation
+    )
+    assert eval_result.full_match == full_match
+    assert eval_result.match_result == match_result
+    assert eval_result.extra_actions == extra_actions
+    assert eval_result.conversation == conversation
+
+def test_generate_function_eval_result_match(agent, evaluator, mocker):
+    # Arrange
+    mock_message1 = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message1.function_call = EXPECTED_ACTIONS[0]
+
+    mock_message2 = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message2.function_call = EXPECTED_ACTIONS[1]
+
+    agent.conversation.messages = [mock_message1, mock_message2]
+
+    # Act
+    result = evaluator.generate_eval_result("instructions", EXPECTED_ACTIONS)
+
+    # Assert
+    assert result.full_match
+    assert result.match_result == {action: True for action in EXPECTED_ACTIONS}
+    assert result.extra_actions == []
+
+def test_generate_eval_result_no_match(agent, evaluator, mocker):
+    # Arrange
+    mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message.function_call = OpenAIFunctionCallAction(name="function3", arguments={"arg3": "value3"})
+
+    agent.conversation.messages = [mock_message]
+
+    # Act
+    result = evaluator.generate_eval_result("instructions", EXPECTED_ACTIONS)
+
+    # Assert
+    assert not result.full_match
+    assert result.match_result == {action: False for action in EXPECTED_ACTIONS}
+    assert result.extra_actions == [mock_message.function_call]
+
+def test_generate_eval_result_partial_match(agent, evaluator, mocker):
+    # Arrange
+    mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message.function_call = EXPECTED_ACTIONS[0]
+
+    agent.conversation.messages = [mock_message]
+
+    # Act
+    result = evaluator.generate_eval_result("instructions", EXPECTED_ACTIONS)
+
+    # Assert
+    assert not result.full_match
+    assert result.match_result == {EXPECTED_ACTIONS[0]: True, EXPECTED_ACTIONS[1]: False}
+    assert result.extra_actions == []
+
+def test_generate_code_writing_eval_result_match(agent, code_evaluator, mocker):
+    # Arrange
+    mock_message1 = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message1.content = "```python\nx = 1```"
+    
+    mock_message2 = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message2.content = "```python\ny = 'test'```"
+
+    agent.conversation.messages = [mock_message1, mock_message2]
+
+    expected_actions = [
+        CodeWritingAction(object_types="int", object_value=1),
+        CodeWritingAction(object_types="str", object_value='test')
+    ]
+
+    # Act
+    result = code_evaluator.generate_eval_result("instructions", expected_actions)
+
+    # Assert
+    print("result = ", result)
     assert result.full_match
     assert result.match_result == {action: True for action in expected_actions}
     assert result.extra_actions == []
 
-
-def test_generate_eval_result_no_match(agent, mocker):
+def test_generate_code_writing_eval_result_no_match(agent, code_evaluator, mocker):
     # Arrange
-    expected_actions = [
-        OpenAIFunctionCallAction(
-            name="function1", arguments={"arg1": "value1"}
-        ),
-        OpenAIFunctionCallAction(
-            name="function2", arguments={"arg2": "value2"}
-        ),
-    ]
-
     mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
-    mock_message.function_call = OpenAIFunctionCallAction(
-        name="function3", arguments={"arg3": "value3"}
-    )
+    mock_message.content = "```python\nz = 3.14```"
 
     agent.conversation.messages = [mock_message]
 
-    provider = mocker.MagicMock(spec=OpenAIAgentProvider)
-    provider.build_and_run_agent = mocker.MagicMock(return_value=agent)
-    evaluator = OpenAIFunctionEval(provider)
+    expected_actions = [
+        CodeWritingAction(object_types="int", object_value=1),
+        CodeWritingAction(object_types="str", object_value='test')
+    ]
 
-    result = evaluator.generate_eval_result("instructions", expected_actions)
+    # Act
+    result = code_evaluator.generate_eval_result("instructions", expected_actions)
 
+    # Assert
     assert not result.full_match
-    assert result.match_result == {
-        action: False for action in expected_actions
-    }
+    assert result.match_result == {action: False for action in expected_actions}
     assert result.extra_actions == [
-        OpenAIFunctionCallAction(
-            name="function3", arguments={"arg3": "value3"}
-        )
+        CodeWritingAction(object_types="float", object_value=3.14)
     ]
 
-
-def test_generate_eval_result_partial_match(agent, mocker):
+def test_generate_code_writing_eval_result_partial_match(agent, code_evaluator, mocker):
     # Arrange
-    expected_actions = [
-        OpenAIFunctionCallAction(
-            name="function1", arguments={"arg1": "value1"}
-        ),
-        OpenAIFunctionCallAction(
-            name="function2", arguments={"arg2": "value2"}
-        ),
-    ]
-
     mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
-    mock_message.function_call = OpenAIFunctionCallAction(
-        name="function1", arguments={"arg1": "value1"}
-    )
+    mock_message.content = "```python\nx = 1```"
 
     agent.conversation.messages = [mock_message]
 
-    provider = mocker.MagicMock(spec=OpenAIAgentProvider)
-    provider.build_and_run_agent = mocker.MagicMock(return_value=agent)
-    evaluator = OpenAIFunctionEval(provider)
+    expected_actions = [
+        CodeWritingAction(object_types="int", object_value=1),
+        CodeWritingAction(object_types="str", object_value='test')
+    ]
 
-    with mocker.patch(
-        "automata.agent.providers.OpenAIAutomataAgent", return_value=agent
-    ):
-        result = evaluator.generate_eval_result(
-            "instructions", expected_actions
-        )
+    # Act
+    result = code_evaluator.generate_eval_result("instructions", expected_actions)
 
+    # Assert
     assert not result.full_match
     assert result.match_result == {
         expected_actions[0]: True,
         expected_actions[1]: False,
     }
     assert result.extra_actions == []
+    
+def test_composite_eval_result_match(agent, composite_evaluator, mocker):
+    # Arrange
+    function_call_action = OpenAIFunctionCallAction(
+        name="function1", arguments={"arg1": "value1"}
+    )
+    code_writing_action = CodeWritingAction(
+        object_types="int", object_value=1
+    )
+    
+    mock_message1 = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message1.function_call = function_call_action
+    mock_message1.content = None
+
+    mock_message2 = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message2.content = "```python\nx = 1```"
+    mock_message2.function_call = None
+
+    agent.conversation.messages = [mock_message1, mock_message2]
+
+    expected_actions = [function_call_action, code_writing_action]
+
+    # Act
+    result = composite_evaluator.generate_eval_results("instructions", expected_actions)
+
+    # Assert
+    assert result.full_match
+    assert result.match_result == {
+        function_call_action: True, 
+        code_writing_action: True
+    }
+    assert result.extra_actions == []
+
+
+def test_composite_eval_result_partial_match(agent, composite_evaluator, mocker):
+    # Arrange
+    function_call_action = OpenAIFunctionCallAction(
+        name="function1", arguments={"arg1": "value1"}
+    )
+    code_writing_action = CodeWritingAction(
+        object_types="int", object_value=1
+    )
+    
+    # Only the function call action is performed, not the code writing action
+    mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message.function_call = function_call_action
+    mock_message.content = None
+
+    agent.conversation.messages = [mock_message]
+
+    expected_actions = [function_call_action, code_writing_action]
+
+    # Act
+    result = composite_evaluator.generate_eval_results("instructions", expected_actions)
+
+    # Assert
+    assert not result.full_match
+    # Check that the function call action matched but the code writing action did not
+    assert result.match_result == {function_call_action: True, code_writing_action: False}
+    assert result.extra_actions == []
+
+
+def test_composite_eval_result_no_match(agent, composite_evaluator, mocker):
+    # Arrange
+    function_call_action = OpenAIFunctionCallAction(
+        name="function1", arguments={"arg1": "value1"}
+    )
+    code_writing_action = CodeWritingAction(
+        object_types="int", object_value=1
+    )
+    
+    # No function call or code writing actions are performed
+    mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
+    mock_message.function_call = None
+    mock_message.content = None
+
+    agent.conversation.messages = [mock_message]
+
+    expected_actions = [function_call_action, code_writing_action]
+
+    # Act
+    result = composite_evaluator.generate_eval_results("instructions", expected_actions)
+
+    # Assert
+    assert not result.full_match
+    # Check that neither action matched
+    assert result.match_result == {function_call_action: False, code_writing_action: False}
+    assert result.extra_actions == []
+
+
+
+def test_evaluation_harness(eval_harness):
+    # Arrange
+    instructions = ["instruction1", "instruction2"]
+    expected_actions = [
+        [OpenAIFunctionCallAction(name="function1", arguments={"arg1": "value1"})],
+        [OpenAIFunctionCallAction(name="function2", arguments={"arg2": "value2"})]
+    ]
+
+    # Act
+    metrics = eval_harness.evaluate(instructions, expected_actions)
+
+    # Assert
+    assert isinstance(metrics, EvaluationMetrics)
+    assert metrics.total_actions() == 2
+    assert metrics.total_successful_actions() == 2
+    assert metrics.action_success_rate() == 1.0
+    assert metrics.total_extra_actions() == 0

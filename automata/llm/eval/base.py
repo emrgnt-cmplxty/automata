@@ -38,6 +38,9 @@ class Eval(abc.ABC):
         self, instructions: str, expected_actions: List[Action]
     ) -> EvalResult:
         """Generates an eval result for a given set of instructions and expected actions."""
+
+        filtered_expected_actions = self._filter_actions(expected_actions)
+
         agent = self.agent_provider.build_and_run_agent(instructions)
         observed_actions: List[Action] = []
 
@@ -46,14 +49,14 @@ class Eval(abc.ABC):
                 observed_actions.extend(extracted_actions)
 
         match_result: Dict[Action, bool] = {
-            action: action in observed_actions for action in expected_actions
+            action: action in observed_actions for action in filtered_expected_actions
         }
 
         full_match = all(match_result.values())
         extra_actions = [
             action
             for action in observed_actions
-            if action not in expected_actions
+            if action not in filtered_expected_actions
         ]
 
         return EvalResult(
@@ -67,6 +70,12 @@ class Eval(abc.ABC):
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
         pass
+
+    @abc.abstractmethod
+    def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        """Filters a list of actions to only contain actions that are relevant to the eval."""
+        pass
+
 
 
 class CompositeEval(Eval):
@@ -82,14 +91,43 @@ class CompositeEval(Eval):
 
     def generate_eval_results(
         self, instructions: str, expected_actions: List[Action]
-    ) -> List[EvalResult]:
+    ) -> EvalResult:
         results = []
         for evaluator_class in self.evaluators:
             evaluator = evaluator_class(self.agent_provider)
             results.append(
                 evaluator.generate_eval_result(instructions, expected_actions)
             )
-        return results
+        self.results: List[EvalResult] = results
+        return CompositeEval._aggregate_result(results)
+
+    @staticmethod
+    def _aggregate_result(results: List[EvalResult]) -> EvalResult:
+        """Aggregates a list of EvalResult objects into a single result."""
+        
+        if not results:
+            raise ValueError("No results to aggregate.")
+        # Perform an 'and' operation over all full_match values
+        aggregated_full_match = all(result.full_match for result in results)
+
+        # Merge all match_result dictionaries
+        aggregated_match_result = {}
+        for result in results:
+            aggregated_match_result.update(result.match_result)
+
+        # Concatenate all extra_actions lists
+        aggregated_extra_actions = []
+        for result in results:
+            aggregated_extra_actions.extend(result.extra_actions)
+
+        # Return a new EvalResult object with the aggregated results
+        return EvalResult(
+            full_match=aggregated_full_match,
+            match_result=aggregated_match_result,
+            extra_actions=aggregated_extra_actions,
+            conversation=results[0].conversation if results else None
+        )
+    
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
@@ -99,3 +137,8 @@ class CompositeEval(Eval):
                 evaluator(self.agent_provider).extract_action(message)
             )
         return actions
+
+    def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        raise NotImplementedError("The composite evaluator does not filter actions.")
+    
+

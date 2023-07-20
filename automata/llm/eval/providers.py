@@ -27,11 +27,8 @@ class OpenAIFunctionCallAction(Action):
         return hash((self.name, json.dumps(self.arguments)))
 
 
-class OpenAIEval(Eval):
-    "An abstract class for evaluating an OpenAI LLM."
 
-
-class OpenAIFunctionEval(OpenAIEval):
+class OpenAIFunctionEval(Eval):
     """A concrete class for evaluating an OpenAI messages for function call actions."""
 
     def __init__(self, agent_provider: AgentProvider, *args, **kwargs):
@@ -39,20 +36,18 @@ class OpenAIFunctionEval(OpenAIEval):
         super().__init__(agent_provider, *args, **kwargs)
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
+        """Extracts the coding action explicitly"""
         actions: List[Action] = []
         if isinstance(message, OpenAIChatMessage):
             function_call = message.function_call
             if (
                 function_call and function_call.name != "initializer"
-            ):  # initialize is a dummy method call
+            ):
                 action = OpenAIFunctionCallAction(
                     name=function_call.name, arguments=function_call.arguments
                 )
                 actions.append(action)
         return actions
 
-
-class OpenAICodeWritingEval(OpenAIEval, CodeWritingEval):
-    """A concrete class for evaluating an OpenAI LLM's code writing actions."""
-
-    pass
+    def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        return [action for action in actions if isinstance(action, OpenAIFunctionCallAction)]

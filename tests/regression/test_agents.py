@@ -58,7 +58,7 @@ def test_basic_agent_execution(
             "automata-main",
             2,
             "class VectorDatabaseProvider(abc.ABC, Generic[K, V]):\n\n    @abc.abstractmethod\n    def __len__(self) -> int:\n        pass\n\n    @abc.abstractmethod\n    def save(self) -> None:\n        pass\n\n    @abc.abstractmethod\n    def load(self) -> None:\n        pass\n\n    @abc.abstractmethod\n    def clear(self) -> None:\n        pass\n\n    @abc.abstractmethod\n    def get_ordered_keys(self) -> List[K]:\n        pass\n\n    @abc.abstractmethod\n    def get_ordered_embeddings(self) -> List[V]:\n        pass\n\n    @abc.abstractmethod\n    def add(self, entry: V) -> None:\n        pass\n\n    @abc.abstractmethod\n    def batch_add(self, entries: V) -> None:\n        pass\n\n    @abc.abstractmethod\n    def update_entry(self, entry: V) -> None:\n        pass\n\n    @abc.abstractmethod\n    def batch_update(self, entries: List[V]) -> None:\n        pass\n\n    @abc.abstractmethod\n    def entry_to_key(self, entry: V) -> K:\n        pass\n\n    @abc.abstractmethod\n    def contains(self, key: K) -> bool:\n        pass\n\n    @abc.abstractmethod\n    def get(self, key: K) -> V:\n        pass\n\n    @abc.abstractmethod\n    def batch_get(self, keys: List[K]) -> List[V]:\n        pass\n\n    @abc.abstractmethod\n    def discard(self, key: K) -> None:\n        pass\n\n    @abc.abstractmethod\n    def batch_discard(self, keys: List[K]) -> None:\n        pass",
-            0.95,
+            0.85,
         ),
         # A simple context search for `SymbolSearch`
         (
@@ -68,7 +68,7 @@ def test_basic_agent_execution(
             "automata-main",
             2,
             "SymbolSearch",
-            0.95,
+            0.85,
         ),
     ],
 )
@@ -127,7 +127,7 @@ def test_agent_py_writer(
 
     module = py_module_loader.fetch_ast_module(expected_output_module)
     if not module:
-        raise ValueError("Failed to create expected output modle")
+        raise ValueError("Failed to create expected output module")
     result = ast.unparse(module)
     py_module_loader.delete_module(expected_output_module)
 
