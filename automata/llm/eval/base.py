@@ -131,7 +131,7 @@ class CompositeEval(Eval):
         aggregated_full_match = all(result.full_match for result in results)
 
         # Merge all match_result dictionaries
-        aggregated_match_result = {}
+        aggregated_match_result: Dict[Action, bool] = {}
         for result in results:
             aggregated_match_result |= result.match_result
 
