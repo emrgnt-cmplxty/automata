@@ -3,9 +3,10 @@ from typing import List
 
 from automata.config import CONVERSATION_DB_PATH
 from automata.llm import (
-    OpenAIChatMessage,
-    LLMConversationDatabaseProvider,
     FunctionCall,
+    LLMChatMessage,
+    LLMConversationDatabaseProvider,
+    OpenAIChatMessage,
 )
 
 
@@ -41,7 +42,10 @@ class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
         )
         return result[0][0] or 0
 
-    def save_message(self, message: OpenAIChatMessage) -> None:
+    def save_message(self, message: LLMChatMessage) -> None:
+        """Save a message to the database."""
+        if not isinstance(message, OpenAIChatMessage):
+            raise ValueError("Expected an OpenAIChatMessage instance.")
         """TODO - Think about how to handle function calls, e.g. OpenAIChatMessage, and other chat message providers"""
         if self.session_id is None:
             raise ValueError("The database session_id has not been set.")
@@ -61,7 +65,8 @@ class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
 
     def get_messages(
         self,
-    ) -> List[OpenAIChatMessage]:
+    ) -> List[LLMChatMessage]:
+        """Get all messages with the original session id."""
         """TODO - Test ordering and etc. around this method."""
         result = self.select(
             OpenAIAutomataConversationDatabase.PRIMARY_TABLE_NAME,
@@ -72,14 +77,13 @@ class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
         # Sort the results by interaction_id, which is the second element of each row
         sorted_result = sorted(result, key=lambda row: row[1])
 
-
         # Convert the sorted results to a list of LLMChatMessage instances
         return [
             OpenAIChatMessage(
                 role=row[2],
                 content=row[3],
                 function_call=FunctionCall(**json.loads(row[4]))
-                if row[4] != None
+                if row[4] is not None
                 else None,
             )
             for row in sorted_result

@@ -4,10 +4,10 @@ from unittest.mock import patch
 import pytest
 
 from automata.agent import AgentMaxIterError, OpenAIAutomataAgent
-from automata.config import OpenAIAutomataAgentConfig
 from automata.agent.providers import OpenAIChatCompletionProvider, OpenAITool
-from automata.memory_store import OpenAIAutomataConversationDatabase
+from automata.config import OpenAIAutomataAgentConfig
 from automata.llm import OpenAIChatMessage
+from automata.memory_store import OpenAIAutomataConversationDatabase
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -22,15 +22,15 @@ def db(tmpdir_factory):
 
 
 def test_agent_initialization(automata_agent):
-    assert automata_agent._initialized == True
+    assert automata_agent._initialized
     assert automata_agent.iteration_count == 0
-    assert automata_agent.completed == False
+    assert not automata_agent.completed
     assert isinstance(automata_agent.config, OpenAIAutomataAgentConfig)
 
 
 def test_invalid_config():
     with pytest.raises(Exception):
-        automata_agent = OpenAIAutomataAgent("instructions", "InvalidConfig")
+        OpenAIAutomataAgent("instructions", "InvalidConfig")  # type: ignore
 
 
 def test_tool_execution(automata_agent):
@@ -160,23 +160,6 @@ def test_db_cleanup(db, tmpdir_factory):
     db_path = str(db_file)
     new_db = OpenAIAutomataConversationDatabase("session2", db_path)
     new_db.close()
-
-
-def mock_openai_response_with_completion_message():
-    return {
-        "choices": [
-            {
-                "message": {
-                    "role": "assistant",
-                    "function_call": {
-                        "name": "call_termination",
-                        "arguments": '{"result": "Success"}',
-                    },
-                    "content": None,
-                }
-            }
-        ]
-    }
 
 
 @pytest.mark.parametrize(
