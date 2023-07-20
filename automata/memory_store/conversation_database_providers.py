@@ -1,10 +1,13 @@
+import json
 from typing import List
 
 from automata.config import CONVERSATION_DB_PATH
-from automata.llm import LLMChatMessage, LLMConversationDatabaseProvider
+from automata.llm import OpenAIChatMessage, LLMConversationDatabaseProvider, FunctionCall
 
 
-class AgentConversationDatabase(LLMConversationDatabaseProvider):
+# TODO - Remove db_path and go with dependency injection, 
+# e.g. pass in a database provider instance
+class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
     """A conversation database for an Automata agent."""
 
     def __init__(
@@ -32,7 +35,7 @@ class AgentConversationDatabase(LLMConversationDatabaseProvider):
         )
         return result[0][0] or 0
 
-    def save_message(self, message: LLMChatMessage) -> None:
+    def save_message(self, message: OpenAIChatMessage) -> None:
         """TODO - Think about how to handle function calls, e.g. OpenAIChatMessage, and other chat message providers"""
         if self.session_id is None:
             raise ValueError("The database session_id has not been set.")
@@ -40,6 +43,7 @@ class AgentConversationDatabase(LLMConversationDatabaseProvider):
         interaction = {
             "role": message.role,
             "content": message.content,
+            "function_call": str(message.function_call) if message.function_call else "None",
             "session_id": self.session_id,
             "interaction_id": interaction_id,
         }
@@ -47,7 +51,7 @@ class AgentConversationDatabase(LLMConversationDatabaseProvider):
 
     def get_messages(
         self,
-    ) -> List[LLMChatMessage]:
+    ) -> List[OpenAIChatMessage]:
         """TODO - Test ordering and etc. around this method."""
         result = self.select(
             "interactions", ["*"], {"session_id": self.session_id}
@@ -56,8 +60,10 @@ class AgentConversationDatabase(LLMConversationDatabaseProvider):
         # Sort the results by interaction_id, which is the second element of each row
         sorted_result = sorted(result, key=lambda row: row[1])
 
+        print("row[4] = ", sorted_result[0][4])
+        print("function_call(row[4]) = ", FunctionCall(**json.loads(sorted_result[0][4])).name)
         # Convert the sorted results to a list of LLMChatMessage instances
         return [
-            LLMChatMessage(role=row[2], content=row[3])
+            OpenAIChatMessage(role=row[2], content=row[3], function_call=FunctionCall(**json.loads(row[4])) if row[4] != "None" else None)
             for row in sorted_result
         ]

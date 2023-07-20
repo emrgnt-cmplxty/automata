@@ -1,11 +1,24 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
-
+from pytest_mock import MockerFixture
 from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks.base import Task, TaskStatus
-from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
+from automata.tasks.executor import (
+    AutomataTaskExecutor,
+    ITaskExecution,
+    IAutomataTaskExecution,
+)
+from automata.llm import LLMChatMessage
+from automata.agent import OpenAIAutomataAgent
+
+mock_message = MagicMock(spec=LLMChatMessage)
+mock_message.role = "assistant"
+mock_message.content = "Hello, world!"
+
+mock_agent = MagicMock(spec=OpenAIAutomataAgent)
+mock_agent.run.return_value = "Test result"
 
 
 class TestExecuteBehavior(ITaskExecution):
@@ -14,7 +27,8 @@ class TestExecuteBehavior(ITaskExecution):
     """
 
     def execute(self, task: Task):
-        task.result = "Test result"
+        print("in the test execute method")
+        task.result = mock_agent.run()
 
 
 @pytest.fixture(autouse=True)

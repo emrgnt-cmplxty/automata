@@ -3,13 +3,13 @@ import os
 import pytest
 
 from automata.llm import LLMChatMessage
-from automata.memory_store import AgentConversationDatabase
+from automata.memory_store import OpenAIAutomataConversationDatabase
 
 
 @pytest.fixture(scope="module", autouse=True)
 def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
-    db = AgentConversationDatabase("session1", str(db_file))
+    db = OpenAIAutomataConversationDatabase("session1", str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):

@@ -86,6 +86,8 @@ class FunctionCall(NamedTuple):
             result_str = result_str[1:]
             return {"result": result_str}
 
+    def __str__(self) -> str:
+        return json.dumps(self._asdict()) 
 
 class OpenAIChatCompletionResult(LLMCompletionResult):
     """A class to represent a completion result from the OpenAI API."""
@@ -126,7 +128,7 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
                         "message": {
                             "role": role,
                             "content": content,
-                            "function_call": function_call,
+                            "function_call": function_call
                         }
                     }
                 ]
@@ -149,7 +151,7 @@ class OpenAIChatMessage(LLMChatMessage):
         self.function_call = function_call
 
     def __str__(self) -> str:
-        return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
+        return f"OpenAIChatMessage(role={self.role}, content={self.content}, function_call={self.function_call})"
 
     def to_dict(self) -> Dict[str, Any]:
         if self.function_call is None:
@@ -197,6 +199,8 @@ class OpenAIConversation(LLMConversation):
         if not isinstance(message, OpenAIChatMessage):
             raise OpenAIIncorrectMessageTypeError(message)
         self._messages.append(message)
+        # Notify the observers whenever a new message is added to the conversation
+        self.notify_observers()
 
     def get_messages_for_next_completion(self) -> List[Dict[str, Any]]:
         return [message.to_dict() for message in self._messages]
