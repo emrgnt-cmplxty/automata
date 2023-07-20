@@ -1,16 +1,16 @@
 import json
 from typing import Any, Dict, List
 
-from automata.agent import Agent
-from automata.config import AgentConfig, OpenAIAutomataAgentConfig
+from automata.agent import AgentProvider, OpenAIAgentProvider
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
-from .base import Action, CodeWritingEval, Eval
+from .base import Action, Eval
+from .code_writing import CodeWritingEval
 
 
 class OpenAIFunctionCallAction(Action):
-    """An action represented by a function call."""
+    """A concrete action represented by an OpenAI function call."""
 
     def __init__(self, name: str, arguments: Dict[str, Any]):
         self.name = name
@@ -27,46 +27,27 @@ class OpenAIFunctionCallAction(Action):
         return hash((self.name, json.dumps(self.arguments)))
 
 
-class OpenAIEval(Eval):
-    "An abstract class for evaluating an OpenAI LLM."
 
-    def _build_and_run_agent(self, instructions: str) -> Agent:
-        from automata.agent.providers import (  # import late for mocking in tests
-            OpenAIAutomataAgent,
-        )
+class OpenAIFunctionEval(Eval):
+    """A concrete class for evaluating an OpenAI messages for function call actions."""
 
-        if not isinstance(self.config, OpenAIAutomataAgentConfig):
-            raise TypeError(
-                "Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
-            )
+    def __init__(self, agent_provider: AgentProvider, *args, **kwargs):
+        assert isinstance(agent_provider, OpenAIAgentProvider)
+        super().__init__(agent_provider, *args, **kwargs)
 
-        agent = OpenAIAutomataAgent(
-            instructions=instructions, config=self.config
-        )
-        agent.run()
-        return agent
-
-
-class OpenAIFunctionEval(OpenAIEval):
-    """A class for evaluating an OpenAI LLM."""
-
-    def __init__(self, config: AgentConfig, *args, **kwargs):
-        assert isinstance(config, OpenAIAutomataAgentConfig)
-        super().__init__(config, *args, **kwargs)
-
-    def _extract_action(self, message: LLMChatMessage) -> List[Action]:
+    def extract_action(self, message: LLMChatMessage) -> List[Action]:
+        """Extracts the coding action explicitly"""
         actions: List[Action] = []
         if isinstance(message, OpenAIChatMessage):
             function_call = message.function_call
             if (
                 function_call and function_call.name != "initializer"
-            ):  # initialize is a dummy method call
+            ):
                 action = OpenAIFunctionCallAction(
                     name=function_call.name, arguments=function_call.arguments
                 )
                 actions.append(action)
         return actions
 
-
-class OpenAICodeWritingEval(OpenAIEval, CodeWritingEval):
-    pass
+    def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        return [action for action in actions if isinstance(action, OpenAIFunctionCallAction)]

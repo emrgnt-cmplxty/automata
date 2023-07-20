@@ -22,6 +22,11 @@ class Person:
         return "run"
 
 
+def f(x) -> int:
+    """This is my new function"""
+    return x + 1
+
+
 class EmptyClass:
     pass
 
@@ -32,8 +37,3 @@ class OuterClass:
 
         def inner_method(self):
             """Inner method doc strings"""
-
-
-def f(x) -> int:
-    """This is my new function"""
-    return x + 1

@@ -1,8 +1,13 @@
-from typing import Type
+from typing import List, Type
 
-from automata.agent import OpenAIAutomataAgent
+from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
-from automata.llm.eval import Eval, EvalResult, OpenAIFunctionEval
+from automata.llm.eval import (
+    CompositeEval,
+    Eval,
+    EvalResult,
+    OpenAIFunctionEval,
+)
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tools.factory import AgentToolFactory
@@ -21,7 +26,7 @@ def run_agent_and_get_eval(
     model,
     max_iterations,
     expected_actions,
-    evaluator_class: Type[Eval] = OpenAIFunctionEval,
+    evaluator_classes: List[Type[Eval]] = [OpenAIFunctionEval],
 ) -> EvalResult:
     initialize_automata()
 
@@ -37,10 +42,15 @@ def run_agent_and_get_eval(
         .with_model(model)
         .with_max_iterations(max_iterations)
     )
+    agent_config = agent_config_builder.build()
+    composite_evaluator = CompositeEval(
+        agent_provider=OpenAIAgentProvider(agent_config),
+        evaluators=evaluator_classes,
+    )
 
-    evaluator = evaluator_class(config=agent_config_builder.build())
-
-    return evaluator.generate_eval_result(instructions, expected_actions)
+    return composite_evaluator.generate_eval_result(
+        instructions, expected_actions
+    )
 
 
 def run_agent_and_get_result(

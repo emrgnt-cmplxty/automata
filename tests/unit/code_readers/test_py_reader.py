@@ -81,7 +81,6 @@ def test_get_code_module(getter):
         "",
         "        def inner_method(self):",
     ]
-
     assert result.split("\n") == expected_match
 
 

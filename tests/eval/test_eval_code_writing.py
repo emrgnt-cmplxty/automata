@@ -1,6 +1,6 @@
 import pytest
 
-from automata.llm.eval import CodeWritingAction, OpenAICodeWritingEval
+from automata.llm.eval.code_writing import CodeWritingEval, CodeWritingAction
 from tests.utils.regression_utils import run_agent_and_get_eval
 
 
@@ -15,7 +15,7 @@ from tests.utils.regression_utils import run_agent_and_get_eval
             [],
             "gpt-3.5-turbo",
             5,
-            [CodeWritingAction(object_type="int", object_value=10)],
+            [CodeWritingAction(object_types="int", object_value=10)],
         ),
     ],
 )
@@ -34,7 +34,7 @@ def test_eval_writing(
         model,
         max_iterations,
         expected_actions,
-        OpenAICodeWritingEval,
+        [CodeWritingEval],
     )
     # check if all expected actions were performed
     assert (
