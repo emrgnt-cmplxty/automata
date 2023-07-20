@@ -1,14 +1,13 @@
-import logging
-
 import json
+import logging
 from typing import Any, Dict, List, Optional
 
 from automata.agent import AgentProvider
 from automata.llm.eval import Action, Eval
-from automata.llm.eval.base import Action
 from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)
+
 
 class CodeExecutionError(Exception):
     """Exception raised when there's an error executing the code."""
@@ -25,8 +24,10 @@ class VariableNotFoundError(CodeExecutionError):
 class CodeWritingAction(Action):
     """An concrete action representing written code."""
 
+    LANGUAGE_MARKER_POSITION = 1
+
     # TODO - Consider adding variable name to the action,
-    # e.g. if x = OpenAutomataAgent(), 
+    # e.g. if x = OpenAutomataAgent(),
     # and object_types = 'OpenAutomataAgent', object_value = OpenAutomataAgent(),
     # then variable_name = 'x'
     def __init__(
@@ -77,7 +78,9 @@ class CodeWritingAction(Action):
         snippet: str, expected_language: str = "python"
     ) -> str:
         """Extracts a code snippet from a markdown string."""
-        return snippet.split(f"```{expected_language}")[1].replace("```", "")
+        return snippet.split(f"```{expected_language}")[
+            CodeWritingAction.LANGUAGE_MARKER_POSITION
+        ].replace("```", "")
 
 
 class CodeWritingEval(Eval):
@@ -116,9 +119,7 @@ class CodeWritingEval(Eval):
             actions.append(action)
         return actions
 
-    def _parse_code_snippet(
-        self, raw_content
-    ) -> List[Dict[str, Any]]:
+    def _parse_code_snippet(self, raw_content) -> List[Dict[str, Any]]:
         """Parses a code snippet and extracts the object value and type at the specified variable."""
 
         # Isolate the exec environment to a separate dictionary
@@ -130,7 +131,8 @@ class CodeWritingEval(Eval):
             exec(code_snippet, None, isolated_locals)
             target_values = [
                 isolated_locals.get(target_variable)
-                for target_variable in self.target_variables if target_variable in isolated_locals
+                for target_variable in self.target_variables
+                if target_variable in isolated_locals
             ]
             if target_values is None:
                 raise VariableNotFoundError(
@@ -146,4 +148,8 @@ class CodeWritingEval(Eval):
             raise CodeExecutionError(f"Error executing code: {str(e)}")
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
-        return [action for action in actions if isinstance(action, CodeWritingAction)]
+        return [
+            action
+            for action in actions
+            if isinstance(action, CodeWritingAction)
+        ]

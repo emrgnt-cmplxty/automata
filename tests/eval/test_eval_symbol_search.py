@@ -1,6 +1,6 @@
 import pytest
 
-from automata.llm.eval.providers import OpenAIFunctionCallAction
+from automata.llm.eval.eval_providers import OpenAIFunctionCallAction
 from tests.utils.regression_utils import run_agent_and_get_eval
 
 

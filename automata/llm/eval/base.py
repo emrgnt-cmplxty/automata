@@ -1,6 +1,7 @@
 import abc
 import logging
-from typing import Dict, List, NamedTuple, Type
+from dataclasses import dataclass
+from typing import Dict, List, Type, Union
 
 from automata.agent import AgentProvider
 from automata.llm.foundation import LLMChatMessage, LLMConversation
@@ -14,7 +15,8 @@ class Action(abc.ABC):
     pass
 
 
-class EvalResult(NamedTuple):
+@dataclass
+class EvalResult:
     """A concrete class to represent the result of an eval."""
 
     full_match: bool
@@ -78,26 +80,36 @@ class Eval(abc.ABC):
         pass
 
 
+def check_eval_uniqueness(
+    evaluator_classes: Union[List[Eval], List[Type[Eval]]]
+) -> bool:
+    # Check for duplicate evaluators
+    if len(evaluator_classes) != len(set(evaluator_classes)):
+        raise ValueError("All evaluators must be of different types.")
+
+    return True
+
+
 class CompositeEval(Eval):
     def __init__(
         self,
         agent_provider: AgentProvider,
-        evaluators: List[Type[Eval]],
+        evaluator_classes: List[Type[Eval]],
         *args,
         **kwargs,
     ):
+        check_eval_uniqueness(evaluator_classes)
         super().__init__(agent_provider, *args, **kwargs)
-        self.evaluators = evaluators
+
+        self.evaluators = [cls(agent_provider) for cls in evaluator_classes]
 
     def generate_eval_results(
         self, instructions: str, expected_actions: List[Action]
     ) -> EvalResult:
-        results = []
-        for evaluator_class in self.evaluators:
-            evaluator = evaluator_class(self.agent_provider)
-            results.append(
-                evaluator.generate_eval_result(instructions, expected_actions)
-            )
+        results = [
+            evaluator.generate_eval_result(instructions, expected_actions)
+            for evaluator in self.evaluators
+        ]
         self.results: List[EvalResult] = results
         return CompositeEval.aggregate_result(results)
 
@@ -119,7 +131,7 @@ class CompositeEval(Eval):
         aggregated_full_match = all(result.full_match for result in results)
 
         # Merge all match_result dictionaries
-        aggregated_match_result = {}
+        aggregated_match_result: Dict[Action, bool] = {}
         for result in results:
             aggregated_match_result |= result.match_result
 
@@ -140,9 +152,7 @@ class CompositeEval(Eval):
         """Extracts a list of action from the given message."""
         actions = []
         for evaluator in self.evaluators:
-            actions.extend(
-                evaluator(self.agent_provider).extract_action(message)
-            )
+            actions.extend(evaluator.extract_action(message))
         return actions
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
