@@ -7,8 +7,7 @@ from automata.agent import AgentMaxIterError, OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfig
 from automata.agent.providers import OpenAIChatCompletionProvider, OpenAITool
 from automata.memory_store import OpenAIAutomataConversationDatabase
-
-from automata.llm import LLMChatMessage
+from automata.llm import OpenAIChatMessage
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -20,7 +19,6 @@ def db(tmpdir_factory):
     db.close()
     if os.path.exists(str(db_file)):
         os.remove(str(db_file))
-
 
 
 def test_agent_initialization(automata_agent):
@@ -146,7 +144,7 @@ def test_db_connection(db):
 def test_db_interaction(db):
     interaction = {"content": "x", "role": "assistant"}
     initial_interaction_id = db.last_interaction_id
-    db.save_message(LLMChatMessage(**interaction))
+    db.save_message(OpenAIChatMessage(**interaction, function_call=None))
     assert db.last_interaction_id == initial_interaction_id + 1
 
 
@@ -205,8 +203,8 @@ def test_agent_saves_messages_to_database(
 
     assert saved_messages[0].role == "assistant"
     assert saved_messages[0].content is None
-    assert saved_messages[0].function_call.name == 'call_termination'
-    assert saved_messages[0].function_call.arguments == {'result': 'Success'}
+    assert saved_messages[0].function_call.name == "call_termination"
+    assert saved_messages[0].function_call.arguments == {"result": "Success"}
     assert saved_messages[1].role == "user"
     assert "Success" in saved_messages[1].content
     assert saved_messages[1].function_call is None

@@ -146,7 +146,7 @@ class OpenAIAutomataAgent(Agent):
             except AgentStopIteration:
                 break
 
-        print('in run...')
+        print("in run...")
 
         last_message = self._conversation.get_latest_message()
         print("last_message = ", last_message)

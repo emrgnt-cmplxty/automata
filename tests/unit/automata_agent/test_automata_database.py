@@ -1,10 +1,10 @@
 import os
 import shutil
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
-from automata.llm import LLMChatMessage
+from automata.llm import OpenAIChatMessage
 from automata.memory_store import OpenAIAutomataConversationDatabase
 
 db_dir = os.path.join(os.path.dirname(__file__), "db")
@@ -37,7 +37,7 @@ def test_last_interaction_id(db):
     """Tests that the last_interaction_id method returns the correct ID."""
 
     with patch(
-        "automata.memory_store.agent_conversation_database.OpenAIAutomataConversationDatabase.select"
+        "automata.memory_store.conversation_database_providers.OpenAIAutomataConversationDatabase.select"
     ) as mock_select:
         mock_select.return_value = [(5,)]
         assert db.last_interaction_id == 5
@@ -47,12 +47,12 @@ def test_save_message(db):
     """Tests that the save_message method saves a message correctly."""
 
     with patch(
-        "automata.memory_store.agent_conversation_database.OpenAIAutomataConversationDatabase.insert"
+        "automata.memory_store.conversation_database_providers.OpenAIAutomataConversationDatabase.insert"
     ) as mock_insert, patch(
-        "automata.memory_store.agent_conversation_database.OpenAIAutomataConversationDatabase.select"
+        "automata.memory_store.conversation_database_providers.OpenAIAutomataConversationDatabase.select"
     ) as mock_select:
         mock_select.return_value = [(5,)]
-        message = LLMChatMessage(role="assistant", content="Hello, world!")
+        message = OpenAIChatMessage(role="assistant", content="Hello, world!")
         db.save_message(message)
         mock_insert.assert_called_once()
 
@@ -61,7 +61,7 @@ def test_get_messages(db):
     """Tests that the get_messages method returns the correct messages."""
 
     with patch(
-        "automata.memory_store.agent_conversation_database.OpenAIAutomataConversationDatabase.select"
+        "automata.memory_store.conversation_database_providers.OpenAIAutomataConversationDatabase.select"
     ) as mock_select:
         mock_select.return_value = [
             ("test_session", 1, "assistant", "Hello, world!", None),
@@ -78,14 +78,14 @@ def test_get_messages(db):
 def test_invalid_session_id(db):
     """Tests that an error is raised when trying to save a message with an invalid session ID."""
     db.session_id = None
-    message = LLMChatMessage(role="assistant", content="Hello, world!")
+    message = OpenAIChatMessage(role="assistant", content="Hello, world!")
     with pytest.raises(ValueError):
         db.save_message(message)
 
 
 def test_persistence(db):
     """Tests that data is persisted correctly in the database."""
-    message = LLMChatMessage(role="assistant", content="Hello, world!")
+    message = OpenAIChatMessage(role="assistant", content="Hello, world!")
     db.save_message(message)
     messages_before = db.get_messages()
     db.close()
@@ -98,12 +98,12 @@ def test_persistence(db):
 
 
 @patch(
-    "automata.memory_store.agent_conversation_database.OpenAIAutomataConversationDatabase.insert"
+    "automata.memory_store.conversation_database_providers.OpenAIAutomataConversationDatabase.insert"
 )
 def test_error_handling(mock_insert, db):
     """Tests that an error is handled correctly when a database operation fails."""
     mock_insert.side_effect = Exception("Database error")
-    message = LLMChatMessage(role="assistant", content="Hello, world!")
+    message = OpenAIChatMessage(role="assistant", content="Hello, world!")
     with pytest.raises(Exception) as e:
         db.save_message(message)
     assert str(e.value) == "Database error"
@@ -115,7 +115,7 @@ def test_performance(db):
     import time
 
     messages = [
-        LLMChatMessage(role="assistant", content="Hello, world!")
+        OpenAIChatMessage(role="assistant", content="Hello, world!")
         for _ in range(1000)
     ]
     start = time.time()

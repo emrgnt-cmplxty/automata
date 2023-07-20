@@ -87,7 +87,8 @@ class FunctionCall(NamedTuple):
             return {"result": result_str}
 
     def __str__(self) -> str:
-        return json.dumps(self._asdict()) 
+        return json.dumps(self._asdict())
+
 
 class OpenAIChatCompletionResult(LLMCompletionResult):
     """A class to represent a completion result from the OpenAI API."""
@@ -128,7 +129,7 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
                         "message": {
                             "role": role,
                             "content": content,
-                            "function_call": function_call
+                            "function_call": function_call,
                         }
                     }
                 ]

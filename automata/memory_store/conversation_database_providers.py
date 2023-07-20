@@ -2,13 +2,19 @@ import json
 from typing import List
 
 from automata.config import CONVERSATION_DB_PATH
-from automata.llm import OpenAIChatMessage, LLMConversationDatabaseProvider, FunctionCall
+from automata.llm import (
+    OpenAIChatMessage,
+    LLMConversationDatabaseProvider,
+    FunctionCall,
+)
 
 
-# TODO - Remove db_path and go with dependency injection, 
+# TODO - Remove db_path and go with dependency injection,
 # e.g. pass in a database provider instance
 class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
     """A conversation database for an Automata agent."""
+
+    PRIMARY_TABLE_NAME = "interactions"
 
     def __init__(
         self, session_id: str, db_path: str = CONVERSATION_DB_PATH
@@ -16,7 +22,7 @@ class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
         self.connect(db_path)
         self.session_id = session_id
         self.create_table(
-            "interactions",
+            OpenAIAutomataConversationDatabase.PRIMARY_TABLE_NAME,
             {
                 "session_id": "TEXT",
                 "interaction_id": "INTEGER",
@@ -29,7 +35,7 @@ class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
     @property
     def last_interaction_id(self) -> int:
         result = self.select(
-            "interactions",
+            OpenAIAutomataConversationDatabase.PRIMARY_TABLE_NAME,
             ["MAX(interaction_id)"],
             {"session_id": self.session_id},
         )
@@ -43,27 +49,38 @@ class OpenAIAutomataConversationDatabase(LLMConversationDatabaseProvider):
         interaction = {
             "role": message.role,
             "content": message.content,
-            "function_call": str(message.function_call) if message.function_call else "None",
+            "function_call": str(message.function_call)
+            if message.function_call
+            else None,
             "session_id": self.session_id,
             "interaction_id": interaction_id,
         }
-        self.insert("interactions", interaction)
+        self.insert(
+            OpenAIAutomataConversationDatabase.PRIMARY_TABLE_NAME, interaction
+        )
 
     def get_messages(
         self,
     ) -> List[OpenAIChatMessage]:
         """TODO - Test ordering and etc. around this method."""
         result = self.select(
-            "interactions", ["*"], {"session_id": self.session_id}
+            OpenAIAutomataConversationDatabase.PRIMARY_TABLE_NAME,
+            ["*"],
+            {"session_id": self.session_id},
         )
 
         # Sort the results by interaction_id, which is the second element of each row
         sorted_result = sorted(result, key=lambda row: row[1])
 
-        print("row[4] = ", sorted_result[0][4])
-        print("function_call(row[4]) = ", FunctionCall(**json.loads(sorted_result[0][4])).name)
+
         # Convert the sorted results to a list of LLMChatMessage instances
         return [
-            OpenAIChatMessage(role=row[2], content=row[3], function_call=FunctionCall(**json.loads(row[4])) if row[4] != "None" else None)
+            OpenAIChatMessage(
+                role=row[2],
+                content=row[3],
+                function_call=FunctionCall(**json.loads(row[4]))
+                if row[4] != None
+                else None,
+            )
             for row in sorted_result
         ]
