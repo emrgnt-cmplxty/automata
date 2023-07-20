@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Type
 
 from automata.llm.eval.base import Action, CompositeEval, Eval
 from automata.llm.eval.metrics import EvaluationMetrics

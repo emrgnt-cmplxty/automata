@@ -9,6 +9,14 @@
 
 import pytest
 
+# from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
+# from automata.llm import OpenAIChatMessage, OpenAIConversation
+# from automata.llm.eval.providers import (
+#     OpenAIFunctionCallAction,
+#     OpenAIFunctionEval,
+# )
+
+import pytest
 from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
 from automata.llm import OpenAIChatMessage, OpenAIConversation
 from automata.llm.eval import (
@@ -20,6 +28,12 @@ from automata.llm.eval import (
     EvaluationMetrics,
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
+    CodeWritingEval,
+    CodeWritingAction,
+    EvalResult,
+    CompositeEval,
+    EvaluationHarness, 
+    EvaluationMetrics
 )
 
 
@@ -104,9 +118,7 @@ def test_generate_function_eval_result_match(agent, evaluator, mocker):
 def test_generate_eval_result_no_match(agent, evaluator, mocker):
     # Arrange
     mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
-    mock_message.function_call = OpenAIFunctionCallAction(
-        name="function3", arguments={"arg3": "value3"}
-    )
+    mock_message.content = "```python\nz = 3.14```"
 
     agent.conversation.messages = [mock_message]
 
@@ -190,9 +202,7 @@ def test_generate_code_writing_eval_result_no_match(
 
     # Assert
     assert not result.full_match
-    assert result.match_result == {
-        action: False for action in expected_actions
-    }
+    assert result.match_result == {action: False for action in expected_actions}
     assert result.extra_actions == [
         CodeWritingAction(object_types="float", object_value=3.14)
     ]
