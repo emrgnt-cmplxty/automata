@@ -1,10 +1,5 @@
-# Here's a basic implementation of a class to evaluate detailed metrics from an EvalResult.
-# For the sake of simplicity, this implementation only includes some basic metrics.
-# In a real-world scenario, you would likely want to include more complex metrics,
-# and you would probably want to use a library to calculate some of them.
-
 from collections import Counter
-from typing import List
+from typing import List, Optional
 
 from automata.llm.eval.base import EvalResult
 
@@ -14,57 +9,85 @@ class EvaluationMetrics:
 
     def __init__(self, results: List[EvalResult]):
         self.results = results
+        self._total_actions: Optional[int] = None
+        self._total_successful_actions: Optional[int] = None
+        self._total_extra_actions: Optional[int] = None
+        self._action_success_rate: Optional[float] = None
+        self._extra_action_frequency: Optional[Counter[str]] = None
+        self._successful_actions_frequency: Optional[Counter[str]] = None
+        self._failed_actions_frequency: Optional[Counter[str]] = None
 
     @property
     def total_actions(self) -> int:
-        return sum(len(result.match_result) for result in self.results)
+        if self._total_actions is None:
+            self._total_actions = sum(
+                len(result.match_result) for result in self.results
+            )
+        return self._total_actions
 
     @property
     def total_successful_actions(self) -> int:
-        return sum(
-            action
-            for result in self.results
-            for action in result.match_result.values()
-        )
+        if self._total_successful_actions is None:
+            self._total_successful_actions = sum(
+                action
+                for result in self.results
+                for action in result.match_result.values()
+            )
+        return self._total_successful_actions
 
     @property
     def action_success_rate(self) -> float:
-        total_actions = self.total_actions
-        if total_actions == 0:
-            return 0
-        else:
-            return self.total_successful_actions / total_actions
+        if self._action_success_rate is None:
+            total_actions = self.total_actions
+            if total_actions == 0:
+                self._action_success_rate = 0
+            else:
+                self._action_success_rate = (
+                    self.total_successful_actions / total_actions
+                )
+        return self._action_success_rate
 
     @property
     def total_extra_actions(self) -> int:
-        print("self.results = ", self.results)
-        return sum(len(result.extra_actions) for result in self.results)
+        if self._total_extra_actions is None:
+            self._total_extra_actions = sum(
+                len(result.extra_actions) for result in self.results
+            )
+        return self._total_extra_actions
 
     @property
     def extra_action_frequency(self) -> Counter:
-        all_extra_actions = [
-            str(action)
-            for result in self.results
-            for action in result.extra_actions
-        ]
-        return Counter(all_extra_actions)
+        if self._extra_action_frequency is None:
+            all_extra_actions = [
+                str(action)
+                for result in self.results
+                for action in result.extra_actions
+            ]
+            self._extra_action_frequency = Counter(all_extra_actions)
+        return self._extra_action_frequency
 
     @property
     def successful_actions_frequency(self) -> Counter:
-        all_successful_actions = [
-            str(action)
-            for result in self.results
-            for action, success in result.match_result.items()
-            if success
-        ]
-        return Counter(all_successful_actions)
+        if self._successful_actions_frequency is None:
+            all_successful_actions = [
+                str(action)
+                for result in self.results
+                for action, success in result.match_result.items()
+                if success
+            ]
+            self._successful_actions_frequency = Counter(
+                all_successful_actions
+            )
+        return self._successful_actions_frequency
 
     @property
     def failed_actions_frequency(self) -> Counter:
-        all_failed_actions = [
-            str(action)
-            for result in self.results
-            for action, success in result.match_result.items()
-            if not success
-        ]
-        return Counter(all_failed_actions)
+        if self._failed_actions_frequency is None:
+            all_failed_actions = [
+                str(action)
+                for result in self.results
+                for action, success in result.match_result.items()
+                if not success
+            ]
+            self._failed_actions_frequency = Counter(all_failed_actions)
+        return self._failed_actions_frequency

@@ -6,7 +6,6 @@ from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
 from .base import Action, Eval
-from .code_writing import CodeWritingEval
 
 
 class OpenAIFunctionCallAction(Action):
@@ -26,6 +25,11 @@ class OpenAIFunctionCallAction(Action):
     def __hash__(self):
         return hash((self.name, json.dumps(self.arguments)))
 
+    def __str__(self):
+        return f"{self.name}({self.arguments})"
+
+    def __repr__(self):
+        return f"OpenAIFunctionCallAction(name={self.name}, arguments={self.arguments})"
 
 
 class OpenAIFunctionEval(Eval):
@@ -40,9 +44,7 @@ class OpenAIFunctionEval(Eval):
         actions: List[Action] = []
         if isinstance(message, OpenAIChatMessage):
             function_call = message.function_call
-            if (
-                function_call and function_call.name != "initializer"
-            ):
+            if function_call and function_call.name != "initializer":
                 action = OpenAIFunctionCallAction(
                     name=function_call.name, arguments=function_call.arguments
                 )
@@ -50,4 +52,11 @@ class OpenAIFunctionEval(Eval):
         return actions
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
-        return [action for action in actions if isinstance(action, OpenAIFunctionCallAction)]
+        return [
+            action
+            for action in actions
+            if isinstance(action, OpenAIFunctionCallAction)
+        ]
+
+    def __repr__(self) -> str:
+        return f"OpenAIFunctionEval(agent_provider={self.agent_provider})"

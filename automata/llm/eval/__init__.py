@@ -1,11 +1,8 @@
 from .base import Action, CompositeEval, Eval, EvalResult
 from .code_writing import CodeWritingAction, CodeWritingEval
-from .providers import (
-    OpenAIFunctionCallAction,
-    OpenAIFunctionEval,
-)
 from .harness import EvaluationHarness
 from .metrics import EvaluationMetrics
+from .providers import OpenAIFunctionCallAction, OpenAIFunctionEval
 
 __all__ = [
     "Action",
@@ -17,5 +14,5 @@ __all__ = [
     "OpenAIFunctionCallAction",
     "OpenAIFunctionEval",
     "EvaluationHarness",
-    "EvaluationMetrics"
+    "EvaluationMetrics",
 ]
