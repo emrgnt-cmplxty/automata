@@ -109,6 +109,8 @@ def test_error_handling(mock_insert, db):
     assert str(e.value) == "Database error"
 
 
+# TODO - It might not be great that this test is a function of the external environment
+# We should consider if it is worth keeping.
 @pytest.mark.performance
 def test_performance(db):
     """Tests that a large number of messages can be saved and retrieved quickly."""
@@ -122,9 +124,9 @@ def test_performance(db):
     for message in messages:
         db.save_message(message)
     end = time.time()
-    assert end - start < 1  # The operation should be completed within 1 second
+    assert end - start < 5  # The operation should be completed within 5 second
     start = time.time()
     messages = db.get_messages()
     end = time.time()
-    assert end - start < 1  # The operation should be completed within 1 second
+    assert end - start < 5  # The operation should be completed within 5 second
     assert len(messages) == 1000

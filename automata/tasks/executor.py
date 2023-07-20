@@ -7,8 +7,8 @@ from automata.agent import (
     AgentTaskStateError,
     OpenAIAutomataAgent,
 )
-from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.config import OpenAIAutomataAgentConfigBuilder
+from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import ITaskExecution, Task, TaskStatus
 

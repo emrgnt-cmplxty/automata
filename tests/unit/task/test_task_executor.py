@@ -1,17 +1,13 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
-from pytest_mock import MockerFixture
+
+from automata.agent import OpenAIAutomataAgent
 from automata.core.utils import get_root_fpath
+from automata.llm import LLMChatMessage
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks.base import Task, TaskStatus
-from automata.tasks.executor import (
-    AutomataTaskExecutor,
-    ITaskExecution,
-    IAutomataTaskExecution,
-)
-from automata.llm import LLMChatMessage
-from automata.agent import OpenAIAutomataAgent
+from automata.tasks.executor import AutomataTaskExecutor, ITaskExecution
 
 mock_message = MagicMock(spec=LLMChatMessage)
 mock_message.role = "assistant"
