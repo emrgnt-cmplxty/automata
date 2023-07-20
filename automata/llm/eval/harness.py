@@ -1,25 +1,33 @@
-from typing import List, Type
+from typing import List
 
-from automata.agent import AgentProvider
-from automata.llm.eval.base import Eval, Action
+from automata.llm.eval.base import Action, CompositeEval, Eval
 from automata.llm.eval.metrics import EvaluationMetrics
 
 
 class EvaluationHarness:
     """A class to evaluate a list of instructions against a list of expected actions."""
 
-    def __init__(self, eval_class: Type[Eval], provider: AgentProvider):
-        self.eval_class = eval_class
-        self.provider = provider
+    def __init__(self, evals: List[Eval]):
+        self.evals = evals
 
     def evaluate(
-        self, instructions: List[str], expected_actions: List[List[Action]]
+        self,
+        instructions: List[str],
+        expected_actions: List[List[Action]],
+        aggregate=True,
     ) -> EvaluationMetrics:
+        """Returns the evaluation metrics for the given instructions and expected actions."""
         results = []
 
-        for instruction, actions in zip(instructions, expected_actions):
-            eval_instance = self.eval_class(self.provider)
-            result = eval_instance.generate_eval_result(instruction, actions)
+        for eval, instruction, actions in zip(
+            self.evals, instructions, expected_actions
+        ):
+            print("actions = ", actions)
+            result = eval.generate_eval_result(instruction, actions)
+            print("result = ", result)
             results.append(result)
 
+        if aggregate:
+            results = [CompositeEval.aggregate_result(results)]
+        print("aggregate results = ", results)
         return EvaluationMetrics(results)

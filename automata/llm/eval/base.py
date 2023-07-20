@@ -49,7 +49,8 @@ class Eval(abc.ABC):
                 observed_actions.extend(extracted_actions)
 
         match_result: Dict[Action, bool] = {
-            action: action in observed_actions for action in filtered_expected_actions
+            action: action in observed_actions
+            for action in filtered_expected_actions
         }
 
         full_match = all(match_result.values())
@@ -77,7 +78,6 @@ class Eval(abc.ABC):
         pass
 
 
-
 class CompositeEval(Eval):
     def __init__(
         self,
@@ -99,14 +99,22 @@ class CompositeEval(Eval):
                 evaluator.generate_eval_result(instructions, expected_actions)
             )
         self.results: List[EvalResult] = results
-        return CompositeEval._aggregate_result(results)
+        return CompositeEval.aggregate_result(results)
 
     @staticmethod
-    def _aggregate_result(results: List[EvalResult]) -> EvalResult:
+    def aggregate_result(results: List[EvalResult]) -> EvalResult:
         """Aggregates a list of EvalResult objects into a single result."""
-        
+
         if not results:
             raise ValueError("No results to aggregate.")
+
+        # Check conversations match across results
+        if any(
+            result.conversation != results[0].conversation
+            for result in results
+        ):
+            raise ValueError("All conversations must match.")
+
         # Perform an 'and' operation over all full_match values
         aggregated_full_match = all(result.full_match for result in results)
 
@@ -125,9 +133,8 @@ class CompositeEval(Eval):
             full_match=aggregated_full_match,
             match_result=aggregated_match_result,
             extra_actions=aggregated_extra_actions,
-            conversation=results[0].conversation if results else None
+            conversation=results[0].conversation,
         )
-    
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
@@ -139,6 +146,6 @@ class CompositeEval(Eval):
         return actions
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
-        raise NotImplementedError("The composite evaluator does not filter actions.")
-    
-
+        raise NotImplementedError(
+            "The composite evaluator does not filter actions."
+        )

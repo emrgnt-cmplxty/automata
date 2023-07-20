@@ -15,27 +15,32 @@ class EvaluationMetrics:
     def __init__(self, results: List[EvalResult]):
         self.results = results
 
+    @property
     def total_actions(self) -> int:
         return sum(len(result.match_result) for result in self.results)
 
+    @property
     def total_successful_actions(self) -> int:
-        print('self.results = ', self.results)
         return sum(
             action
             for result in self.results
             for action in result.match_result.values()
         )
 
+    @property
     def action_success_rate(self) -> float:
-        total_actions = self.total_actions()
+        total_actions = self.total_actions
         if total_actions == 0:
             return 0
         else:
-            return self.total_successful_actions() / total_actions
+            return self.total_successful_actions / total_actions
 
+    @property
     def total_extra_actions(self) -> int:
+        print("self.results = ", self.results)
         return sum(len(result.extra_actions) for result in self.results)
 
+    @property
     def extra_action_frequency(self) -> Counter:
         all_extra_actions = [
             str(action)
@@ -44,6 +49,7 @@ class EvaluationMetrics:
         ]
         return Counter(all_extra_actions)
 
+    @property
     def successful_actions_frequency(self) -> Counter:
         all_successful_actions = [
             str(action)
@@ -53,6 +59,7 @@ class EvaluationMetrics:
         ]
         return Counter(all_successful_actions)
 
+    @property
     def failed_actions_frequency(self) -> Counter:
         all_failed_actions = [
             str(action)
