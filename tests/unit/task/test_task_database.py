@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from automata.tasks.agent_database import AutomataAgentTaskDatabase
+from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import TaskStatus
-from automata.tasks.tasks import AutomataTask
+from automata.tasks.task_database import AutomataAgentTaskDatabase
 
 
 @pytest.fixture(scope="module")

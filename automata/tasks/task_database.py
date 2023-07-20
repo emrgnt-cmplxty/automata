@@ -7,8 +7,8 @@ import jsonpickle
 from automata.agent import AgentTaskGeneralError, AgentTaskStateError
 from automata.config import TASK_DB_PATH
 from automata.core.base import SQLDatabase
+from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import TaskStatus
-from automata.tasks.tasks import AutomataTask
 
 logger = logging.getLogger(__name__)
 
