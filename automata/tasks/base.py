@@ -50,10 +50,6 @@ class Task:
             self.session_id = self._deterministic_session_id(**kwargs)
         elif "session_id" in kwargs:
             self.session_id = kwargs["session_id"]
-        elif "generate_deterministic_id" in kwargs and "session_id" in kwargs:
-            raise ValueError(
-                "Values for both session_id and generate_deterministic_id cannot be provided."
-            )
         else:
             self.session_id = uuid.uuid4()
 
