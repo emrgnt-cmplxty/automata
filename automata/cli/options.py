@@ -28,7 +28,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="The root path to the project.",
         ),
         click.option(
-            "--project_rel_py_path",
+            "--project_project_name",
             help="The relative py path to the project.",
         ),
     ]

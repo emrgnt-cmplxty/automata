@@ -11,7 +11,7 @@ def default_args():
     return {
         "project_root_fpath": get_root_fpath(),
         "project_name": "automata",
-        "project_rel_py_path": "automata",
+        "project_project_name": "automata",
     }
 
 
@@ -37,7 +37,8 @@ def mock_logger():
 def test_initialize_modules_defaults(mock_initialize, default_args):
     initialize_modules()
     mock_initialize.assert_called_once_with(
-        default_args["project_root_fpath"], default_args["project_rel_py_path"]
+        default_args["project_root_fpath"],
+        default_args["project_project_name"],
     )
 
 
@@ -46,11 +47,11 @@ def test_initialize_modules_custom_args(mock_initialize):
     custom_args = {
         "project_root_fpath": "/custom/root/path",
         "project_name": "custom_project",
-        "project_rel_py_path": "custom_path",
+        "project_project_name": "custom_path",
     }
     initialize_modules(**custom_args)
     mock_initialize.assert_called_once_with(
-        custom_args["project_root_fpath"], custom_args["project_rel_py_path"]
+        custom_args["project_root_fpath"], custom_args["project_project_name"]
     )
 
 

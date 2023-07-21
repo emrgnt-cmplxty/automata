@@ -22,8 +22,8 @@ class PyModuleLoader(metaclass=Singleton):
     """
 
     initialized = False
-    root_fpath: Optional[str] = None
-    rel_py_path: Optional[str] = None
+    root_fpath: str = ""
+    project_name: str = ""
 
     _dotpath_map: Optional[DotPathMap] = None
     _loaded_modules: Dict[str, Optional[Module]] = {}
@@ -34,7 +34,7 @@ class PyModuleLoader(metaclass=Singleton):
     def initialize(
         self,
         root_fpath: str = get_root_fpath(),
-        rel_py_path: str = "automata",
+        project_name: str = "automata",  # TODO - How do we treat multi-slash paths?, e.g. automata/example as rel path
     ) -> None:
         """
         Initializes the loader by setting paths across the entire project
@@ -49,7 +49,7 @@ class PyModuleLoader(metaclass=Singleton):
 
         """
 
-        py_dir_fpath = os.path.join(root_fpath, rel_py_path)
+        py_dir_fpath = os.path.join(root_fpath, project_name)
 
         if self.initialized:
             raise Exception("Module loader is already initialized!")
@@ -57,9 +57,9 @@ class PyModuleLoader(metaclass=Singleton):
             f"Loading modules with root path: {root_fpath} and py path: {py_dir_fpath}"
         )
 
-        self._dotpath_map = DotPathMap(py_dir_fpath, rel_py_path)
+        self._dotpath_map = DotPathMap(py_dir_fpath, project_name)
         self.root_fpath = root_fpath
-        self.rel_py_path = rel_py_path
+        self.project_name = project_name
         self.initialized = True
 
     def _assert_initialized(self) -> None:
@@ -212,8 +212,8 @@ class PyModuleLoader(metaclass=Singleton):
         """
         self._loaded_modules = {}
         self._dotpath_map = None
-        self.root_fpath = None
-        self.rel_py_path = None
+        self.root_fpath = ""
+        self.project_name = ""
         self.initialized = False
         logger.info("PyModuleLoader has been reset.")
 

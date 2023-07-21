@@ -88,12 +88,10 @@ class CodeWritingEval(Eval):
 
     def __init__(
         self,
-        agent_provider: AgentProvider,
         target_variables: List[str] = ["x"],
         *args,
         **kwargs,
     ):
-        self.agent_provider = agent_provider
         self.target_variables = target_variables
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
@@ -105,7 +103,11 @@ class CodeWritingEval(Eval):
             return actions
 
         # Parse the code snippet to extract set variables and their types
-        parsed_snippets = self._parse_code_snippet(message.content)
+        try:
+            parsed_snippets = self._parse_code_snippet(message.content)
+        except:
+            logger.info("Failed to parse code snippet.")
+            parsed_snippets = []
 
         # Clean errors from parsed snippet
         for snippet in parsed_snippets:

@@ -44,13 +44,10 @@ def run_agent_and_get_eval(
     )
     agent_config = agent_config_builder.build()
     composite_evaluator = CompositeEval(
-        agent_provider=OpenAIAgentProvider(agent_config),
         evaluator_classes=evaluator_classes,
     )
 
-    return composite_evaluator.generate_eval_result(
-        instructions, expected_actions
-    )
+    return composite_evaluator.generate_eval_result(expected_actions)
 
 
 def run_agent_and_get_result(

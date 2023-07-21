@@ -17,10 +17,10 @@ def test_common_options_length(command_with_options):
     assert len(command_with_options.params) == 4
 
 
-def test_common_options_project_rel_py_path(command_with_options):
-    project_rel_py_path_option = command_with_options.params[0]
-    assert project_rel_py_path_option.name == "project_rel_py_path"
-    assert project_rel_py_path_option.default is None
+def test_common_options_project_project_name(command_with_options):
+    project_project_name_option = command_with_options.params[0]
+    assert project_project_name_option.name == "project_project_name"
+    assert project_project_name_option.default is None
 
 
 def test_common_options_project_root_fpath(command_with_options):
