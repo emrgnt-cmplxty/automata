@@ -53,7 +53,7 @@ class Task:
             and "generate_deterministic_id" not in kwargs
         ):
             self.session_id = kwargs["session_id"]
-        elif "generate_deterministic_id" in kwargs and "session_id" in kwargs:
+        elif "generate_deterministic_id" in kwargs:
             raise ValueError(
                 "Values for both session_id and generate_deterministic_id cannot be provided."
             )
