@@ -207,7 +207,7 @@ class SymbolGraphNavigator:
             )
         loader_args: Tuple[str, str] = (
             py_module_loader.root_fpath or "",
-            py_module_loader.rel_py_path or "",
+            py_module_loader.project_name or "",
         )
         bounding_boxes = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:

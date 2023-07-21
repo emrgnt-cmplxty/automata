@@ -39,7 +39,7 @@ class TestExecuteBehavior(ITaskExecution):
     Class for executing test tasks.
     """
 
-    def execute(self, task: Task):
+    def execute(self, task: Task) -> None:
         print("in the test execute method")
         task.result = mock_agent.run()
 

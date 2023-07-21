@@ -229,8 +229,6 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
-        print("assistant_message = ", assistant_message)
-
         if self.iteration_count != self.config.max_iterations - 1:
             iteration_message = OpenAIAutomataAgent.GENERAL_SUFFIX.format(
                 iteration_count=self.iteration_count,
