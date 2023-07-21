@@ -80,6 +80,29 @@ def configure(ctx, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
+def build(ctx, *args, **kwargs) -> None:
+    """Run the install_index script."""
+    from automata.cli.build import (
+        generate_local_indices,
+        generate_remote_indices,
+        install_indexing,
+    )
+
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+
+    logger.info("Running install_index")
+    install_indexing()
+
+    # logger.info("Running generate_remote_indices")
+    # generate_remote_indices()
+
+    logger.info("Running generate_local_indices")
+    generate_local_indices()
+
+
+@common_options
+@cli.command()
+@click.pass_context
 def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
     from automata.cli.scripts.run_code_embedding import main
