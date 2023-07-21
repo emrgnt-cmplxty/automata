@@ -196,12 +196,17 @@ class OpenAIConversation(LLMConversation):
     def __len__(self) -> int:
         return len(self._messages)
 
-    def add_message(self, message: LLMChatMessage) -> None:
+    def add_message(
+        self, message: LLMChatMessage, session_id: Optional[str]
+    ) -> None:
         if not isinstance(message, OpenAIChatMessage):
             raise OpenAIIncorrectMessageTypeError(message)
         self._messages.append(message)
+
         # Notify the observers whenever a new message is added to the conversation
-        self.notify_observers()
+        # Only notify the observers if the session_id is not None
+        if session_id:
+            self.notify_observers(session_id)
 
     def get_messages_for_next_completion(self) -> List[Dict[str, Any]]:
         return [message.to_dict() for message in self._messages]
@@ -367,26 +372,33 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     def reset(self) -> None:
         self.conversation.reset_conversation()
 
-    def standalone_call(self, prompt: str) -> str:
+    def standalone_call(
+        self, prompt: str, session_id: Optional[str] = None
+    ) -> str:
         """Return the completion message based on the provided prompt."""
         if self.conversation.messages:
             raise ValueError(
                 "The conversation is not empty. Please call reset() before calling standalone_call()."
             )
-        self.add_message(LLMChatMessage(role="user", content=prompt))
+        self.add_message(
+            LLMChatMessage(role="user", content=prompt), session_id
+        )
         response = self.get_next_assistant_completion().content
         self.reset()
         if not response:
             raise ValueError("No response found")
         return response
 
-    def add_message(self, message: LLMChatMessage) -> None:
+    def add_message(
+        self, message: LLMChatMessage, session_id: Optional[str] = None
+    ) -> None:
         if not isinstance(message, OpenAIChatMessage):
             self.conversation.add_message(
-                OpenAIChatMessage(role=message.role, content=message.content)
+                OpenAIChatMessage(role=message.role, content=message.content),
+                session_id,
             )
         else:
-            self.conversation.add_message(message)
+            self.conversation.add_message(message, session_id)
         logger.debug(
             f"Approximately {self.approximate_tokens_consumed} tokens were after adding the latest message."
         )

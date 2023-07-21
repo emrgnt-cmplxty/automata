@@ -1,10 +1,10 @@
 import abc
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Type, Union
+from typing import Dict, List, Optional, Type, Union
 
 from automata.agent import AgentProvider
-from automata.llm.foundation import LLMChatMessage, LLMConversation
+from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,16 @@ class EvalResult:
     full_match: bool
     match_result: Dict[Action, bool]
     extra_actions: List[Action]
-    conversation: LLMConversation
+    session_id: Optional[str] = None
+
+    def to_dict(self) -> Dict:
+        """Converts the result to a dictionary."""
+        return {
+            "full_match": self.full_match,
+            "match_result": self.match_result,
+            "extra_actions": self.extra_actions,
+            "session_id": self.session_id,
+        }
 
 
 class Eval(abc.ABC):
@@ -66,7 +75,6 @@ class Eval(abc.ABC):
             full_match=full_match,
             match_result=match_result,
             extra_actions=extra_actions,
-            conversation=agent.conversation,
         )
 
     @abc.abstractmethod
@@ -83,7 +91,7 @@ class Eval(abc.ABC):
 def check_eval_uniqueness(
     evaluator_classes: Union[List[Eval], List[Type[Eval]]]
 ) -> bool:
-    # Check for duplicate evaluators
+    """Checks that all evaluators are of different types."""
     if len(evaluator_classes) != len(set(evaluator_classes)):
         raise ValueError("All evaluators must be of different types.")
 
@@ -91,6 +99,8 @@ def check_eval_uniqueness(
 
 
 class CompositeEval(Eval):
+    """Creates a composite evaluator from a list of evaluator classes."""
+
     def __init__(
         self,
         agent_provider: AgentProvider,
@@ -106,6 +116,7 @@ class CompositeEval(Eval):
     def generate_eval_results(
         self, instructions: str, expected_actions: List[Action]
     ) -> EvalResult:
+        """Generates an eval result for a given set of instructions and expected actions."""
         results = [
             evaluator.generate_eval_result(instructions, expected_actions)
             for evaluator in self.evaluators
@@ -122,8 +133,7 @@ class CompositeEval(Eval):
 
         # Check conversations match across results
         if any(
-            result.conversation != results[0].conversation
-            for result in results
+            result.session_id != results[0].session_id for result in results
         ):
             raise ValueError("All conversations must match.")
 
@@ -145,7 +155,7 @@ class CompositeEval(Eval):
             full_match=aggregated_full_match,
             match_result=aggregated_match_result,
             extra_actions=aggregated_extra_actions,
-            conversation=results[0].conversation,
+            session_id=results[0].session_id,
         )
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
@@ -156,6 +166,7 @@ class CompositeEval(Eval):
         return actions
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        """Filters a list of actions to only contain actions that are relevant to the eval."""
         raise NotImplementedError(
             "The composite evaluator does not filter actions."
         )

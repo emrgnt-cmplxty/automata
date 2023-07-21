@@ -58,9 +58,9 @@ class LLMConversation(ABC):
     def unregister_observer(self, observer: Observer) -> None:
         self._observers.discard(observer)
 
-    def notify_observers(self) -> None:
+    def notify_observers(self, session_id: str) -> None:
         for observer in self._observers:
-            observer.update(self)
+            observer.update((session_id, self))
 
     @abstractmethod
     def __len__(self) -> int:
@@ -86,18 +86,19 @@ class LLMConversation(ABC):
 class LLMConversationDatabaseProvider(Observer, SQLDatabase, ABC):
     """Abstract base class for different types of database providers."""
 
-    def update(self, subject: LLMConversation) -> None:
+    def update(self, subject: Tuple[str, LLMConversation]) -> None:
         """Concrete `Observer` method to update the database when the conversation changes."""
-        if isinstance(subject, LLMConversation):
-            self.save_message(subject.get_latest_message())
+        session_id, message = subject
+        if isinstance(message, LLMConversation):
+            self.save_message(session_id, message.get_latest_message())
 
     @abstractmethod
-    def save_message(self, message: LLMChatMessage) -> None:
+    def save_message(self, session_id: str, message: LLMChatMessage) -> None:
         """An abstract method to save a message to the database."""
         pass
 
     @abstractmethod
-    def get_messages(self) -> List[LLMChatMessage]:
+    def get_messages(self, session_id: str) -> List[LLMChatMessage]:
         """An abstract method to get all messages with the original session id."""
         pass
 
@@ -111,7 +112,9 @@ class LLMChatCompletionProvider(ABC):
         pass
 
     @abstractmethod
-    def add_message(self, message: LLMChatMessage) -> None:
+    def add_message(
+        self, message: LLMChatMessage, session_id: Optional[str] = None
+    ) -> None:
         """Abstract method to add a new message to the provider's buffer."""
         pass
 
@@ -121,7 +124,9 @@ class LLMChatCompletionProvider(ABC):
         pass
 
     @abstractmethod
-    def standalone_call(self, prompt: str) -> str:
+    def standalone_call(
+        self, prompt: str, session_id: Optional[str] = None
+    ) -> str:
         """
         This abstract function enables the utilization of the provider as a unique output LLM.
         For instance, the function exists to permit the user to engage the ChatProvider

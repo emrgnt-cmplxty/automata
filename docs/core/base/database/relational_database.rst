@@ -24,7 +24,7 @@ Related Symbols
 -  ``automata.core.base.database.relational.SQLDatabase``
 -  ``automata.tests.unit.test_task_database.test_database_lifecycle``
 -  ``automata.llm.foundation.LLMConversationDatabaseProvider``
--  ``automata.tests.unit.test_conversation_database.test_get_last_interaction_id_when_no_interactions``
+-  ``automata.tests.unit.test_conversation_database.test_get_get_last_interaction_id_when_no_interactions``
 -  ``automata.tasks.agent_database.AutomataAgentTaskDatabase``
 -  ``automata.tests.unit.test_task_database.test_get_tasks_by_query``
 -  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``

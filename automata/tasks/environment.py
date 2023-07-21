@@ -24,6 +24,7 @@ class AutomataTaskEnvironment(TaskEnvironment):
         Raises:
             Exception: If the task is not status CREATED.
         """
+
         if task.status != TaskStatus.REGISTERED:
             raise AgentTaskStateError(
                 f"Cannot setup task environment because task is not in REGISTERED state. Task status = {task.status}"
@@ -40,17 +41,23 @@ class AutomataTaskEnvironment(TaskEnvironment):
         self.github_manager.clone_repository(task.task_dir)
 
         task.status = TaskStatus.PENDING
-        logger.info(f"Task {task.task_id} environment setup successfully.")
+        logger.info(f"Task {task.session_id} environment setup successfully.")
 
     def teardown(self) -> None:
+        """Tears down the environment, not implemented."""
+
         # TODO - Implement teardown environment
         raise NotImplementedError
 
     def validate(self) -> None:
+        """Validates the environment, not implemented."""
+
         # TODO - Implement validate environment
         raise NotImplementedError
 
     def reset(self) -> None:
+        """Resets the environment, not implemented."""
+
         # TODO - Implement reset environment which clears the state
         raise NotImplementedError
 
@@ -72,19 +79,23 @@ class AutomataTaskEnvironment(TaskEnvironment):
             If the checkout fails.
             If the commit fails.
         """
+
         logger.debug("Comitting task...")
 
         if task.status != TaskStatus.SUCCESS:
             raise AgentTaskStateError(
                 "Cannot commit task to repository because the task has not been successfully executed."
             )
+
         if not os.path.exists(task.task_dir):
             raise AgentTaskGeneralError(
                 "Cannot commit task to repository because the task output directory is missing."
             )
+
         # Check if the branch already exists, if not create it
         if not self.github_manager.branch_exists(pull_branch_name):
             self.github_manager.create_branch(pull_branch_name)
+
         # Checkout the new branch
         try:
             self.github_manager.checkout_branch(
@@ -119,7 +130,7 @@ class AutomataTaskEnvironment(TaskEnvironment):
         logger.info(
             "Task %s committed successfully with Title:\n%s\n\nBody:\n%s\n\nBranch:\n%s\nAt URL:\n%s\n"
             % (
-                task.task_id,
+                task.session_id,
                 pull_title,
                 pull_body,
                 pull_branch_name,

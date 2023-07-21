@@ -52,8 +52,9 @@ class IAutomataTaskExecution(ITaskExecution):
         TODO - Consider explicitly passing args to the ConfigFactory
                Instead of passing kwargs to the create_config method.
         """
+
         agent_config = OpenAIAutomataAgentConfigBuilder.create_from_args(
-            session_id=str(task.task_id), **task.kwargs
+            session_id=str(task.session_id), **task.kwargs
         )
 
         agent = OpenAIAutomataAgent(
@@ -62,10 +63,11 @@ class IAutomataTaskExecution(ITaskExecution):
         )
 
         if task.record_conversation:
+            # TODO - Remove hard coupling of OpenAIProvider to IAutomataTaskExecution
+            # then, introduce provider-style workflow if necessary
+
             # Initialize the OpenAIAutomataConversationDatabase and set it to the agent
-            db_provider = OpenAIAutomataConversationDatabase(
-                session_id=str(task.task_id)
-            )
+            db_provider = OpenAIAutomataConversationDatabase()
             agent.set_database_provider(db_provider)
 
         return agent
@@ -94,11 +96,11 @@ class AutomataTaskExecutor:
             )
         for attempt in range(task.max_retries):
             try:
-                logger.debug(f"Executing task {task.task_id}")
+                logger.debug(f"Executing task {task.session_id}")
                 task.status = TaskStatus.RUNNING
                 self.execution.execute(task)
                 task.status = TaskStatus.SUCCESS
-                logger.info(f"Task {task.task_id} executed successfully.")
+                logger.info(f"Task {task.session_id} executed successfully.")
                 break
 
             except Exception as e:
