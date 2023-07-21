@@ -10,10 +10,10 @@ from automata.llm.eval.base import (
 )
 from automata.llm.eval.metrics import EvaluationMetrics
 
-# Evaluation task loader
-
 
 class EvalTaskLoader:
+    """Loads a list of tasks from a JSON file."""
+
     def __init__(self, filepath):
         self.filepath = filepath
 
@@ -23,10 +23,9 @@ class EvalTaskLoader:
         return tasks
 
 
-# Evaluation result writer
-
-
 class EvalResultWriter(SQLDatabase):
+    """Writes evaluation results to a SQLite database."""
+
     def __init__(self, db_path):
         self.connect(db_path)
         self.create_table(
@@ -60,26 +59,6 @@ class EvalResultWriter(SQLDatabase):
         ]
 
 
-# Modified EvaluationHarness
-
-# class EvaluationHarness:
-#     def __init__(self, evaluators, session_id, db_path):
-#         self.evaluators = evaluators
-#         self.session_id = session_id
-#         self.result_writer = EvalResultWriter(db_path)
-
-#     def run_and_log_evaluations(self, payload: Dict[str, Any]) -> List[EvalResult]:
-#         instructions = payload['instructions']
-#         expected_actions = payload['expected_actions']
-#         results = []
-#         for evaluator in self.evaluators:
-#             # evaluator.agent_provider.set_database_provider(LLMConversationDatabaseProvider(self.session_id))
-#             result = evaluator.generate_eval_result(instructions, expected_actions)
-#             results.append(result)
-#             # self.result_writer.write_result(self.session_id, result, evaluator.agent_provider.get_conversation_id())
-#         return results
-
-
 class EvaluationHarness:
     """A class to evaluate a list of instructions against a list of expected actions."""
 
@@ -100,8 +79,6 @@ class EvaluationHarness:
             self.evals, instructions, expected_actions
         ):
             result = eval.generate_eval_result(instruction, actions)
-            print(f"result = {result}")
-            print(f"result.extra_actions = {result.extra_actions}")
             results.append(result)
 
         if aggregate:

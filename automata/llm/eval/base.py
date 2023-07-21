@@ -83,7 +83,7 @@ class Eval(abc.ABC):
 def check_eval_uniqueness(
     evaluator_classes: Union[List[Eval], List[Type[Eval]]]
 ) -> bool:
-    # Check for duplicate evaluators
+    """Checks that all evaluators are of different types."""
     if len(evaluator_classes) != len(set(evaluator_classes)):
         raise ValueError("All evaluators must be of different types.")
 
@@ -91,6 +91,8 @@ def check_eval_uniqueness(
 
 
 class CompositeEval(Eval):
+    """Creates a composite evaluator from a list of evaluator classes."""
+
     def __init__(
         self,
         agent_provider: AgentProvider,
@@ -106,6 +108,7 @@ class CompositeEval(Eval):
     def generate_eval_results(
         self, instructions: str, expected_actions: List[Action]
     ) -> EvalResult:
+        """Generates an eval result for a given set of instructions and expected actions."""
         results = [
             evaluator.generate_eval_result(instructions, expected_actions)
             for evaluator in self.evaluators
@@ -156,6 +159,7 @@ class CompositeEval(Eval):
         return actions
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        """Filters a list of actions to only contain actions that are relevant to the eval."""
         raise NotImplementedError(
             "The composite evaluator does not filter actions."
         )

@@ -39,8 +39,12 @@ class OpenAIFunctionEval(Eval):
         assert isinstance(agent_provider, OpenAIAgentProvider)
         super().__init__(agent_provider, *args, **kwargs)
 
+    def __repr__(self) -> str:
+        return f"OpenAIFunctionEval(agent_provider={self.agent_provider})"
+
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts the coding action explicitly"""
+
         actions: List[Action] = []
         if isinstance(message, OpenAIChatMessage):
             function_call = message.function_call
@@ -52,11 +56,10 @@ class OpenAIFunctionEval(Eval):
         return actions
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        """Filters out non-OpenAIFunctionCallActions."""
+
         return [
             action
             for action in actions
             if isinstance(action, OpenAIFunctionCallAction)
         ]
-
-    def __repr__(self) -> str:
-        return f"OpenAIFunctionEval(agent_provider={self.agent_provider})"
