@@ -20,7 +20,7 @@ cd $FACTORY_PATH
 
 # Copy the project to the factory
 rm -rf $project_name && cp -rf ../$project_name .
-node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_py_dir.scip  --target-only $project_py_dir
+node ./scip-python/packages/pyright-scip/index index --project-name automata --output automata-embedding-data/indices/automata.scip --target-only automata
 
 cd ..
 poetry run automata run-code-embedding
