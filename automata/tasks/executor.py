@@ -52,7 +52,6 @@ class IAutomataTaskExecution(ITaskExecution):
         TODO - Consider explicitly passing args to the ConfigFactory
                Instead of passing kwargs to the create_config method.
         """
-        print("in build agent, task = ", task)
         agent_config = OpenAIAutomataAgentConfigBuilder.create_from_args(
             session_id=str(task.task_id), **task.kwargs
         )
