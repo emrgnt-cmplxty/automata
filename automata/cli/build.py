@@ -80,5 +80,5 @@ def generate_local_indices():
 
     shutil.copytree(automata_root, project_in_factory, ignore=ignore_dirs)
 
-    node_command = f"node scip-python/packages/pyright-scip/index index --project-name automata --output automata-embedding-data/indices/automata.scip --target-only automata"
+    node_command = "node scip-python/packages/pyright-scip/index index --project-name automata --output automata-embedding-data/indices/automata.scip --target-only automata"
     subprocess.run(node_command, shell=True)
