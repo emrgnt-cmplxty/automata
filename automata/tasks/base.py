@@ -28,7 +28,7 @@ class Task:
     It also exposes a method to generate a deterministic task id based on the hash of the hashable kwargs.
     """
 
-    TASK_LOG_NAME = "task_TASK_ID.log"
+    TASK_LOG_NAME = "task_SESSION_ID.log"
     TASK_LOG_REL_DIR = "logs"
 
     def __init__(self, *args, **kwargs) -> None:
@@ -42,11 +42,21 @@ class Task:
             priority (int): The priority of the task. Defaults to 0.
             max_retries (int): The maximum number of retries for the task. Defaults to 3.
         """
-        self.task_id = (
-            self._deterministic_task_id(**kwargs)
-            if kwargs.get("generate_deterministic_id", False)
-            else uuid.uuid4()
-        )
+
+        if (
+            "generate_deterministic_id" in kwargs
+            and "session_id" not in kwargs
+        ):
+            self.session_id = self._deterministic_session_id(**kwargs)
+        elif "session_id" in kwargs:
+            self.session_id = kwargs["session_id"]
+        elif "generate_deterministic_id" in kwargs and "session_id" in kwargs:
+            raise ValueError(
+                "Values for both session_id and generate_deterministic_id cannot be provided."
+            )
+        else:
+            self.session_id = uuid.uuid4()
+
         self.priority = kwargs.get("priority", 0)
         self.max_retries = kwargs.get("max_retries", 3)
         self._status = TaskStatus.CREATED
@@ -59,7 +69,7 @@ class Task:
         self.error: Optional[str] = None
 
     def __str__(self):
-        return f"Task {self.task_id} ({self.status})"
+        return f"Task {self.session_id} ({self.status})"
 
     def notify_observer(self) -> None:
         """
@@ -94,7 +104,7 @@ class Task:
             self._status = new_status
         self.notify_observer()
 
-    def _deterministic_task_id(self, **kwargs) -> uuid.UUID:
+    def _deterministic_session_id(self, **kwargs) -> uuid.UUID:
         """
         Returns a deterministic session id for the task which is
         generated based on the hash of the hashable kwargs.
@@ -114,9 +124,9 @@ class Task:
     def _get_task_dir(self, base_dir: str) -> str:
         """
         Gets the output directory for the task.
-        Use of the task_id as the directory name ensures that the task directory is unique.
+        Use of the session_id as the directory name ensures that the task directory is unique.
         """
-        return os.path.join(base_dir, f"task_{self.task_id}")
+        return os.path.join(base_dir, f"task_{self.session_id}")
 
     def _get_log_dir(self) -> str:
         """

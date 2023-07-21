@@ -40,6 +40,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "s|your_openai_api_key|$OPENAI_API_KEY|" ../.env
     sed -i '' "s|your_github_api_key|$GITHUB_API_KEY|" ../.env
     sed -i '' "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" ../.env
+    sed -i '' "s|your_eval_db_path|$EVAL_DB_PATH|" ../.env
     sed -i '' "s|your_task_db_path|$TASK_DB_PATH|" ../.env
     sed -i '' "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" ../.env
     sed -i '' "s|your_repository_name|$REPOSITORY_NAME|" ../.env
@@ -48,6 +49,7 @@ else
     sed -i "s|your_openai_api_key|$OPENAI_API_KEY|" ../.env
     sed -i "s|your_github_api_key|$GITHUB_API_KEY|" ../.env
     sed -i "s|your_conversation_db_path|$CONVERSATION_DB_PATH|" ../.env
+    sed -i "s|your_eval_db_path|$EVAL_DB_PATH|" ../.env
     sed -i "s|your_task_db_path|$TASK_DB_PATH|" ../.env
     sed -i "s|your_tasks_output_path|$TASKS_OUTPUT_PATH|" ../.env
     sed -i "s|your_repository_name|$REPOSITORY_NAME|" ../.env

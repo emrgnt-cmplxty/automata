@@ -1,4 +1,5 @@
 import logging
+import uuid
 from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Sequence
 
@@ -52,6 +53,7 @@ class OpenAIAutomataAgent(Agent):
         self.iteration_count = 0
         self._conversation = OpenAIConversation()
         self.completed = False
+        self.session_id = self.config.session_id or str(uuid.uuid4())
         self._setup()
 
     # set the conversation
@@ -84,7 +86,7 @@ class OpenAIAutomataAgent(Agent):
 
         logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
-        self.chat_provider.add_message(assistant_message)
+        self.chat_provider.add_message(assistant_message, self.session_id)
         if not self.config.stream:
             logger.debug(f"{assistant_message}\n")
         logging.debug(f"\n{('-' * 120)}")
@@ -93,7 +95,7 @@ class OpenAIAutomataAgent(Agent):
 
         user_message = self._get_next_user_response(assistant_message)
         logger.debug(f"Latest User Message -- \n{user_message}\n")
-        self.chat_provider.add_message(user_message)
+        self.chat_provider.add_message(user_message, self.session_id)
         logging.debug(f"\n{('-' * 120)}")
 
         return (assistant_message, user_message)
@@ -146,10 +148,7 @@ class OpenAIAutomataAgent(Agent):
             except AgentStopIteration:
                 break
 
-        print("in run...")
-
         last_message = self._conversation.get_latest_message()
-        print("last_message = ", last_message)
         if (
             not self.completed
             and self.iteration_count >= self.config.max_iterations
@@ -278,7 +277,8 @@ class OpenAIAutomataAgent(Agent):
         self._conversation.add_message(
             OpenAIChatMessage(
                 role="system", content=self.config.system_instruction
-            )
+            ),
+            self.session_id,
         )
         for message in list(
             self._build_initial_messages(
@@ -288,7 +288,7 @@ class OpenAIAutomataAgent(Agent):
             logger.debug(
                 f"Adding the following initial mesasge to the conversation {message}"
             )
-            self._conversation.add_message(message)
+            self._conversation.add_message(message, self.session_id)
             logging.debug(f"\n{('-' * 120)}")
 
         self.chat_provider = OpenAIChatCompletionProvider(
@@ -304,7 +304,7 @@ class OpenAIAutomataAgent(Agent):
             f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
         )
         logger.debug(
-            f"\n{('-' * 60)}\nSession ID: {self.config.session_id}\n{'-'* 60}\n\n"
+            f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n"
         )
 
     def _get_termination_tool(self) -> OpenAITool:
@@ -344,7 +344,10 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
 
 
 class OpenAIAgentProvider(AgentProvider):
+    """A concrete class for providing an OpenAIAutomataAgent."""
+
     def build_and_run_agent(self, instructions: str) -> Agent:
+        """Builds and runs an OpenAIAutomataAgent with the given instructions."""
         if not isinstance(self.config, OpenAIAutomataAgentConfig):
             raise TypeError(
                 f"Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"

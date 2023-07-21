@@ -19,7 +19,7 @@ from automata.tasks.executor import (
 @pytest.fixture(scope="module", autouse=True)
 def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
-    db = OpenAIAutomataConversationDatabase("session1", str(db_file))
+    db = OpenAIAutomataConversationDatabase(str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):
@@ -55,6 +55,10 @@ def module_loader():
 @pytest.fixture
 def patch_logging(mocker):
     return mocker.patch("logging.config.dictConfig", return_value=None)
+
+
+def test_agent_session_id_matches_task(automata_agent, task_w_agent_session):
+    assert automata_agent.session_id == task_w_agent_session.session_id
 
 
 def test_execute_automata_task_success(
@@ -140,5 +144,5 @@ def test_execute_automata_task_with_database_saving(
     assert task.status == TaskStatus.SUCCESS
     assert task.result == "Execution Result:\n\nSuccess"
 
-    saved_messages = db.get_messages()
+    saved_messages = db.get_messages(automata_agent.session_id)
     assert len(saved_messages) == 2

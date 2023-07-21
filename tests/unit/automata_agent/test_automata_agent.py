@@ -14,7 +14,7 @@ from automata.memory_store import OpenAIAutomataConversationDatabase
 def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
 
-    db = OpenAIAutomataConversationDatabase("session1", str(db_file))
+    db = OpenAIAutomataConversationDatabase(str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):
@@ -143,22 +143,19 @@ def test_db_connection(db):
 
 def test_db_interaction(db):
     interaction = {"content": "x", "role": "assistant"}
-    initial_interaction_id = db.last_interaction_id
-    db.save_message(OpenAIChatMessage(**interaction, function_call=None))
-    assert db.last_interaction_id == initial_interaction_id + 1
-
-
-def test_db_session_management(db):
-    assert db.session_id is not None
-    new_session_id = "newSessionId"
-    db.session_id = new_session_id
-    assert db.session_id == new_session_id
+    initial_interaction_id = db._get_last_interaction_id("session1")
+    db.save_message(
+        "session1", OpenAIChatMessage(**interaction, function_call=None)
+    )
+    assert (
+        db._get_last_interaction_id("session1") == initial_interaction_id + 1
+    )
 
 
 def test_db_cleanup(db, tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test.db")
     db_path = str(db_file)
-    new_db = OpenAIAutomataConversationDatabase("session2", db_path)
+    new_db = OpenAIAutomataConversationDatabase(db_path)
     new_db.close()
 
 
@@ -182,7 +179,7 @@ def test_agent_saves_messages_to_database(
 
     # Verify that the agent's completed attribute is set to True
     assert automata_agent.completed is True
-    saved_messages = db.get_messages()
+    saved_messages = db.get_messages(automata_agent.session_id)
 
     assert saved_messages[0].role == "assistant"
     assert saved_messages[0].content is None

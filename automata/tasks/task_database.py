@@ -29,14 +29,14 @@ class AutomataAgentTaskDatabase(SQLDatabase):
         self.create_table(self.TABLE_NAME, self.TABLE_FIELDS)
 
     def insert_task(self, task: AutomataTask) -> None:
-        task_id = task.task_id
+        session_id = task.session_id
         task_json = jsonpickle.encode(task)
         instructions = task.instructions
         status = task.status.value
         self.insert(
             self.TABLE_NAME,
             {
-                "id": str(task_id),
+                "id": str(session_id),
                 "json": task_json,
                 "instructions": instructions,
                 "status": status,
@@ -54,7 +54,7 @@ class AutomataAgentTaskDatabase(SQLDatabase):
                 "instructions": instructions,
                 "status": status,
             },
-            {"id": str(task.task_id)},
+            {"id": str(task.session_id)},
         )
 
     def get_tasks_by_query(
@@ -78,7 +78,7 @@ class AutomataAgentTaskDatabase(SQLDatabase):
     def contains(self, task: AutomataTask) -> bool:
         """Checks if a task exists in the database."""
         result = self.select(
-            self.TABLE_NAME, ["id"], conditions={"id": str(task.task_id)}
+            self.TABLE_NAME, ["id"], conditions={"id": str(task.session_id)}
         )
         return len(result) > 0
 
@@ -101,13 +101,13 @@ class AutomataTaskRegistry:
                 f"Cannot register task because task is not in CREATED state. Task status = {task.status}"
             )
         task.observer = self.update_task
-        if self.fetch_task_by_id(str(task.task_id)):
+        if self.fetch_task_by_id(str(task.session_id)):
             raise AgentTaskGeneralError(
-                f"Task with id {task.task_id} already exists"
+                f"Task with id {task.session_id} already exists"
             )
         self.db.insert_task(task)
         task.status = TaskStatus.REGISTERED
-        logger.info(f"Task {task.task_id} registered successfully.")
+        logger.info(f"Task {task.session_id} registered successfully.")
 
     def update_task(self, task: AutomataTask) -> None:
         """
@@ -118,25 +118,25 @@ class AutomataTaskRegistry:
         """
         if not self.db.contains(task):
             raise AgentTaskStateError(
-                f"Task with id {task.task_id} does not exist"
+                f"Task with id {task.session_id} does not exist"
             )
         task.observer = None
         self.db.update_task(task)
         task.observer = self.update_task
 
-    def fetch_task_by_id(self, task_id: str) -> Optional[AutomataTask]:
+    def fetch_task_by_id(self, session_id: str) -> Optional[AutomataTask]:
         """
         Raises:
             Exception: If multiple tasks are found with the same id.
         """
         results = self.db.get_tasks_by_query(
-            query="SELECT json FROM tasks WHERE id = ?", params=(task_id,)
+            query="SELECT json FROM tasks WHERE id = ?", params=(session_id,)
         )
         if not results:
             return None
         if len(results) != 1:
             raise AgentTaskGeneralError(
-                f"Found multiple tasks with id {task_id}"
+                f"Found multiple tasks with id {session_id}"
             )
         task = results[0]
         task.observer = self.update_task

@@ -250,8 +250,19 @@ def task():
     repo_manager = MockRepositoryClient()
     return AutomataTask(
         repo_manager,
+        # session_id = automata_agent.session_id,
         config_to_load=AgentConfigName.TEST.to_path(),
-        generate_deterministic_id=False,
+        instructions="This is a test.",
+    )
+
+
+@pytest.fixture
+def task_w_agent_session(automata_agent):
+    repo_manager = MockRepositoryClient()
+    return AutomataTask(
+        repo_manager,
+        session_id=automata_agent.session_id,
+        config_to_load=AgentConfigName.TEST.to_path(),
         instructions="This is a test.",
     )
 
@@ -265,7 +276,7 @@ def environment():
 @pytest.fixture
 def registry(task):
     def mock_get_tasks_by_query(query, params):
-        return [task] if params[0] == task.task_id else []
+        return [task] if params[0] == task.session_id else []
 
     db = MagicMock()
     db.get_tasks_by_query.side_effect = (

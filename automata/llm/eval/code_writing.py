@@ -98,6 +98,7 @@ class CodeWritingEval(Eval):
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts the coding action explicitly"""
+
         actions: List[Action] = []
 
         if not message.content:
@@ -148,6 +149,8 @@ class CodeWritingEval(Eval):
             raise CodeExecutionError(f"Error executing code: {str(e)}")
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        """Filters out non-CodeWritingActions."""
+
         return [
             action
             for action in actions

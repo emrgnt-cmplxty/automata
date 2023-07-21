@@ -1,11 +1,13 @@
 import json
 from typing import List
 
+from automata.config import EVAL_DB_PATH
 from automata.core.base.database import SQLDatabase
 from automata.llm.eval.base import (
     Action,
     CompositeEval,
     Eval,
+    EvalResult,
     check_eval_uniqueness,
 )
 from automata.llm.eval.metrics import EvaluationMetrics
@@ -26,31 +28,31 @@ class EvalTaskLoader:
 class EvalResultWriter(SQLDatabase):
     """Writes evaluation results to a SQLite database."""
 
-    def __init__(self, db_path):
+    def __init__(self, db_path: str = EVAL_DB_PATH):
         self.connect(db_path)
         self.create_table(
             "eval_results",
             {
                 "session_id": "TEXT",
                 "eval_result": "TEXT",
-                "conversation_id": "TEXT",
             },
         )
 
-    def write_result(self, session_id, eval_result, conversation_id):
+    def write_result(
+        self, session_id: int, eval_result: EvalResult, conversation_id: int
+    ):
         self.insert(
             "eval_results",
             {
                 "session_id": session_id,
-                "eval_result": json.dumps(eval_result._asdict()),
-                "conversation_id": conversation_id,
+                "eval_result": json.dumps(eval_result.to_dict()),
             },
         )
 
-    def get_results(self, session_id):
+    def get_results(self, session_id: int):
         results = self.select(
             "eval_results",
-            ["eval_result", "conversation_id"],
+            ["eval_result"],
             {"session_id": session_id},
         )
         return [

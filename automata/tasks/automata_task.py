@@ -48,12 +48,14 @@ class AutomataTask(Task):
         Initializes logging for the task by creating a log file in the task directory.
         If the task directory does not exist, it is created.
         """
+
         log_dir = self._get_log_dir()
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
 
         log_file = os.path.join(
-            log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id))
+            log_dir,
+            Task.TASK_LOG_NAME.replace("SESSION_ID", str(self.session_id)),
         )
         log_level = (
             logging.DEBUG if self.kwargs.get("verbose") else logging.INFO
@@ -64,9 +66,12 @@ class AutomataTask(Task):
         logging.debug("Logging initialized.")
 
     def get_logs(self) -> str:
+        """Gets the logs for the task."""
+
         log_dir = self._get_log_dir()
         log_file = os.path.join(
-            log_dir, Task.TASK_LOG_NAME.replace("TASK_ID", str(self.task_id))
+            log_dir,
+            Task.TASK_LOG_NAME.replace("SESSION_ID", str(self.session_id)),
         )
 
         if not os.path.exists(log_file):

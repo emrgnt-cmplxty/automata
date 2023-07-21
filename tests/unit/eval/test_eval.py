@@ -63,17 +63,15 @@ def test_eval_result_init(mocker):
     full_match = True
     match_result = {"action": True}
     extra_actions = ["action"]
-    conversation = mocker.MagicMock(spec=OpenAIConversation)
     eval_result = EvalResult(
         full_match=full_match,
         match_result=match_result,
         extra_actions=extra_actions,
-        conversation=conversation,
+        session_id=None,
     )
     assert eval_result.full_match == full_match
     assert eval_result.match_result == match_result
     assert eval_result.extra_actions == extra_actions
-    assert eval_result.conversation == conversation
 
 
 def test_generate_function_eval_result_match(agent, evaluator, mocker):
@@ -381,3 +379,85 @@ def test_code_execution_error(code_evaluator, agent, mocker):
     # Act and Assert
     with pytest.raises(CodeExecutionError):
         code_evaluator.generate_eval_result("instructions", expected_actions)
+
+
+def mock_openai_response_with_completion_message():
+    return {
+        "choices": [
+            {
+                "message": {
+                    "role": "assistant",
+                    "function_call": {
+                        "name": "call_termination",
+                        "arguments": '{"result": "Success"}',
+                    },
+                    "content": None,
+                }
+            }
+        ]
+    }
+
+
+# @pytest.mark.parametrize(
+#     "api_response", [mock_openai_response_with_completion_message()]
+# )
+# @patch("openai.ChatCompletion.create")
+# def test_task_evaluation_with_database_integration(
+#     mock_openai_chatcompletion_create,
+#     api_response,
+#     automata_agent,
+#     task,
+#     environment,
+#     registry,
+#     mocker,
+# ):
+#     # Mock the API response
+#     mock_openai_chatcompletion_create.return_value = api_response
+
+#     # Generate a unique session ID for this test case
+#     session_id = task.session_id
+
+#     # Instantiate the three databases with the session ID
+#     task_db = AutomataAgentTaskDatabase()
+#     conversation_db = OpenAIAutomataConversationDatabase()
+#     eval_db = EvalResultWriter()
+
+#     # Create a task and set record_conversation to True
+#     registry.register(task)
+#     environment.setup(task)
+
+#     # Connect the agent to the conversation and task databases
+#     automata_agent.set_database_provider(conversation_db)
+#     automata_agent.set_task_database(task_db)
+
+#     # Create the evaluation harness with the task's expected actions
+#     eval_harness = EvaluationHarness(task.expected_actions)
+
+#     # Execute the task
+#     execution = IAutomataTaskExecution()
+#     IAutomataTaskExecution._build_agent = MagicMock(
+#         return_value=automata_agent
+#     )
+#     task_executor = AutomataTaskExecutor(execution)
+#     task_executor.execute(task)
+
+#     # Retrieve the executed actions from the conversation database
+#     executed_actions = conversation_db.get_actions_for_session(session_id)
+
+#     # Evaluate the actions
+#     metrics = eval_harness.evaluate(task.instructions, executed_actions)
+
+#     # Store the evaluation results in the evaluation database
+#     eval_db.write_result(session_id, metrics, task.conversation_id)
+
+#     # Assert the task execution and evaluation results
+#     assert task.status == TaskStatus.SUCCESS
+#     assert task.result == "Execution Result:\n\nSuccess"
+
+#     saved_messages = conversation_db.get_messages_for_session(session_id)
+#     assert len(saved_messages) == len(task.instructions)
+
+#     eval_results = eval_db.get_results(session_id)
+#     assert len(eval_results) == 1  # Only one evaluation result should exist
+
+#     # Other assertions to check the correctness of the evaluation can be added here...

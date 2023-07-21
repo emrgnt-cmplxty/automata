@@ -51,7 +51,7 @@ def test_callback(mock_notify_observer, task, environment, registry):
     assert mock_notify_observer.call_count == 2
 
 
-def test_task_id_determinism(automata_agent_config_builder):
+def test_session_id_determinism(automata_agent_config_builder):
     common_args = {
         "test1": "arg1",
         "priority": 5,
@@ -73,10 +73,10 @@ def test_task_id_determinism(automata_agent_config_builder):
         **common_args, test2="arg2", generate_deterministic_id=False
     )
 
-    assert task_1.task_id == task_2.task_id
-    assert task_1.task_id != task_3.task_id
-    assert task_1.task_id != task_4.task_id
-    assert isinstance(task_4.task_id, uuid.UUID)
+    assert task_1.session_id == task_2.session_id
+    assert task_1.session_id != task_3.session_id
+    assert task_1.session_id != task_4.session_id
+    assert isinstance(task_4.session_id, uuid.UUID)
 
     task_5 = AutomataTask(
         MockRepositoryClient(),
@@ -86,4 +86,4 @@ def test_task_id_determinism(automata_agent_config_builder):
         config_to_load=AgentConfigName.TEST.to_path(),
     )
 
-    assert task_1.task_id != task_5.task_id
+    assert task_1.session_id != task_5.session_id

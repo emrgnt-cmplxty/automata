@@ -29,13 +29,14 @@ class Agent(ABC):
             LLMConversationDatabaseProvider
         ] = None
 
+    @abstractmethod
+    def __iter__(self):
+        pass
+
     @property
     @abstractmethod
     def conversation(self) -> LLMConversation:
-        pass
-
-    @abstractmethod
-    def __iter__(self):
+        """An abstract property for getting the conversation associated with the agent."""
         pass
 
     @abstractmethod
@@ -66,10 +67,12 @@ class Agent(ABC):
     def set_database_provider(
         self, provider: LLMConversationDatabaseProvider
     ) -> None:
+        """An abstract method for setting the database provider for the agent."""
         pass
 
     @abstractmethod
     def _setup(self) -> None:
+        """An abstract method for setting up the agent before running."""
         pass
 
 
