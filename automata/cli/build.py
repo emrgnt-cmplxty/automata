@@ -57,8 +57,18 @@ def generate_remote_indices():
     os.makedirs(factory_path)
     shutil.move(repo_store_project_path, factory_path)
 
-    node_command = f"node {pyright_scip_index} index --project-name {project_name} --output {embedding_data_path}/indices/{project_name}.scip  --target-only {project_name}"
-    subprocess.run(node_command, shell=True)
+    node_command = [
+        "node",
+        str(pyright_scip_index),
+        "index",
+        "--project-name",
+        project_name,
+        "--output",
+        f"{embedding_data_path}/indices/{project_name}.scip",
+        "--target-only",
+        project_name,
+    ]
+    subprocess.run(node_command)
 
     shutil.move(project_in_factory, repo_store_project_path)
 
@@ -80,5 +90,15 @@ def generate_local_indices():
 
     shutil.copytree(automata_root, project_in_factory, ignore=ignore_dirs)
 
-    node_command = f"node scip-python/packages/pyright-scip/index index --project-name automata --output automata-embedding-data/indices/automata.scip --target-only automata"
-    subprocess.run(node_command, shell=True)
+    node_command = [
+        "node",
+        "scip-python/packages/pyright-scip/index",
+        "index",
+        "--project-name",
+        "automata",
+        "--output",
+        "automata-embedding-data/indices/automata.scip",
+        "--target-only",
+        "automata",
+    ]
+    subprocess.run(node_command)
