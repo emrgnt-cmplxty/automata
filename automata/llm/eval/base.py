@@ -3,19 +3,10 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Type, Union
 
-from automata.agent import AgentProvider, OpenAIAutomataAgent
-from automata.config import GITHUB_API_KEY, REPOSITORY_NAME
 from automata.llm.foundation import LLMChatMessage
-from automata.memory_store import OpenAIAutomataConversationDatabase
-from automata.singletons.github_client import GitHubClient
 from automata.tasks import (
-    AutomataAgentTaskDatabase,
     AutomataTask,
-    AutomataTaskEnvironment,
     AutomataTaskExecutor,
-    AutomataTaskRegistry,
-    EnvironmentMode,
-    IAutomataTaskExecution,
 )
 
 logger = logging.getLogger(__name__)

@@ -2,7 +2,6 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from automata.agent import AgentProvider
 from automata.llm.eval import Action, Eval
 from automata.llm.foundation import LLMChatMessage
 
