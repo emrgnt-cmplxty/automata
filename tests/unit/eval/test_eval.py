@@ -1,26 +1,19 @@
-from collections import Counter
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
-from automata.llm import OpenAIChatMessage, OpenAIConversation
 from automata.llm.eval import (
     CodeWritingAction,
     CodeWritingEval,
     CompositeEval,
-    EvalResult,
     EvaluationHarness,
-    EvaluationMetrics,
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
 )
-from automata.llm.eval.code_writing import CodeExecutionError
-from automata.tasks.base import Task, TaskStatus
+from automata.tasks.base import TaskStatus
 from automata.tasks.executor import (
     AutomataTaskExecutor,
     IAutomataTaskExecution,
-    ITaskExecution,
 )
 
 

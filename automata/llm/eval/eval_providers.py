@@ -1,7 +1,6 @@
 import json
 from typing import Any, Dict, List
 
-from automata.agent import AgentProvider, OpenAIAgentProvider
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
