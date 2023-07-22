@@ -109,9 +109,7 @@ class EvaluationHarness:
                 )
                 for eval in self.evals
             )
-            if aggregate:
-                return CompositeEval.aggregate_result(results)
-            return results
+            return CompositeEval.aggregate_result(results) if aggregate else results
 
         # Create a multiprocessing pool and map the process_task function to all tasks
         with Pool() as p:
