@@ -127,7 +127,7 @@ class AutomataTaskRegistry:
         Raises:
             Exception: If the task does not exist in the registry.
         """
-        print("self.db.contains(task) = ", self.db.contains(task))
+        
         if not self.db.contains(task):
             raise AgentTaskStateError(
                 f"Task with id {task.session_id} does not exist"
