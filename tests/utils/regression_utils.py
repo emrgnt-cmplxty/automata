@@ -3,6 +3,7 @@ from typing import List
 from automata.agent import OpenAIAutomataAgent
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.llm.eval import (
+    Action,
     CodeWritingEval,
     CompositeEval,
     Eval,
@@ -30,12 +31,12 @@ def initialize_automata():
 
 
 def run_agent_and_get_eval(
-    instructions,
-    agent_config_name,
-    toolkit_list,
-    model,
-    max_iterations,
-    expected_actions,
+    instructions: str,
+    agent_config_name: str,
+    toolkit_list: List[str],
+    model: str,
+    max_iterations: int,
+    expected_actions: List[Action],
     evaluators: List[Eval] = [
         OpenAIFunctionEval(),
         CodeWritingEval(target_variables=["x", "y", "z"]),
