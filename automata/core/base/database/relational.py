@@ -50,10 +50,13 @@ class SQLDatabase(RelationalDatabase):
     def connect(self, db_path: str = CONVERSATION_DB_PATH) -> None:
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
+        self.db_path = db_path
 
     def close(self):
         if self.conn:
             self.conn.close()
+            self.conn = None
+            self.cursor = None
 
     def create_table(self, table_name: str, fields: Dict):
         fields_str = ", ".join([f"{k} {v}" for k, v in fields.items()])

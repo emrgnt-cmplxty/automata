@@ -61,9 +61,19 @@ class AutomataAgentTaskDatabase(SQLDatabase):
         self, query: str, params: Tuple = ()
     ) -> List[AutomataTask]:
         """Gets the list of tasks by applying the specified query."""
-        rows = self.select(
-            self.TABLE_NAME, ["json"], conditions=dict(zip(query, params))
-        )
+
+        if "WHERE" in query:
+            query_where = query.split("WHERE")[1].strip()
+            query_conditions = query_where.split("AND")
+            conditions = {
+                q.split("=")[0].strip(): p
+                for q, p in zip(query_conditions, params)
+            }
+        else:
+            conditions = {}
+
+        rows = self.select(self.TABLE_NAME, ["json"], conditions=conditions)
+
         tasks = []
         for row in rows:
             task_json = row[0]
@@ -77,6 +87,7 @@ class AutomataAgentTaskDatabase(SQLDatabase):
 
     def contains(self, task: AutomataTask) -> bool:
         """Checks if a task exists in the database."""
+
         result = self.select(
             self.TABLE_NAME, ["id"], conditions={"id": str(task.session_id)}
         )
@@ -116,6 +127,7 @@ class AutomataTaskRegistry:
         Raises:
             Exception: If the task does not exist in the registry.
         """
+        print("self.db.contains(task) = ", self.db.contains(task))
         if not self.db.contains(task):
             raise AgentTaskStateError(
                 f"Task with id {task.session_id} does not exist"

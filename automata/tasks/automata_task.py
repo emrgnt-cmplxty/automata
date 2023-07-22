@@ -13,6 +13,8 @@ from automata.tasks.base import Task
 logger = logging.getLogger(__name__)
 
 
+# TODO - We should make it clearer which arguments are permissible for the task
+# Note, this is a function of the task.
 class AutomataTask(Task):
     """A task that is to be executed by the TaskExecutor."""
 

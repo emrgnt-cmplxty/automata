@@ -1,8 +1,9 @@
-from typing import List, Type
+from typing import List
 
-from automata.agent import OpenAIAgentProvider, OpenAIAutomataAgent
+from automata.agent import OpenAIAutomataAgent
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.llm.eval import (
+    CodeWritingEval,
     CompositeEval,
     Eval,
     EvalResult,
@@ -10,6 +11,14 @@ from automata.llm.eval import (
 )
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
+from automata.tasks import (
+    AutomataAgentTaskDatabase,
+    AutomataTask,
+    AutomataTaskEnvironment,
+    AutomataTaskExecutor,
+    AutomataTaskRegistry,
+    IAutomataTaskExecution,
+)
 from automata.tools.factory import AgentToolFactory
 
 
@@ -26,28 +35,48 @@ def run_agent_and_get_eval(
     model,
     max_iterations,
     expected_actions,
-    evaluator_classes: List[Type[Eval]] = [OpenAIFunctionEval],
+    evaluators: List[Eval] = [
+        OpenAIFunctionEval(),
+        CodeWritingEval(target_variables=["x", "y", "z"]),
+    ],
 ) -> EvalResult:
     initialize_automata()
 
+    # Create a task
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
         toolkit_list
     )
     tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
 
     config_name = AgentConfigName(agent_config_name)
-    agent_config_builder = (
-        OpenAIAutomataAgentConfigBuilder.from_name(config_name)
-        .with_tools(tools)
-        .with_model(model)
-        .with_max_iterations(max_iterations)
-    )
-    agent_config = agent_config_builder.build()
-    composite_evaluator = CompositeEval(
-        evaluator_classes=evaluator_classes,
+
+    task = AutomataTask(
+        instructions=instructions,
+        config_to_load=config_name,
+        model=model,
+        max_iterations=max_iterations,
+        tools=tools,
     )
 
-    return composite_evaluator.generate_eval_result(expected_actions)
+    # Register and setup task
+    task_db = AutomataAgentTaskDatabase()
+    registry = AutomataTaskRegistry(task_db)
+    registry.register(task)
+
+    environment = AutomataTaskEnvironment()
+    environment.setup(task)
+
+    # Create the executor
+    execution = IAutomataTaskExecution()
+    task_executor = AutomataTaskExecutor(execution)
+
+    composite_evaluator = CompositeEval(
+        evaluators,
+    )
+
+    return composite_evaluator.generate_eval_result(
+        task, expected_actions, task_executor
+    )
 
 
 def run_agent_and_get_result(

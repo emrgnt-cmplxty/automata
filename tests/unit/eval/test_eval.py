@@ -159,6 +159,19 @@ def mock_openai_response_with_code_action_completion_message_z():
     }
 
 
+def mock_openai_response_with_bad_code_action_completion_message_z():
+    return {
+        "choices": [
+            {
+                "message": {
+                    "role": "assistant",
+                    "content": "```python\nz = 3.1.4```",
+                }
+            }
+        ]
+    }
+
+
 EXPECTED_FUNCTION_ACTIONS = [
     OpenAIFunctionCallAction(name="function1", arguments={"arg1": "value1"}),
     OpenAIFunctionCallAction(name="function2", arguments={"arg2": "value2"}),
@@ -241,6 +254,9 @@ params = {
         mock_openai_response_with_function_completion_message_1(),
         mock_openai_response_with_code_action_completion_message_x(),
         mock_openai_response_with_function_completion_message_final(),
+    ],
+    "test_bad_code_action_completion": [
+        mock_openai_response_with_bad_code_action_completion_message_z(),
     ],
 }
 
@@ -496,42 +512,33 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
     )
 
 
-# def test_code_execution_error(code_evaluator, agent, mocker):
-#     """Test if CodeExecutionError is raised when there's an error in executing the code"""
-#     # Arrange
-#     mock_message = mocker.MagicMock(spec=OpenAIChatMessage)
-#     mock_message.content = (
-#         "```python\nx = 1/0```"  # This should raise a ZeroDivisionError
-#     )
-#     agent.conversation.messages = [mock_message]
+def test_code_execution_error(composite_evaluator, task, setup):
+    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
+    mock_openai_chatcompletion_create.side_effect = params[
+        "test_composite_eval_no_match"
+    ]
 
-#     expected_actions = [CodeWritingAction(object_types="int", object_value=1)]
+    expected_actions = [
+        EXPECTED_FUNCTION_ACTIONS[0],
+        EXPECTED_CODE_ACTIONS[0],
+    ]
 
-#     # Act and Assert
-#     with pytest.raises(CodeExecutionError):
-#         code_evaluator.generate_eval_result("instructions", expected_actions)
+    result = composite_evaluator.generate_eval_result(
+        task, expected_actions, task_executor
+    )
 
-
-# def mock_openai_response_with_function_completion_message():
-#     return {
-#         "choices": [
-#             {
-#                 "message": {
-#                     "role": "assistant",
-#                     "function_call": {
-#                         "name": "call_termination",
-#                         "arguments": '{"result": "Success"}',
-#                     },
-#                     "content": None,
-#                 }
-#             }
-#         ]
-#     }
+    assert result.full_match is False
+    assert result.match_result == {
+        EXPECTED_FUNCTION_ACTIONS[0]: False,
+        EXPECTED_CODE_ACTIONS[0]: False,
+    }
+    assert result.extra_actions == [
+        OpenAIFunctionCallAction(
+            name="call_termination", arguments={"result": "Success"}
+        )
+    ]
 
 
-# @pytest.mark.parametrize(
-#     "api_response", [mock_openai_response_with_function_completion_message()]
-# )
 # @patch("openai.ChatCompletion.create")
 # def test_task_evaluation_with_database_integration(
 #     mock_openai_chatcompletion_create,
