@@ -38,7 +38,7 @@ class OpenAIFunctionEval(Eval):
         super().__init__(*args, **kwargs)
 
     def __repr__(self) -> str:
-        return f"OpenAIFunctionEval()"
+        return "OpenAIFunctionEval()"
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts the coding action explicitly"""
