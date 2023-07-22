@@ -1,6 +1,7 @@
 # TODO - Agent tests should depend on actions for verification, not specific output
 import ast
 import logging
+import random
 
 import pytest
 
@@ -94,18 +95,21 @@ def test_agent_py_reader_and_context(
         )
 
 
+random_suffix = random.randint(0, 1000000)
+
+
 @pytest.mark.regression
 @pytest.mark.parametrize(
     "instructions, toolkit_list, model, agent_config_name, max_iterations, expected_output_module, expected_result, min_similarity",
     [
         # Extracting source code directly from a module
         (
-            "Create a new module with a hello world function at automata.test_module",
+            f"Create a new module with a hello world function at automata.test_module_{random_suffix}",
             ["py-writer"],
             "gpt-4",
             "automata-main",
             2,
-            "automata.test_output.test_module",
+            f"automata.test_module_{random_suffix}",
             "def hello_world():\n    print('Hello, world!')",
             0.9,
         ),
