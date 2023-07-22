@@ -67,7 +67,7 @@ random_suffix = random.randint(0, 1000000)
                 OpenAIFunctionCallAction(
                     name="py-writer-create-new-module",
                     arguments={
-                        f"module_name": "automata.test_module_{random_suffix}",
+                        "module_name": f"automata.test_module_{random_suffix}",
                         "content": "def hello_world():\n    print('Hello, world!')",
                     },
                 )
@@ -91,7 +91,7 @@ def test_eval_py_write(
         max_iterations,
         expected_actions,
     )
-
+    # TODO - Add post test cleanup which deletes the test_module_{random_suffix} module
     assert (
         eval_result.full_match
     ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"

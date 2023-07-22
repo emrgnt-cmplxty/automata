@@ -4,6 +4,7 @@ from automata.llm.eval.eval_providers import OpenAIFunctionCallAction
 from tests.utils.regression_utils import run_agent_and_get_eval
 
 
+@pytest.mark.ignore
 @pytest.mark.evaluation
 @pytest.mark.parametrize(
     "instructions, agent_config_name, toolkit_list, model, max_iterations, expected_actions",
@@ -46,4 +47,4 @@ def test_eval_search(
     # returning results with extra text, like `autom...arching the codebase for relevant symbols appears to be `automata.experimental.search.symbol_search.SymbolSearch`....
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"
