@@ -11,6 +11,7 @@ from automata.llm.eval.base import (
     check_eval_uniqueness,
 )
 from automata.llm.eval.metrics import EvaluationMetrics
+from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 
 class EvalTaskLoader:
@@ -70,19 +71,30 @@ class EvaluationHarness:
 
     def evaluate(
         self,
-        instructions: List[str],
-        expected_actions: List[List[Action]],
+        tasks: List[AutomataTask],
+        expected_actions: List[Action],
+        executor: AutomataTaskExecutor,
         aggregate=True,
     ) -> EvaluationMetrics:
         """Returns the evaluation metrics for the given instructions and expected actions."""
-        results = []
 
-        for eval, instruction, actions in zip(
-            self.evals, instructions, expected_actions
-        ):
-            result = eval.generate_eval_result(instruction, actions)
-            results.append(result)
+        aggregate_results = []
+        for task in tasks:
+            print("task = ", task)
+            results: List[EvalResult] = []
+            agent = executor.execute(task)
+            print(
+                "agent.conversation.messages = ", agent.conversation.messages
+            )
+            results.extend(
+                eval.process_result(
+                    expected_actions, agent.conversation.messages
+                )
+                for eval in self.evals
+            )
+            if aggregate:
+                results = [CompositeEval.aggregate_result(results)]
+            print("results = ", results)
+            aggregate_results.extend(results)
 
-        if aggregate:
-            results = [CompositeEval.aggregate_result(results)]
-        return EvaluationMetrics(results)
+        return EvaluationMetrics(aggregate_results)

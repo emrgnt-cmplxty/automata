@@ -257,6 +257,17 @@ def task():
 
 
 @pytest.fixture
+def task2():
+    repo_manager = MockRepositoryClient()
+    return AutomataTask(
+        repo_manager,
+        # session_id = automata_agent.session_id,
+        config_to_load=AgentConfigName.TEST.to_path(),
+        instructions="This is a test2.",
+    )
+
+
+@pytest.fixture
 def task_w_agent_session(automata_agent):
     repo_manager = MockRepositoryClient()
     return AutomataTask(

@@ -11,11 +11,21 @@ class EvaluationMetrics:
         self.results = results
         self._total_actions: Optional[int] = None
         self._total_successful_actions: Optional[int] = None
+        self._total_full_matches: Optional[int] = None
         self._total_extra_actions: Optional[int] = None
+        self._full_match_success_rate: Optional[float] = None
         self._action_success_rate: Optional[float] = None
         self._extra_action_frequency: Optional[Counter[str]] = None
         self._successful_actions_frequency: Optional[Counter[str]] = None
         self._failed_actions_frequency: Optional[Counter[str]] = None
+
+    @property
+    def total_full_matches(self) -> int:
+        if self._total_full_matches is None:
+            self._total_full_matches = sum(
+                result.full_match for result in self.results
+            )
+        return self._total_full_matches
 
     @property
     def total_actions(self) -> int:
@@ -34,6 +44,18 @@ class EvaluationMetrics:
                 for action in result.match_result.values()
             )
         return self._total_successful_actions
+
+    @property
+    def full_match_rate(self) -> float:
+        if self._full_match_success_rate is None:
+            total_results = len(self.results)
+            if total_results == 0:
+                self._full_match_success_rate = 0
+            else:
+                self._full_match_success_rate = (
+                    self.total_full_matches / total_results
+                )
+        return self._full_match_success_rate
 
     @property
     def action_success_rate(self) -> float:

@@ -4,10 +4,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Type, Union
 
 from automata.llm.foundation import LLMChatMessage
-from automata.tasks import (
-    AutomataTask,
-    AutomataTaskExecutor,
-)
+from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 logger = logging.getLogger(__name__)
 
