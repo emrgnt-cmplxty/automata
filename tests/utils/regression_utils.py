@@ -17,6 +17,7 @@ from automata.tasks import (
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
     AutomataTaskRegistry,
+    EnvironmentMode,
     IAutomataTaskExecution,
 )
 from automata.tools.factory import AgentToolFactory
@@ -63,7 +64,9 @@ def run_agent_and_get_eval(
     registry = AutomataTaskRegistry(task_db)
     registry.register(task)
 
-    environment = AutomataTaskEnvironment()
+    environment = AutomataTaskEnvironment(
+        environment_mode=EnvironmentMode.LOCAL_COPY
+    )
     environment.setup(task)
 
     # Create the executor
