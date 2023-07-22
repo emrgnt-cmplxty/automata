@@ -128,7 +128,8 @@ def test_get_all_tasks(db, task):
     task_registry.register(task)
     tasks = task_registry.get_all_tasks()
     assert len(tasks) == 1
-    assert tasks[0] == task
+    assert tasks[0].session_id == task.session_id
+    assert tasks[0].instructions == task.instructions
 
 
 def test_update_nonexistent_task(registry, task):

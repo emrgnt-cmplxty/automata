@@ -26,7 +26,7 @@ from tests.utils.regression_utils import run_agent_and_get_eval
         ),
     ],
 )
-def test_eval_read(
+def test_eval_read_XXX(
     instructions,
     agent_config_name,
     toolkit_list,
@@ -45,7 +45,7 @@ def test_eval_read(
 
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nObserved Actions:{eval_result.observed_actions}\nExtra Actions: {eval_result.extra_actions}\n"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"
 
 
 @pytest.mark.evaluation
@@ -89,4 +89,4 @@ def test_eval_py_write(
 
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"
