@@ -26,10 +26,17 @@ class EvalResult:
 
     def to_dict(self) -> Dict:
         """Converts the result to a dictionary."""
+        
+        match_result_dict = {
+            str(action): result 
+            for action, result in self.match_result.items()
+        }
+        extra_actions_list = [str(action) for action in self.extra_actions]
+        
         return {
             "full_match": self.full_match,
-            "match_result": self.match_result,
-            "extra_actions": self.extra_actions,
+            "match_result": match_result_dict,
+            "extra_actions": extra_actions_list,
             "session_id": self.session_id,
         }
 

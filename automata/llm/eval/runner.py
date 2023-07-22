@@ -1,3 +1,5 @@
+from itertools import chain
+from multiprocessing import Pool
 import json
 from typing import List
 
@@ -12,7 +14,7 @@ from automata.llm.eval.base import (
 )
 from automata.llm.eval.metrics import EvaluationMetrics
 from automata.tasks import AutomataTask, AutomataTaskExecutor
-
+from automata.config import MAX_WORKERS
 
 class EvalTaskLoader:
     """Loads a list of tasks from a JSON file."""
@@ -56,18 +58,21 @@ class EvalResultWriter(SQLDatabase):
             ["eval_result"],
             {"session_id": session_id},
         )
+        print(results)  # Debugging code
+
         return [
-            (json.loads(result), conversation_id)
-            for result, conversation_id in results
+            json.loads(result[0])
+            for result in results
         ]
 
 
 class EvaluationHarness:
     """A class to evaluate a list of instructions against a list of expected actions."""
 
-    def __init__(self, evals: List[Eval]):
+    def __init__(self, evals: List[Eval], num_workers: int=MAX_WORKERS):
         check_eval_uniqueness(evals)
         self.evals = evals
+        self.num_workers = num_workers
 
     def evaluate(
         self,
@@ -78,8 +83,24 @@ class EvaluationHarness:
     ) -> EvaluationMetrics:
         """Returns the evaluation metrics for the given instructions and expected actions."""
 
-        aggregate_results = []
-        for task in tasks:
+        # aggregate_results = []
+        # for task in tasks:
+        #     results: List[EvalResult] = []
+        #     agent = executor.execute(task)
+        #     results.extend(
+        #         eval.process_result(
+        #             expected_actions, agent.conversation.messages
+        #         )
+        #         for eval in self.evals
+        #     )
+        #     if aggregate:
+        #         results = [CompositeEval.aggregate_result(results)]
+        #     aggregate_results.extend(results)
+
+        # return EvaluationMetrics(aggregate_results)
+
+        # Define a function to process a single task
+        def process_task(task):
             results: List[EvalResult] = []
             agent = executor.execute(task)
             results.extend(
@@ -89,7 +110,14 @@ class EvaluationHarness:
                 for eval in self.evals
             )
             if aggregate:
-                results = [CompositeEval.aggregate_result(results)]
-            aggregate_results.extend(results)
+                return CompositeEval.aggregate_result(results)
+            return results
+
+        # Create a multiprocessing pool and map the process_task function to all tasks
+        with Pool() as p:
+            aggregate_results = p.map(process_task, tasks)
+
+        # Flatten the results if necessary
+        aggregate_results = list(chain(*aggregate_results))
 
         return EvaluationMetrics(aggregate_results)

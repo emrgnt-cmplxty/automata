@@ -14,6 +14,7 @@ from automata.llm.eval import (
     EvaluationMetrics,
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
+    EvalResult
 )
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.base import TaskStatus
@@ -24,6 +25,7 @@ from automata.tasks.executor import (
 from automata.tasks.registry import AutomataTaskRegistry
 from automata.tasks.task_database import AutomataAgentTaskDatabase
 
+# TODO - Refactor test eval into multiple tests
 
 @pytest.fixture
 def evaluator():
@@ -661,3 +663,57 @@ def test_task_evaluation_with_database_integration(
     # TODO - We skip the user feedback message, should probably check that
     assert fetched_conversation[2].role == mock_msg_1.role
     assert fetched_conversation[2].content == mock_msg_1.content
+
+
+
+# Standalone test for the EvalResultWriter
+def test_eval_result_writer(eval_db):
+    # Generate a test EvalResult
+    action1 = EXPECTED_CODE_ACTIONS[0]
+    action2 = EXPECTED_CODE_ACTIONS[1]
+    eval_result = EvalResult(
+        full_match=True,
+        match_result={action1: True, action2: False},
+        extra_actions=[action2],
+    )
+
+    # Write the result to the database
+    eval_db.write_result("test_session", eval_result, 1)
+
+    # Retrieve the result from the database
+    retrieved_results = eval_db.get_results("test_session")
+
+    # Check that the retrieved result matches the original result
+    assert len(retrieved_results) == 1
+    retrieved_result = retrieved_results[0]
+    assert retrieved_result["full_match"] == eval_result.full_match
+    print("retrieve dmatch result = ", retrieved_result["match_result"])
+    print("real match result = ", eval_result.match_result)
+    assert retrieved_result["match_result"] == eval_result.match_result
+    assert retrieved_result["extra_actions"] == eval_result.extra_actions
+    assert retrieved_result["session_id"] == eval_result.session_id
+
+def test_evaluate_with_multiprocessing(setup, eval_harness):
+    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
+
+    # Define the mock tasks and the results they should produce
+    mock_tasks = [MagicMock(), MagicMock(), MagicMock()]
+    mock_results = [
+        EvalResult(full_match=True, match_result={}, extra_actions=[]),
+        EvalResult(full_match=False, match_result={}, extra_actions=[]),
+        EvalResult(full_match=True, match_result={}, extra_actions=[]),
+    ]
+
+    # Configure the mock tasks to return the predefined results
+    for task, result in zip(mock_tasks, mock_results):
+        task.result = result
+
+    # Call the evaluate method with the mock tasks
+    metrics = eval_harness.evaluate(mock_tasks, [], task_executor, aggregate=False)
+
+    # Check that the results match the predefined results
+    assert len(metrics.results) == len(mock_tasks)
+    for i, result in enumerate(metrics.results):
+        assert result.full_match == mock_results[i].full_match
+        assert result.match_result == mock_results[i].match_result
+        assert result.extra_actions == mock_results[i].extra_actions
