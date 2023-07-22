@@ -84,7 +84,11 @@ def run_agent_and_get_eval(
 
 
 def run_agent_and_get_result(
-    instructions, toolkit_list, model, agent_config_name, max_iterations
+    instructions: str,
+    toolkit_list: List[str],
+    model: str,
+    agent_config_name: str,
+    max_iterations: int,
 ) -> str:
     initialize_automata()
 

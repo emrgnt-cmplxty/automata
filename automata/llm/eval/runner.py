@@ -80,12 +80,8 @@ class EvaluationHarness:
 
         aggregate_results = []
         for task in tasks:
-            print("task = ", task)
             results: List[EvalResult] = []
             agent = executor.execute(task)
-            print(
-                "agent.conversation.messages = ", agent.conversation.messages
-            )
             results.extend(
                 eval.process_result(
                     expected_actions, agent.conversation.messages
@@ -94,7 +90,6 @@ class EvaluationHarness:
             )
             if aggregate:
                 results = [CompositeEval.aggregate_result(results)]
-            print("results = ", results)
             aggregate_results.extend(results)
 
         return EvaluationMetrics(aggregate_results)

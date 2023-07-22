@@ -19,7 +19,6 @@ def db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join(
         f"task_db_{random.randint(0, 100000)}.db"
     )
-    print("db_file = ", db_file)
     db = AutomataAgentTaskDatabase(str(db_file))
     yield db
     db.close()
@@ -128,8 +127,6 @@ def test_get_all_tasks(db, task):
     tasks = task_registry.get_all_tasks()
     task_registry.register(task)
     tasks = task_registry.get_all_tasks()
-    for task in tasks:
-        print("task = ", task)
     assert len(tasks) == 1
     assert tasks[0] == task
 

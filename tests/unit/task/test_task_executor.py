@@ -40,7 +40,6 @@ class TestExecuteBehavior(ITaskExecution):
     """
 
     def execute(self, task: Task) -> None:
-        print("in the test execute method")
         task.result = mock_agent.run()
 
 
