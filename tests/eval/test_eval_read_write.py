@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 from automata.llm.eval.eval_providers import OpenAIFunctionCallAction
@@ -26,7 +28,7 @@ from tests.utils.regression_utils import run_agent_and_get_eval
         ),
     ],
 )
-def test_eval_read_XXX(
+def test_eval_read(
     instructions,
     agent_config_name,
     toolkit_list,
@@ -48,12 +50,15 @@ def test_eval_read_XXX(
     ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"
 
 
+random_suffix = random.randint(0, 1000000)
+
+
 @pytest.mark.evaluation
 @pytest.mark.parametrize(
     "instructions, agent_config_name, toolkit_list, model, max_iterations, expected_actions",
     [
         (
-            "Create a new module with a hello world function at automata.test_module",
+            f"Create a new module with a hello world function at automata.test_module_{random_suffix}",
             "automata-main",
             ["py-writer"],
             "gpt-4",
@@ -62,7 +67,7 @@ def test_eval_read_XXX(
                 OpenAIFunctionCallAction(
                     name="py-writer-create-new-module",
                     arguments={
-                        "module_name": "automata.test_module",
+                        f"module_name": "automata.test_module_{random_suffix}",
                         "content": "def hello_world():\n    print('Hello, world!')",
                     },
                 )
