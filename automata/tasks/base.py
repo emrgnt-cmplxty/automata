@@ -43,7 +43,7 @@ class Task:
             priority (int): The priority of the task. Defaults to 0.
             max_retries (int): The maximum number of retries for the task. Defaults to 3.
         """
-
+        print("kwargs = ", kwargs)
         if (
             "generate_deterministic_id" in kwargs
             and "session_id" not in kwargs
