@@ -17,7 +17,7 @@ def db(tmpdir_factory):
     import random
 
     db_file = tmpdir_factory.mktemp("data").join(
-        "task_db_{}.db".format(random.randint(0, 100000))
+        f"task_db_{random.randint(0, 100000)}.db"
     )
     print("db_file = ", db_file)
     db = AutomataAgentTaskDatabase(str(db_file))
