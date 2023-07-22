@@ -167,6 +167,8 @@ class OpenAIAutomataAgent(Agent):
     def set_database_provider(
         self, provider: LLMConversationDatabaseProvider
     ) -> None:
+        """Sets the database provider for the agent."""
+
         if not isinstance(provider, LLMConversationDatabaseProvider):
             raise AgentDatabaseError(
                 f"Invalid database provider type: {type(provider)}"
@@ -271,6 +273,7 @@ class OpenAIAutomataAgent(Agent):
         Raises:
             AgentError: If the agent fails to initialize.
         """
+
         logger.debug(f"Setting up agent with tools = {self.config.tools}")
         self._conversation.add_message(
             OpenAIChatMessage(

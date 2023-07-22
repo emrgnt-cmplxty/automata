@@ -5,10 +5,8 @@ import pytest
 from automata.agent import AgentTaskStateError
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import TaskStatus
-from automata.tasks.task_database import (
-    AutomataAgentTaskDatabase,
-    AutomataTaskRegistry,
-)
+from automata.tasks.registry import AutomataTaskRegistry
+from automata.tasks.task_database import AutomataAgentTaskDatabase
 
 
 @pytest.fixture(autouse=True)

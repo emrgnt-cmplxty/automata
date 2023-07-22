@@ -6,10 +6,8 @@ from automata.tasks.executor import (
     IAutomataTaskExecution,
     ITaskExecution,
 )
-from automata.tasks.task_database import (
-    AutomataAgentTaskDatabase,
-    AutomataTaskRegistry,
-)
+from automata.tasks.registry import AutomataTaskRegistry
+from automata.tasks.task_database import AutomataAgentTaskDatabase
 
 __all__ = [
     "Task",

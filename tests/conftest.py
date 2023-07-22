@@ -18,7 +18,7 @@ from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.environment import AutomataTaskEnvironment
-from automata.tasks.task_database import AutomataTaskRegistry
+from automata.tasks.registry import AutomataTaskRegistry
 from automata.tools.factory import AgentToolFactory
 
 
