@@ -22,14 +22,14 @@ class DotPathMap:
 
     DOT_SEP = "."
 
-    def __init__(self, path: str, rel_py_path: str) -> None:
+    def __init__(self, path: str, project_name: str) -> None:
         """
         Args:
             path: The absolute path to the root of the module tree
             prefix: The prefix to add to the dotpath of each module
         """
-        # TODO - Test that rel_py_path works when path != local directory name
-        self.prefix = rel_py_path.replace(os.pathsep, DotPathMap.DOT_SEP)
+        # TODO - Test that project_name works when path != local directory name
+        self.prefix = project_name.replace(os.pathsep, DotPathMap.DOT_SEP)
         # Remove ending '.' in module fpath
         if self.prefix.endswith(DotPathMap.DOT_SEP):
             self.prefix = self.prefix[:-1]

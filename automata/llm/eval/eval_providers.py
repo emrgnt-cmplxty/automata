@@ -1,7 +1,6 @@
 import json
 from typing import Any, Dict, List
 
-from automata.agent import AgentProvider, OpenAIAgentProvider
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
@@ -35,12 +34,11 @@ class OpenAIFunctionCallAction(Action):
 class OpenAIFunctionEval(Eval):
     """A concrete class for evaluating an OpenAI messages for function call actions."""
 
-    def __init__(self, agent_provider: AgentProvider, *args, **kwargs):
-        assert isinstance(agent_provider, OpenAIAgentProvider)
-        super().__init__(agent_provider, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def __repr__(self) -> str:
-        return f"OpenAIFunctionEval(agent_provider={self.agent_provider})"
+        return "OpenAIFunctionEval()"
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts the coding action explicitly"""

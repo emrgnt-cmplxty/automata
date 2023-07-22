@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 from automata.llm.eval.eval_providers import OpenAIFunctionCallAction
@@ -45,7 +47,10 @@ def test_eval_read(
 
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nObserved Actions:{eval_result.observed_actions}\nExtra Actions: {eval_result.extra_actions}\n"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"
+
+
+random_suffix = random.randint(0, 1000000)
 
 
 @pytest.mark.evaluation
@@ -53,7 +58,7 @@ def test_eval_read(
     "instructions, agent_config_name, toolkit_list, model, max_iterations, expected_actions",
     [
         (
-            "Create a new module with a hello world function at automata.test_module",
+            f"Create a new module with a hello world function at automata.test_module_{random_suffix}",
             "automata-main",
             ["py-writer"],
             "gpt-4",
@@ -62,7 +67,7 @@ def test_eval_read(
                 OpenAIFunctionCallAction(
                     name="py-writer-create-new-module",
                     arguments={
-                        "module_name": "automata.test_module",
+                        "module_name": f"automata.test_module_{random_suffix}",
                         "content": "def hello_world():\n    print('Hello, world!')",
                     },
                 )
@@ -86,7 +91,7 @@ def test_eval_py_write(
         max_iterations,
         expected_actions,
     )
-
+    # TODO - Add post test cleanup which deletes the test_module_{random_suffix} module
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"

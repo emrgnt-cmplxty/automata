@@ -3,7 +3,7 @@ import uuid
 from abc import ABC, abstractmethod
 from collections.abc import Hashable
 from enum import Enum
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from automata.config import TASK_OUTPUT_PATH
 
@@ -32,6 +32,7 @@ class Task:
     TASK_LOG_REL_DIR = "logs"
 
     def __init__(self, *args, **kwargs) -> None:
+        # sourcery skip: remove-redundant-if
         """
         Initializes a task object.
 
@@ -42,7 +43,6 @@ class Task:
             priority (int): The priority of the task. Defaults to 0.
             max_retries (int): The maximum number of retries for the task. Defaults to 3.
         """
-
         if (
             "generate_deterministic_id" in kwargs
             and "session_id" not in kwargs
@@ -141,7 +141,7 @@ class ITaskExecution(ABC):
     """Interface for task execution behaviors."""
 
     @abstractmethod
-    def execute(self, task: Task):
+    def execute(self, task: Task) -> Any:
         pass
 
 

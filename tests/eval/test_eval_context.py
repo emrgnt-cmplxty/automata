@@ -43,4 +43,4 @@ def test_eval_context(
     # TODO - Move to utils and avoid copy pasta across eval tests
     assert (
         eval_result.full_match
-    ), f"Expected actions were not fully matched.\nMatch Result: {eval_result.match_result}\nExtra Actions: {eval_result.extra_actions}\n"
+    ), f"Expected actions were not fully matched. Match result: {eval_result.match_result}"

@@ -1,19 +1,41 @@
 import logging
 import logging.config
 import os
+import shutil
+from enum import Enum
+from typing import Optional
 
 from automata.agent import AgentTaskGeneralError, AgentTaskStateError
+from automata.core.utils import get_root_py_fpath
 from automata.singletons.github_client import GitHubClient
+from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import Task, TaskEnvironment, TaskStatus
 
 logger = logging.getLogger(__name__)
 
 
+class EnvironmentMode(Enum):
+    GITHUB = "github"
+    LOCAL_COPY = "local_copy"
+
+
 class AutomataTaskEnvironment(TaskEnvironment):
     """A concrete implementation of the Abstract TaskEnvironment for Automata providers."""
 
-    def __init__(self, github_manager: GitHubClient) -> None:
+    # TODO - We should make it clearer what happens when a github client is not passed
+    # e.g. there should be an associated enum at initialization or some such which
+    # specifies how the task environment is created.
+    def __init__(
+        self,
+        github_manager: Optional[GitHubClient] = None,
+        environment_mode: EnvironmentMode = EnvironmentMode.GITHUB,
+    ) -> None:
+        if environment_mode == EnvironmentMode.GITHUB and not github_manager:
+            raise ValueError(
+                f"Invalid arguments, github_manager must not be None if environment_mode={EnvironmentMode.GITHUB}"
+            )
+        self.environment_mode = environment_mode
         self.github_manager = github_manager
 
     def setup(self, task: Task) -> None:
@@ -38,7 +60,16 @@ class AutomataTaskEnvironment(TaskEnvironment):
             f"Setting up the task environment in directory {task.task_dir}."
         )
         # TODO - Consider more methods for environment initlization than git clone
-        self.github_manager.clone_repository(task.task_dir)
+        if self.environment_mode == EnvironmentMode.GITHUB:
+            # TODO - How can I avoid this and type ignores elsewhere?
+            self.github_manager.clone_repository(task.task_dir)  # type: ignore
+        else:
+            # copy automata directory into task directory
+            # TODO - Add tests for local env standup
+            shutil.copytree(
+                get_root_py_fpath(),
+                os.path.join(task.task_dir, py_module_loader.project_name),
+            )
 
         task.status = TaskStatus.PENDING
         logger.info(f"Task {task.session_id} environment setup successfully.")
@@ -81,6 +112,9 @@ class AutomataTaskEnvironment(TaskEnvironment):
         """
 
         logger.debug("Comitting task...")
+
+        if not self.github_manager:
+            raise ValueError("Cannot commit task without a github manager.")
 
         if task.status != TaskStatus.SUCCESS:
             raise AgentTaskStateError(

@@ -1,6 +1,7 @@
 import logging
 import logging.config
 import time
+from typing import Any
 
 from automata.agent import (
     AgentTaskGeneralError,
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 class IAutomataTaskExecution(ITaskExecution):
     """Class for executing general tasks."""
 
-    def execute(self, task: Task) -> None:
+    def execute(self, task: Task) -> OpenAIAutomataAgent:
         """
         Executes the task by creating and running an AutomataAgent.
         Eachtime the execution fails, the task's retry count is incremented.
@@ -37,6 +38,7 @@ class IAutomataTaskExecution(ITaskExecution):
             result = agent.run()
             task.result = result
             task.status = TaskStatus.SUCCESS
+            return agent
         except Exception as e:
             logger.exception(f"AutomataTask failed: {e}")
             task.error = str(e)
@@ -79,7 +81,7 @@ class AutomataTaskExecutor:
     def __init__(self, execution: ITaskExecution) -> None:
         self.execution = execution
 
-    def execute(self, task: AutomataTask) -> None:
+    def execute(self, task: AutomataTask) -> Any:
         """
         Executes the task using the specified execution behavior.
 
@@ -98,11 +100,10 @@ class AutomataTaskExecutor:
             try:
                 logger.debug(f"Executing task {task.session_id}")
                 task.status = TaskStatus.RUNNING
-                self.execution.execute(task)
+                result = self.execution.execute(task)
                 task.status = TaskStatus.SUCCESS
                 logger.info(f"Task {task.session_id} executed successfully.")
-                break
-
+                return result
             except Exception as e:
                 logging.exception(f"AutomataTask failed: {e}")
                 task.status = TaskStatus.RETRYING

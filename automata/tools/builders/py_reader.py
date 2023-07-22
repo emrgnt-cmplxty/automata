@@ -28,7 +28,7 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
 
         return [
             Tool(
-                name="py-retriever-retrieve-raw-code",
+                name="py-retriever-code",
                 function=self._run_indexer_retrieve_code,
                 description=f"Returns the code of the python package, module, standalone function, class,"
                 f" or method at the given module path and sub-module (e.g. node) path."

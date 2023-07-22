@@ -1,5 +1,9 @@
 from .base import Action, CompositeEval, Eval, EvalResult
-from .code_writing import CodeWritingAction, CodeWritingEval
+from .code_writing import (
+    CodeExecutionError,
+    CodeWritingAction,
+    CodeWritingEval,
+)
 from .eval_providers import OpenAIFunctionCallAction, OpenAIFunctionEval
 from .metrics import EvaluationMetrics
 from .runner import EvalResultWriter, EvaluationHarness
@@ -9,6 +13,7 @@ __all__ = [
     "CompositeEval",
     "EvalResult",
     "Eval",
+    "CodeExecutionError",
     "CodeWritingEval",
     "CodeWritingAction",
     "OpenAIFunctionCallAction",

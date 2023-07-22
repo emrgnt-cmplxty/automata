@@ -34,7 +34,7 @@ def test_eval_writing(
         model,
         max_iterations,
         expected_actions,
-        [CodeWritingEval],
+        [CodeWritingEval()],
     )
     # check if all expected actions were performed
     assert (

@@ -1,10 +1,10 @@
 import abc
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Sequence, Type, Union
 
-from automata.agent import AgentProvider
 from automata.llm.foundation import LLMChatMessage
+from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -37,25 +37,40 @@ class EvalResult:
 class Eval(abc.ABC):
     """Abstract class for evaluating an LLMs performance"""
 
+    @abc.abstractmethod
     def __init__(
         self,
-        agent_provider: AgentProvider,
         *args,
         **kwargs,
     ):
-        self.agent_provider = agent_provider
+        pass
 
     def generate_eval_result(
-        self, instructions: str, expected_actions: List[Action]
+        self,
+        task: AutomataTask,
+        expected_actions: List[Action],
+        executor: AutomataTaskExecutor,
+        *args,
+        **kwargs,
     ) -> EvalResult:
         """Generates an eval result for a given set of instructions and expected actions."""
 
+        agent = executor.execute(task)
+
+        return self.process_result(
+            expected_actions, agent.conversation.messages
+        )
+
+    def process_result(
+        self,
+        expected_actions: List[Action],
+        conversation: Sequence[LLMChatMessage],
+    ):
+        """Processes the result of an evaluation."""
+
         filtered_expected_actions = self._filter_actions(expected_actions)
-
-        agent = self.agent_provider.build_and_run_agent(instructions)
         observed_actions: List[Action] = []
-
-        for message in agent.conversation.messages:
+        for message in conversation:
             if extracted_actions := self.extract_action(message):
                 observed_actions.extend(extracted_actions)
 
@@ -92,6 +107,7 @@ def check_eval_uniqueness(
     evaluator_classes: Union[List[Eval], List[Type[Eval]]]
 ) -> bool:
     """Checks that all evaluators are of different types."""
+
     if len(evaluator_classes) != len(set(evaluator_classes)):
         raise ValueError("All evaluators must be of different types.")
 
@@ -103,25 +119,33 @@ class CompositeEval(Eval):
 
     def __init__(
         self,
-        agent_provider: AgentProvider,
-        evaluator_classes: List[Type[Eval]],
+        evaluators: List[Eval],
         *args,
         **kwargs,
     ):
-        check_eval_uniqueness(evaluator_classes)
-        super().__init__(agent_provider, *args, **kwargs)
+        check_eval_uniqueness(evaluators)
+        super().__init__(*args, **kwargs)
 
-        self.evaluators = [cls(agent_provider) for cls in evaluator_classes]
+        self.evaluators = evaluators
 
-    def generate_eval_results(
-        self, instructions: str, expected_actions: List[Action]
+    def generate_eval_result(
+        self,
+        task: AutomataTask,
+        expected_actions: List[Action],
+        executor: AutomataTaskExecutor,
+        *args,
+        **kwargs,
     ) -> EvalResult:
         """Generates an eval result for a given set of instructions and expected actions."""
+
+        agent = executor.execute(task)
+
         results = [
-            evaluator.generate_eval_result(instructions, expected_actions)
+            evaluator.process_result(
+                expected_actions, agent.conversation.messages
+            )
             for evaluator in self.evaluators
         ]
-        self.results: List[EvalResult] = results
         return CompositeEval.aggregate_result(results)
 
     @staticmethod
@@ -160,6 +184,7 @@ class CompositeEval(Eval):
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
+
         actions = []
         for evaluator in self.evaluators:
             actions.extend(evaluator.extract_action(message))
@@ -167,6 +192,7 @@ class CompositeEval(Eval):
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
         """Filters a list of actions to only contain actions that are relevant to the eval."""
+
         raise NotImplementedError(
             "The composite evaluator does not filter actions."
         )

@@ -4,10 +4,6 @@
 
 # Local environment paths
 : ${EMBEDDING_DATA_PATH:="../automata-embedding-data"}
-: ${FACTORY_PATH:="../automata_embedding_factory"}
-
-project_name="automata"
-project_py_dir="automata"
 
 # Remove the old index if it exists
 if [ -f "$EMBEDDING_DATA_PATH/indices/$project_name.scip" ]; then
@@ -23,10 +19,13 @@ rm -rf $project_name && cp -rf ../$project_name .
 nvm use
 node ../scip-python/packages/pyright-scip/index index --project-name $project_name --output $EMBEDDING_DATA_PATH/indices/$project_py_dir.scip  --target-only $project_py_dir
 
+# Run the project
 cd ..
-poetry run automata run-code-embedding
-poetry run automata run-doc-embedding
+node ./scip-python/packages/pyright-scip/index index --project-name $project_name --target-only $project_name
+
+mv index.scip automata-embedding-data/indices/$project_name.scip 
+poetry run $project_name run-code-embedding
+poetry run $project_name run-doc-embedding
 
 # Return to root
 cd -
-rm -rf $FACTORY_PATH

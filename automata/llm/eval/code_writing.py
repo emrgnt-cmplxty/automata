@@ -2,7 +2,6 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from automata.agent import AgentProvider
 from automata.llm.eval import Action, Eval
 from automata.llm.foundation import LLMChatMessage
 
@@ -88,12 +87,10 @@ class CodeWritingEval(Eval):
 
     def __init__(
         self,
-        agent_provider: AgentProvider,
         target_variables: List[str] = ["x"],
         *args,
         **kwargs,
     ):
-        self.agent_provider = agent_provider
         self.target_variables = target_variables
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
@@ -105,7 +102,11 @@ class CodeWritingEval(Eval):
             return actions
 
         # Parse the code snippet to extract set variables and their types
-        parsed_snippets = self._parse_code_snippet(message.content)
+        try:
+            parsed_snippets = self._parse_code_snippet(message.content)
+        except Exception as e:
+            logger.info(f"Failed to parse code snippet with {e}")
+            parsed_snippets = []
 
         # Clean errors from parsed snippet
         for snippet in parsed_snippets:
