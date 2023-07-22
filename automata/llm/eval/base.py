@@ -12,7 +12,17 @@ logger = logging.getLogger(__name__)
 class Action(abc.ABC):
     """An arbitrary action to be taken by an LLM, like an OpenAI function call"""
 
-    pass
+    @abc.abstractmethod
+    def to_dict(self):
+        """Converts the Action to a dictionary."""
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def from_dict(dct):
+        """Creates an Action from a dictionary."""
+        pass
+
 
 
 @dataclass
@@ -39,6 +49,32 @@ class EvalResult:
             "extra_actions": extra_actions_list,
             "session_id": self.session_id,
         }
+    
+    @staticmethod
+    def from_dict(dct):
+        match_result = {
+            EvalResult._action_from_dict(action): result
+            for action, result in dct["match_result"].items()
+        }
+        extra_actions = [EvalResult._action_from_dict(action) for action in dct["extra_actions"]]
+        return EvalResult(
+            full_match=dct["full_match"],
+            match_result=match_result,
+            extra_actions=extra_actions,
+            session_id=dct["session_id"]
+        )
+
+    @staticmethod
+    def _action_from_dict(dct):
+        if dct["type"] == "CodeWritingAction":
+            from automata.llm.eval.code_writing import CodeWritingAction
+            return CodeWritingAction.from_dict(dct)
+        elif dct["type"] == "OpenAIFunctionCallAction":
+            from automata.llm.eval.eval_providers import OpenAIFunctionCallAction
+            return OpenAIFunctionCallAction.from_dict(dct)
+        else:
+            raise ValueError(f"Unknown action type: {dct['type']}")
+
 
 
 class Eval(abc.ABC):

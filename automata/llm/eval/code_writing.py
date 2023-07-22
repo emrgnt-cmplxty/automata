@@ -72,6 +72,20 @@ class CodeWritingAction(Action):
     def __repr__(self):
         return f"CodeWritingAction(object_value={self.object_value}, object_types={self.object_types})"
 
+    def to_dict(self):
+        return {
+            "type": "CodeWritingAction",
+            "object_value": self.object_value,
+            "object_types": self.object_types
+        }
+
+    @staticmethod
+    def from_dict(dct):
+        return CodeWritingAction(
+            object_value=dct["object_value"],
+            object_types=dct["object_types"]
+        )
+
     @staticmethod
     def _extract_snippet(
         snippet: str, expected_language: str = "python"

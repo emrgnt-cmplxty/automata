@@ -58,13 +58,22 @@ class EvalResultWriter(SQLDatabase):
             ["eval_result"],
             {"session_id": session_id},
         )
-        print(results)  # Debugging code
-
         return [
-            json.loads(result[0])
+            EvalResult.from_dict(json.loads(result[0]))
             for result in results
         ]
 
+
+def process_task(task: AutomataTask, executor: AutomataTaskExecutor, expected_actions: List[Action], evals: List[Eval], aggregate: bool = True):
+    results: List[EvalResult] = []
+    agent = executor.execute(task)
+    results.extend(
+        eval.process_result(
+            expected_actions, agent.conversation.messages
+        )
+        for eval in evals
+    )
+    return CompositeEval.aggregate_result(results) if aggregate else results
 
 class EvaluationHarness:
     """A class to evaluate a list of instructions against a list of expected actions."""
@@ -100,24 +109,24 @@ class EvaluationHarness:
         # return EvaluationMetrics(aggregate_results)
 
         # Define a function to process a single task
-        def process_task(task):
-            results: List[EvalResult] = []
-            agent = executor.execute(task)
-            results.extend(
-                eval.process_result(
-                    expected_actions, agent.conversation.messages
-                )
-                for eval in self.evals
-            )
-            if aggregate:
-                return CompositeEval.aggregate_result(results)
-            return results
 
         # Create a multiprocessing pool and map the process_task function to all tasks
-        with Pool() as p:
-            aggregate_results = p.map(process_task, tasks)
+        # with Pool() as p:
+        #     aggregate_results = p.map(process_task, tasks)
 
+
+        # tasks_args = [(task, task_executor, expected_actions, evaluators, True) for task in tasks]
+
+        # Use starmap to pass multiple arguments to the function
+        # aggregate_results = p.starmap(process_task, tasks_args)
         # Flatten the results if necessary
-        aggregate_results = list(chain(*aggregate_results))
+        # aggregate_results = list(chain(*aggregate_results))
+
+        with Pool() as p:
+            # Prepare the arguments for each task as a tuple
+            tasks_args = [(task, executor, expected_actions, self.evals, True) for task in tasks]
+
+            # Use starmap to pass multiple arguments to the function
+            aggregate_results = p.starmap(process_task, tasks_args)
 
         return EvaluationMetrics(aggregate_results)
