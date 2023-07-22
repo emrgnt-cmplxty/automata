@@ -1,3 +1,5 @@
+import os
+from collections import Counter
 from unittest.mock import MagicMock
 
 import pytest
@@ -7,9 +9,11 @@ from automata.llm.eval import (
     CodeWritingEval,
     CompositeEval,
     EvaluationHarness,
+    EvaluationMetrics,
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
 )
+from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.base import TaskStatus
 from automata.tasks.executor import (
     AutomataTaskExecutor,
@@ -36,11 +40,6 @@ def composite_evaluator(evaluator, code_evaluator):
 @pytest.fixture
 def eval_harness(evaluator, code_evaluator):
     return EvaluationHarness([evaluator, code_evaluator])
-
-
-import os
-
-from automata.memory_store import OpenAIAutomataConversationDatabase
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -173,7 +172,7 @@ EXPECTED_CODE_ACTIONS = [
 
 
 @pytest.fixture
-def setup(mocker, automata_agent, task, environment, registry, db):
+def setup(mocker, automata_agent, task, task2, environment, registry, db):
     # Mock the API response
     mock_openai_chatcompletion_create = mocker.patch(
         "openai.ChatCompletion.create"
@@ -182,6 +181,9 @@ def setup(mocker, automata_agent, task, environment, registry, db):
     # Register and setup task
     registry.register(task)
     environment.setup(task)
+
+    registry.register(task2)
+    environment.setup(task2)
 
     # Use the agent's set_database_provider method
     automata_agent.set_database_provider(db)
@@ -233,6 +235,11 @@ params = {
         mock_openai_response_with_function_completion_message_final(),
     ],
     "test_composite_eval_no_match": [
+        mock_openai_response_with_function_completion_message_final(),
+    ],
+    "test_evaluation_harness_and_metrics": [
+        mock_openai_response_with_function_completion_message_1(),
+        mock_openai_response_with_code_action_completion_message_x(),
         mock_openai_response_with_function_completion_message_final(),
     ],
 }
@@ -417,66 +424,6 @@ def test_composite_eval_result_match(db, task, composite_evaluator, setup):
     ]
 
 
-def test_generate_code_writing_eval_result_partial_match(
-    db, task, code_evaluator, setup
-):
-    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
-    mock_openai_chatcompletion_create.side_effect = [
-        {
-            "choices": [
-                {
-                    "message": {
-                        "role": "assistant",
-                        "content": "```python\nx = 1```",
-                    }
-                }
-            ]
-        },
-        mock_openai_response_with_function_completion_message_final(),
-    ]
-
-    # Act
-    result = code_evaluator.generate_eval_result(
-        task, EXPECTED_CODE_ACTIONS, task_executor
-    )
-
-    # Assert
-    assert not result.full_match
-    assert result.match_result == {
-        EXPECTED_CODE_ACTIONS[0]: True,
-        EXPECTED_CODE_ACTIONS[1]: False,
-    }
-    assert result.extra_actions == []
-
-
-def test_composite_eval_partial_match(db, task, composite_evaluator, setup):
-    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
-    mock_openai_chatcompletion_create.side_effect = params[
-        "test_composite_eval_partial_match"
-    ]
-
-    expected_actions = [
-        EXPECTED_FUNCTION_ACTIONS[0],
-        EXPECTED_CODE_ACTIONS[0],
-    ]
-
-    result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor
-    )
-
-    assert result.full_match == False
-    print("result.match_result = ", result.match_result)
-    assert result.match_result == {
-        EXPECTED_FUNCTION_ACTIONS[0]: True,
-        EXPECTED_CODE_ACTIONS[0]: False,
-    }
-    assert result.extra_actions == [
-        OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
-        )
-    ]
-
-
 def test_composite_eval_no_match(db, task, composite_evaluator, setup):
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
@@ -492,7 +439,7 @@ def test_composite_eval_no_match(db, task, composite_evaluator, setup):
         task, expected_actions, task_executor
     )
 
-    assert result.full_match == False
+    assert result.full_match is False
     assert result.match_result == {
         EXPECTED_FUNCTION_ACTIONS[0]: False,
         EXPECTED_CODE_ACTIONS[0]: False,
@@ -504,55 +451,49 @@ def test_composite_eval_no_match(db, task, composite_evaluator, setup):
     ]
 
 
-# def test_evaluation_harness_and_metrics(agent, eval_harness, mocker):
-#     """Test the properties of EvaluationMetrics"""
-#     # Arrange
-#     function_call_action1 = OpenAIFunctionCallAction(
-#         name="function1", arguments={"arg1": "value1"}
-#     )
-#     function_call_action2 = OpenAIFunctionCallAction(
-#         name="function2", arguments={"arg2": "value2"}
-#     )
-#     code_writer_1 = CodeWritingAction(object_types="str", object_value="test")
-#     code_writer_extra = CodeWritingAction(object_types="int", object_value="1")
-#     expected_actions = [
-#         [function_call_action1, function_call_action2],
-#         [code_writer_1],
-#     ]
+def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
+    """Test the properties of EvaluationMetrics"""
 
-#     # Only the first action is performed
-#     mock_message1 = mocker.MagicMock(spec=OpenAIChatMessage)
-#     mock_message1.function_call = function_call_action1
-#     mock_message1.content = None
+    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
+    mock_openai_chatcompletion_create.side_effect = params[
+        "test_evaluation_harness_and_metrics"
+    ]
 
-#     # The second action is not performed
-#     mock_message2 = mocker.MagicMock(spec=OpenAIChatMessage)
-#     mock_message2.function_call = None
-#     mock_message2.content = (
-#         "```python\nx = 1```"  # An unexpected code writing action
-#     )
+    expected_actions = [
+        EXPECTED_FUNCTION_ACTIONS[0],
+        EXPECTED_FUNCTION_ACTIONS[1],
+        EXPECTED_CODE_ACTIONS[0],
+        EXPECTED_CODE_ACTIONS[1],
+    ]
 
-#     agent.conversation.messages = [mock_message1, mock_message2]
+    # Act
+    metrics = eval_harness.evaluate(
+        [task, task2], expected_actions, task_executor
+    )
 
-#     # Act
-#     metrics = eval_harness.evaluate(
-#         ["instruction1", "instruction2"], expected_actions
-#     )
-#     # Assert
-#     assert isinstance(metrics, EvaluationMetrics)
-#     assert metrics.total_actions == 3
-#     assert metrics.total_successful_actions == 1
-#     assert metrics.action_success_rate == 0.3333333333333333
-#     assert metrics.total_extra_actions == 1
-#     assert metrics.successful_actions_frequency == Counter(
-#         {str(function_call_action1): 1}
-#     )
-#     assert metrics.failed_actions_frequency == Counter(
-#         {str(function_call_action2): 1, str(code_writer_1): 1}
-#     )
-#     assert metrics.extra_action_frequency == Counter(
-#         {str(code_writer_extra): 1}
-#     )
+    # Assert
+    assert isinstance(metrics, EvaluationMetrics)
+    assert metrics.total_actions == 8
+    assert metrics.total_successful_actions == 4
+    assert metrics.action_success_rate == 0.5
+    assert metrics.total_extra_actions == 2
+    assert metrics.full_match_rate == 0.0
+
+    assert metrics.successful_actions_frequency == Counter(
+        {
+            str(EXPECTED_FUNCTION_ACTIONS[0]): 2,
+            str(EXPECTED_CODE_ACTIONS[0]): 2,
+        }
+    )
+    assert metrics.failed_actions_frequency == Counter(
+        {
+            str(EXPECTED_FUNCTION_ACTIONS[1]): 2,
+            str(EXPECTED_CODE_ACTIONS[1]): 2,
+        }
+    )
+    assert metrics.extra_action_frequency == Counter(
+        {"call_termination({'result': 'Success'})": 2}
+    )
 
 
 # def test_code_execution_error(code_evaluator, agent, mocker):
