@@ -104,8 +104,8 @@ class CodeWritingEval(Eval):
         # Parse the code snippet to extract set variables and their types
         try:
             parsed_snippets = self._parse_code_snippet(message.content)
-        except:
-            logger.info("Failed to parse code snippet.")
+        except Exception as e:
+            logger.info(f"Failed to parse code snippet with {e}")
             parsed_snippets = []
 
         # Clean errors from parsed snippet
