@@ -12,6 +12,7 @@ from automata.agent import (
     AgentResultError,
     AgentStopIteration,
     AgentToolkitBuilder,
+    AgentToolkitNames,
 )
 from automata.config import ConfigCategory
 from automata.config.openai_agent import OpenAIAutomataAgentConfig
@@ -51,18 +52,16 @@ class OpenAIAutomataAgent(Agent):
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
-        self._conversation = OpenAIConversation()
         self.completed = False
         self.session_id = self.config.session_id or str(uuid.uuid4())
+        self._conversation = OpenAIConversation()
         self._setup()
-
-    # set the conversation
-    @property
-    def conversation(self) -> LLMConversation:
-        return self._conversation
 
     def __iter__(self):
         return self
+
+    def __repr__(self):
+        return f"OpenAIAutomataAgent(config={str(self.config)}, iteration_count={self.iteration_count}, completed={self.completed}, session_id={self.session_id}, _conversation={str(self._conversation)})"
 
     def __next__(self) -> LLMIterationResult:
         """
@@ -101,11 +100,11 @@ class OpenAIAutomataAgent(Agent):
         return (assistant_message, user_message)
 
     @property
+    def conversation(self) -> LLMConversation:
+        return self._conversation
+
+    @property
     def tools(self) -> List[OpenAITool]:
-        """
-        Returns:
-            List[OpenAITool]: The tools for the agent.
-        """
         tools = []
         for tool in self.config.tools:
             if not isinstance(tool, OpenAITool):
@@ -116,10 +115,6 @@ class OpenAIAutomataAgent(Agent):
 
     @property
     def functions(self) -> List[OpenAIFunction]:
-        """
-        Returns:
-            List[OpenAIFunction]: The available functions for the agent.
-        """
         return [ele.openai_function for ele in self.tools]
 
     def run(self) -> str:
@@ -190,7 +185,10 @@ class OpenAIAutomataAgent(Agent):
 
         TODO - Consider moving this logic to the conversation provider
         """
-        assert "user_input_instructions" in instruction_formatter
+        if "user_input_instructions" not in instruction_formatter:
+            raise KeyError(
+                "The instruction formatter must have an entry for user_input_instructions."
+            )
 
         messages_config = load_config(
             ConfigCategory.INSTRUCTION.to_path(),
@@ -340,7 +338,8 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
         pass
 
     @classmethod
-    def can_handle(cls, tool_manager):
+    def can_handle(cls, tool_manager: AgentToolkitNames):
+        """Checks if the ToolkitBuilder matches the expecte dtool_manager type"""
         return cls.TOOL_TYPE == tool_manager
 
 
