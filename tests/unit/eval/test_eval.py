@@ -549,15 +549,14 @@ def test_composite_eval_no_match(
     ]
 
 
-def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup_real):
+def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
     """Test the properties of EvaluationMetrics"""
 
     (
         mock_openai_chatcompletion_create,
         automata_agent,
         task_executor,
-        real_registry,
-    ) = setup_real
+    ) = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_evaluation_harness_and_metrics"
     ]
@@ -568,10 +567,6 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup_real):
         EXPECTED_CODE_ACTIONS[0],
         EXPECTED_CODE_ACTIONS[1],
     ]
-
-    # Act
-    real_registry.register(task)
-    real_registry.register(task2)
 
     metrics = eval_harness.evaluate(
         [task, task2], expected_actions, task_executor
@@ -694,12 +689,10 @@ def test_eval_result_writer(eval_db):
     # Check that the retrieved result matches the original result
     assert len(retrieved_results) == 1
     retrieved_result = retrieved_results[0]
-    assert retrieved_result["full_match"] == eval_result.full_match
-    print("retrieve dmatch result = ", retrieved_result["match_result"])
-    print("real match result = ", eval_result.match_result)
-    assert retrieved_result["match_result"] == eval_result.match_result
-    assert retrieved_result["extra_actions"] == eval_result.extra_actions
-    assert retrieved_result["session_id"] == eval_result.session_id
+    assert retrieved_result.full_match == eval_result.full_match
+    assert retrieved_result.match_result == eval_result.match_result
+    assert retrieved_result.extra_actions == eval_result.extra_actions
+    assert retrieved_result.session_id == eval_result.session_id
 
 
 def test_evaluate_with_multiprocessing(setup, eval_harness):

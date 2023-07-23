@@ -76,14 +76,13 @@ class CodeWritingAction(Action):
         return {
             "type": "CodeWritingAction",
             "object_value": self.object_value,
-            "object_types": self.object_types
+            "object_types": self.object_types,
         }
 
     @staticmethod
     def from_dict(dct):
         return CodeWritingAction(
-            object_value=dct["object_value"],
-            object_types=dct["object_types"]
+            object_value=dct["object_value"], object_types=dct["object_types"]
         )
 
     @staticmethod

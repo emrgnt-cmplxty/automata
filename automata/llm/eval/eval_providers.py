@@ -29,19 +29,18 @@ class OpenAIFunctionCallAction(Action):
 
     def __repr__(self):
         return f"OpenAIFunctionCallAction(name={self.name}, arguments={self.arguments})"
-    
+
     def to_dict(self):
         return {
             "type": "OpenAIFunctionCallAction",
             "name": self.name,
-            "arguments": self.arguments
+            "arguments": self.arguments,
         }
 
     @staticmethod
     def from_dict(dct):
         return OpenAIFunctionCallAction(
-            name=dct["name"],
-            arguments=dct["arguments"]
+            name=dct["name"], arguments=dct["arguments"]
         )
 
 

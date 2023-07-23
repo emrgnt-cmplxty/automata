@@ -1,4 +1,5 @@
 import abc
+import json
 import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Type, Union
@@ -24,7 +25,6 @@ class Action(abc.ABC):
         pass
 
 
-
 @dataclass
 class EvalResult:
     """A concrete class to represent the result of an eval."""
@@ -36,45 +36,76 @@ class EvalResult:
 
     def to_dict(self) -> Dict:
         """Converts the result to a dictionary."""
-        
+
         match_result_dict = {
-            str(action): result 
+            json.dumps(action.to_dict()): result
             for action, result in self.match_result.items()
         }
-        extra_actions_list = [str(action) for action in self.extra_actions]
-        
+        extra_actions_list = [
+            action.to_dict() for action in self.extra_actions
+        ]
+
         return {
             "full_match": self.full_match,
             "match_result": match_result_dict,
             "extra_actions": extra_actions_list,
             "session_id": self.session_id,
         }
-    
+
     @staticmethod
-    def from_dict(dct):
+    # TODO - Add custom exceptions, and add proper error handling for jsons
+    def from_dict(
+        result_dict: Dict[str, Union[List[str], str, Dict[str, str]]]
+    ):
+        """Loads a json serialized eval result"""
+
+        matches = result_dict["match_result"]
+        if isinstance(matches, dict) and not all(
+            isinstance(item, str) for item in matches.keys()
+        ):
+            raise Exception(
+                f"An invalid match result was encountered in {matches}"
+            )
+
+        full_match = result_dict["full_match"]
+        if not isinstance(full_match, bool):
+            raise Exception(
+                f"A non-bool full_match, {full_match} was observed."
+            )
+
         match_result = {
-            EvalResult._action_from_dict(action): result
-            for action, result in dct["match_result"].items()
+            EvalResult._action_from_dict(json.loads(action)): result
+            for action, result in matches.items()
         }
-        extra_actions = [EvalResult._action_from_dict(action) for action in dct["extra_actions"]]
+
+        extra_actions = [
+            EvalResult._action_from_dict(json.loads(action))
+            for action in result_dict["extra_actions"]
+        ]
+
         return EvalResult(
-            full_match=dct["full_match"],
+            full_match=full_match,
             match_result=match_result,
             extra_actions=extra_actions,
-            session_id=dct["session_id"]
+            session_id=result_dict["session_id"],
         )
 
     @staticmethod
-    def _action_from_dict(dct):
-        if dct["type"] == "CodeWritingAction":
-            from automata.llm.eval.code_writing import CodeWritingAction
-            return CodeWritingAction.from_dict(dct)
-        elif dct["type"] == "OpenAIFunctionCallAction":
-            from automata.llm.eval.eval_providers import OpenAIFunctionCallAction
-            return OpenAIFunctionCallAction.from_dict(dct)
-        else:
-            raise ValueError(f"Unknown action type: {dct['type']}")
+    def _action_from_dict(action_dict: Dict[str, str]):
+        """Parses out the corresponding actiopn from a raw dictionary"""
 
+        if action_dict["type"] == "CodeWritingAction":
+            from automata.llm.eval.code_writing import CodeWritingAction
+
+            return CodeWritingAction.from_dict(action_dict)
+        elif action_dict["type"] == "OpenAIFunctionCallAction":
+            from automata.llm.eval.eval_providers import (
+                OpenAIFunctionCallAction,
+            )
+
+            return OpenAIFunctionCallAction.from_dict(action_dict)
+        else:
+            raise ValueError(f"Unknown action type: {action_dict['type']}")
 
 
 class Eval(abc.ABC):
