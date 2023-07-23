@@ -131,8 +131,8 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
 class ContextOracleOpenAIToolkitBuilder(
     ContextOracleToolkitBuilder, OpenAIAgentToolkitBuilder
 ):
-    TOOL_TYPE = AgentToolkitNames.CONTEXT_ORACLE
-    PLATFORM = LLMProvider.OPENAI
+    TOOL_NAME = AgentToolkitNames.CONTEXT_ORACLE
+    LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

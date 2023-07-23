@@ -33,12 +33,6 @@ class Agent(ABC):
     def __iter__(self):
         pass
 
-    @property
-    @abstractmethod
-    def conversation(self) -> LLMConversation:
-        """An abstract property for getting the conversation associated with the agent."""
-        pass
-
     @abstractmethod
     def __next__(self) -> LLMIterationResult:
         """
@@ -50,6 +44,12 @@ class Agent(ABC):
             LLMIterationResult:
             The latest assistant and user messages, or None if the task is completed.
         """
+        pass
+
+    @property
+    @abstractmethod
+    def conversation(self) -> LLMConversation:
+        """An abstract property for getting the conversation associated with the agent."""
         pass
 
     @abstractmethod
@@ -92,17 +92,17 @@ class AgentToolkitNames(Enum):
 
 class AgentToolkitBuilder(ABC):
     """
-
     AgentToolkitBuilder is an abstract class for building tools for providers.
-
     Each builder builds the tools associated with a specific AgentToolkitNames.
     """
 
-    TOOL_TYPE: Optional[AgentToolkitNames] = None
-    PLATFORM: Optional[LLMProvider] = None
+    # The tool name, must be included above in `AgentToolkitNames` if set
+    TOOL_NAME: Optional[AgentToolkitNames] = None
+    LLM_PROVIDER: Optional[LLMProvider] = None
 
     @abstractmethod
     def build(self) -> List["Tool"]:
+        """Builds the tools associated with the `AgentToolkitBuilder`."""
         pass
 
 

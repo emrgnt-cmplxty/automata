@@ -117,8 +117,8 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
 class SymbolSearchOpenAIToolkitBuilder(
     SymbolSearchToolkitBuilder, OpenAIAgentToolkitBuilder
 ):
-    TOOL_TYPE = AgentToolkitNames.SYMBOL_SEARCH
-    PLATFORM = LLMProvider.OPENAI
+    TOOL_NAME = AgentToolkitNames.SYMBOL_SEARCH
+    LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

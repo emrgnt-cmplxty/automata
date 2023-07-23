@@ -42,7 +42,7 @@ class AgentToolFactory:
 
         for builder in OpenAIAutomataAgentToolkitRegistry.get_all_builders():
             if builder.can_handle(agent_tool):
-                if builder.PLATFORM == LLMProvider.OPENAI:
+                if builder.LLM_PROVIDER == LLMProvider.OPENAI:
                     return builder(**kwargs).build_for_open_ai()
                 else:
                     return builder(**kwargs).build()

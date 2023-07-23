@@ -340,7 +340,7 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
     @classmethod
     def can_handle(cls, tool_manager: AgentToolkitNames):
         """Checks if the ToolkitBuilder matches the expecte dtool_manager type"""
-        return cls.TOOL_TYPE == tool_manager
+        return cls.TOOL_NAME == tool_manager
 
 
 class OpenAIAgentProvider(AgentProvider):
