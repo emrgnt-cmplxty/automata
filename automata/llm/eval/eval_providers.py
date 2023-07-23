@@ -1,16 +1,15 @@
 import json
-from typing import Any, Dict, List
+from typing import Dict, List
 
+from automata.llm.eval import Action, Eval, Payload
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
-
-from .base import Action, Eval
 
 
 class OpenAIFunctionCallAction(Action):
     """A concrete action represented by an OpenAI function call."""
 
-    def __init__(self, name: str, arguments: Dict[str, Any]):
+    def __init__(self, name: str, arguments: Dict[str, str]):
         self.name = name
         self.arguments = arguments
 
@@ -30,18 +29,26 @@ class OpenAIFunctionCallAction(Action):
     def __repr__(self):
         return f"OpenAIFunctionCallAction(name={self.name}, arguments={self.arguments})"
 
-    def to_dict(self):
+    def to_payload(self) -> Payload:
         return {
             "type": "OpenAIFunctionCallAction",
             "name": self.name,
             "arguments": self.arguments,
         }
 
-    @staticmethod
-    def from_dict(dct):
-        return OpenAIFunctionCallAction(
-            name=dct["name"], arguments=dct["arguments"]
-        )
+    @classmethod
+    def from_payload(cls, payload: Payload) -> "OpenAIFunctionCallAction":
+        """Converts a storage payload into an underlying OpenAIFunctionCallAction object"""
+
+        name = payload["name"]
+        if not isinstance(name, str):
+            raise ValueError("Payload name was not a string")
+
+        arguments = payload["arguments"]
+        if not isinstance(arguments, Dict):
+            raise ValueError("Arguments must be a dictionary.")
+
+        return OpenAIFunctionCallAction(name=name, arguments=arguments)
 
 
 class OpenAIFunctionEval(Eval):

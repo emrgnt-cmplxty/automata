@@ -2,13 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from automata.cli.scripts.run_agent import (
-    DEFAULT_ISSUES_PROMPT_PREFIX,
-    DEFAULT_ISSUES_PROMPT_SUFFIX,
-    main,
-    process_issues,
-)
-from automata.config import AgentConfig
+from automata.cli.scripts.run_agent import main, process_issues
 
 
 @pytest.fixture
@@ -78,7 +72,7 @@ def test_main(mock_dependencies):
         )
         mock_agent.assert_called_once_with(
             "Test Instructions",
-            # config=AgentConfig.from_dict({"name": "test-agent", "model": "gpt-4-0613"}),
+            # config=AgentConfig.from_payload({"name": "test-agent", "model": "gpt-4-0613"}),
         )
         mock_agent.return_value.run.assert_called_once()
         assert result == "Success"

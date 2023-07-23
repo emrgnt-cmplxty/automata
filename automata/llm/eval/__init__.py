@@ -1,4 +1,4 @@
-from .base import Action, CompositeEval, Eval, EvalResult
+from .base import Action, CompositeEval, Eval, EvalResult, Payload
 from .code_writing import (
     CodeExecutionError,
     CodeWritingAction,
@@ -13,6 +13,7 @@ __all__ = [
     "CompositeEval",
     "EvalResult",
     "Eval",
+    "Payload",
     "CodeExecutionError",
     "CodeWritingEval",
     "CodeWritingAction",

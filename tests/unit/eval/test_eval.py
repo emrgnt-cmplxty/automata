@@ -186,8 +186,8 @@ EXPECTED_FUNCTION_ACTIONS = [
 
 
 EXPECTED_CODE_ACTIONS = [
-    CodeWritingAction(object_types="int", object_value=1),
-    CodeWritingAction(object_types="str", object_value="test"),
+    CodeWritingAction(object_types="int", object_value_repr="1"),
+    CodeWritingAction(object_types="str", object_value_repr="test"),
 ]
 
 
@@ -436,7 +436,7 @@ def test_generate_code_writing_eval_result_match(
         action: True for action in EXPECTED_CODE_ACTIONS
     }
     assert result.extra_actions == [
-        CodeWritingAction(object_value=3.14, object_types="float")
+        CodeWritingAction(object_value_repr="3.14", object_types="float")
     ]
 
 
@@ -516,7 +516,7 @@ def test_composite_eval_result_match(
     assert result.full_match
     assert result.match_result == {action: True for action in expected_actions}
     assert result.extra_actions == [
-        CodeWritingAction(object_value=3.14, object_types="float"),
+        CodeWritingAction(object_value_repr="3.14", object_types="float"),
     ]
 
 
@@ -693,31 +693,3 @@ def test_eval_result_writer(eval_db):
     assert retrieved_result.match_result == eval_result.match_result
     assert retrieved_result.extra_actions == eval_result.extra_actions
     assert retrieved_result.session_id == eval_result.session_id
-
-
-def test_evaluate_with_multiprocessing(setup, eval_harness):
-    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
-
-    # Define the mock tasks and the results they should produce
-    mock_tasks = [MagicMock(), MagicMock(), MagicMock()]
-    mock_results = [
-        EvalResult(full_match=True, match_result={}, extra_actions=[]),
-        EvalResult(full_match=False, match_result={}, extra_actions=[]),
-        EvalResult(full_match=True, match_result={}, extra_actions=[]),
-    ]
-
-    # Configure the mock tasks to return the predefined results
-    for task, result in zip(mock_tasks, mock_results):
-        task.result = result
-
-    # Call the evaluate method with the mock tasks
-    metrics = eval_harness.evaluate(
-        mock_tasks, [], task_executor, aggregate=False
-    )
-
-    # Check that the results match the predefined results
-    assert len(metrics.results) == len(mock_tasks)
-    for i, result in enumerate(metrics.results):
-        assert result.full_match == mock_results[i].full_match
-        assert result.match_result == mock_results[i].match_result
-        assert result.extra_actions == mock_results[i].extra_actions

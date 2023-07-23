@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, cast
 
 from automata.config import EVAL_DB_PATH, MAX_WORKERS
 from automata.core.base.database import SQLDatabase
@@ -56,7 +56,7 @@ class EvalResultWriter(SQLDatabase):
         """Writes the result to the database."""
         entry = {
             "session_id": session_id,
-            EvalResultWriter.ENTRY_NAME: EvalResultWriter._json_dumps_eval_result(
+            EvalResultWriter.ENTRY_NAME: EvalResultWriter._create_payload(
                 eval_result.to_dict()
             ),
         }
@@ -81,32 +81,29 @@ class EvalResultWriter(SQLDatabase):
         )
 
         return [
-            EvalResult.from_dict(
-                EvalResultWriter._json_loads_eval_result_dict(result[0])
-            )
+            EvalResult.from_payload(EvalResultWriter._load_payload(result[0]))
             for result in results
         ]
 
-    # TODO - Fix type error below, requiring us to understand this error -
-    # Argument 1 to "_json_dumps_recursive" of "EvalResultWriter" has
-    # incompatible type "Dict[str, str]"; expected "Dict[str, Union[List[str], str, Dict[str, str]]]"
     @staticmethod
-    def _json_dumps_eval_result(
-        input_dict,  #: Dict[str, Union[List[str], str, Dict[str, str]]]
-    ):
+    def _create_payload(
+        input_dict: Dict[str, Union[List[str], str, Dict[str, str]]]
+    ) -> str:
         """
         Function to recursively convert dictionary values to strings.
         This can be useful when we want to dump a dictionary to a JSON
         string and the dictionary contains nested dictionaries.
         """
+
         for key, value in input_dict.items():
             if isinstance(value, dict):
-                input_dict[key] = EvalResultWriter._json_dumps_eval_result(
-                    value
-                )
+                cast_value = cast(
+                    Dict[str, Union[List[str], str, Dict[str, str]]], value
+                )  # TODO - Why do we need to cast?
+                input_dict[key] = EvalResultWriter._create_payload(cast_value)
             elif isinstance(value, list):
                 input_dict[key] = [
-                    EvalResultWriter._json_dumps_eval_result(v)
+                    EvalResultWriter._create_payload(v)
                     if isinstance(v, dict)
                     else v
                     for v in value
@@ -114,27 +111,24 @@ class EvalResultWriter(SQLDatabase):
         return json.dumps(input_dict)
 
     @staticmethod
-    def _json_loads_eval_result_dict(
+    def _load_payload(
         input_dict,
     ) -> Dict[str, Union[List[str], str, Dict[str, str]]]:
         """
         Function to recursively convert strings to dictionaries.
         Note, this is incapable of processing keys which are stringified dictionaries.
-        # TODO - The above is how actions are stored, this approach should be considered
         """
 
         input_dict = json.loads(input_dict)
         for key, value in input_dict.items():
             if isinstance(value, str):
                 try:
-                    input_dict[
-                        key
-                    ] = EvalResultWriter._json_loads_eval_result_dict(value)
+                    input_dict[key] = EvalResultWriter._load_payload(value)
                 except Exception:
                     pass
             elif isinstance(value, list):
                 input_dict[key] = [
-                    EvalResultWriter._json_loads_eval_result_dict(v)
+                    EvalResultWriter._load_payload(v)
                     if isinstance(v, dict)
                     else v
                     for v in value
