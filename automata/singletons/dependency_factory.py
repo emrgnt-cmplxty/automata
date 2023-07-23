@@ -5,11 +5,7 @@ from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 
-from automata.agent import (
-    AgentGeneralError,
-    AgentToolkitNames,
-    UnknownToolError,
-)
+from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import (
     PyContextHandler,
     PyContextHandlerConfig,
@@ -43,6 +39,7 @@ from automata.symbol_embedding import (
     SymbolDocEmbedding,
     SymbolDocEmbeddingBuilder,
 )
+from automata.tools.error import UnknownToolError
 from automata.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
@@ -89,7 +86,7 @@ class DependencyFactory(metaclass=Singleton):
 
     def set_overrides(self, **kwargs) -> None:
         if self._class_cache:
-            raise AgentGeneralError(
+            raise Exception(
                 "Cannot set overrides after dependencies have been created."
             )
 
@@ -111,7 +108,7 @@ class DependencyFactory(metaclass=Singleton):
         Returns:
             The instance of the requested dependency.
         Raises:
-            AgentGeneralError: If the dependency is not found.
+            Exception: If the dependency is not found.
         """
         if dependency in self.overrides:
             return self.overrides[dependency]
@@ -121,7 +118,7 @@ class DependencyFactory(metaclass=Singleton):
 
         method_name = f"create_{dependency}"
         if not hasattr(self, method_name):
-            raise AgentGeneralError(f"Dependency {dependency} not found.")
+            raise Exception(f"Dependency {dependency} not found.")
 
         creation_method = getattr(self, method_name)
         logger.info(f"Creating dependency {dependency}")

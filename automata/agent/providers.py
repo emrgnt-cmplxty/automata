@@ -5,14 +5,16 @@ from typing import Dict, Final, List, Sequence
 
 from automata.agent import (
     Agent,
+    AgentProvider,
+    AgentToolkitBuilder,
+    AgentToolkitNames,
+)
+from automata.agent.error import (
     AgentDatabaseError,
     AgentGeneralError,
     AgentMaxIterError,
-    AgentProvider,
     AgentResultError,
     AgentStopIteration,
-    AgentToolkitBuilder,
-    AgentToolkitNames,
 )
 from automata.config import ConfigCategory
 from automata.config.openai_agent import OpenAIAutomataAgentConfig
@@ -35,14 +37,14 @@ logger = logging.getLogger(__name__)
 
 class OpenAIAutomataAgent(Agent):
     """
-    OpenAIAutomataAgent is an autonomous agent designed to execute instructions and report
-    the results back to the main system. It communicates with the OpenAI API to generate
-    responses based on given instructions and manages interactions with various tools.
+    OpenAIAutomataAgent is an autonomous agent designed to execute
+    instructions and report the results back to the main system. It
+    communicates with the OpenAI API to generate responses based on given
+    instructions and manages interactions with various tools.
     """
 
     CONTINUE_PREFIX: Final = f"Continue..."
     EXECUTION_PREFIX: Final = "Execution Result:"
-    _initialized = False
     GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nPlease return a result with call_termination when ready or if you are nearing limits."
     STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS, RETURN A RESULT NOW WITH call_termination."
 
@@ -65,17 +67,15 @@ class OpenAIAutomataAgent(Agent):
 
     def __next__(self) -> LLMIterationResult:
         """
-        Executes a single iteration of the task and returns the latest assistant and user messages.
+        Executes a single iteration of the task and returns the latest
+        assistant and user messages.
 
         Raises:
-            AgentError: If the agent has already completed its task or exceeded the maximum number of iterations.
-
-        Returns:
-            LLMIterationResult Latest assistant and user messages, or None if the task is completed.
+            AgentStopIteration: If the agent has already completed its task
+            or exceeded the maximum number of iterations.
 
         TODO:
-            - Add support for multiple assistants.
-            - Can we cleanup the logging?
+            - Add support for hierarchical agents.
         """
         if (
             self.completed

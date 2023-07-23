@@ -1,11 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
-from pydantic import BaseModel
-
-from automata.config import AgentConfig, AgentConfigName, LLMProvider
+from automata.config import AgentConfig, LLMProvider
 from automata.llm import (
     LLMConversation,
     LLMConversationDatabaseProvider,
@@ -19,7 +17,9 @@ logger = logging.getLogger(__name__)
 class Agent(ABC):
     """
     An abstract class for implementing a agent.
-    An agent is an autonomous entity that can perform actions and communicate with other providers.
+
+    An agent is an autonomous entity that can perform actions and communicate
+    with other providers.
     """
 
     def __init__(self, instructions: str) -> None:
@@ -28,6 +28,7 @@ class Agent(ABC):
         self.database_provider: Optional[
             LLMConversationDatabaseProvider
         ] = None
+        self._initialized = False
 
     @abstractmethod
     def __iter__(self):
@@ -37,12 +38,13 @@ class Agent(ABC):
     def __next__(self) -> LLMIterationResult:
         """
         Iterates the agent by performing a single step of its task.
+
         A single step is a new conversation turn, which consists of generating
         a new 'asisstant' message, and parsing the reply from the 'user'.
 
-        Returns:
-            LLMIterationResult:
-            The latest assistant and user messages, or None if the task is completed.
+        Raises:
+            AgentStopIteration: If the agent has already completed its task
+            or exceeded the maximum number of iterations.
         """
         pass
 
@@ -56,6 +58,7 @@ class Agent(ABC):
     def run(self) -> str:
         """
         Runs the agent until it completes its task.
+
         The task is complete when next returns None.
 
         Raises:
@@ -104,29 +107,6 @@ class AgentToolkitBuilder(ABC):
     def build(self) -> List["Tool"]:
         """Builds the tools associated with the `AgentToolkitBuilder`."""
         pass
-
-
-class AgentInstance(BaseModel):
-    """An abstract class for implementing an agent instance."""
-
-    config_name: AgentConfigName = AgentConfigName.DEFAULT
-    description: str = ""
-    kwargs: Dict[str, Any] = {}
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    @abstractmethod
-    def run(self, instructions: str) -> str:
-        pass
-
-    @classmethod
-    def create(
-        cls, config_name: AgentConfigName, description: str = "", **kwargs
-    ) -> "AgentInstance":
-        return cls(
-            config_name=config_name, description=description, kwargs=kwargs
-        )
 
 
 class AgentProvider(ABC):

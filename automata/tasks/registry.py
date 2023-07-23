@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from automata.agent import AgentTaskGeneralError, AgentTaskStateError
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import TaskStatus
+from automata.tasks.error import TaskGeneralError, TaskStateError
 from automata.tasks.task_database import AutomataAgentTaskDatabase, logger
 
 
@@ -20,12 +20,12 @@ class AutomataTaskRegistry:
             Exception: If the task is not status CREATED.
         """
         if task.status != TaskStatus.CREATED:
-            raise AgentTaskStateError(
+            raise TaskStateError(
                 f"Cannot register task because task is not in CREATED state. Task status = {task.status}"
             )
         task.observer = self.update_task
         if self.fetch_task_by_id(str(task.session_id)):
-            raise AgentTaskGeneralError(
+            raise TaskGeneralError(
                 f"Task with id {task.session_id} already exists"
             )
         self.db.insert_task(task)
@@ -41,7 +41,7 @@ class AutomataTaskRegistry:
         """
 
         if not self.db.contains(task):
-            raise AgentTaskStateError(
+            raise TaskStateError(
                 f"Task with id {task.session_id} does not exist"
             )
         task.observer = None
@@ -59,7 +59,7 @@ class AutomataTaskRegistry:
         if not results:
             return None
         if len(results) != 1:
-            raise AgentTaskGeneralError(
+            raise TaskGeneralError(
                 f"Found multiple tasks with id {session_id}"
             )
         task = results[0]

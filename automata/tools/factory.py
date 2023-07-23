@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List, Sequence, Tuple
 
-from automata.agent import AgentToolkitNames, UnknownToolError
+from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
 from automata.config.base import LLMProvider
@@ -11,7 +11,7 @@ from automata.memory_store import (
     SymbolCodeEmbeddingHandler,
     SymbolDocEmbeddingHandler,
 )
-from automata.tools.base import Tool
+from automata.tools import Tool, UnknownToolError
 
 logger = logging.getLogger(__name__)
 

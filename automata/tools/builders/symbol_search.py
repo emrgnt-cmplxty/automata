@@ -5,7 +5,6 @@ from automata.agent import (
     AgentToolkitBuilder,
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
-    UnknownToolError,
 )
 from automata.config.base import LLMProvider
 from automata.experimental.search import (
@@ -19,7 +18,7 @@ from automata.llm import OpenAITool
 from automata.singletons.toolkit_registries import (
     OpenAIAutomataAgentToolkitRegistry,
 )
-from automata.tools.base import Tool
+from automata.tools import Tool, UnknownToolError
 
 
 class SearchTool(Enum):
