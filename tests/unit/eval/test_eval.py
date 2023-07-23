@@ -9,12 +9,12 @@ from automata.llm.eval import (
     CodeWritingAction,
     CodeWritingEval,
     CompositeEval,
+    EvalResult,
     EvalResultWriter,
     EvaluationHarness,
     EvaluationMetrics,
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
-    EvalResult
 )
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.base import TaskStatus
@@ -26,6 +26,7 @@ from automata.tasks.registry import AutomataTaskRegistry
 from automata.tasks.task_database import AutomataAgentTaskDatabase
 
 # TODO - Refactor test eval into multiple tests
+
 
 @pytest.fixture
 def evaluator():
@@ -548,10 +549,15 @@ def test_composite_eval_no_match(
     ]
 
 
-def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
+def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup_real):
     """Test the properties of EvaluationMetrics"""
 
-    mock_openai_chatcompletion_create, automata_agent, task_executor = setup
+    (
+        mock_openai_chatcompletion_create,
+        automata_agent,
+        task_executor,
+        real_registry,
+    ) = setup_real
     mock_openai_chatcompletion_create.side_effect = params[
         "test_evaluation_harness_and_metrics"
     ]
@@ -564,6 +570,9 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
     ]
 
     # Act
+    real_registry.register(task)
+    real_registry.register(task2)
+
     metrics = eval_harness.evaluate(
         [task, task2], expected_actions, task_executor
     )
@@ -665,7 +674,6 @@ def test_task_evaluation_with_database_integration(
     assert fetched_conversation[2].content == mock_msg_1.content
 
 
-
 # Standalone test for the EvalResultWriter
 def test_eval_result_writer(eval_db):
     # Generate a test EvalResult
@@ -693,6 +701,7 @@ def test_eval_result_writer(eval_db):
     assert retrieved_result["extra_actions"] == eval_result.extra_actions
     assert retrieved_result["session_id"] == eval_result.session_id
 
+
 def test_evaluate_with_multiprocessing(setup, eval_harness):
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
 
@@ -709,7 +718,9 @@ def test_evaluate_with_multiprocessing(setup, eval_harness):
         task.result = result
 
     # Call the evaluate method with the mock tasks
-    metrics = eval_harness.evaluate(mock_tasks, [], task_executor, aggregate=False)
+    metrics = eval_harness.evaluate(
+        mock_tasks, [], task_executor, aggregate=False
+    )
 
     # Check that the results match the predefined results
     assert len(metrics.results) == len(mock_tasks)
