@@ -27,7 +27,7 @@ class CodeWritingAction(Action):
 
     # TODO - Consider adding variable name to the action,
     # e.g. if x = OpenAutomataAgent(),
-    # and object_types = 'OpenAutomataAgent', object_value_repr = OpenAutomataAgent(),
+    # and object_types = 'OpenAutomataAgent', object_value_repr = "OpenAutomataAgent(config = ...)",
     # then variable_name = 'x'
     def __init__(
         self,
