@@ -30,6 +30,8 @@ class OpenAIFunctionCallAction(Action):
         return f"OpenAIFunctionCallAction(name={self.name}, arguments={self.arguments})"
 
     def to_payload(self) -> Payload:
+        """Converts a OpenAIFunctionCallAction to a valid storage payload object"""
+
         return {
             "type": "OpenAIFunctionCallAction",
             "name": self.name,

@@ -58,7 +58,7 @@ class EvalResult:
     @staticmethod
     # TODO - Add custom exceptions, and add proper error handling for jsons
     def from_payload(payload: Payload):
-        """Loads a json serialized eval result"""
+        """Loads a json serialized eval result."""
 
         matches = payload["match_result"]
         if isinstance(matches, dict) and not all(
@@ -87,7 +87,7 @@ class EvalResult:
         session_id = payload["session_id"]
         if session_id is not None and not isinstance(session_id, str):
             raise ValueError(
-                f"Invalid session_id  ({session_id}) was observed."
+                f"Invalid session_id ({session_id}) was observed."
             )
 
         return EvalResult(
@@ -99,7 +99,7 @@ class EvalResult:
 
     @staticmethod
     def _action_from_payload(payload: Payload):
-        """Parses out the corresponding actiopn from a raw dictionary"""
+        """Parses out the corresponding actiopn from a raw dictionary."""
 
         action_type = payload.pop("type")
         if action_type == "CodeWritingAction":
@@ -118,7 +118,7 @@ class EvalResult:
 
 
 class Eval(ABC):
-    """Abstract class for evaluating an LLMs performance"""
+    """Abstract class for evaluating an LLMs performance."""
 
     @abstractmethod
     def __init__(

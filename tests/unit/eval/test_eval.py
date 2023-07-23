@@ -26,6 +26,8 @@ from automata.tasks.registry import AutomataTaskRegistry
 from automata.tasks.task_database import AutomataAgentTaskDatabase
 
 # TODO - Refactor test eval into multiple tests
+# TODO - Include more tests for CodeWriting / FunctionCalling
+# which include more exotic types
 
 
 @pytest.fixture
