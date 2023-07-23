@@ -113,7 +113,7 @@ def test_process_embeddings(tqdm_mock, symbol_code_embedding_handler_mock):
     symbol_code_embedding_handler_mock.flush.assert_called_once()
 
 
-@patch("automata.cli.scripts.run_code_embedding.initialize_modules")
+@patch("automata.cli.scripts.run_code_embedding.initialize_py_module_loader")
 @patch("automata.cli.scripts.run_code_embedding.initialize_resources")
 @patch("automata.cli.scripts.run_code_embedding.collect_symbols")
 @patch("automata.cli.scripts.run_code_embedding.process_embeddings")
