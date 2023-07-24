@@ -5,7 +5,6 @@ from automata.agent import (
     AgentToolkitBuilder,
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
-    UnknownToolError,
 )
 from automata.config.base import LLMProvider
 from automata.experimental.search import (
@@ -19,7 +18,7 @@ from automata.llm import OpenAITool
 from automata.singletons.toolkit_registries import (
     OpenAIAutomataAgentToolkitRegistry,
 )
-from automata.tools.base import Tool
+from automata.tools import Tool, UnknownToolError
 
 
 class SearchTool(Enum):
@@ -117,8 +116,8 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
 class SymbolSearchOpenAIToolkitBuilder(
     SymbolSearchToolkitBuilder, OpenAIAgentToolkitBuilder
 ):
-    TOOL_TYPE = AgentToolkitNames.SYMBOL_SEARCH
-    PLATFORM = LLMProvider.OPENAI
+    TOOL_NAME = AgentToolkitNames.SYMBOL_SEARCH
+    LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

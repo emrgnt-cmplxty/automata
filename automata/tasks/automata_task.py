@@ -2,19 +2,19 @@ import logging
 import logging.config
 import os
 
-from automata.agent import AgentTaskInstructionsError
 from automata.core.utils import (
     get_logging_config,
     get_root_fpath,
     get_root_py_fpath,
 )
 from automata.tasks.base import Task
+from automata.tasks.error import TaskInstructionsError
 
 logger = logging.getLogger(__name__)
 
 
 # TODO - We should make it clearer which arguments are permissible for the task
-# Note, this is a function of the task.
+# Note, this is a function of the task type.
 class AutomataTask(Task):
     """A task that is to be executed by the TaskExecutor."""
 
@@ -31,9 +31,7 @@ class AutomataTask(Task):
             "instructions" not in self.kwargs
             or self.kwargs["instructions"] == ""
         ):
-            raise AgentTaskInstructionsError(
-                "Task instructions cannot be empty."
-            )
+            raise TaskInstructionsError("Task instructions cannot be empty.")
         self.instructions = self.kwargs["instructions"]
         self.record_conversation = self.kwargs.get("record_conversation", True)
 

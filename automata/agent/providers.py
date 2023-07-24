@@ -5,13 +5,16 @@ from typing import Dict, Final, List, Sequence
 
 from automata.agent import (
     Agent,
+    AgentProvider,
+    AgentToolkitBuilder,
+    AgentToolkitNames,
+)
+from automata.agent.error import (
     AgentDatabaseError,
     AgentGeneralError,
     AgentMaxIterError,
-    AgentProvider,
     AgentResultError,
     AgentStopIteration,
-    AgentToolkitBuilder,
 )
 from automata.config import ConfigCategory
 from automata.config.openai_agent import OpenAIAutomataAgentConfig
@@ -34,14 +37,14 @@ logger = logging.getLogger(__name__)
 
 class OpenAIAutomataAgent(Agent):
     """
-    OpenAIAutomataAgent is an autonomous agent designed to execute instructions and report
-    the results back to the main system. It communicates with the OpenAI API to generate
-    responses based on given instructions and manages interactions with various tools.
+    OpenAIAutomataAgent is an autonomous agent designed to execute
+    instructions and report the results back to the main system. It
+    communicates with the OpenAI API to generate responses based on given
+    instructions and manages interactions with various tools.
     """
 
     CONTINUE_PREFIX: Final = f"Continue..."
     EXECUTION_PREFIX: Final = "Execution Result:"
-    _initialized = False
     GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nPlease return a result with call_termination when ready or if you are nearing limits."
     STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS, RETURN A RESULT NOW WITH call_termination."
 
@@ -51,32 +54,28 @@ class OpenAIAutomataAgent(Agent):
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
-        self._conversation = OpenAIConversation()
         self.completed = False
         self.session_id = self.config.session_id or str(uuid.uuid4())
+        self._conversation = OpenAIConversation()
         self._setup()
-
-    # set the conversation
-    @property
-    def conversation(self) -> LLMConversation:
-        return self._conversation
 
     def __iter__(self):
         return self
 
+    def __repr__(self):
+        return f"OpenAIAutomataAgent(config={str(self.config)}, iteration_count={self.iteration_count}, completed={self.completed}, session_id={self.session_id}, _conversation={str(self._conversation)})"
+
     def __next__(self) -> LLMIterationResult:
         """
-        Executes a single iteration of the task and returns the latest assistant and user messages.
+        Executes a single iteration of the task and returns the latest
+        assistant and user messages.
 
         Raises:
-            AgentError: If the agent has already completed its task or exceeded the maximum number of iterations.
-
-        Returns:
-            LLMIterationResult Latest assistant and user messages, or None if the task is completed.
+            AgentStopIteration: If the agent has already completed its task
+            or exceeded the maximum number of iterations.
 
         TODO:
-            - Add support for multiple assistants.
-            - Can we cleanup the logging?
+            - Add support for hierarchical agents.
         """
         if (
             self.completed
@@ -101,11 +100,11 @@ class OpenAIAutomataAgent(Agent):
         return (assistant_message, user_message)
 
     @property
+    def conversation(self) -> LLMConversation:
+        return self._conversation
+
+    @property
     def tools(self) -> List[OpenAITool]:
-        """
-        Returns:
-            List[OpenAITool]: The tools for the agent.
-        """
         tools = []
         for tool in self.config.tools:
             if not isinstance(tool, OpenAITool):
@@ -116,10 +115,6 @@ class OpenAIAutomataAgent(Agent):
 
     @property
     def functions(self) -> List[OpenAIFunction]:
-        """
-        Returns:
-            List[OpenAIFunction]: The available functions for the agent.
-        """
         return [ele.openai_function for ele in self.tools]
 
     def run(self) -> str:
@@ -167,6 +162,8 @@ class OpenAIAutomataAgent(Agent):
     def set_database_provider(
         self, provider: LLMConversationDatabaseProvider
     ) -> None:
+        """Sets the database provider for the agent."""
+
         if not isinstance(provider, LLMConversationDatabaseProvider):
             raise AgentDatabaseError(
                 f"Invalid database provider type: {type(provider)}"
@@ -188,7 +185,10 @@ class OpenAIAutomataAgent(Agent):
 
         TODO - Consider moving this logic to the conversation provider
         """
-        assert "user_input_instructions" in instruction_formatter
+        if "user_input_instructions" not in instruction_formatter:
+            raise KeyError(
+                "The instruction formatter must have an entry for user_input_instructions."
+            )
 
         messages_config = load_config(
             ConfigCategory.INSTRUCTION.to_path(),
@@ -271,6 +271,7 @@ class OpenAIAutomataAgent(Agent):
         Raises:
             AgentError: If the agent fails to initialize.
         """
+
         logger.debug(f"Setting up agent with tools = {self.config.tools}")
         self._conversation.add_message(
             OpenAIChatMessage(
@@ -337,8 +338,9 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
         pass
 
     @classmethod
-    def can_handle(cls, tool_manager):
-        return cls.TOOL_TYPE == tool_manager
+    def can_handle(cls, tool_manager: AgentToolkitNames):
+        """Checks if the ToolkitBuilder matches the expecte dtool_manager type"""
+        return cls.TOOL_NAME == tool_manager
 
 
 class OpenAIAgentProvider(AgentProvider):

@@ -3,7 +3,7 @@ import os
 
 from tqdm import tqdm
 
-from automata.cli.cli_utils import initialize_modules
+from automata.cli.cli_utils import initialize_py_module_loader
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import (
@@ -73,7 +73,7 @@ def process_embeddings(symbol_code_embedding_handler, filtered_symbols):
 
 
 def main(*args, **kwargs):
-    initialize_modules(**kwargs)
+    initialize_py_module_loader(**kwargs)
 
     symbol_graph, symbol_code_embedding_handler = initialize_resources(
         **kwargs

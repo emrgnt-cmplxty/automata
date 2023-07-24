@@ -5,12 +5,12 @@ import shutil
 from enum import Enum
 from typing import Optional
 
-from automata.agent import AgentTaskGeneralError, AgentTaskStateError
 from automata.core.utils import get_root_py_fpath
 from automata.singletons.github_client import GitHubClient
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import Task, TaskEnvironment, TaskStatus
+from automata.tasks.error import TaskGeneralError, TaskStateError
 
 logger = logging.getLogger(__name__)
 
@@ -48,11 +48,11 @@ class AutomataTaskEnvironment(TaskEnvironment):
         """
 
         if task.status != TaskStatus.REGISTERED:
-            raise AgentTaskStateError(
+            raise TaskStateError(
                 f"Cannot setup task environment because task is not in REGISTERED state. Task status = {task.status}"
             )
         if not isinstance(task, AutomataTask):
-            raise AgentTaskGeneralError(
+            raise TaskGeneralError(
                 "AutomataTaskEnvironment requires an AutomataTask instance"
             )
 
@@ -117,12 +117,12 @@ class AutomataTaskEnvironment(TaskEnvironment):
             raise ValueError("Cannot commit task without a github manager.")
 
         if task.status != TaskStatus.SUCCESS:
-            raise AgentTaskStateError(
+            raise TaskStateError(
                 "Cannot commit task to repository because the task has not been successfully executed."
             )
 
         if not os.path.exists(task.task_dir):
-            raise AgentTaskGeneralError(
+            raise TaskGeneralError(
                 "Cannot commit task to repository because the task output directory is missing."
             )
 

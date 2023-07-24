@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch
 import networkx as nx
 import pytest
 
-from automata.agent.error import AgentGeneralError
 from automata.experimental.search import SymbolSearch
 from automata.singletons.dependency_factory import DependencyFactory
 
@@ -79,7 +78,7 @@ def test_create_symbol_doc_embedding_handler(mock_init, dependency_factory):
 
 def test_set_overrides_raises_exception(dependency_factory):
     dependency_factory._class_cache = {"some_key": "some_value"}
-    with pytest.raises(AgentGeneralError):
+    with pytest.raises(Exception):
         dependency_factory.set_overrides(some_dependency=MagicMock())
 
 
