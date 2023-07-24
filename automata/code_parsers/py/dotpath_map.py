@@ -23,11 +23,6 @@ class DotPathMap:
     DOT_SEP = "."
 
     def __init__(self, path: str, project_name: str) -> None:
-        """
-        Args:
-            path: The absolute path to the root of the module tree
-            prefix: The prefix to add to the dotpath of each module
-        """
         # TODO - Test that project_name works when path != local directory name
         self.prefix = project_name.replace(os.pathsep, DotPathMap.DOT_SEP)
         # Remove ending '.' in module fpath
@@ -63,18 +58,15 @@ class DotPathMap:
         return self._module_fpath_to_dotpath_map[module_fpath]
 
     def contains_dotpath(self, module_dotpath: str) -> bool:
+        """Checks if the map contains a module with the given dotpath is in the local store"""
         return module_dotpath in self._module_dotpath_to_fpath_map
 
     def contains_fpath(self, module_fpath: str) -> bool:
+        """Checks if the map contains a module with the given filepath is in the local store"""
         return module_fpath in self._module_fpath_to_dotpath_map
 
     def put_module(self, module_dotpath: str) -> None:
-        """
-        Puts a module with the given dotpath in the local store
-
-        Raises:
-            Exception: If the module already exists in the map
-        """
+        """Puts a module with the given dotpath in the local store"""
         module_os_rel_path = os.path.relpath(
             module_dotpath.replace(DotPathMap.DOT_SEP, os.path.sep),
             self.prefix,
@@ -86,12 +78,7 @@ class DotPathMap:
         self._module_fpath_to_dotpath_map[file_path] = module_dotpath
 
     def delete_module(self, module_dotpath: str) -> None:
-        """
-        Puts a module with the given dotpath in the local store
-
-        Raises:
-            Exception: If the module already exists in the map
-        """
+        """Deletes a module with the given dotpath in the local store"""
         module_os_rel_path = os.path.relpath(
             module_dotpath.replace(DotPathMap.DOT_SEP, os.path.sep),
             self.prefix,
