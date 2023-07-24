@@ -8,13 +8,12 @@ WORKDIR /automata
 COPY . .
 
 # Install dependencies
-RUN apt-get update && apt-get install -y gcc g++
+RUN apt-get update && apt-get install -y gcc g++ curl
 RUN pip install --no-cache-dir poetry
 RUN poetry config virtualenvs.create false
 RUN poetry install
 
 # Install Node.js
-RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
@@ -24,3 +23,5 @@ RUN apt-get install -y nodejs
 # Run these commands in the terminal to build and run the Docker container:
 # docker build -t automata .
 # docker run -it --name test automata bash
+# docker stop test
+# docker rm test
