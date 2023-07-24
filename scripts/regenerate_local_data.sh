@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## Default values
+project_name="automata"
 
 # Local environment paths
 : ${EMBEDDING_DATA_PATH:="../automata-embedding-data"}
