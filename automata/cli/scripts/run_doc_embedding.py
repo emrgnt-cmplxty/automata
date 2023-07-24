@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import List
 
 from tqdm import tqdm
 
@@ -16,6 +17,7 @@ from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,
 )
+from automata.symbol import Symbol
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding import (
@@ -27,9 +29,7 @@ from automata.symbol_embedding import (
 logger = logging.getLogger(__name__)
 
 
-def initialize_providers(
-    embedding_level, symbols=None, overwrite=False, **kwargs
-):
+def initialize_providers(embedding_level, symbols=None, **kwargs):
     project_name = kwargs.get("project_name") or "automata"
     initialize_modules(**kwargs)
 
@@ -38,6 +38,11 @@ def initialize_providers(
             DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
         )
     )
+
+    if isinstance(symbols, str):
+        dotpaths = parse_dotpaths(symbols)
+        symbols = map_dotpaths_to_symbols(dotpaths, symbol_graph)
+
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,
         persist_directory=DependencyFactory.DEFAULT_CODE_EMBEDDING_FPATH,
@@ -74,8 +79,6 @@ def initialize_providers(
         dependency_factory.get("symbol_doc_embedding_handler")
     )
 
-    symbol_doc_embedding_handler.overwrite = overwrite
-
     with SymbolProviderSynchronizationContext() as synchronization_context:
         synchronization_context.register_provider(symbol_graph)
         synchronization_context.register_provider(
@@ -86,11 +89,6 @@ def initialize_providers(
     symbol_doc_embedding_handler.is_synchronized = True
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
-    if symbols:
-        all_defined_symbols = [
-            sym for sym in all_defined_symbols if sym.full_dotpath in symbols
-        ]
-
     filtered_symbols = sorted(
         get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
     )
@@ -98,13 +96,28 @@ def initialize_providers(
     return symbol_doc_embedding_handler, filtered_symbols
 
 
-def main(symbols=None, *args, **kwargs) -> str:
+def parse_dotpaths(dotpaths: str) -> List[str]:
+    """Parses a comma-separated string of dotpaths into a list of dotpaths."""
+    return [dotpath.strip() for dotpath in dotpaths.split(",")]
+
+
+def map_dotpaths_to_symbols(
+    dotpaths: List[str], symbol_graph: SymbolGraph
+) -> List[Symbol]:
+    """Maps a list of dotpaths to their corresponding Symbol objects."""
+    all_symbols = symbol_graph.get_sorted_supported_symbols()
+    return [
+        symbol for symbol in all_symbols if symbol.full_dotpath in dotpaths
+    ]
+
+
+def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
 
     symbol_doc_embedding_handler, filtered_symbols = initialize_providers(
-        symbols=symbols, **kwargs
+        **kwargs
     )
 
     logger.info("Looping over filtered symbols...")
