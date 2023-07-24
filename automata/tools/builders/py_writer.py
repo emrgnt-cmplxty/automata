@@ -89,8 +89,8 @@ class PyCodeWriterToolkitBuilder(AgentToolkitBuilder):
 class PyCodeWriterOpenAIToolkitBuilder(
     PyCodeWriterToolkitBuilder, OpenAIAgentToolkitBuilder
 ):
-    TOOL_TYPE = AgentToolkitNames.PY_WRITER
-    PLATFORM = LLMProvider.OPENAI
+    TOOL_NAME = AgentToolkitNames.PY_WRITER
+    LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

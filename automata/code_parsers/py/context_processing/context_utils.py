@@ -30,6 +30,7 @@ def process_method(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
 
 
 def get_all_methods(ast: AST) -> List[Union[FunctionDef, AsyncFunctionDef]]:
+    """Gets all methods in a given AST"""
     return [
         node
         for node in walk(ast)
@@ -38,16 +39,19 @@ def get_all_methods(ast: AST) -> List[Union[FunctionDef, AsyncFunctionDef]]:
 
 
 def get_all_classes(ast: AST) -> List[ClassDef]:
+    """Gets all classes in a given AST"""
     return [node for node in walk(ast) if isinstance(node, ClassDef)]
 
 
 def get_all_attributes(cls: ClassDef):
+    """Gets all attributes in a given class"""
     return [
         node for node in iter_child_nodes(cls) if isinstance(node, AnnAssign)
     ]
 
 
 def _get_method_arguments(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
+    """Gets the arguments for a specified method"""
     args = []
     defaults = {
         arg.arg: default
@@ -78,4 +82,5 @@ def _get_method_arguments(method: Union[AsyncFunctionDef, FunctionDef]) -> str:
 def _get_method_return_annotation(
     method: Union[AsyncFunctionDef, FunctionDef]
 ) -> str:
+    """Gets the return annotation for a specified method"""
     return unparse(method.returns) if method.returns is not None else "None"

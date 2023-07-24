@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.cli.cli_utils import ask_choice, initialize_modules
+from automata.cli.cli_utils import ask_choice, initialize_py_module_loader
 from automata.core.utils import get_root_fpath
 
 
@@ -35,7 +35,7 @@ def mock_logger():
 
 @patch("automata.singletons.py_module_loader.py_module_loader.initialize")
 def test_initialize_modules_defaults(mock_initialize, default_args):
-    initialize_modules()
+    initialize_py_module_loader()
     mock_initialize.assert_called_once_with(
         default_args["project_root_fpath"],
         default_args["project_project_name"],
@@ -49,7 +49,7 @@ def test_initialize_modules_custom_args(mock_initialize):
         "project_name": "custom_project",
         "project_project_name": "custom_path",
     }
-    initialize_modules(**custom_args)
+    initialize_py_module_loader(**custom_args)
     mock_initialize.assert_called_once_with(
         custom_args["project_root_fpath"], custom_args["project_project_name"]
     )

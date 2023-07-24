@@ -43,6 +43,7 @@ class PyContextHandler:
         dependent_symbols_header="Dependent Symbols:",
     ) -> str:
         """Construct the context for a symbol."""
+
         self.obs_symbols.add(symbol)
         base_context = f"{self.retriever.process_symbol(symbol, primary_active_components)}"
 
@@ -77,6 +78,7 @@ class PyContextHandler:
         self, symbol: "Symbol"
     ) -> List["Symbol"]:
         """Get the top N symbols according to their ranks."""
+
         query = symbol.descriptors[-1].name
         symbol_rank_results = self.symbol_search.get_symbol_rank_results(query)
         return [
@@ -93,6 +95,7 @@ class PyContextHandler:
         Get the tpo N symbols that the given symbol depends on.
         TODO - Sort results by some metric like similarity or ranked search.
         """
+
         symbol_dependencies = (
             self.symbol_search.symbol_graph.get_symbol_dependencies(symbol)
         )

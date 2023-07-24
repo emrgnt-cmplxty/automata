@@ -3,15 +3,12 @@ import logging.config
 import time
 from typing import Any
 
-from automata.agent import (
-    AgentTaskGeneralError,
-    AgentTaskStateError,
-    OpenAIAutomataAgent,
-)
+from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.base import ITaskExecution, Task, TaskStatus
+from automata.tasks.error import TaskGeneralError, TaskStateError
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +26,7 @@ class IAutomataTaskExecution(ITaskExecution):
             Exception: If the task fails on execution
         """
         if not isinstance(task, AutomataTask):
-            raise AgentTaskGeneralError(
+            raise TaskGeneralError(
                 "AutomataTaskEnvironment requires an AutomataTask instance"
             )
         task.status = TaskStatus.RUNNING
@@ -93,7 +90,7 @@ class AutomataTaskExecutor:
             If the task fails and the maximum number of retries is reached.
         """
         if task.status != TaskStatus.PENDING:
-            raise AgentTaskStateError(
+            raise TaskStateError(
                 f"Cannot execute task because task is not in PENDING state. Task status = {task.status}"
             )
         for attempt in range(task.max_retries):

@@ -1,7 +1,7 @@
 import logging
 import os
 
-from automata.cli.cli_utils import initialize_modules
+from automata.cli.cli_utils import initialize_py_module_loader
 from automata.code_writers.py.doc_writer import PyDocWriter
 from automata.core.utils import get_root_fpath
 from automata.singletons.dependency_factory import DependencyFactory
@@ -18,7 +18,7 @@ def main(*args, **kwargs) -> str:
     Update the symbol code embedding based on the specified SCIP index file.
     """
     project_name = kwargs.get("project_name") or "automata"
-    initialize_modules(**kwargs)
+    initialize_py_module_loader(**kwargs)
 
     doc_writer = PyDocWriter(get_root_fpath())
 

@@ -30,18 +30,7 @@ class PyReader:
     def get_source_code(
         self, module_dotpath: str, node_path: Optional[str] = None
     ) -> str:
-        """
-        Gets code for a specified module, class, or function/method
-
-        Args:
-            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
-            node_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned
-
-        Returns:
-            str: The code for the specified module, class, or function/method, or "No Result Found."
-                if not found
-        """
+        """Gets code for a specified module, class, or function/method"""
         from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
@@ -53,18 +42,7 @@ class PyReader:
     def get_docstring(
         self, module_dotpath: str, node_path: Optional[str]
     ) -> str:
-        """
-        Gets the docstring for a specified module, class, or function/method
-
-        Args:
-            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
-            node_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the module-level docstring will be returned
-
-        Returns:
-            str: The docstring for the specified module, class, or function/method, or "No Result Found."
-                if not found
-        """
+        """Gets the docstring for a specified module, class, or function/method"""
         from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
@@ -82,18 +60,7 @@ class PyReader:
     def get_source_code_without_docstrings(
         self, module_dotpath: str, node_path: Optional[str]
     ) -> str:
-        """
-        Gets code for a specified module, class, or function/method
-
-        Args:
-            module_dotpath (str): The path of the module in dot-separated format (e.g. 'package.module')
-            node_path (Optional[str]): The path of the class, function, or method in dot-separated format
-                (e.g. 'ClassName.method_name'). If None, the entire module code will be returned
-
-        Returns:
-            str: The code for the specified module, class, or function/method, or "No Result Found."
-                if not found
-        """
+        """Gets code for a specified module, class, or function/method"""
         from automata.singletons.py_module_loader import py_module_loader
 
         if module := py_module_loader.fetch_ast_module(module_dotpath):
@@ -107,12 +74,8 @@ class PyReader:
 
     @staticmethod
     def get_docstring_from_node(node: Optional[AST]) -> str:
-        """
-        Gets the docstring from the specified node
+        """Gets the docstring from the specified node"""
 
-        Args:
-            node: The FST node to get the docstring from
-        """
         if not node:
             return PyReader.NO_RESULT_FOUND_STR
 

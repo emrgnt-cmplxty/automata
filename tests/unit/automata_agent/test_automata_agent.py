@@ -3,8 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from automata.agent import AgentMaxIterError, OpenAIAutomataAgent
-from automata.agent.providers import OpenAIChatCompletionProvider, OpenAITool
+from automata.agent.error import AgentMaxIterError
+from automata.agent.providers import (
+    OpenAIAutomataAgent,
+    OpenAIChatCompletionProvider,
+    OpenAITool,
+)
 from automata.config import OpenAIAutomataAgentConfig
 from automata.llm import OpenAIChatMessage
 from automata.memory_store import OpenAIAutomataConversationDatabase
