@@ -20,12 +20,14 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         embedding_db: VectorDatabaseProvider,
         embedding_builder: "SymbolDocEmbeddingBuilder",
         batch_size: int = 1,
+        overwrite: bool = False,
     ) -> None:
         if batch_size != 1:
             raise ValueError(
                 "SymbolDocEmbeddingHandler only supports batch_size=1"
             )
         super().__init__(embedding_db, embedding_builder, batch_size)
+        self.overwrite = overwrite
 
     def process_embedding(self, symbol: Symbol) -> None:
         """
@@ -33,24 +35,20 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         Currently we do nothing except update symbol commit hash and source code
         if the symbol is already in the database.
         """
-        source_code = self.embedding_builder.fetch_embedding_source_code(
-            symbol
-        )
+        source_code = self.embedding_builder.fetch_embedding_source_code(symbol)
 
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
 
-        if self.embedding_db.contains(symbol.full_dotpath):
-            self._update_existing_embedding(source_code, symbol)
-        else:
+        if self.overwrite or not self.embedding_db.contains(symbol.full_dotpath):
             self._create_new_embedding(source_code, symbol)
+        else:
+            self._update_existing_embedding(source_code, symbol)
 
     def _create_new_embedding(self, source_code: str, symbol: Symbol) -> None:
         if symbol.py_kind == SymbolDescriptor.PyKind.Class:
             logger.debug(f"Creating a new class embedding for {symbol}")
-            symbol_embedding = self.embedding_builder.build(
-                source_code, symbol
-            )
+            symbol_embedding = self.embedding_builder.build(source_code, symbol)
         elif isinstance(self.embedding_builder, SymbolDocEmbeddingBuilder):
             logger.debug(f"Creating a new non-class embedding for {symbol}")
             symbol_embedding = self.embedding_builder.build_non_class(
