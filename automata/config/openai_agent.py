@@ -145,6 +145,8 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
     def with_instruction_version(
         self, instruction_version: str
     ) -> "OpenAIAutomataAgentConfigBuilder":
+        """Set the instruction version for the AutomataAgent instance and validate if it is supported."""
+
         self._validate_type(instruction_version, str, "Instruction version")
         self._config.instruction_version = InstructionConfigVersion(
             instruction_version

@@ -36,6 +36,7 @@ class PyDocWriter:
         Args:
             module_dir (str): The directory of the module
         """
+
         summary = ""
         for file in self.directory_manager.get_files_in_dir(module_dir):
             if file.endswith(".rst") and file != "index.rst":
@@ -56,13 +57,9 @@ class PyDocWriter:
     ) -> None:
         """
         Generate individual .rst files for each key (a key represents a module)
-            and updates the file structure.
-
-        Args:
-            docs (Dict[Any, Any]): The documentation dictionary
-            symbols (List[Any]): The symbols of the documentation dictionary
-            docs_dir (str): The output directory for the docs
+        and updates the file structure.
         """
+
         for symbol in np.array(symbols):
             symbol_name = symbol.descriptors[-1].name
 
@@ -89,14 +86,13 @@ class PyDocWriter:
                 except Exception as e:
                     logger.error(f"Error converting {symbol_name} to rst: {e}")
 
+    # TODO - Break this method up into smaller methods.
     def generate_index_files(self, docs_dir: str) -> None:
         """
         Generate index files for each directory that
             contains .rst files or subdirectories.
-
-        Args:
-            docs_dir (str): The output directory for the docs
         """
+
         doc_directory_manager = DirectoryManager(docs_dir)
         for root, dirs, _ in os.walk(docs_dir, topdown=False):
             root_relative_to_base = os.path.relpath(root, start=docs_dir)
@@ -174,18 +170,15 @@ class PyDocWriter:
     ) -> None:
         """
         Generate the full documentation given the symbols and a directory.
-
-        Args:
-            docs (Dict[Any, Any]): The documentation dictionary
-            symbols (List[Any]): The symbols of the documentation dictionary
-            docs_dir (str): The relative directory
         """
+
         self.generate_rst_files(docs, symbols, docs_dir)
         self.generate_index_files(docs_dir)
 
     @staticmethod
     def get_payload(directory: str) -> str:
         """Returns a formatted string for the main body of the index.rst file."""
+
         return f"""{os.path.basename(directory)}
 {"=" * len(os.path.basename(directory))}
 
@@ -200,20 +193,13 @@ how to :ref:`installation` the project.
     @staticmethod
     def generate_summary(content: str) -> str:
         """This method should implement the logic to generate summary from the content."""
+
         # TODO: Implement summary generation function.
         return ""
 
     @staticmethod
     def camel_to_snake(name: str) -> str:
-        """
-        Converts a camel case string to snake case
-
-        Args:
-            name (str): The string to convert
-
-        Returns:
-            str: The converted string
-        """
+        """Converts a camel case string to snake case"""
 
         name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", name)
@@ -221,15 +207,7 @@ how to :ref:`installation` the project.
 
     @staticmethod
     def check_camel_case(text: str) -> bool:
-        """
-        Checks if a string is camel case
-
-        Args:
-            text (str): The string to check
-
-        Returns:
-            bool: True if the string is camel case, False otherwise
-        """
+        """Checks if a string is camel case"""
         return (
             text != text.lower() and text != text.upper() and "_" not in text
         )

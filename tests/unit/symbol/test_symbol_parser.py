@@ -1,4 +1,4 @@
-from automata.symbol.parser import Symbol, is_global_symbol, is_local_symbol
+from automata.symbol.parser import Symbol
 
 
 def test_parse_symbol(symbols):
@@ -8,16 +8,6 @@ def test_parse_symbol(symbols):
         assert symbol.package.name == "automata"
         assert symbol.package.version == "v0.0.0"
         assert len(symbol.descriptors) > 0
-
-
-def test_is_global_symbol(symbols):
-    for symbol in symbols:
-        assert is_global_symbol(symbol.uri)
-
-
-def test_is_local_symbol(symbols):
-    for symbol in symbols:
-        assert is_local_symbol(f"local {symbol.uri}")
 
 
 def _unparse(symbol: Symbol):

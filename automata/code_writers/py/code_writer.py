@@ -82,6 +82,7 @@ class PyCodeWriter:
 
     def _write_to_disk_and_format(self, module_fpath: str, source_code: str):
         """Write the source code to disk and format it using black and isort."""
+
         with open(module_fpath, "w") as output_file:
             output_file.write(source_code)
         subprocess.run(["black", module_fpath])

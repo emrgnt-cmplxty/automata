@@ -20,6 +20,9 @@ class SymbolEmbedding(Embedding):
     ):
         super().__init__(key, document, vector)
 
+    def __str__(self) -> str:
+        return f"SymbolEmbedding(\nsymbol={self.symbol},\n\nembedding_source={self.document}\n\nvector_length={len(self.vector)}\n)"
+
     @property
     def symbol(self) -> Symbol:
         return self.key
@@ -27,9 +30,6 @@ class SymbolEmbedding(Embedding):
     @symbol.setter
     def symbol(self, value: Symbol):
         self.key = value
-
-    def __str__(self) -> str:
-        return f"SymbolEmbedding(\nsymbol={self.symbol},\n\nembedding_source={self.document}\n\nvector_length={len(self.vector)}\n)"
 
     @property
     @abc.abstractmethod

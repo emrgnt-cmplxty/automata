@@ -11,6 +11,8 @@ class SymbolProviderRegistry:
 
     @staticmethod
     def register_provider(provider: ISymbolProvider) -> None:
+        """Registers a symbol provider."""
+
         provider.set_synchronized(False)
         SymbolProviderRegistry._providers.add(provider)
 
@@ -22,6 +24,7 @@ class SymbolProviderRegistry:
         their synchronized status set True and their supported symbols
         filtered to only include symbols that are supported by all providers.
         """
+
         all_symbols = [
             set(provider._get_sorted_supported_symbols())
             for provider in SymbolProviderRegistry._providers
@@ -47,6 +50,7 @@ class SymbolProviderRegistry:
     @staticmethod
     def get_sorted_supported_symbols() -> List[Symbol]:
         """Returns a list of all supported symbols."""
+
         if not SymbolProviderRegistry.sorted_supported_symbols:
             SymbolProviderRegistry.synchronize()
 
@@ -54,6 +58,8 @@ class SymbolProviderRegistry:
 
     @staticmethod
     def reset() -> None:
+        """Resets the registry."""
+
         SymbolProviderRegistry._providers = set([])
         SymbolProviderRegistry.sorted_supported_symbols = []
 
@@ -74,9 +80,13 @@ class SymbolProviderSynchronizationContext:
             )
 
     def register_provider(self, provider: ISymbolProvider):
+        """Registers a symbol provider."""
+
         SymbolProviderRegistry.register_provider(provider)
         self._was_synchronized = False
 
     def synchronize(self):
+        """Synchronizes all symbol providers."""
+
         SymbolProviderRegistry.synchronize()
         self._was_synchronized = True

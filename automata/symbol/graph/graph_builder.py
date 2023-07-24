@@ -47,6 +47,7 @@ class GraphBuilder:
         return self._graph
 
     def _add_symbol_vertices(self, document: Any) -> None:
+        """Add `Symbol` nodes to the graph."""
         for symbol_information in document.symbols:
             try:
                 symbol = parse_symbol(symbol_information.symbol)
@@ -62,6 +63,7 @@ class GraphBuilder:
             )
 
     def _process_relationships(self, document: Any) -> None:
+        """Add edges for relationships between `Symbol` nodes."""
         for symbol_information in document.symbols:
             relationship_manager = RelationshipProcessor(
                 self._graph, symbol_information
@@ -69,9 +71,11 @@ class GraphBuilder:
             relationship_manager.process()
 
     def _process_references(self, document: Any) -> None:
+        """Process references between `Symbol` nodes."""
         occurrence_manager = ReferenceProcessor(self._graph, document)
         occurrence_manager.process()
 
     def _process_caller_callee_relationships(self, document: Any) -> None:
+        """Process caller-callee relationships between `Symbol` nodes."""
         caller_callee_manager = CallerCalleeProcessor(self._graph, document)
         caller_callee_manager.process()

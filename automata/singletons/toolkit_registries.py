@@ -11,6 +11,7 @@ class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
 
     @staticmethod
     def register_tool_manager(cls: Type[OpenAIAgentToolkitBuilder]):
+        """Register a tool manager with the registry."""
         OpenAIAutomataAgentToolkitRegistry._all_builders.add(cls)
         return cls
 

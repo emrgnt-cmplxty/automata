@@ -13,10 +13,6 @@ class TemplateFormatter:
         symbol_rank: "SymbolRank",
         max_default_overview_symbols: int = 100,
     ) -> Dict[str, str]:
-        """
-        TODO:
-            - Re-implement this method after the new instruction configs are finalized.
-        """
         formatter: Dict[str, str] = {}
         if config.config_name == AgentConfigName.AUTOMATA_MAIN:
             top_symbols = symbol_rank.get_top_symbols(
