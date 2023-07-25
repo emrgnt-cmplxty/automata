@@ -62,7 +62,9 @@ setup.sh
 .direnv
 docs/_build
 .chroma
-##FIXME- The following should be removed by tests, but isn't
+FIXME- The following should be removed by tests, but isn't
+Linked issue: https://github.com/emrgnt-cmplxty/automata/issues/315
+Linked issue: https://github.com/emrgnt-cmplxty/automata/issues/315
 tests/test_output_vec
 automata/test_output
 automata/test_module.py
