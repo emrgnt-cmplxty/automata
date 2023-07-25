@@ -1,0 +1,5 @@
+rule_settings:
+  enable:
+    - default
+    - gpsg
+    - gpsg-import
