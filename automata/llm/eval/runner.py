@@ -26,7 +26,7 @@ class EvalTaskLoader:
         return tasks
 
 
-class EvalResultWriter(SQLDatabase):
+class EvalResultDatabase(SQLDatabase):
     """Writes evaluation results to a SQLite database."""
 
     TABLE_NAME = "eval_results"
@@ -40,8 +40,8 @@ class EvalResultWriter(SQLDatabase):
     def __init__(self, db_path: str = EVAL_DB_PATH):
         self.connect(db_path)
         self.create_table(
-            EvalResultWriter.TABLE_NAME,
-            EvalResultWriter.TABLE_SCHEMA,
+            EvalResultDatabase.TABLE_NAME,
+            EvalResultDatabase.TABLE_SCHEMA,
         )
 
     # TODO - Add run_id into full runner workflow.
@@ -49,22 +49,29 @@ class EvalResultWriter(SQLDatabase):
     # log it, and then use it to write and get results.
     def write_result(
         self,
-        session_id: str,
         eval_result: EvalResult,
         run_id: Optional[str] = None,
-    ):
+    ) -> None:
         """Writes the result to the database."""
+
+        if not eval_result.session_id:
+            raise ValueError(
+                "Session ID must be set to save an evaluation result."
+            )
+
         entry = {
-            "session_id": session_id,
-            EvalResultWriter.ENTRY_NAME: EvalResultWriter._create_payload(
+            "session_id": eval_result.session_id,
+            EvalResultDatabase.ENTRY_NAME: EvalResultDatabase._create_payload(
                 eval_result.to_dict()
             ),
         }
         if run_id is not None:
             entry["run_id"] = run_id
-        self.insert(EvalResultWriter.TABLE_NAME, entry)
+        self.insert(EvalResultDatabase.TABLE_NAME, entry)
 
-    def get_results(self, session_id: str, run_id: Optional[str] = None):
+    def get_results(
+        self, session_id: str, run_id: Optional[str] = None
+    ) -> List[EvalResult]:
         """Gets the results from the database"""
 
         filters = {}
@@ -75,13 +82,15 @@ class EvalResultWriter(SQLDatabase):
 
         # TODO - Add filter on passed run_id
         results = self.select(
-            EvalResultWriter.TABLE_NAME,
-            [EvalResultWriter.ENTRY_NAME],
+            EvalResultDatabase.TABLE_NAME,
+            [EvalResultDatabase.ENTRY_NAME],
             filters,
         )
 
         return [
-            EvalResult.from_payload(EvalResultWriter._load_payload(result[0]))
+            EvalResult.from_payload(
+                EvalResultDatabase._load_payload(result[0])
+            )
             for result in results
         ]
 
@@ -100,10 +109,12 @@ class EvalResultWriter(SQLDatabase):
                 cast_value = cast(
                     Dict[str, Union[List[str], str, Dict[str, str]]], value
                 )  # TODO - Why do we need to cast?
-                input_dict[key] = EvalResultWriter._create_payload(cast_value)
+                input_dict[key] = EvalResultDatabase._create_payload(
+                    cast_value
+                )
             elif isinstance(value, list):
                 input_dict[key] = [
-                    EvalResultWriter._create_payload(v)
+                    EvalResultDatabase._create_payload(v)
                     if isinstance(v, dict)
                     else v
                     for v in value
@@ -123,12 +134,12 @@ class EvalResultWriter(SQLDatabase):
         for key, value in input_dict.items():
             if isinstance(value, str):
                 try:
-                    input_dict[key] = EvalResultWriter._load_payload(value)
+                    input_dict[key] = EvalResultDatabase._load_payload(value)
                 except Exception:
                     pass
             elif isinstance(value, list):
                 input_dict[key] = [
-                    EvalResultWriter._load_payload(v)
+                    EvalResultDatabase._load_payload(v)
                     if isinstance(v, dict)
                     else v
                     for v in value
@@ -143,11 +154,13 @@ def process_task(
     expected_actions: List[Action],
     evals: List[Eval],
     aggregate: bool = True,
-):
+) -> Union[List[EvalResult], EvalResult]:
     results: List[EvalResult] = []
     agent = executor.execute(task)
     results.extend(
-        eval.process_result(expected_actions, agent.conversation.messages)
+        eval.process_result(
+            expected_actions, agent.conversation.messages, agent.session_id
+        )
         for eval in evals
     )
     return CompositeEval.aggregate_result(results) if aggregate else results
@@ -176,7 +189,9 @@ class EvaluationHarness:
             agent = executor.execute(task)
             results.extend(
                 eval.process_result(
-                    expected_actions, agent.conversation.messages
+                    expected_actions,
+                    agent.conversation.messages,
+                    agent.session_id,
                 )
                 for eval in self.evals
             )

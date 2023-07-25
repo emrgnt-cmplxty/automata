@@ -3,6 +3,7 @@ import os
 
 import pytest
 
+from automata.core.run_handlers import initialize_automata
 from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,
@@ -15,7 +16,6 @@ from automata.symbol_embedding.base import (
 from automata.symbol_embedding.vector_databases import (
     ChromaSymbolEmbeddingVectorDatabase,
 )
-from tests.utils.regression_utils import initialize_automata
 
 logger = logging.getLogger(__name__)
 

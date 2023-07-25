@@ -135,7 +135,7 @@ def test_run_with_completion_message(
     result = automata_agent.run()
 
     # Check if the result is None, indicating that the agent has completed
-    assert result == f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\nSuccess"
+    assert result == f"Success"
 
     # Verify that the agent's completed attribute is set to True
     assert automata_agent.completed is True
@@ -179,16 +179,16 @@ def test_agent_saves_messages_to_database(
     result = automata_agent.run()
 
     # Check if the result is None, indicating that the agent has completed
-    assert result == f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\nSuccess"
+    assert result == "Success"
 
     # Verify that the agent's completed attribute is set to True
     assert automata_agent.completed is True
     saved_messages = db.get_messages(automata_agent.session_id)
 
-    assert saved_messages[0].role == "assistant"
-    assert saved_messages[0].content is None
-    assert saved_messages[0].function_call.name == "call_termination"
-    assert saved_messages[0].function_call.arguments == {"result": "Success"}
-    assert saved_messages[1].role == "user"
-    assert "Success" in saved_messages[1].content
-    assert saved_messages[1].function_call is None
+    assert saved_messages[-2].role == "assistant"
+    assert saved_messages[-2].content is None
+    assert saved_messages[-2].function_call.name == "call_termination"
+    assert saved_messages[-2].function_call.arguments == {"result": "Success"}
+    assert saved_messages[-1].role == "user"
+    assert "Success" in saved_messages[-1].content
+    assert saved_messages[-1].function_call is None

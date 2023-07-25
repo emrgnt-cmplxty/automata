@@ -5,8 +5,7 @@ from automata.llm.eval import (
     Action,
     CodeWritingEval,
     CompositeEval,
-    Eval,
-    EvalResult,
+    EvalResultDatabase,
     OpenAIFunctionEval,
 )
 from automata.singletons.dependency_factory import dependency_factory
@@ -35,10 +34,10 @@ if __name__ == "__main__":
     instructions = """Return True"""
     agent_config_name = "automata-main"
     toolkit_list = ["py-writer"]
-    model = "gpt-4"
+    model = "gpt-3.5-turbo"
     max_iterations = 2
     evaluators = [OpenAIFunctionEval(), CodeWritingEval()]
-    expected_actions = []
+    expected_actions: List[Action] = []
 
     # Create a task
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
@@ -78,4 +77,7 @@ if __name__ == "__main__":
         task, expected_actions, task_executor
     )
 
-    print("Result = ", result)
+    # Write result to database
+    eval_db = EvalResultDatabase()
+    print(f"Result = {result}")
+    eval_db.write_result(result)
