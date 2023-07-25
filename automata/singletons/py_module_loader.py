@@ -37,7 +37,7 @@ class PyModuleLoader(metaclass=Singleton):
         project_name: str = "automata",  # TODO - How do we treat multi-slash paths?, e.g. automata/example as rel path
     ) -> None:
         """
-        Initializes the loader by setting paths across the entire project
+        Initializes the loader by setting paths across the entire project.
 
         Raises:
             Exception: If the map or python directory have already been initialized
@@ -62,6 +62,14 @@ class PyModuleLoader(metaclass=Singleton):
         self.project_name = project_name
         self.initialized = True
 
+    def __contains__(self, dotpath: str) -> bool:
+        """
+        Raises:
+            Exception: If the map or python directory have not been initialized
+        """
+        self._assert_initialized()
+        return self._dotpath_map.contains_dotpath(dotpath)  # type: ignore
+
     def _assert_initialized(self) -> None:
         """
         Checks if the map and python directory have been initialized
@@ -72,20 +80,9 @@ class PyModuleLoader(metaclass=Singleton):
         if not self.initialized:
             raise Exception("Module loader is not yet initialized!")
 
-    def __contains__(self, dotpath: str) -> bool:
-        """
-        Checks if the map contains a module with the given dotpath
-
-        Raises:
-            Exception: If the map or python directory have not been initialized
-        """
-        self._assert_initialized()
-        return self._dotpath_map.contains_dotpath(dotpath)  # type: ignore
-
     def items(self) -> Iterable[Tuple[str, Optional[Module]]]:
         """
-        Returns:
-            A dictionary containing the module dotpath to module AST object mapping.
+        Gets all the items in the map.
 
         Raises:
             Exception: If the map or python directory have not been initialized.
@@ -99,7 +96,7 @@ class PyModuleLoader(metaclass=Singleton):
         Gets the module with the given dotpath.
 
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         if not self._dotpath_map.contains_dotpath(module_dotpath):  # type: ignore
@@ -118,14 +115,8 @@ class PyModuleLoader(metaclass=Singleton):
         """
         Gets the module dotpath for the specified module object.
 
-        Args:
-            module_obj (Module): The module object.
-
-        Returns:
-            str: The module dotpath for the specified module object.
-
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         return next(
@@ -143,14 +134,8 @@ class PyModuleLoader(metaclass=Singleton):
         """
         Gets the module fpath for the specified module dotpath.
 
-        Args:
-            module_dotpath (str): The module dotpath.
-
-        Returns:
-            str: The module fpath for the specified module dotpath.
-
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         if module_dotpath in self._loaded_modules:
@@ -162,28 +147,18 @@ class PyModuleLoader(metaclass=Singleton):
         """
         Gets the module dotpath for the specified module fpath.
 
-        Args:
-            module_fpath (str): The module fpath.
-
-        Returns:
-            str: The module dotpath for the specified module fpath.
-
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         return self._dotpath_map.get_module_dotpath_by_fpath(module_fpath)  # type: ignore
 
     def put_module(self, module_dotpath: str, module: Module) -> None:
         """
-        Put a module with the given dotpath in the map
-
-        Args:
-            module_dotpath: The dotpath of the module
-            module: The module to put in the map
+        Put a module with the given dotpath in the map.
 
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         self._loaded_modules[module_dotpath] = module
@@ -191,14 +166,10 @@ class PyModuleLoader(metaclass=Singleton):
 
     def delete_module(self, module_dotpath: str) -> None:
         """
-        Put a module with the given dotpath in the map
-
-        Args:
-            module_dotpath: The dotpath of the module
-            module: The module to put in the map
+        Put a module with the given dotpath in the map.
 
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         self._assert_initialized()
         self._dotpath_map.delete_module(module_dotpath)  # type: ignore
@@ -208,7 +179,7 @@ class PyModuleLoader(metaclass=Singleton):
     def reset(self) -> None:
         """
         Resets the PyModuleLoader to its initial state.
-        This will clear the cache of loaded modules and reset the dotpath map.
+        Clears the cache of loaded modules and resets the dotpath map.
         """
         self._loaded_modules = {}
         self._dotpath_map = None
@@ -219,10 +190,10 @@ class PyModuleLoader(metaclass=Singleton):
 
     def _load_all_modules(self) -> None:
         """
-        Loads all modules in the map
+        Loads all modules in the map.
 
         Raises:
-            Exception: If the map or python directory have not been initialized
+            Exception: If the map or python directory have not been initialized.
         """
         for module_dotpath, fpath in self._dotpath_map.items():  # type: ignore
             if module_dotpath not in self._loaded_modules:
@@ -232,19 +203,11 @@ class PyModuleLoader(metaclass=Singleton):
 
     @staticmethod
     def _load_module_from_fpath(path: str) -> Optional[Module]:
-        """
-        Loads and returns a AST object for the given file path.
-
-        Args:
-            path (str): The file path of the Python source code.
-
-        Returns:
-            Module: AST object for the given file path.
-        """
+        """Loads and returns a AST object for the given file path."""
         try:
             return py_ast_parse(open(path).read())
         except Exception as e:
-            logger.error(f"Failed to load module '{path}' due to: {e}")
+            logger.error(f"Failed to load module '{path}' due to: {e}.")
             return None
 
 

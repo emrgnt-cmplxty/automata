@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import numpy as np
-import pytest
 
 from automata.embedding import (
     EmbeddingBuilder,
@@ -60,7 +59,7 @@ def test_get_nearest_symbols_for_query(
     symbol_similarity.embedding_provider.build_embedding_vector.return_value = np.array(
         [1, 0, 0, 0]
     )
-    ordered_embeddings = embedding_db.get_ordered_embeddings()
+    ordered_embeddings = embedding_db.get_all_ordered_embeddings()
     result = symbol_similarity.calculate_query_similarity_dict(
         ordered_embeddings, "symbol1"
     )

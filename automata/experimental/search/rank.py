@@ -115,15 +115,8 @@ class SymbolRank:
         )
 
     def get_top_symbols(self, n: int) -> List[Tuple[str, float]]:
-        """
-        Get the top N symbols according to their ranks.
+        """Get the top N symbols according to their ranks."""
 
-        Args:
-            n: The number of top symbols to retrieve.
-
-        Returns:
-            A list of tuples each containing the dotpath of a symbol and its rank.
-        """
         ranks = self.get_ordered_ranks()
         return [(symbol.full_dotpath, rank) for symbol, rank in ranks[:n]]
 
@@ -132,6 +125,7 @@ class SymbolRank:
         Prepare the graph for the SymbolRank algorithm. If the graph is not directed,
         convert it to a directed graph, then create a stochastic graph from the directed graph.
         """
+
         if not self.graph.is_directed():
             directed_graph = self.graph.to_directed()
         else:
@@ -177,6 +171,7 @@ class SymbolRank:
             the modification of the rank computation based on symbol source-code similarity
 
         """
+
         if query_to_symbol_similarity is None:
             return {k: 1.0 / node_count for k in stochastic_graph}
         if missing := set(self.graph) - set(query_to_symbol_similarity):
@@ -191,6 +186,8 @@ class SymbolRank:
         dangling: Optional[Dict[Symbol, float]],
         query_to_symbol_similarity: Dict[Symbol, float],
     ) -> Dict[Symbol, float]:
+        """Prepare the dangling node weights for the SymbolRank algorithm."""
+
         if dangling is None:
             return query_to_symbol_similarity
         if missing := set(self.graph) - set(dangling):
@@ -203,6 +200,8 @@ class SymbolRank:
     def _get_dangling_nodes(
         self, stochastic_graph: nx.DiGraph
     ) -> List[Hashable]:
+        """Get the dangling nodes in the graph."""
+
         return [
             node
             for node in stochastic_graph

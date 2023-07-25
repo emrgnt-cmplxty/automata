@@ -71,12 +71,16 @@ class LLMProvider(PathEnum):
 
 @dataclass
 class ModelInformation:
+    """A class to represent the model information"""
+
     prompt_token_cost: float
     completion_token_cost: float
     max_tokens: int
 
 
 class AgentConfig(ABC, BaseModel):
+    """An abstract class to represent the configuration of an agent."""
+
     config_name: AgentConfigName = AgentConfigName.DEFAULT
     tools: List[Tool] = []
     instructions: str = ""
@@ -162,33 +166,46 @@ class AgentConfigBuilder(Generic[T]):
 
     @abstractmethod
     def with_model(self, model: str) -> "AgentConfigBuilder":
+        """Set the model for the agent."""
         pass
 
     def with_tools(self, tools: List[Tool]) -> "AgentConfigBuilder":
+        """Set the tools for the agent."""
+
         self._config.tools = tools
         return self
 
     def with_stream(self, stream: bool) -> "AgentConfigBuilder":
+        """Set the stream for the agent."""
+
         self._validate_type(stream, bool, "Stream")
         self._config.stream = stream
         return self
 
     def with_verbose(self, verbose: bool) -> "AgentConfigBuilder":
+        """Set the verbositty for the agent."""
+
         self._validate_type(verbose, bool, "Verbose")
         self._config.verbose = verbose
         return self
 
     def with_max_iterations(self, max_iters: int) -> "AgentConfigBuilder":
+        """Set the max iterations for the agent."""
+
         self._validate_type(max_iters, int, "Max iterations")
         self._config.max_iterations = max_iters
         return self
 
     def with_max_tokens(self, max_tokens: int) -> "AgentConfigBuilder":
+        """Set the max tokens for the agent."""
+
         self._validate_type(max_tokens, int, "Max iterations")
         self._config.max_tokens = max_tokens
         return self
 
     def with_temperature(self, temperature: float) -> "AgentConfigBuilder":
+        """Set the temperature for the agent."""
+
         self._validate_type(temperature, float, "Temperature")
         self._config.temperature = temperature
         return self
@@ -196,6 +213,8 @@ class AgentConfigBuilder(Generic[T]):
     def with_session_id(
         self, session_id: Optional[str]
     ) -> "AgentConfigBuilder":
+        """Set the session id for the agent."""
+
         if session_id:
             self._validate_type(session_id, str, "Session Id")
         self._config.session_id = session_id
@@ -204,6 +223,7 @@ class AgentConfigBuilder(Generic[T]):
     @classmethod
     def from_config(cls, config: T) -> "AgentConfigBuilder":
         """Create an AgentConfigBuilder instance using the provided configuration object."""
+
         return cls(config)
 
     @classmethod
@@ -211,6 +231,7 @@ class AgentConfigBuilder(Generic[T]):
         cls, config_name: Union[str, AgentConfigName]
     ) -> "AgentConfigBuilder":
         """Create an AgentConfigBuilder instance using the provided configuration object name."""
+
         if isinstance(config_name, str):
             try:
                 config_name = AgentConfigName(config_name)
@@ -224,6 +245,7 @@ class AgentConfigBuilder(Generic[T]):
     @staticmethod
     def _validate_type(value, expected_type, param_name: str) -> None:
         """Validate the type of the provided value and raise a ValueError if it doesn't match the expected type."""
+
         if not isinstance(value, expected_type):
             raise ValueError(
                 f"{param_name} must be a {expected_type.__name__}."

@@ -43,7 +43,7 @@ def mock_chromasymbolembeddingvectordatabase():
         "automata.symbol_embedding.ChromaSymbolEmbeddingVectorDatabase"
     ) as mock:
         instance = mock.return_value
-        instance.get_ordered_embeddings.return_value = [
+        instance.get_all_ordered_embeddings.return_value = [
             MagicMock(spec=SymbolDocEmbedding)
         ]
         yield mock

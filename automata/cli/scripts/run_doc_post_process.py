@@ -30,7 +30,7 @@ def main(*args, **kwargs) -> str:
 
     symbols = [
         embedding.symbol
-        for embedding in doc_embedding_db.get_ordered_embeddings()
+        for embedding in doc_embedding_db.get_all_ordered_embeddings()
     ]
 
     docs = {

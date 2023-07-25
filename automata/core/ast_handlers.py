@@ -40,6 +40,8 @@ class BoundingBox:
 
 
 def fetch_bounding_box(node: AST) -> Optional[BoundingBox]:
+    """Finds the bounding box of a node in the AST."""
+
     if not node.end_lineno or not node.end_col_offset:
         logger.warning(
             f"{node} does not have an end line number or column offset"
@@ -54,11 +56,8 @@ def fetch_bounding_box(node: AST) -> Optional[BoundingBox]:
 
 
 def get_docstring_from_node(node: Optional[AST]) -> str:
-    """
-    Gets the docstring from the specified node
-    Args:
-        node: The AST node to get the docstring from
-    """
+    """Gets the docstring from the specified node."""
+
     if not node:
         return AST_NO_RESULT_FOUND
 
@@ -86,6 +85,7 @@ class DocstringRemover(NodeTransformer):
 
 def get_node_without_docstrings(node: AST) -> AST:
     """Creates a copy of the specified node without docstrings."""
+
     remover = DocstringRemover()
     remover.visit(node)
     return node
@@ -106,12 +106,15 @@ class ImportRemover(NodeTransformer):
 
 def get_node_without_imports(node: AST) -> AST:
     """Creates a copy of the specified node without import statements."""
+
     remover = ImportRemover()
     remover.visit(node)
     return node
 
 
 def find_imports(module: Module) -> List[AST]:
+    """Find the imports for a specified module."""
+
     return [
         node for node in module.body if isinstance(node, (Import, ImportFrom))
     ]
@@ -121,17 +124,8 @@ def find_syntax_tree_node(
     code_obj: Optional[AST],
     node_path: Optional[str],
 ) -> Optional[AST]:
-    """
-    Find a module, or find a function, method, or class inside a module.
+    """Find a module, or find a function, method, or class inside a module."""
 
-    Args:
-        code_obj (RedBaron): The  red baron FST object.
-        node_path (Optional[str]): The dot-separated object path (e.g., 'ClassName.method_name'). If None,
-            the module is returned.
-
-    Returns:
-        Optional[Union[Def, Class, Module]]: The found def, or class node, or None if not found.
-    """
     if not code_obj:
         return None
 
@@ -141,7 +135,11 @@ def find_syntax_tree_node(
     obj_parts = node_path.split(".")
 
     def find_syntax_tree_node_pyast(code_obj: AST, node_path: List[str]):
+        """Finds the syntax tree node using the pyast library."""
+
         def find_subnode(node, obj_name):
+            """Finds a subnode of a node with the specified name."""
+
             for child in iter_child_nodes(node):
                 if (
                     isinstance(
@@ -154,6 +152,8 @@ def find_syntax_tree_node(
             return None
 
         if isinstance(code_obj, (Module, ClassDef)):
+            """Check if the code object is a module or class."""
+
             node = code_obj
             while node and node_path:
                 obj_name = node_path.pop(0)

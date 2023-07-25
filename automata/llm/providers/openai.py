@@ -36,6 +36,8 @@ class FunctionCall(NamedTuple):
     arguments: Dict[str, str]
 
     def to_dict(self) -> Dict[str, Union[Dict[str, str], str]]:
+        """Convert the function call to a dictionary."""
+
         return {
             "name": self.name,
             "arguments": json.dumps(self.arguments),
@@ -45,6 +47,8 @@ class FunctionCall(NamedTuple):
     def from_response_dict(
         cls, response_dict: Dict[str, str]
     ) -> "FunctionCall":
+        """Create a FunctionCall from a response dictionary."""
+
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
@@ -70,6 +74,7 @@ class FunctionCall(NamedTuple):
             Further, we need to be sure that this is adequate to solve all
             possible problems we might face due to adopting a Markdown return format.
         """
+
         try:
             return json.loads(arguments)
         except json.decoder.JSONDecodeError as e:
@@ -110,6 +115,8 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
         return f"{self.role}:\ncontent={self.content}\nfunction_call={self.function_call}"
 
     def get_function_call(self) -> Optional[FunctionCall]:
+        """Get the function call from the completion result."""
+
         if not self.function_call:
             return None
         else:
@@ -122,6 +129,8 @@ class OpenAIChatCompletionResult(LLMCompletionResult):
         content: str,
         function_call: Optional[FunctionCall] = None,
     ) -> "OpenAIChatCompletionResult":
+        """Create a completion result from the given arguments."""
+
         return cls(
             raw_data={
                 "choices": [
@@ -155,6 +164,8 @@ class OpenAIChatMessage(LLMChatMessage):
         return f"OpenAIChatMessage(role={self.role}, content={self.content}, function_call={self.function_call})"
 
     def to_dict(self) -> Dict[str, Any]:
+        """Convert the chat message to a dictionary."""
+
         if self.function_call is None:
             return {"role": self.role, "content": self.content}
 
@@ -168,6 +179,8 @@ class OpenAIChatMessage(LLMChatMessage):
     def from_completion_result(
         cls, completion_result: OpenAIChatCompletionResult
     ) -> "OpenAIChatMessage":
+        """Create a chat message from a completion result."""
+
         return cls(
             role=completion_result.get_role(),
             content=completion_result.get_content(),
@@ -189,16 +202,18 @@ class OpenAIConversation(LLMConversation):
         super().__init__()
         self._messages: List[OpenAIChatMessage] = []
 
+    def __len__(self) -> int:
+        return len(self._messages)
+
     @property
     def messages(self) -> Sequence[LLMChatMessage]:
         return self._messages
 
-    def __len__(self) -> int:
-        return len(self._messages)
-
     def add_message(
         self, message: LLMChatMessage, session_id: Optional[str]
     ) -> None:
+        """Add a message to the conversation."""
+
         if not isinstance(message, OpenAIChatMessage):
             raise OpenAIIncorrectMessageTypeError(message)
         self._messages.append(message)
@@ -209,12 +224,15 @@ class OpenAIConversation(LLMConversation):
             self.notify_observers(session_id)
 
     def get_messages_for_next_completion(self) -> List[Dict[str, Any]]:
+        """Get the messages for the next completion."""
         return [message.to_dict() for message in self._messages]
 
     def get_latest_message(self) -> LLMChatMessage:
+        """Get the latest message in the conversation."""
         return self._messages[-1]
 
     def reset_conversation(self) -> None:
+        """Reset the conversation."""
         self._messages = []
 
 
@@ -341,6 +359,8 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         return len(encoding.encode(result))
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
+        """Get the next completion from the assistant."""
+
         functions = [ele.to_dict() for ele in self.functions]
         logger.debug(
             f"Approximately {self.approximate_tokens_consumed} tokens were consumed prior to completion generation."
@@ -370,12 +390,14 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         )
 
     def reset(self) -> None:
+        """Reset the conversation."""
         self.conversation.reset_conversation()
 
     def standalone_call(
         self, prompt: str, session_id: Optional[str] = None
     ) -> str:
         """Return the completion message based on the provided prompt."""
+
         if self.conversation.messages:
             raise ValueError(
                 "The conversation is not empty. Please call reset() before calling standalone_call()."
@@ -392,6 +414,8 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     def add_message(
         self, message: LLMChatMessage, session_id: Optional[str] = None
     ) -> None:
+        """Add a message to the conversation."""
+
         if not isinstance(message, OpenAIChatMessage):
             self.conversation.add_message(
                 OpenAIChatMessage(role=message.role, content=message.content),
@@ -406,6 +430,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
     @staticmethod
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:
         """Streams the response message from the agent."""
+
         response = {
             "role": "assistant",
             "content": None,
@@ -500,6 +525,8 @@ class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
     def batch_build_embedding_vector(
         self, sources: List[str]
     ) -> List[np.ndarray]:
+        """Builds embeddings for a batch of source texts."""
+
         from openai.embeddings_utils import get_embeddings
 
         return [

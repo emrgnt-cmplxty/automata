@@ -57,8 +57,9 @@ class SymbolSearch:
 
     def get_symbol_rank_results(self, query: str) -> SymbolRankResult:
         """Fetches the list of the SymbolRank similar symbols ordered by rank."""
+
         ordered_embeddings = (
-            self.search_embedding_handler.get_ordered_embeddings()
+            self.search_embedding_handler.get_all_ordered_embeddings()
         )
 
         query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
@@ -128,6 +129,7 @@ class SymbolSearch:
 
     def _find_pattern_in_modules(self, pattern: str) -> Dict[str, List[int]]:
         """Finds exact line matches for a given pattern string in all modules."""
+
         matches = {}
         for module_path, module in py_module_loader.items():
             if module:
@@ -166,6 +168,7 @@ class SymbolSearch:
         dictionary: Dict[Any, float], func: Callable[[List[float]], np.ndarray]
     ) -> Dict[Any, float]:
         """Apply a function to each value in a dictionary and return a new dictionary."""
+
         # Apply the function to the accumulated values
         transformed_values = func([dictionary[key] for key in dictionary])
 

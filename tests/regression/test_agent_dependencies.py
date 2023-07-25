@@ -75,7 +75,9 @@ def test_automata_symbol_providers():
         factory=SymbolCodeEmbedding.from_args,
     )
 
-    ordered_code_embeddings = list(code_embedding_db.get_ordered_embeddings())
+    ordered_code_embeddings = list(
+        code_embedding_db.get_all_ordered_embeddings()
+    )
     last_code_embedding_symbol = ordered_code_embeddings[-1].symbol
 
     # DOC EMBEDDING
@@ -85,7 +87,9 @@ def test_automata_symbol_providers():
         factory=SymbolDocEmbedding.from_args,
     )
 
-    ordered_doc_embeddings = list(doc_embedding_db.get_ordered_embeddings())
+    ordered_doc_embeddings = list(
+        doc_embedding_db.get_all_ordered_embeddings()
+    )
     last_doc_embedding_symbol = ordered_doc_embeddings[-1].symbol
     if last_code_embedding_symbol.package != last_doc_embedding_symbol.package:
         raise ValueError(

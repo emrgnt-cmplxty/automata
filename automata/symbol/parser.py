@@ -20,17 +20,21 @@ class _SymbolParser:
         self.index = 0
 
     def error(self, message: str) -> ValueError:
+        """Produces a `ValueError` with the current symbol and a caret pointing to the current index"""
         return ValueError(f"{message}\n{self.symbol}\n{'_' * self.index}^")
 
     def current(self) -> str:
+        """Returns the current character in the `Symbol`"""
         return self.symbol[self.index]
 
     def peek_next(self) -> Optional[str]:
+        """Looks ahead to the next character in the `Symbol`"""
         if self.index + 1 < len(self.symbol):
             return self.symbol[self.index + 1]
         return None
 
     def parse_descriptors(self) -> List[SymbolDescriptor]:
+        """Parse the list of `Descriptor`s associated with the `Symbol`"""
         result = []
         while self.index < len(self.symbol):
             descriptor = self.parse_descriptor()
@@ -38,7 +42,10 @@ class _SymbolParser:
         return result
 
     def parse_descriptor(self) -> SymbolDescriptor:
-        """Parse a single `Descriptor` in the list associated with the `Symbol`"""
+        """
+        Parse a single `Descriptor` in the list associated with the `Symbol`
+        TODO - Refactor this into multiple methods.
+        """
         next_char = self.current()
         if next_char == "(":
             self.index += 1
@@ -90,6 +97,7 @@ class _SymbolParser:
                 raise self.error("Expected a descriptor suffix")
 
     def accept_identifier(self, what: str) -> str:
+        """Accepts an identifier from the `Symbol`"""
         if self.current() == "`":
             self.index += 1
             return self.accept_backtick_escaped_identifier(what)
@@ -144,6 +152,7 @@ class _SymbolParser:
         )
 
     def accept_character(self, r: str, what: str):
+        """Accepts a character from the `Symbol`"""
         if self.current() == r:
             self.index += 1
         else:
@@ -153,6 +162,7 @@ class _SymbolParser:
 
     @staticmethod
     def is_identifier_character(c: str) -> bool:
+        """Checks if a character is a valid identifier character"""
         return c.isalpha() or c.isdigit() or c in {"-", "+", "$", "_"}
 
 
@@ -185,6 +195,7 @@ def parse_symbol(symbol_uri: str) -> Symbol:
 
 
 def new_local_symbol(symbol: str, id: str) -> Symbol:
+    """Creates a new local `Symbol`"""
     # TODO: Do we need this method?
     return Symbol(
         symbol,
@@ -192,14 +203,6 @@ def new_local_symbol(symbol: str, id: str) -> Symbol:
         SymbolPackage("", "", ""),
         (SymbolDescriptor(id, SymbolDescriptor.ScipSuffix.Local),),
     )
-
-
-def is_global_symbol(symbol: str) -> bool:
-    return not is_local_symbol(symbol)
-
-
-def is_local_symbol(symbol: str) -> bool:
-    return symbol.startswith("local ")
 
 
 def get_escaped_name(name: str) -> str:
