@@ -114,17 +114,23 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
+@click.argument("symbols", nargs=-1)
 @click.option(
     "--embedding-level", type=int, default=2, help="Level of the embedding."
 )
-def run_doc_embedding(ctx, *args, **kwargs) -> None:
-    """Run the document embedding pipeline."""
-
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="Overwrite the existing doc embeddings in the database.",
+)
+def run_doc_embedding(ctx, symbols, overwrite, *args, **kwargs) -> None:
     from automata.cli.scripts.run_doc_embedding import main
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Calling run_doc_embedding")
-    result = main(*args, **kwargs)
+
+    result = main(overwrite=overwrite, *args, **kwargs)
     logger.info(f"Result = {result}")
 
 
