@@ -13,3 +13,5 @@ def loader():
 
 def test_eval_loader(loader):
     print("loader = ", loader)
+
+    assert False

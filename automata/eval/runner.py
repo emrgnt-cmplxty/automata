@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class EvalTaskLoader:
     """Loads a list of tasks from a JSON file."""
 
-    def __init__(self, filepath):
+    def __init__(self, filepath: str):
         self.filepath = filepath
         self.tasks = self.load_json()
 
