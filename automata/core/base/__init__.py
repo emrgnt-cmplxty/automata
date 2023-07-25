@@ -4,6 +4,7 @@ from .database import (
     SQLDatabase,
     VectorDatabaseProvider,
 )
+from .error import AutomataError
 from .patterns import Observer, Singleton
 
 __all__ = [
@@ -11,6 +12,7 @@ __all__ = [
     "VectorDatabaseProvider",
     "JSONVectorDatabase",
     "ChromaVectorDatabase",
+    "AutomataError",
     "Singleton",
     "Observer",
 ]

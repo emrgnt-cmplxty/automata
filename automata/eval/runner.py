@@ -1,29 +1,70 @@
 import json
+import logging
 from typing import Dict, List, Optional, Union, cast
 
-from automata.config import EVAL_DB_PATH, MAX_WORKERS
+from automata.config import EVAL_DB_PATH
 from automata.core.base.database import SQLDatabase
 from automata.eval.base import (
     Action,
     CompositeEval,
     Eval,
     EvalResult,
+    Payload,
     check_eval_uniqueness,
 )
+from automata.eval.error import EvalExecutionError, EvalLoadingError
 from automata.eval.metrics import EvaluationMetrics
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
+logger = logging.getLogger(__name__)
 
-class EvalTaskLoader:
+
+class EvalSetLoader:
     """Loads a list of tasks from a JSON file."""
 
-    def __init__(self, filepath):
+    def __init__(self, filepath: str):
         self.filepath = filepath
+        if not filepath.endswith(".json"):
+            raise ValueError(
+                f"Only JSON files are supported, received filepath {filepath}"
+            )
+        payloads = self.load_json()
+        self.tasks: List[AutomataTask] = []
+        self.expected_actions: List[List[Action]] = []
+        for payload in payloads:
+            instructions = payload.get("instructions")
+            expected_actions = payload.get("expected_actions")
 
-    def load_tasks(self):
-        with open(self.filepath, "r") as f:
-            tasks = json.load(f)
-        return tasks
+            assert isinstance(
+                instructions, str
+            ), "instructions must be a string"
+            assert isinstance(
+                expected_actions, list
+            ), "expected_actions must be a dictionary"
+            for expected_action in expected_actions:
+                assert isinstance(
+                    expected_action, dict
+                ), "each expected action must be a dictionary"
+
+            self.tasks.append(AutomataTask(instructions=instructions))
+            self.expected_actions.append(
+                [
+                    Action.parse_action_from_payload(action)  # type: ignore
+                    for action in expected_actions
+                ]
+            )
+
+    def load_json(self) -> List[Payload]:
+        """Loads the JSON file."""
+
+        try:
+            logging.info(f"Loading json from {self.filepath}...")
+            with open(self.filepath, "r") as f:
+                json_output = json.load(f)
+            logging.info(f"Loaded {len(json_output)} tasks.")
+        except Exception as e:
+            raise EvalLoadingError from e
+        return json_output
 
 
 class EvalResultDatabase(SQLDatabase):
@@ -169,10 +210,10 @@ def process_task(
 class EvaluationHarness:
     """A class to evaluate a list of instructions against a list of expected actions."""
 
-    def __init__(self, evals: List[Eval], num_workers: int = MAX_WORKERS):
+    def __init__(self, evals: List[Eval]):
         check_eval_uniqueness(evals)
         self.evals = evals
-        self.num_workers = num_workers
+        # self.num_workers = num_workers # TODO - Include parallelizatio
 
     def evaluate(
         self,
@@ -183,20 +224,29 @@ class EvaluationHarness:
     ) -> EvaluationMetrics:
         """Returns the evaluation metrics for the given instructions and expected actions."""
 
+        logging.info(f"Starting evaluation of {len(tasks)} tasks...")
+
         aggregate_results = []
         for task in tasks:
-            results: List[EvalResult] = []
-            agent = executor.execute(task)
-            results.extend(
-                eval.process_result(
-                    expected_actions,
-                    agent.conversation.messages,
-                    agent.session_id,
+            try:
+                results: List[EvalResult] = []
+                agent = executor.execute(task)
+                results.extend(
+                    eval.process_result(
+                        expected_actions,
+                        agent.conversation.messages,
+                        agent.session_id,
+                    )
+                    for eval in self.evals
                 )
-                for eval in self.evals
-            )
-            if aggregate:
-                results = [CompositeEval.aggregate_result(results)]
-            aggregate_results.extend(results)
+                if aggregate:
+                    results = [CompositeEval.aggregate_result(results)]
+                aggregate_results.extend(results)
+
+            except Exception as e:
+                logging.error("Error during task execution: ", e)
+                raise EvalExecutionError from e
+
+        logging.info("Evaluation complete, calculating metrics...")
 
         return EvaluationMetrics(aggregate_results)

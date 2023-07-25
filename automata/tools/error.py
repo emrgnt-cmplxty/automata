@@ -1,3 +1,7 @@
+# TODO -  Why does the below produce circular import error?
+# from automata.core.base import AutomataError
+
+
 class UnknownToolError(Exception):
     """An exception for when an unknown tools type is provided."""
 

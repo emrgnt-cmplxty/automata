@@ -10,6 +10,9 @@ from automata.tasks import AutomataTask, AutomataTaskExecutor
 logger = logging.getLogger(__name__)
 
 
+Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
+
+
 class Action(ABC):
     """An arbitrary action to be taken by an LLM, like an OpenAI function call"""
 
@@ -24,8 +27,22 @@ class Action(ABC):
         """Creates an Action from a dictionary."""
         pass
 
+    @staticmethod
+    def parse_action_from_payload(payload: Payload) -> "Action":
+        """Parses out the corresponding actiopn from a raw dictionary."""
 
-Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
+        action_type = payload.pop("type")
+        if action_type == "CodeWritingAction":
+            from automata.eval.code_writing import CodeWritingAction
+
+            return CodeWritingAction.from_payload(payload)
+        elif action_type == "OpenAIFunctionCallAction":
+            from automata.eval.eval_providers import OpenAIFunctionCallAction
+
+            return OpenAIFunctionCallAction.from_payload(payload)
+
+        else:
+            raise ValueError(f"Unknown action type: {payload['type']}")
 
 
 @dataclass
@@ -75,12 +92,12 @@ class EvalResult:
             )
 
         match_result = {
-            EvalResult._action_from_payload(json.loads(action)): result
+            Action.parse_action_from_payload(json.loads(action)): result
             for action, result in matches.items()
         }
 
         extra_actions = [
-            EvalResult._action_from_payload(json.loads(action))
+            Action.parse_action_from_payload(json.loads(action))
             for action in payload["extra_actions"]
         ]
 
@@ -96,23 +113,6 @@ class EvalResult:
             extra_actions=extra_actions,
             session_id=session_id,
         )
-
-    @staticmethod
-    def _action_from_payload(payload: Payload):
-        """Parses out the corresponding actiopn from a raw dictionary."""
-
-        action_type = payload.pop("type")
-        if action_type == "CodeWritingAction":
-            from automata.eval.code_writing import CodeWritingAction
-
-            return CodeWritingAction.from_payload(payload)
-        elif action_type == "OpenAIFunctionCallAction":
-            from automata.eval.eval_providers import OpenAIFunctionCallAction
-
-            return OpenAIFunctionCallAction.from_payload(payload)
-
-        else:
-            raise ValueError(f"Unknown action type: {payload['type']}")
 
 
 class Eval(ABC):
