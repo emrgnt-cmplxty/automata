@@ -31,7 +31,6 @@ class Action(ABC):
     def parse_action_from_payload(payload: Payload) -> "Action":
         """Parses out the corresponding actiopn from a raw dictionary."""
 
-        print("payload = ", payload)
         action_type = payload.pop("type")
         if action_type == "CodeWritingAction":
             from automata.eval.code_writing import CodeWritingAction
