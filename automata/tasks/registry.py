@@ -50,9 +50,12 @@ class AutomataTaskRegistry:
 
     def fetch_task_by_id(self, session_id: str) -> Optional[AutomataTask]:
         """
+        Fetches a taks by the recorded session id.
+
         Raises:
             Exception: If multiple tasks are found with the same id.
         """
+
         results = self.db.get_tasks_by_query(
             query="SELECT json FROM tasks WHERE id = ?", params=(session_id,)
         )
@@ -67,6 +70,7 @@ class AutomataTaskRegistry:
         return task
 
     def get_all_tasks(self) -> List[AutomataTask]:
+        """Gets all tasks in the registry."""
         results = self.db.get_tasks_by_query(query="SELECT json FROM tasks")
         for result in results:
             result.observer = self.update_task

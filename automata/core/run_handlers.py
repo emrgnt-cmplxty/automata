@@ -3,6 +3,14 @@ from typing import List, Optional, Tuple
 from automata.agent import OpenAIAutomataAgent
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.core.utils import get_root_fpath
+from automata.eval import (
+    Action,
+    CodeWritingEval,
+    CompositeEval,
+    Eval,
+    EvalResult,
+    OpenAIFunctionEval,
+)
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
@@ -124,3 +132,35 @@ def run_with_task(
     task_executor = AutomataTaskExecutor(task_execution)
     task_executor.execute(task)
     return task
+
+
+def run_with_eval(
+    instructions: str,
+    config_name: AgentConfigName,
+    tools: List[Tool],
+    model: str,
+    max_iterations: int,
+    task_registry: AutomataTaskRegistry,
+    task_environment: AutomataTaskEnvironment,
+    task_execution: ITaskExecution = IAutomataTaskExecution(),
+    expected_actions: List[Action] = [],
+    evaluator: Eval = CompositeEval([OpenAIFunctionEval(), CodeWritingEval()]),
+) -> EvalResult:
+    """Run a task with the given parameters."""
+
+    task = create_task(
+        instructions,
+        config_name,
+        tools,
+        model,
+        max_iterations,
+        task_registry,
+        task_environment,
+    )
+
+    # Create the executor and execute the task
+    task_executor = AutomataTaskExecutor(task_execution)
+
+    return evaluator.generate_eval_result(
+        task, expected_actions, task_executor
+    )

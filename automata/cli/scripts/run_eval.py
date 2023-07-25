@@ -76,8 +76,3 @@ if __name__ == "__main__":
     result = composite_evaluator.generate_eval_result(
         task, expected_actions, task_executor
     )
-
-    # Write result to database
-    eval_db = EvalResultDatabase()
-    print(f"Result = {result}")
-    eval_db.write_result(result)
