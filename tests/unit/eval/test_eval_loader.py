@@ -14,7 +14,6 @@ def loader():
 def test_eval_loader(loader):
     assert loader.tasks, "No tasks loaded"
     assert loader.expected_actions, "No expected actions loaded"
-    print("loader.tasks[0].instructions = ", loader.tasks[0].instructions)
     assert (
         loader.tasks[0].instructions == "Call Termination with result True"
     ), "Instruction not loaded correctly"
