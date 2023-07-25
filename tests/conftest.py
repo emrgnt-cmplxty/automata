@@ -19,6 +19,7 @@ from automata.symbol.parser import parse_symbol
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.environment import AutomataTaskEnvironment
 from automata.tasks.registry import AutomataTaskRegistry
+from automata.tasks.task_database import AutomataAgentTaskDatabase
 from automata.tools.factory import AgentToolFactory
 
 
@@ -284,14 +285,16 @@ def environment():
     return AutomataTaskEnvironment(github_mock)
 
 
-@pytest.fixture
-def registry(task):
-    def mock_get_tasks_by_query(query, params):
-        return [task] if params[0] == task.session_id else []
+@pytest.fixture(autouse=True)
+def task_db(tmpdir_factory):
+    db_file = tmpdir_factory.mktemp("data").join("test.db")
+    db = AutomataAgentTaskDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
 
-    db = MagicMock()
-    db.get_tasks_by_query.side_effect = (
-        mock_get_tasks_by_query  # Assigning the side_effect attribute
-    )
-    registry = AutomataTaskRegistry(db)
-    return registry
+
+@pytest.fixture
+def registry(task, task_db):
+    return AutomataTaskRegistry(task_db)
