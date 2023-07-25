@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a38c7621248191aa7df05eac07de73612c5c9103b501723919485812261bbd85
-size 289
+[
+    {
+        "instructions": "Call Termination with result True",
+        "expected_actions": [
+            {
+                "type": "OpenAIFunctionCallAction",
+                "name": "call_termination",
+                "arguments": {"result": "True"}
+            }
+        ]
+    }
+]
