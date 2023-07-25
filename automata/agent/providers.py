@@ -163,10 +163,10 @@ class OpenAIAutomataAgent(Agent):
 
         if not self.completed:
             raise ValueError("The agent has not completed its instructions.")
-        result = self._conversation.get_latest_message().content
-        if not result:
+        if result := self._conversation.get_latest_message().content:
+            return result
+        else:
             raise ValueError("The agent did not produce a result.")
-        return result
 
     def set_database_provider(
         self, provider: LLMConversationDatabaseProvider

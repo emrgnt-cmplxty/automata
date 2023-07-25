@@ -136,7 +136,7 @@ def test_agent_py_writer(
         instructions, agent_config_name, tools, model, max_iterations
     )
 
-    module = py_module_loader.fetch_ast_module(expected_output_module)
-    if not module:
+    if module := py_module_loader.fetch_ast_module(expected_output_module):
+        py_module_loader.delete_module(expected_output_module)
+    else:
         raise ValueError("Failed to create expected output module")
-    py_module_loader.delete_module(expected_output_module)
