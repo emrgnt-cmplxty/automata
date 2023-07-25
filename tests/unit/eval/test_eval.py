@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.agent.providers import OpenAIChatMessage
-from automata.llm.eval import (
+from automata.eval import (
     CodeWritingAction,
     CodeWritingEval,
     CompositeEval,

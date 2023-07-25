@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List
 
-from automata.llm.eval import Action, Eval, Payload
+from automata.eval import Action, Eval, Payload
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 

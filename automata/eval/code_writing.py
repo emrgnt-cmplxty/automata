@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from automata.llm.eval import Action, Eval, Payload
+from automata.eval import Action, Eval, Payload
 from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)

@@ -10,6 +10,7 @@ from automata.tasks import (
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
     IAutomataTaskExecution,
+    ITaskExecution,
 )
 from automata.tasks.registry import AutomataTaskRegistry
 from automata.tools import Tool
@@ -105,7 +106,7 @@ def run_with_task(
     max_iterations: int,
     task_registry: AutomataTaskRegistry,
     task_environment: AutomataTaskEnvironment,
-    task_execution: IAutomataTaskExecution,
+    task_execution: ITaskExecution = IAutomataTaskExecution(),
 ) -> AutomataTask:
     """Run a task with the given parameters."""
 

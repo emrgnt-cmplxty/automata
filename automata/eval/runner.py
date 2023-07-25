@@ -3,14 +3,14 @@ from typing import Dict, List, Optional, Union, cast
 
 from automata.config import EVAL_DB_PATH, MAX_WORKERS
 from automata.core.base.database import SQLDatabase
-from automata.llm.eval.base import (
+from automata.eval.base import (
     Action,
     CompositeEval,
     Eval,
     EvalResult,
     check_eval_uniqueness,
 )
-from automata.llm.eval.metrics import EvaluationMetrics
+from automata.eval.metrics import EvaluationMetrics
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 

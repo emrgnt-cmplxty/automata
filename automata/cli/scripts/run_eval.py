@@ -1,7 +1,7 @@
 from typing import List
 
 from automata.config import AgentConfigName
-from automata.llm.eval import (
+from automata.eval import (
     Action,
     CodeWritingEval,
     CompositeEval,
@@ -15,10 +15,10 @@ from automata.tasks import (
     AutomataTask,
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
+    AutomataTaskRegistry,
     EnvironmentMode,
     IAutomataTaskExecution,
 )
-from automata.tasks.registry import AutomataTaskRegistry
 from automata.tools.factory import AgentToolFactory
 
 

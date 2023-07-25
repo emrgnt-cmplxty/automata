@@ -105,13 +105,11 @@ class EvalResult:
 
         action_type = payload.pop("type")
         if action_type == "CodeWritingAction":
-            from automata.llm.eval.code_writing import CodeWritingAction
+            from automata.eval.code_writing import CodeWritingAction
 
             return CodeWritingAction.from_payload(payload)
         elif action_type == "OpenAIFunctionCallAction":
-            from automata.llm.eval.eval_providers import (
-                OpenAIFunctionCallAction,
-            )
+            from automata.eval.eval_providers import OpenAIFunctionCallAction
 
             return OpenAIFunctionCallAction.from_payload(payload)
 
