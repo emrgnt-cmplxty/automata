@@ -24,37 +24,35 @@ class EvalSetLoader:
 
     def __init__(self, filepath: str):
         self.filepath = filepath
-        if filepath.endswith(".json"):
-            payloads = self.load_json()
-            print("payloads = ", payloads)
-            self.tasks: List[AutomataTask] = []
-            self.expected_actions: List[List[Action]] = []
-            for payload in payloads:
-                instructions = payload.get("instructions")
-                expected_actions = payload.get("expected_actions")
-
-                assert isinstance(
-                    instructions, str
-                ), "instructions must be a string"
-                assert isinstance(
-                    expected_actions, list
-                ), "expected_actions must be a dictionary"
-                for expected_action in expected_actions:
-                    assert isinstance(
-                        expected_action, dict
-                    ), "each expected action must be a dictionary"
-
-                self.tasks.append(AutomataTask(instructions=instructions))
-                self.expected_actions.append(
-                    [
-                        Action.parse_action_from_payload(action)  # type: ignore
-                        for action in expected_actions
-                    ]
-                )
-
-        else:
+        if not filepath.endswith(".json"):
             raise ValueError(
                 f"Only JSON files are supported, received filepath {filepath}"
+            )
+        payloads = self.load_json()
+        print("payloads = ", payloads)
+        self.tasks: List[AutomataTask] = []
+        self.expected_actions: List[List[Action]] = []
+        for payload in payloads:
+            instructions = payload.get("instructions")
+            expected_actions = payload.get("expected_actions")
+
+            assert isinstance(
+                instructions, str
+            ), "instructions must be a string"
+            assert isinstance(
+                expected_actions, list
+            ), "expected_actions must be a dictionary"
+            for expected_action in expected_actions:
+                assert isinstance(
+                    expected_action, dict
+                ), "each expected action must be a dictionary"
+
+            self.tasks.append(AutomataTask(instructions=instructions))
+            self.expected_actions.append(
+                [
+                    Action.parse_action_from_payload(action)  # type: ignore
+                    for action in expected_actions
+                ]
             )
 
     def load_json(self) -> List[Payload]:
