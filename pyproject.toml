@@ -57,7 +57,7 @@ questionary = "^1.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
-sphinx = "^3.5"
+sphinx = "^4.5"
 sphinx-panels = "0.6.0" # Used on Linux
 sphinx-rtd-dark-mode = "1.2.4" # Used on Windows
 sphinx_panels = "0.6.0" # Used on Windows
