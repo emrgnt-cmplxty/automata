@@ -58,7 +58,7 @@ class Task:
                 "Values for both session_id and generate_deterministic_id cannot be provided."
             )
         else:
-            self.session_id = uuid.uuid4()
+            self.session_id = str(uuid.uuid4())
 
         self.priority = kwargs.get("priority", 0)
         self.max_retries = kwargs.get("max_retries", 3)
@@ -107,7 +107,7 @@ class Task:
             self._status = new_status
         self.notify_observer()
 
-    def _deterministic_session_id(self, **kwargs) -> uuid.UUID:
+    def _deterministic_session_id(self, **kwargs) -> str:
         """
         Returns a deterministic session id for the task which is
         generated based on the hash of the hashable kwargs.
@@ -122,7 +122,7 @@ class Task:
         kwargs_hash = hash(tuple(hashable_items))
 
         # Combine the hashes and use it as a seed for generating a deterministic UUID
-        return uuid.uuid5(uuid.NAMESPACE_DNS, f"{kwargs_hash}")
+        return str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{kwargs_hash}"))
 
     def _get_task_dir(self, base_dir: str) -> str:
         """

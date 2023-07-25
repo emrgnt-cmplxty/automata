@@ -5,12 +5,12 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.agent.providers import OpenAIChatMessage
-from automata.llm.eval import (
+from automata.eval import (
     CodeWritingAction,
     CodeWritingEval,
     CompositeEval,
     EvalResult,
-    EvalResultWriter,
+    EvalResultDatabase,
     EvaluationHarness,
     EvaluationMetrics,
     OpenAIFunctionCallAction,
@@ -237,7 +237,7 @@ def task_db(tmpdir_factory):
 @pytest.fixture(scope="module", autouse=True)
 def eval_db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test_eval.db")
-    db = EvalResultWriter(str(db_file))
+    db = EvalResultDatabase(str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):
@@ -359,10 +359,10 @@ def test_generate_function_eval_result_match(
     ]
 
     assert task.status == TaskStatus.SUCCESS
-    assert task.result == "Execution Result:\n\nSuccess"
+    assert task.result == "Success"
 
     saved_messages = conversation_db.get_messages(automata_agent.session_id)
-    assert len(saved_messages) == 6
+    assert len(saved_messages) == 11
 
 
 def test_generate_eval_result_no_match(
@@ -658,8 +658,8 @@ def test_task_evaluation_with_database_integration(
     mock_msg_0 = OpenAIChatMessage(
         **mock_conversation[0]["choices"][0]["message"]
     )
-    assert fetched_conversation[0].role == mock_msg_0.role
-    assert fetched_conversation[0].content == mock_msg_0.content
+    assert fetched_conversation[-4].role == mock_msg_0.role
+    assert fetched_conversation[-4].content == mock_msg_0.content
     # TODO - We need proper loading of the function_call object
     # assert fetched_conversation[0].function_call == mock_msg_0.function_call
 
@@ -667,11 +667,11 @@ def test_task_evaluation_with_database_integration(
         **mock_conversation[1]["choices"][0]["message"]
     )
     # TODO - We skip the user feedback message, should probably check that
-    assert fetched_conversation[2].role == mock_msg_1.role
-    assert fetched_conversation[2].content == mock_msg_1.content
+    assert fetched_conversation[-2].role == mock_msg_1.role
+    assert fetched_conversation[-2].content == mock_msg_1.content
 
 
-# Standalone test for the EvalResultWriter
+# Standalone test for the EvalResultDatabase
 def test_eval_result_writer(eval_db):
     # Generate a test EvalResult
     action1 = EXPECTED_CODE_ACTIONS[0]
@@ -680,10 +680,11 @@ def test_eval_result_writer(eval_db):
         full_match=True,
         match_result={action1: True, action2: False},
         extra_actions=[action2],
+        session_id="test_session",
     )
 
     # Write the result to the database
-    eval_db.write_result("test_session", eval_result, 1)
+    eval_db.write_result(eval_result, 1)
 
     # Retrieve the result from the database
     retrieved_results = eval_db.get_results("test_session")

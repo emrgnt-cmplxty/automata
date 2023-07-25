@@ -1,7 +1,7 @@
 from collections import Counter
 from typing import List, Optional
 
-from automata.llm.eval.base import EvalResult
+from automata.eval.base import EvalResult
 
 
 class EvaluationMetrics:

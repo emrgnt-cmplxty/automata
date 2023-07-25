@@ -44,7 +44,6 @@ class OpenAIAutomataAgent(Agent):
     """
 
     CONTINUE_PREFIX: Final = f"Continue..."
-    EXECUTION_PREFIX: Final = "Execution Result:"
     GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nPlease return a result with call_termination when ready or if you are nearing limits."
     STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS, RETURN A RESULT NOW WITH call_termination."
 
@@ -159,6 +158,16 @@ class OpenAIAutomataAgent(Agent):
             raise AgentResultError("The agent produced an empty result.")
         return last_message.content
 
+    def get_result(self) -> str:
+        """Gets the result of the agent."""
+
+        if not self.completed:
+            raise ValueError("The agent has not completed its instructions.")
+        if result := self._conversation.get_latest_message().content:
+            return result
+        else:
+            raise ValueError("The agent did not produce a result.")
+
     def set_database_provider(
         self, provider: LLMConversationDatabaseProvider
     ) -> None:
@@ -173,6 +182,9 @@ class OpenAIAutomataAgent(Agent):
                 "The database provider has already been set."
             )
         self.database_provider = provider
+        # Log existing messages
+        for message in self.conversation.messages:
+            provider.save_message(self.session_id, message)
         self._conversation.register_observer(provider)
 
     def _build_initial_messages(
@@ -254,7 +266,7 @@ class OpenAIAutomataAgent(Agent):
                     )
                     return OpenAIChatMessage(
                         role="user",
-                        content=f"{OpenAIAutomataAgent.EXECUTION_PREFIX}\n\n{result}{function_iteration_message}",
+                        content=f"{result}{function_iteration_message}",
                     )
         return OpenAIChatMessage(
             role="user",

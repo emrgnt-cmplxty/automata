@@ -1,4 +1,3 @@
-import uuid
 from unittest.mock import PropertyMock, patch
 
 import pytest
@@ -76,7 +75,7 @@ def test_session_id_determinism(automata_agent_config_builder):
     assert task_1.session_id == task_2.session_id
     assert task_1.session_id != task_3.session_id
     assert task_1.session_id != task_4.session_id
-    assert isinstance(task_4.session_id, uuid.UUID)
+    assert isinstance(task_4.session_id, str)
 
     task_5 = AutomataTask(
         MockRepositoryClient(),

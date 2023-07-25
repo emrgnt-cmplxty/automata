@@ -1,13 +1,11 @@
 from typing import List
 
-from automata.agent import OpenAIAutomataAgent
-from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
-from automata.llm.eval import (
+from automata.config import AgentConfigName
+from automata.eval import (
     Action,
     CodeWritingEval,
     CompositeEval,
-    Eval,
-    EvalResult,
+    EvalResultDatabase,
     OpenAIFunctionEval,
 )
 from automata.singletons.dependency_factory import dependency_factory
@@ -17,10 +15,10 @@ from automata.tasks import (
     AutomataTask,
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
+    AutomataTaskRegistry,
     EnvironmentMode,
     IAutomataTaskExecution,
 )
-from automata.tasks.registry import AutomataTaskRegistry
 from automata.tools.factory import AgentToolFactory
 
 
@@ -30,19 +28,16 @@ def initialize_automata():
     py_module_loader.initialize()
 
 
-def run_agent_and_get_eval(
-    instructions: str,
-    agent_config_name: str,
-    toolkit_list: List[str],
-    model: str,
-    max_iterations: int,
-    expected_actions: List[Action],
-    evaluators: List[Eval] = [
-        OpenAIFunctionEval(),
-        CodeWritingEval(target_variables=["x", "y", "z"]),
-    ],
-) -> EvalResult:
+if __name__ == "__main__":
     initialize_automata()
+
+    instructions = """Return True"""
+    agent_config_name = "automata-main"
+    toolkit_list = ["py-writer"]
+    model = "gpt-3.5-turbo"
+    max_iterations = 2
+    evaluators = [OpenAIFunctionEval(), CodeWritingEval()]
+    expected_actions: List[Action] = []
 
     # Create a task
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
@@ -78,37 +73,6 @@ def run_agent_and_get_eval(
         evaluators,
     )
 
-    return composite_evaluator.generate_eval_result(
+    result = composite_evaluator.generate_eval_result(
         task, expected_actions, task_executor
     )
-
-
-def run_agent_and_get_result(
-    instructions: str,
-    toolkit_list: List[str],
-    model: str,
-    agent_config_name: str,
-    max_iterations: int,
-) -> str:
-    initialize_automata()
-
-    tool_dependencies = dependency_factory.build_dependencies_for_tools(
-        toolkit_list
-    )
-    tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
-    config_name = AgentConfigName(agent_config_name)
-    agent_config_builder = (
-        OpenAIAutomataAgentConfigBuilder.from_name(config_name)
-        .with_tools(tools)
-        .with_model(model)
-    )
-
-    agent_config_builder = agent_config_builder.with_max_iterations(
-        max_iterations
-    )
-
-    agent = OpenAIAutomataAgent(
-        instructions, config=agent_config_builder.build()
-    )
-    result = agent.run()
-    return result.replace("Execution Result:\n", "").strip()

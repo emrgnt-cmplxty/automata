@@ -55,9 +55,9 @@ class EvalResult:
             "session_id": self.session_id,
         }
 
-    @staticmethod
+    @classmethod
     # TODO - Add custom exceptions, and add proper error handling for jsons
-    def from_payload(payload: Payload):
+    def from_payload(cls, payload: Payload) -> "EvalResult":
         """Loads a json serialized eval result."""
 
         matches = payload["match_result"]
@@ -90,7 +90,7 @@ class EvalResult:
                 f"Invalid session_id ({session_id}) was observed."
             )
 
-        return EvalResult(
+        return cls(
             full_match=full_match,
             match_result=match_result,
             extra_actions=extra_actions,
@@ -103,13 +103,11 @@ class EvalResult:
 
         action_type = payload.pop("type")
         if action_type == "CodeWritingAction":
-            from automata.llm.eval.code_writing import CodeWritingAction
+            from automata.eval.code_writing import CodeWritingAction
 
             return CodeWritingAction.from_payload(payload)
         elif action_type == "OpenAIFunctionCallAction":
-            from automata.llm.eval.eval_providers import (
-                OpenAIFunctionCallAction,
-            )
+            from automata.eval.eval_providers import OpenAIFunctionCallAction
 
             return OpenAIFunctionCallAction.from_payload(payload)
 
@@ -141,13 +139,14 @@ class Eval(ABC):
         agent = executor.execute(task)
 
         return self.process_result(
-            expected_actions, agent.conversation.messages
+            expected_actions, agent.conversation.messages, agent.session_id
         )
 
     def process_result(
         self,
         expected_actions: List[Action],
         conversation: Sequence[LLMChatMessage],
+        session_id: Optional[str] = None,
     ):
         """Processes the result of an evaluation."""
 
@@ -173,6 +172,7 @@ class Eval(ABC):
             full_match=full_match,
             match_result=match_result,
             extra_actions=extra_actions,
+            session_id=session_id,
         )
 
     @abstractmethod
@@ -225,7 +225,7 @@ class CompositeEval(Eval):
 
         results = [
             evaluator.process_result(
-                expected_actions, agent.conversation.messages
+                expected_actions, agent.conversation.messages, agent.session_id
             )
             for evaluator in self.evaluators
         ]

@@ -152,8 +152,6 @@ def find_syntax_tree_node(
             return None
 
         if isinstance(code_obj, (Module, ClassDef)):
-            """Check if the code object is a module or class."""
-
             node = code_obj
             while node and node_path:
                 obj_name = node_path.pop(0)
