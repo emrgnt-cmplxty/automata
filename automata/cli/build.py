@@ -1,8 +1,10 @@
+import logging
 import os
 import pathlib
 import shutil
 import subprocess
 
+# TODO - Add comments to these input variables
 script_dir = pathlib.Path(__file__).parent.absolute()
 automata_root = script_dir.parent.parent
 repo_store_path = os.path.join(automata_root.parent, "repo_store")
@@ -21,11 +23,17 @@ pyright_scip_index = os.path.join(
 project_in_factory = os.path.join(factory_path, project_name)
 
 
+logger = logging.getLogger(__name__)
+
+
+# TODO - Can we add a type def to this method?
 def git(*args):
+    """Executes git [args] in the local environtment"""
     return subprocess.check_call(["git"] + list(args))
 
 
 def install_indexing():
+    """Attempts to execute the install indexing script"""
     try:
         os.chdir(scip_python_path)
         subprocess.run(["npm", "install"], check=True)
@@ -33,47 +41,12 @@ def install_indexing():
         os.chdir(os.path.join(scip_python_path, "packages/pyright-scip"))
         subprocess.run(["npm", "run", "build"], check=True)
     finally:
+        logger.error("Failed to install the indexing")
         os.chdir(automata_root)
 
 
-def generate_remote_indices():
-    if os.path.exists(repo_store_project_path):
-        shutil.rmtree(repo_store_project_path)
-
-    git(
-        "clone",
-        "git@github.com:emrgnt-cmplxty/Automata.git",
-        repo_store_project_path,
-    )
-
-    project_indices = os.path.join(
-        embedding_data_path, "indices", f"{project_name}.scip"
-    )
-    if os.path.exists(project_indices):
-        os.remove(project_indices)
-
-    if os.path.exists(factory_path):
-        shutil.rmtree(factory_path)
-    os.makedirs(factory_path)
-    shutil.move(repo_store_project_path, factory_path)
-
-    node_command = [
-        "node",
-        str(pyright_scip_index),
-        "index",
-        "--project-name",
-        project_name,
-        "--output",
-        f"{embedding_data_path}/indices/{project_name}.scip",
-        "--target-only",
-        project_name,
-    ]
-    subprocess.run(node_command)
-
-    shutil.move(project_in_factory, repo_store_project_path)
-
-
 def generate_local_indices():
+    """Generates the local project indices"""
     project_indices = os.path.join(
         embedding_data_path, "indices", f"{project_name}.scip"
     )

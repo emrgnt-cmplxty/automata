@@ -39,6 +39,7 @@ class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):
             self._queue_for_building(source_code, symbol)
 
     def flush(self):
+        """Flush the current batch of embeddings to the database."""
         if self.to_build:
             self._build_and_add_embeddings()
         super().flush()

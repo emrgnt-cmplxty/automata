@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from automata.llm.eval import Action, Eval
+from automata.llm.eval import Action, Eval, Payload
 from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)
@@ -27,19 +27,19 @@ class CodeWritingAction(Action):
 
     # TODO - Consider adding variable name to the action,
     # e.g. if x = OpenAutomataAgent(),
-    # and object_types = 'OpenAutomataAgent', object_value = OpenAutomataAgent(),
+    # and object_types = 'OpenAutomataAgent', object_value_repr = "OpenAutomataAgent(config = ...)",
     # then variable_name = 'x'
     def __init__(
         self,
         object_types: str,
-        object_value: Any = None,
+        object_value_repr: Optional[str] = None,
         object_variable_checks: Optional[List[str]] = None,
     ):
         if object_variable_checks is None:
             object_variable_checks = []
 
         self.object_types = object_types
-        self.object_value = object_value
+        self.object_value_repr = object_value_repr
         self.object_variable_checks = object_variable_checks
 
     def __eq__(self, other):
@@ -51,32 +51,72 @@ class CodeWritingAction(Action):
 
         # Check for basic Python types
         basic_types = (int, float, str, list, dict, set, tuple, bool)
-        if isinstance(self.object_value, basic_types):
-            return self.object_value == other.object_value
+        if isinstance(self.object_value_repr, basic_types):
+            return self.object_value_repr == other.object_value_repr
 
         # If not a basic type, perform attribute checks
         return all(
-            getattr(self.object_value, variable_check, None)
-            == getattr(other.object_value, variable_check, None)
+            getattr(self.object_value_repr, variable_check, None)
+            == getattr(other.object_value_repr, variable_check, None)
             for variable_check in self.object_variable_checks
         )
 
     def __hash__(self):
         return hash(
             (
-                json.dumps(self.object_value),
+                json.dumps(self.object_value_repr),
                 json.dumps(self.object_types),
             )
         )
 
     def __repr__(self):
-        return f"CodeWritingAction(object_value={self.object_value}, object_types={self.object_types})"
+        return f"CodeWritingAction(object_value_repr={self.object_value_repr}, object_types={self.object_types})"
+
+    def to_payload(self) -> Payload:
+        """Converts a CodeWritingAction into a payload for storing."""
+
+        return {
+            "type": "CodeWritingAction",
+            "object_value_repr": self.object_value_repr or "None",
+            "object_types": self.object_types,
+        }
+
+    @classmethod
+    def from_payload(cls, payload: Payload) -> "CodeWritingAction":
+        """Converts a payload CodeWritingAction into underlying payload."""
+
+        object_types = payload["object_types"]
+        if not isinstance(object_types, str):
+            raise ValueError(
+                f"Object types of type={type(object_types)} received, instead of str."
+            )
+
+        object_value_repr = payload["object_value_repr"]
+        if not isinstance(object_value_repr, str):
+            raise ValueError(
+                f"Object representation of type={type(object_value_repr)} received, instead of str."
+            )
+
+        object_variable_checks = payload.get("object_variable_checks")
+        if object_variable_checks is not None and not isinstance(
+            object_variable_checks, list
+        ):
+            raise ValueError(
+                f"Object variable checks ({object_variable_checks}) was not of type list."
+            )
+
+        return cls(
+            object_value_repr=object_value_repr,
+            object_types=object_types,
+            object_variable_checks=object_variable_checks,
+        )
 
     @staticmethod
     def _extract_snippet(
         snippet: str, expected_language: str = "python"
     ) -> str:
         """Extracts a code snippet from a markdown string."""
+
         return snippet.split(f"```{expected_language}")[
             CodeWritingAction.LANGUAGE_MARKER_POSITION
         ].replace("```", "")
@@ -115,7 +155,7 @@ class CodeWritingEval(Eval):
                 parsed_snippets.remove(snippet)
 
             action = CodeWritingAction(
-                object_value=snippet["value"],
+                object_value_repr=snippet["value"],
                 object_types=snippet["type"],
             )
             actions.append(action)
@@ -141,7 +181,10 @@ class CodeWritingEval(Eval):
                     f"Variables '{self.target_variables}' not found in the executed code."
                 )
             return [
-                {"value": target_value, "type": type(target_value).__name__}
+                {
+                    "value": str(target_value),
+                    "type": type(target_value).__name__,
+                }
                 for target_value in target_values
             ]
 

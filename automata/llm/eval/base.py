@@ -1,5 +1,6 @@
-import abc
+import json
 import logging
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Type, Union
 
@@ -9,10 +10,22 @@ from automata.tasks import AutomataTask, AutomataTaskExecutor
 logger = logging.getLogger(__name__)
 
 
-class Action(abc.ABC):
+class Action(ABC):
     """An arbitrary action to be taken by an LLM, like an OpenAI function call"""
 
-    pass
+    @abstractmethod
+    def to_payload(self):
+        """Converts the Action to a dictionary."""
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def from_payload(dct):
+        """Creates an Action from a dictionary."""
+        pass
+
+
+Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
 
 
 @dataclass
@@ -26,18 +39,88 @@ class EvalResult:
 
     def to_dict(self) -> Dict:
         """Converts the result to a dictionary."""
+
+        match_result_dict = {
+            json.dumps(action.to_payload()): result
+            for action, result in self.match_result.items()
+        }
+        extra_actions_list = [
+            action.to_payload() for action in self.extra_actions
+        ]
+
         return {
             "full_match": self.full_match,
-            "match_result": self.match_result,
-            "extra_actions": self.extra_actions,
+            "match_result": match_result_dict,
+            "extra_actions": extra_actions_list,
             "session_id": self.session_id,
         }
 
+    @staticmethod
+    # TODO - Add custom exceptions, and add proper error handling for jsons
+    def from_payload(payload: Payload):
+        """Loads a json serialized eval result."""
 
-class Eval(abc.ABC):
-    """Abstract class for evaluating an LLMs performance"""
+        matches = payload["match_result"]
+        if isinstance(matches, dict) and not all(
+            isinstance(item, str) for item in matches.keys()
+        ):
+            raise Exception(
+                f"An invalid match result was encountered in {matches}"
+            )
 
-    @abc.abstractmethod
+        full_match = payload["full_match"]
+        if not isinstance(full_match, bool):
+            raise Exception(
+                f"A non-bool full_match, {full_match} was observed."
+            )
+
+        match_result = {
+            EvalResult._action_from_payload(json.loads(action)): result
+            for action, result in matches.items()
+        }
+
+        extra_actions = [
+            EvalResult._action_from_payload(json.loads(action))
+            for action in payload["extra_actions"]
+        ]
+
+        session_id = payload["session_id"]
+        if session_id is not None and not isinstance(session_id, str):
+            raise ValueError(
+                f"Invalid session_id ({session_id}) was observed."
+            )
+
+        return EvalResult(
+            full_match=full_match,
+            match_result=match_result,
+            extra_actions=extra_actions,
+            session_id=session_id,
+        )
+
+    @staticmethod
+    def _action_from_payload(payload: Payload):
+        """Parses out the corresponding actiopn from a raw dictionary."""
+
+        action_type = payload.pop("type")
+        if action_type == "CodeWritingAction":
+            from automata.llm.eval.code_writing import CodeWritingAction
+
+            return CodeWritingAction.from_payload(payload)
+        elif action_type == "OpenAIFunctionCallAction":
+            from automata.llm.eval.eval_providers import (
+                OpenAIFunctionCallAction,
+            )
+
+            return OpenAIFunctionCallAction.from_payload(payload)
+
+        else:
+            raise ValueError(f"Unknown action type: {payload['type']}")
+
+
+class Eval(ABC):
+    """Abstract class for evaluating an LLMs performance."""
+
+    @abstractmethod
     def __init__(
         self,
         *args,
@@ -92,12 +175,12 @@ class Eval(abc.ABC):
             extra_actions=extra_actions,
         )
 
-    @abc.abstractmethod
+    @abstractmethod
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
         """Filters a list of actions to only contain actions that are relevant to the eval."""
         pass

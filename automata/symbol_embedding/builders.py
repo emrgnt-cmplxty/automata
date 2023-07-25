@@ -16,6 +16,7 @@ class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` source code embeddings."""
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolCodeEmbedding:
+        """Build the embedding for a symbol's source code."""
         embedding_vector = self.embedding_provider.build_embedding_vector(
             source_code
         )
@@ -24,6 +25,7 @@ class SymbolCodeEmbeddingBuilder(EmbeddingBuilder):
     def batch_build(
         self, source_codes: List[str], symbols: List[Symbol]
     ) -> List[SymbolCodeEmbedding]:
+        """Build the embeddings for a list of symbols' source code."""
         embedding_vectors = (
             self.embedding_provider.batch_build_embedding_vector(source_codes)
         )
@@ -106,7 +108,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         """
         prompt = self._build_prompt(symbol)
         document = self._build_class_document(prompt)
-        summary = self._build_document_summary(document)
+        summary = self._build_class_document_summary(document)
         embedding = self.embedding_provider.build_embedding_vector(document)
 
         return SymbolDocEmbedding(
@@ -121,6 +123,8 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     def build_non_class(
         self, source_code: str, symbol: Symbol
     ) -> SymbolDocEmbedding:
+        """Build the embedding for a non-class type symbol's documentation."""
+
         ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
         document = f"Symbol: {symbol.full_dotpath}\n{raw_doctring}"
@@ -136,18 +140,19 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             context="",
         )
 
-    def _build_document_summary(self, document: str) -> str:
-        """Build the document for a symbol."""
+    def _build_class_document_summary(self, document: str) -> str:
+        """Build the summary for a class document."""
         return self.completion_provider.standalone_call(
             f"Condense the documentation below down to one to two concise paragraphs:\n {document}\nIf there is an example, include that in full in the output."
         )
 
     def _build_class_document(self, prompt: str) -> str:
-        """Build the document for a symbol."""
+        """Build the document for a class symbol."""
         return self.completion_provider.standalone_call(prompt)
 
     def _build_prompt(self, symbol: Symbol) -> str:
-        """Build the document for a symbol."""
+        """Build the prompt for a symbol doc generation."""
+
         abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
         primary_active_components: Dict[ContextComponent, Any] = {
             ContextComponent.HEADLINE: {},
@@ -174,6 +179,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         self, abbreviated_selected_symbol: str
     ) -> List[Symbol]:
         """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
+
         search_results = self.symbol_search.get_symbol_rank_results(
             f"{abbreviated_selected_symbol}"
         )

@@ -81,7 +81,7 @@ class EmbeddingHandler(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_ordered_embeddings(self) -> List[Any]:
+    def get_all_ordered_embeddings(self) -> List[Any]:
         """An abstract method to get all the embeddings entries in a sorted order."""
 
     @abc.abstractmethod
@@ -102,6 +102,7 @@ class EmbeddingSimilarityCalculator:
         norm_type: EmbeddingNormType = EmbeddingNormType.L2,
     ) -> None:
         """Initializes SymbolSimilarity by building the associated symbol mappings."""
+
         self.embedding_provider: EmbeddingVectorProvider = embedding_provider
         self.norm_type = norm_type
 
@@ -116,6 +117,7 @@ class EmbeddingSimilarityCalculator:
         of the query embedding and the symbol embeddings.
         Return result is sorted in descending order by default.
         """
+
         query_embedding_vector = (
             self.embedding_provider.build_embedding_vector(query_text)
         )
@@ -146,6 +148,7 @@ class EmbeddingSimilarityCalculator:
         self, ordered_embeddings: np.ndarray, embedding_array: np.ndarray
     ) -> np.ndarray:
         """Calculate the similarity score between the embedding with all symbol embeddings"""
+
         # Normalize the embeddings and the query embedding
         embeddings_norm = self._normalize_embeddings(
             ordered_embeddings, self.norm_type
@@ -160,6 +163,8 @@ class EmbeddingSimilarityCalculator:
     def _normalize_embeddings(
         embeddings_array: np.ndarray, norm_type: EmbeddingNormType
     ) -> np.ndarray:
+        """Normalize the embeddings based on the norm type."""
+
         if norm_type == EmbeddingNormType.L1:
             norm = np.sum(np.abs(embeddings_array), axis=1, keepdims=True)
             return embeddings_array / norm

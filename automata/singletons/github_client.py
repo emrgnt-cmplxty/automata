@@ -20,40 +20,48 @@ class RepositoryClient(ABC):
 
     @abstractmethod
     def clone_repository(self, local_path: str) -> Any:
+        """Clone the repository to the local path."""
         pass
 
     @abstractmethod
     def create_branch(self, branch_name: str) -> Any:
+        """Create a new branch in the repository."""
         pass
 
     @abstractmethod
     def checkout_branch(self, repo_local_path: str, branch_name: str) -> Any:
+        """Checkout a branch in the repository."""
         pass
 
     @abstractmethod
     def stage_all_changes(self, repo_local_path: str) -> Any:
+        """Stage all changes in the repository."""
         pass
 
     @abstractmethod
     def commit_and_push_changes(
         self, repo_local_path: str, branch_name: str, commit_message: str
     ) -> Any:
+        """Commit and push all changes in the repository."""
         pass
 
     @abstractmethod
     def create_pull_request(
         self, branch_name: str, title: str, body: str
     ) -> Any:
+        """Create a new pull request on the remote."""
         pass
 
     @abstractmethod
     def merge_pull_request(
         self, pull_request_number: int, commit_message: str
     ) -> PullRequestMergeStatus.PullRequestMergeStatus:
+        """Merge a pull request on the remote."""
         pass
 
     @abstractmethod
     def branch_exists(self, branch_name: str) -> bool:
+        """Check if a branch exists on the remote."""
         pass
 
 
@@ -74,6 +82,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
 
     def clone_repository(self, local_path: str) -> None:
         """Clone the repository to the local path."""
+
         # Use Git to clone the repository
         clone_url = self.repo.clone_url.replace(
             "https://",
@@ -84,6 +93,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
 
     def create_branch(self, branch_name: str) -> GitRef.GitRef:
         """Create a new branch in the repository."""
+
         # Get the reference to the HEAD commit of the primary_branch
         base_sha = self.repo.get_git_ref(
             f"heads/{self.primary_branch}"
@@ -109,6 +119,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
         self, repo_local_path: str, branch_name: str, commit_message: str
     ) -> None:
         """Commit and push all changes in the repository."""
+
         repo = Repo(repo_local_path)
         repo.git.commit(m=commit_message)
         repo.git.push("origin", branch_name)
@@ -131,6 +142,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
 
     def branch_exists(self, branch_name: str) -> bool:
         """Check if a branch exists on GitHub."""
+
         try:
             self.repo.get_git_ref(f"heads/{branch_name}")
             return True
@@ -162,6 +174,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
         issue.remove_from_labels(label_name)
 
     def add_label(self, issue_number: int, label_name: str) -> None:
+        """Add a label to an issue on the remote repository."""
         issue = self.repo.get_issue(number=issue_number)
         issue.add_to_labels(label_name)
 
@@ -183,6 +196,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
         comment.delete()
 
     def fetch_issue(self, issue_number: int) -> Optional[Issue.Issue]:
+        """Fetch an issue from the remote repository if it exists, otherwise return None."""
         try:
             return self.repo.get_issue(number=issue_number)
         except Exception:

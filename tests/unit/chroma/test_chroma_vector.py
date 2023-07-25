@@ -158,7 +158,7 @@ def test_get_ordered_embeddings(vector_db, symbols, make_embedding):
     )
     vector_db.add(embedded_symbol2)
     vector_db.add(embedded_symbol1)
-    embeddings = vector_db.get_ordered_embeddings()
+    embeddings = vector_db.get_all_ordered_embeddings()
     assert np.array_equal(embeddings[0].vector, embedded_symbol1.vector)
     assert np.array_equal(embeddings[1].vector, embedded_symbol2.vector)
 

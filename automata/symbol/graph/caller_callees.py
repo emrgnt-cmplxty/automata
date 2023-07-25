@@ -25,6 +25,7 @@ class CallerCalleeProcessor(GraphProcessor):
         One symbol is a caller of another symbol if it performs a call to that symbol.
         E.g. `foo()` is a caller of `bar()` in `foo(bar())`.
         Note - Construction is an expensive operation and should be used sparingly.
+        TODO - Split this method into smaller methods.
         """
         for symbol in self.document.symbols:
             try:

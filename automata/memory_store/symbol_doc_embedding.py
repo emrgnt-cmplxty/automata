@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # TODO - `SymbolDocEmbeddingHandler` is still in an experimental state
 # TODO - Implement some form of batch handling
 class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
-    """A class to handle the embedding of symbols"""
+    """A class to handle the embedding of symbols."""
 
     def __init__(
         self,
@@ -50,6 +50,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             self._update_existing_embedding(source_code, symbol)
 
     def _create_new_embedding(self, source_code: str, symbol: Symbol) -> None:
+        """Creates a new embedding for a symbol."""
         if symbol.py_kind == SymbolDescriptor.PyKind.Class:
             logger.debug(f"Creating a new class embedding for {symbol}")
             symbol_embedding = self.embedding_builder.build(
@@ -70,6 +71,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
     def _update_existing_embedding(
         self, source_code: str, symbol: Symbol
     ) -> None:
+        """Updates the existing embedding for a symbol if necessary."""
         existing_embedding = self.embedding_db.get(symbol.full_dotpath)
         if (
             existing_embedding.symbol != symbol

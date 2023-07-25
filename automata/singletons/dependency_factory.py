@@ -5,11 +5,7 @@ from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 
-from automata.agent import (
-    AgentGeneralError,
-    AgentToolkitNames,
-    UnknownToolError,
-)
+from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import (
     PyContextHandler,
     PyContextHandlerConfig,
@@ -43,6 +39,7 @@ from automata.symbol_embedding import (
     SymbolDocEmbedding,
     SymbolDocEmbeddingBuilder,
 )
+from automata.tools.error import UnknownToolError
 from automata.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
@@ -89,7 +86,7 @@ class DependencyFactory(metaclass=Singleton):
 
     def set_overrides(self, **kwargs) -> None:
         if self._class_cache:
-            raise AgentGeneralError(
+            raise Exception(
                 "Cannot set overrides after dependencies have been created."
             )
 
@@ -106,12 +103,9 @@ class DependencyFactory(metaclass=Singleton):
         Gets a dependency by name.
         The dependency argument corresponds to the names of the creation methods of the DependencyFactory class
         without the 'create_' prefix. For example, to get a SymbolGraph instance you'd call `get('symbol_graph')`.
-        Args:
-            dependency (str): The name of the dependency to be retrieved.
-        Returns:
-            The instance of the requested dependency.
+
         Raises:
-            AgentGeneralError: If the dependency is not found.
+            Exception: If the dependency is not found.
         """
         if dependency in self.overrides:
             return self.overrides[dependency]
@@ -121,7 +115,7 @@ class DependencyFactory(metaclass=Singleton):
 
         method_name = f"create_{dependency}"
         if not hasattr(self, method_name):
-            raise AgentGeneralError(f"Dependency {dependency} not found.")
+            raise Exception(f"Dependency {dependency} not found.")
 
         creation_method = getattr(self, method_name)
         logger.info(f"Creating dependency {dependency}")
@@ -138,6 +132,7 @@ class DependencyFactory(metaclass=Singleton):
         self, toolkit_list: List[str]
     ) -> Dict[str, Any]:
         """Builds and returns a dictionary of all dependencies required by the given list of tools."""
+
         # Identify all unique dependencies
         dependencies: Set[str] = set()
         for tool_name in toolkit_list:
@@ -164,7 +159,8 @@ class DependencyFactory(metaclass=Singleton):
         return tool_dependencies
 
     def _synchronize_provider(self, provider: ISymbolProvider) -> None:
-        """Synchronize an ISymbolProvider instance."""
+        """Synchronize an `ISymbolProvider` instance."""
+
         if not self.overrides.get("disable_synchronization", False):
             with SymbolProviderSynchronizationContext() as synchronization_context:
                 synchronization_context.register_provider(provider)
@@ -173,6 +169,8 @@ class DependencyFactory(metaclass=Singleton):
     @lru_cache()
     def create_symbol_graph(self) -> SymbolGraph:
         """
+        Creates a `SymbolGraph` instance.
+
         Associated Keyword Args:
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
@@ -187,15 +185,20 @@ class DependencyFactory(metaclass=Singleton):
 
     @lru_cache()
     def create_subgraph(self) -> nx.DiGraph:
+        """Calls the `default_rankable_subgraph` method of `SymbolGraph`."""
+
         symbol_graph: SymbolGraph = self.get("symbol_graph")
         return symbol_graph.default_rankable_subgraph
 
     @lru_cache()
     def create_symbol_rank(self) -> SymbolRank:
         """
+        Creates a SymbolRank instance.
+
         Associated Keyword Args:
             symbol_rank_config (SymbolRankConfig())
         """
+
         subgraph: nx.DiGraph = self.get("subgraph")
         return SymbolRank(
             subgraph,
@@ -207,10 +210,13 @@ class DependencyFactory(metaclass=Singleton):
         self,
     ) -> SymbolCodeEmbeddingHandler:
         """
+        Creates a `SymbolCodeEmbeddingHandler` instance.
+
         Associated Keyword Args:
             code_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for code embeddings.
             embedding_provider (OpenAIEmbedding())
         """
+
         code_embedding_db = self.overrides.get(
             "code_embedding_db",
             ChromaSymbolEmbeddingVectorDatabase(
@@ -231,6 +237,8 @@ class DependencyFactory(metaclass=Singleton):
     @lru_cache()
     def create_symbol_doc_embedding_handler(self) -> SymbolDocEmbeddingHandler:
         """
+        Creates a `SymbolDocEmbeddingHandler` instance.
+
         Associated Keyword Args:
             doc_embedding_db (ChromaSymbolEmbeddingVectorDatabase): Database responsible for doc embeddings.
             embedding_provider (OpenAIEmbedding())
@@ -264,6 +272,8 @@ class DependencyFactory(metaclass=Singleton):
     @lru_cache()
     def create_symbol_search(self) -> SymbolSearch:
         """
+        Creates a `SymbolSearch` instance.
+
         Associated Keyword Args:
             symbol_rank_config (SymbolRankConfig())
         """
@@ -322,13 +332,17 @@ class DependencyFactory(metaclass=Singleton):
 
     @lru_cache()
     def create_py_reader(self) -> PyReader:
+        """Creates `PyReader` for use in all dependencies."""
         return PyReader()
 
     @lru_cache()
     def create_py_writer(self) -> PyCodeWriter:
+        """Creates `PyCodeWriter` for use in all dependencies."""
         return PyCodeWriter(self.get("py_reader"))
 
     def reset(self):
+        """Resets the entire dependency cache."""
+
         SymbolProviderRegistry.reset()
         self._class_cache = {}
         self._instances = {}

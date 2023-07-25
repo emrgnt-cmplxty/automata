@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from ast import AST, unparse
 from contextlib import contextmanager
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Optional, Protocol, Set
+from typing import TYPE_CHECKING, Any, Dict, Optional, Set
 
 from automata.code_parsers.py.context_processing.context_utils import (
     get_all_attributes,
@@ -31,29 +31,24 @@ class ContextComponent(Enum):
     INTERFACE = "interface"
 
 
-class ContextComponentCallable(Protocol):
-    def __call__(
-        self, symbol: "Symbol", ast_object: AST, **kwargs: Any
-    ) -> str:
-        ...
-
-
 class BaseContextComponent(ABC):
+    """A base class for context components."""
+
     def __init__(self, spacer: str = "  ", indent_level: int = 0):
         self.spacer = spacer
         self.indent_level = indent_level
-
-    @contextmanager
-    def increased_indentation(self):
-        self.indent_level += 1
-        yield
-        self.indent_level -= 1
 
     def process_entry(self, message: str, include_newline=True) -> str:
         spacer = self.spacer * self.indent_level
         return "".join(
             f"{spacer}{line.strip()}\n" for line in message.split("\n")
         )
+
+    @contextmanager
+    def increased_indentation(self):
+        self.indent_level += 1
+        yield
+        self.indent_level -= 1
 
     @abstractmethod
     def generate(
@@ -71,6 +66,7 @@ class HeadlineContextComponent(BaseContextComponent):
         **kwargs,
     ) -> str:
         """Convert a symbol into a headline."""
+
         return self.process_entry(symbol.full_dotpath)
 
 
@@ -86,6 +82,7 @@ class SourceCodeContextComponent(BaseContextComponent):
         **kwargs,
     ) -> str:
         """Convert a symbol into underlying source code."""
+
         if not include_docstrings:
             ast_object = get_node_without_docstrings(ast_object)
 
@@ -114,6 +111,7 @@ class InterfaceContextComponent(BaseContextComponent):
         **kwargs,
     ) -> str:
         """Convert a symbol into an interface, skipping 'private' methods/classes if indicated."""
+
         if recursion_depth > self.MAX_RECURSION_DEPTH:
             raise RecursionError(
                 f"Max recursion depth of {self.MAX_RECURSION_DEPTH} exceeded."
@@ -138,6 +136,7 @@ class InterfaceContextComponent(BaseContextComponent):
 
         return interface
 
+    # TODO - Split this method into smaller methods
     def _process_classes_and_methods(
         self,
         ast_object: AST,
@@ -149,6 +148,7 @@ class InterfaceContextComponent(BaseContextComponent):
         processed_objects: Set[int],
     ) -> str:
         """Process all classes and methods in the ast_object."""
+
         interface = ""
         obj_docstring = get_docstring_from_node(ast_object)
         if include_docstrings and obj_docstring != AST_NO_RESULT_FOUND:
@@ -242,6 +242,7 @@ class PyContextRetriever:
         Process the context of a specified `Symbol`. The caller has the responsibility
         to decide the indent level and context components to be processed.
         """
+
         from automata.symbol import convert_to_ast_object
 
         ast_object = convert_to_ast_object(symbol)

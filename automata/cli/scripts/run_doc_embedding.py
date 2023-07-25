@@ -4,7 +4,7 @@ from typing import List
 
 from tqdm import tqdm
 
-from automata.cli.cli_utils import initialize_modules
+from automata.cli.cli_utils import initialize_py_module_loader
 from automata.context_providers.symbol_synchronization import (
     SymbolProviderSynchronizationContext,
 )
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 def initialize_providers(embedding_level, symbols=None, **kwargs):
     project_name = kwargs.get("project_name") or "automata"
-    initialize_modules(**kwargs)
+    initialize_py_module_loader(**kwargs)
 
     symbol_graph = SymbolGraph(
         os.path.join(

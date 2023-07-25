@@ -60,6 +60,8 @@ class SymbolDescriptor:
 
     @staticmethod
     def get_escaped_name(name) -> str:
+        """Gets the escaped name of the symbol."""
+
         def is_simple_identifier(name):
             return re.match(r"^[\w$+-]+$", name) is not None
 
@@ -70,9 +72,14 @@ class SymbolDescriptor:
         return "`" + re.sub("`", "``", name) + "`"
 
     @staticmethod
-    def convert_scip_to_python_suffix(
+    def convert_scip_to_python_kind(
         descriptor_suffix: DescriptorProto,
     ) -> PyKind:
+        """
+        Converts a scip suffix to a python kind,
+        e.g. a symbol ending with a `ScipSuffix.Method` descriptor will
+        have a scip suffix of `Pykind.Method`.
+        """
         if descriptor_suffix == SymbolDescriptor.ScipSuffix.Local:
             return SymbolDescriptor.PyKind.Local
 
@@ -183,7 +190,6 @@ class Symbol:
 
     @property
     def parent(self) -> "Symbol":
-        """Returns the parent symbol of the current symbol."""
         parent_descriptors = list(self.descriptors)[:-1]
         return Symbol(
             self.uri, self.scheme, self.package, tuple(parent_descriptors)
@@ -191,40 +197,34 @@ class Symbol:
 
     @property
     def py_kind(self) -> SymbolDescriptor.PyKind:
-        return SymbolDescriptor.convert_scip_to_python_suffix(
+        return SymbolDescriptor.convert_scip_to_python_kind(
             self.descriptors[-1].suffix
         )
 
     @property
     def full_dotpath(self) -> str:
-        """Returns the full dotpath of the symbol."""
         return ".".join([ele.name for ele in self.descriptors])
 
     @property
     def module_path(self) -> str:
-        """Returns the module name of the symbol."""
         return self.descriptors[0].name
 
     @property
     def is_local(self) -> bool:
-        """Returns True if the symbol is local."""
         return self.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Local
 
     @property
     def is_meta(self) -> bool:
-        """Returns True if the symbol is meta."""
         return self.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Meta
 
     @property
     def is_parameter(self) -> bool:
-        """Returns True if the symbol is parameter."""
         return (
             self.descriptors[0].suffix == SymbolDescriptor.ScipSuffix.Parameter
         )
 
     @property
     def is_protobuf(self) -> bool:
-        """Returns True if the symbol is a protobuf symbol."""
         return self.module_path.endswith("pb2")
 
     @classmethod
@@ -274,13 +274,16 @@ class ISymbolProvider(abc.ABC):
 
     @abc.abstractmethod
     def _get_sorted_supported_symbols(self) -> List[Symbol]:
+        """Gets the sorted list of supported symbols."""
         pass
 
     @abc.abstractmethod
     def filter_symbols(self, sorted_supported_symbols: List[Symbol]) -> None:
+        """Filters the sorted list of supported symbols."""
         pass
 
     def get_sorted_supported_symbols(self) -> List[Symbol]:
+        """Gets the sorted list of supported symbols."""
         from automata.core.utils import is_sorted
 
         if not self.is_synchronized:
@@ -294,4 +297,5 @@ class ISymbolProvider(abc.ABC):
         return sorted_symbols
 
     def set_synchronized(self, value: bool):
+        """Sets the synchronized flag."""
         self.is_synchronized = value

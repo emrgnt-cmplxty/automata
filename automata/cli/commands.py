@@ -3,7 +3,7 @@ import logging.config
 
 import click
 
-from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
+from automata.cli.cli_output_logger import CustomLogger
 from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 def reconfigure_logging(log_level_str: str) -> None:
+    """Reconfigures the logging for the local project."""
+
     log_level = logging.DEBUG
     if log_level_str == "INFO":
         log_level = logging.INFO
@@ -45,7 +47,9 @@ def cli(ctx) -> None:
 @cli.command()
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
-    """Configure Automata"""
+    """Configures the Automata"""
+    # TODO - Can we add a few more lines of comments here?
+
     logger.info("Configuring Automata:")
 
     reconfigure_logging(kwargs.get("log-level", "INFO"))
@@ -57,8 +61,8 @@ def configure(ctx, *args, **kwargs) -> None:
         "OPENAI_API_KEY": "your_openai_api_key",
     }
 
-    setup_files(SCRIPTS_PATH=SCRIPTS_PATH, DOTENV_PATH=DOTENV_PATH)
-    load_env_vars(DOTENV_PATH=DOTENV_PATH, DEFAULT_KEYS=DEFAULT_KEYS)
+    setup_files(scripts_path=SCRIPTS_PATH, dotenv_path=DOTENV_PATH)
+    load_env_vars(dotenv_path=DOTENV_PATH, default_keys=DEFAULT_KEYS)
 
     logger.info("Configuring Automata:")
 
@@ -82,19 +86,13 @@ def configure(ctx, *args, **kwargs) -> None:
 @click.pass_context
 def build(ctx, *args, **kwargs) -> None:
     """Run the install_index script."""
-    from automata.cli.build import (
-        generate_local_indices,
-        generate_remote_indices,
-        install_indexing,
-    )
+
+    from automata.cli.build import generate_local_indices, install_indexing
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
 
     logger.info("Running install_index")
     install_indexing()
-
-    # logger.info("Running generate_remote_indices")
-    # generate_remote_indices()
 
     logger.info("Running generate_local_indices")
     generate_local_indices()
@@ -105,6 +103,7 @@ def build(ctx, *args, **kwargs) -> None:
 @click.pass_context
 def run_code_embedding(ctx, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
+
     from automata.cli.scripts.run_code_embedding import main
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
@@ -140,6 +139,7 @@ def run_doc_embedding(ctx, symbols, overwrite, *args, **kwargs) -> None:
 @click.pass_context
 def run_doc_post_process(ctx, *args, **kwargs) -> None:
     """Run the document post-processor."""
+
     from automata.cli.scripts.run_doc_post_process import main
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))

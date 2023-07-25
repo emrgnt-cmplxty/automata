@@ -79,8 +79,8 @@ class PyReaderToolkitBuilder(AgentToolkitBuilder):
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
 class PyReaderOpenAIToolkit(PyReaderToolkitBuilder, OpenAIAgentToolkitBuilder):
-    TOOL_TYPE = AgentToolkitNames.PY_READER
-    PLATFORM = LLMProvider.OPENAI
+    TOOL_NAME = AgentToolkitNames.PY_READER
+    LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
         tools = super().build()

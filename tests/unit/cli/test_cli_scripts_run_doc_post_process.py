@@ -2,14 +2,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.cli.cli_utils import initialize_modules
 from automata.code_writers.py.doc_writer import PyDocWriter
-from automata.core.utils import get_root_fpath
 from automata.singletons.dependency_factory import DependencyFactory
-from automata.symbol_embedding import (
-    ChromaSymbolEmbeddingVectorDatabase,
-    SymbolDocEmbedding,
-)
+from automata.symbol_embedding import SymbolDocEmbedding
 
 
 @pytest.fixture
@@ -20,10 +15,10 @@ def mock_initialize_modules():
             and kwargs["project_name"] != "test_project"
         ):
             raise ValueError(
-                "Incorrect project_name argument received by initialize_modules"
+                "Incorrect project_name argument received by initialize_py_module_loader"
             )
 
-    with patch("automata.cli.cli_utils.initialize_modules") as mock:
+    with patch("automata.cli.cli_utils.initialize_py_module_loader") as mock:
         mock.side_effect = _initialize_modules
         yield mock
 
@@ -48,7 +43,7 @@ def mock_chromasymbolembeddingvectordatabase():
         "automata.symbol_embedding.ChromaSymbolEmbeddingVectorDatabase"
     ) as mock:
         instance = mock.return_value
-        instance.get_ordered_embeddings.return_value = [
+        instance.get_all_ordered_embeddings.return_value = [
             MagicMock(spec=SymbolDocEmbedding)
         ]
         yield mock

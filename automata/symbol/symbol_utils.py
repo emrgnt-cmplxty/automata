@@ -18,9 +18,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
     while descriptors:
         top_descriptor = descriptors.pop(0)
         if (
-            SymbolDescriptor.convert_scip_to_python_suffix(
-                top_descriptor.suffix
-            )
+            SymbolDescriptor.convert_scip_to_python_kind(top_descriptor.suffix)
             == SymbolDescriptor.PyKind.Module
         ):
             module_path = top_descriptor.name
@@ -35,9 +33,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
             if not obj:
                 raise ValueError(f"Module {module_dotpath} not found")
         elif (
-            SymbolDescriptor.convert_scip_to_python_suffix(
-                top_descriptor.suffix
-            )
+            SymbolDescriptor.convert_scip_to_python_kind(top_descriptor.suffix)
             == SymbolDescriptor.PyKind.Class
         ):
             if not obj:
@@ -54,9 +50,7 @@ def convert_to_ast_object(symbol: Symbol) -> ast.AST:
                 None,
             )
         elif (
-            SymbolDescriptor.convert_scip_to_python_suffix(
-                top_descriptor.suffix
-            )
+            SymbolDescriptor.convert_scip_to_python_kind(top_descriptor.suffix)
             == SymbolDescriptor.PyKind.Method
         ):
             if not obj:

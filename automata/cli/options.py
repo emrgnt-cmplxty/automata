@@ -11,6 +11,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
     Returns:
         click.Command: Command with options added
     """
+
     options = [
         click.option(
             "--log-level",
@@ -47,6 +48,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
     Returns:
         click.Command: Command with options added
     """
+
     options = [
         click.option(
             "--instructions",

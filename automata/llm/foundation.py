@@ -13,9 +13,11 @@ class LLMCompletionResult(BaseModel):
     content: Optional[str] = None
 
     def get_role(self) -> str:
+        """Get the role of the completion result."""
         return self.role
 
     def get_content(self) -> Any:
+        """Get the content of the completion result."""
         return self.content
 
 
@@ -53,12 +55,15 @@ class LLMConversation(ABC):
         pass
 
     def register_observer(self, observer: Observer) -> None:
+        """Register an observer to the conversation."""
         self._observers.add(observer)
 
     def unregister_observer(self, observer: Observer) -> None:
+        """Unregister an observer from the conversation."""
         self._observers.discard(observer)
 
     def notify_observers(self, session_id: str) -> None:
+        """Notify all observers that the conversation has changed."""
         for observer in self._observers:
             observer.update((session_id, self))
 

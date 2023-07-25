@@ -55,7 +55,7 @@ Example
    )
 
    # Get ordered embeddings from database and compute similarity of a query_text
-   ordered_embeddings = embedding_db.get_ordered_embeddings()
+   ordered_embeddings = embedding_db.get_all_ordered_embeddings()
    query_text = 'def initialize(x, y):'
    similarity_dict = similarity_calculator.calculate_query_similarity_dict(ordered_embeddings, query_text)
 

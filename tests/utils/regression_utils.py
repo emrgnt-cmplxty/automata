@@ -17,10 +17,10 @@ from automata.tasks import (
     AutomataTask,
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
-    AutomataTaskRegistry,
     EnvironmentMode,
     IAutomataTaskExecution,
 )
+from automata.tasks.registry import AutomataTaskRegistry
 from automata.tools.factory import AgentToolFactory
 
 
