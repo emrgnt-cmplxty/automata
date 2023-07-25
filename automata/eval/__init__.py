@@ -6,7 +6,7 @@ from .code_writing import (
 )
 from .eval_providers import OpenAIFunctionCallAction, OpenAIFunctionEval
 from .metrics import EvaluationMetrics
-from .runner import EvalResultDatabase, EvalTaskLoader, EvaluationHarness
+from .runner import EvalResultDatabase, EvalSetLoader, EvaluationHarness
 
 __all__ = [
     "Action",
@@ -20,7 +20,7 @@ __all__ = [
     "OpenAIFunctionCallAction",
     "OpenAIFunctionEval",
     "EvaluationMetrics",
-    "EvalTaskLoader",
+    "EvalSetLoader",
     "EvaluationHarness",
     "EvalResultDatabase",
 ]

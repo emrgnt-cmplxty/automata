@@ -28,9 +28,10 @@ class Action(ABC):
         pass
 
     @staticmethod
-    def _action_from_payload(payload: Payload) -> "Action":
+    def parse_action_from_payload(payload: Payload) -> "Action":
         """Parses out the corresponding actiopn from a raw dictionary."""
 
+        print("payload = ", payload)
         action_type = payload.pop("type")
         if action_type == "CodeWritingAction":
             from automata.eval.code_writing import CodeWritingAction
@@ -92,12 +93,12 @@ class EvalResult:
             )
 
         match_result = {
-            Action._action_from_payload(json.loads(action)): result
+            Action.parse_action_from_payload(json.loads(action)): result
             for action, result in matches.items()
         }
 
         extra_actions = [
-            Action._action_from_payload(json.loads(action))
+            Action.parse_action_from_payload(json.loads(action))
             for action in payload["extra_actions"]
         ]
 

@@ -9,6 +9,7 @@ from automata.eval.base import (
     CompositeEval,
     Eval,
     EvalResult,
+    Payload,
     check_eval_uniqueness,
 )
 from automata.eval.error import EvalExecutionError, EvalLoadingError
@@ -18,15 +19,47 @@ from automata.tasks import AutomataTask, AutomataTaskExecutor
 logger = logging.getLogger(__name__)
 
 
-class EvalTaskLoader:
+class EvalSetLoader:
     """Loads a list of tasks from a JSON file."""
 
     def __init__(self, filepath: str):
         self.filepath = filepath
-        self.tasks = self.load_json()
+        if filepath.endswith(".json"):
+            payloads = self.load_json()
+            print("payloads = ", payloads)
+            self.tasks: List[AutomataTask] = []
+            self.expected_actions: List[List[Action]] = []
+            for payload in payloads:
+                instructions = payload.get("instructions")
+                expected_actions = payload.get("expected_actions")
 
-    def load_json(self) -> Dict[str, Union[str, List[str]]]:
+                assert isinstance(
+                    instructions, str
+                ), "instructions must be a string"
+                assert isinstance(
+                    expected_actions, list
+                ), "expected_actions must be a dictionary"
+                for expected_action in expected_actions:
+                    assert isinstance(
+                        expected_action, dict
+                    ), "each expected action must be a dictionary"
+
+                self.tasks.append(AutomataTask(instructions=instructions))
+                self.expected_actions.append(
+                    [
+                        Action.parse_action_from_payload(action)  # type: ignore
+                        for action in expected_actions
+                    ]
+                )
+
+        else:
+            raise ValueError(
+                f"Only JSON files are supported, received filepath {filepath}"
+            )
+
+    def load_json(self) -> List[Payload]:
         """Loads the JSON file."""
+
         try:
             logging.info(f"Loading json from {self.filepath}...")
             with open(self.filepath, "r") as f:

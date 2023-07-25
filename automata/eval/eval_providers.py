@@ -47,12 +47,16 @@ class OpenAIFunctionCallAction(Action):
             raise ValueError("Payload name was not a string")
 
         arguments = payload["arguments"]
-        if not isinstance(arguments, str):
-            raise ValueError("Payload arguments were not a string.")
+        if isinstance(arguments, str):
+            # TODO - Add special error handling here
+            return OpenAIFunctionCallAction(
+                name=name, arguments=json.loads(arguments)
+            )
 
-        return OpenAIFunctionCallAction(
-            name=name, arguments=json.loads(arguments)
-        )
+        elif not isinstance(arguments, dict):
+            raise ValueError("Payload arguments was not a dictionary")
+
+        return OpenAIFunctionCallAction(name=name, arguments=arguments)
 
 
 class OpenAIFunctionEval(Eval):
