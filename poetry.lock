@@ -1800,13 +1800,13 @@ files = [
 
 [[package]]
 name = "jsonschema"
-version = "4.18.3"
+version = "4.18.4"
 description = "An implementation of JSON Schema validation for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jsonschema-4.18.3-py3-none-any.whl", hash = "sha256:aab78b34c2de001c6b692232f08c21a97b436fe18e0b817bf0511046924fceef"},
-    {file = "jsonschema-4.18.3.tar.gz", hash = "sha256:64b7104d72efe856bea49ca4af37a14a9eba31b40bb7238179f3803130fd34d9"},
+    {file = "jsonschema-4.18.4-py3-none-any.whl", hash = "sha256:971be834317c22daaa9132340a51c01b50910724082c2c1a2ac87eeec153a3fe"},
+    {file = "jsonschema-4.18.4.tar.gz", hash = "sha256:fb3642735399fa958c0d2aad7057901554596c63349f4f6b283c493cf692a25d"},
 ]
 
 [package.dependencies]
@@ -5288,4 +5288,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "52dcb79b5f4faa250491276b376f53814f3d43fbb379b7efc9b8bfd27d98f4d7"
+content-hash = "21e4de8cc3aa7712605c3bc5c5e167f96025a8f837c8730bc22f0ea08c0c5207"
