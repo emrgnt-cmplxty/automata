@@ -87,6 +87,9 @@ class AgentEvalResult(EvalResult):
         self.extra_actions = extra_actions
         self.session_id = session_id
 
+    def __repr__(self) -> str:
+        return f"AgentEvalResult(match_results={self.match_results}, extra_actions={self.extra_actions}, session_id={self.session_id})"
+
     @property
     def is_full_match(self) -> bool:
         """Checks if the result is a full match."""

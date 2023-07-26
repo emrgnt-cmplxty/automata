@@ -175,7 +175,8 @@ def run_eval(ctx, *args, **kwargs) -> None:
     Run the evaluation.
 
     Here is an exmaple command -
-    poetry run automata run-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkit-list="context-oracle" --log-level=DEBUG --max-iterations=3
+    poetry run automata run-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="context-oracle" --log-level=DEBUG --max-iterations=3
+
 
     """
     from automata.cli.scripts.run_eval import main
