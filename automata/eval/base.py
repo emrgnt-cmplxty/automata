@@ -1,117 +1,232 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Type, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from automata.llm.foundation import LLMChatMessage
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 logger = logging.getLogger(__name__)
 
-
 Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
+
+
+def parse_action_from_payload(payload: Payload) -> "Action":
+    """Parses out the corresponding actiopn from a raw dictionary."""
+
+    action_type = payload.pop("type")
+    if action_type == "CodeWritingAction":
+        from automata.eval.code_writing import CodeWritingAction
+
+        return CodeWritingAction.from_payload(payload)
+    elif action_type == "OpenAIFunctionCallAction":
+        from automata.eval.eval_providers import OpenAIFunctionCallAction
+
+        return OpenAIFunctionCallAction.from_payload(payload)
+
+    else:
+        raise ValueError(f"Unknown action type: {payload['type']}")
 
 
 class Action(ABC):
     """An arbitrary action to be taken by an LLM, like an OpenAI function call"""
 
     @abstractmethod
-    def to_payload(self):
+    def to_payload(self) -> Payload:
         """Converts the Action to a dictionary."""
         pass
 
     @staticmethod
     @abstractmethod
-    def from_payload(dct):
+    def from_payload(dct: Payload) -> "Action":
         """Creates an Action from a dictionary."""
         pass
 
-    @staticmethod
-    def parse_action_from_payload(payload: Payload) -> "Action":
-        """Parses out the corresponding actiopn from a raw dictionary."""
 
-        action_type = payload.pop("type")
-        if action_type == "CodeWritingAction":
-            from automata.eval.code_writing import CodeWritingAction
+class EvalResult(ABC):
+    """An abstract class to represent the result of an evaluation."""
 
-            return CodeWritingAction.from_payload(payload)
-        elif action_type == "OpenAIFunctionCallAction":
-            from automata.eval.eval_providers import OpenAIFunctionCallAction
+    @property
+    @abstractmethod
+    def is_full_match(self) -> bool:
+        """Indicates whether the evaluation was a full match."""
 
-            return OpenAIFunctionCallAction.from_payload(payload)
+    @property
+    @abstractmethod
+    def is_partial_match(self) -> bool:
+        """Indicates whether the evaluation was a partial match."""
 
-        else:
-            raise ValueError(f"Unknown action type: {payload['type']}")
+    @abstractmethod
+    def get_details(self) -> Dict[str, Any]:
+        """Returns a dictionary with detailed information about the evaluation."""
+
+    @abstractmethod
+    def get_extra_info(self) -> Dict[str, Action]:
+        """Returns a dictionary with extra information about the evaluation."""
+
+    @abstractmethod
+    def to_payload(self) -> Payload:
+        """Converts the evaluation result to a dictionary (or other serializable format)."""
+
+    @classmethod
+    @abstractmethod
+    def from_payload(cls, payload: Payload) -> "EvalResult":
+        """Creates an evaluation result from a dictionary (or other serialized format)."""
 
 
-@dataclass
-class EvalResult:
-    """A concrete class to represent the result of an eval."""
+class AgentEvalResult(EvalResult):
+    """A concrete class to represent the result of an agent eval."""
 
-    full_match: bool
-    match_result: Dict[Action, bool]
-    extra_actions: List[Action]
-    session_id: Optional[str] = None
+    def __init__(
+        self,
+        match_results: Dict[Action, bool],
+        extra_actions: List[Action],
+        session_id: Optional[str],
+    ):
+        self.match_results = match_results
+        self.extra_actions = extra_actions
+        self.session_id = session_id
 
-    def to_dict(self) -> Dict:
+    @property
+    def is_full_match(self) -> bool:
+        """Checks if the result is a full match."""
+        return all(self.match_results.values())
+
+    @property
+    def is_partial_match(self) -> bool:
+        """Checks if the result is a partial match."""
+        return any(self.match_results.values())
+
+    def get_details(self) -> Dict[str, Any]:
+        """Gets the details of the result."""
+        return {
+            str(action): result
+            for action, result in self.match_results.items()
+        }
+
+    def get_extra_info(self) -> Dict[str, Any]:
+        """Gets the extra info of the result."""
+        return {
+            "extra_actions": [str(action) for action in self.extra_actions]
+        }
+
+    def to_payload(self) -> Payload:
         """Converts the result to a dictionary."""
 
-        match_result_dict = {
-            json.dumps(action.to_payload()): result
-            for action, result in self.match_result.items()
+        match_results = {
+            json.dumps(action.to_payload()): str(result)
+            for action, result in self.match_results.items()
         }
-        extra_actions_list = [
-            action.to_payload() for action in self.extra_actions
+        extra_actions = [
+            json.dumps(action.to_payload()) for action in self.extra_actions
         ]
 
         return {
-            "full_match": self.full_match,
-            "match_result": match_result_dict,
-            "extra_actions": extra_actions_list,
-            "session_id": self.session_id,
+            "match_results": match_results,
+            "extra_actions": extra_actions,
         }
 
     @classmethod
-    # TODO - Add custom exceptions, and add proper error handling for jsons
-    def from_payload(cls, payload: Payload) -> "EvalResult":
-        """Loads a json serialized eval result."""
+    def from_payload(cls, payload: Payload) -> "AgentEvalResult":
+        """Creates an evaluation result from a dictionary (or other serialized format)."""
 
-        matches = payload["match_result"]
-        if isinstance(matches, dict) and not all(
+        matches = payload["match_results"]
+        if not isinstance(matches, dict) or not all(
             isinstance(item, str) for item in matches.keys()
         ):
-            raise Exception(
+            raise ValueError(
                 f"An invalid match result was encountered in {matches}"
             )
 
-        full_match = payload["full_match"]
-        if not isinstance(full_match, bool):
-            raise Exception(
-                f"A non-bool full_match, {full_match} was observed."
-            )
-
-        match_result = {
-            Action.parse_action_from_payload(json.loads(action)): result
+        match_results = {
+            parse_action_from_payload(json.loads(action)): result == "True"
             for action, result in matches.items()
         }
 
         extra_actions = [
-            Action.parse_action_from_payload(json.loads(action))
+            parse_action_from_payload(json.loads(action))
             for action in payload["extra_actions"]
         ]
 
-        session_id = payload["session_id"]
+        session_id = payload.get("session_id")
         if session_id is not None and not isinstance(session_id, str):
             raise ValueError(
                 f"Invalid session_id ({session_id}) was observed."
             )
 
         return cls(
-            full_match=full_match,
-            match_result=match_result,
+            match_results=match_results,
             extra_actions=extra_actions,
             session_id=session_id,
+        )
+
+
+class ToolEvalResult(EvalResult):
+    """A concrete class to represent the result of a tool eval."""
+
+    def __init__(
+        self,
+        expected_action: Optional[Action],
+        observed_action: Optional[Action],
+    ):
+        self.expected_action = expected_action
+        self.observed_action = observed_action
+
+    @property
+    def is_full_match(self) -> bool:
+        """Checks if the result is a full match."""
+        return self.expected_action == self.observed_action
+
+    @property
+    def is_partial_match(self) -> bool:
+        """Checks if the result is a partial match."""
+        return self.is_full_match or self.expected_action is None
+
+    def is_match(self) -> bool:
+        """Checks if the result is a match."""
+        return self.expected_action == self.observed_action
+
+    def get_details(self) -> Dict[str, Optional[Action]]:
+        """Gets the details of the result."""
+        return {
+            "expected_action": self.expected_action,
+            "observed_action": self.observed_action,
+        }
+
+    def get_extra_info(self) -> Dict[str, Any]:
+        """Gets the extra info of the result."""
+        return {}
+
+    def to_payload(self) -> Payload:
+        """Converts the evaluation result to a dictionary (or other serializable format)."""
+        return {
+            "expected_action": json.dumps(self.expected_action.to_payload())
+            if self.expected_action
+            else "None",
+            "observed_action": json.dumps(self.observed_action.to_payload())
+            if self.observed_action
+            else "None",
+        }
+
+    @classmethod
+    def from_payload(cls, payload: Payload) -> "ToolEvalResult":
+        """Creates an evaluation result from a dictionary (or other serialized format)."""
+
+        if not isinstance(payload["expected_action"], str):
+            raise ValueError("Expected action must be a string.")
+
+        if not isinstance(payload["observed_action"], str):
+            raise ValueError("Observed action must be a string.")
+
+        expected_action = parse_action_from_payload(
+            json.loads(payload["expected_action"])
+        )
+        observed_action = parse_action_from_payload(
+            json.loads(payload["observed_action"])
+        )
+
+        return cls(
+            expected_action=expected_action, observed_action=observed_action
         )
 
 
@@ -126,6 +241,32 @@ class Eval(ABC):
     ):
         pass
 
+    @abstractmethod
+    def generate_eval_result(
+        self,
+        task: AutomataTask,
+        expected_actions: List[Action],
+        executor: Any,
+        *args,
+        **kwargs,
+    ) -> EvalResult:
+        """Generates an eval result for a given set of instructions and expected actions."""
+        pass
+
+    @abstractmethod
+    def extract_action(self, message: LLMChatMessage) -> List[Action]:
+        """Extracts a list of action from the given message."""
+        pass
+
+    @abstractmethod
+    def _filter_actions(self, actions: List[Action]) -> List[Action]:
+        """Filters a list of actions to only contain actions that are relevant to the eval."""
+        pass
+
+
+class AgentEval(Eval):
+    """Abstract class for evaluating an LLMs performance."""
+
     def generate_eval_result(
         self,
         task: AutomataTask,
@@ -139,143 +280,91 @@ class Eval(ABC):
         agent = executor.execute(task)
 
         return self.process_result(
-            expected_actions, agent.conversation.messages, agent.session_id
+            expected_actions,
+            agent.conversation.messages,
+            session_id=agent.session_id,
         )
 
     def process_result(
         self,
         expected_actions: List[Action],
-        conversation: Sequence[LLMChatMessage],
-        session_id: Optional[str] = None,
-    ):
+        process_input: Sequence[LLMChatMessage],
+        *args,
+        **kwargs,
+    ) -> EvalResult:
         """Processes the result of an evaluation."""
+
+        if "session_id" not in kwargs:
+            raise ValueError("session_id must be provided.")
+
+        session_id = kwargs["session_id"]
 
         filtered_expected_actions = self._filter_actions(expected_actions)
         observed_actions: List[Action] = []
-        for message in conversation:
+        for message in process_input:
             if extracted_actions := self.extract_action(message):
                 observed_actions.extend(extracted_actions)
 
-        match_result: Dict[Action, bool] = {
+        match_results: Dict[Action, bool] = {
             action: action in observed_actions
             for action in filtered_expected_actions
         }
 
-        full_match = all(match_result.values())
         extra_actions = [
             action
             for action in observed_actions
             if action not in filtered_expected_actions
         ]
 
-        return EvalResult(
-            full_match=full_match,
-            match_result=match_result,
+        return AgentEvalResult(
+            match_results=match_results,
             extra_actions=extra_actions,
             session_id=session_id,
         )
 
-    @abstractmethod
-    def extract_action(self, message: LLMChatMessage) -> List[Action]:
-        """Extracts a list of action from the given message."""
-        pass
 
-    @abstractmethod
-    def _filter_actions(self, actions: List[Action]) -> List[Action]:
-        """Filters a list of actions to only contain actions that are relevant to the eval."""
-        pass
-
-
-def check_eval_uniqueness(
-    evaluator_classes: Union[List[Eval], List[Type[Eval]]]
-) -> bool:
-    """Checks that all evaluators are of different types."""
-
-    if len(evaluator_classes) != len(set(evaluator_classes)):
-        raise ValueError("All evaluators must be of different types.")
-
-    return True
-
-
-class CompositeEval(Eval):
-    """Creates a composite evaluator from a list of evaluator classes."""
-
-    def __init__(
-        self,
-        evaluators: List[Eval],
-        *args,
-        **kwargs,
-    ):
-        check_eval_uniqueness(evaluators)
-        super().__init__(*args, **kwargs)
-
-        self.evaluators = evaluators
+class ToolEval(Eval):
+    """Abstract class for evaluating tools' performance."""
 
     def generate_eval_result(
         self,
         task: AutomataTask,
         expected_actions: List[Action],
-        executor: AutomataTaskExecutor,
+        executor: Any,
         *args,
         **kwargs,
     ) -> EvalResult:
         """Generates an eval result for a given set of instructions and expected actions."""
+        # TODO - Provide implementation
+        raise NotImplementedError
 
-        agent = executor.execute(task)
+    def process_result(
+        self,
+        expected_actions: List[Action],
+        process_input: Any,
+        *args,
+        **kwargs,
+    ) -> EvalResult:
+        """Processes the result of an evaluation."""
+        # if len(expected_actions) == 0:
+        # ...
+        # elif len(expected_actions) == 1:
+        # ...
+        # else:
+        # raise ValueError("Expected actions must be of length 0 or 1.")...
+        # return ToolEvalResult(
+        #     expected_action=expected_action,
+        #     observed_action=observed_action,
+        # )
+        # TODO - Provide implementation
+        raise NotImplementedError
 
-        results = [
-            evaluator.process_result(
-                expected_actions, agent.conversation.messages, agent.session_id
-            )
-            for evaluator in self.evaluators
-        ]
-        return CompositeEval.aggregate_result(results)
-
-    @staticmethod
-    def aggregate_result(results: List[EvalResult]) -> EvalResult:
-        """Aggregates a list of EvalResult objects into a single result."""
-
-        if not results:
-            raise ValueError("No results to aggregate.")
-
-        # Check conversations match across results
-        if any(
-            result.session_id != results[0].session_id for result in results
-        ):
-            raise ValueError("All conversations must match.")
-
-        # Perform an 'and' operation over all full_match values
-        aggregated_full_match = all(result.full_match for result in results)
-
-        # Merge all match_result dictionaries
-        aggregated_match_result: Dict[Action, bool] = {}
-        for result in results:
-            aggregated_match_result |= result.match_result
-
-        # Concatenate all extra_actions lists
-        aggregated_extra_actions = []
-        for result in results:
-            aggregated_extra_actions.extend(result.extra_actions)
-
-        # Return a new EvalResult object with the aggregated results
-        return EvalResult(
-            full_match=aggregated_full_match,
-            match_result=aggregated_match_result,
-            extra_actions=aggregated_extra_actions,
-            session_id=results[0].session_id,
-        )
-
+    @abstractmethod
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
-
-        actions = []
-        for evaluator in self.evaluators:
-            actions.extend(evaluator.extract_action(message))
-        return actions
+        pass
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
-        """Filters a list of actions to only contain actions that are relevant to the eval."""
-
-        raise NotImplementedError(
-            "The composite evaluator does not filter actions."
-        )
+        """In the context of ToolEval, there's only one action to be expected.
+        Therefore, there's no need to filter actions."""
+        return actions

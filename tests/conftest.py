@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+import uuid
 from typing import Any, Set
 from unittest.mock import MagicMock
 
@@ -254,6 +255,7 @@ def task():
         # session_id = automata_agent.session_id,
         config_to_load=AgentConfigName.TEST.to_path(),
         instructions="This is a test.",
+        session_id=str(uuid.uuid4()),
     )
 
 

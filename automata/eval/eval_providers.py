@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List
 
-from automata.eval import Action, Eval, Payload
+from automata.eval import Action, AgentEval, Payload
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
@@ -59,7 +59,7 @@ class OpenAIFunctionCallAction(Action):
         return OpenAIFunctionCallAction(name=name, arguments=arguments)
 
 
-class OpenAIFunctionEval(Eval):
+class OpenAIFunctionEval(AgentEval):
     """A concrete class for evaluating an OpenAI messages for function call actions."""
 
     def __init__(self, *args, **kwargs):
