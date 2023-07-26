@@ -50,12 +50,20 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
     for key, default_value in default_keys.items():
         current_value = get_key(dotenv_path, key)
         if current_value is None:
-            raise ValueError(f"Key {key} not found in the .env file")
+            if key == "GRAPH_TYPE":
+                new_value = "dynamic"
+            else:
+                raise ValueError(f"Key {key} not found in the .env file")
         elif not current_value or current_value == default_value:
-            new_value = input(
-                f"{key} is not configured. Please enter your key: "
-            )
-            replace_key(dotenv_path, key, new_value)
+            if key == "GRAPH_TYPE":
+                new_value = "dynamic"
+            else:
+                new_value = input(
+                    f"{key} is not configured. Please enter your key: "
+                )
+        else:
+            new_value = current_value
+        replace_key(dotenv_path, key, new_value)
 
 
 def show_key_value(dotenv_path: str, key: str):
@@ -71,6 +79,13 @@ def update_key_value(dotenv_path: str, key: str):
     new_value = input(f"Enter new value for {key}: ")
     replace_key(dotenv_path, key, new_value)
     log_cli_output(f"The value of {key} has been updated.")
+
+
+def update_graph_type(dotenv_path: str, type: str):
+    """Updates the type in the local environment."""
+
+    replace_key(dotenv_path, "GRAPH_TYPE", type)
+    log_cli_output(f"The graph type has been updated to {type}.")
 
 
 def delete_key_value(dotenv_path: str, key: str):
