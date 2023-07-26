@@ -42,7 +42,14 @@ def run_eval_harness(
     # Load the tasks and expected actions
     logger.info(f"Loading evals from {evals_filepath}...")
 
-    toolkits = kwargs.get("toolkits", [])
+    toolkits = kwargs.get("toolkits")
+    if toolkits is not None and not isinstance(toolkits, str):
+        raise ValueError("Toolkits must be a string or None.")
+    elif toolkits is None:
+        toolkits = []
+    else:
+        toolkits = toolkits.split(",")
+
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
         toolkits
     )

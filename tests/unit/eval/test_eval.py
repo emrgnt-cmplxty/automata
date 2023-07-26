@@ -432,10 +432,6 @@ def test_generate_code_writing_eval_result_match(
         task, EXPECTED_CODE_ACTIONS, task_executor
     )
 
-    print("result = ", result)
-    print("result.match_results = ", result.match_results)
-    print("result.is_full_match = ", result.is_full_match)
-
     # Assert
     assert result.is_full_match
     assert result.match_results == {
