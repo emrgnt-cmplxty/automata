@@ -188,7 +188,7 @@ EXPECTED_FUNCTION_ACTIONS = [
 
 
 EXPECTED_CODE_ACTIONS = [
-    CodeWritingAction(object_type="int", object_value_repr="1"),
+    CodeWritingAction(object_type="int", object_value_repr="1", error=None),
     CodeWritingAction(object_type="str", object_value_repr="test"),
 ]
 
@@ -431,6 +431,10 @@ def test_generate_code_writing_eval_result_match(
     result = code_evaluator.generate_eval_result(
         task, EXPECTED_CODE_ACTIONS, task_executor
     )
+
+    print("result = ", result)
+    print("result.match_results = ", result.match_results)
+    print("result.is_full_match = ", result.is_full_match)
 
     # Assert
     assert result.is_full_match
@@ -705,3 +709,22 @@ def test_eval_result_writer(eval_db):
     assert retrieved_result.match_results == eval_result.match_results
     assert retrieved_result.extra_actions == eval_result.extra_actions
     assert retrieved_result.session_id == eval_result.session_id
+
+
+def test_partial_matches():
+    obj1 = CodeWritingAction(
+        object_type="int", object_value_repr="1", error=None
+    )
+    obj2 = CodeWritingAction(
+        object_type="float", object_value_repr="2.0", error=None
+    )
+
+    action_1 = CodeWritingAction(
+        object_type=str(type(obj1)), object_value_repr=repr(obj1), error=None
+    )
+
+    action_2 = CodeWritingAction(
+        object_type=str(type(obj2)), object_value_repr=repr(obj2), error=None
+    )
+
+    assert action_1 == action_2
