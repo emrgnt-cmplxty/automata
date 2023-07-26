@@ -1,7 +1,12 @@
 [
     {
-        "instructions": "Call Termination with result True",
+        "instructions": "Return a markdown python snippet which creates a valid instance of an openai automata agent config and stores it into a local variable `x`.",
         "expected_actions": [
+            {
+                "type": "CodeWritingAction",
+                "object_value_repr": "OpenAIAutomataAgentConfig(...)",
+                "object_type": "OpenAIAutomataAgentConfig"
+            },
             {
                 "type": "OpenAIFunctionCallAction",
                 "name": "call_termination",

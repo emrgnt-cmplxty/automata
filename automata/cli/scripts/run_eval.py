@@ -9,6 +9,7 @@ from automata.eval import (
     CodeWritingEval,
     OpenAIFunctionEval,
 )
+from automata.singletons.dependency_factory import dependency_factory
 from automata.tasks import (
     AutomataAgentTaskDatabase,
     AutomataTaskEnvironment,
@@ -17,6 +18,7 @@ from automata.tasks import (
     EnvironmentMode,
     IAutomataTaskExecution,
 )
+from automata.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +41,18 @@ def run_eval_harness(
 
     # Load the tasks and expected actions
     logger.info(f"Loading evals from {evals_filepath}...")
+
+    toolkits = kwargs.get("toolkits", [])
+    tool_dependencies = dependency_factory.build_dependencies_for_tools(
+        toolkits
+    )
+    tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
+
     eval_loader = AgentEvalSetLoader(
         evals_filepath,
         model=kwargs.get("model", "gpt-4"),
         config_to_load=kwargs.get("config_to_load", "automata-main"),
+        tools=tools,
     )
     tasks = eval_loader.tasks
     tasks_expected_actions = eval_loader.tasks_expected_actions
@@ -52,9 +62,9 @@ def run_eval_harness(
     environment = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
+    registry = AutomataTaskRegistry(task_db)
 
     for task in eval_loader.tasks:
-        registry = AutomataTaskRegistry(task_db)
         registry.register(task)
         environment.setup(task)
 

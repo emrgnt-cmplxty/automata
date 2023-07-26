@@ -69,12 +69,12 @@ def main(*args, **kwargs):
         kwargs.get("instructions")
         or "This is a dummy instruction, return True."
     )
-    toolkit_list = kwargs.get("toolkit_list", "context-oracle").split(",")
+    toolkits = kwargs.get("toolkits", "context-oracle").split(",")
 
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
-        toolkit_list
+        toolkits
     )
-    tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
+    tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
     logger.info("Done building tools...")
     config_name = AgentConfigName(kwargs.get("agent_name", "automata-main"))
     agent_config_builder = (
@@ -92,5 +92,4 @@ def main(*args, **kwargs):
     agent = OpenAIAutomataAgent(
         instructions, config=agent_config_builder.build()
     )
-    result = agent.run()
-    return result
+    return agent.run()

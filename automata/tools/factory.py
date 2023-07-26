@@ -50,11 +50,11 @@ class AgentToolFactory:
         raise UnknownToolError(agent_tool.value)
 
     @staticmethod
-    def build_tools(toolkit_list: List[str], **kwargs) -> List[Tool]:
+    def build_tools(toolkits: List[str], **kwargs) -> List[Tool]:
         """Given a list of tools this method builds the tools and returns them."""
         tools: List[Tool] = []
 
-        for tool_name in toolkit_list:
+        for tool_name in toolkits:
             tool_name = tool_name.strip()
             agent_tool_manager = AgentToolkitNames(tool_name)
 
