@@ -11,7 +11,7 @@ from automata.cli.env_operations import (
     show_key_value,
     update_key_value,
 )
-from automata.cli.options import agent_options, common_options
+from automata.cli.options import agent_options, common_options, eval_options
 from automata.core.utils import get_logging_config
 
 logging.setLoggerClass(CustomLogger)
@@ -163,3 +163,16 @@ def run_agent(ctx, *args, **kwargs) -> None:
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running agent")
     main(**kwargs)
+
+
+@common_options
+@eval_options
+@cli.command()
+@click.pass_context
+def run_eval(ctx, *args, **kwargs) -> None:
+    """Run the evaluation."""
+    from automata.cli.scripts.run_eval import run_eval_harness
+
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    logger.info("Running Evaluation")
+    run_eval_harness(**kwargs)

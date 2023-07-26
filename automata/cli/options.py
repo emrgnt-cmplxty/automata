@@ -65,7 +65,7 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             help="Which model to use?",
         ),
         click.option(
-            "--max_iterations",
+            "--max-iterations",
             default=None,
             help="How many iterations can we use?",
             type=int,
@@ -74,6 +74,30 @@ def agent_options(command: click.Command, *args, **kwargs) -> click.Command:
             "--config-to-load",
             default="automata-main",
             help="Which agent to use for this task?",
+        ),
+    ]
+    for option in reversed(options):
+        command = option(command)
+    return command
+
+
+# New decorator for evaluation options
+def eval_options(command: click.Command, *args, **kwargs) -> click.Command:
+    """
+    Common options used in evaluation configuration
+
+    Args:
+        command (click.Command): Command to add options to
+
+    Returns:
+        click.Command: Command with options added
+    """
+
+    options = [
+        click.option(
+            "--evals-filepath",
+            default="evals.json",
+            help="Filepath to the JSON file containing evals.",
         ),
     ]
     for option in reversed(options):

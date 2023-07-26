@@ -34,7 +34,8 @@ class AgentEvalSetLoader:
             )
         payloads = self.load_json()
         self.tasks: List[AutomataTask] = []
-        self.expected_actions: List[List[Action]] = []
+        self.tasks_expected_actions: List[List[Action]] = []
+
         for payload in payloads:
             instructions = payload.get("instructions")
             expected_actions = payload.get("expected_actions")
@@ -51,7 +52,7 @@ class AgentEvalSetLoader:
                 ), "each expected action must be a dictionary"
 
             self.tasks.append(AutomataTask(instructions=instructions))
-            self.expected_actions.append(
+            self.tasks_expected_actions.append(
                 [
                     parse_action_from_payload(action)  # type: ignore
                     for action in expected_actions
@@ -149,7 +150,7 @@ class AgentEvaluationHarness:
     def evaluate(
         self,
         tasks: List[AutomataTask],
-        expected_actions: List[Action],
+        tasks_expected_actions: List[List[Action]],
         executor: AutomataTaskExecutor,
         aggregate: bool = True,
     ) -> AgentEvaluationMetrics:
@@ -158,7 +159,7 @@ class AgentEvaluationHarness:
         logging.info(f"Starting evaluation of {len(tasks)} tasks...")
 
         aggregate_results = []
-        for task in tasks:
+        for task, expected_actions in zip(tasks, tasks_expected_actions):
             try:
                 results: List[AgentEvalResult] = []
                 agent = executor.execute(task)
