@@ -27,18 +27,18 @@ class CodeWritingAction(Action):
 
     # TODO - Consider adding variable name to the action,
     # e.g. if x = OpenAutomataAgent(),
-    # and object_types = 'OpenAutomataAgent', object_value_repr = "OpenAutomataAgent(config = ...)",
+    # and object_type = 'OpenAutomataAgent', object_value_repr = "OpenAutomataAgent(config = ...)",
     # then variable_name = 'x'
     def __init__(
         self,
-        object_types: str,
+        object_type: str,
         object_value_repr: Optional[str] = None,
         object_variable_checks: Optional[List[str]] = None,
     ):
         if object_variable_checks is None:
             object_variable_checks = []
 
-        self.object_types = object_types
+        self.object_type = object_type
         self.object_value_repr = object_value_repr
         self.object_variable_checks = object_variable_checks
 
@@ -46,7 +46,7 @@ class CodeWritingAction(Action):
         if not isinstance(other, CodeWritingAction):
             return False
 
-        if self.object_types != other.object_types:
+        if self.object_type != other.object_type:
             return False
 
         # Check for basic Python types
@@ -65,12 +65,12 @@ class CodeWritingAction(Action):
         return hash(
             (
                 json.dumps(self.object_value_repr),
-                json.dumps(self.object_types),
+                json.dumps(self.object_type),
             )
         )
 
     def __repr__(self):
-        return f"CodeWritingAction(object_value_repr={self.object_value_repr}, object_types={self.object_types})"
+        return f"CodeWritingAction(object_value_repr={self.object_value_repr}, object_type={self.object_type})"
 
     def to_payload(self) -> Payload:
         """Converts a CodeWritingAction into a payload for storing."""
@@ -78,17 +78,17 @@ class CodeWritingAction(Action):
         return {
             "type": "CodeWritingAction",
             "object_value_repr": self.object_value_repr or "None",
-            "object_types": self.object_types,
+            "object_type": self.object_type,
         }
 
     @classmethod
     def from_payload(cls, payload: Payload) -> "CodeWritingAction":
         """Converts a payload CodeWritingAction into underlying payload."""
 
-        object_types = payload["object_types"]
-        if not isinstance(object_types, str):
+        object_type = payload["object_type"]
+        if not isinstance(object_type, str):
             raise ValueError(
-                f"Object types of type={type(object_types)} received, instead of str."
+                f"Object types of type={type(object_type)} received, instead of str."
             )
 
         object_value_repr = payload["object_value_repr"]
@@ -107,7 +107,7 @@ class CodeWritingAction(Action):
 
         return cls(
             object_value_repr=object_value_repr,
-            object_types=object_types,
+            object_type=object_type,
             object_variable_checks=object_variable_checks,
         )
 
@@ -156,7 +156,7 @@ class CodeWritingEval(AgentEval):
 
             action = CodeWritingAction(
                 object_value_repr=snippet["value"],
-                object_types=snippet["type"],
+                object_type=snippet["type"],
             )
             actions.append(action)
         return actions

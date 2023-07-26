@@ -129,13 +129,13 @@ class DependencyFactory(metaclass=Singleton):
         return instance
 
     def build_dependencies_for_tools(
-        self, toolkit_list: List[str]
+        self, toolkits: List[str]
     ) -> Dict[str, Any]:
         """Builds and returns a dictionary of all dependencies required by the given list of tools."""
 
         # Identify all unique dependencies
         dependencies: Set[str] = set()
-        for tool_name in toolkit_list:
+        for tool_name in toolkits:
             tool_name = tool_name.strip()
             agent_tool = AgentToolkitNames(tool_name)
 
@@ -149,9 +149,7 @@ class DependencyFactory(metaclass=Singleton):
 
         # Build dependencies
         tool_dependencies = {}
-        logger.info(
-            f"Building dependencies for toolkit_list {toolkit_list}..."
-        )
+        logger.info(f"Building dependencies for toolkits {toolkits}...")
         for dependency in dependencies:
             logger.info(f"Building {dependency}...")
             tool_dependencies[dependency] = self.get(dependency)

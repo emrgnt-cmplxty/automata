@@ -37,7 +37,7 @@ def initialize_automata(
 
 def run_setup(
     agent_config: str,
-    toolkit_list: Optional[List[str]] = None,
+    toolkits: Optional[List[str]] = None,
     root_fpath: str = get_root_fpath(),
     project_name: str = "automata",
 ) -> Tuple[List[Tool], AgentConfigName]:
@@ -46,13 +46,13 @@ def run_setup(
     initialize_automata(root_fpath, project_name)
     agent_config_name = AgentConfigName(agent_config)
 
-    if toolkit_list is None:
-        toolkit_list = []
+    if toolkits is None:
+        toolkits = []
 
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
-        toolkit_list
+        toolkits
     )
-    tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
+    tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
 
     return tools, agent_config_name
 

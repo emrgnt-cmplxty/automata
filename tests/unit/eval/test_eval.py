@@ -188,8 +188,8 @@ EXPECTED_FUNCTION_ACTIONS = [
 
 
 EXPECTED_CODE_ACTIONS = [
-    CodeWritingAction(object_types="int", object_value_repr="1"),
-    CodeWritingAction(object_types="str", object_value_repr="test"),
+    CodeWritingAction(object_type="int", object_value_repr="1"),
+    CodeWritingAction(object_type="str", object_value_repr="test"),
 ]
 
 
@@ -438,7 +438,7 @@ def test_generate_code_writing_eval_result_match(
         action: True for action in EXPECTED_CODE_ACTIONS
     }
     assert result.extra_actions == [
-        CodeWritingAction(object_value_repr="3.14", object_types="float")
+        CodeWritingAction(object_value_repr="3.14", object_type="float")
     ]
 
 
@@ -520,7 +520,7 @@ def test_composite_eval_result_match(
         action: True for action in expected_actions
     }
     assert result.extra_actions == [
-        CodeWritingAction(object_value_repr="3.14", object_types="float"),
+        CodeWritingAction(object_value_repr="3.14", object_type="float"),
     ]
 
 

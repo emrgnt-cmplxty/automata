@@ -6,6 +6,7 @@ build-backend = "poetry.core.masonry.api"
 automata = 'automata.cli.__main__:cli'
 
 [tool.poetry.group.dev.dependencies]
+notebook = "7.0.0"
 jupyter = "^1.0.0"
 sourcery = "^1.6.0"
 
