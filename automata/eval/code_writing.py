@@ -145,7 +145,7 @@ class CodeWritingEval(AgentEval):
         try:
             parsed_snippets = self._parse_code_snippet(message.content)
         except Exception as e:
-            logger.info(f"Failed to parse code snippet with {e}")
+            logger.debug(f"Failed to parse code snippet with {e}")
             parsed_snippets = []
 
         # Clean errors from parsed snippet

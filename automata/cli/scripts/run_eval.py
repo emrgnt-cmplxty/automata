@@ -1,28 +1,22 @@
 import logging
 from typing import List
 
-from automata.config import AgentConfigName
+from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
-    Action,
     AgentEval,
     AgentEvalSetLoader,
     AgentEvaluationHarness,
     CodeWritingEval,
     OpenAIFunctionEval,
 )
-from automata.eval.composite import CompositeAgentEval
-from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
     AutomataAgentTaskDatabase,
-    AutomataTask,
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
     AutomataTaskRegistry,
     EnvironmentMode,
     IAutomataTaskExecution,
 )
-from automata.tools.factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +39,11 @@ def run_eval_harness(
 
     # Load the tasks and expected actions
     logger.info(f"Loading evals from {evals_filepath}...")
-    eval_loader = AgentEvalSetLoader(evals_filepath)
+    eval_loader = AgentEvalSetLoader(
+        evals_filepath,
+        model=kwargs.get("model", "gpt-4"),
+        config_to_load=kwargs.get("config_to_load", "automata-main"),
+    )
     tasks = eval_loader.tasks
     tasks_expected_actions = eval_loader.tasks_expected_actions
 
@@ -67,10 +65,17 @@ def run_eval_harness(
     execution = IAutomataTaskExecution()
     task_executor = AutomataTaskExecutor(execution)
 
-    # # Execute the evaluations
+    # Execute the evaluations
     metrics = evaluation_harness.evaluate(
         tasks, tasks_expected_actions, task_executor
     )
 
     # Log the metrics
     logging.info(f"Evaluation metrics: {metrics}")
+
+
+def main(*args, **kwargs) -> None:
+    """Main entrypoint for the run_eval script."""
+
+    initialize_py_module_loader(**kwargs)
+    run_eval_harness(**kwargs)

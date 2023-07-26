@@ -62,7 +62,8 @@ setup.sh
 .direnv
 docs/_build
 .chroma
-##FIXME- The following should be removed by tests, but isn't
+##FIXME- The following should be removed by tests, but aren't at times
 tests/test_output_vec
 automata/test_output
 automata/test_module.py
+tests/unit/sample_module_22.py

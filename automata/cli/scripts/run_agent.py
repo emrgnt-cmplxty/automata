@@ -93,5 +93,4 @@ def main(*args, **kwargs):
         instructions, config=agent_config_builder.build()
     )
     result = agent.run()
-    print("Final result:\n\n", result)
     return result
