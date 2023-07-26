@@ -1,78 +1,81 @@
+import logging
 from typing import List
 
-from automata.config import AgentConfigName
+from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
-    Action,
     AgentEval,
+    AgentEvalSetLoader,
+    AgentEvaluationHarness,
     CodeWritingEval,
     OpenAIFunctionEval,
 )
-from automata.eval.composite import CompositeAgentEval
-from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
     AutomataAgentTaskDatabase,
-    AutomataTask,
     AutomataTaskEnvironment,
     AutomataTaskExecutor,
     AutomataTaskRegistry,
     EnvironmentMode,
     IAutomataTaskExecution,
 )
-from automata.tools.factory import AgentToolFactory
+
+logger = logging.getLogger(__name__)
 
 
-def initialize_automata():
-    py_module_loader.reset()
-    dependency_factory.reset()
-    py_module_loader.initialize()
+def run_eval_harness(
+    evals_filepath: str,
+    evals: List[AgentEval] = [OpenAIFunctionEval(), CodeWritingEval()],
+    *args,
+    **kwargs,
+) -> None:
+    """
+    Run evaluation for a list of tasks specified in a JSON file.
 
+    Args:
+        evals_filepath (str): Filepath to the JSON file containing evals.
 
-if __name__ == "__main__":
-    initialize_automata()
+    Returns:
+        None
+    """
 
-    instructions = """Return True"""
-    agent_config_name = "automata-main"
-    toolkit_list = ["py-writer"]
-    model = "gpt-3.5-turbo"
-    max_iterations = 2
-    evaluators: List[AgentEval] = [OpenAIFunctionEval(), CodeWritingEval()]
-    expected_actions: List[Action] = []
-
-    # Create a task
-    tool_dependencies = dependency_factory.build_dependencies_for_tools(
-        toolkit_list
+    # Load the tasks and expected actions
+    logger.info(f"Loading evals from {evals_filepath}...")
+    eval_loader = AgentEvalSetLoader(
+        evals_filepath,
+        model=kwargs.get("model", "gpt-4"),
+        config_to_load=kwargs.get("config_to_load", "automata-main"),
     )
-    tools = AgentToolFactory.build_tools(toolkit_list, **tool_dependencies)
+    tasks = eval_loader.tasks
+    tasks_expected_actions = eval_loader.tasks_expected_actions
 
-    config_name = AgentConfigName(agent_config_name)
-
-    task = AutomataTask(
-        instructions=instructions,
-        config_to_load=config_name,
-        model=model,
-        max_iterations=max_iterations,
-        tools=tools,
-    )
-
-    # Register and setup task
+    # Setup the tasks
     task_db = AutomataAgentTaskDatabase()
-    registry = AutomataTaskRegistry(task_db)
-    registry.register(task)
-
     environment = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
-    environment.setup(task)
+
+    for task in eval_loader.tasks:
+        registry = AutomataTaskRegistry(task_db)
+        registry.register(task)
+        environment.setup(task)
+
+    # Create the evaluation harness
+    evaluation_harness = AgentEvaluationHarness(evals)
 
     # Create the executor
     execution = IAutomataTaskExecution()
     task_executor = AutomataTaskExecutor(execution)
 
-    composite_evaluator = CompositeAgentEval(
-        evaluators,
+    # Execute the evaluations
+    metrics = evaluation_harness.evaluate(
+        tasks, tasks_expected_actions, task_executor
     )
 
-    result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor
-    )
+    # Log the metrics
+    logging.info(f"Evaluation metrics: {metrics}")
+
+
+def main(*args, **kwargs) -> None:
+    """Main entrypoint for the run_eval script."""
+
+    initialize_py_module_loader(**kwargs)
+    run_eval_harness(**kwargs)

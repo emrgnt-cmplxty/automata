@@ -13,13 +13,13 @@ def loader():
 
 def test_eval_loader(loader):
     assert loader.tasks, "No tasks loaded"
-    assert loader.expected_actions, "No expected actions loaded"
+    assert loader.tasks_expected_actions, "No expected actions loaded"
     assert (
         loader.tasks[0].instructions == "Call Termination with result True"
     ), "Instruction not loaded correctly"
     assert (
-        loader.expected_actions[0][0].name == "call_termination"
+        loader.tasks_expected_actions[0][0].name == "call_termination"
     ), "Call Termination not loaded correctly"
-    assert loader.expected_actions[0][0].arguments == {
+    assert loader.tasks_expected_actions[0][0].arguments == {
         "result": "True"
     }, "Call Termination not loaded correctly"

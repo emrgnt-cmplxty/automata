@@ -23,6 +23,18 @@ class AgentEvaluationMetrics:
         self._successful_actions_frequency: Optional[Counter[str]] = None
         self._failed_actions_frequency: Optional[Counter[str]] = None
 
+    def __str__(self) -> str:
+        return (
+            f"Total Actions: {self.total_actions}\n"
+            f"Successful Actions: {self.total_successful_actions}\n"
+            f"Full Matches: {self.total_full_matches}\n"
+            f"Partial Matches: {self.total_partial_matches}\n"
+            f"Extra Actions: {self.total_extra_actions}\n"
+            f"Partial Match Success Rate: {self.partial_match_rate}\n"
+            f"Full Match Success Rate: {self.full_match_rate}\n"
+            f"Action Success Rate: {self.action_success_rate}\n"
+        )
+
     @property
     def total_full_matches(self) -> int:
         """Returns the total number of full matches."""

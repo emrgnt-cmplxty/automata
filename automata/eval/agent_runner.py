@@ -25,33 +25,35 @@ logger = logging.getLogger(__name__)
 class AgentEvalSetLoader:
     """Loads a list of tasks from a JSON file."""
 
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str, *args, **kwargs):
         # sourcery skip: docstrings-for-functions
         self.filepath = filepath
         if not filepath.endswith(".json"):
             raise ValueError(
-                f"Only JSON files are supported, received filepath {filepath}"
+                f"Only JSON files are supported, received filepath {filepath}."
             )
         payloads = self.load_json()
         self.tasks: List[AutomataTask] = []
-        self.expected_actions: List[List[Action]] = []
+        self.tasks_expected_actions: List[List[Action]] = []
+
         for payload in payloads:
             instructions = payload.get("instructions")
             expected_actions = payload.get("expected_actions")
 
-            assert isinstance(
-                instructions, str
-            ), "instructions must be a string"
-            assert isinstance(
-                expected_actions, list
-            ), "expected_actions must be a dictionary"
+            if not isinstance(instructions, str):
+                raise ValueError("Instructions must be a string.")
+            if not isinstance(expected_actions, list):
+                raise ValueError("Expected_actions must be a dictionary.")
             for expected_action in expected_actions:
-                assert isinstance(
-                    expected_action, dict
-                ), "each expected action must be a dictionary"
+                if not isinstance(expected_action, dict):
+                    raise ValueError(
+                        "Each expected action must be a dictionary."
+                    )
 
-            self.tasks.append(AutomataTask(instructions=instructions))
-            self.expected_actions.append(
+            self.tasks.append(
+                AutomataTask(instructions=instructions, **kwargs)
+            )
+            self.tasks_expected_actions.append(
                 [
                     parse_action_from_payload(action)  # type: ignore
                     for action in expected_actions
@@ -80,7 +82,7 @@ def create_payload(input_dict: Payload) -> str:
 
     for key, value in input_dict.items():
         if isinstance(value, dict):
-            cast_value = cast(Payload, value)  # TODO - Why do we need to cast?
+            cast_value = cast(Payload, value)
             input_dict[key] = create_payload(cast_value)
         elif isinstance(value, list):
             input_dict[key] = [
@@ -149,7 +151,7 @@ class AgentEvaluationHarness:
     def evaluate(
         self,
         tasks: List[AutomataTask],
-        expected_actions: List[Action],
+        tasks_expected_actions: List[List[Action]],
         executor: AutomataTaskExecutor,
         aggregate: bool = True,
     ) -> AgentEvaluationMetrics:
@@ -158,7 +160,7 @@ class AgentEvaluationHarness:
         logging.info(f"Starting evaluation of {len(tasks)} tasks...")
 
         aggregate_results = []
-        for task in tasks:
+        for task, expected_actions in zip(tasks, tasks_expected_actions):
             try:
                 results: List[AgentEvalResult] = []
                 agent = executor.execute(task)

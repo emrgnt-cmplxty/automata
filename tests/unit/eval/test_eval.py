@@ -566,10 +566,18 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
     ]
 
     expected_actions = [
-        EXPECTED_FUNCTION_ACTIONS[0],
-        EXPECTED_FUNCTION_ACTIONS[1],
-        EXPECTED_CODE_ACTIONS[0],
-        EXPECTED_CODE_ACTIONS[1],
+        [
+            EXPECTED_FUNCTION_ACTIONS[0],
+            EXPECTED_FUNCTION_ACTIONS[1],
+            EXPECTED_CODE_ACTIONS[0],
+            EXPECTED_CODE_ACTIONS[1],
+        ],
+        [
+            EXPECTED_FUNCTION_ACTIONS[0],
+            EXPECTED_FUNCTION_ACTIONS[1],
+            EXPECTED_CODE_ACTIONS[0],
+            EXPECTED_CODE_ACTIONS[1],
+        ],
     ]
 
     metrics = eval_harness.evaluate(

@@ -1,0 +1,12 @@
+[
+    {
+        "instructions": "Call Termination with result True",
+        "expected_actions": [
+            {
+                "type": "OpenAIFunctionCallAction",
+                "name": "call_termination",
+                "arguments": {"result": "True"}
+            }
+        ]
+    }
+]

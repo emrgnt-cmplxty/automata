@@ -11,7 +11,7 @@ from automata.cli.env_operations import (
     show_key_value,
     update_key_value,
 )
-from automata.cli.options import agent_options, common_options
+from automata.cli.options import agent_options, common_options, eval_options
 from automata.core.utils import get_logging_config
 
 logging.setLoggerClass(CustomLogger)
@@ -162,4 +162,27 @@ def run_agent(ctx, *args, **kwargs) -> None:
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running agent")
+    main(**kwargs)
+
+
+@common_options
+@agent_options
+@eval_options
+@cli.command()
+@click.pass_context
+def run_eval(ctx, *args, **kwargs) -> None:
+    """
+    Run the evaluation.
+
+    Here is an exmaple command -
+    poetry run automata run-eval --evals-filepath=automata/config/eval/primary_agent_payload.json
+
+    """
+    from automata.cli.scripts.run_eval import main
+
+    if kwargs.get("instructions"):
+        raise ValueError("Instructions should not be passed to run_eval")
+
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    logger.info("Running Evaluation")
     main(**kwargs)
