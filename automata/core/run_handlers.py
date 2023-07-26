@@ -6,11 +6,11 @@ from automata.core.utils import get_root_fpath
 from automata.eval import (
     Action,
     CodeWritingEval,
-    CompositeEval,
     Eval,
     EvalResult,
     OpenAIFunctionEval,
 )
+from automata.eval.composite import CompositeAgentEval
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
@@ -144,7 +144,9 @@ def run_with_eval(
     task_environment: AutomataTaskEnvironment,
     task_execution: ITaskExecution = IAutomataTaskExecution(),
     expected_actions: List[Action] = [],
-    evaluator: Eval = CompositeEval([OpenAIFunctionEval(), CodeWritingEval()]),
+    evaluator: Eval = CompositeAgentEval(
+        [OpenAIFunctionEval(), CodeWritingEval()]
+    ),
 ) -> EvalResult:
     """Run a task with the given parameters."""
 

@@ -3,11 +3,11 @@ from typing import List
 from automata.config import AgentConfigName
 from automata.eval import (
     Action,
+    AgentEval,
     CodeWritingEval,
-    CompositeEval,
-    EvalResultDatabase,
     OpenAIFunctionEval,
 )
+from automata.eval.composite import CompositeAgentEval
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     toolkit_list = ["py-writer"]
     model = "gpt-3.5-turbo"
     max_iterations = 2
-    evaluators = [OpenAIFunctionEval(), CodeWritingEval()]
+    evaluators: List[AgentEval] = [OpenAIFunctionEval(), CodeWritingEval()]
     expected_actions: List[Action] = []
 
     # Create a task
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     execution = IAutomataTaskExecution()
     task_executor = AutomataTaskExecutor(execution)
 
-    composite_evaluator = CompositeEval(
+    composite_evaluator = CompositeAgentEval(
         evaluators,
     )
 

@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from automata.eval import Action, Eval, Payload
+from automata.eval import Action, AgentEval, Payload
 from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)
@@ -122,7 +122,7 @@ class CodeWritingAction(Action):
         ].replace("```", "")
 
 
-class CodeWritingEval(Eval):
+class CodeWritingEval(AgentEval):
     """A class for evaluating an LLM's code writing ability."""
 
     def __init__(

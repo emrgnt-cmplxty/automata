@@ -6,16 +6,16 @@ import pytest
 
 from automata.agent.providers import OpenAIChatMessage
 from automata.eval import (
+    AgentEvalResult,
+    AgentEvaluationHarness,
+    AgentEvaluationMetrics,
     CodeWritingAction,
     CodeWritingEval,
-    CompositeEval,
-    EvalResult,
-    EvalResultDatabase,
-    EvaluationHarness,
-    EvaluationMetrics,
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
 )
+from automata.eval.composite import CompositeAgentEval
+from automata.eval.eval_result_database import AgentEvalResultDatabase
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.base import TaskStatus
 from automata.tasks.executor import (
@@ -43,12 +43,12 @@ def code_evaluator():
 @pytest.fixture
 def composite_evaluator(evaluator, code_evaluator):
     evaluators = [evaluator, code_evaluator]
-    return CompositeEval(evaluators)
+    return CompositeAgentEval(evaluators)
 
 
 @pytest.fixture
 def eval_harness(evaluator, code_evaluator):
-    return EvaluationHarness([evaluator, code_evaluator])
+    return AgentEvaluationHarness([evaluator, code_evaluator])
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -237,7 +237,7 @@ def task_db(tmpdir_factory):
 @pytest.fixture(scope="module", autouse=True)
 def eval_db(tmpdir_factory):
     db_file = tmpdir_factory.mktemp("data").join("test_eval.db")
-    db = EvalResultDatabase(str(db_file))
+    db = AgentEvalResultDatabase(str(db_file))
     yield db
     db.close()
     if os.path.exists(str(db_file)):
@@ -348,8 +348,8 @@ def test_generate_function_eval_result_match(
     )
 
     # Assert
-    assert result.full_match
-    assert result.match_result == {
+    assert result.is_full_match
+    assert result.match_results == {
         action: True for action in EXPECTED_FUNCTION_ACTIONS
     }
     assert result.extra_actions == [
@@ -379,8 +379,8 @@ def test_generate_eval_result_no_match(
     )
 
     # Assert
-    assert not result.full_match
-    assert result.match_result == {
+    assert not result.is_full_match
+    assert result.match_results == {
         action: False for action in EXPECTED_FUNCTION_ACTIONS
     }
     assert result.extra_actions == [
@@ -407,8 +407,8 @@ def test_generate_eval_result_partial_match(
     )
 
     # Assert
-    assert not result.full_match
-    assert result.match_result == {
+    assert not result.is_full_match
+    assert result.match_results == {
         EXPECTED_FUNCTION_ACTIONS[0]: True,
         EXPECTED_FUNCTION_ACTIONS[1]: False,
     }
@@ -433,8 +433,8 @@ def test_generate_code_writing_eval_result_match(
     )
 
     # Assert
-    assert result.full_match
-    assert result.match_result == {
+    assert result.is_full_match
+    assert result.match_results == {
         action: True for action in EXPECTED_CODE_ACTIONS
     }
     assert result.extra_actions == [
@@ -456,8 +456,8 @@ def test_generate_code_writing_eval_result_no_match(
     )
 
     # Assert
-    assert not result.full_match
-    assert result.match_result == {
+    assert not result.is_full_match
+    assert result.match_results == {
         action: False for action in EXPECTED_CODE_ACTIONS
     }
     assert result.extra_actions == []
@@ -483,12 +483,12 @@ def test_generate_code_writing_eval_result_partial_match(
 
     # Act
     result = code_evaluator.generate_eval_result(
-        task, EXPECTED_CODE_ACTIONS, task_executor
+        task, EXPECTED_CODE_ACTIONS, task_executor, session_id=None
     )
 
     # Assert
-    assert not result.full_match
-    assert result.match_result == {
+    assert not result.is_full_match
+    assert result.match_results == {
         EXPECTED_CODE_ACTIONS[0]: True,
         EXPECTED_CODE_ACTIONS[1]: False,
     }
@@ -512,11 +512,13 @@ def test_composite_eval_result_match(
     ]
 
     result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor
+        task, expected_actions, task_executor, session_id=None
     )
 
-    assert result.full_match
-    assert result.match_result == {action: True for action in expected_actions}
+    assert result.is_full_match
+    assert result.match_results == {
+        action: True for action in expected_actions
+    }
     assert result.extra_actions == [
         CodeWritingAction(object_value_repr="3.14", object_types="float"),
     ]
@@ -536,11 +538,11 @@ def test_composite_eval_no_match(
     ]
 
     result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor
+        task, expected_actions, task_executor, session_id=None
     )
 
-    assert result.full_match is False
-    assert result.match_result == {
+    assert result.is_full_match is False
+    assert result.match_results == {
         EXPECTED_FUNCTION_ACTIONS[0]: False,
         EXPECTED_CODE_ACTIONS[0]: False,
     }
@@ -552,7 +554,7 @@ def test_composite_eval_no_match(
 
 
 def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
-    """Test the properties of EvaluationMetrics"""
+    """Test the properties of AgentEvaluationMetrics"""
 
     (
         mock_openai_chatcompletion_create,
@@ -575,7 +577,7 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
     )
 
     # Assert
-    assert isinstance(metrics, EvaluationMetrics)
+    assert isinstance(metrics, AgentEvaluationMetrics)
     assert metrics.total_actions == 8
     assert metrics.total_successful_actions == 4
     assert metrics.action_success_rate == 0.5
@@ -611,11 +613,11 @@ def test_code_execution_error(composite_evaluator, task, setup):
     ]
 
     result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor
+        task, expected_actions, task_executor, session_id=None
     )
 
-    assert result.full_match is False
-    assert result.match_result == {
+    assert result.is_full_match is False
+    assert result.match_results == {
         EXPECTED_FUNCTION_ACTIONS[0]: False,
         EXPECTED_CODE_ACTIONS[0]: False,
     }
@@ -671,14 +673,13 @@ def test_task_evaluation_with_database_integration(
     assert fetched_conversation[-2].content == mock_msg_1.content
 
 
-# Standalone test for the EvalResultDatabase
+# Standalone test for the AgentEvalResultDatabase
 def test_eval_result_writer(eval_db):
     # Generate a test EvalResult
     action1 = EXPECTED_CODE_ACTIONS[0]
     action2 = EXPECTED_CODE_ACTIONS[1]
-    eval_result = EvalResult(
-        full_match=True,
-        match_result={action1: True, action2: False},
+    eval_result = AgentEvalResult(
+        match_results={action1: True, action2: False},
         extra_actions=[action2],
         session_id="test_session",
     )
@@ -692,7 +693,7 @@ def test_eval_result_writer(eval_db):
     # Check that the retrieved result matches the original result
     assert len(retrieved_results) == 1
     retrieved_result = retrieved_results[0]
-    assert retrieved_result.full_match == eval_result.full_match
-    assert retrieved_result.match_result == eval_result.match_result
+    assert retrieved_result.is_full_match == eval_result.is_full_match
+    assert retrieved_result.match_results == eval_result.match_results
     assert retrieved_result.extra_actions == eval_result.extra_actions
     assert retrieved_result.session_id == eval_result.session_id

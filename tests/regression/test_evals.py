@@ -4,7 +4,8 @@ import logging
 import pytest
 
 from automata.core.run_handlers import run_setup, run_with_eval
-from automata.eval import EvalResultDatabase, OpenAIFunctionCallAction
+from automata.eval import OpenAIFunctionCallAction
+from automata.eval.eval_result_database import AgentEvalResultDatabase
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks import (
@@ -63,15 +64,15 @@ def test_basic_eval_task(
     )
 
     assert eval_result.session_id is not None
-    assert eval_result.full_match is True
-    assert eval_result.match_result == {}
+    assert eval_result.is_full_match is True
+    assert eval_result.match_results == {}
     assert eval_result.extra_actions == [
         OpenAIFunctionCallAction(
             name="call_termination", arguments={"result": "True"}
         )
     ]
 
-    eval_db = EvalResultDatabase()
+    eval_db = AgentEvalResultDatabase()
     eval_db.write_result(eval_result)
 
     session_id = eval_result.session_id
