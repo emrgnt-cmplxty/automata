@@ -4,7 +4,8 @@
         "expected_actions": [
             {
                 "type": "CodeWritingAction",
-                "object_type": "OpenAIAutomataAgentConfig"
+                "object_type": "OpenAIAutomataAgentConfig",
+                "object_value_repr": "None"
             }
         ]
     },
