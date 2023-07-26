@@ -92,5 +92,4 @@ def main(*args, **kwargs):
     agent = OpenAIAutomataAgent(
         instructions, config=agent_config_builder.build()
     )
-    result = agent.run()
-    return result
+    return agent.run()
