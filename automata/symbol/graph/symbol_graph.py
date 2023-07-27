@@ -46,7 +46,7 @@ class SymbolGraph(ISymbolProvider):
         self._graph = builder.build_graph()
         self.navigator = SymbolGraphNavigator(self._graph)
 
-        with open(f"../../{data_root_path}/symbolgraph.pkl", "wb") as f:
+        with open(f"{data_root_path}/symbolgraph.pkl", "wb") as f:
             pickle.dump(self._graph, f)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:

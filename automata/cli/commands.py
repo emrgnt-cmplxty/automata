@@ -48,8 +48,9 @@ def cli(ctx) -> None:
 @cli.command()
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
-    """Configures environment variables for Automata"""
     """
+    Configures environment variables for Automata
+
     This command uses click to create an interactive CLI command for configuring
     envirnoment variables. Upon running the automata configure command, the .env
     is created if it doesn't already exist and the user is prompted to enter the
