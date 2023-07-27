@@ -20,7 +20,9 @@ from automata.core import (
 )
 
 if TYPE_CHECKING:
-    from automata.symbol.base import Symbol  # avoid circular dependencies
+    from automata.symbol.symbol_base import (  # avoid circular dependencies
+        Symbol,
+    )
 
 logger = logging.getLogger(__name__)
 

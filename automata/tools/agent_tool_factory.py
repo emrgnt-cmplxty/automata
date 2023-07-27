@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Sequence, Tuple
 from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
-from automata.config.base import LLMProvider
+from automata.config.config_base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
 from automata.memory_store import (

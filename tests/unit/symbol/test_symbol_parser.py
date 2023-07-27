@@ -1,4 +1,4 @@
-from automata.symbol.parser import Symbol
+from automata.symbol.symbol_parser import Symbol
 
 
 def test_parse_symbol(symbols):

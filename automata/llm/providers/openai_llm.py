@@ -24,7 +24,7 @@ from automata.llm import (
     LLMCompletionResult,
     LLMConversation,
 )
-from automata.tools.base import Tool
+from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
 

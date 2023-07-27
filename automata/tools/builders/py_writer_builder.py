@@ -5,13 +5,13 @@ from typing import List
 from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.openai_agent import OpenAIAgentToolkitBuilder
 from automata.code_writers.py import PyCodeWriter
-from automata.config.base import LLMProvider
+from automata.config.config_base import LLMProvider
 from automata.llm.providers.openai_llm import OpenAITool
 from automata.singletons.py_module_loader import py_module_loader
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
-from automata.tools.base import Tool
+from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
 

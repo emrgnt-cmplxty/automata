@@ -1,7 +1,7 @@
 # sourcery skip: no-relative-imports
 from automata.agent.openai_agent import OpenAIChatMessage
 from automata.eval.agent.agent_eval import AgentEvalResult
-from automata.tasks.base import TaskStatus
+from automata.tasks.task_base import TaskStatus
 
 from .conftest import EXPECTED_CODE_ACTIONS, EXPECTED_FUNCTION_ACTIONS, params
 

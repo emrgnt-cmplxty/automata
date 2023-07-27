@@ -3,10 +3,10 @@ from typing import Any
 
 import networkx as nx
 
-from automata.symbol.base import SymbolDescriptor
-from automata.symbol.graph.base import GraphProcessor
-from automata.symbol.graph.navigator import SymbolGraphNavigator
-from automata.symbol.parser import parse_symbol
+from automata.symbol.graph.symbol_graph_base import GraphProcessor
+from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
+from automata.symbol.symbol_base import SymbolDescriptor
+from automata.symbol.symbol_parser import parse_symbol
 
 logger = logging.getLogger(__name__)
 

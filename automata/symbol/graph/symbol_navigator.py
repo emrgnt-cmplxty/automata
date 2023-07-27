@@ -9,7 +9,7 @@ import networkx as nx
 from automata.config import MAX_WORKERS
 from automata.core import fetch_bounding_box
 from automata.singletons.py_module_loader import py_module_loader
-from automata.symbol.base import Symbol, SymbolReference
+from automata.symbol.symbol_base import Symbol, SymbolReference
 from automata.symbol.symbol_utils import (
     convert_to_ast_object,
     get_rankable_symbols,

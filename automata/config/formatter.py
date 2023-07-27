@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict
 
-from automata.config.base import AgentConfig, AgentConfigName
+from automata.config.config_base import AgentConfig, AgentConfigName
 
 if TYPE_CHECKING:
     from automata.experimental.search import SymbolRank

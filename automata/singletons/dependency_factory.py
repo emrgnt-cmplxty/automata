@@ -40,7 +40,7 @@ from automata.symbol_embedding import (
     SymbolDocEmbeddingBuilder,
 )
 from automata.tools.agent_tool_factory import AgentToolFactory
-from automata.tools.error import UnknownToolError
+from automata.tools.tool_error import UnknownToolError
 
 logger = logging.getLogger(__name__)
 

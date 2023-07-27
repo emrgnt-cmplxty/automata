@@ -1,6 +1,6 @@
 # sourcery skip: no-relative-imports
 from automata.eval import CodeWritingAction, OpenAIFunctionCallAction
-from automata.tasks.base import TaskStatus
+from automata.tasks.task_base import TaskStatus
 
 from .conftest import (
     EXPECTED_CODE_ACTIONS,

@@ -6,7 +6,7 @@ from automata.agent import (
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
 )
-from automata.config.base import LLMProvider
+from automata.config.config_base import LLMProvider
 from automata.experimental.search import (
     ExactSearchResult,
     SourceCodeResult,

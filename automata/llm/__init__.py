@@ -1,4 +1,4 @@
-from .foundation import (
+from .llm_base import (
     LLMChatCompletionProvider,
     LLMChatMessage,
     LLMCompletionResult,

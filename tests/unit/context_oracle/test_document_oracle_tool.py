@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from automata.experimental.tools import DocumentOracleToolkitBuilder
-from automata.tools.base import Tool
+from automata.tools.tool_base import Tool
 
 
 @pytest.fixture

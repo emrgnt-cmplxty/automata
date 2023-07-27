@@ -3,9 +3,9 @@ from typing import Any, Dict
 
 import networkx as nx
 
-from automata.symbol.base import SymbolReference
-from automata.symbol.graph.base import GraphProcessor
-from automata.symbol.parser import parse_symbol
+from automata.symbol.graph.symbol_graph_base import GraphProcessor
+from automata.symbol.symbol_base import SymbolReference
+from automata.symbol.symbol_parser import parse_symbol
 
 from ..scip_pb2 import SymbolRole  # type: ignore
 

@@ -7,7 +7,7 @@ from automata.agent import (
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
 )
-from automata.config.base import LLMProvider
+from automata.config.config_base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
@@ -19,7 +19,7 @@ from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.symbol_embedding import SymbolDocEmbedding
-from automata.tools.base import Tool
+from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
 

@@ -239,7 +239,7 @@ class Symbol:
             raise ValueError(f"Invalid symbol_str: {symbol_str}")
         uri, _, __, ___ = match.groups()
         # In current implementation, only the uri is used in re-construcing the symbol
-        from automata.symbol.parser import parse_symbol
+        from automata.symbol.symbol_parser import parse_symbol
 
         return parse_symbol(uri)
 

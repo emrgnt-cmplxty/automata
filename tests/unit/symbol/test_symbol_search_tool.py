@@ -5,7 +5,7 @@ import pytest
 from astunparse import unparse as py_ast_unparse
 
 from automata.experimental.tools import SymbolSearchToolkitBuilder
-from automata.tools.base import Tool
+from automata.tools.tool_base import Tool
 
 
 @pytest.fixture

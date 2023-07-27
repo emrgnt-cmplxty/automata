@@ -7,10 +7,10 @@ import pytest
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
 from automata.singletons.py_module_loader import py_module_loader
-from automata.tools.base import Tool
 from automata.tools.builders.py_writer_builder import (
     PyCodeWriterToolkitBuilder,
 )
+from automata.tools.tool_base import Tool
 
 
 @pytest.fixture(autouse=True)

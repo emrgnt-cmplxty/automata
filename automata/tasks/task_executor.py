@@ -7,8 +7,8 @@ from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.base import ITaskExecution, Task, TaskStatus
-from automata.tasks.error import TaskGeneralError, TaskStateError
+from automata.tasks.task_base import ITaskExecution, Task, TaskStatus
+from automata.tasks.task_error import TaskGeneralError, TaskStateError
 
 logger = logging.getLogger(__name__)
 

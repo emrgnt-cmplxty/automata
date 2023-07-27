@@ -3,11 +3,11 @@ from typing import Any
 
 import networkx as nx
 
-from automata.symbol.graph.caller_callees import CallerCalleeProcessor
-from automata.symbol.graph.references import ReferenceProcessor
-from automata.symbol.graph.relationships import RelationshipProcessor
-from automata.symbol.parser import parse_symbol
+from automata.symbol.graph.symbol_caller_callees import CallerCalleeProcessor
+from automata.symbol.graph.symbol_references import ReferenceProcessor
+from automata.symbol.graph.symbol_relationships import RelationshipProcessor
 from automata.symbol.scip_pb2 import Index  # type: ignore
+from automata.symbol.symbol_parser import parse_symbol
 
 logger = logging.getLogger(__name__)
 

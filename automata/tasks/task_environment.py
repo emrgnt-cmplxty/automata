@@ -9,8 +9,8 @@ from automata.core.utils import get_root_py_fpath
 from automata.singletons.github_client import GitHubClient
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.base import Task, TaskEnvironment, TaskStatus
-from automata.tasks.error import TaskGeneralError, TaskStateError
+from automata.tasks.task_base import Task, TaskEnvironment, TaskStatus
+from automata.tasks.task_error import TaskGeneralError, TaskStateError
 
 logger = logging.getLogger(__name__)
 

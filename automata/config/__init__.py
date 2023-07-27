@@ -16,7 +16,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .base import (
+from .config_base import (
     AgentConfig,
     AgentConfigBuilder,
     AgentConfigName,

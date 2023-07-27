@@ -1,12 +1,12 @@
-from .base import (
+from .graph import SymbolGraph
+from .symbol_base import (
     ISymbolProvider,
     Symbol,
     SymbolDescriptor,
     SymbolPackage,
     SymbolReference,
 )
-from .graph import SymbolGraph
-from .parser import parse_symbol
+from .symbol_parser import parse_symbol
 from .symbol_utils import convert_to_ast_object, get_rankable_symbols
 
 __all__ = [

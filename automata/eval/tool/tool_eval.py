@@ -2,14 +2,14 @@ import json
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional
 
-from automata.eval.base import (
+from automata.eval.eval_base import (
     Action,
     Eval,
     EvalResult,
     Payload,
     parse_action_from_payload,
 )
-from automata.llm.foundation import LLMChatMessage
+from automata.llm.llm_base import LLMChatMessage
 from automata.tasks import AutomataTask
 
 

@@ -4,8 +4,8 @@ from typing import Any
 import networkx as nx
 from google.protobuf.json_format import MessageToDict  # type: ignore
 
-from automata.symbol.graph.base import GraphProcessor
-from automata.symbol.parser import parse_symbol
+from automata.symbol.graph.symbol_graph_base import GraphProcessor
+from automata.symbol.symbol_parser import parse_symbol
 
 logger = logging.getLogger(__name__)
 

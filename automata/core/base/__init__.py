@@ -1,10 +1,10 @@
+from .base_error import AutomataError
 from .database import (
     ChromaVectorDatabase,
     JSONVectorDatabase,
     SQLDatabase,
     VectorDatabaseProvider,
 )
-from .error import AutomataError
 from .patterns import Observer, Singleton
 
 __all__ = [
