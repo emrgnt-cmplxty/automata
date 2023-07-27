@@ -49,18 +49,20 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
 
     for key, default_value in default_keys.items():
         current_value = get_key(dotenv_path, key)
-        if current_value is None:
-            if key == "GRAPH_TYPE":
-                new_value = "dynamic"
-            else:
-                raise ValueError(f"Key {key} not found in the .env file")
+        if (
+            current_value is None
+            and key == "GRAPH_TYPE"
+            or current_value is not None
+            and (not current_value or current_value == default_value)
+            and key == "GRAPH_TYPE"
+        ):
+            new_value = "dynamic"
+        elif current_value is None:
+            raise ValueError(f"Key {key} not found in the .env file")
         elif not current_value or current_value == default_value:
-            if key == "GRAPH_TYPE":
-                new_value = "dynamic"
-            else:
-                new_value = input(
-                    f"{key} is not configured. Please enter your key: "
-                )
+            new_value = input(
+                f"{key} is not configured. Please enter your key: "
+            )
         else:
             new_value = current_value
         replace_key(dotenv_path, key, new_value)
