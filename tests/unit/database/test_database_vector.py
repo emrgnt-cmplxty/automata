@@ -6,17 +6,6 @@ from automata.symbol_embedding import (
 )
 
 
-@pytest.fixture
-def vector_db(temp_output_filename):
-    return JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
-
-
-@pytest.fixture(params=[0, 1])
-def embedded_symbol(symbols, request):
-    data = [("x", [1, 2, 3]), ("y", [1, 2, 3, 4])][request.param]
-    return SymbolCodeEmbedding(symbols[request.param], data[0], data[1])
-
-
 def test_init_vector(vector_db):
     pass
 

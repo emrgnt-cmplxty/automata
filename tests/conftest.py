@@ -2,7 +2,7 @@ import os
 import random
 import shutil
 import uuid
-from typing import Any, Set
+from typing import Any, Generator, Set
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -17,6 +17,10 @@ from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient, RepositoryClient
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.parser import parse_symbol
+from automata.symbol_embedding import (
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+)
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.environment import AutomataTaskEnvironment
 from automata.tasks.registry import AutomataTaskRegistry
@@ -25,7 +29,7 @@ from automata.tools.factory import AgentToolFactory
 
 
 @pytest.fixture
-def temp_output_vector_dir():
+def temp_output_dir() -> Generator:
     """Creates a temporary output filename which is deleted after the test is run"""
     this_dir = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(this_dir, "test_output_vec")
@@ -45,23 +49,20 @@ def temp_output_vector_dir():
 
 
 @pytest.fixture
-def temp_output_filename():
+def temp_output_filename(temp_output_dir: str) -> str:
     """Creates a temporary output filename which is deleted after the test is run"""
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    filename = os.path.join(this_dir, "test_output.json")
-    yield filename
-    try:
-        if os.path.exists(filename):
-            os.remove(filename)
-    except OSError:
-        pass
+    return os.path.join(temp_output_dir, "test_output")
 
-    # The TemporaryDirectory context manager should already clean up the directory,
-    # but just in case it doesn't (e.g. due to an error), we'll try removing it manually as well.
-    try:
-        shutil.rmtree(f"{filename}/")
-    except OSError:
-        pass
+
+@pytest.fixture
+def vector_db(temp_output_filename):
+    return JSONSymbolEmbeddingVectorDatabase(temp_output_filename)
+
+
+@pytest.fixture(params=[0, 1])
+def embedded_symbol(symbols, request):
+    data = [("x", [1, 2, 3]), ("y", [1, 2, 3, 4])][request.param]
+    return SymbolCodeEmbedding(symbols[request.param], data[0], data[1])
 
 
 @pytest.fixture
@@ -300,3 +301,151 @@ def task_db(tmpdir_factory):
 @pytest.fixture
 def registry(task, task_db):
     return AutomataTaskRegistry(task_db)
+
+
+@pytest.fixture
+def evaluator():
+    return OpenAIFunctionEval()
+
+
+@pytest.fixture
+def code_evaluator():
+    return CodeWritingEval(target_variables=["x", "y", "z"])
+
+
+@pytest.fixture
+def composite_evaluator(evaluator, code_evaluator):
+    evaluators = [evaluator, code_evaluator]
+    return AgentEvalComposite(evaluators)
+
+
+@pytest.fixture
+def eval_harness(evaluator, code_evaluator):
+    database = MagicMock()
+    return AgentEvaluationHarness([evaluator, code_evaluator], database)
+
+
+@pytest.fixture(scope="module", autouse=True)
+def conversation_db(tmpdir_factory):
+    db_file = tmpdir_factory.mktemp("data").join("test.db")
+    db = OpenAIAutomataConversationDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture(scope="module", autouse=True)
+def task_db(tmpdir_factory):
+    db_file = tmpdir_factory.mktemp("data").join("test_task.db")
+    db = AutomataAgentTaskDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture(scope="module", autouse=True)
+def eval_db(tmpdir_factory):
+    db_file = tmpdir_factory.mktemp("data").join("test_eval.db")
+    db = AgentEvalResultDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture
+def real_registry(task_db):
+    return AutomataTaskRegistry(task_db)
+
+
+@pytest.fixture
+def setup(
+    mocker, automata_agent, task, task2, environment, registry, conversation_db
+):
+    # Mock the API response
+    mock_openai_chatcompletion_create = mocker.patch(
+        "openai.ChatCompletion.create"
+    )
+
+    # Register and setup task
+    registry.register(task)
+    environment.setup(task)
+
+    registry.register(task2)
+    environment.setup(task2)
+
+    # Use the agent's set_database_provider method
+    automata_agent.set_database_provider(conversation_db)
+
+    execution = IAutomataTaskExecution()
+    IAutomataTaskExecution._build_agent = MagicMock(
+        return_value=automata_agent
+    )
+    task_executor = AutomataTaskExecutor(execution)
+
+    return mock_openai_chatcompletion_create, automata_agent, task_executor
+
+
+# TODO - Cleanup these fixtures and reduce copy pasta
+
+
+@pytest.fixture(scope="module", autouse=True)
+def task_db(tmpdir_factory):
+    db_file = tmpdir_factory.mktemp("data").join("test_task.db")
+    db = AutomataAgentTaskDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture(scope="module", autouse=True)
+def eval_db(tmpdir_factory):
+    db_file = tmpdir_factory.mktemp("data").join("test_eval.db")
+    db = AgentEvalResultDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture
+def real_registry(task_db):
+    return AutomataTaskRegistry(task_db)
+
+
+@pytest.fixture
+def setup_real(
+    mocker,
+    automata_agent,
+    task_w_agent_session,
+    environment,
+    real_registry,
+    conversation_db,
+):
+    # Mock the API response
+    mock_openai_chatcompletion_create = mocker.patch(
+        "openai.ChatCompletion.create"
+    )
+
+    # Register and setup task
+    real_registry.register(task_w_agent_session)
+    environment.setup(task_w_agent_session)
+
+    # Use the agent's set_database_provider method
+    automata_agent.set_database_provider(conversation_db)
+
+    execution = IAutomataTaskExecution()
+    IAutomataTaskExecution._build_agent = MagicMock(
+        return_value=automata_agent
+    )
+    task_executor = AutomataTaskExecutor(execution)
+
+    return (
+        mock_openai_chatcompletion_create,
+        automata_agent,
+        task_executor,
+        real_registry,
+    )

@@ -49,11 +49,11 @@ def vector_db(embedding_type):
 
 # Factory fixture for creating database instances
 @pytest.fixture
-def vector_db_persistent(embedding_type, temp_output_vector_dir):
+def vector_db_persistent(embedding_type, temp_output_dir):
     return ChromaSymbolEmbeddingVectorDatabase(
         collection_name,
         factory=embedding_type.from_args,
-        persist_directory=temp_output_vector_dir,
+        persist_directory=temp_output_dir,
     )
 
 
