@@ -1,5 +1,16 @@
+import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
+from typing import (
+    Any,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 from pydantic import BaseModel
 
@@ -142,3 +153,69 @@ class LLMChatCompletionProvider(ABC):
             Exception: If the chat provider's buffer is not devoid of content.
         """
         pass
+
+
+class FunctionCall(NamedTuple):
+    """A class representing function call to be made by the OpenAI agent."""
+
+    name: str
+    arguments: Dict[str, str]
+
+    def to_dict(self) -> Dict[str, Union[Dict[str, str], str]]:
+        """Convert the function call to a dictionary."""
+
+        return {
+            "name": self.name,
+            "arguments": json.dumps(self.arguments),
+        }
+
+    @classmethod
+    def from_response_dict(
+        cls, response_dict: Dict[str, str]
+    ) -> "FunctionCall":
+        """Create a FunctionCall from a response dictionary."""
+
+        if (
+            response_dict["name"] == "call_termination"
+            and '"result":' in response_dict["arguments"]
+        ):
+            return cls(
+                name=response_dict["name"],
+                arguments=FunctionCall.handle_termination(
+                    response_dict["arguments"]
+                ),
+            )
+        return cls(
+            name=response_dict["name"],
+            arguments=json.loads(response_dict["arguments"]),
+        )
+
+    @staticmethod
+    def handle_termination(arguments: str) -> Dict[str, str]:
+        """
+        Handle the termination message from the conversation.
+
+        Note/FIXME - This is a hacky solution to the problem of parsing Markdown
+            with JSON. It needs to be made more robust and generalizable.
+            Further, we need to be sure that this is adequate to solve all
+            possible problems we might face due to adopting a Markdown return format.
+        """
+
+        try:
+            return json.loads(arguments)
+        except json.decoder.JSONDecodeError as e:
+            split_result = arguments.split('{"result":')
+            if len(split_result) <= 1:
+                raise ValueError(
+                    "Invalid arguments for call_termination"
+                ) from e
+            result_str = split_result[1].strip().replace('"}', "")
+            if result_str[0] != '"':
+                raise ValueError(
+                    "Invalid format for call_termination arguments"
+                ) from e
+            result_str = result_str[1:]
+            return {"result": result_str}
+
+    def __str__(self) -> str:
+        return json.dumps(self._asdict())

@@ -26,7 +26,7 @@ from .config_base import (
     LLMProvider,
     ModelInformation,
 )
-from .openai_agent import (
+from .openai_config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )

@@ -28,16 +28,6 @@ class ToolEval(Eval):
         # TODO - Provide implementation
         raise NotImplementedError
 
-    def process_result(
-        self,
-        expected_actions: List[Action],
-        process_input: Any,
-        *args,
-        **kwargs,
-    ) -> EvalResult:
-        """Processes the result of an evaluation."""
-        raise NotImplementedError
-
     @abstractmethod
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
