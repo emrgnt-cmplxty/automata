@@ -1,5 +1,6 @@
 import logging
 import os
+import pickle
 
 from tqdm import tqdm
 
@@ -20,11 +21,27 @@ logger = logging.getLogger(__name__)
 
 
 def initialize_resources(project_name, **kwargs):
-    symbol_graph = SymbolGraph(
-        os.path.join(
-            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
+    if os.getenv("GRAPH_TYPE") == "static":
+        try:
+            with open("automata-embedding-data/symbolgraph.pkl", "rb") as f:
+                graph = pickle.load(f)
+            symbol_graph = SymbolGraph.from_graph(graph)
+        except FileNotFoundError:
+            logger.warning(
+                "Pickle file not found, generating SymbolGraph dynamically."
+            )
+            symbol_graph = SymbolGraph(
+                os.path.join(
+                    DependencyFactory.DEFAULT_SCIP_FPATH,
+                    f"{project_name}.scip",
+                )
+            )
+    else:
+        symbol_graph = SymbolGraph(
+            os.path.join(
+                DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
+            )
         )
-    )
 
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,

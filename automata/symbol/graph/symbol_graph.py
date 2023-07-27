@@ -151,3 +151,13 @@ class SymbolGraph(ISymbolProvider):
         with open(path, "rb") as f:
             index.ParseFromString(f.read())
         return index
+
+    @classmethod
+    def from_graph(cls, graph: nx.MultiDiGraph) -> "SymbolGraph":
+        instance = cls.__new__(cls)
+
+        instance._graph = graph
+
+        instance.navigator = SymbolGraphNavigator(instance._graph)
+
+        return instance

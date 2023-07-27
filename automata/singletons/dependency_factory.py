@@ -1,5 +1,6 @@
 import logging
 import os
+import pickle
 from functools import lru_cache
 from typing import Any, Dict, List, Set, Tuple
 
@@ -172,6 +173,18 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
+        if os.getenv("GRAPH_TYPE") == "static":
+            try:
+                with open(
+                    "automata-embedding-data/symbolgraph.pkl", "rb"
+                ) as f:
+                    graph = pickle.load(f)
+                return SymbolGraph.from_graph(graph)
+            except FileNotFoundError:
+                logger.warning(
+                    "Pickle file not found, generating SymbolGraph dynamically."
+                )
+
         return self.overrides.get(
             "symbol_graph",
             SymbolGraph(

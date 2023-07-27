@@ -1,5 +1,6 @@
 import logging
 import os
+import pickle
 from typing import List
 
 from tqdm import tqdm
@@ -33,11 +34,27 @@ def initialize_providers(embedding_level, symbols=None, **kwargs):
     project_name = kwargs.get("project_name") or "automata"
     initialize_py_module_loader(**kwargs)
 
-    symbol_graph = SymbolGraph(
-        os.path.join(
-            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
+    if os.getenv("GRAPH_TYPE") == "static":
+        try:
+            with open("automata-embedding-data/symbolgraph.pkl", "rb") as f:
+                graph = pickle.load(f)
+            symbol_graph = SymbolGraph.from_graph(graph)
+        except FileNotFoundError:
+            logger.warning(
+                "Pickle file not found, generating SymbolGraph dynamically."
+            )
+            symbol_graph = SymbolGraph(
+                os.path.join(
+                    DependencyFactory.DEFAULT_SCIP_FPATH,
+                    f"{project_name}.scip",
+                )
+            )
+    else:
+        symbol_graph = SymbolGraph(
+            os.path.join(
+                DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
+            )
         )
-    )
 
     if isinstance(symbols, str):
         dotpaths = parse_dotpaths(symbols)
