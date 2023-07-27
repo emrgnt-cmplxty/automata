@@ -5,8 +5,8 @@ from typing import Dict, List
 from dotenv import load_dotenv
 
 from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
-from automata.symbol.graph.symbol_graph_types import SymbolGraphType
 from automata.embedding.data_root_path_types import DataRootPathType
+from automata.symbol.graph.symbol_graph_types import SymbolGraphType
 
 logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
@@ -53,13 +53,17 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
     for key, default_value in default_keys.items():
         current_value = get_key(dotenv_path, key)
         if key == "GRAPH_TYPE":
-            if current_value is None or current_value not in [e.value for e in SymbolGraphType]:
+            if current_value is None or current_value not in [
+                e.value for e in SymbolGraphType
+            ]:
                 new_value = select_graph_type()
             else:
                 new_value = current_value
         elif key == "DATA_ROOT_PATH":
             if current_value is None:
-                choice = ask_choice(f"Select {key} source", ["Default", "Custom"])
+                choice = ask_choice(
+                    f"Select {key} source", ["Default", "Custom"]
+                )
                 if choice == "Default":
                     new_value = default_value
                 else:
@@ -69,7 +73,9 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
         elif current_value is None:
             raise ValueError(f"Key {key} not found in the .env file")
         elif not current_value or current_value == default_value:
-            new_value = input(f"{key} is not configured. Please enter your key: ")
+            new_value = input(
+                f"{key} is not configured. Please enter your key: "
+            )
         else:
             new_value = current_value
         replace_key(dotenv_path, key, new_value)
@@ -94,8 +100,8 @@ def ask_choice(prompt: str, choices: List[str]) -> str:
 def select_graph_type() -> str:
     valid_options = [e.value for e in SymbolGraphType]
     valid_options = [re.escape(option) for option in valid_options]
-    options_string = ''.join(valid_options)
-    
+    options_string = "".join(valid_options)
+
     prompt = f"Select graph type from {options_string}: "
     while True:
         user_input = input(prompt).strip().lower()
@@ -118,7 +124,11 @@ def update_key_value(dotenv_path: str, key: str):
     if key == "DATA_ROOT_PATH":
         choice = ask_choice(f"Select {key} source", ["Default", "Custom"])
         if choice == "Default":
-            replace_key(dotenv_path, key, DataRootPathType.AUTOMATA_EMBEDDING_DATA.value)
+            replace_key(
+                dotenv_path,
+                key,
+                DataRootPathType.AUTOMATA_EMBEDDING_DATA.value,
+            )
         else:
             new_value = input(f"Enter custom value for {key}: ")
             replace_key(dotenv_path, key, new_value)
