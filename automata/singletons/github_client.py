@@ -106,12 +106,13 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
             ref=f"refs/heads/{branch_name}", sha=base_sha
         )
 
-    def checkout_branch(
-        self, repo_local_path: str, branch_name: str, b=True
-    ) -> None:
+    def checkout_branch(self, repo_local_path: str, branch_name: str) -> None:
         """Checkout a branch in the repository."""
         repo = Repo(repo_local_path)
-        repo.git.checkout(branch_name, b=b)
+        if branch_name not in repo.heads:
+            repo.git.checkout("-b", branch_name)
+        else:
+            repo.git.checkout(branch_name)
 
     def stage_all_changes(self, repo_local_path: str) -> None:
         """Stage all changes in the repository."""
@@ -204,3 +205,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
             return self.repo.get_issue(number=issue_number)
         except Exception:
             return None
+
+    def set_remote_name(self, remote_name: str):
+        self.remote_name = remote_name
+        self.repo = self.client.get_repo(self.remote_name)
