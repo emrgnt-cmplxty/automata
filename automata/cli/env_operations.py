@@ -1,10 +1,11 @@
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from dotenv import load_dotenv
 
 from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
 from automata.symbol.graph.symbol_graph_types import SymbolGraphType
+from automata.embedding.data_root_path_types import DataRootPathType
 
 logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
@@ -51,21 +52,42 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
     for key, default_value in default_keys.items():
         current_value = get_key(dotenv_path, key)
         if key == "GRAPH_TYPE":
-            if current_value is None or current_value not in [
-                e.value for e in SymbolGraphType
-            ]:
+            if current_value is None or current_value not in [e.value for e in SymbolGraphType]:
                 new_value = select_graph_type()
+            else:
+                new_value = current_value
+        elif key == "DATA_ROOT_PATH":
+            if current_value is None:
+                choice = ask_choice(f"Select {key} source", ["Default", "Custom"])
+                if choice == "Default":
+                    new_value = default_value
+                else:
+                    new_value = input(f"Enter custom value for {key}: ")
             else:
                 new_value = current_value
         elif current_value is None:
             raise ValueError(f"Key {key} not found in the .env file")
         elif not current_value or current_value == default_value:
-            new_value = input(
-                f"{key} is not configured. Please enter your key: "
-            )
+            new_value = input(f"{key} is not configured. Please enter your key: ")
         else:
             new_value = current_value
         replace_key(dotenv_path, key, new_value)
+
+
+def ask_choice(prompt: str, choices: List[str]) -> str:
+    """Prompt the user to select a choice from the given list."""
+    while True:
+        print(prompt)
+        for i, choice in enumerate(choices, start=1):
+            print(f"{i}. {choice}")
+        try:
+            choice_index = int(input("Enter the number of your choice: ")) - 1
+            if 0 <= choice_index < len(choices):
+                return choices[choice_index]
+            else:
+                print("Invalid choice. Please try again.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
 
 def select_graph_type() -> str:
@@ -89,8 +111,16 @@ def show_key_value(dotenv_path: str, key: str):
 def update_key_value(dotenv_path: str, key: str):
     """Updates the key value in the local environment."""
 
-    new_value = input(f"Enter new value for {key}: ")
-    replace_key(dotenv_path, key, new_value)
+    if key == "DATA_ROOT_PATH":
+        choice = ask_choice(f"Select {key} source", ["Default", "Custom"])
+        if choice == "Default":
+            replace_key(dotenv_path, key, DataRootPathType.AUTOMATA_EMBEDDING_DATA.value)
+        else:
+            new_value = input(f"Enter custom value for {key}: ")
+            replace_key(dotenv_path, key, new_value)
+    else:
+        new_value = input(f"Enter new value for {key}: ")
+        replace_key(dotenv_path, key, new_value)
     log_cli_output(f"The value of {key} has been updated.")
 
 
