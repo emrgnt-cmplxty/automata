@@ -4,6 +4,7 @@ from typing import Dict
 from dotenv import load_dotenv
 
 from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
+from automata.symbol.graph.symbol_graph_types import SymbolGraphType
 
 logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
@@ -49,14 +50,13 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
 
     for key, default_value in default_keys.items():
         current_value = get_key(dotenv_path, key)
-        if (
-            current_value is None
-            and key == "GRAPH_TYPE"
-            or current_value is not None
-            and (not current_value or current_value == default_value)
-            and key == "GRAPH_TYPE"
-        ):
-            new_value = "dynamic"
+        if key == "GRAPH_TYPE":
+            if current_value is None or current_value not in [
+                e.value for e in SymbolGraphType
+            ]:
+                new_value = select_graph_type()
+            else:
+                new_value = current_value
         elif current_value is None:
             raise ValueError(f"Key {key} not found in the .env file")
         elif not current_value or current_value == default_value:
@@ -66,6 +66,17 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
         else:
             new_value = current_value
         replace_key(dotenv_path, key, new_value)
+
+
+def select_graph_type() -> str:
+    valid_options = [e.value for e in SymbolGraphType]
+    prompt = f"Select graph type from {valid_options}: "
+    while True:
+        user_input = input(prompt).strip().lower()
+        if user_input in valid_options:
+            return user_input
+        else:
+            print(f"Invalid choice. Please select from {valid_options}")
 
 
 def show_key_value(dotenv_path: str, key: str):
