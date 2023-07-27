@@ -68,7 +68,7 @@ def test_main(mock_dependencies):
         result = main(
             instructions="Test Instructions",
             agent_name="test-agent",
-            toolkit_list="context-oracle",
+            toolkit_list="advanced-context-oracle",
         )
         mock_agent.assert_called_once_with(
             "Test Instructions",

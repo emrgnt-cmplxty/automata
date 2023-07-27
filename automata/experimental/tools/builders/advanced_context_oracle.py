@@ -24,8 +24,8 @@ from automata.tools.base import Tool
 logger = logging.getLogger(__name__)
 
 
-class ContextOracleToolkitBuilder(AgentToolkitBuilder):
-    """The ContextOracleToolkitBuilder provides tools which translate NLP queries to relevant context."""
+class AdvancedContextOracleToolkitBuilder(AgentToolkitBuilder):
+    """The AdvancedContextOracleToolkitBuilder provides tools which translate NLP queries to relevant context."""
 
     def __init__(
         self,
@@ -44,7 +44,7 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools associated with the context oracle."""
         return [
             Tool(
-                name="context-oracle",
+                name="advanced-context-oracle",
                 function=self._get_context,
                 description=textwrap.dedent(
                     """This tool utilizes the EmbeddingSimilarityCalculator and SymbolSearch to provide context for a given query by computing semantic similarity between the query and all available symbols' documentation and code. The symbol with the highest combined similarity score is identified, with its source code and documentation summary forming the primary context. Additionally, if enabled, the documentation summaries of related symbols (those next most similar to the query) are included."""
@@ -128,13 +128,14 @@ class ContextOracleToolkitBuilder(AgentToolkitBuilder):
 
 
 @OpenAIAutomataAgentToolkitRegistry.register_tool_manager
-class ContextOracleOpenAIToolkitBuilder(
-    ContextOracleToolkitBuilder, OpenAIAgentToolkitBuilder
+class AdvancedContextOracleOpenAIToolkitBuilder(
+    AdvancedContextOracleToolkitBuilder, OpenAIAgentToolkitBuilder
 ):
-    TOOL_NAME = AgentToolkitNames.CONTEXT_ORACLE
+    TOOL_NAME = AgentToolkitNames.ADVANCED_CONTEXT_ORACLE
     LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
+        """Builds the tools associated with the context oracle for the OpenAI API."""
         tools = super().build()
 
         # Predefined properties and required parameters

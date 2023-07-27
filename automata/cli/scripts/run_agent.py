@@ -69,7 +69,7 @@ def main(*args, **kwargs):
         kwargs.get("instructions")
         or "This is a dummy instruction, return True."
     )
-    toolkits = kwargs.get("toolkits", "context-oracle").split(",")
+    toolkits = kwargs.get("toolkits", "advanced-context-oracle").split(",")
 
     tool_dependencies = dependency_factory.build_dependencies_for_tools(
         toolkits

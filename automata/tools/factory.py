@@ -21,11 +21,15 @@ class AgentToolFactory:
 
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolkitNames, List[Tuple[str, Any]]] = {
         AgentToolkitNames.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-        AgentToolkitNames.CONTEXT_ORACLE: [
+        AgentToolkitNames.ADVANCED_CONTEXT_ORACLE: [
             ("symbol_search", SymbolSearch),
             ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
             ("symbol_code_embedding_handler", SymbolCodeEmbeddingHandler),
             ("embedding_similarity_calculator", EmbeddingSimilarityCalculator),
+        ],
+        AgentToolkitNames.DOCUMENT_ORACLE: [
+            ("symbol_search", SymbolSearch),
+            ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
         ],
         AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
         AgentToolkitNames.PY_WRITER: [("py_writer", PyCodeWriter)],
