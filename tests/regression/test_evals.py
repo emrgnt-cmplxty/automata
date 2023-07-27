@@ -5,7 +5,7 @@ import pytest
 
 from automata.core.run_handlers import run_setup, run_with_eval
 from automata.eval import OpenAIFunctionCallAction
-from automata.eval.eval_result_database import AgentEvalResultDatabase
+from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks import (

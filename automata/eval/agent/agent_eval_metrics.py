@@ -2,7 +2,7 @@
 from collections import Counter
 from typing import List, Optional
 
-from automata.eval.base import AgentEvalResult
+from automata.eval.agent.agent_eval import AgentEvalResult
 
 
 class AgentEvaluationMetrics:

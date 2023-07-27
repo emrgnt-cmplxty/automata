@@ -1,29 +1,23 @@
 # sourcery skip: docstrings-for-modules
-from automata.eval.agent_runner import (
+from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
+from automata.eval.agent.agent_eval_composite import AgentEvalComposite
+from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
+from automata.eval.agent.agent_eval_harness import (
     AgentEvalSetLoader,
     AgentEvaluationHarness,
 )
-from automata.eval.base import (
-    Action,
-    AgentEval,
-    AgentEvalResult,
-    Eval,
-    EvalResult,
-    Payload,
-    ToolEvalResult,
-)
-from automata.eval.code_writing import (
+from automata.eval.agent.agent_eval_metrics import AgentEvaluationMetrics
+from automata.eval.base import Action, Eval, EvalResult, Payload
+from automata.eval.code_writing_eval import (
     CodeExecutionError,
     CodeWritingAction,
     CodeWritingEval,
 )
-from automata.eval.composite import CompositeAgentEval
-from automata.eval.eval_providers import (
+from automata.eval.openai_eval import (
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
 )
-from automata.eval.eval_result_database import AgentEvalResultDatabase
-from automata.eval.metrics import AgentEvaluationMetrics
+from automata.eval.tool.tool_eval import ToolEvalResult
 
 __all__ = [
     "Action",
@@ -34,7 +28,7 @@ __all__ = [
     "Eval",
     "AgentEval",
     "ToolEval",
-    "CompositeAgentEval",
+    "AgentEvalComposite",
     "CodeExecutionError",
     "CodeWritingEval",
     "CodeWritingAction",

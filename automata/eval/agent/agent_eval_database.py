@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from automata.config import EVAL_DB_PATH
 from automata.core.base.database import SQLDatabase
-from automata.eval.agent_runner import create_payload, load_payload
-from automata.eval.base import AgentEvalResult
+from automata.eval.agent.agent_eval import AgentEvalResult
+from automata.eval.agent.agent_eval_harness import create_payload, load_payload
 
 
 class AgentEvalResultDatabase(SQLDatabase):

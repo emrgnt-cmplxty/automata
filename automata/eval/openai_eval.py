@@ -1,11 +1,13 @@
 import json
 from typing import Dict, List
 
-from automata.eval import Action, AgentEval, Payload
+from automata.eval.agent.agent_eval import AgentEval
+from automata.eval.base import Action, Payload, register_action
 from automata.llm.foundation import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
 
+@register_action
 class OpenAIFunctionCallAction(Action):
     """A concrete action represented by an OpenAI function call."""
 

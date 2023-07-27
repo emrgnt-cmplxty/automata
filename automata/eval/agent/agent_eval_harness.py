@@ -5,23 +5,18 @@ import logging
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
-from automata.eval.base import (
-    Action,
-    AgentEval,
-    AgentEvalResult,
-    Payload,
-    parse_action_from_payload,
-)
-from automata.eval.composite import (
+from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
+from automata.eval.agent.agent_eval_composite import (
     aggregate_agent_result,
     check_eval_uniqueness,
 )
-from automata.eval.error import EvalExecutionError, EvalLoadingError
-from automata.eval.metrics import AgentEvaluationMetrics
+from automata.eval.agent.agent_eval_metrics import AgentEvaluationMetrics
+from automata.eval.base import Action, Payload, parse_action_from_payload
+from automata.eval.eval_error import EvalExecutionError, EvalLoadingError
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 if TYPE_CHECKING:
-    from automata.eval.eval_result_database import AgentEvalResultDatabase
+    from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 
 logger = logging.getLogger(__name__)
 
