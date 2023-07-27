@@ -50,24 +50,7 @@ class CodeWritingAction(Action):
         if not isinstance(other, CodeWritingAction):
             return False
 
-        if not self.object_type == other.object_type:
-            return False
-
-        # TODO - Improve __eq__ method to check for object equality
-        # The code below does not work since the object is a string representation
-        # The object needs to be parsed and loaded in order for the following below to work
-        # Check for basic Python types
-        # basic_types = (int, float, str, list, dict, set, tuple, bool)
-        # if isinstance(self.object_value_repr, basic_types):
-        #     return self.object_value_repr == other.object_value_repr
-
-        # # If not a basic type, perform attribute checks
-        # return all(
-        #     getattr(self.object_value_repr, variable_check, None)
-        #     == getattr(other.object_value_repr, variable_check, None)
-        #     for variable_check in self.object_variable_checks
-        # )
-        return True
+        return self.object_type == other.object_type
 
     def __hash__(self):
         return hash(
