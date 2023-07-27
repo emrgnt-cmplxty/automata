@@ -27,6 +27,10 @@ class AgentToolFactory:
             ("symbol_code_embedding_handler", SymbolCodeEmbeddingHandler),
             ("embedding_similarity_calculator", EmbeddingSimilarityCalculator),
         ],
+        AgentToolkitNames.DOCUMENT_ORACLE: [
+            ("symbol_search", SymbolSearch),
+            ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
+        ],
         AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
         AgentToolkitNames.PY_WRITER: [("py_writer", PyCodeWriter)],
     }

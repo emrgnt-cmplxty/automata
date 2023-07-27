@@ -43,15 +43,7 @@ def document_oracle_tool_builder(
 
 def test_init(document_oracle_tool_builder):
     assert isinstance(
-        document_oracle_tool_builder.embedding_similarity_calculator,
-        MagicMock,
-    )
-    assert isinstance(
         document_oracle_tool_builder.symbol_doc_embedding_handler,
-        MagicMock,
-    )
-    assert isinstance(
-        document_oracle_tool_builder.symbol_code_embedding_handler,
         MagicMock,
     )
 

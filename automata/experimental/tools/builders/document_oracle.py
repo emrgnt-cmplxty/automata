@@ -9,13 +9,9 @@ from automata.agent import (
     OpenAIAgentToolkitBuilder,
 )
 from automata.config.base import LLMProvider
-from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
-from automata.memory_store import (
-    SymbolCodeEmbeddingHandler,
-    SymbolDocEmbeddingHandler,
-)
+from automata.memory_store import SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registries import (
     OpenAIAutomataAgentToolkitRegistry,
 )
@@ -34,14 +30,10 @@ class DocumentOracleToolkitBuilder(AgentToolkitBuilder):
         self,
         symbol_search: SymbolSearch,
         symbol_doc_embedding_handler: SymbolDocEmbeddingHandler,
-        symbol_code_embedding_handler: SymbolCodeEmbeddingHandler,
-        embedding_similarity_calculator: EmbeddingSimilarityCalculator,
         **kwargs,
     ) -> None:
         self.symbol_search = symbol_search
         self.symbol_doc_embedding_handler = symbol_doc_embedding_handler
-        self.symbol_code_embedding_handler = symbol_code_embedding_handler
-        self.embedding_similarity_calculator = embedding_similarity_calculator
 
     def build(self) -> List[Tool]:
         """Builds the tools associated with the context oracle."""
