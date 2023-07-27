@@ -3,7 +3,7 @@ import contextlib
 import json
 import logging
 import uuid
-from typing import TYPE_CHECKING, Dict, List, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
 from automata.eval.base import (
     Action,
@@ -67,14 +67,36 @@ class AgentEvalSetLoader:
     def load_json(self) -> List[Payload]:
         """Loads the JSON file."""
 
+        def format_values(obj: Any, formatter: Dict[str, str]) -> Any:
+            """Recursively apply formatter to all string values in the object."""
+            if isinstance(obj, str):
+                return obj.format(**formatter)
+            elif isinstance(obj, list):
+                return [format_values(item, formatter) for item in obj]
+            elif isinstance(obj, dict):
+                return {k: format_values(v, formatter) for k, v in obj.items()}
+            else:
+                return obj
+
         try:
             logging.info(f"Loading json from {self.filepath}...")
             with open(self.filepath, "r") as f:
-                json_output = json.load(f)
-            logging.info(f"Loaded {len(json_output)} tasks.")
+                data = json.load(f)
+
+            payloads = []
+            for item in data:
+                template = item["template"]
+                formatters = item["formatters"]
+
+                for formatter in formatters:
+                    payload = format_values(template, formatter)
+                    payloads.append(payload)
+
+            logging.info(f"Loaded {len(payloads)} tasks.")
         except Exception as e:
             raise EvalLoadingError from e
-        return json_output
+
+        return payloads
 
 
 def create_payload(input_dict: Payload) -> str:
