@@ -36,6 +36,7 @@ class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
         if OpenAIAutomataAgentToolkitRegistry._is_initialized:
             return
         # Import all builder modules to ensure the classes get registered
+        import automata.experimental.tools.builders as experimental_builder_package
         import automata.tools.builders as builder_package
 
         for _, module_path, _ in pkgutil.iter_modules(
@@ -43,6 +44,13 @@ class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
         ):
             __import__(f"automata.tools.builders.{module_path}", fromlist=[""])
 
+        for _, module_path, _ in pkgutil.iter_modules(
+            experimental_builder_package.__path__
+        ):
+            __import__(
+                f"automata.experimental.tools.builders.{module_path}",
+                fromlist=[""],
+            )
         # Mark the registry as initialized
         OpenAIAutomataAgentToolkitRegistry._is_initialized = True
 
