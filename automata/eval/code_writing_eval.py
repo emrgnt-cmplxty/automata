@@ -3,7 +3,8 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from automata.core.base import AutomataError
-from automata.eval import Action, AgentEval, Payload
+from automata.eval.agent.agent_eval import AgentEval
+from automata.eval.base import Action, Payload, register_action
 from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ class VariableNotFoundError(AutomataError):
     pass
 
 
+@register_action
 class CodeWritingAction(Action):
     """An concrete action representing written code."""
 

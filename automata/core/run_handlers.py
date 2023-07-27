@@ -10,7 +10,7 @@ from automata.eval import (
     EvalResult,
     OpenAIFunctionEval,
 )
-from automata.eval.composite import CompositeAgentEval
+from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
@@ -144,7 +144,7 @@ def run_with_eval(
     task_environment: AutomataTaskEnvironment,
     task_execution: ITaskExecution = IAutomataTaskExecution(),
     expected_actions: List[Action] = [],
-    evaluator: Eval = CompositeAgentEval(
+    evaluator: Eval = AgentEvalComposite(
         [OpenAIFunctionEval(), CodeWritingEval()]
     ),
 ) -> EvalResult:

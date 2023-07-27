@@ -6,7 +6,6 @@ import pytest
 
 from automata.agent.providers import OpenAIChatMessage
 from automata.eval import (
-    AgentEvalResult,
     AgentEvaluationHarness,
     AgentEvaluationMetrics,
     CodeWritingAction,
@@ -14,8 +13,9 @@ from automata.eval import (
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
 )
-from automata.eval.composite import CompositeAgentEval
-from automata.eval.eval_result_database import AgentEvalResultDatabase
+from automata.eval.agent.agent_eval import AgentEvalResult
+from automata.eval.agent.agent_eval_composite import AgentEvalComposite
+from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.base import TaskStatus
 from automata.tasks.executor import (
@@ -43,7 +43,7 @@ def code_evaluator():
 @pytest.fixture
 def composite_evaluator(evaluator, code_evaluator):
     evaluators = [evaluator, code_evaluator]
-    return CompositeAgentEval(evaluators)
+    return AgentEvalComposite(evaluators)
 
 
 @pytest.fixture

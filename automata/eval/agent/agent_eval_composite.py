@@ -1,13 +1,9 @@
 """Generates a composite evaluator from a list of evaluators."""
 from typing import Dict, List, Union
 
-from automata.eval.base import (
-    Action,
-    AgentEval,
-    AgentEvalResult,
-    Eval,
-    ToolEval,
-)
+from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
+from automata.eval.base import Action, Eval
+from automata.eval.tool.tool_eval import ToolEval
 from automata.llm.foundation import LLMChatMessage
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
@@ -55,7 +51,7 @@ def check_eval_uniqueness(
     return True
 
 
-class CompositeAgentEval(Eval):
+class AgentEvalComposite(Eval):
     """Creates a composite evaluator from a list of evaluator classes."""
 
     def __init__(
