@@ -1,17 +1,6 @@
 import os
-from unittest.mock import Mock, patch
 
 import pytest
-from git import Git, Repo
-from github import (
-    Github,
-    GitRef,
-    Issue,
-    IssueComment,
-    PaginatedList,
-    PullRequest,
-    PullRequestMergeStatus,
-)
 
 from automata.singletons.github_client import GitHubClient
 
