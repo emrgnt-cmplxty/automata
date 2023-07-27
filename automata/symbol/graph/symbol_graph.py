@@ -1,5 +1,6 @@
 import logging
 import pickle
+import os
 from copy import deepcopy
 from functools import lru_cache
 from typing import Dict, List, Optional, Set
@@ -14,6 +15,10 @@ from automata.symbol.scip_pb2 import Index  # type: ignore
 from automata.symbol.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
+
+data_root_path = os.environ.get("DATA_ROOT_PATH")
+if data_root_path is None:
+    raise ValueError("Environment variable DATA_ROOT_PATH is not set.")
 
 
 class SymbolGraph(ISymbolProvider):
@@ -41,7 +46,7 @@ class SymbolGraph(ISymbolProvider):
         self._graph = builder.build_graph()
         self.navigator = SymbolGraphNavigator(self._graph)
 
-        with open("symbolgraph.pkl", "wb") as f:
+        with open(f"../../{data_root_path}/symbolgraph.pkl", "wb") as f:
             pickle.dump(self._graph, f)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:

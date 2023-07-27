@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Dict, List
 
 from dotenv import load_dotenv
@@ -92,13 +93,16 @@ def ask_choice(prompt: str, choices: List[str]) -> str:
 
 def select_graph_type() -> str:
     valid_options = [e.value for e in SymbolGraphType]
-    prompt = f"Select graph type from {valid_options}: "
+    valid_options = [re.escape(option) for option in valid_options]
+    options_string = ''.join(valid_options)
+    
+    prompt = f"Select graph type from {options_string}: "
     while True:
         user_input = input(prompt).strip().lower()
         if user_input in valid_options:
             return user_input
         else:
-            print(f"Invalid choice. Please select from {valid_options}")
+            print(f"Invalid choice. Please select from {options_string}")
 
 
 def show_key_value(dotenv_path: str, key: str):
