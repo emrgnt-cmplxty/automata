@@ -1,25 +1,27 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import TYPE_CHECKING, Sequence
 
-from automata.llm import FunctionCall
 from automata.tools.tool_base import Tool
+
+if TYPE_CHECKING:
+    from automata.llm import FunctionCall
 
 
 class IToolExecution(ABC):
     """Interface for executing tools."""
 
     @abstractmethod
-    def execute(self, function_call: FunctionCall) -> str:
+    def execute(self, function_call: "FunctionCall") -> str:
         pass
 
 
 class ToolExecution(IToolExecution):
     """Class for executing tools."""
 
-    def __init__(self, tools: List[Tool]) -> None:
+    def __init__(self, tools: Sequence[Tool]) -> None:
         self.tools = {tool.name: tool for tool in tools}
 
-    def execute(self, function_call: FunctionCall) -> str:
+    def execute(self, function_call: "FunctionCall") -> str:
         tool = self.tools.get(function_call.name)
 
         if not tool:
@@ -36,5 +38,5 @@ class ToolExecutor:
     def __init__(self, execution: IToolExecution) -> None:
         self.execution = execution
 
-    def execute(self, function_call: FunctionCall) -> str:
+    def execute(self, function_call: "FunctionCall") -> str:
         return self.execution.execute(function_call)
