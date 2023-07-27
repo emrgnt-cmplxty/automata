@@ -15,7 +15,7 @@ from automata.experimental.search import (
     SymbolSearch,
 )
 from automata.llm import OpenAITool
-from automata.singletons.toolkit_registries import (
+from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.tools import Tool, UnknownToolError

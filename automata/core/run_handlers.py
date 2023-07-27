@@ -22,7 +22,7 @@ from automata.tasks import (
 )
 from automata.tasks.task_registry import AutomataTaskRegistry
 from automata.tools import Tool
-from automata.tools.factory import AgentToolFactory
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 
 def initialize_automata(

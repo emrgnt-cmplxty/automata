@@ -4,7 +4,10 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import numpy as np
 
 from automata.embedding import EmbeddingHandler, EmbeddingSimilarityCalculator
-from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
+from automata.experimental.search.symbol_rank import (
+    SymbolRank,
+    SymbolRankConfig,
+)
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import (
     Symbol,

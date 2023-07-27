@@ -1,4 +1,4 @@
-from .openai import (
+from automata.llm.providers.openai_llm import (
     FunctionCall,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,

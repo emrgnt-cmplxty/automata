@@ -1,4 +1,4 @@
-from .rank import SymbolRank, SymbolRankConfig
+from .symbol_rank import SymbolRank, SymbolRankConfig
 from .symbol_search import (
     ExactSearchResult,
     SourceCodeResult,

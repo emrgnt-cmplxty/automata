@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from automata.agent.error import AgentMaxIterError
-from automata.agent.providers import (
+from automata.agent.openai_agent import (
     OpenAIAutomataAgent,
     OpenAIChatCompletionProvider,
     OpenAITool,

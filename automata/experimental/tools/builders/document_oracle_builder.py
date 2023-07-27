@@ -12,7 +12,7 @@ from automata.config.base import LLMProvider
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
 from automata.memory_store import SymbolDocEmbeddingHandler
-from automata.singletons.toolkit_registries import (
+from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.tools.base import Tool

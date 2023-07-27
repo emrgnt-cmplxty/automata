@@ -42,7 +42,7 @@ from automata.tasks.task_executor import (
     IAutomataTaskExecution,
 )
 from automata.tasks.task_registry import AutomataTaskRegistry
-from automata.tools.factory import AgentToolFactory
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 # General Fixtures
 

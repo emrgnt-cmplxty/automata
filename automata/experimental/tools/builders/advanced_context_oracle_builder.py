@@ -15,7 +15,7 @@ from automata.memory_store import (
     SymbolCodeEmbeddingHandler,
     SymbolDocEmbeddingHandler,
 )
-from automata.singletons.toolkit_registries import (
+from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.symbol_embedding import SymbolDocEmbedding

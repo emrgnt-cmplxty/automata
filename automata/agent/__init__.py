@@ -1,5 +1,5 @@
 from .agent import Agent, AgentProvider, AgentToolkitBuilder, AgentToolkitNames
-from .providers import (
+from .openai_agent import (
     OpenAIAgentProvider,
     OpenAIAgentToolkitBuilder,
     OpenAIAutomataAgent,

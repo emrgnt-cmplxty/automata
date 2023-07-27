@@ -36,17 +36,6 @@ class ToolEval(Eval):
         **kwargs,
     ) -> EvalResult:
         """Processes the result of an evaluation."""
-        # if len(expected_actions) == 0:
-        # ...
-        # elif len(expected_actions) == 1:
-        # ...
-        # else:
-        # raise ValueError("Expected actions must be of length 0 or 1.")...
-        # return ToolEvalResult(
-        #     expected_action=expected_action,
-        #     observed_action=observed_action,
-        # )
-        # TODO - Provide implementation
         raise NotImplementedError
 
     @abstractmethod

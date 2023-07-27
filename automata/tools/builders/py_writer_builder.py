@@ -3,12 +3,12 @@ import logging
 from typing import List
 
 from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
-from automata.agent.providers import OpenAIAgentToolkitBuilder
+from automata.agent.openai_agent import OpenAIAgentToolkitBuilder
 from automata.code_writers.py import PyCodeWriter
 from automata.config.base import LLMProvider
-from automata.llm.providers.openai import OpenAITool
+from automata.llm.providers.openai_llm import OpenAITool
 from automata.singletons.py_module_loader import py_module_loader
-from automata.singletons.toolkit_registries import (
+from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.tools.base import Tool

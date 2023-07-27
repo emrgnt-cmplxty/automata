@@ -7,7 +7,7 @@ from .context_processing.context_retriever import (
     PyContextRetriever,
 )
 from .dotpath_map import DotPathMap
-from .reader import PyReader
+from .py_reader import PyReader
 
 __all__ = [
     "PyContextRetriever",

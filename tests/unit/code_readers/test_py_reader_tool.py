@@ -6,7 +6,7 @@ import pytest
 from automata.code_parsers.py import PyReader
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tools.base import Tool
-from automata.tools.builders.py_reader import PyReaderToolkitBuilder
+from automata.tools.builders.py_reader_builder import PyReaderToolkitBuilder
 
 
 @pytest.fixture(autouse=True)

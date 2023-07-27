@@ -3,7 +3,7 @@ import textwrap
 
 import pytest
 
-from automata.code_parsers.py.reader import PyReader
+from automata.code_parsers.py.py_reader import PyReader
 from automata.singletons.py_module_loader import py_module_loader
 
 

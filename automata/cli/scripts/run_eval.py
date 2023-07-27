@@ -19,7 +19,7 @@ from automata.tasks import (
     EnvironmentMode,
     IAutomataTaskExecution,
 )
-from automata.tools.factory import AgentToolFactory
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
 

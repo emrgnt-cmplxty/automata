@@ -40,7 +40,7 @@ class AgentToolFactory:
         agent_tool: AgentToolkitNames, **kwargs
     ) -> Sequence[Tool]:
         """Uses the Builder Registry to create tools from a given agent tool name."""
-        from automata.singletons.toolkit_registries import (  # import here for easy mocking
+        from automata.singletons.toolkit_registry import (  # import here for easy mocking
             OpenAIAutomataAgentToolkitRegistry,
         )
 
