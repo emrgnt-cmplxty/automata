@@ -2,14 +2,14 @@ import json
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional
 
-from automata.eval.base import (
+from automata.eval.eval_base import (
     Action,
     Eval,
     EvalResult,
     Payload,
     parse_action_from_payload,
 )
-from automata.llm.foundation import LLMChatMessage
+from automata.llm.llm_base import LLMChatMessage
 from automata.tasks import AutomataTask
 
 
@@ -25,27 +25,6 @@ class ToolEval(Eval):
         **kwargs,
     ) -> EvalResult:
         """Generates an eval result for a given set of instructions and expected actions."""
-        # TODO - Provide implementation
-        raise NotImplementedError
-
-    def process_result(
-        self,
-        expected_actions: List[Action],
-        process_input: Any,
-        *args,
-        **kwargs,
-    ) -> EvalResult:
-        """Processes the result of an evaluation."""
-        # if len(expected_actions) == 0:
-        # ...
-        # elif len(expected_actions) == 1:
-        # ...
-        # else:
-        # raise ValueError("Expected actions must be of length 0 or 1.")...
-        # return ToolEvalResult(
-        #     expected_action=expected_action,
-        #     observed_action=observed_action,
-        # )
         # TODO - Provide implementation
         raise NotImplementedError
 

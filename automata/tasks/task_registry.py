@@ -1,9 +1,9 @@
 from typing import List, Optional
 
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.base import TaskStatus
-from automata.tasks.error import TaskGeneralError, TaskStateError
+from automata.tasks.task_base import TaskStatus
 from automata.tasks.task_database import AutomataAgentTaskDatabase, logger
+from automata.tasks.task_error import TaskGeneralError, TaskStateError
 
 
 class AutomataTaskRegistry:

@@ -16,7 +16,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .base import (
+from .config_base import (
     AgentConfig,
     AgentConfigBuilder,
     AgentConfigName,
@@ -26,7 +26,7 @@ from .base import (
     LLMProvider,
     ModelInformation,
 )
-from .openai_agent import (
+from .openai_config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )

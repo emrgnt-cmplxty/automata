@@ -6,7 +6,7 @@ from automata.agent import (
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
 )
-from automata.config.base import LLMProvider
+from automata.config.config_base import LLMProvider
 from automata.experimental.search import (
     ExactSearchResult,
     SourceCodeResult,
@@ -15,7 +15,7 @@ from automata.experimental.search import (
     SymbolSearch,
 )
 from automata.llm import OpenAITool
-from automata.singletons.toolkit_registries import (
+from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.tools import Tool, UnknownToolError

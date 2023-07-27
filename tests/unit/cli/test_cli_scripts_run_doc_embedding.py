@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from automata.cli.scripts.run_doc_embedding import initialize_providers, main
-from automata.symbol.base import SymbolDescriptor
+from automata.symbol.symbol_base import SymbolDescriptor
 
 
 class FakeSymbol:

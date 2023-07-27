@@ -1,6 +1,6 @@
 import pytest
 
-from automata.context_providers.symbol_synchronization import (
+from automata.context_providers.symbol_synchronization_context import (
     SymbolProviderSynchronizationContext,
 )
 from automata.singletons.py_module_loader import py_module_loader

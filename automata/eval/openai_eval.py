@@ -2,8 +2,8 @@ import json
 from typing import Dict, List
 
 from automata.eval.agent.agent_eval import AgentEval
-from automata.eval.base import Action, Payload, register_action
-from automata.llm.foundation import LLMChatMessage
+from automata.eval.eval_base import Action, Payload, register_action
+from automata.llm.llm_base import LLMChatMessage
 from automata.llm.providers import OpenAIChatMessage
 
 

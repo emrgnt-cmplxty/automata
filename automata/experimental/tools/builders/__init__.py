@@ -1,8 +1,8 @@
-from automata.experimental.tools.builders.advanced_context_oracle import (
+from automata.experimental.tools.builders.advanced_context_oracle_builder import (
     AdvancedContextOracleOpenAIToolkitBuilder,
     AdvancedContextOracleToolkitBuilder,
 )
-from automata.experimental.tools.builders.document_oracle import (
+from automata.experimental.tools.builders.document_oracle_builder import (
     DocumentOracleOpenAIToolkitBuilder,
     DocumentOracleToolkitBuilder,
 )

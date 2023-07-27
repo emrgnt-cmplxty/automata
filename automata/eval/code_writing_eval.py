@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Optional
 
 from automata.core.base import AutomataError
 from automata.eval.agent.agent_eval import AgentEval
-from automata.eval.base import Action, Payload, register_action
-from automata.llm.foundation import LLMChatMessage
+from automata.eval.eval_base import Action, Payload, register_action
+from automata.llm.llm_base import LLMChatMessage
 
 logger = logging.getLogger(__name__)
 

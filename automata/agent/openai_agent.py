@@ -17,10 +17,9 @@ from automata.agent.error import (
     AgentStopIteration,
 )
 from automata.config import ConfigCategory
-from automata.config.openai_agent import OpenAIAutomataAgentConfig
+from automata.config.openai_config import OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, load_config
 from automata.llm import (
-    FunctionCall,
     LLMChatMessage,
     LLMConversation,
     LLMConversationDatabaseProvider,
@@ -31,6 +30,7 @@ from automata.llm import (
     OpenAIFunction,
     OpenAITool,
 )
+from automata.llm.llm_base import FunctionCall
 
 logger = logging.getLogger(__name__)
 

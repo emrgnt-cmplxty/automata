@@ -5,7 +5,7 @@ from typing import List
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_py_module_loader
-from automata.context_providers.symbol_synchronization import (
+from automata.context_providers.symbol_synchronization_context import (
     SymbolProviderSynchronizationContext,
 )
 from automata.llm import OpenAIEmbeddingProvider

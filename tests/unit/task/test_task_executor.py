@@ -8,7 +8,7 @@ from automata.core.utils import get_root_fpath
 from automata.llm import LLMChatMessage
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.singletons.py_module_loader import py_module_loader
-from automata.tasks.base import Task, TaskStatus
+from automata.tasks.task_base import Task, TaskStatus
 from automata.tasks.task_executor import (
     AutomataTaskExecutor,
     IAutomataTaskExecution,

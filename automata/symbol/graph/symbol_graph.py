@@ -6,10 +6,14 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
-from automata.symbol.base import ISymbolProvider, Symbol, SymbolReference
 from automata.symbol.graph.graph_builder import GraphBuilder
-from automata.symbol.graph.navigator import SymbolGraphNavigator
+from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
+from automata.symbol.symbol_base import (
+    ISymbolProvider,
+    Symbol,
+    SymbolReference,
+)
 from automata.symbol.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)

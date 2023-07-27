@@ -3,7 +3,7 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Union
 
-from automata.llm.foundation import LLMChatMessage
+from automata.llm.llm_base import LLMChatMessage
 from automata.tasks import AutomataTask
 
 logger = logging.getLogger(__name__)

@@ -2,9 +2,9 @@
 from typing import Dict, List, Union
 
 from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
-from automata.eval.base import Action, Eval
+from automata.eval.eval_base import Action, Eval
 from automata.eval.tool.tool_eval import ToolEval
-from automata.llm.foundation import LLMChatMessage
+from automata.llm.llm_base import LLMChatMessage
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 

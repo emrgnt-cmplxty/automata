@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.tasks.base import TaskStatus
+from automata.tasks.task_base import TaskStatus
 
 
 class TestURL:

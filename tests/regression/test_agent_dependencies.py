@@ -9,7 +9,7 @@ from automata.singletons.dependency_factory import (
     dependency_factory,
 )
 from automata.symbol.graph import SymbolGraph
-from automata.symbol_embedding.base import (
+from automata.symbol_embedding.symbol_embedding_base import (
     SymbolCodeEmbedding,
     SymbolDocEmbedding,
 )

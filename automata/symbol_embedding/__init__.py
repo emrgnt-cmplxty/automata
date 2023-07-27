@@ -1,6 +1,13 @@
-from .base import SymbolCodeEmbedding, SymbolDocEmbedding, SymbolEmbedding
-from .builders import SymbolCodeEmbeddingBuilder, SymbolDocEmbeddingBuilder
-from .handler import SymbolEmbeddingHandler
+from .symbol_embedding_base import (
+    SymbolCodeEmbedding,
+    SymbolDocEmbedding,
+    SymbolEmbedding,
+)
+from .symbol_embedding_builders import (
+    SymbolCodeEmbeddingBuilder,
+    SymbolDocEmbeddingBuilder,
+)
+from .symbol_embedding_handler import SymbolEmbeddingHandler
 from .vector_databases import (
     ChromaSymbolEmbeddingVectorDatabase,
     JSONSymbolEmbeddingVectorDatabase,

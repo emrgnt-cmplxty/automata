@@ -3,7 +3,7 @@ import sqlite3
 
 import pytest
 
-from automata.core.base.database.relational import (  # replace "your_module" with the module where SQLDatabase is defined
+from automata.core.base.database.relational_database import (  # replace "your_module" with the module where SQLDatabase is defined
     SQLDatabase,
 )
 

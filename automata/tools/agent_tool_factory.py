@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Sequence, Tuple
 from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
-from automata.config.base import LLMProvider
+from automata.config.config_base import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
 from automata.memory_store import (
@@ -40,7 +40,7 @@ class AgentToolFactory:
         agent_tool: AgentToolkitNames, **kwargs
     ) -> Sequence[Tool]:
         """Uses the Builder Registry to create tools from a given agent tool name."""
-        from automata.singletons.toolkit_registries import (  # import here for easy mocking
+        from automata.singletons.toolkit_registry import (  # import here for easy mocking
             OpenAIAutomataAgentToolkitRegistry,
         )
 

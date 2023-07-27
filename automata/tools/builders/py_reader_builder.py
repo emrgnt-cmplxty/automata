@@ -2,14 +2,14 @@ import logging
 from typing import List, Optional
 
 from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
-from automata.agent.providers import OpenAIAgentToolkitBuilder
+from automata.agent.openai_agent import OpenAIAgentToolkitBuilder
 from automata.code_parsers.py import PyReader
-from automata.config.base import LLMProvider
-from automata.llm.providers.openai import OpenAITool
-from automata.singletons.toolkit_registries import (
+from automata.config.config_base import LLMProvider
+from automata.llm.providers.openai_llm import OpenAITool
+from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
-from automata.tools.base import Tool
+from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
 

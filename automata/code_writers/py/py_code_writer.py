@@ -3,7 +3,7 @@ import logging
 import subprocess
 from typing import cast
 
-from automata.code_parsers.py.reader import PyReader
+from automata.code_parsers.py.py_reader import PyReader
 from automata.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)

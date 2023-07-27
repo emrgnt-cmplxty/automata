@@ -1,5 +1,5 @@
-from .relational import RelationalDatabase, SQLDatabase
-from .vector import (
+from .relational_database import RelationalDatabase, SQLDatabase
+from .vector_database import (
     ChromaVectorDatabase,
     JSONVectorDatabase,
     VectorDatabaseProvider,

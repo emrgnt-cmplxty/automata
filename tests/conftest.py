@@ -27,7 +27,7 @@ from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient
 from automata.symbol import Symbol
 from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol.parser import parse_symbol
+from automata.symbol.symbol_parser import parse_symbol
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     JSONSymbolEmbeddingVectorDatabase,
@@ -42,7 +42,7 @@ from automata.tasks.task_executor import (
     IAutomataTaskExecution,
 )
 from automata.tasks.task_registry import AutomataTaskRegistry
-from automata.tools.factory import AgentToolFactory
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 # General Fixtures
 

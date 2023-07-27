@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automata.code_writers.py.doc_writer import PyDocWriter
+from automata.code_writers.py.py_doc_writer import PyDocWriter
 from automata.singletons.dependency_factory import DependencyFactory
 from automata.symbol_embedding import SymbolDocEmbedding
 

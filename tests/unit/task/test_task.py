@@ -4,7 +4,7 @@ import pytest
 
 from automata.config import AgentConfigName
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.base import TaskStatus
+from automata.tasks.task_base import TaskStatus
 
 
 @pytest.fixture(autouse=True)

@@ -11,7 +11,7 @@ from automata.eval.agent.agent_eval_composite import (
     check_eval_uniqueness,
 )
 from automata.eval.agent.agent_eval_metrics import AgentEvaluationMetrics
-from automata.eval.base import Action, Payload, parse_action_from_payload
+from automata.eval.eval_base import Action, Payload, parse_action_from_payload
 from automata.eval.eval_error import EvalExecutionError, EvalLoadingError
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 

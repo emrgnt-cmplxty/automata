@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from automata.singletons.py_module_loader import py_module_loader
 
-from .base import Symbol, SymbolDescriptor
+from .symbol_base import Symbol, SymbolDescriptor
 
 
 def convert_to_ast_object(symbol: Symbol) -> ast.AST:
