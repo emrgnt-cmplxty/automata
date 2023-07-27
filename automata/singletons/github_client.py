@@ -75,7 +75,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
         self.access_token = access_token
         self.client = Github(access_token)
         self.remote_name = os.getenv(
-            "AUTOMATA_DEFAULT_REPOSITORY", "emrgnt-cmplxty/automata"
+            "REPOSITORY_NAME", "emrgnt-cmplxty/automata"
         )
         self.repo = self.client.get_repo(self.remote_name)
 

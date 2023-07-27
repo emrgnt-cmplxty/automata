@@ -1,118 +1,285 @@
-import os
-
 import pytest
+import responses
 
 from automata.singletons.github_client import GitHubClient
 
-
-def test_clone_repository(mocker):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-
-    mocker.patch.object(client, "clone_repository")
-
-    local_path = "local_path"
-    client.clone_repository(local_path)
-
-    client.clone_repository.assert_called_once_with(local_path)
+GITHUB_REQUEST_BASE = "https://api.github.com:443/repos/user/repo"
+GITHUB_URL_BASE = "https://api.github.com/repos/user/repo"
+GITHUB_REQUEST_JSON = {
+    "name": "repo",
+    "owner": {"login": "user"},
+    "url": GITHUB_URL_BASE,
+}
 
 
-@pytest.mark.parametrize("branch_name", ["branch1", "branch2", "branch3"])
-def test_create_branch(mocker, branch_name):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-    mocker.patch.object(client.repo, "create_git_ref")
-
-    client.create_branch(branch_name)
-
-    client.repo.create_git_ref.assert_called_once_with(
-        ref=f"refs/heads/{branch_name}",
-        sha=client.repo.get_git_ref(
-            f"heads/{client.primary_branch}"
-        ).object.sha,
+@responses.activate
+def test_create_issue():
+    responses.add(
+        responses.GET,
+        GITHUB_REQUEST_BASE,
+        json=GITHUB_REQUEST_JSON,
+        status=200,
     )
 
-
-@pytest.mark.skip(reason="Issues with singletons")
-def test_checkout_branch(mocker):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-
-    # Create a Mock for Repo
-    mock_repo = mocker.patch("git.Repo", autospec=True)
-    mock_repo.return_value.git = mocker.MagicMock()
-
-    # Create a Mock for repo.heads
-    heads = mocker.PropertyMock(return_value=["branch1", "branch2"])
-    type(mock_repo.return_value).heads = heads
-
-    client.checkout_branch("local_path", "branch_name")
-
-    # If the branch exists, checkout should be called
-    if "branch_name" in mock_repo.return_value.heads:
-        mock_repo.return_value.git.checkout.assert_called_once_with(
-            "branch_name"
-        )
-    # If the branch doesn't exist, checkout should be called with '-b' option
-    else:
-        mock_repo.return_value.git.checkout.assert_called_once_with(
-            "-b", "branch_name"
-        )
-
-
-@pytest.mark.skip(reason="Issues with singletons")
-def test_stage_all_changes(mocker):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-    mock_repo = mocker.patch("git.Repo")
-
-    client.stage_all_changes("local_path")
-
-    mock_repo().git.add.assert_called_once_with(A=True)
-
-
-@pytest.mark.skip(reason="Issues with singletons")
-def test_commit_and_push_changes(mocker):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-    mock_repo = mocker.patch("git.Repo")
-
-    client.commit_and_push_changes(
-        "local_path", "branch_name", "commit_message"
+    responses.add(
+        responses.POST,
+        f"{GITHUB_REQUEST_BASE}/issues",
+        json={
+            "number": 1,
+            "title": "Test",
+            "body": "Test issue",
+            "labels": [],
+        },
+        status=201,
     )
 
-    mock_repo().git.commit.assert_called_once_with(m="commit_message")
-    mock_repo().git.push.assert_called_once_with("origin", "branch_name")
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    issue = client.create_issue("Test", "Test issue", [])
+
+    assert issue.number == 1
+    assert issue.title == "Test"
+    assert issue.body == "Test issue"
+    assert issue.labels == []
 
 
-@pytest.mark.skip(reason="Issues with singletons")
-def test_create_pull_request(mocker):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-
-    client.create_pull_request("branch_name", "title", "body")
-
-    client.repo.create_pull.assert_called_once_with(
-        title="title",
-        body="body",
-        head="branch_name",
-        base=client.primary_branch,
+@responses.activate
+def test_create_pull_request():
+    responses.add(
+        responses.GET,
+        GITHUB_REQUEST_BASE,
+        json={
+            "name": "repo",
+            "owner": {"login": "user"},
+            "url": GITHUB_URL_BASE,
+        },
+        status=200,
     )
 
-
-def test_merge_pull_request(mocker):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-    mock_pull_request = mocker.patch.object(client.repo, "get_pull")
-
-    client.merge_pull_request(1, "commit_message")
-
-    mock_pull_request().merge.assert_called_once_with(
-        commit_message="commit_message"
+    responses.add(
+        responses.POST,
+        f"{GITHUB_REQUEST_BASE}/pulls",
+        json={
+            "number": 1,
+            "title": "Test",
+            "body": "Test PR",
+        },
+        status=201,
     )
 
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    pull_request = client.create_pull_request("test-branch", "Test", "Test PR")
 
-@pytest.mark.parametrize(
-    "branch_name,exists", [("branch1", True), ("branch2", False)]
-)
-def test_branch_exists(mocker, branch_name, exists):
-    client = GitHubClient(os.getenv("GITHUB_API_KEY"), "remote_name")
-    if exists:
-        mocker.patch.object(client.repo, "get_git_ref")
-    else:
-        mocker.patch.object(client.repo, "get_git_ref", side_effect=Exception)
+    assert pull_request.number == 1
+    assert pull_request.title == "Test"
+    assert pull_request.body == "Test PR"
 
-    assert client.branch_exists(branch_name) == exists
+
+@responses.activate
+def test_merge_pull_request():
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/pulls/1",
+        json={
+            "number": 1,
+            "title": "Test",
+            "body": "Test PR",
+            "url": GITHUB_URL_BASE,
+        },
+        status=200,
+    )
+
+    responses.add(
+        responses.PUT,
+        f"{GITHUB_REQUEST_BASE}/merge",
+        json={
+            "sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+            "merged": True,
+            "message": "Pull Request successfully merged",
+        },
+        status=200,
+    )
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    merge_status = client.merge_pull_request(1, "Merging PR")
+
+    assert merge_status.merged
+    assert merge_status.message == "Pull Request successfully merged"
+
+
+@responses.activate
+def test_get_open_issues():
+    responses.add(
+        responses.GET,
+        GITHUB_REQUEST_BASE,
+        json={
+            "url": f"{GITHUB_URL_BASE}",
+        },
+        status=200,
+    )
+
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/issues?state=open",
+        json=[
+            {
+                "number": 1,
+                "title": "Test issue",
+                "body": "This is a test issue",
+                "state": "open",
+            },
+            {
+                "number": 2,
+                "title": "Another test issue",
+                "body": "This is another test issue",
+                "state": "open",
+            },
+        ],
+        status=200,
+    )
+
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    issues = client.get_open_issues()
+
+    assert len(list(issues)) == 2
+    assert issues[0].number == 1
+    assert issues[0].title == "Test issue"
+    assert issues[0].body == "This is a test issue"
+    assert issues[0].state == "open"
+
+
+@responses.activate
+def test_branch_exists():
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/git/refs/heads/test-branch",
+        json={
+            "ref": "refs/heads/test-branch",
+            "url": f"{GITHUB_URL_BASE}/git/refs/heads/test-branch",
+        },
+        status=200,
+    )
+
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    assert client.branch_exists("test-branch")
+
+
+@responses.activate
+def test_get_open_pull_requests():
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/pulls",
+        json=[
+            {
+                "number": 1,
+                "title": "Test PR",
+                "body": "This is a test PR",
+                "state": "open",
+            },
+            {
+                "number": 2,
+                "title": "Another test PR",
+                "body": "This is another test PR",
+                "state": "open",
+            },
+        ],
+        status=200,
+    )
+
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    pull_requests = client.get_open_pull_requests()
+
+    assert len(list(pull_requests)) == 2
+    assert pull_requests[0].number == 1
+    assert pull_requests[0].title == "Test PR"
+    assert pull_requests[0].body == "This is a test PR"
+    assert pull_requests[0].state == "open"
+
+
+@responses.activate
+def test_create_issue_comment():
+    responses.add(
+        responses.GET,
+        GITHUB_REQUEST_BASE,
+        json={
+            "number": 1,
+            "title": "Test issue",
+            "body": "This is a test issue",
+            "state": "open",
+            "url": "https://api.github.com/repos/user/repo",
+        },
+        status=200,
+    )
+
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/issues/1",
+        json={
+            "id": 1,
+            "body": "Test comment",
+            "url": f"{GITHUB_URL_BASE}/issues/1",
+        },
+        status=201,
+    )
+
+    responses.add(
+        responses.POST,
+        f"{GITHUB_REQUEST_BASE}/issues/1/comments",
+        json={
+            "id": 1,
+            "body": "Test comment",
+            "url": f"{GITHUB_URL_BASE}/issues/1/comments",
+        },
+        status=201,
+    )
+
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    comment = client.create_issue_comment(1, "Test comment")
+
+    assert comment.id == 1
+    assert comment.body == "Test comment"
+
+
+@pytest.mark.skip(reason="Not implemented")
+@responses.activate
+def test_remove_issue_comment():
+    pass
+
+
+@responses.activate
+def test_fetch_issue():
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/issues/1",
+        json={
+            "number": 1,
+            "title": "Test issue",
+            "body": "This is a test issue",
+            "state": "open",
+        },
+        status=200,
+    )
+
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    issue = client.fetch_issue(1)
+
+    assert issue.number == 1
+    assert issue.title == "Test issue"
+    assert issue.body == "This is a test issue"
+    assert issue.state == "open"
+
+
+@responses.activate
+def test_fetch_issue_not_found():
+    responses.add(
+        responses.GET,
+        f"{GITHUB_REQUEST_BASE}/issues/999",
+        json={
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/reference/issues#get-an-issue",
+        },
+        status=404,
+    )
+
+    client = GitHubClient("MOCK_TOKEN", "user/repo")
+    issue = client.fetch_issue(999)
+
+    assert issue is None
