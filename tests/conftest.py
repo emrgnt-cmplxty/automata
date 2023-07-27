@@ -2,7 +2,7 @@ import os
 import random
 import shutil
 import uuid
-from typing import Any, Generator, List, Set
+from typing import Any, Dict, Generator, List, Set
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -19,6 +19,7 @@ from automata.eval import (
 from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.experimental.search import SymbolRankConfig, SymbolSearch
+from automata.llm import FunctionCall
 from automata.memory_store import (
     OpenAIAutomataConversationDatabase,
     SymbolCodeEmbeddingHandler,
@@ -43,6 +44,8 @@ from automata.tasks.task_executor import (
 )
 from automata.tasks.task_registry import AutomataTaskRegistry
 from automata.tools.agent_tool_factory import AgentToolFactory
+from automata.tools.tool_base import Tool
+from automata.tools.tool_executor import ToolExecution, ToolExecutor
 
 # General Fixtures
 
@@ -471,3 +474,51 @@ def matched_setup(
         task_executor,
         task_registry,
     )
+
+
+# `Tool` Fixtures
+
+
+class TestTool(Tool):
+    def run(self, tool_input: Dict[str, str]) -> str:
+        return "TestTool response"
+
+
+@pytest.fixture
+def test_tool(request) -> TestTool:
+    name = request.node.get_closest_marker("tool_name")
+    description = request.node.get_closest_marker("tool_description")
+    function = request.node.get_closest_marker("tool_function")
+
+    return TestTool(
+        name=name.args[0] if name else "TestTool",
+        description=description.args[0]
+        if description
+        else "A test tool for testing purposes",
+        function=function.args[0]
+        if function
+        else (lambda x: "TestTool response"),
+    )
+
+
+@pytest.mark.tool_name("TestTool")
+@pytest.mark.tool_description("A test tool for testing purposes")
+def test_tool_instantiation(test_tool):
+    assert test_tool.name == "TestTool"
+    assert test_tool.description == "A test tool for testing purposes"
+    assert test_tool.function is not None
+
+
+@pytest.fixture
+def function_call() -> FunctionCall:
+    return FunctionCall(name="TestTool", arguments={"test": "test"})
+
+
+@pytest.fixture
+def tool_execution(test_tool) -> ToolExecution:
+    return ToolExecution([test_tool])
+
+
+@pytest.fixture
+def tool_executor(tool_execution) -> ToolExecutor:
+    return ToolExecutor(tool_execution)
