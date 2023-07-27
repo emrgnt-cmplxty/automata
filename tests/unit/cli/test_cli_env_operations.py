@@ -1,4 +1,4 @@
-from unittest.mock import mock_open, patch, call
+from unittest.mock import call, mock_open, patch
 
 import pytest
 
@@ -57,9 +57,11 @@ def test_load_env_vars(dotenv_path, default_keys):
         "dotenv.load_dotenv"
     ):
         load_env_vars(dotenv_path, default_keys)
-    calls = [call(dotenv_path, "GITHUB_API_KEY", "new"), call(dotenv_path, "OPENAI_API_KEY", "your_github_api_key")]
+    calls = [
+        call(dotenv_path, "GITHUB_API_KEY", "new"),
+        call(dotenv_path, "OPENAI_API_KEY", "your_github_api_key"),
+    ]
     mock_replace_key.assert_has_calls(calls, any_order=True)
-
 
 
 def test_show_key_value(dotenv_path):
