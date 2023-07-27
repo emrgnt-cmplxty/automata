@@ -20,7 +20,7 @@ from automata.tasks import (
     IAutomataTaskExecution,
     ITaskExecution,
 )
-from automata.tasks.registry import AutomataTaskRegistry
+from automata.tasks.task_registry import AutomataTaskRegistry
 from automata.tools import Tool
 from automata.tools.factory import AgentToolFactory
 
@@ -28,7 +28,7 @@ from automata.tools.factory import AgentToolFactory
 def initialize_automata(
     root_fpath: str = get_root_fpath(), project_name: str = "automata"
 ):
-    """Initialize the automata environment."""
+    """Initialize the automata task_environment."""
 
     py_module_loader.reset()
     dependency_factory.reset()
@@ -41,7 +41,7 @@ def run_setup(
     root_fpath: str = get_root_fpath(),
     project_name: str = "automata",
 ) -> Tuple[List[Tool], AgentConfigName]:
-    """Setup the automata environment."""
+    """Setup the automata task_environment."""
 
     initialize_automata(root_fpath, project_name)
     agent_config_name = AgentConfigName(agent_config)

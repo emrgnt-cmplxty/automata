@@ -67,14 +67,14 @@ def run_eval_harness(
 
     # Setup the tasks
     task_db = AutomataAgentTaskDatabase()
-    environment = AutomataTaskEnvironment(
+    task_environment = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
-    registry = AutomataTaskRegistry(task_db)
+    task_registry = AutomataTaskRegistry(task_db)
 
     for task in eval_loader.tasks:
-        registry.register(task)
-        environment.setup(task)
+        task_registry.register(task)
+        task_environment.setup(task)
 
     # Create the evaluation harness
     eval_database = AgentEvalResultDatabase()

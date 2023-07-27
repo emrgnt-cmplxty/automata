@@ -18,12 +18,12 @@ from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.base import TaskStatus
-from automata.tasks.executor import (
+from automata.tasks.task_database import AutomataAgentTaskDatabase
+from automata.tasks.task_executor import (
     AutomataTaskExecutor,
     IAutomataTaskExecution,
 )
-from automata.tasks.registry import AutomataTaskRegistry
-from automata.tasks.task_database import AutomataAgentTaskDatabase
+from automata.tasks.task_registry import AutomataTaskRegistry
 
 # TODO - Refactor test eval into multiple tests
 # TODO - Include more tests for CodeWriting / FunctionCalling
@@ -31,7 +31,7 @@ from automata.tasks.task_database import AutomataAgentTaskDatabase
 
 
 @pytest.fixture
-def evaluator():
+def function_evaluator():
     return OpenAIFunctionEval()
 
 
@@ -41,15 +41,17 @@ def code_evaluator():
 
 
 @pytest.fixture
-def composite_evaluator(evaluator, code_evaluator):
-    evaluators = [evaluator, code_evaluator]
+def composite_evaluator(function_evaluator, code_evaluator):
+    evaluators = [function_evaluator, code_evaluator]
     return AgentEvalComposite(evaluators)
 
 
 @pytest.fixture
-def eval_harness(evaluator, code_evaluator):
+def eval_harness(function_evaluator, code_evaluator):
     database = MagicMock()
-    return AgentEvaluationHarness([evaluator, code_evaluator], database)
+    return AgentEvaluationHarness(
+        [function_evaluator, code_evaluator], database
+    )
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -196,19 +198,26 @@ EXPECTED_CODE_ACTIONS = [
 
 @pytest.fixture
 def setup(
-    mocker, automata_agent, task, task2, environment, registry, conversation_db
+    mocker,
+    automata_agent,
+    tasks,
+    task_environment,
+    task_registry,
+    conversation_db,
 ):
     # Mock the API response
     mock_openai_chatcompletion_create = mocker.patch(
         "openai.ChatCompletion.create"
     )
+    task_0 = tasks[0]
+    task_1 = tasks[1]
 
     # Register and setup task
-    registry.register(task)
-    environment.setup(task)
+    task_registry.register(task_0)
+    task_environment.setup(task_0)
 
-    registry.register(task2)
-    environment.setup(task2)
+    task_registry.register(task_1)
+    task_environment.setup(task_1)
 
     # Use the agent's set_database_provider method
     automata_agent.set_database_provider(conversation_db)
@@ -246,17 +255,17 @@ def eval_db(tmpdir_factory):
 
 
 @pytest.fixture
-def real_registry(task_db):
+def task_registry(task_db):
     return AutomataTaskRegistry(task_db)
 
 
 @pytest.fixture
-def setup_real(
+def matched_setup(
     mocker,
     automata_agent,
-    task_w_agent_session,
-    environment,
-    real_registry,
+    task_w_agent_matched_session,
+    task_environment,
+    task_registry,
     conversation_db,
 ):
     # Mock the API response
@@ -265,8 +274,8 @@ def setup_real(
     )
 
     # Register and setup task
-    real_registry.register(task_w_agent_session)
-    environment.setup(task_w_agent_session)
+    task_registry.register(task_w_agent_matched_session)
+    task_environment.setup(task_w_agent_matched_session)
 
     # Use the agent's set_database_provider method
     automata_agent.set_database_provider(conversation_db)
@@ -281,7 +290,7 @@ def setup_real(
         mock_openai_chatcompletion_create,
         automata_agent,
         task_executor,
-        real_registry,
+        task_registry,
     )
 
 
@@ -337,14 +346,15 @@ params = {
 
 
 def test_generate_function_eval_result_match(
-    conversation_db, task, evaluator, setup
+    conversation_db, tasks, function_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_function_eval_result_match_responses"
     ]
     # Act
-    result = evaluator.generate_eval_result(
+    result = function_evaluator.generate_eval_result(
         task, EXPECTED_FUNCTION_ACTIONS, task_executor, run_id="test"
     )
 
@@ -367,15 +377,16 @@ def test_generate_function_eval_result_match(
 
 
 def test_generate_eval_result_no_match(
-    conversation_db, task, evaluator, setup
+    conversation_db, tasks, function_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_eval_result_no_match_responses"
     ]
 
     # Act
-    result = evaluator.generate_eval_result(
+    result = function_evaluator.generate_eval_result(
         task, EXPECTED_FUNCTION_ACTIONS, task_executor, run_id="test"
     )
 
@@ -395,15 +406,16 @@ def test_generate_eval_result_no_match(
 
 
 def test_generate_eval_result_partial_match(
-    conversation_db, task, evaluator, setup
+    conversation_db, tasks, function_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_eval_result_partial_match"
     ]
 
     # Act
-    result = evaluator.generate_eval_result(
+    result = function_evaluator.generate_eval_result(
         task, EXPECTED_FUNCTION_ACTIONS, task_executor, run_id="test"
     )
 
@@ -421,8 +433,9 @@ def test_generate_eval_result_partial_match(
 
 
 def test_generate_code_writing_eval_result_match(
-    conversation_db, task, code_evaluator, setup
+    conversation_db, tasks, code_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_code_writing_eval_result_match"
@@ -444,8 +457,9 @@ def test_generate_code_writing_eval_result_match(
 
 
 def test_generate_code_writing_eval_result_no_match(
-    conversation_db, task, code_evaluator, setup
+    conversation_db, tasks, code_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_code_writing_eval_result_no_match"
@@ -465,8 +479,9 @@ def test_generate_code_writing_eval_result_no_match(
 
 
 def test_generate_code_writing_eval_result_partial_match(
-    conversation_db, task, code_evaluator, setup
+    conversation_db, tasks, code_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = [
         {
@@ -501,8 +516,9 @@ def test_generate_code_writing_eval_result_partial_match(
 
 
 def test_composite_eval_result_match(
-    conversation_db, task, composite_evaluator, setup
+    conversation_db, tasks, composite_evaluator, setup
 ):
+    task = tasks[0]
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_composite_eval_result_match"
@@ -530,8 +546,10 @@ def test_composite_eval_result_match(
 
 
 def test_composite_eval_no_match(
-    conversation_db, task, composite_evaluator, setup
+    conversation_db, tasks, composite_evaluator, setup
 ):
+    task = tasks[0]
+
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_composite_eval_no_match"
@@ -558,7 +576,7 @@ def test_composite_eval_no_match(
     ]
 
 
-def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
+def test_evaluation_harness_and_metrics(eval_harness, tasks, setup):
     """Test the properties of AgentEvaluationMetrics"""
 
     (
@@ -585,9 +603,7 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
         ],
     ]
 
-    metrics = eval_harness.evaluate(
-        [task, task2], expected_actions, task_executor
-    )
+    metrics = eval_harness.evaluate(tasks, expected_actions, task_executor)
 
     # Assert
     assert isinstance(metrics, AgentEvaluationMetrics)
@@ -614,7 +630,9 @@ def test_evaluation_harness_and_metrics(eval_harness, task, task2, setup):
     )
 
 
-def test_code_execution_error(composite_evaluator, task, setup):
+def test_code_execution_error(composite_evaluator, tasks, setup):
+    task = tasks[0]
+
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = params[
         "test_composite_eval_no_match"
@@ -642,14 +660,17 @@ def test_code_execution_error(composite_evaluator, task, setup):
 
 
 def test_task_evaluation_with_database_integration(
-    setup_real, composite_evaluator, conversation_db, task_w_agent_session
+    matched_setup,
+    composite_evaluator,
+    conversation_db,
+    task_w_agent_matched_session,
 ):
     (
         mock_openai_chatcompletion_create,
         automata_agent,
         task_executor,
-        real_registry,
-    ) = setup_real
+        task_registry,
+    ) = matched_setup
 
     mock_conversation = params["test_composite_eval_partial_match"]
     mock_openai_chatcompletion_create.side_effect = mock_conversation
@@ -660,11 +681,14 @@ def test_task_evaluation_with_database_integration(
     ]
 
     composite_evaluator.generate_eval_result(
-        task_w_agent_session, expected_actions, task_executor, run_id="test"
+        task_w_agent_matched_session,
+        expected_actions,
+        task_executor,
+        run_id="test",
     )
 
-    session_id = str(task_w_agent_session.session_id)
-    fetched_task = real_registry.fetch_task_by_id(session_id)
+    session_id = str(task_w_agent_matched_session.session_id)
+    fetched_task = task_registry.fetch_task_by_id(session_id)
     fetched_conversation = conversation_db.get_messages(session_id)
 
     assert fetched_task.status == TaskStatus.SUCCESS

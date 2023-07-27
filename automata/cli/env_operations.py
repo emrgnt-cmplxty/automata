@@ -66,7 +66,7 @@ def show_key_value(dotenv_path: str, key: str):
 
 
 def update_key_value(dotenv_path: str, key: str):
-    """Updates the key value in the local environment."""
+    """Updates the key value in the local task_environment."""
 
     new_value = input(f"Enter new value for {key}: ")
     replace_key(dotenv_path, key, new_value)
@@ -74,7 +74,7 @@ def update_key_value(dotenv_path: str, key: str):
 
 
 def delete_key_value(dotenv_path: str, key: str):
-    """Deletes the key from the local environment."""
+    """Deletes the key from the local task_environment."""
 
     user_confirmation = input(
         f"Are you sure you want to delete the value of {key}? [y/n]: "
