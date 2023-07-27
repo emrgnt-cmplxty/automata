@@ -106,13 +106,12 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
             ref=f"refs/heads/{branch_name}", sha=base_sha
         )
 
-    def checkout_branch(self, repo_local_path: str, branch_name: str) -> None:
+    def checkout_branch(
+        self, repo_local_path: str, branch_name: str, b=True
+    ) -> None:
         """Checkout a branch in the repository."""
         repo = Repo(repo_local_path)
-        if branch_name not in repo.heads:
-            repo.git.checkout("-b", branch_name)
-        else:
-            repo.git.checkout(branch_name)
+        repo.git.checkout(branch_name, b=b)
 
     def stage_all_changes(self, repo_local_path: str) -> None:
         """Stage all changes in the repository."""
