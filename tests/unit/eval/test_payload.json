@@ -1,12 +1,33 @@
 [
     {
-        "instructions": "Call Termination with result True",
-        "expected_actions": [
-            {
-                "type": "OpenAIFunctionCallAction",
-                "name": "call_termination",
-                "arguments": {"result": "True"}
-            }
+        "template": {
+            "instructions": "Call Termination with result {result}",
+            "expected_actions": [
+                {
+                    "type": "OpenAIFunctionCallAction",
+                    "name": "call_termination",
+                    "arguments": {"result": "{result}"}
+                }
+            ]
+        },
+        "formatters": [
+            {"result": "True"}
+        ]
+    },
+    {
+        "template": {
+            "instructions": "Return a markdown python snippet which when executed deletes a `{object}`.",
+            "expected_actions": [
+                {
+                    "type": "CodeWritingAction",
+                    "object_type": "{object}",
+                    "object_value_repr": "None"
+                }
+            ]
+        },
+        "formatters": [
+            {"object": "GitHubClient"},
+            {"object": "ChromaVectorDatabase"}
         ]
     }
 ]

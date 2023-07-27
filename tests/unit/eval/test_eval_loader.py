@@ -23,3 +23,9 @@ def test_eval_loader(loader):
     assert loader.tasks_expected_actions[0][0].arguments == {
         "result": "True"
     }, "Call Termination not loaded correctly"
+
+    assert (
+        loader.tasks[1].instructions
+        == "Return a markdown python snippet which when executed deletes a `GitHubClient`."
+    ), "Instruction not loaded correctly"
+    assert loader.tasks_expected_actions[1][0].object_type == "GitHubClient"
