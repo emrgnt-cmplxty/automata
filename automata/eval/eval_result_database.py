@@ -51,7 +51,7 @@ class AgentEvalResultDatabase(SQLDatabase):
         self.insert(AgentEvalResultDatabase.TABLE_NAME, entry)
 
     def get_results(
-        self, session_id: Optional[str], run_id: Optional[str] = None
+        self, session_id: Optional[str] = None, run_id: Optional[str] = None
     ) -> List[AgentEvalResult]:
         """Gets the results from the database"""
 
