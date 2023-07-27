@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
@@ -73,7 +74,9 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
     ) -> None:
         self.access_token = access_token
         self.client = Github(access_token)
-        self.remote_name = remote_name
+        self.remote_name = os.getenv(
+            "AUTOMATA_DEFAULT_REPOSITORY", "emrgnt-cmplxty/automata"
+        )
         self.repo = self.client.get_repo(self.remote_name)
 
         self.primary_branch = primary_branch
