@@ -1,11 +1,9 @@
+# sourcery skip: no-relative-imports
 from collections import Counter
 
 from automata.eval import AgentEvaluationMetrics
-from tests.unit.eval.conftest import (
-    EXPECTED_CODE_ACTIONS,
-    EXPECTED_FUNCTION_ACTIONS,
-    params,
-)
+
+from .conftest import EXPECTED_CODE_ACTIONS, EXPECTED_FUNCTION_ACTIONS, params
 
 
 def test_evaluation_harness_and_metrics(eval_harness, tasks, setup):
