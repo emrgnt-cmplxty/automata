@@ -47,7 +47,7 @@ def test_basic_task_execution(
 
     task_db = AutomataAgentTaskDatabase()
     task_registry = AutomataTaskRegistry(task_db)
-    task_environment = AutomataTaskEnvironment(
+    (task_environment,) = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
 
@@ -63,7 +63,7 @@ def test_basic_task_execution(
 
     session_id = str(task.session_id)
 
-    # Check that task is saved correctly to the registry / db
+    # Check that task is saved correctly to the task_registry / db
     lookup_task = task_registry.fetch_task_by_id(session_id)
     assert task.session_id == lookup_task.session_id
     assert task.instructions == lookup_task.instructions

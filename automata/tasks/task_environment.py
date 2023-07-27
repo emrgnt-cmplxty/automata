@@ -75,19 +75,19 @@ class AutomataTaskEnvironment(TaskEnvironment):
         logger.info(f"Task {task.session_id} environment setup successfully.")
 
     def teardown(self) -> None:
-        """Tears down the environment, not implemented."""
+        """Tears down the task_environment, not implemented."""
 
         # TODO - Implement teardown environment
         raise NotImplementedError
 
     def validate(self) -> None:
-        """Validates the environment, not implemented."""
+        """Validates the task_environment, not implemented."""
 
         # TODO - Implement validate environment
         raise NotImplementedError
 
     def reset(self) -> None:
-        """Resets the environment, not implemented."""
+        """Resets the task_environment, not implemented."""
 
         # TODO - Implement reset environment which clears the state
         raise NotImplementedError
