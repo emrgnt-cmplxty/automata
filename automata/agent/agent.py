@@ -28,6 +28,7 @@ class Agent(ABC):
         self.database_provider: Optional[
             LLMConversationDatabaseProvider
         ] = None
+
         self._initialized = False
 
     @abstractmethod

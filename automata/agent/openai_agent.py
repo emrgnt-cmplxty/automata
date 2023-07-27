@@ -31,6 +31,7 @@ from automata.llm import (
     OpenAITool,
 )
 from automata.llm.llm_base import FunctionCall
+from automata.tools import ToolExecution, ToolExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -252,22 +253,22 @@ class OpenAIAutomataAgent(Agent):
             iteration_message = OpenAIAutomataAgent.STOPPING_SUFFIX
 
         if assistant_message.function_call:
-            for tool in self.tools:
-                if (
-                    assistant_message.function_call.name
-                    == tool.openai_function.name
-                ):
-                    result = tool.run(
-                        assistant_message.function_call.arguments
-                    )
-                    # Completion can occur from running `call_terminate` in the block above.
-                    function_iteration_message = (
-                        "" if self.completed else f"\n\n{iteration_message}"
-                    )
-                    return OpenAIChatMessage(
-                        role="user",
-                        content=f"{result}{function_iteration_message}",
-                    )
+            try:
+                result = self.tool_executor.execute(
+                    assistant_message.function_call
+                )
+                function_iteration_message = (
+                    "" if self.completed else f"\n\n{iteration_message}"
+                )
+                return OpenAIChatMessage(
+                    role="user",
+                    content=f"{result}{function_iteration_message}",
+                )
+            except Exception as e:
+                logging.exception(f"Tool execution failed: {e}")
+                # Handle exception as necessary
+                pass
+
         return OpenAIChatMessage(
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{iteration_message}",
@@ -309,6 +310,9 @@ class OpenAIAutomataAgent(Agent):
             conversation=self._conversation,
             functions=self.functions,
         )
+
+        self.tool_executor = ToolExecutor(ToolExecution(self.tools))
+
         self._initialized = True
 
         logger.debug(
