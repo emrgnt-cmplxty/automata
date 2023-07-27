@@ -2,7 +2,8 @@
 import contextlib
 import json
 import logging
-from typing import Dict, List, Union, cast
+import uuid
+from typing import TYPE_CHECKING, Dict, List, Union, cast
 
 from automata.eval.base import (
     Action,
@@ -18,6 +19,9 @@ from automata.eval.composite import (
 from automata.eval.error import EvalExecutionError, EvalLoadingError
 from automata.eval.metrics import AgentEvaluationMetrics
 from automata.tasks import AutomataTask, AutomataTaskExecutor
+
+if TYPE_CHECKING:
+    from automata.eval.eval_result_database import AgentEvalResultDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -143,9 +147,13 @@ def process_task(
 class AgentEvaluationHarness:
     """A class to evaluate a list of instructions against a list of expected actions."""
 
-    def __init__(self, evals: List[AgentEval]):
+    def __init__(
+        self, evals: List[AgentEval], database: "AgentEvalResultDatabase"
+    ):
         check_eval_uniqueness(evals)
         self.evals = evals
+        self.run_id = str(uuid.uuid4())
+        self.database = database
         # self.num_workers = num_workers # TODO - Include parallelizatio
 
     def evaluate(
@@ -157,7 +165,9 @@ class AgentEvaluationHarness:
     ) -> AgentEvaluationMetrics:
         """Returns the evaluation metrics for the given instructions and expected actions."""
 
-        logging.info(f"Starting evaluation of {len(tasks)} tasks...")
+        logging.info(
+            f"Starting evaluation of {len(tasks)} tasks with run_id={self.run_id}..."
+        )
 
         aggregate_results = []
         for task, expected_actions in zip(tasks, tasks_expected_actions):
@@ -169,11 +179,13 @@ class AgentEvaluationHarness:
                         expected_actions,
                         agent.conversation.messages,
                         session_id=agent.session_id,
+                        run_id=self.run_id,
                     )
                     if not isinstance(result, AgentEvalResult):
                         raise ValueError(
                             "Evaluators must return an AgentEvalResult."
                         )
+                    self.database.write_result(result)
                     results.append(result)
                 if aggregate:
                     results = [aggregate_agent_result(results)]

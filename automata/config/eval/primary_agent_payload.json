@@ -4,6 +4,16 @@
         "expected_actions": [
             {
                 "type": "CodeWritingAction",
+                "object_type": "PyReader",
+                "object_value_repr": "None"
+            }
+        ]
+    },
+    {
+        "instructions": "Provide a markdown python snippet, which can validly executed by `exec`. When ran, the snippet produces a valid instance of an openai agent config in the local variable `x`.",
+        "expected_actions": [
+            {
+                "type": "CodeWritingAction",
                 "object_type": "OpenAIAutomataAgentConfig",
                 "object_value_repr": "None"
             }

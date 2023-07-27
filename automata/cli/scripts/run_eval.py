@@ -4,6 +4,7 @@ from typing import List
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
     AgentEval,
+    AgentEvalResultDatabase,
     AgentEvalSetLoader,
     AgentEvaluationHarness,
     CodeWritingEval,
@@ -76,7 +77,8 @@ def run_eval_harness(
         environment.setup(task)
 
     # Create the evaluation harness
-    evaluation_harness = AgentEvaluationHarness(evals)
+    eval_database = AgentEvalResultDatabase()
+    evaluation_harness = AgentEvaluationHarness(evals, eval_database)
 
     # Create the executor
     execution = IAutomataTaskExecution()

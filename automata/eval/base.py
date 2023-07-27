@@ -1,5 +1,6 @@
 import json
 import logging
+import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Sequence, Union
 
@@ -46,6 +47,12 @@ class Action(ABC):
 class EvalResult(ABC):
     """An abstract class to represent the result of an evaluation."""
 
+    def __init__(self, *args, **kwargs):
+        # TODO - Add tests for run_id
+        self.run_id = kwargs.get("run_id") or str(uuid.uuid4())
+        if not isinstance(self.run_id, str):
+            raise ValueError("run_id must be a string.")
+
     @property
     @abstractmethod
     def is_full_match(self) -> bool:
@@ -82,13 +89,16 @@ class AgentEvalResult(EvalResult):
         match_results: Dict[Action, bool],
         extra_actions: List[Action],
         session_id: Optional[str],
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self.match_results = match_results
         self.extra_actions = extra_actions
         self.session_id = session_id
 
     def __repr__(self) -> str:
-        return f"AgentEvalResult(match_results={self.match_results}, extra_actions={self.extra_actions}, session_id={self.session_id})"
+        return f"AgentEvalResult(match_results={self.match_results}, extra_actions={self.extra_actions}, session_id={self.session_id}, run_id={self.run_id})"
 
     @property
     def is_full_match(self) -> bool:
@@ -156,11 +166,13 @@ class AgentEvalResult(EvalResult):
             raise ValueError(
                 f"Invalid session_id ({session_id}) was observed."
             )
+        run_id = payload.get("run_id")
 
         return cls(
             match_results=match_results,
             extra_actions=extra_actions,
             session_id=session_id,
+            run_id=run_id,
         )
 
 
@@ -171,7 +183,10 @@ class ToolEvalResult(EvalResult):
         self,
         expected_action: Optional[Action],
         observed_action: Optional[Action],
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self.expected_action = expected_action
         self.observed_action = observed_action
 
@@ -301,6 +316,7 @@ class AgentEval(Eval):
             raise ValueError("session_id must be provided.")
 
         session_id = kwargs["session_id"]
+        run_id = kwargs.get("run_id")
 
         filtered_expected_actions = self._filter_actions(expected_actions)
         observed_actions: List[Action] = []
@@ -323,6 +339,7 @@ class AgentEval(Eval):
             match_results=match_results,
             extra_actions=extra_actions,
             session_id=session_id,
+            run_id=run_id,
         )
 
 

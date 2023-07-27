@@ -20,7 +20,10 @@ def aggregate_agent_result(results: List[AgentEvalResult]) -> AgentEvalResult:
 
     # Check conversations match across results
     if any(result.session_id != results[0].session_id for result in results):
-        raise ValueError("All conversations must match.")
+        raise ValueError("All session ids must match.")
+
+    if any(result.run_id != results[0].run_id for result in results):
+        raise ValueError("All run ids must match.")
 
     # Merge all match_result dictionaries
     aggregated_match_results: Dict[Action, bool] = {}
@@ -37,6 +40,7 @@ def aggregate_agent_result(results: List[AgentEvalResult]) -> AgentEvalResult:
         match_results=aggregated_match_results,
         extra_actions=aggregated_extra_actions,
         session_id=results[0].session_id,
+        run_id=results[0].run_id,
     )
 
 
@@ -87,6 +91,7 @@ class CompositeAgentEval(Eval):
                 expected_actions,
                 agent.conversation.messages,
                 session_id=agent.session_id,
+                run_id=kwargs.get("run_id"),
             )
             if not isinstance(result, AgentEvalResult):
                 raise ValueError("Evaluators must return an AgentEvalResult.")
