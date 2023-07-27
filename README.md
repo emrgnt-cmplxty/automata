@@ -41,6 +41,35 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 
 Follow these steps to setup the Automata environment
 
+```bash
+# Clone the repository
+git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/
+
+# Install dependencies
+poetry install
+
+# Configure the environment and setup files
+automata configure
+```
+
+<details>
+<summary>Installation via Docker</summary>
+<br>
+You can also install Automata through Docker.
+
+Pull the Docker image:
+```console
+$ docker pull ghcr.io/emrgnt-cmplxty/automata:latest
+```
+
+Run the Docker image:
+```console
+$ docker run -it --rm ghcr.io/emrgnt-cmplxty/automata:latest
+```
+
+This will start a Docker container with Automata installed and open an interactive shell for you to use.
+</details>
+
 <details>
 <summary>Windows Tips</summary>
 <br>
@@ -62,17 +91,6 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /
 ```
 
 </details>
-
-```bash
-# Clone the repository
-git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/
-
-# Install dependencies
-poetry install
-
-# Configure the environment and setup files
-automata configure
-```
 
 ### Indexing
 
