@@ -185,10 +185,12 @@ class AgentEvaluationHarness:
                         raise ValueError(
                             "Evaluators must return an AgentEvalResult."
                         )
-                    self.database.write_result(result)
                     results.append(result)
                 if aggregate:
                     results = [aggregate_agent_result(results)]
+
+                for result in results:
+                    self.database.write_result(result)
                 aggregate_results.extend(results)
 
             except Exception as e:

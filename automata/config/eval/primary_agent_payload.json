@@ -1,31 +1,11 @@
 [
     {
-        "instructions": "Return a markdown python snippet which when executed creates an instance of a PyReader and stores it into a local variable `x`.",
+        "instructions": "Return a markdown python snippet which when executed creates a valid instance of a `Symbol` and stores it into a local variable `x`.",
         "expected_actions": [
             {
                 "type": "CodeWritingAction",
-                "object_type": "PyReader",
+                "object_type": "Symbol",
                 "object_value_repr": "None"
-            }
-        ]
-    },
-    {
-        "instructions": "Provide a markdown python snippet, which can validly executed by `exec`. When ran, the snippet produces a valid instance of an openai agent config in the local variable `x`.",
-        "expected_actions": [
-            {
-                "type": "CodeWritingAction",
-                "object_type": "OpenAIAutomataAgentConfig",
-                "object_value_repr": "None"
-            }
-        ]
-    },
-    {
-        "instructions": "Call Termination with result True",
-        "expected_actions": [
-            {
-                "type": "OpenAIFunctionCallAction",
-                "name": "call_termination",
-                "arguments": {"result": "True"}
             }
         ]
     }
