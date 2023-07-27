@@ -189,7 +189,7 @@ def automata_agent_config_builder():
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
 
-    llm_toolkits_list = ["context-oracle"]
+    llm_toolkits_list = ["advanced-context-oracle"]
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[
@@ -201,7 +201,7 @@ def automata_agent(mocker, automata_agent_config_builder):
         dependency: dependency_factory.get(dependency)
         for dependency in dependencies
     }
-    tools = AgentToolFactory.build_tools(["context-oracle"], **kwargs)
+    tools = AgentToolFactory.build_tools(["advanced-context-oracle"], **kwargs)
 
     instructions = "Test instruction."
 

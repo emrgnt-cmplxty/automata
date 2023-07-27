@@ -44,7 +44,7 @@ def test_build_automata_class_dependencies(classes_to_build):
 @pytest.mark.parametrize(
     "toolkits_to_build",
     [
-        ["context-oracle"],
+        ["advanced-context-oracle"],
     ],
 )
 def test_build_automata_tools(toolkits_to_build):

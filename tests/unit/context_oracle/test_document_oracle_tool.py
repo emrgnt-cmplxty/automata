@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.experimental.tools import AdvancedContextOracleToolkitBuilder
+from automata.experimental.tools import DocumentOracleToolkitBuilder
 from automata.tools.base import Tool
 
 
@@ -27,13 +27,13 @@ def embedding_similarity_calculator():
 
 
 @pytest.fixture
-def advanced_context_oracle_tool_builder(
+def document_oracle_tool_builder(
     symbol_search,
     symbol_code_embedding_handler,
     symbol_doc_embedding_handler,
     embedding_similarity_calculator,
 ):
-    return AdvancedContextOracleToolkitBuilder(
+    return DocumentOracleToolkitBuilder(
         symbol_search=symbol_search,
         symbol_doc_embedding_handler=symbol_doc_embedding_handler,
         symbol_code_embedding_handler=symbol_code_embedding_handler,
@@ -41,23 +41,23 @@ def advanced_context_oracle_tool_builder(
     )
 
 
-def test_init(advanced_context_oracle_tool_builder):
+def test_init(document_oracle_tool_builder):
     assert isinstance(
-        advanced_context_oracle_tool_builder.embedding_similarity_calculator,
+        document_oracle_tool_builder.embedding_similarity_calculator,
         MagicMock,
     )
     assert isinstance(
-        advanced_context_oracle_tool_builder.symbol_doc_embedding_handler,
+        document_oracle_tool_builder.symbol_doc_embedding_handler,
         MagicMock,
     )
     assert isinstance(
-        advanced_context_oracle_tool_builder.symbol_code_embedding_handler,
+        document_oracle_tool_builder.symbol_code_embedding_handler,
         MagicMock,
     )
 
 
-def test_build(advanced_context_oracle_tool_builder):
-    tools = advanced_context_oracle_tool_builder.build()
+def test_build(document_oracle_tool_builder):
+    tools = document_oracle_tool_builder.build()
     assert len(tools) == 1
     for tool in tools:
         assert isinstance(tool, Tool)
