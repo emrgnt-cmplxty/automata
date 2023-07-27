@@ -25,9 +25,5 @@ class TemplateFormatter:
                 )
             )
             formatter["max_iterations"] = str(config.max_iterations)
-        elif config.config_name != AgentConfigName.TEST:
-            raise NotImplementedError(
-                "Automata does not have a default template formatter."
-            )
 
         return formatter

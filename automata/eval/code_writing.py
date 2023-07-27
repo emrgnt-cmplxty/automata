@@ -2,19 +2,20 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
+from automata.core.base import AutomataError
 from automata.eval import Action, AgentEval, Payload
 from automata.llm.foundation import LLMChatMessage
 
 logger = logging.getLogger(__name__)
 
 
-class CodeExecutionError(Exception):
+class CodeExecutionError(AutomataError):
     """Exception raised when there's an error executing the code."""
 
     pass
 
 
-class VariableNotFoundError(CodeExecutionError):
+class VariableNotFoundError(AutomataError):
     """Exception raised when the target variable is not found."""
 
     pass
@@ -23,7 +24,8 @@ class VariableNotFoundError(CodeExecutionError):
 class CodeWritingAction(Action):
     """An concrete action representing written code."""
 
-    LANGUAGE_MARKER_POSITION = 1
+    BACKWARD_LANGUAGE_MARKER_POSITION = 1
+    FORWARD_LANGUAGE_MARKER_POSITION = 0
 
     # TODO - Consider adding variable name to the action,
     # e.g. if x = OpenAutomataAgent(),
@@ -132,8 +134,8 @@ class CodeWritingAction(Action):
         """Extracts a code snippet from a markdown string."""
 
         return snippet.split(f"```{expected_language}")[
-            CodeWritingAction.LANGUAGE_MARKER_POSITION
-        ].replace("```", "")
+            CodeWritingAction.BACKWARD_LANGUAGE_MARKER_POSITION
+        ].split("```")[CodeWritingAction.FORWARD_LANGUAGE_MARKER_POSITION]
 
 
 class CodeWritingEval(AgentEval):
@@ -186,8 +188,10 @@ class CodeWritingEval(AgentEval):
             except Exception as e:
                 return [
                     {
-                        "error": CodeExecutionError(
-                            f"Error executing code: {str(e)}"
+                        "error": str(
+                            CodeExecutionError(
+                                f"Error executing code: {str(e)}"
+                            )
                         ),
                     }
                 ]

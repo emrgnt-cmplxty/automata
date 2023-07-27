@@ -48,7 +48,8 @@ def composite_evaluator(evaluator, code_evaluator):
 
 @pytest.fixture
 def eval_harness(evaluator, code_evaluator):
-    return AgentEvaluationHarness([evaluator, code_evaluator])
+    database = MagicMock()
+    return AgentEvaluationHarness([evaluator, code_evaluator], database)
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -344,7 +345,7 @@ def test_generate_function_eval_result_match(
     ]
     # Act
     result = evaluator.generate_eval_result(
-        task, EXPECTED_FUNCTION_ACTIONS, task_executor
+        task, EXPECTED_FUNCTION_ACTIONS, task_executor, run_id="test"
     )
 
     # Assert
@@ -375,7 +376,7 @@ def test_generate_eval_result_no_match(
 
     # Act
     result = evaluator.generate_eval_result(
-        task, EXPECTED_FUNCTION_ACTIONS, task_executor
+        task, EXPECTED_FUNCTION_ACTIONS, task_executor, run_id="test"
     )
 
     # Assert
@@ -403,7 +404,7 @@ def test_generate_eval_result_partial_match(
 
     # Act
     result = evaluator.generate_eval_result(
-        task, EXPECTED_FUNCTION_ACTIONS, task_executor
+        task, EXPECTED_FUNCTION_ACTIONS, task_executor, run_id="test"
     )
 
     # Assert
@@ -429,7 +430,7 @@ def test_generate_code_writing_eval_result_match(
 
     # Act
     result = code_evaluator.generate_eval_result(
-        task, EXPECTED_CODE_ACTIONS, task_executor
+        task, EXPECTED_CODE_ACTIONS, task_executor, run_id="test"
     )
 
     # Assert
@@ -452,7 +453,7 @@ def test_generate_code_writing_eval_result_no_match(
 
     # Act
     result = code_evaluator.generate_eval_result(
-        task, EXPECTED_CODE_ACTIONS, task_executor
+        task, EXPECTED_CODE_ACTIONS, task_executor, run_id="test"
     )
 
     # Assert
@@ -483,7 +484,11 @@ def test_generate_code_writing_eval_result_partial_match(
 
     # Act
     result = code_evaluator.generate_eval_result(
-        task, EXPECTED_CODE_ACTIONS, task_executor, session_id=None
+        task,
+        EXPECTED_CODE_ACTIONS,
+        task_executor,
+        session_id=None,
+        run_id="test",
     )
 
     # Assert
@@ -512,7 +517,7 @@ def test_composite_eval_result_match(
     ]
 
     result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor, session_id=None
+        task, expected_actions, task_executor, session_id=None, run_id="test"
     )
 
     assert result.is_full_match
@@ -538,7 +543,7 @@ def test_composite_eval_no_match(
     ]
 
     result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor, session_id=None
+        task, expected_actions, task_executor, session_id=None, run_id="test"
     )
 
     assert result.is_full_match is False
@@ -621,7 +626,7 @@ def test_code_execution_error(composite_evaluator, task, setup):
     ]
 
     result = composite_evaluator.generate_eval_result(
-        task, expected_actions, task_executor, session_id=None
+        task, expected_actions, task_executor, session_id=None, run_id="test"
     )
 
     assert result.is_full_match is False
@@ -655,7 +660,7 @@ def test_task_evaluation_with_database_integration(
     ]
 
     composite_evaluator.generate_eval_result(
-        task_w_agent_session, expected_actions, task_executor
+        task_w_agent_session, expected_actions, task_executor, run_id="test"
     )
 
     session_id = str(task_w_agent_session.session_id)
@@ -693,7 +698,7 @@ def test_eval_result_writer(eval_db):
     )
 
     # Write the result to the database
-    eval_db.write_result(eval_result, 1)
+    eval_db.write_result(eval_result)
 
     # Retrieve the result from the database
     retrieved_results = eval_db.get_results("test_session")
