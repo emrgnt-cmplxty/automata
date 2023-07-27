@@ -160,8 +160,6 @@ def run_agent(ctx, *args, **kwargs) -> None:
     """Run the agent."""
     from automata.cli.scripts.run_agent import main
 
-    reconfigure_logging("DEBUG")  # kwargs.get("log-level", "DEBUG"))
-    # reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running agent")
     main(**kwargs)
 
