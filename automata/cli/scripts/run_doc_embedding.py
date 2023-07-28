@@ -1,6 +1,6 @@
 import logging
 import os
-import pickle # eslint-disable-line no-eval
+import pickle  # eslint-disable-line no-eval
 from typing import List
 
 from tqdm import tqdm
@@ -38,7 +38,7 @@ def initialize_providers(embedding_level, symbols=None, **kwargs):
     if os.getenv("GRAPH_TYPE") == "static":
         try:
             with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
-                graph = pickle.load(f) # eslint-disable-line no-eval
+                graph = pickle.load(f)  # eslint-disable-line no-eval
             symbol_graph = SymbolGraph.from_graph(graph)
         except FileNotFoundError:
             logger.warning(
