@@ -3,9 +3,6 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Union
 
-from automata.llm.llm_base import LLMChatMessage
-from automata.tasks import AutomataTask
-
 logger = logging.getLogger(__name__)
 
 Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
@@ -97,8 +94,8 @@ class Eval(ABC):
     @abstractmethod
     def generate_eval_result(
         self,
-        task: AutomataTask,
-        expected_actions: List[Action],
+        exec_input: Any,
+        expected_output: Any,
         executor: Any,
         *args,
         **kwargs,
@@ -107,11 +104,11 @@ class Eval(ABC):
         pass
 
     @abstractmethod
-    def extract_action(self, message: LLMChatMessage) -> List[Action]:
+    def extract_action(self, input: Any) -> Any:
         """Extracts a list of action from the given message."""
         pass
 
     @abstractmethod
-    def _filter_actions(self, actions: List[Action]) -> List[Action]:
+    def _filter_actions(self, inputs: Any) -> Any:
         """Filters a list of actions to only contain actions that are relevant to the eval."""
         pass

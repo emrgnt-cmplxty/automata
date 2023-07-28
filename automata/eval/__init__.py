@@ -7,16 +7,16 @@ from automata.eval.agent.agent_eval_harness import (
     AgentEvaluationHarness,
 )
 from automata.eval.agent.agent_eval_metrics import AgentEvaluationMetrics
-from automata.eval.code_writing_eval import (
+from automata.eval.agent.code_writing_eval import (
     CodeExecutionError,
     CodeWritingAction,
     CodeWritingEval,
 )
-from automata.eval.eval_base import Action, Eval, EvalResult, Payload
-from automata.eval.openai_eval import (
+from automata.eval.agent.openai_function_eval import (
     OpenAIFunctionCallAction,
     OpenAIFunctionEval,
 )
+from automata.eval.eval_base import Action, Eval, EvalResult, Payload
 from automata.eval.tool.tool_eval import ToolEvalResult
 
 __all__ = [
