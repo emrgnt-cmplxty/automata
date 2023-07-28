@@ -6,7 +6,7 @@ from automata.eval import AgentEvaluationMetrics
 from .conftest import EXPECTED_CODE_ACTIONS, EXPECTED_FUNCTION_ACTIONS, params
 
 
-def test_evaluation_harness_and_metrics(eval_harness, tasks, setup):
+def test_evaluation_harness_and_metrics(agent_eval_harness, tasks, setup):
     """Test the properties of AgentEvaluationMetrics"""
 
     (
@@ -33,7 +33,9 @@ def test_evaluation_harness_and_metrics(eval_harness, tasks, setup):
         ],
     ]
 
-    metrics = eval_harness.evaluate(tasks, expected_actions, task_executor)
+    metrics = agent_eval_harness.evaluate(
+        tasks, expected_actions, task_executor
+    )
 
     # Assert
     assert isinstance(metrics, AgentEvaluationMetrics)

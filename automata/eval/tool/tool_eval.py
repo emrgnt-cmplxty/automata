@@ -36,7 +36,6 @@ class ToolEval(Eval):
 
         observed_result = executor.execute(exec_input)
         observed_action = self.extract_action((exec_input, observed_result))
-
         return self.to_tool_result(
             expected_action=expected_output,
             observed_action=observed_action,

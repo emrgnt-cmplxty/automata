@@ -15,6 +15,8 @@ from automata.eval import (
     AgentEvaluationHarness,
     CodeWritingEval,
     OpenAIFunctionEval,
+    SymbolSearchEval,
+    ToolEvaluationHarness,
 )
 from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
@@ -394,17 +396,27 @@ def code_evaluator():
 
 
 @pytest.fixture
+def search_evaluator():
+    return SymbolSearchEval()
+
+
+@pytest.fixture
 def composite_evaluator(function_evaluator, code_evaluator):
     evaluators = [function_evaluator, code_evaluator]
     return AgentEvalComposite(evaluators)
 
 
 @pytest.fixture
-def eval_harness(function_evaluator, code_evaluator):
+def agent_eval_harness(function_evaluator, code_evaluator):
     database = MagicMock()
     return AgentEvaluationHarness(
         [function_evaluator, code_evaluator], database
     )
+
+
+@pytest.fixture
+def tool_eval_harness(search_evaluator):
+    return ToolEvaluationHarness([search_evaluator])
 
 
 @pytest.fixture
@@ -522,3 +534,41 @@ def tool_execution(test_tool) -> ToolExecution:
 @pytest.fixture
 def tool_executor(tool_execution) -> ToolExecutor:
     return ToolExecutor(tool_execution)
+
+
+@pytest.fixture
+def setup_tool(mocker, symbols):
+    # Mock the API response
+
+    # Create a mock for the SymbolSearch instance
+    symbol_search_mock = MagicMock()
+
+    symbol_0 = symbols[0]
+    symbol_0.uri = "result1"  # hack
+
+    symbol_1 = symbols[1]
+    symbol_1.uri = "result2"  # hack
+
+    symbol_2 = symbols[2]
+    symbol_2.uri = "result3"  # hack
+
+    # Mock the get_symbol_rank_results method
+    symbol_search_mock.get_symbol_rank_results = MagicMock(
+        return_value=[
+            (symbol_0, 0.3),
+            (symbol_1, 0.2),
+            (symbol_2, 0.1),
+            (symbols[3], 0.01),  # pad to top k (5)
+            (symbols[4], 0.01),
+        ]
+    )
+
+    # Create tools using the factory
+    symbol_search_tools = AgentToolFactory.create_tools_from_builder(
+        AgentToolkitNames.SYMBOL_SEARCH, symbol_search=symbol_search_mock
+    )
+
+    # Create the tool execution instance with the tools
+    tool_execution = ToolExecution(symbol_search_tools)
+
+    return ToolExecutor(execution=tool_execution)

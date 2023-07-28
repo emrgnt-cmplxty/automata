@@ -1,0 +1,20 @@
+[
+    {
+        "template": {
+            "function_call": {
+                "type": "FunctionCall",
+                "name": "call_termination",
+                "arguments": {"result": "{result}"}
+            },
+            "expected_action": {
+                "type": "SymbolSearchAction",
+                "query": "{object}",
+                "search_results": ""
+            }
+        },
+        "formatters": [
+            {"result": "True", "object": "GitHubClient"},
+            {"result": "False", "object": "ChromaVectorDatabase"}
+        ]
+    }
+]

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.eval.tool import (
+from automata.eval import (
     SymbolSearchAction,
     SymbolSearchEval,
     SymbolSearchEvalResult,

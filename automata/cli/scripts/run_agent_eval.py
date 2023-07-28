@@ -94,7 +94,7 @@ def run_eval_harness(
 
 
 def main(*args, **kwargs) -> None:
-    """Main entrypoint for the run_eval script."""
+    """Main entrypoint for the run_agent_eval script."""
 
     initialize_py_module_loader(**kwargs)
     run_eval_harness(**kwargs)
