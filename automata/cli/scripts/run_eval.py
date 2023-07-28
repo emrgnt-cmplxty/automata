@@ -3,12 +3,13 @@ from typing import List
 
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
-    AgentEval,
+    AgentEvalResultDatabase,
     AgentEvalSetLoader,
     AgentEvaluationHarness,
     CodeWritingEval,
     OpenAIFunctionEval,
 )
+from automata.eval.agent.agent_eval import AgentEval
 from automata.singletons.dependency_factory import dependency_factory
 from automata.tasks import (
     AutomataAgentTaskDatabase,
@@ -18,7 +19,7 @@ from automata.tasks import (
     EnvironmentMode,
     IAutomataTaskExecution,
 )
-from automata.tools.factory import AgentToolFactory
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
 
@@ -66,17 +67,18 @@ def run_eval_harness(
 
     # Setup the tasks
     task_db = AutomataAgentTaskDatabase()
-    environment = AutomataTaskEnvironment(
+    task_environment = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
-    registry = AutomataTaskRegistry(task_db)
+    task_registry = AutomataTaskRegistry(task_db)
 
     for task in eval_loader.tasks:
-        registry.register(task)
-        environment.setup(task)
+        task_registry.register(task)
+        task_environment.setup(task)
 
     # Create the evaluation harness
-    evaluation_harness = AgentEvaluationHarness(evals)
+    eval_database = AgentEvalResultDatabase()
+    evaluation_harness = AgentEvaluationHarness(evals, eval_database)
 
     # Create the executor
     execution = IAutomataTaskExecution()

@@ -3,11 +3,11 @@ from typing import List
 
 from automata.config import CONVERSATION_DB_PATH
 from automata.llm import (
-    FunctionCall,
     LLMChatMessage,
     LLMConversationDatabaseProvider,
     OpenAIChatMessage,
 )
+from automata.llm.llm_base import FunctionCall
 
 
 # TODO - Should the database be a function of session_id in constructor?

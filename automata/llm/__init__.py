@@ -1,4 +1,5 @@
-from .foundation import (
+from .llm_base import (
+    FunctionCall,
     LLMChatCompletionProvider,
     LLMChatMessage,
     LLMCompletionResult,
@@ -7,7 +8,6 @@ from .foundation import (
     LLMIterationResult,
 )
 from .providers import (
-    FunctionCall,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
     OpenAIConversation,

@@ -70,7 +70,7 @@ def test_basic_agent_execution(
         (
             "What class should we instantiate to search the codebase for relevant symbols? Please return just the class name.",
             "automata-main",
-            ["context-oracle"],
+            ["advanced-context-oracle"],
             "gpt-4",
             2,
             "SymbolSearch",
@@ -136,7 +136,7 @@ def test_agent_py_writer(
         instructions, agent_config_name, tools, model, max_iterations
     )
 
-    if module := py_module_loader.fetch_ast_module(expected_output_module):
+    if _ := py_module_loader.fetch_ast_module(expected_output_module):
         py_module_loader.delete_module(expected_output_module)
     else:
         raise ValueError("Failed to create expected output module")

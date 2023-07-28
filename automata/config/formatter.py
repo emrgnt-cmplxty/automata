@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict
 
-from automata.config.base import AgentConfig, AgentConfigName
+from automata.config.config_base import AgentConfig, AgentConfigName
 
 if TYPE_CHECKING:
     from automata.experimental.search import SymbolRank
@@ -25,9 +25,5 @@ class TemplateFormatter:
                 )
             )
             formatter["max_iterations"] = str(config.max_iterations)
-        elif config.config_name != AgentConfigName.TEST:
-            raise NotImplementedError(
-                "Automata does not have a default template formatter."
-            )
 
         return formatter

@@ -20,7 +20,7 @@ import yaml
 from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
 
 if TYPE_CHECKING:
-    from automata.embedding.base import EmbeddingVectorProvider
+    from automata.embedding.emedding_base import EmbeddingVectorProvider
 
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:

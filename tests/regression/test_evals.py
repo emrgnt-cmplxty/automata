@@ -5,7 +5,7 @@ import pytest
 
 from automata.core.run_handlers import run_setup, run_with_eval
 from automata.eval import OpenAIFunctionCallAction
-from automata.eval.eval_result_database import AgentEvalResultDatabase
+from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks import (
@@ -49,7 +49,7 @@ def test_basic_eval_task(
 
     task_db = AutomataAgentTaskDatabase()
     task_registry = AutomataTaskRegistry(task_db)
-    task_environment = AutomataTaskEnvironment(
+    (task_environment,) = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
 
@@ -82,7 +82,7 @@ def test_basic_eval_task(
     eval_write_result = eval_write_results[0]
     assert eval_write_result.session_id == session_id
 
-    # Check that task is saved correctly to the registry / db
+    # Check that task is saved correctly to the task_registry / db
     lookup_task = task_registry.fetch_task_by_id(session_id)
     assert eval_result.session_id == lookup_task.session_id
     assert lookup_task.status == TaskStatus.SUCCESS

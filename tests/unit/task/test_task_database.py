@@ -3,10 +3,10 @@ import os
 import pytest
 
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.base import TaskStatus
-from automata.tasks.error import TaskStateError
-from automata.tasks.registry import AutomataTaskRegistry
+from automata.tasks.task_base import TaskStatus
 from automata.tasks.task_database import AutomataAgentTaskDatabase
+from automata.tasks.task_error import TaskStateError
+from automata.tasks.task_registry import AutomataTaskRegistry
 
 
 @pytest.fixture(autouse=True)
@@ -24,7 +24,7 @@ def db(tmpdir_factory):
 
 
 @pytest.fixture
-def registry(db):
+def task_registry(db):
     return AutomataTaskRegistry(db)
 
 
@@ -130,7 +130,7 @@ def test_get_all_tasks(db, task):
     assert tasks[0].instructions == task.instructions
 
 
-def test_update_nonexistent_task(registry, task):
+def test_update_nonexistent_task(task_registry, task):
     # Test that updating a nonexistent task raises an error.
     with pytest.raises(TaskStateError):
-        registry.update_task(task)
+        task_registry.update_task(task)

@@ -8,8 +8,8 @@ from automata.core.utils import get_root_fpath
 from automata.llm import LLMChatMessage
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.singletons.py_module_loader import py_module_loader
-from automata.tasks.base import Task, TaskStatus
-from automata.tasks.executor import (
+from automata.tasks.task_base import Task, TaskStatus
+from automata.tasks.task_executor import (
     AutomataTaskExecutor,
     IAutomataTaskExecution,
     ITaskExecution,
@@ -56,15 +56,19 @@ def patch_logging(mocker):
     return mocker.patch("logging.config.dictConfig", return_value=None)
 
 
-def test_agent_session_id_matches_task(automata_agent, task_w_agent_session):
-    assert automata_agent.session_id == task_w_agent_session.session_id
+def test_agent_session_id_matches_task(
+    automata_agent, task_w_agent_matched_session
+):
+    assert automata_agent.session_id == task_w_agent_matched_session.session_id
 
 
 def test_execute_automata_task_success(
-    patch_logging, module_loader, task, environment, registry
+    patch_logging, module_loader, tasks, task_environment, task_registry
 ):
-    registry.register(task)
-    environment.setup(task)
+    task = tasks[0]
+
+    task_registry.register(task)
+    task_environment.setup(task)
 
     execution = TestExecuteBehavior()
     task_executor = AutomataTaskExecutor(execution)
@@ -77,10 +81,12 @@ def test_execute_automata_task_success(
 
 
 def test_execute_automata_task_fail(
-    patch_logging, module_loader, task, environment, registry
+    patch_logging, module_loader, tasks, task_environment, task_registry
 ):
-    registry.register(task)
-    environment.setup(task)
+    task = tasks[0]
+
+    task_registry.register(task)
+    task_environment.setup(task)
 
     execution = MagicMock(spec=TestExecuteBehavior())
     task_executor = AutomataTaskExecutor(execution)
@@ -119,16 +125,17 @@ def test_execute_automata_task_with_database_saving(
     api_response,
     db,
     automata_agent,
-    task,
-    environment,
-    registry,
+    tasks,
+    task_environment,
+    task_registry,
 ):
     # Mock the API response
     mock_openai_chatcompletion_create.return_value = api_response
+    task = tasks[0]
 
     # Create a task and set record_conversation to True
-    registry.register(task)
-    environment.setup(task)
+    task_registry.register(task)
+    task_environment.setup(task)
 
     automata_agent.set_database_provider(db)
 

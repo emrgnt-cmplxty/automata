@@ -2,7 +2,7 @@ import os
 import random
 import shutil
 import uuid
-from typing import Any, Set
+from typing import Any, Dict, Generator, List, Set
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -11,24 +11,52 @@ import pytest
 from automata.agent import AgentToolkitNames, OpenAIAutomataAgent
 from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.embedding import EmbeddingSimilarityCalculator
+from automata.eval import (
+    AgentEvaluationHarness,
+    CodeWritingEval,
+    OpenAIFunctionEval,
+)
+from automata.eval.agent.agent_eval_composite import AgentEvalComposite
+from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.experimental.search import SymbolRankConfig, SymbolSearch
-from automata.memory_store import SymbolCodeEmbeddingHandler
+from automata.llm import FunctionCall
+from automata.memory_store import (
+    OpenAIAutomataConversationDatabase,
+    SymbolCodeEmbeddingHandler,
+)
 from automata.singletons.dependency_factory import dependency_factory
-from automata.singletons.github_client import GitHubClient, RepositoryClient
+from automata.singletons.github_client import GitHubClient
+from automata.symbol import Symbol
 from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol.parser import parse_symbol
+from automata.symbol.symbol_parser import parse_symbol
+from automata.symbol_embedding import (
+    ChromaSymbolEmbeddingVectorDatabase,
+    JSONSymbolEmbeddingVectorDatabase,
+    SymbolCodeEmbedding,
+    SymbolDocEmbedding,
+)
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.environment import AutomataTaskEnvironment
-from automata.tasks.registry import AutomataTaskRegistry
 from automata.tasks.task_database import AutomataAgentTaskDatabase
-from automata.tools.factory import AgentToolFactory
+from automata.tasks.task_environment import AutomataTaskEnvironment
+from automata.tasks.task_executor import (
+    AutomataTaskExecutor,
+    IAutomataTaskExecution,
+)
+from automata.tasks.task_registry import AutomataTaskRegistry
+from automata.tools.agent_tool_factory import AgentToolFactory
+from automata.tools.tool_base import Tool
+from automata.tools.tool_executor import ToolExecution, ToolExecutor
+
+# General Fixtures
 
 
 @pytest.fixture
-def temp_output_vector_dir():
+def temp_output_dir() -> Generator:
     """Creates a temporary output filename which is deleted after the test is run"""
     this_dir = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(this_dir, "test_output_vec")
+    if not os.path.exists(filename):
+        os.mkdir(filename)
     yield filename
     try:
         if os.path.exists(filename):
@@ -45,27 +73,21 @@ def temp_output_vector_dir():
 
 
 @pytest.fixture
-def temp_output_filename():
+def temp_output_filename(temp_output_dir: str) -> str:
     """Creates a temporary output filename which is deleted after the test is run"""
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    filename = os.path.join(this_dir, "test_output.json")
-    yield filename
-    try:
-        if os.path.exists(filename):
-            os.remove(filename)
-    except OSError:
-        pass
+    return os.path.join(temp_output_dir, "test_output.json")
 
-    # The TemporaryDirectory context manager should already clean up the directory,
-    # but just in case it doesn't (e.g. due to an error), we'll try removing it manually as well.
-    try:
-        shutil.rmtree(f"{filename}/")
-    except OSError:
-        pass
+
+# `Symbol` Fixtures
+
+
+EXAMPLE_SYMBOL_PREFIX = (
+    "scip-python python automata v0.0.0 `config.automata_agent_config`/"
+)
 
 
 @pytest.fixture
-def symbols():
+def symbols() -> List[Symbol]:
     """
     Mock several realistic symbols for testing
 
@@ -109,13 +131,8 @@ def symbols():
     ]
 
 
-EXAMPLE_SYMBOL_PREFIX = (
-    "scip-python python automata v0.0.0 `config.automata_agent_config`/"
-)
-
-
 @pytest.fixture
-def mock_simple_method_symbols():
+def mock_simple_method_symbols() -> List[Symbol]:
     """Returns a list of 100 mock symbols with a simple method"""
     return [
         parse_symbol(
@@ -125,21 +142,48 @@ def mock_simple_method_symbols():
     ]
 
 
-@pytest.fixture
-def mock_simple_class_symbols():
-    """Returns a list of 100 mock symbols with a simple class"""
-    return [
-        parse_symbol(
-            EXAMPLE_SYMBOL_PREFIX + str(random.random()) + "_uri_ex_method#"
-        )
-        for _ in range(100)
-    ]
+# `Embedding` Fixtures
+
+
+# Parameterized fixture for embedding type
+@pytest.fixture(params=[SymbolCodeEmbedding, SymbolDocEmbedding])
+def embedding_type(request):
+    return request.param
+
+
+@pytest.fixture(params=[0, 1])
+def embedded_symbol(symbols, request):
+    data = [("x", [1, 2, 3]), ("y", [1, 2, 3, 4])][request.param]
+    return SymbolCodeEmbedding(symbols[request.param], data[0], data[1])
 
 
 @pytest.fixture
 def mock_embedding():
     """Returns a random mock embedding vector"""
     return np.array([random.random() for _ in range(1024)])
+
+
+# Factory fixture for creating embeddings
+@pytest.fixture
+def embedding_maker(embedding_type):
+    def _make_embedding(symbol, document, vector):
+        if embedding_type == SymbolDocEmbedding:
+            # Add extra fields for SymbolDocEmbedding
+            return embedding_type(
+                symbol,
+                document,
+                vector,
+                source_code="some code",
+                summary="summary",
+                context="context",
+            )
+        else:
+            return embedding_type(symbol, document, vector)
+
+    return _make_embedding
+
+
+# Advanced `Symbol` structures
 
 
 @pytest.fixture
@@ -173,6 +217,83 @@ def symbol_search(mocker, symbol_graph_mock):
     )
 
 
+# Database Fixtures
+
+
+@pytest.fixture
+def json_vector_db(
+    tmpdir_factory,
+) -> Generator[JSONSymbolEmbeddingVectorDatabase, Any, Any]:
+    """Creates a JSONSymbolEmbeddingVectorDatabase object for testing"""
+    db_file = tmpdir_factory.mktemp("data").join("test_json.db")
+    yield JSONSymbolEmbeddingVectorDatabase(str(db_file))
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+CHROMA_COLLECTION_NAME = "a_test_chroma_collection"
+
+
+@pytest.fixture
+def chroma_vector_db(embedding_type) -> ChromaSymbolEmbeddingVectorDatabase:
+    """Creates a in-memory Chroma Symbol database for testing"""
+    return ChromaSymbolEmbeddingVectorDatabase(
+        CHROMA_COLLECTION_NAME, factory=embedding_type.from_args
+    )
+
+
+@pytest.fixture
+def chroma_vector_db_persistent(
+    embedding_type,
+    tmpdir_factory,
+) -> Generator[ChromaSymbolEmbeddingVectorDatabase, Any, Any]:
+    db_file = tmpdir_factory.mktemp("data").join("test_json.db")
+    db_dir = os.path.dirname(str(db_file))
+    """Creates a persistent Chroma Symbol database for testing"""
+    yield ChromaSymbolEmbeddingVectorDatabase(
+        CHROMA_COLLECTION_NAME,
+        factory=embedding_type.from_args,
+        persist_directory=db_dir,
+    )
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture
+def conversation_db(
+    tmpdir_factory,
+) -> Generator[OpenAIAutomataConversationDatabase, Any, Any]:
+    db_file = tmpdir_factory.mktemp("data").join("test_conversation.db")
+    db = OpenAIAutomataConversationDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture
+def task_db(tmpdir_factory) -> Generator[AutomataAgentTaskDatabase, Any, Any]:
+    db_file = tmpdir_factory.mktemp("data").join("test_task.db")
+    db = AutomataAgentTaskDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+@pytest.fixture
+def eval_db(tmpdir_factory) -> Generator[AgentEvalResultDatabase, Any, Any]:
+    db_file = tmpdir_factory.mktemp("data").join("test_eval.db")
+    db = AgentEvalResultDatabase(str(db_file))
+    yield db
+    db.close()
+    if os.path.exists(str(db_file)):
+        os.remove(str(db_file))
+
+
+# `Agent` Fixtures
+
+
 @pytest.fixture
 def automata_agent_config_builder():
     config_name = AgentConfigName.TEST
@@ -189,7 +310,7 @@ def automata_agent_config_builder():
 def automata_agent(mocker, automata_agent_config_builder):
     """Creates a mock AutomataAgent object for testing"""
 
-    llm_toolkits_list = ["context-oracle"]
+    llm_toolkits_list = ["advanced-context-oracle"]
     dependencies: Set[Any] = set()
     for tool in llm_toolkits_list:
         for dependency_name, _ in AgentToolFactory.TOOLKIT_TYPE_TO_ARGS[
@@ -201,7 +322,7 @@ def automata_agent(mocker, automata_agent_config_builder):
         dependency: dependency_factory.get(dependency)
         for dependency in dependencies
     }
-    tools = AgentToolFactory.build_tools(["context-oracle"], **kwargs)
+    tools = AgentToolFactory.build_tools(["advanced-context-oracle"], **kwargs)
 
     instructions = "Test instruction."
 
@@ -214,43 +335,13 @@ def automata_agent(mocker, automata_agent_config_builder):
     )
 
 
-class MockRepositoryClient(RepositoryClient):
-    def clone_repository(self, local_path: str):
-        pass
-
-    def create_branch(self, branch_name: str):
-        pass
-
-    def checkout_branch(self, repo_local_path: str, branch_name: str):
-        pass
-
-    def stage_all_changes(self, repo_local_path: str):
-        pass
-
-    def commit_and_push_changes(
-        self, repo_local_path: str, branch_name: str, commit_message: str
-    ):
-        pass
-
-    def create_pull_request(self, branch_name: str, title: str, body: str):
-        pass
-
-    def branch_exists(self, branch_name: str) -> bool:
-        return False
-
-    def fetch_issue(self, issue_number: int) -> Any:
-        pass
-
-    def merge_pull_request(
-        self, pull_request_number: int, commit_message: str
-    ) -> Any:
-        pass
+# `Task` Fixtures
 
 
 @pytest.fixture
-def task():
-    repo_manager = MockRepositoryClient()
-    return AutomataTask(
+def tasks():
+    repo_manager = MagicMock()
+    task_0 = AutomataTask(
         repo_manager,
         # session_id = automata_agent.session_id,
         config_to_load=AgentConfigName.TEST.to_path(),
@@ -258,21 +349,18 @@ def task():
         session_id=str(uuid.uuid4()),
     )
 
-
-@pytest.fixture
-def task2():
-    repo_manager = MockRepositoryClient()
-    return AutomataTask(
+    task_1 = AutomataTask(
         repo_manager,
         # session_id = automata_agent.session_id,
         config_to_load=AgentConfigName.TEST.to_path(),
         instructions="This is a test2.",
     )
+    return [task_0, task_1]
 
 
 @pytest.fixture
-def task_w_agent_session(automata_agent):
-    repo_manager = MockRepositoryClient()
+def task_w_agent_matched_session(automata_agent):
+    repo_manager = MagicMock()
     return AutomataTask(
         repo_manager,
         session_id=automata_agent.session_id,
@@ -282,21 +370,155 @@ def task_w_agent_session(automata_agent):
 
 
 @pytest.fixture
-def environment():
+def task_environment():
     github_mock = MagicMock(spec=GitHubClient)
     return AutomataTaskEnvironment(github_mock)
 
 
-@pytest.fixture(autouse=True)
-def task_db(tmpdir_factory):
-    db_file = tmpdir_factory.mktemp("data").join("test.db")
-    db = AutomataAgentTaskDatabase(str(db_file))
-    yield db
-    db.close()
-    if os.path.exists(str(db_file)):
-        os.remove(str(db_file))
+@pytest.fixture
+def task_registry(task_db):
+    return AutomataTaskRegistry(task_db)
+
+
+# `Eval` Fixtures
 
 
 @pytest.fixture
-def registry(task, task_db):
-    return AutomataTaskRegistry(task_db)
+def function_evaluator():
+    return OpenAIFunctionEval()
+
+
+@pytest.fixture
+def code_evaluator():
+    return CodeWritingEval(target_variables=["x", "y", "z"])
+
+
+@pytest.fixture
+def composite_evaluator(function_evaluator, code_evaluator):
+    evaluators = [function_evaluator, code_evaluator]
+    return AgentEvalComposite(evaluators)
+
+
+@pytest.fixture
+def eval_harness(function_evaluator, code_evaluator):
+    database = MagicMock()
+    return AgentEvaluationHarness(
+        [function_evaluator, code_evaluator], database
+    )
+
+
+@pytest.fixture
+def setup(
+    mocker,
+    automata_agent,
+    tasks,
+    task_environment,
+    task_registry,
+    conversation_db,
+):
+    # Mock the API response
+    mock_openai_chatcompletion_create = mocker.patch(
+        "openai.ChatCompletion.create"
+    )
+
+    task_0, task_1 = tasks
+    # Register and setup task
+    task_registry.register(task_0)
+    task_environment.setup(task_0)
+
+    task_registry.register(task_1)
+    task_environment.setup(task_1)
+
+    # Use the agent's set_database_provider method
+    automata_agent.set_database_provider(conversation_db)
+
+    execution = IAutomataTaskExecution()
+    IAutomataTaskExecution._build_agent = MagicMock(
+        return_value=automata_agent
+    )
+    task_executor = AutomataTaskExecutor(execution)
+
+    return mock_openai_chatcompletion_create, automata_agent, task_executor
+
+
+@pytest.fixture
+def matched_setup(
+    mocker,
+    automata_agent,
+    task_w_agent_matched_session,
+    task_environment,
+    task_registry,
+    conversation_db,
+):
+    # Mock the API response
+    mock_openai_chatcompletion_create = mocker.patch(
+        "openai.ChatCompletion.create"
+    )
+
+    # Register and setup task
+    task_registry.register(task_w_agent_matched_session)
+    task_environment.setup(task_w_agent_matched_session)
+
+    # Use the agent's set_database_provider method
+    automata_agent.set_database_provider(conversation_db)
+
+    execution = IAutomataTaskExecution()
+    IAutomataTaskExecution._build_agent = MagicMock(
+        return_value=automata_agent
+    )
+    task_executor = AutomataTaskExecutor(execution)
+
+    return (
+        mock_openai_chatcompletion_create,
+        automata_agent,
+        task_executor,
+        task_registry,
+    )
+
+
+# `Tool` Fixtures
+
+
+class TestTool(Tool):
+    def run(self, tool_input: Dict[str, str]) -> str:
+        return "TestTool response"
+
+
+@pytest.fixture
+def test_tool(request) -> TestTool:
+    name = request.node.get_closest_marker("tool_name")
+    description = request.node.get_closest_marker("tool_description")
+    function = request.node.get_closest_marker("tool_function")
+
+    return TestTool(
+        name=name.args[0] if name else "TestTool",
+        description=description.args[0]
+        if description
+        else "A test tool for testing purposes",
+        function=function.args[0]
+        if function
+        else (lambda x: "TestTool response"),
+    )
+
+
+@pytest.mark.tool_name("TestTool")
+@pytest.mark.tool_description("A test tool for testing purposes")
+def test_tool_instantiation(test_tool):
+    assert test_tool.name == "TestTool"
+    assert test_tool.description == "A test tool for testing purposes"
+    assert test_tool.function is not None
+
+
+@pytest.fixture
+def function_call() -> FunctionCall:
+    return FunctionCall(name="TestTool", arguments={"test": "test"})
+
+
+@pytest.fixture
+def tool_execution(test_tool) -> ToolExecution:
+    return ToolExecution([test_tool])
+
+
+@pytest.fixture
+def tool_executor(tool_execution) -> ToolExecutor:
+    return ToolExecutor(tool_execution)

@@ -22,7 +22,7 @@ def initialize_py_module_loader(*args, **kwargs) -> None:
 
 
 def setup_files(scripts_path: str, dotenv_path: str) -> None:
-    """Setup the files necessary for the local environment."""
+    """Setup the files necessary for the local task_environment."""
 
     if not os.path.exists(os.path.join(scripts_path, "setup.sh")):
         try:

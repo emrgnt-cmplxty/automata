@@ -7,8 +7,8 @@ from automata.core.utils import (
     get_root_fpath,
     get_root_py_fpath,
 )
-from automata.tasks.base import Task
-from automata.tasks.error import TaskInstructionsError
+from automata.tasks.task_base import Task
+from automata.tasks.task_error import TaskInstructionsError
 
 logger = logging.getLogger(__name__)
 

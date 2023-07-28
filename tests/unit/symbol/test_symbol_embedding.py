@@ -35,7 +35,6 @@ def test_update_embeddings(
     mock_embedding,
     mock_provider,
     mock_simple_method_symbols,
-    mock_simple_class_symbols,
 ):
     monkeypatch.setattr(
         "automata.symbol.symbol_utils.convert_to_ast_object",
@@ -51,7 +50,7 @@ def test_update_embeddings(
     mock_db.contains.return_value = False
 
     # Create the Mock objects for the method parameters
-    mock_symbols = mock_simple_method_symbols + mock_simple_class_symbols
+    mock_symbols = mock_simple_method_symbols
 
     mock_provider.fetch_embedding_source_code.return_value = "X"
     mock_db.contains.return_value = False

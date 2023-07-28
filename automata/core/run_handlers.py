@@ -10,7 +10,7 @@ from automata.eval import (
     EvalResult,
     OpenAIFunctionEval,
 )
-from automata.eval.composite import CompositeAgentEval
+from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (
@@ -20,15 +20,15 @@ from automata.tasks import (
     IAutomataTaskExecution,
     ITaskExecution,
 )
-from automata.tasks.registry import AutomataTaskRegistry
+from automata.tasks.task_registry import AutomataTaskRegistry
 from automata.tools import Tool
-from automata.tools.factory import AgentToolFactory
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 
 def initialize_automata(
     root_fpath: str = get_root_fpath(), project_name: str = "automata"
 ):
-    """Initialize the automata environment."""
+    """Initialize the automata task_environment."""
 
     py_module_loader.reset()
     dependency_factory.reset()
@@ -41,7 +41,7 @@ def run_setup(
     root_fpath: str = get_root_fpath(),
     project_name: str = "automata",
 ) -> Tuple[List[Tool], AgentConfigName]:
-    """Setup the automata environment."""
+    """Setup the automata task_environment."""
 
     initialize_automata(root_fpath, project_name)
     agent_config_name = AgentConfigName(agent_config)
@@ -144,7 +144,7 @@ def run_with_eval(
     task_environment: AutomataTaskEnvironment,
     task_execution: ITaskExecution = IAutomataTaskExecution(),
     expected_actions: List[Action] = [],
-    evaluator: Eval = CompositeAgentEval(
+    evaluator: Eval = AgentEvalComposite(
         [OpenAIFunctionEval(), CodeWritingEval()]
     ),
 ) -> EvalResult:

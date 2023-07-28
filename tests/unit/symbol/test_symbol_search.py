@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 from astunparse import unparse as py_ast_unparse
 
-from automata.tools.base import Tool
-from automata.tools.builders.symbol_search import SymbolSearchToolkitBuilder
+from automata.experimental.tools import SymbolSearchToolkitBuilder
+from automata.tools.tool_base import Tool
 
 
 @pytest.fixture

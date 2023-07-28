@@ -1,22 +1,29 @@
 [
     {
-        "instructions": "Return a markdown python snippet which when executed creates an instance of a PyReader and stores it into a local variable `x`.",
+    "template": {
+        "instructions": "Return a markdown python snippet which when executed creates a valid instance of a `{object}` and stores it into a local variable `x`.",
         "expected_actions": [
             {
                 "type": "CodeWritingAction",
-                "object_type": "OpenAIAutomataAgentConfig",
+                "object_type": "{object}",
                 "object_value_repr": "None"
             }
         ]
     },
-    {
-        "instructions": "Call Termination with result True",
-        "expected_actions": [
-            {
-                "type": "OpenAIFunctionCallAction",
-                "name": "call_termination",
-                "arguments": {"result": "True"}
-            }
-        ]
+    "formatters": [
+        {"object": "Symbol"},
+        {"object": "OpenAIAutomataAgent"},
+        {"object": "GitHubClient"},
+        {"object": "ChromaVectorDatabase"},
+        {"object": "DependencyFactory"},
+        {"object": "JSONVectorDatabase"},
+        {"object": "SymbolGraph"},
+        {"object": "AutomataTaskEnvironment"},
+        {"object": "PyCodeWriter"},
+        {"object": "PyModuleLoader"},
+        {"object": "SymbolSearch"},
+        {"object": "OpenAIChatMessage"},
+        {"object": "SymbolDescriptor"}
+    ]
     }
 ]

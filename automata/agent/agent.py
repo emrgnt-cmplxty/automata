@@ -28,6 +28,7 @@ class Agent(ABC):
         self.database_provider: Optional[
             LLMConversationDatabaseProvider
         ] = None
+
         self._initialized = False
 
     @abstractmethod
@@ -88,7 +89,8 @@ class AgentToolkitNames(Enum):
     """
 
     SYMBOL_SEARCH = "symbol-search"
-    CONTEXT_ORACLE = "context-oracle"
+    ADVANCED_CONTEXT_ORACLE = "advanced-context-oracle"
+    DOCUMENT_ORACLE = "document-oracle"
     PY_READER = "py-reader"
     PY_WRITER = "py-writer"
 

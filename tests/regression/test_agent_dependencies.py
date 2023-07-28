@@ -9,7 +9,7 @@ from automata.singletons.dependency_factory import (
     dependency_factory,
 )
 from automata.symbol.graph import SymbolGraph
-from automata.symbol_embedding.base import (
+from automata.symbol_embedding.symbol_embedding_base import (
     SymbolCodeEmbedding,
     SymbolDocEmbedding,
 )
@@ -44,7 +44,7 @@ def test_build_automata_class_dependencies(classes_to_build):
 @pytest.mark.parametrize(
     "toolkits_to_build",
     [
-        ["context-oracle"],
+        ["advanced-context-oracle"],
     ],
 )
 def test_build_automata_tools(toolkits_to_build):

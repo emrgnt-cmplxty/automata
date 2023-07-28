@@ -1,11 +1,10 @@
-from unittest.mock import PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
 from automata.config import AgentConfigName
 from automata.tasks.automata_task import AutomataTask
-from automata.tasks.base import TaskStatus
-from tests.conftest import MockRepositoryClient
+from automata.tasks.task_base import TaskStatus
 
 
 @pytest.fixture(autouse=True)
@@ -13,39 +12,47 @@ def mock_logging_config_dict(mocker):
     return mocker.patch("logging.config.dictConfig", return_value=None)
 
 
-def test_task_inital_state(mock_logging_config_dict, task):
+def test_task_inital_state(mock_logging_config_dict, tasks):
+    task = tasks[0]
     assert task.status == TaskStatus.CREATED
 
 
-def test_register_task(mock_logging_config_dict, task, registry):
-    registry.register(task)
+def test_register_task(mock_logging_config_dict, tasks, task_registry):
+    task = tasks[0]
+    task_registry.register(task)
     assert task.status == TaskStatus.REGISTERED
 
 
 def test_setup_environment(
-    mock_logging_config_dict, task, environment, registry
+    mock_logging_config_dict, tasks, task_environment, task_registry
 ):
-    registry.register(task)
-    environment.setup(task)
+    task = tasks[0]
+    task_registry.register(task)
+    task_environment.setup(task)
     assert task.observer is not None
     assert task.status == TaskStatus.PENDING
 
 
-def test_setup_task_no_setup(mock_logging_config_dict, task, registry):
+def test_setup_task_no_setup(mock_logging_config_dict, tasks, task_registry):
+    task = tasks[0]
     with pytest.raises(Exception):
-        registry.setup(task)
+        task_registry.setup(task)
 
 
 @patch.object(AutomataTask, "status", new_callable=PropertyMock)
-def test_status_setter(mock_status, task):
+def test_status_setter(mock_status, tasks):
+    task = tasks[0]
     task.status = TaskStatus.RETRYING
     mock_status.assert_called_once_with(TaskStatus.RETRYING)
 
 
 @patch.object(AutomataTask, "notify_observer")
-def test_callback(mock_notify_observer, task, environment, registry):
-    registry.register(task)
-    environment.setup(task)
+def test_callback(
+    mock_notify_observer, tasks, task_environment, task_registry
+):
+    task = tasks[0]
+    task_registry.register(task)
+    task_environment.setup(task)
     # Notify observer should be called twice, once at register and once at setup
     assert mock_notify_observer.call_count == 2
 
@@ -78,7 +85,7 @@ def test_session_id_determinism(automata_agent_config_builder):
     assert isinstance(task_4.session_id, str)
 
     task_5 = AutomataTask(
-        MockRepositoryClient(),
+        MagicMock(),
         **common_args,
         test2="arg2",
         generate_deterministic_id=False,

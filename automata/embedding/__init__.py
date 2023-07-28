@@ -1,4 +1,4 @@
-from .base import (
+from .emedding_base import (
     Embedding,
     EmbeddingBuilder,
     EmbeddingHandler,

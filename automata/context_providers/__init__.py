@@ -1,4 +1,4 @@
-from automata.context_providers.symbol_synchronization import (
+from automata.context_providers.symbol_synchronization_context import (
     SymbolProviderRegistry,
     SymbolProviderSynchronizationContext,
 )
