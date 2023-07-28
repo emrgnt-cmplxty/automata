@@ -22,13 +22,12 @@ class ToolExecution(IToolExecution):
         self.tools = {tool.name: tool for tool in tools}
 
     def execute(self, function_call: "FunctionCall") -> str:
-        tool = self.tools.get(function_call.name)
-
-        if not tool:
+        if tool := self.tools.get(function_call.name):
+            return tool.run(function_call.arguments)
+        else:
             raise Exception(
                 f"No tool found for function call: {function_call.name}"
             )
-        return tool.run(function_call.arguments)
 
 
 class ToolExecutor:
