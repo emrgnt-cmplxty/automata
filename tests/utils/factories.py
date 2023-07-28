@@ -1,6 +1,6 @@
 import io
 import os
-import pickle  # eslint-disable-line no-eval
+import pickle
 
 import pytest
 

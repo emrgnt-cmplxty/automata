@@ -5,11 +5,7 @@ from automata.context_providers.symbol_synchronization_context import (
 )
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import Symbol, SymbolGraph
-
-# noqa
-from tests.utils.factories import (  # eslint-disable-line no-eval
-    static_symbol_graph_static_test,
-)
+from tests.utils.factories import static_symbol_graph_static_test  # noqa
 
 
 @pytest.fixture
