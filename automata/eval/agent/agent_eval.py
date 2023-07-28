@@ -112,18 +112,18 @@ class AgentEval(Eval):
 
     def generate_eval_result(
         self,
-        task: AutomataTask,
-        expected_actions: List[Action],
+        exec_input: AutomataTask,
+        expected_output: List[Action],
         executor: AutomataTaskExecutor,
         *args,
         **kwargs,
     ) -> EvalResult:
         """Generates an eval result for a given set of instructions and expected actions."""
 
-        agent = executor.execute(task)
+        agent = executor.execute(exec_input)
 
         return self.process_result(
-            expected_actions,
+            expected_output,
             agent.conversation.messages,
             session_id=agent.session_id,
         )

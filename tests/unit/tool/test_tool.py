@@ -9,8 +9,8 @@ def test_tool_run(test_tool):
     assert response == "TestTool response"
 
 
-def test_tool_execution(tool_execution, function_call):
-    response = tool_execution.execute(function_call)
+def test_tool_execution(tool_executor, function_call):
+    response = tool_executor.execute(function_call)
     assert response == "TestTool response"
 
 
