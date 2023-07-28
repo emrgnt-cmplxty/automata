@@ -205,6 +205,8 @@ class SymbolSearchEval(ToolEval):
     def to_tool_result(
         self, expected_action: Action, observed_action: Optional[Action]
     ) -> ToolEvalResult:
+        print("expected_action = ", expected_action)
+        print("observed_action = ", observed_action)
         if not isinstance(expected_action, SymbolSearchAction):
             raise ValueError("Expected action must be a SymbolSearchAction.")
         if observed_action is not None and not isinstance(

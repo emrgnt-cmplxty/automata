@@ -1,12 +1,12 @@
-from typing import List
+from typing import Any, List
 
-from automata.eval.tool.tool_eval import ToolEvalResult
+# from automata.eval.tool.tool_eval import ToolEvalResult
 
 
 class ToolEvaluationMetrics:
     """A class to evaluate detailed metrics from a sequence of ToolEvalResults."""
 
-    def __init__(self, results: List[ToolEvalResult]):
+    def __init__(self, results: List[Any]):
         self.results = results
 
     @property

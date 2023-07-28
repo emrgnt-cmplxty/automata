@@ -537,24 +537,36 @@ def tool_executor(tool_execution) -> ToolExecutor:
 
 
 @pytest.fixture
-def setup_tool(mocker, symbol_search):
+def setup_tool(mocker, symbols):
     # Mock the API response
-    mock_openai_chatcompletion_create = mocker.patch(
-        "openai.ChatCompletion.create"
+
+    # Create a mock for the SymbolSearch instance
+    symbol_search_mock = MagicMock()
+
+    symbol_0 = symbols[0]
+    symbol_0.uri = "result1"  # hack
+
+    symbol_1 = symbols[1]
+    symbol_1.uri = "result2"  # hack
+
+    symbol_2 = symbols[0]
+    symbol_2.uri = "result2"  # hack
+
+    # Mock the get_symbol_rank_results method
+    symbol_search_mock.get_symbol_rank_results = MagicMock(
+        return_value=[
+            (symbol_0, "result1"),
+            (symbol_1, "result2"),
+            (symbol_2, "result3"),
+        ]
     )
 
     # Create tools using the factory
     symbol_search_tools = AgentToolFactory.create_tools_from_builder(
-        AgentToolkitNames.SYMBOL_SEARCH, symbol_search=symbol_search
+        AgentToolkitNames.SYMBOL_SEARCH, symbol_search=symbol_search_mock
     )
-    # other_tools = AgentToolFactory.create_tools_from_builder(
-    #     AgentToolkitNames.PY_READER
-    # )
 
     # Create the tool execution instance with the tools
     tool_execution = ToolExecution(symbol_search_tools)
 
-    # Create the tool executor
-    tool_executor = ToolExecutor(execution=tool_execution)
-
-    return mock_openai_chatcompletion_create, tool_executor
+    return ToolExecutor(execution=tool_execution)

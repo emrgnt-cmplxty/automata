@@ -3,12 +3,20 @@ import logging
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, List
 
+from automata.eval import (
+    Action,
+    Payload,
+    ToolEval,
+    ToolEvalResult,
+    ToolEvaluationMetrics,
+)
 from automata.llm import FunctionCall
 from automata.tools import ToolExecution
 
-if TYPE_CHECKING:
-    from automata.eval import Payload
-    from automata.eval.tool.tool_eval import Action, ToolEval, ToolEvalResult
+# from automata.eval.tool.tool_eval_metrics import ToolEvaluationMetrics
+
+# if TYPE_CHECKING:
+#     from automata.eval.tool.tool_eval import Action, ToolEval
 
 
 class EvalExecutionError(Exception):
@@ -72,7 +80,7 @@ class ToolEvalSetLoader:
         else:
             return obj
 
-    def load_json(self) -> List["Payload"]:
+    def load_json(self) -> List[Payload]:
         """Loads the JSON file."""
         try:
             logging.info(f"Loading json from {self.filepath}...")
@@ -84,22 +92,22 @@ class ToolEvalSetLoader:
             raise EvalLoadingError from e
 
 
+# TODO - Implement tool evaluation result database
+
+
 class ToolEvaluationHarness:
     """A class to evaluate a list of function calls against a list of expected actions."""
 
-    def __init__(
-        self, evals: List["ToolEval"]  # , database: "ToolEvalResultDatabase"
-    ):
+    def __init__(self, evals: List[ToolEval]):
         self.evals = evals
         self.run_id = str(uuid.uuid4())
-        # self.database = database
 
     def evaluate(
         self,
         function_calls: List[FunctionCall],
-        expected_actions: List["Action"],
+        expected_actions: List[Action],
         executor: ToolExecution,
-    ) -> None:  # ToolEvaluationMetrics:
+    ) -> ToolEvaluationMetrics:
         """Returns the evaluation metrics for the given function calls and expected actions."""
 
         logging.info(
@@ -110,26 +118,24 @@ class ToolEvaluationHarness:
         for function_call, expected_action in zip(
             function_calls, expected_actions
         ):
-            try:
-                observed_result = executor.execute(function_call)
-                for eval in self.evals:
-                    result = eval.generate_eval_result(
-                        function_call,
-                        expected_action,
-                        executor,
-                        run_id=self.run_id,
+            # try:
+            observed_result = executor.execute(function_call)
+            for eval in self.evals:
+                result = eval.generate_eval_result(
+                    function_call,
+                    expected_action,
+                    executor,
+                    run_id=self.run_id,
+                )
+                if not isinstance(result, ToolEvalResult):
+                    raise ValueError(
+                        "Evaluators must return a ToolEvalResult."
                     )
-                    if not isinstance(result, ToolEvalResult):
-                        raise ValueError(
-                            "Evaluators must return a ToolEvalResult."
-                        )
-                    # self.database.write_result(result)
-                    aggregate_results.append(result)
+                # self.database.write_result(result)
+                aggregate_results.append(result)
 
-            except Exception as e:
-                logging.error(f"Error during function call execution: {e}")
-                raise EvalExecutionError from e
+        # except Exception as e:
+        # logging.error(f"Error during function call execution: {e}")
+        # raise EvalExecutionError from e
 
-        logging.info("Evaluation complete, calculating metrics...")
-
-        # return ToolEvaluationMetrics(aggregate_results)
+        return ToolEvaluationMetrics(aggregate_results)
