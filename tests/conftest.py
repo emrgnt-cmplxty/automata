@@ -15,6 +15,8 @@ from automata.eval import (
     AgentEvaluationHarness,
     CodeWritingEval,
     OpenAIFunctionEval,
+    SymbolSearchEval,
+    ToolEvaluationHarness,
 )
 from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
@@ -394,17 +396,27 @@ def code_evaluator():
 
 
 @pytest.fixture
+def search_evaluator():
+    return SymbolSearchEval()
+
+
+@pytest.fixture
 def composite_evaluator(function_evaluator, code_evaluator):
     evaluators = [function_evaluator, code_evaluator]
     return AgentEvalComposite(evaluators)
 
 
 @pytest.fixture
-def eval_harness(function_evaluator, code_evaluator):
+def agent_eval_harness(function_evaluator, code_evaluator):
     database = MagicMock()
     return AgentEvaluationHarness(
         [function_evaluator, code_evaluator], database
     )
+
+
+@pytest.fixture
+def tool_eval_harness(search_evaluator):
+    return ToolEvaluationHarness([search_evaluator])
 
 
 @pytest.fixture
@@ -522,3 +534,27 @@ def tool_execution(test_tool) -> ToolExecution:
 @pytest.fixture
 def tool_executor(tool_execution) -> ToolExecutor:
     return ToolExecutor(tool_execution)
+
+
+@pytest.fixture
+def setup_tool(mocker, symbol_search):
+    # Mock the API response
+    mock_openai_chatcompletion_create = mocker.patch(
+        "openai.ChatCompletion.create"
+    )
+
+    # Create tools using the factory
+    symbol_search_tools = AgentToolFactory.create_tools_from_builder(
+        AgentToolkitNames.SYMBOL_SEARCH, symbol_search=symbol_search
+    )
+    # other_tools = AgentToolFactory.create_tools_from_builder(
+    #     AgentToolkitNames.PY_READER
+    # )
+
+    # Create the tool execution instance with the tools
+    tool_execution = ToolExecution(symbol_search_tools)
+
+    # Create the tool executor
+    tool_executor = ToolExecutor(execution=tool_execution)
+
+    return mock_openai_chatcompletion_create, tool_executor

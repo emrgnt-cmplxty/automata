@@ -170,7 +170,7 @@ def run_agent(ctx, *args, **kwargs) -> None:
 @eval_options
 @cli.command()
 @click.pass_context
-def run_eval(ctx, *args, **kwargs) -> None:
+def run_agent_eval(ctx, *args, **kwargs) -> None:
     """
     Run the evaluation.
 
@@ -179,10 +179,10 @@ def run_eval(ctx, *args, **kwargs) -> None:
 
 
     """
-    from automata.cli.scripts.run_eval import main
+    from automata.cli.scripts.run_agent_eval import main
 
     if kwargs.get("instructions"):
-        raise ValueError("Instructions should not be passed to run_eval")
+        raise ValueError("Instructions should not be passed to run_agent_eval")
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running Evaluation")
