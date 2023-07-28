@@ -12,6 +12,8 @@ from automata.eval.eval_base import (
 from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
 from automata.llm import FunctionCall
 
+TOP_K_MATCHES = 5
+
 
 @register_action
 class SymbolSearchAction(Action):
@@ -71,7 +73,6 @@ class SymbolSearchEvalResult(ToolEvalResult):
         self,
         expected_action: SymbolSearchAction,
         observed_action: Optional[SymbolSearchAction],
-        k: int = 5,
         *args,
         **kwargs,
     ):
@@ -93,15 +94,22 @@ class SymbolSearchEvalResult(ToolEvalResult):
         )
         if self.observed_action:
             self.top_k_matches = (
-                observed_action.search_results[:k] if observed_action else []
+                observed_action.search_results[:TOP_K_MATCHES]
+                if observed_action
+                else []
             )
-            if len(self.top_k_matches) < k:
-                self.top_k_matches += ["None"] * (k - len(self.top_k_matches))
+            if len(self.top_k_matches) < TOP_K_MATCHES:
+                self.top_k_matches += ["None"] * (
+                    TOP_K_MATCHES - len(self.top_k_matches)
+                )
         else:
-            self.top_k_matches = ["None"] * k
+            self.top_k_matches = ["None"] * TOP_K_MATCHES
 
-        self.expected_match = expected_action.search_results[0]
-        self.k = k
+        self.expected_match = (
+            expected_action.search_results[0]
+            if expected_action.search_results
+            else "None"
+        )
 
     @property
     def is_full_match(self) -> bool:
@@ -120,7 +128,7 @@ class SymbolSearchEvalResult(ToolEvalResult):
     def get_details(self) -> Dict[str, Union[Optional[Action], str]]:
         """Gets the details of the result."""
         return {
-            "expected_match": self.expected_match,
+            "expected_match": self.expected_match or "None",
             "observed_action": self.observed_action,
         }
 
@@ -189,11 +197,6 @@ class SymbolSearchEval(ToolEval):
         function_call, result = input_action_tuple
         split_results: List[str] = []
 
-        print("function_call = ", function_call)
-        print(
-            "function_call.name==symbol-rank-search",
-            function_call.name == "symbol-rank-search",
-        )
         if function_call.name == "symbol-rank-search":
             split_results = result.split("\n")
         else:
@@ -205,8 +208,6 @@ class SymbolSearchEval(ToolEval):
     def to_tool_result(
         self, expected_action: Action, observed_action: Optional[Action]
     ) -> ToolEvalResult:
-        print("expected_action = ", expected_action)
-        print("observed_action = ", observed_action)
         if not isinstance(expected_action, SymbolSearchAction):
             raise ValueError("Expected action must be a SymbolSearchAction.")
         if observed_action is not None and not isinstance(

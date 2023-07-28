@@ -28,7 +28,6 @@ class ToolExecution(IToolExecution):
             raise Exception(
                 f"No tool found for function call: {function_call.name}"
             )
-
         return tool.run(function_call.arguments)
 
 

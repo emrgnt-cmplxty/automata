@@ -22,6 +22,9 @@ EXPECTED_TOOL_ACTIONS = [
     SymbolSearchAction(
         query="test_query_2", search_results=["result1", "result2"]
     ),
+    SymbolSearchAction(query="test_query_3", search_results=["result3"]),
+    SymbolSearchAction(query="test_query_4", search_results=[]),
+    SymbolSearchAction(query="test_query_5", search_results=["result5"]),
 ]
 FUNCTION_CALLS = [
     FunctionCall(
@@ -29,6 +32,15 @@ FUNCTION_CALLS = [
     ),
     FunctionCall(
         name="symbol-rank-search", arguments={"query": "test_query_2"}
+    ),
+    FunctionCall(
+        name="symbol-rank-search", arguments={"query": "test_query_3"}
+    ),
+    FunctionCall(
+        name="symbol-rank-search", arguments={"query": "test_query_4"}
+    ),
+    FunctionCall(
+        name="symbol-rank-search", arguments={"query": "test_query_5"}
     ),
 ]
 

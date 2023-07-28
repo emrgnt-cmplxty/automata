@@ -1,16 +1,13 @@
 import json
 import logging
 import uuid
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import Any, Dict, List
 
-from automata.eval import Action, Payload, ToolEval, ToolEvalResult
+from automata.eval.eval_base import Action, Payload
+from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
+from automata.eval.tool.tool_eval_metrics import ToolEvaluationMetrics
 from automata.llm import FunctionCall
 from automata.tools import ToolExecution
-
-# from automata.eval.tool.tool_eval_metrics import ToolEvaluationMetrics
-
-if TYPE_CHECKING:
-    from automata.eval import ToolEvaluationMetrics
 
 
 class EvalExecutionError(Exception):
@@ -41,7 +38,8 @@ class ToolEvalSetLoader:
             formatters = item["formatters"]
 
             for formatter in formatters:
-                payload = self.format_values(template, formatter)
+                # TODO - Avoid using type ignore below.
+                payload = self.format_values(template, formatter)  # type: ignore
 
                 func_call = payload.get("function_call")
                 expected_action = payload.get("expected_action")
@@ -101,9 +99,7 @@ class ToolEvaluationHarness:
         function_calls: List[FunctionCall],
         expected_actions: List[Action],
         executor: ToolExecution,
-    ) -> "ToolEvaluationMetrics":
-        from automata.eval import ToolEvaluationMetrics
-
+    ) -> ToolEvaluationMetrics:
         """Returns the evaluation metrics for the given function calls and expected actions."""
 
         logging.info(
@@ -115,7 +111,6 @@ class ToolEvaluationHarness:
             function_calls, expected_actions
         ):
             # try:
-            observed_result = executor.execute(function_call)
             for eval in self.evals:
                 result = eval.generate_eval_result(
                     function_call,
