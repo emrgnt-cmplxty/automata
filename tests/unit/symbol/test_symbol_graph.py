@@ -19,7 +19,6 @@ def sync_context(symbol_graph_static_test):  # noqa
 
 
 def test_get_all_symbols(symbol_graph_static_test, sync_context):  # noqa
-    print(os.environ.get("DATA_ROOT_PATH"))
     graph_symbols = symbol_graph_static_test.get_sorted_supported_symbols()
     assert isinstance(graph_symbols, list)
     assert all(isinstance(s, Symbol) for s in graph_symbols)

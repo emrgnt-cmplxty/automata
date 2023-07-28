@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
+from automata.embedding.data_root_settings import data_root_path
 from automata.symbol.base import ISymbolProvider, Symbol, SymbolReference
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.navigator import SymbolGraphNavigator
@@ -15,9 +16,6 @@ from automata.symbol.scip_pb2 import Index  # type: ignore
 from automata.symbol.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
-
-default_data_root_path = "automata-embedding-data"
-data_root_path = os.environ.get("DATA_ROOT_PATH", default_data_root_path)
 
 
 class SymbolGraph(ISymbolProvider):

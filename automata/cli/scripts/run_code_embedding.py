@@ -5,6 +5,7 @@ import pickle
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_py_module_loader
+from automata.embedding.data_root_settings import data_root_path
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import (
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 def initialize_resources(project_name, **kwargs):
     if os.getenv("GRAPH_TYPE") == "static":
         try:
-            with open("automata-embedding-data/symbolgraph.pkl", "rb") as f:
+            with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
                 graph = pickle.load(f)
             symbol_graph = SymbolGraph.from_graph(graph)
         except FileNotFoundError:

@@ -5,7 +5,6 @@ from typing import Dict, List
 from dotenv import load_dotenv
 
 from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
-from automata.embedding.data_root_path_types import DataRootPathType
 from automata.symbol.graph.symbol_graph_types import SymbolGraphType
 
 logging.setLoggerClass(CustomLogger)
@@ -127,7 +126,7 @@ def update_key_value(dotenv_path: str, key: str):
             replace_key(
                 dotenv_path,
                 key,
-                DataRootPathType.AUTOMATA_EMBEDDING_DATA.value,
+                "automata-embedding-data",
             )
         else:
             new_value = input(f"Enter custom value for {key}: ")

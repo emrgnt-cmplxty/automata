@@ -22,6 +22,7 @@ from automata.context_providers import (
 from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
 from automata.embedding import EmbeddingSimilarityCalculator
+from automata.embedding.data_root_settings import data_root_path
 from automata.experimental.search import (
     SymbolRank,
     SymbolRankConfig,
@@ -175,9 +176,7 @@ class DependencyFactory(metaclass=Singleton):
         """
         if os.getenv("GRAPH_TYPE") == "static":
             try:
-                with open(
-                    "automata-embedding-data/symbolgraph.pkl", "rb"
-                ) as f:
+                with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
                     graph = pickle.load(f)
                 return SymbolGraph.from_graph(graph)
             except FileNotFoundError:
