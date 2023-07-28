@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 import responses
 
@@ -13,7 +15,9 @@ GITHUB_REQUEST_JSON = {
 
 
 @responses.activate
-def test_create_issue():
+@patch("os.getenv")
+def test_create_issue(mock_getenv):
+    mock_getenv.return_value = "user/repo"
     responses.add(
         responses.GET,
         GITHUB_REQUEST_BASE,
