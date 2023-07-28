@@ -22,7 +22,6 @@ from automata.context_providers import (
 from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
 from automata.embedding import EmbeddingSimilarityCalculator
-from automata.embedding.data_root_settings import data_root_path
 from automata.experimental.search import (
     SymbolRank,
     SymbolRankConfig,
@@ -34,6 +33,7 @@ from automata.memory_store import (
     SymbolDocEmbeddingHandler,
 )
 from automata.symbol import ISymbolProvider, SymbolGraph
+from automata.symbol.graph.data_root_settings import data_root_path
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,

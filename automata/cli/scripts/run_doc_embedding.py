@@ -9,7 +9,6 @@ from automata.cli.cli_utils import initialize_py_module_loader
 from automata.context_providers.symbol_synchronization_context import (
     SymbolProviderSynchronizationContext,
 )
-from automata.embedding.data_root_settings import data_root_path
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import (
     SymbolCodeEmbeddingHandler,
@@ -20,6 +19,7 @@ from automata.singletons.dependency_factory import (
     dependency_factory,
 )
 from automata.symbol import Symbol
+from automata.symbol.graph.data_root_settings import data_root_path
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding import (

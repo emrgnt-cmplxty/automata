@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
-from automata.embedding.data_root_settings import data_root_path
+from automata.symbol.graph.data_root_settings import data_root_path
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
