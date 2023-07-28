@@ -3,8 +3,18 @@ from unittest.mock import MagicMock, patch
 
 import click.testing
 import pytest
+from click.testing import CliRunner
 
 import automata.cli.commands
+
+DOTENV_PATH = ".env"
+SCRIPTS_PATH = "scripts/"
+DEFAULT_KEYS = {
+    "GITHUB_API_KEY": "your_github_api_key",
+    "OPENAI_API_KEY": "your_openai_api_key",
+    "GRAPH_TYPE": "dynamic",
+    "DATA_ROOT_PATH": "automata-embedding-data",
+}
 
 
 @pytest.fixture()
@@ -135,52 +145,23 @@ def test_cli_run_agent():
         assert mock_main.called
 
 
-@pytest.mark.skip(reason="Succeeds locally, fails in actions")
-def test_configure_setup_files_called(runner, mock_logger):
-    with patch("automata.cli.cli_utils.setup_files") as mock_setup_files:
-        runner.invoke(automata.cli.commands.cli, ["configure"])
-        mock_setup_files.assert_called_once_with(
-            SCRIPTS_PATH="scripts/", DOTENV_PATH=".env"
-        )
-
-
-@pytest.mark.skip(reason="Succeeds locally, fails in actions")
-def test_configure_load_env_vars_called(runner, mock_logger):
-    with patch("automata.cli.commands.load_env_vars") as mock_load_env_vars:
-        runner.invoke(automata.cli.commands.cli, ["configure"])
-        mock_load_env_vars.assert_called_once_with(
-            DOTENV_PATH=".env",
-            DEFAULT_KEYS={
-                "GITHUB_API_KEY": "your_github_api_key",
-                "OPENAI_API_KEY": "your_openai_api_key",
-            },
-        )
-
-
-@pytest.mark.skip(reason="Succeeds locally, fails in actions")
-def test_configure_ask_choice_called(runner, mock_ask_choice, mock_logger):
-    mock_ask_choice.return_value = "GITHUB_API_KEY"
+@patch("automata.cli.commands.setup_files")
+def test_configure_setup_files_called(setup_files_mock):
+    runner = CliRunner()
     runner.invoke(automata.cli.commands.cli, ["configure"])
-    assert mock_ask_choice.call_count == 2
+
+    setup_files_mock.assert_called_once_with(
+        scripts_path=SCRIPTS_PATH, dotenv_path=DOTENV_PATH
+    )
 
 
-@pytest.mark.skip(reason="Succeeds locally, fails in actions")
-@pytest.mark.parametrize(
-    "operation_choice, expected_function",
-    [
-        ("Show", "show_key_value"),
-        ("Update", "update_key_value"),
-        ("Delete", "delete_key_value"),
-    ],
-)
-@pytest.mark.skip(reason="Succeeds locally, fails in actions")
-def test_configure_operation_choice(
-    runner, mock_ask_choice, operation_choice, expected_function, mock_logger
-):
-    mock_ask_choice.side_effect = ["GITHUB_API_KEY", operation_choice]
-    with patch(f"automata.cli.commands.{expected_function}") as mock_func:
-        runner.invoke(automata.cli.commands.cli, ["configure"])
-        mock_func.assert_called_once_with(".env", "GITHUB_API_KEY")
+@patch("automata.cli.commands.load_env_vars")
+def test_configure_load_env_vars_called(load_env_vars_mock):
+    runner = CliRunner()
+    runner.invoke(automata.cli.commands.cli, ["configure"])
+    load_env_vars_mock.assert_called_with(
+        dotenv_path=DOTENV_PATH, default_keys=DEFAULT_KEYS
+    )
 
 
 def test_reconfigure_logging_quiet_libraries():

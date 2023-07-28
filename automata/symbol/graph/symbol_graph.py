@@ -1,4 +1,5 @@
 import logging
+import pickle
 from copy import deepcopy
 from functools import lru_cache
 from typing import Dict, List, Optional, Set
@@ -6,6 +7,7 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
+from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
@@ -32,6 +34,7 @@ class SymbolGraph(ISymbolProvider):
         build_references: bool = True,
         build_relationships: bool = True,
         build_caller_relationships: bool = False,
+        pickle_graph: bool = True,
     ) -> None:
         super().__init__()
         index = self._load_index_protobuf(index_path)
@@ -43,6 +46,10 @@ class SymbolGraph(ISymbolProvider):
         )
         self._graph = builder.build_graph()
         self.navigator = SymbolGraphNavigator(self._graph)
+
+        if pickle_graph:
+            with open(f"{data_root_path}/symbol_graph.pkl", "wb") as f:
+                pickle.dump(self._graph, f)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         return self.navigator.get_symbol_dependencies(symbol)
@@ -146,3 +153,13 @@ class SymbolGraph(ISymbolProvider):
         with open(path, "rb") as f:
             index.ParseFromString(f.read())
         return index
+
+    @classmethod
+    def from_graph(cls, graph: nx.MultiDiGraph) -> "SymbolGraph":
+        instance = cls.__new__(cls)
+
+        instance._graph = graph
+
+        instance.navigator = SymbolGraphNavigator(instance._graph)
+
+        return instance

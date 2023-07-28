@@ -9,6 +9,7 @@ from automata.cli.env_operations import (
     delete_key_value,
     load_env_vars,
     show_key_value,
+    update_graph_type,
     update_key_value,
 )
 from automata.cli.options import agent_options, common_options, eval_options
@@ -47,8 +48,15 @@ def cli(ctx) -> None:
 @cli.command()
 @click.pass_context
 def configure(ctx, *args, **kwargs) -> None:
-    """Configures the Automata"""
-    # TODO - Can we add a few more lines of comments here?
+    """
+    Configures environment variables for Automata
+
+    This command uses click to create an interactive CLI command for configuring
+    envirnoment variables. Upon running the automata configure command, the .env
+    is created if it doesn't already exist and the user is prompted to enter the
+    values for their environment variables. This ensures that the user does not
+    have to manually edit the .env file.
+    """
 
     logger.info("Configuring Automata:")
 
@@ -59,6 +67,8 @@ def configure(ctx, *args, **kwargs) -> None:
     DEFAULT_KEYS = {
         "GITHUB_API_KEY": "your_github_api_key",
         "OPENAI_API_KEY": "your_openai_api_key",
+        "GRAPH_TYPE": "dynamic",
+        "DATA_ROOT_PATH": "automata-embedding-data",
     }
 
     setup_files(scripts_path=SCRIPTS_PATH, dotenv_path=DOTENV_PATH)
@@ -67,7 +77,7 @@ def configure(ctx, *args, **kwargs) -> None:
     logger.info("Configuring Automata:")
 
     config_choice = ask_choice(
-        "Select key to configure", list(DEFAULT_KEYS.keys())
+        "Select item to configure", list(DEFAULT_KEYS.keys())
     )
     operation_choice = ask_choice(
         "Select operation", ["Show", "Update", "Delete"]
@@ -76,7 +86,11 @@ def configure(ctx, *args, **kwargs) -> None:
     if operation_choice == "Show":
         show_key_value(DOTENV_PATH, config_choice)
     elif operation_choice == "Update":
-        update_key_value(DOTENV_PATH, config_choice)
+        if config_choice != "GRAPH_TYPE":
+            update_key_value(DOTENV_PATH, config_choice)
+            return
+        graph_choice = ask_choice("Select graph type", ["dynamic", "static"])
+        update_graph_type(DOTENV_PATH, graph_choice)
     elif operation_choice == "Delete":
         delete_key_value(DOTENV_PATH, config_choice)
 
