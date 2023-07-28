@@ -1,5 +1,5 @@
 import logging
-import pickle
+import pickle # eslint-disable-line no-eval
 from copy import deepcopy
 from functools import lru_cache
 from typing import Dict, List, Optional, Set

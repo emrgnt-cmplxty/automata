@@ -1,5 +1,3 @@
-import pickle
-
 import pytest
 
 from automata.context_providers.symbol_synchronization_context import (
@@ -7,14 +5,6 @@ from automata.context_providers.symbol_synchronization_context import (
 )
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import Symbol, SymbolGraph
-from automata.symbol.graph.data_root_settings import data_root_path
-from tests.utils.factories import static_symbol_graph_static_test  # noqa
-
-# @pytest.fixture
-# def symbol_graph_test():
-#     with open("/Users/nolantremelling/automata/automata-embedding-data/test_symbol_graph.pkl", "rb") as f:
-#             graph = pickle.load(f)
-#     return SymbolGraph.from_graph(graph)
 
 
 @pytest.fixture

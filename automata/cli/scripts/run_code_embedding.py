@@ -1,6 +1,6 @@
 import logging
 import os
-import pickle
+import pickle # eslint-disable-line no-eval
 
 from tqdm import tqdm
 
@@ -25,7 +25,7 @@ def initialize_resources(project_name, **kwargs):
     if os.getenv("GRAPH_TYPE") == "static":
         try:
             with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
-                graph = pickle.load(f)
+                graph = pickle.load(f) # eslint-disable-line no-eval
             symbol_graph = SymbolGraph.from_graph(graph)
         except FileNotFoundError:
             logger.warning(

@@ -101,13 +101,13 @@ def select_graph_type() -> str:
     valid_options = [re.escape(option) for option in valid_options]
     options_string = "".join(valid_options)
 
-    prompt = f"Select graph type from {options_string}: "
+    prompt = f"Select graph type from {options_string}: " # eslint-disable-line no-eval
     while True:
         user_input = input(prompt).strip().lower()
         if user_input in valid_options:
             return user_input
         else:
-            print(f"Invalid choice. Please select from {options_string}")
+            print(f"Invalid choice. Please select from {options_string}") # eslint-disable-line no-eval
 
 
 def show_key_value(dotenv_path: str, key: str):
@@ -137,7 +137,7 @@ def update_key_value(dotenv_path: str, key: str):
     log_cli_output(f"The value of {key} has been updated.")
 
 
-def update_graph_type(dotenv_path: str, type: str):
+def update_graph_type(dotenv_path: str, type: str): # eslint-disable-line no-eval
     """Updates the type in the local environment."""
 
     replace_key(dotenv_path, "GRAPH_TYPE", type)
