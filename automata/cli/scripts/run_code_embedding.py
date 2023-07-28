@@ -5,6 +5,7 @@ import pickle
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_py_module_loader
+from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import (
@@ -12,7 +13,6 @@ from automata.singletons.dependency_factory import (
     dependency_factory,
 )
 from automata.symbol import SymbolGraph, get_rankable_symbols
-from automata.symbol.graph.data_root_settings import data_root_path
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,

@@ -117,7 +117,6 @@ def test_process_embeddings(tqdm_mock, symbol_code_embedding_handler_mock):
 @patch("automata.cli.scripts.run_code_embedding.initialize_resources")
 @patch("automata.cli.scripts.run_code_embedding.collect_symbols")
 @patch("automata.cli.scripts.run_code_embedding.process_embeddings")
-@pytest.mark.skip("Fixme")
 def test_main_1(
     process_embeddings_mock,
     collect_symbols_mock,
@@ -137,8 +136,9 @@ def test_main_1(
     assert result == "Success"
     initialize_modules_mock.assert_called_once()
     initialize_resources_mock.assert_called_once_with(
-        "test_project", project_name="test_project"
+        project_name="test_project"
     )
+
     collect_symbols_mock.assert_called_once_with(symbol_graph_mock)
     process_embeddings_mock.assert_called_once_with(
         symbol_code_embedding_handler_mock, collect_symbols_mock.return_value

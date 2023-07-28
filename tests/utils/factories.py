@@ -10,7 +10,7 @@ from automata.symbol import SymbolGraph
 
 
 @pytest.fixture
-def symbol_graph_static_test() -> SymbolGraph:
+def static_indices_graph_dynamic() -> SymbolGraph:
     """
     Creates a non-mock SymbolGraph object for testing the graph
 
@@ -25,7 +25,7 @@ def symbol_graph_static_test() -> SymbolGraph:
 
 
 @pytest.fixture
-def static_symbol_graph_static_test() -> SymbolGraph:
+def static_indices_graph_static() -> SymbolGraph:
     """
     Creates a serialized and then deserialized (via pickle) non-mock SymbolGraph object for testing the graph.
 

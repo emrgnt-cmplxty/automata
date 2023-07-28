@@ -12,7 +12,9 @@ from automata.symbol_embedding import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
 )
-from tests.utils.factories import symbol_graph_static_test  # noqa: F401, F811
+from tests.utils.factories import (  # noqa: F401, F811
+    static_indices_graph_dynamic,
+)
 
 
 # Use fixtures for common setup
@@ -49,7 +51,7 @@ def embedding_db(temp_output_filename, symbols_and_embeddings):
 def cem_and_symbol_graph_tester(
     embedding_db,
     symbols_and_embeddings,
-    symbol_graph_static_test,  # noqa: F401, F811
+    static_indices_graph_dynamic,  # noqa: F401, F811
 ):
     symbol1, symbol2, _, _, _, _ = symbols_and_embeddings
 
@@ -62,7 +64,7 @@ def cem_and_symbol_graph_tester(
     G = nx.DiGraph()
     G.add_node(symbol1, label="symbol")
     G.add_edge(symbol1, symbol2, label="symbol")
-    symbol_graph_tester = deepcopy(symbol_graph_static_test)
+    symbol_graph_tester = deepcopy(static_indices_graph_dynamic)
     symbol_graph_tester._graph = G
     symbol_graph_tester.navigator._graph = G
 

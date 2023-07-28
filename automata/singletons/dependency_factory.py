@@ -14,6 +14,7 @@ from automata.code_parsers.py import (
     PyReader,
 )
 from automata.code_writers.py import PyCodeWriter
+from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.config import EmbeddingDataCategory
 from automata.context_providers import (
     SymbolProviderRegistry,
@@ -33,7 +34,6 @@ from automata.memory_store import (
     SymbolDocEmbeddingHandler,
 )
 from automata.symbol import ISymbolProvider, SymbolGraph
-from automata.symbol.graph.data_root_settings import data_root_path
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
