@@ -69,7 +69,6 @@ def cem_and_symbol_graph_tester(
     return cem, symbol_graph_tester
 
 
-@pytest.mark.skip("This test works only when in isolation from the other test")
 def test_synchronize(cem_and_symbol_graph_tester):
     cem, symbol_graph_tester = cem_and_symbol_graph_tester
 

@@ -19,7 +19,7 @@ def symbol_graph_static_test() -> SymbolGraph:
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
     index_path = os.path.join(file_dir, "..", "test.scip")
-    return SymbolGraph(index_path)
+    return SymbolGraph(index_path, pickle_graph=False)
 
 
 @pytest.fixture

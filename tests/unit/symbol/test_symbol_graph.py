@@ -18,7 +18,6 @@ def sync_context(symbol_graph_static_test):  # noqa
     return synchronization_context
 
 
-@pytest.mark.skip("This test works only when in isolation from the other test")
 def test_get_all_symbols(symbol_graph_static_test, sync_context):  # noqa
     print(os.environ.get("DATA_ROOT_PATH"))
     graph_symbols = symbol_graph_static_test.get_sorted_supported_symbols()
@@ -26,7 +25,6 @@ def test_get_all_symbols(symbol_graph_static_test, sync_context):  # noqa
     assert all(isinstance(s, Symbol) for s in graph_symbols)
 
 
-@pytest.mark.skip("This test works only when in isolation from the other test")
 def test_build_real_graph(symbol_graph_static_test, sync_context):  # noqa
     all_symbols = sorted(
         symbol_graph_static_test.get_sorted_supported_symbols(),
@@ -37,7 +35,6 @@ def test_build_real_graph(symbol_graph_static_test, sync_context):  # noqa
     assert len(all_symbols) == 1_874
 
 
-@pytest.mark.skip("This test works only when in isolation from the other test")
 def test_build_real_graph_and_subgraph(
     symbol_graph_static_test, sync_context  # noqa
 ):  # noqa

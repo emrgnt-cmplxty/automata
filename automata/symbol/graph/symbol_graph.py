@@ -16,9 +16,8 @@ from automata.symbol.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
 
-data_root_path = os.environ.get("DATA_ROOT_PATH")
-if data_root_path is None:
-    raise ValueError("Environment variable DATA_ROOT_PATH is not set.")
+default_data_root_path = "automata-embedding-data"
+data_root_path = os.environ.get("DATA_ROOT_PATH", default_data_root_path)
 
 
 class SymbolGraph(ISymbolProvider):
@@ -34,6 +33,7 @@ class SymbolGraph(ISymbolProvider):
         build_references: bool = True,
         build_relationships: bool = True,
         build_caller_relationships: bool = False,
+        pickle_graph: bool = True,
     ) -> None:
         super().__init__()
         index = self._load_index_protobuf(index_path)
@@ -46,8 +46,9 @@ class SymbolGraph(ISymbolProvider):
         self._graph = builder.build_graph()
         self.navigator = SymbolGraphNavigator(self._graph)
 
-        with open(f"{data_root_path}/symbolgraph.pkl", "wb") as f:
-            pickle.dump(self._graph, f)
+        if pickle_graph:
+            with open(f"{data_root_path}/symbol_graph.pkl", "wb") as f:
+                pickle.dump(self._graph, f)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         return self.navigator.get_symbol_dependencies(symbol)
