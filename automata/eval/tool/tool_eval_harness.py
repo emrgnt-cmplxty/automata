@@ -3,20 +3,14 @@ import logging
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, List
 
-from automata.eval import (
-    Action,
-    Payload,
-    ToolEval,
-    ToolEvalResult,
-    ToolEvaluationMetrics,
-)
+from automata.eval import Action, Payload, ToolEval, ToolEvalResult
 from automata.llm import FunctionCall
 from automata.tools import ToolExecution
 
 # from automata.eval.tool.tool_eval_metrics import ToolEvaluationMetrics
 
-# if TYPE_CHECKING:
-#     from automata.eval.tool.tool_eval import Action, ToolEval
+if TYPE_CHECKING:
+    from automata.eval import ToolEvaluationMetrics
 
 
 class EvalExecutionError(Exception):
@@ -107,7 +101,9 @@ class ToolEvaluationHarness:
         function_calls: List[FunctionCall],
         expected_actions: List[Action],
         executor: ToolExecution,
-    ) -> ToolEvaluationMetrics:
+    ) -> "ToolEvaluationMetrics":
+        from automata.eval import ToolEvaluationMetrics
+
         """Returns the evaluation metrics for the given function calls and expected actions."""
 
         logging.info(
