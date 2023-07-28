@@ -189,7 +189,12 @@ class SymbolSearchEval(ToolEval):
         function_call, result = input_action_tuple
         split_results: List[str] = []
 
-        if function_call.name != "symbol-rank-search":
+        print("function_call = ", function_call)
+        print(
+            "function_call.name==symbol-rank-search",
+            function_call.name == "symbol-rank-search",
+        )
+        if function_call.name == "symbol-rank-search":
             split_results = result.split("\n")
         else:
             raise ValueError("Only symbol-search is supported for now.")

@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from automata.eval.tool import (
@@ -98,9 +100,58 @@ def test_symbol_search_eval_result_from_payload(expected_action):
         result_payload
     )
     assert expected_action.query == observed_action.query
-    print(
-        "symbol_search_eval_result = ",
-        symbol_search_eval_result.observed_action,
-    )
     assert symbol_search_eval_result.is_full_match
     assert symbol_search_eval_result.is_partial_match
+
+
+def test_symbol_search_eval_to_tool_result(
+    symbol_search_eval, expected_action
+):
+    observed_action = SymbolSearchAction.from_payload(
+        {"query": "test_query", "search_results": "result1,result2"}
+    )
+
+    result = symbol_search_eval.to_tool_result(
+        expected_action, observed_action
+    )
+    assert isinstance(result, SymbolSearchEvalResult)
+    assert result.expected_action == expected_action
+    assert result.observed_action == observed_action
+    assert result.is_full_match
+    assert result.is_partial_match
+
+
+def test_symbol_search_eval_extract_action(symbol_search_eval):
+    observed_action = SymbolSearchAction.from_payload(
+        {"query": "test_query", "search_results": "result1,result2"}
+    )
+
+    action_tuple = (
+        FunctionCall(
+            name="symbol-rank-search", arguments={"query": "test_query"}
+        ),
+        "result1\nresult2",
+    )
+    result = symbol_search_eval.extract_action(action_tuple)
+
+    assert result == observed_action
+
+
+def test_generate_eval_result(symbol_search_eval):
+    function_call = FunctionCall(
+        name="symbol-rank-search", arguments={"query": "test_query"}
+    )
+    expected_action = SymbolSearchAction.from_payload(
+        {"query": "test_query", "search_results": "result1,result2"}
+    )
+
+    mock_tool_exec = MagicMock()
+    mock_tool_exec.execute.return_value = "result1\nresult2\nresult3"
+
+    result = symbol_search_eval.generate_eval_result(
+        function_call, expected_action, mock_tool_exec
+    )
+
+    assert result.is_full_match
+    assert result.is_partial_match
+    mock_tool_exec.execute.assert_called_once_with(function_call)
