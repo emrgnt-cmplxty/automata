@@ -42,7 +42,7 @@ class SymbolSearchAction(Action):
         return {
             "type": "SymbolSearchAction",
             "query": self.query,
-            "search_results": self.search_results,
+            "search_results": ",".join(self.search_results),
         }
 
     @classmethod
@@ -56,12 +56,12 @@ class SymbolSearchAction(Action):
             )
 
         search_results = payload["search_results"]
-        if not isinstance(search_results, list):
+        if not isinstance(search_results, str):
             raise ValueError(
-                f"Search results of type={type(search_results)} received, instead of list."
+                f"Search results of type={type(search_results)} received, instead of str."
             )
 
-        return cls(query=query, search_results=search_results)
+        return cls(query=query, search_results=search_results.split(","))
 
 
 class SymbolSearchEvalResult(ToolEvalResult):
@@ -77,9 +77,7 @@ class SymbolSearchEvalResult(ToolEvalResult):
     ):
         super().__init__(expected_action, observed_action, *args, **kwargs)
 
-        if expected_action is not isinstance(
-            expected_action, SymbolSearchAction
-        ):
+        if not isinstance(expected_action, SymbolSearchAction):
             raise ValueError(
                 "Expected action must be of type SymbolSearchAction."
             )
@@ -133,7 +131,7 @@ class SymbolSearchEvalResult(ToolEvalResult):
     def to_payload(self) -> Payload:
         """Converts the evaluation result to a dictionary (or other serializable format)."""
         return {
-            "expected_action": self.expected_match,
+            "expected_action": json.dumps(self.expected_action.to_payload()),
             "observed_action": json.dumps(self.observed_action.to_payload())
             if self.observed_action
             else "None",
@@ -180,6 +178,9 @@ class SymbolSearchEvalResult(ToolEvalResult):
 class SymbolSearchEval(ToolEval):
     """A class for evaluating an LLM's symbol searching ability."""
 
+    def __init__(self):
+        pass
+
     def extract_action(
         self, input_action_tuple: Tuple[FunctionCall, str]
     ) -> Action:
@@ -195,3 +196,20 @@ class SymbolSearchEval(ToolEval):
 
         query = function_call.arguments["query"]
         return SymbolSearchAction(query=query, search_results=split_results)
+
+    def to_tool_result(
+        self, expected_action: Action, observed_action: Optional[Action]
+    ) -> ToolEvalResult:
+        if not isinstance(expected_action, SymbolSearchAction):
+            raise ValueError("Expected action must be a SymbolSearchAction.")
+        if observed_action is not None and not isinstance(
+            observed_action, SymbolSearchAction
+        ):
+            raise ValueError(
+                "Observed action must be a SymbolSearchAction or None."
+            )
+
+        return SymbolSearchEvalResult(
+            expected_action,
+            observed_action,
+        )

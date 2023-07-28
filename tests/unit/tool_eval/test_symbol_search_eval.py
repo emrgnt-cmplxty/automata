@@ -1,61 +1,106 @@
-# import pytest
-# from automata.eval.tool import (
-#     SymbolSearchEvalResult,
-#     SymbolSearchAction,
-#     ToolEvalResult,
-# )
-# from automata.experimental.tools import SymbolSearchToolkitBuilder
+import pytest
 
-# from automata.llm import LLMChatMessage, FunctionCall
+from automata.eval.tool import (
+    SymbolSearchAction,
+    SymbolSearchEval,
+    SymbolSearchEvalResult,
+)
+from automata.experimental.tools import SymbolSearchToolkitBuilder
+from automata.llm import FunctionCall
 
-
-# def test_tool_eval(tool_eval, function_call, expected_action, tool_executor):
-#     result = tool_eval.generate_eval_result(
-#         function_call, [expected_action], tool_executor
-#     )
-#     assert isinstance(result, ToolEvalResult)
-#     assert result.expected_action == expected_action
-#     assert result.observed_action == expected_action
+# Define fixtures for the test cases
 
 
-# def test_tool_eval_result(tool_eval_result):
-#     assert tool_eval_result.is_full_match
-#     assert tool_eval_result.is_partial_match
-#     assert tool_eval_result.is_match
-#     assert tool_eval_result.get_details() == {
-#         "expected_action": tool_eval_result.expected_action,
-#         "observed_action": tool_eval_result.observed_action,
-#     }
+@pytest.fixture
+def symbol_search_eval():
+    return SymbolSearchEval()
 
 
-# def test_symbol_search_action(symbol_search_action):
-#     payload = symbol_search_action.to_payload()
-#     assert payload["query"] == symbol_search_action.query
-#     assert payload["search_results"] == symbol_search_action.search_results
-#     assert SymbolSearchAction.from_payload(payload) == symbol_search_action
+@pytest.fixture
+def function_call():
+    return FunctionCall(name="TestTool", arguments={"test": "test"})
 
 
-# def test_symbol_search_eval_result(symbol_search_eval_result):
-#     assert symbol_search_eval_result.is_full_match
-#     assert symbol_search_eval_result.is_partial_match
-#     assert symbol_search_eval_result.get_details() == {
-#         "expected_match": symbol_search_eval_result.expected_match,
-#         "observed_action": symbol_search_eval_result.observed_action,
-#     }
+@pytest.fixture
+def expected_action():
+    return SymbolSearchAction(
+        query="test_query", search_results=["result1", "result2", "result3"]
+    )
 
 
-# def test_symbol_search_toolkit_builder(symbol_search_toolkit_builder, query):
-#     tools = symbol_search_toolkit_builder.build()
-#     for tool in tools:
-#         assert tool.function(
-#             query
-#         ) == symbol_search_toolkit_builder.process_query(tool.name, query)
+@pytest.fixture
+def symbol_search_tool_builder(symbol_search):
+    return SymbolSearchToolkitBuilder(symbol_search).build()
 
 
-# def test_symbol_search_open_ai_toolkit_builder(
-#     symbol_search_open_ai_toolkit_builder,
-# ):
-#     tools = symbol_search_open_ai_toolkit_builder.build_for_open_ai()
-#     assert len(tools) == len(
-#         symbol_search_open_ai_toolkit_builder.search_tools
-#     )
+def test_symbol_search_action(expected_action):
+    payload = {
+        "query": "test_query",
+        "search_results": "result1,result2,result3",
+    }
+    search_action = SymbolSearchAction.from_payload(payload)
+    assert search_action.search_results == expected_action.search_results
+    assert search_action.query == expected_action.query
+
+
+def test_symbol_search_eval_result(expected_action):
+    observed_action = SymbolSearchAction.from_payload(
+        {"query": "test_query", "search_results": "result1,result2"}
+    )
+    symbol_search_eval_result = SymbolSearchEvalResult(
+        expected_action, observed_action
+    )
+    assert expected_action.query == observed_action.query
+    assert symbol_search_eval_result.is_full_match
+    assert symbol_search_eval_result.is_partial_match
+
+
+def test_symbol_search_eval_result_partial_match(expected_action):
+    observed_action = SymbolSearchAction.from_payload(
+        {
+            "query": "test_query",
+            "search_results": "result2,result1",
+        }  # Partial match b/c result1 is not top result
+    )
+    symbol_search_eval_result = SymbolSearchEvalResult(
+        expected_action, observed_action
+    )
+    assert expected_action.query == observed_action.query
+    assert not symbol_search_eval_result.is_full_match
+    assert symbol_search_eval_result.is_partial_match
+
+
+def test_symbol_search_eval_result_not_match(expected_action):
+    observed_action = SymbolSearchAction.from_payload(
+        {
+            "query": "test_query",
+            "search_results": "result2,result3",
+        }  # Partial match b/c result1 is not top result
+    )
+    symbol_search_eval_result = SymbolSearchEvalResult(
+        expected_action, observed_action
+    )
+    assert expected_action.query == observed_action.query
+    assert not symbol_search_eval_result.is_full_match
+    assert not symbol_search_eval_result.is_partial_match
+
+
+def test_symbol_search_eval_result_from_payload(expected_action):
+    observed_action = SymbolSearchAction.from_payload(
+        {"query": "test_query", "search_results": "result1,result2"}
+    )
+    symbol_search_eval_result = SymbolSearchEvalResult(
+        expected_action, observed_action
+    )
+
+    result_payload = symbol_search_eval_result.to_payload()
+    symbol_search_eval_result = symbol_search_eval_result.from_payload(
+        result_payload
+    )
+    assert expected_action.query == observed_action.query
+    print(
+        "symbol_search_eval_result = ",
+        symbol_search_eval_result.observed_action,
+    )
+    assert symbol_search_eval_result.is_full_match
+    assert symbol_search_eval_result.is_partial_match
