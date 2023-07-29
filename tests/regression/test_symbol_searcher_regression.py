@@ -77,12 +77,12 @@ def test_symbol_rank_search_on_symbol(
 EXACT_CALLS_TO_HITS = {
     "OpenAIAutomataAgent": [
         "automata.cli.scripts.run_agent",
-        "automata.agent.providers",
-        "automata.singletons.toolkit_registries",
+        "automata.agent.openai_agent",
+        "automata.singletons.toolkit_registry",
     ],
     "SymbolRank": [
         "automata.experimental.search.symbol_search",
-        "automata.experimental.search.rank",
+        "automata.experimental.search.symbol_rank",
     ],
 }
 
@@ -95,15 +95,15 @@ EXACT_CALLS_TO_HITS = {
             "OpenAIAutomataAgent",
             [
                 "automata.cli.scripts.run_agent",
-                "automata.agent.providers",
-                "automata.singletons.toolkit_registries",
+                "automata.agent.openai_agent",
+                "automata.singletons.toolkit_registry",
             ],
         ),
         (
             "SymbolRank",
             [
                 "automata.experimental.search.symbol_search",
-                "automata.experimental.search.rank",
+                "automata.experimental.search.symbol_rank",
             ],
         ),
     ],
