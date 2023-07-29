@@ -47,7 +47,7 @@ def test_basic_task_execution(
 
     task_db = AutomataAgentTaskDatabase()
     task_registry = AutomataTaskRegistry(task_db)
-    (task_environment,) = AutomataTaskEnvironment(
+    task_environment = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
 
