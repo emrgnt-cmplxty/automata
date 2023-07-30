@@ -67,9 +67,7 @@ def run_eval_harness(
             print(f"Provided Top Match: {expected_action.search_results[0]}\n")
 
             print("- Observed Results - \n")
-            observed_action = result.observed_action
-
-            if observed_action:
+            if observed_action := result.observed_action:
                 if not isinstance(observed_action, SymbolSearchAction):
                     raise ValueError(
                         "Observed action must be a SymbolSearchAction."
