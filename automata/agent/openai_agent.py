@@ -278,9 +278,6 @@ class OpenAIAutomataAgent(Agent):
                 )
             except Exception as e:
                 logging.exception(f"Tool execution failed: {e}")
-                # Handle exception as necessary
-                pass
-
         return OpenAIChatMessage(
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{iteration_message}",

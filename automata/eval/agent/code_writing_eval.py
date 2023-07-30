@@ -181,47 +181,46 @@ class CodeWritingEval(AgentEval):
     def _parse_code_snippet(self, raw_content) -> List[Dict[str, Any]]:
         """Parses a code snippet and extracts the object value and type at the specified variable."""
 
+        if "```" not in raw_content:
+            return []
         # Isolate the exec environment to a separate dictionary
         isolated_locals: Dict[str, Any] = {}
-        if "```" in raw_content:
+        try:
+            code_snippet = CodeWritingAction._extract_snippet(raw_content)
+            # Execute the code snippet
             try:
-                code_snippet = CodeWritingAction._extract_snippet(raw_content)
-                # Execute the code snippet
-                try:
-                    exec(code_snippet, None, isolated_locals)
-                except Exception as e:
-                    return [
-                        {
-                            "error": str(
-                                CodeExecutionError(
-                                    f"Error executing code: {str(e)}"
-                                )
-                            ),
-                        }
-                    ]
-
-                target_values = [
-                    isolated_locals.get(target_variable)
-                    for target_variable in self.target_variables
-                    if target_variable in isolated_locals
-                ]
-                if target_values is None:
-                    raise VariableNotFoundError(
-                        f"Variables '{self.target_variables}' not found in the executed code."
-                    )
+                exec(code_snippet, None, isolated_locals)
+            except Exception as e:
                 return [
                     {
-                        "value": str(target_value),
-                        "type": type(target_value).__name__,
+                        "error": str(
+                            CodeExecutionError(
+                                f"Error executing code: {str(e)}"
+                            )
+                        ),
                     }
-                    for target_value in target_values
                 ]
 
-            except Exception as e:
-                # If there's an error executing the code, return that.
-                raise CodeExecutionError(f"Error executing code: {str(e)}")
-        else:
-            return []
+            target_values = [
+                isolated_locals.get(target_variable)
+                for target_variable in self.target_variables
+                if target_variable in isolated_locals
+            ]
+            if target_values is None:
+                raise VariableNotFoundError(
+                    f"Variables '{self.target_variables}' not found in the executed code."
+                )
+            return [
+                {
+                    "value": str(target_value),
+                    "type": type(target_value).__name__,
+                }
+                for target_value in target_values
+            ]
+
+        except Exception as e:
+            # If there's an error executing the code, return that.
+            raise CodeExecutionError(f"Error executing code: {str(e)}")
 
     def _filter_actions(self, actions: List[Action]) -> List[Action]:
         """Filters out non-CodeWritingActions."""
