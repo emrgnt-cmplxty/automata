@@ -111,6 +111,9 @@ class SymbolSearchEvalResult(ToolEvalResult):
             else "None"
         )
 
+    def __repr__(self):
+        return f"SymbolSearchEvalResult(observed_action={self.observed_action}, expected_action={self.expected_action})"
+
     @property
     def is_full_match(self) -> bool:
         """Checks if the result is a full match (Exact Match at 0th entry)."""

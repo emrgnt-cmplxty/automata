@@ -47,7 +47,7 @@ class DocumentOracleToolkitBuilder(AgentToolkitBuilder):
             )
         ]
 
-    def _get_best_match(self, query: str, max_related_symbols=10) -> str:
+    def _get_best_match(self, query: str) -> str:
         """
         Retrieves the best matching class documentation corresponding to a
         given query.

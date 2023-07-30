@@ -110,23 +110,22 @@ class ToolEvaluationHarness:
         for function_call, expected_action in zip(
             function_calls, expected_actions
         ):
-            # try:
-            for eval in self.evals:
-                result = eval.generate_eval_result(
-                    function_call,
-                    expected_action,
-                    executor,
-                    run_id=self.run_id,
-                )
-                if not isinstance(result, ToolEvalResult):
-                    raise ValueError(
-                        "Evaluators must return a ToolEvalResult."
+            try:
+                for eval in self.evals:
+                    result = eval.generate_eval_result(
+                        function_call,
+                        expected_action,
+                        executor,
+                        run_id=self.run_id,
                     )
-                # self.database.write_result(result)
-                aggregate_results.append(result)
-
-        # except Exception as e:
-        # logging.error(f"Error during function call execution: {e}")
-        # raise EvalExecutionError from e
-
+                    if not isinstance(result, ToolEvalResult):
+                        raise ValueError(
+                            "Evaluators must return a ToolEvalResult."
+                        )
+                    # self.database.write_result(result)
+                    aggregate_results.append(result)
+            except Exception as e:
+                logging.error(f"Error during function call execution: {e}")
+                raise EvalExecutionError from e
+        print("aggregate_results=", aggregate_results)
         return ToolEvaluationMetrics(aggregate_results)
