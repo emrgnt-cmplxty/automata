@@ -3,6 +3,8 @@ import logging
 import uuid
 from typing import Any, Dict, List
 
+from tqdm import tqdm
+
 from automata.eval.eval_base import Action, Payload
 from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
 from automata.eval.tool.tool_eval_metrics import ToolEvaluationMetrics
@@ -107,8 +109,8 @@ class ToolEvaluationHarness:
         )
 
         aggregate_results = []
-        for function_call, expected_action in zip(
-            function_calls, expected_actions
+        for function_call, expected_action in tqdm(
+            zip(function_calls, expected_actions)
         ):
             try:
                 for eval in self.evals:
