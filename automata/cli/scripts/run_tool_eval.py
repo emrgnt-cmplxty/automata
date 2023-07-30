@@ -3,7 +3,9 @@ from typing import List
 
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
+    SymbolSearchAction,
     SymbolSearchEval,
+    SymbolSearchEvalResult,
     ToolEval,
     ToolEvalSetLoader,
     ToolEvaluationHarness,
@@ -54,7 +56,34 @@ def run_eval_harness(
         eval_loader.expected_actions,
         tool_execution,
     )
+    for result in output.results:
+        if isinstance(result, SymbolSearchEvalResult):
+            expected_action = result.expected_action
+            if not isinstance(expected_action, SymbolSearchAction):
+                raise ValueError(
+                    "Expected action must be a SymbolSearchAction."
+                )
+            print(f"Search Query: {expected_action.query}")
+            print(f"Provided Top Match: {expected_action.search_results[0]}\n")
+
+            print("- Observed Results - \n")
+            observed_action = result.observed_action
+
+            if observed_action:
+                if not isinstance(observed_action, SymbolSearchAction):
+                    raise ValueError(
+                        "Observed action must be a SymbolSearchAction."
+                    )
+
+                print(f"Top Search Results: {observed_action.search_results}")
+            print(
+                f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"
+            )
+
+            print("=" * 150)
+
     print(output)
+    print("=" * 150)
 
 
 def main(*args, **kwargs) -> None:

@@ -48,5 +48,5 @@ class ToolEvaluationMetrics:
             f"Full Matches: {self.total_full_matches}\n"
             f"Partial Matches: {self.total_partial_matches}\n"
             f"Full Match Rate: {self.full_match_rate}\n"
-            f"Partial Match Rate: {self.partial_match_rate}\n"
+            f"Partial Match Rate: {self.partial_match_rate}"
         )
