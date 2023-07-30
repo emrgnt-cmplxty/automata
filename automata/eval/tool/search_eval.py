@@ -198,15 +198,18 @@ class SymbolSearchEval(ToolEval):
     ) -> Action:
         """Extracts the search action implicitly"""
 
-        function_call, result = input_action_tuple
+        input_function, result = input_action_tuple
         split_results: List[str] = []
 
-        if function_call.name == "symbol-rank-search":
+        if (
+            input_function.name == "symbol-rank-search"
+            or input_function.name == "symbol-similarity-search"
+        ):
             split_results = result.split("\n")
         else:
             raise ValueError("Only symbol-search is supported for now.")
 
-        query = function_call.arguments["query"]
+        query = input_function.arguments["query"]
         return SymbolSearchAction(query=query, search_results=split_results)
 
     def to_tool_result(

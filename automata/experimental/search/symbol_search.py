@@ -19,6 +19,7 @@ from automata.symbol import (
 
 SymbolReferencesResult = Dict[str, List[SymbolReference]]
 SymbolRankResult = List[Tuple[Symbol, float]]
+SymbolSimilarityResult = SymbolRankResult
 SourceCodeResult = Optional[str]
 ExactSearchResult = Dict[str, List[int]]
 
@@ -75,6 +76,20 @@ class SymbolSearch:
             query_to_symbol_similarity=transformed_query_vec
         )
 
+    def get_symbol_code_similarity_results(
+        self, query: str
+    ) -> SymbolSimilarityResult:
+        """Fetches the list of similar symbols sorted by embedding similarity."""
+
+        ordered_embeddings = (
+            self.search_embedding_handler.get_all_ordered_embeddings()
+        )
+
+        query_vec = self.embedding_similarity_calculator.calculate_query_similarity_dict(
+            ordered_embeddings, query
+        )
+        return list(query_vec.items())
+
     def symbol_references(self, symbol_uri: str) -> SymbolReferencesResult:
         """
         Finds all references to a module, class, method, or standalone function.
@@ -123,6 +138,8 @@ class SymbolSearch:
             return self.symbol_references(query_remainder)
         elif search_type == "symbol_rank":
             return self.get_symbol_rank_results(query_remainder)
+        elif search_type == "symbol_code_similarity":
+            return self.get_symbol_code_similarity_results(query_remainder)
         elif search_type == "exact":
             return self.exact_search(query_remainder)
         elif search_type == "source":

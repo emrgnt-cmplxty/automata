@@ -32,7 +32,7 @@ class ToolEvalSetLoader:
                 f"Only JSON files are supported, received filepath {filepath}."
             )
         payloads = self.load_json()
-        self.function_calls: List[FunctionCall] = []
+        self.input_functions: List[FunctionCall] = []
         self.expected_actions: List[Action] = []
 
         for item in payloads:
@@ -43,18 +43,18 @@ class ToolEvalSetLoader:
                 # TODO - Avoid using type ignore below.
                 payload = self.format_values(template, formatter)  # type: ignore
 
-                func_call = payload.get("function_call")
+                input_func_call = payload.get("input_function")
                 expected_action = payload.get("expected_action")
 
-                if not isinstance(func_call, dict):
+                if not isinstance(input_func_call, dict):
                     raise ValueError("Function call must be a dictionary.")
                 if not isinstance(expected_action, dict):
                     raise ValueError("Expected action must be a dictionary.")
 
-                self.function_calls.append(
+                self.input_functions.append(
                     FunctionCall(
-                        name=func_call["name"],
-                        arguments=func_call["arguments"],
+                        name=input_func_call["name"],
+                        arguments=input_func_call["arguments"],
                     )
                 )
                 self.expected_actions.append(
@@ -98,24 +98,24 @@ class ToolEvaluationHarness:
 
     def evaluate(
         self,
-        function_calls: List[FunctionCall],
+        input_functions: List[FunctionCall],
         expected_actions: List[Action],
         executor: ToolExecution,
     ) -> ToolEvaluationMetrics:
         """Returns the evaluation metrics for the given function calls and expected actions."""
 
         logging.info(
-            f"Starting evaluation of {len(function_calls)} function calls with run_id={self.run_id}..."
+            f"Starting evaluation of {len(input_functions)} function calls with run_id={self.run_id}..."
         )
 
         aggregate_results = []
-        for function_call, expected_action in tqdm(
-            zip(function_calls, expected_actions)
+        for input_function, expected_action in tqdm(
+            zip(input_functions, expected_actions)
         ):
             try:
                 for eval in self.evals:
                     result = eval.generate_eval_result(
-                        function_call,
+                        input_function,
                         expected_action,
                         executor,
                         run_id=self.run_id,
