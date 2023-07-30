@@ -10,6 +10,7 @@ from automata.eval import (
     ToolEvalSetLoader,
     ToolEvaluationHarness,
 )
+from automata.eval.tool.search_eval import TOP_K_MATCHES
 from automata.singletons.dependency_factory import dependency_factory
 from automata.tools import ToolExecution
 from automata.tools.agent_tool_factory import AgentToolFactory
@@ -64,7 +65,7 @@ def run_eval_harness(
                     "Expected action must be a SymbolSearchAction."
                 )
             print(f"Search Query: {expected_action.query}")
-            print(f"Provided Top Match: {expected_action.search_results[0]}\n")
+            print(f"Truth Top Match: {expected_action.search_results[0]}\n")
 
             print("- Observed Results - \n")
             if observed_action := result.observed_action:
@@ -73,7 +74,13 @@ def run_eval_harness(
                         "Observed action must be a SymbolSearchAction."
                     )
 
-                print(f"Top Search Results: {observed_action.search_results}")
+                print(
+                    f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"
+                )
+                print(
+                    f"{TOP_K_MATCHES}-10 Search Results (not used in matching): {observed_action.search_results[TOP_K_MATCHES:]}\n"
+                )
+
             print(
                 f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"
             )
