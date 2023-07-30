@@ -101,10 +101,21 @@ class OpenAIAutomataAgent(Agent):
 
     @property
     def conversation(self) -> LLMConversation:
+        """A concrete property for getting the conversation associated with the agent."""
         return self._conversation
 
     @property
+    def agent_responses(self) -> List[LLMChatMessage]:
+        """A concrete property for getting the agent responses associated with the agent."""
+        return [
+            message
+            for message in self._conversation.messages
+            if message.role == "assistant"
+        ][-self.iteration_count :]
+
+    @property
     def tools(self) -> List[OpenAITool]:
+        """A concrete property for getting the tools associated with the agent."""
         tools = []
         for tool in self.config.tools:
             if not isinstance(tool, OpenAITool):
@@ -115,6 +126,7 @@ class OpenAIAutomataAgent(Agent):
 
     @property
     def functions(self) -> List[OpenAIFunction]:
+        """A concrete property for getting the functions associated with the agent."""
         return [ele.openai_function for ele in self.tools]
 
     def run(self) -> str:

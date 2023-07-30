@@ -124,7 +124,7 @@ class AgentEval(Eval):
 
         return self.process_result(
             expected_output,
-            agent.conversation.messages,
+            agent.agent_responses,
             session_id=agent.session_id,
         )
 

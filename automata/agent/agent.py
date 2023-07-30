@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from automata.config import AgentConfig, LLMProvider
 from automata.llm import (
+    LLMChatMessage,
     LLMConversation,
     LLMConversationDatabaseProvider,
     LLMIterationResult,
@@ -53,6 +54,18 @@ class Agent(ABC):
     @abstractmethod
     def conversation(self) -> LLMConversation:
         """An abstract property for getting the conversation associated with the agent."""
+        pass
+
+    @property
+    @abstractmethod
+    def agent_responses(self) -> List[LLMChatMessage]:
+        """An abstract property for getting the agent responses associated with the agent."""
+        pass
+
+    @property
+    @abstractmethod
+    def tools(self) -> List[Tool]:
+        """An abstract property for getting the tools associated with the agent."""
         pass
 
     @abstractmethod
