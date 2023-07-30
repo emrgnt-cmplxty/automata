@@ -122,10 +122,10 @@ class ToolEvaluationHarness:
                         raise ValueError(
                             "Evaluators must return a ToolEvalResult."
                         )
+                    # TODO - Re-enable this once we have a database
                     # self.database.write_result(result)
                     aggregate_results.append(result)
             except Exception as e:
                 logging.error(f"Error during function call execution: {e}")
                 raise EvalExecutionError from e
-        print("aggregate_results=", aggregate_results)
         return ToolEvaluationMetrics(aggregate_results)

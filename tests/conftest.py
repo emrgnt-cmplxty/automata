@@ -544,13 +544,8 @@ def setup_tool(mocker, symbols):
     symbol_search_mock = MagicMock()
 
     symbol_0 = symbols[0]
-    symbol_0.uri = "result1"  # hack
-
     symbol_1 = symbols[1]
-    symbol_1.uri = "result2"  # hack
-
     symbol_2 = symbols[2]
-    symbol_2.uri = "result3"  # hack
 
     # Mock the get_symbol_rank_results method
     symbol_search_mock.get_symbol_rank_results = MagicMock(
