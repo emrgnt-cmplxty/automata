@@ -1,6 +1,5 @@
-from .agent import Agent, AgentProvider, AgentToolkitBuilder, AgentToolkitNames
-from .openai_agent import (
-    OpenAIAgentProvider,
+from automata.agent.agent import Agent, AgentToolkitBuilder, AgentToolkitNames
+from automata.agent.openai_agent import (
     OpenAIAgentToolkitBuilder,
     OpenAIAutomataAgent,
 )
@@ -9,8 +8,6 @@ __all__ = [
     "Agent",
     "AgentToolkitBuilder",
     "AgentToolkitNames",
-    "AgentProvider",
     "OpenAIAgentToolkitBuilder",
     "OpenAIAutomataAgent",
-    "OpenAIAgentProvider",
 ]

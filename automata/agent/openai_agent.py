@@ -3,12 +3,7 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Sequence
 
-from automata.agent import (
-    Agent,
-    AgentProvider,
-    AgentToolkitBuilder,
-    AgentToolkitNames,
-)
+from automata.agent import Agent, AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.error import (
     AgentDatabaseError,
     AgentGeneralError,
@@ -114,7 +109,7 @@ class OpenAIAutomataAgent(Agent):
         ][-self.iteration_count :]
 
     @property
-    def tools(self) -> List[OpenAITool]:
+    def tools(self) -> Sequence[OpenAITool]:
         """A concrete property for getting the tools associated with the agent."""
         tools = []
         for tool in self.config.tools:
@@ -278,9 +273,6 @@ class OpenAIAutomataAgent(Agent):
                 )
             except Exception as e:
                 logging.exception(f"Tool execution failed: {e}")
-                # Handle exception as necessary
-                pass
-
         return OpenAIChatMessage(
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{iteration_message}",
@@ -369,20 +361,3 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
     def can_handle(cls, tool_manager: AgentToolkitNames):
         """Checks if the ToolkitBuilder matches the expecte dtool_manager type"""
         return cls.TOOL_NAME == tool_manager
-
-
-class OpenAIAgentProvider(AgentProvider):
-    """A concrete class for providing an OpenAIAutomataAgent."""
-
-    def build_and_run_agent(self, instructions: str) -> Agent:
-        """Builds and runs an OpenAIAutomataAgent with the given instructions."""
-        if not isinstance(self.config, OpenAIAutomataAgentConfig):
-            raise TypeError(
-                f"Expected OpenAIAutomataAgentConfig, found: {self.config.__class__.__name__}"
-            )
-
-        agent = OpenAIAutomataAgent(
-            instructions=instructions, config=self.config
-        )
-        agent.run()
-        return agent

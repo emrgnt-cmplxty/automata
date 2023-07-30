@@ -1,0 +1,23 @@
+[
+    {
+        "template": {
+            "function_call": {
+                "type": "FunctionCall",
+                "name": "symbol-rank-search",
+                "arguments": {"query": "{query}"}
+            },
+            "expected_action": {
+                "type": "SymbolSearchAction",
+                "query": "{query}",
+                "search_results": "{result}"
+            }
+        },
+        "formatters": [
+            {"query": "Which class is an abstraction for agents?", "result": "automata.agent.agent.Agent"},
+            {"query": "Which class is an abstraction for building agent tools?", "result": "automata.agent.agent.AgentToolkitBuilder"},
+            {"query": "Which class enumerates the available agent tools?", "result": "automata.agent.agent.AgentToolkitNames"},
+            {"query": "Which class builds tools for an OpenAI agent?", "result": "automata.agent.openai_agent.OpenAIAgentToolkitBuilder"},
+            {"query": "Which class manages an OpenAI agent lifecycle?", "result": "automata.agent.openai_agent.OpenAIAutomataAgent"}
+        ]
+    }
+]

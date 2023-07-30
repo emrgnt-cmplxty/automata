@@ -1,9 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Sequence
 
-from automata.config import AgentConfig, LLMProvider
+from automata.config import LLMProvider
 from automata.llm import (
     LLMChatMessage,
     LLMConversation,
@@ -64,7 +64,7 @@ class Agent(ABC):
 
     @property
     @abstractmethod
-    def tools(self) -> List[Tool]:
+    def tools(self) -> Sequence[Tool]:
         """An abstract property for getting the tools associated with the agent."""
         pass
 
@@ -121,14 +121,4 @@ class AgentToolkitBuilder(ABC):
     @abstractmethod
     def build(self) -> List["Tool"]:
         """Builds the tools associated with the `AgentToolkitBuilder`."""
-        pass
-
-
-class AgentProvider(ABC):
-    def __init__(self, config: AgentConfig):
-        self.config = config
-
-    @abstractmethod
-    def build_and_run_agent(self, instructions: str) -> Agent:
-        """Builds and runs an agent for a given set of instructions."""
         pass
