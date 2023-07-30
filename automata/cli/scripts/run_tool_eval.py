@@ -53,7 +53,7 @@ def run_eval_harness(
     evaluation_harness = ToolEvaluationHarness(evals)
 
     output = evaluation_harness.evaluate(
-        eval_loader.function_calls,
+        eval_loader.input_functions,
         eval_loader.expected_actions,
         tool_execution,
     )

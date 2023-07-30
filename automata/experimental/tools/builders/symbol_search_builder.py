@@ -26,6 +26,7 @@ class SearchTool(Enum):
     Available search tools.
     """
 
+    SYMBOL_SIMILARITY_SEARCH = "symbol-similarity-search"
     SYMBOL_RANK_SEARCH = "symbol-rank-search"
     SYMBOL_REFERENCES = "symbol-references"
     RETRIEVE_SOURCE_CODE_BY_SYMBOL = "retrieve-source-code-by-symbol"
@@ -51,12 +52,14 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def build_tool(self, tool_type: SearchTool) -> Tool:
         """Builds a suite of tools for searching the associated codebase."""
         tool_funcs = {
+            SearchTool.SYMBOL_SIMILARITY_SEARCH: self._symbol_code_similarity_search_processor,
             SearchTool.SYMBOL_RANK_SEARCH: self._symbol_rank_search_processor,
             SearchTool.SYMBOL_REFERENCES: self._symbol_symbol_references_processor,
             SearchTool.RETRIEVE_SOURCE_CODE_BY_SYMBOL: self._retrieve_source_code_by_symbol_processor,
             SearchTool.EXACT_SEARCH: self._exact_search_processor,
         }
         tool_descriptions = {
+            SearchTool.SYMBOL_SIMILARITY_SEARCH: "Performs a similarity based search of symbols based on a given query string.",
             SearchTool.SYMBOL_RANK_SEARCH: "Performs a ranked search of symbols based on a given query string.",
             SearchTool.SYMBOL_REFERENCES: "Finds all the references to a given symbol within the codebase.",
             SearchTool.RETRIEVE_SOURCE_CODE_BY_SYMBOL: "Returns the source code corresponding to a given symbol.",
@@ -91,6 +94,16 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
         query_result = self.symbol_search.get_symbol_rank_results(query)
         return "\n".join(
             [symbol.full_dotpath for symbol, _rank in query_result][
+                : self.top_n
+            ]
+        )
+
+    def _symbol_code_similarity_search_processor(self, query: str) -> str:
+        query_result = self.symbol_search.get_symbol_code_similarity_results(
+            query
+        )
+        return "\n".join(
+            [symbol.full_dotpath for symbol, _similarity in query_result][
                 : self.top_n
             ]
         )

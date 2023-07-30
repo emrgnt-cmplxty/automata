@@ -1,9 +1,9 @@
 [
     {
         "template": {
-            "function_call": {
+            "input_function": {
                 "type": "FunctionCall",
-                "name": "symbol-rank-search",
+                "name": "symbol-similarity-search",
                 "arguments": {"query": "{query}"}
             },
             "expected_action": {

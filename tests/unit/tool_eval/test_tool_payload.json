@@ -1,7 +1,7 @@
 [
     {
         "template": {
-            "function_call": {
+            "input_function": {
                 "type": "FunctionCall",
                 "name": "call_termination",
                 "arguments": {"result": "{result}"}
