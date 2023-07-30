@@ -15,16 +15,19 @@ def mock_tool_response_with_search_action_completion():
     }
 
 
+result1 = "config.automata_agent_config.AutomataAgentConfig.description"
+result2 = "config.automata_agent_config.AutomataAgentConfig.load.config_name"
+result3 = "core.tasks.automata_task_executor.logger"
 EXPECTED_TOOL_ACTIONS = [
     SymbolSearchAction(
-        query="test_query_1", search_results=["result1", "result2"]
+        query="test_query_1", search_results=[result1, result2]
     ),
     SymbolSearchAction(
-        query="test_query_2", search_results=["result1", "result2"]
+        query="test_query_2", search_results=[result1, result2]
     ),
-    SymbolSearchAction(query="test_query_3", search_results=["result3"]),
+    SymbolSearchAction(query="test_query_3", search_results=[result3]),
     SymbolSearchAction(query="test_query_4", search_results=[]),
-    SymbolSearchAction(query="test_query_5", search_results=["result5"]),
+    SymbolSearchAction(query="test_query_5", search_results=[result3]),
 ]
 FUNCTION_CALLS = [
     FunctionCall(

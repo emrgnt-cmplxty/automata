@@ -40,11 +40,13 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
         self,
         symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
+        top_n: int = 10,
         *args,
         **kwargs,
     ) -> None:
         self.symbol_search = symbol_search
         self.search_tools = search_tools or list(SearchTool)
+        self.top_n = top_n
 
     def build_tool(self, tool_type: SearchTool) -> Tool:
         """Builds a suite of tools for searching the associated codebase."""
@@ -87,7 +89,11 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     # -- Right now these are just simplest implementations I can rattle off
     def _symbol_rank_search_processor(self, query: str) -> str:
         query_result = self.symbol_search.get_symbol_rank_results(query)
-        return "\n".join([symbol.uri for symbol, _rank in query_result])
+        return "\n".join(
+            [symbol.full_dotpath for symbol, _rank in query_result][
+                : self.top_n
+            ]
+        )
 
     def _symbol_symbol_references_processor(self, query: str) -> str:
         query_result = self.symbol_search.symbol_references(query)
@@ -95,7 +101,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             [
                 f"{symbol}:{str(reference)}"
                 for symbol, reference in query_result.items()
-            ]
+            ][: self.top_n]
         )
 
     def _retrieve_source_code_by_symbol_processor(self, query: str) -> str:
@@ -108,7 +114,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             [
                 f"{symbol}:{str(references)}"
                 for symbol, references in query_result.items()
-            ]
+            ][: self.top_n]
         )
 
 

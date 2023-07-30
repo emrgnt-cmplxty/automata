@@ -189,11 +189,34 @@ def run_agent_eval(ctx, *args, **kwargs) -> None:
     Run the evaluation.
 
     Here is an exmaple command -
-    poetry run automata run-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="document-oracle,py-reader" --log-level=DEBUG --max-iterations=3
+    poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="document-oracle,py-reader" --log-level=DEBUG --max-iterations=3
 
 
     """
     from automata.cli.scripts.run_agent_eval import main
+
+    if kwargs.get("instructions"):
+        raise ValueError("Instructions should not be passed to run_agent_eval")
+
+    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    logger.info("Running Evaluation")
+    main(**kwargs)
+
+
+@common_options
+@agent_options
+@eval_options
+@cli.command()
+@click.pass_context
+def run_tool_eval(ctx, *args, **kwargs) -> None:
+    """
+    Run the evaluation.
+
+    Here is an exmaple command -
+    poetry run automata run-tool-eval --evals-filepath=automata/config/eval/tool_payload.json --toolkits="symbol-search" --log-level=DEBUG
+
+    """
+    from automata.cli.scripts.run_tool_eval import main
 
     if kwargs.get("instructions"):
         raise ValueError("Instructions should not be passed to run_agent_eval")
