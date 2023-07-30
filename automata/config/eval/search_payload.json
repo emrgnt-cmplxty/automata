@@ -232,14 +232,12 @@
             {"query": "Which class evaluates a list of instructions against a list of expected actions?", "result": "automata.eval.agent.agent_eval_harness.AgentEvaluationHarness"},
             {"query": "Which class represents the result of an agent eval?", "result": "automata.eval.agent.agent_eval.AgentEvalResult"},
             {"query": "Which class provides an abstraction for evaluating an LLM's performance?", "result": "automata.eval.agent.agent_eval.AgentEval"},
-            {"query": "Which class raises an exception when there's an error executing the code?", "result": "CodeExecutionError"},
-            {"query": "Which class raises an exception when the target variable is not found?", "result": "VariableNotFoundError"},
-            {"query": "Which class represents written code in action?", "result": "CodeWritingAction"},
-            {"query": "What is the function of the `__eq__` method in the `CodeWritingAction` class?", "result": "Checks the equality of two `CodeWritingAction` instances"},
-            {"query": "Which class evaluates an LLM's code writing ability?", "result": "CodeWritingEval"},
-            {"query": "Which class represents an OpenAI function call in action?", "result": "OpenAIFunctionCallAction"},
-            {"query": "What is the function of the `__eq__` method in the `OpenAIFunctionCallAction` class?", "result": "Checks the equality of two `OpenAIFunctionCallAction` instances"},
-            {"query": "Which class evaluates OpenAI messages for function call actions?", "result": "OpenAIFunctionEval"}
+            {"query": "Which class raises an exception when there's an error executing the code?", "result": "automata.eval.agent.code_writing_eval.CodeExecutionError"},
+            {"query": "Which class raises an exception when the target variable is not found?", "result": "automata.eval.agent.code_writing_eval.VariableNotFoundError"},
+            {"query": "Which class represents written code in action?", "result": "automata.eval.agent.code_writing_eval.CodeWritingAction"},
+            {"query": "Which class evaluates an LLM's code writing ability?", "result": "automata.eval.agent.code_writing_eval.CodeWritingEval"},
+            {"query": "Which class represents an OpenAI function call in action?", "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction"},
+            {"query": "Which class evaluates OpenAI messages for function call actions?", "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionEval"}
         ]
     }
 ]
