@@ -1,5 +1,5 @@
 """Generates a composite evaluator from a list of evaluators."""
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
 from automata.eval.eval_base import Action, Eval
@@ -8,7 +8,9 @@ from automata.llm.llm_base import LLMChatMessage
 from automata.tasks import AutomataTask, AutomataTaskExecutor
 
 
-def aggregate_agent_result(results: List[AgentEvalResult]) -> AgentEvalResult:
+def aggregate_agent_result(
+    results: List[AgentEvalResult], run_id: Optional[int] = None
+) -> AgentEvalResult:
     """Aggregates a list of EvalResult objects into a single result."""
 
     if not results:
@@ -18,7 +20,9 @@ def aggregate_agent_result(results: List[AgentEvalResult]) -> AgentEvalResult:
     if any(result.session_id != results[0].session_id for result in results):
         raise ValueError("All session ids must match.")
 
-    if any(result.run_id != results[0].run_id for result in results):
+    if run_id and any(
+        result.run_id != results[0].run_id for result in results
+    ):
         raise ValueError("All run ids must match.")
 
     # Merge all match_result dictionaries
@@ -85,14 +89,14 @@ class AgentEvalComposite(Eval):
         for evaluator in self.agent_evaluators:
             result = evaluator.process_result(
                 expected_output,
-                agent.conversation.messages,
+                agent.agent_responses,
                 session_id=agent.session_id,
                 run_id=kwargs.get("run_id"),
             )
             if not isinstance(result, AgentEvalResult):
                 raise ValueError("Evaluators must return an AgentEvalResult.")
             results.append(result)
-        return aggregate_agent_result(results)
+        return aggregate_agent_result(results, kwargs.get("run_id"))
 
     def extract_action(self, message: LLMChatMessage) -> List[Action]:
         """Extracts a list of action from the given message."""
