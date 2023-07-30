@@ -27,4 +27,4 @@ def test_tool_evaluation_harness_and_metrics(tool_eval_harness, setup_tool):
     assert metrics.total_full_matches == 2
     assert metrics.total_partial_matches == 5
     assert metrics.full_match_rate == 0.4
-    assert metrics.partial_match_rate == 0.8
+    assert metrics.partial_match_rate == 1.0

@@ -1,4 +1,4 @@
-from .emedding_base import (
+from automata.embedding.embedding_base import (
     Embedding,
     EmbeddingBuilder,
     EmbeddingHandler,
