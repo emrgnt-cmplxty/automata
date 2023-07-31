@@ -1,6 +1,5 @@
 import logging
 import os
-import pickle
 from functools import lru_cache
 from typing import Any, Dict, List, Set, Tuple
 
@@ -14,7 +13,6 @@ from automata.code_parsers.py import (
     PyReader,
 )
 from automata.code_writers.py import PyCodeWriter
-from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.config import EmbeddingDataCategory
 from automata.context_providers import (
     SymbolProviderRegistry,
@@ -174,16 +172,6 @@ class DependencyFactory(metaclass=Singleton):
         Associated Keyword Args:
             symbol_graph_scip_fpath (DependencyFactory.DEFAULT_SCIP_FPATH)
         """
-        if os.getenv("GRAPH_TYPE") == "static":
-            try:
-                with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
-                    graph = pickle.load(f)
-                return SymbolGraph.from_graph(graph)
-            except FileNotFoundError:
-                logger.warning(
-                    "Pickle file not found, generating SymbolGraph dynamically."
-                )
-
         return self.overrides.get(
             "symbol_graph",
             SymbolGraph(

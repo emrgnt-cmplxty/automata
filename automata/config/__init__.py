@@ -49,6 +49,8 @@ REPOSITORY_NAME = os.getenv("REPOSITORY_NAME", "emrgnt-cmplxty/Automata")
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", 8))
 DATA_ROOT_PATH = os.getenv("DATA_ROOT_PATH", "automata-embedding-data")
 
+GRAPH_TYPE = os.getenv("GRAPH_TYPE", "dynamic")
+
 __all__ = [
     "AgentConfig",
     "AgentConfigBuilder",

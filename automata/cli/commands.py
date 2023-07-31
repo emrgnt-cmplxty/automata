@@ -213,7 +213,7 @@ def run_tool_eval(ctx, *args, **kwargs) -> None:
     Run the evaluation.
 
     Here is an exmaple command -
-    poetry run automata run-tool-eval --evals-filepath=automata/config/eval/search_payload.json --toolkits="symbol-search" --log-level=DEBUG
+    poetry run automata run-tool-eval --evals-filepath=automata/config/eval/single_target_search_payload.json --toolkits="symbol-search" --log-level=DEBUG
 
     """
     from automata.cli.scripts.run_tool_eval import main

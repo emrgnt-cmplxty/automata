@@ -1,11 +1,9 @@
 import logging
 import os
-import pickle
 
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_py_module_loader
-from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import (
@@ -22,27 +20,11 @@ logger = logging.getLogger(__name__)
 
 
 def initialize_resources(project_name, **kwargs):
-    if os.getenv("GRAPH_TYPE") == "static":
-        try:
-            with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
-                graph = pickle.load(f)
-            symbol_graph = SymbolGraph.from_graph(graph)
-        except FileNotFoundError:
-            logger.warning(
-                "Pickle file not found, generating SymbolGraph dynamically."
-            )
-            symbol_graph = SymbolGraph(
-                os.path.join(
-                    DependencyFactory.DEFAULT_SCIP_FPATH,
-                    f"{project_name}.scip",
-                )
-            )
-    else:
-        symbol_graph = SymbolGraph(
-            os.path.join(
-                DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
-            )
+    symbol_graph = SymbolGraph(
+        os.path.join(
+            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
         )
+    )
 
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,
