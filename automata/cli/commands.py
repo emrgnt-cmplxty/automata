@@ -132,7 +132,7 @@ def run_code_embedding(ctx: click.Context, *args, **kwargs) -> None:
 
     from automata.cli.scripts.run_code_embedding import main
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "INFO"))
     logger.debug("Calling run_code_embedding")
     main(**kwargs)
 
@@ -157,7 +157,7 @@ def run_doc_embedding(
 
     from automata.cli.scripts.run_doc_embedding import main
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "INFO"))
     logger.info("Calling run_doc_embedding")
 
     result = main(overwrite=overwrite, *args, **kwargs)
