@@ -152,7 +152,7 @@ def update_graph_type(dotenv_path: str, graph_type: str) -> None:
     """Updates the type in the local environment."""
 
     replace_key(dotenv_path, "GRAPH_TYPE", graph_type)
-    log_cli_output(f"The graph type has been updated to {type}.")
+    log_cli_output(f"The graph type has been updated to {graph_type}.")
 
 
 def delete_key_value(dotenv_path: str, key: str) -> None:

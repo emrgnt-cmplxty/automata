@@ -19,9 +19,12 @@ def initialize_py_module_loader(
     *args: Any,
     project_root_fpath: Optional[str] = None,
     project_name: Optional[str] = None,
-    project_project_name: Optional[str] = None
+    project_project_name: Optional[str] = None,
+    **kwargs: Any
 ) -> None:
     """Initializes the py_module_loader with the specified project name and root file path."""
+
+    kwargs.pop("log_level", None)
 
     root_path = project_root_fpath or get_root_fpath()
     project_name = project_project_name or project_name or "automata"
