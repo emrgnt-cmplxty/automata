@@ -1,4 +1,11 @@
+"""
+Contains the `SymbolGraph` class and all logic related to building symbol graphs and subgraphs.
+"""
+
+
 import logging
+import os
+import pickle
 from copy import deepcopy
 from functools import lru_cache
 from typing import Dict, List, Optional, Set
@@ -6,7 +13,7 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
-from automata.config import GRAPH_TYPE
+from automata.config import DATA_ROOT_PATH, GRAPH_TYPE
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
@@ -33,9 +40,13 @@ class SymbolGraph(ISymbolProvider):
         build_references: bool = True,
         build_relationships: bool = True,
         build_caller_relationships: bool = False,
-        from_pickle: bool = GRAPH_TYPE == "dynamic",
+        from_pickle: bool = GRAPH_TYPE
+        == "static",  # we would want this to be static, right???
         save_graph_pickle: bool = True,
     ) -> None:
+        """
+        Initializes a new instance of `SymbolGraph`.
+        """
         super().__init__()
         index = self._load_index_protobuf(index_path)
         builder = GraphBuilder(
@@ -46,13 +57,21 @@ class SymbolGraph(ISymbolProvider):
         )
         self._graph = builder.build_graph(from_pickle, save_graph_pickle)
         self.navigator = SymbolGraphNavigator(self._graph)
+        self.from_pickle = from_pickle
+        self.subgraph_pickle_path = f"{DATA_ROOT_PATH}/symbol_subgraph.pkl"
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
+        """
+        Returns the set of symbols that the given symbol depends on. This means any symbols that the input symbol
+        directly references or uses.
+        """
         return self.navigator.get_symbol_dependencies(symbol)
 
     def get_symbol_relationships(self, symbol: Symbol) -> Set[Symbol]:
         """
-        Gets the set of symbols with relationships to the given symbol.
+        Returns the set of symbols with relationships to the given symbol. In this context, a "relationship" refers to
+        any type of connection between the input symbol and other symbols, including dependencies, usages, references, etc.
+
         # TODO: Consider the implications of using a List instead of Set.
         """
         return self.navigator.get_symbol_relationships(symbol)
@@ -61,8 +80,9 @@ class SymbolGraph(ISymbolProvider):
         self, symbol: Symbol
     ) -> Dict[SymbolReference, Symbol]:
         """
-        Gets the callees of the given symbol.
-        Downstream filtering must be applied to remove non-call relationships.
+        Gets the potential callers of the given symbol. This includes any symbols that might be making a call
+        to the given symbol. Downstream filtering must be applied to remove non-call relationships.
+
         """
         return self.navigator.get_potential_symbol_callers(symbol)
 
@@ -70,23 +90,55 @@ class SymbolGraph(ISymbolProvider):
         self, symbol: Symbol
     ) -> Dict[Symbol, SymbolReference]:
         """
-        Gets the callees of the given symbol.
-        Downstream filtering must be applied to remove non-callee relationships.
+        Gets potential callees of the given symbol. This includes any symbols that the given symbol might be calling.
+        Downstream filtering must be applied to remove relationships that are not 'calls'.
         """
         return self.navigator.get_potential_symbol_callees(symbol)
 
     def get_references_to_symbol(
         self, symbol: Symbol
     ) -> Dict[str, List[SymbolReference]]:
+        """
+        Gets the references to the given symbol in the graph. This includes all places in the codebase where
+        the given symbol is used or called.
+        """
         return self.navigator.get_references_to_symbol(symbol)
 
     @property
     def default_rankable_subgraph(self) -> nx.DiGraph:
+        """
+        Gets the default rankable subgraph. This subgraph contains only the nodes and edges of the original
+        graph that can be ranked. This may be a cached version of the graph for faster loading.
+        @TODO: Pickle this for faster loading.
+        """
         return self._build_default_rankable_subgraph()
 
     @lru_cache(maxsize=1)
     def _build_default_rankable_subgraph(self) -> nx.DiGraph:
-        return self._build_rankable_subgraph()
+        """
+        Creates a subgraph of the original `SymbolGraph`
+        """
+        if self.from_pickle and os.path.exists(self.subgraph_pickle_path):
+            return self._load_subgraph_from_pickle()
+
+        subgraph = self._build_rankable_subgraph()
+        self._save_subgraph_to_pickle(subgraph)
+
+        return subgraph
+
+    def _load_subgraph_from_pickle(self) -> nx.DiGraph:
+        """
+        Loads a subgraph from a pickle file.
+        """
+        with open(self.subgraph_pickle_path, "rb") as f:
+            return pickle.load(f)
+
+    def _save_subgraph_to_pickle(self, subgraph: nx.DiGraph) -> None:
+        """
+        Saves a subgraph to a pickle file.
+        """
+        with open(self.subgraph_pickle_path, "wb") as f:
+            pickle.dump(subgraph, f)
 
     def _build_rankable_subgraph(
         self, path_filter: Optional[str] = None
@@ -133,7 +185,12 @@ class SymbolGraph(ISymbolProvider):
     def _get_sorted_supported_symbols(self) -> List[Symbol]:
         return self.navigator.get_sorted_supported_symbols()
 
-    def filter_symbols(self, sorted_supported_symbols: List[Symbol]):
+    def filter_symbols(self, sorted_supported_symbols: List[Symbol]) -> None:
+        """
+        Modifies the graph in-place by removing all symbol nodes that are not present in
+        the given list, 'sorted_supported_symbols'. The list should contain
+        symbol instances that are a part of the graph. If the graph doesn't exist, this function does nothing.
+        """
         if self._graph:
             graph_nodes_and_data = deepcopy(self._graph.nodes(data=True))
             for node, data in graph_nodes_and_data:
@@ -145,6 +202,9 @@ class SymbolGraph(ISymbolProvider):
 
     @staticmethod
     def _load_index_protobuf(path: str) -> Index:
+        """
+        Loads and returns an Index protobuf object from the given file path.
+        """
         index = Index()
         with open(path, "rb") as f:
             index.ParseFromString(f.read())
@@ -152,6 +212,9 @@ class SymbolGraph(ISymbolProvider):
 
     @classmethod
     def from_graph(cls, graph: nx.MultiDiGraph) -> "SymbolGraph":
+        """
+        Creates a new `SymbolGraph` instance from an existing networkx MultiDiGraph object.
+        """
         instance = cls.__new__(cls)
 
         instance._graph = graph

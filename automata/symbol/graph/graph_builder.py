@@ -1,3 +1,7 @@
+"""
+Contains the `GraphBuilder` class, which builds a `SymbolGraph` from a corresponding Index.
+"""
+
 import logging
 import os
 import pickle
@@ -25,6 +29,9 @@ class GraphBuilder:
         build_relationships: bool,
         build_caller_relationships: bool,
     ) -> None:
+        """
+        Initializes a new instance of `GraphBuilder`.
+        """
         self.index = index
         self.build_references = build_references
         self.build_relationships = build_relationships
@@ -40,7 +47,6 @@ class GraphBuilder:
         The `Document` type, along with others, is defined in the scip_pb2.py file.
         Edges are added for relationships, references, and calls between `Symbol` nodes.
         """
-
         graph_pickle_path = f"{DATA_ROOT_PATH}/symbol_graph.pkl"
 
         if not from_pickle or not os.path.exists(graph_pickle_path):
