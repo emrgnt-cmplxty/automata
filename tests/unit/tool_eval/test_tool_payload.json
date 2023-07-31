@@ -12,7 +12,7 @@
                 "search_results": ""
             }
         },
-        "formatters": [
+        "entries": [
             {"result": "True", "object": "GitHubClient"},
             {"result": "False", "object": "ChromaVectorDatabase"}
         ]

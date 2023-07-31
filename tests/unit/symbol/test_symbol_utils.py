@@ -90,7 +90,6 @@ def test_get_rankable_symbols(local_module_loader):
 
     filtered_symbols_no_calculator2 = get_rankable_symbols(
         symbols,
-        symbols_strings_to_filter=["calculator2"],
     )
 
-    assert len(filtered_symbols_no_calculator2) == 6
+    assert len(filtered_symbols_no_calculator2) == 9

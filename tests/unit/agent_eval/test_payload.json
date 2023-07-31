@@ -10,7 +10,7 @@
                 }
             ]
         },
-        "formatters": [
+        "entries": [
             {"result": "True"}
         ]
     },
@@ -25,7 +25,7 @@
                 }
             ]
         },
-        "formatters": [
+        "entries": [
             {"object": "GitHubClient"},
             {"object": "ChromaVectorDatabase"}
         ]

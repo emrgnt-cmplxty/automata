@@ -1,18 +1,21 @@
+"""
+Runs the symbol code embedding process for the given symbol graph.
+"""
+
 import logging
 import os
-import pickle
+from typing import List
 
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_py_module_loader
-from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,
 )
-from automata.symbol import SymbolGraph, get_rankable_symbols
+from automata.symbol import Symbol, SymbolGraph, get_rankable_symbols
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
@@ -21,28 +24,16 @@ from automata.symbol_embedding import (
 logger = logging.getLogger(__name__)
 
 
-def initialize_resources(project_name, **kwargs):
-    if os.getenv("GRAPH_TYPE") == "static":
-        try:
-            with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
-                graph = pickle.load(f)
-            symbol_graph = SymbolGraph.from_graph(graph)
-        except FileNotFoundError:
-            logger.warning(
-                "Pickle file not found, generating SymbolGraph dynamically."
-            )
-            symbol_graph = SymbolGraph(
-                os.path.join(
-                    DependencyFactory.DEFAULT_SCIP_FPATH,
-                    f"{project_name}.scip",
-                )
-            )
-    else:
-        symbol_graph = SymbolGraph(
-            os.path.join(
-                DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
-            )
+def initialize_resources(
+    project_name: str, **kwargs
+) -> tuple[SymbolGraph, SymbolCodeEmbeddingHandler]:
+    """Initialize the resources needed to build the code embeddings."""
+
+    symbol_graph = SymbolGraph(
+        os.path.join(
+            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
         )
+    )
 
     code_embedding_db = ChromaSymbolEmbeddingVectorDatabase(
         project_name,
@@ -71,14 +62,21 @@ def initialize_resources(project_name, **kwargs):
     return symbol_graph, symbol_code_embedding_handler
 
 
-def collect_symbols(symbol_graph):
+def collect_symbols(symbol_graph: SymbolGraph) -> List[Symbol]:
+    """Collect all symbols that can be ranked."""
+
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     return sorted(
         get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
     )
 
 
-def process_embeddings(symbol_code_embedding_handler, filtered_symbols):
+def process_embeddings(
+    symbol_code_embedding_handler: SymbolCodeEmbeddingHandler,
+    filtered_symbols: List[Symbol],
+) -> None:
+    """Process the embeddings for the filtered symbols."""
+
     for symbol in tqdm(filtered_symbols):
         try:
             symbol_code_embedding_handler.process_embedding(symbol)
@@ -90,7 +88,9 @@ def process_embeddings(symbol_code_embedding_handler, filtered_symbols):
     symbol_code_embedding_handler.flush()  # Final flush for any remaining symbols that didn't form a complete batch
 
 
-def main(*args, **kwargs):
+def main(*args, **kwargs) -> str:
+    """Run the code embedding script."""
+
     initialize_py_module_loader(**kwargs)
 
     symbol_graph, symbol_code_embedding_handler = initialize_resources(

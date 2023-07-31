@@ -1,12 +1,14 @@
+"""
+Runs the symbol doc embedding process for the given symbol graph.
+"""
+
 import logging
 import os
-import pickle
-from typing import List
+from typing import List, Optional, Union
 
 from tqdm import tqdm
 
 from automata.cli.cli_utils import initialize_py_module_loader
-from automata.config import DATA_ROOT_PATH as data_root_path
 from automata.context_providers.symbol_synchronization_context import (
     SymbolProviderSynchronizationContext,
 )
@@ -31,31 +33,21 @@ from automata.symbol_embedding import (
 logger = logging.getLogger(__name__)
 
 
-def initialize_providers(embedding_level, symbols=None, **kwargs):
+def initialize_providers(
+    embedding_level: int,
+    symbols: Optional[Union[str, List[Symbol]]] = None,
+    **kwargs,
+) -> tuple[SymbolDocEmbeddingHandler, list[Symbol]]:
+    """Initialize the resources needed to build the doc embeddings."""
+
     project_name = kwargs.get("project_name") or "automata"
     initialize_py_module_loader(**kwargs)
 
-    if os.getenv("GRAPH_TYPE") == "static":
-        try:
-            with open(f"{data_root_path}/symbol_graph.pkl", "rb") as f:
-                graph = pickle.load(f)
-            symbol_graph = SymbolGraph.from_graph(graph)
-        except FileNotFoundError:
-            logger.warning(
-                "Pickle file not found, generating SymbolGraph dynamically."
-            )
-            symbol_graph = SymbolGraph(
-                os.path.join(
-                    DependencyFactory.DEFAULT_SCIP_FPATH,
-                    f"{project_name}.scip",
-                )
-            )
-    else:
-        symbol_graph = SymbolGraph(
-            os.path.join(
-                DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
-            )
+    symbol_graph = SymbolGraph(
+        os.path.join(
+            DependencyFactory.DEFAULT_SCIP_FPATH, f"{project_name}.scip"
         )
+    )
 
     if isinstance(symbols, str):
         dotpaths = parse_dotpaths(symbols)
@@ -116,6 +108,7 @@ def initialize_providers(embedding_level, symbols=None, **kwargs):
 
 def parse_dotpaths(dotpaths: str) -> List[str]:
     """Parses a comma-separated string of dotpaths into a list of dotpaths."""
+
     return [dotpath.strip() for dotpath in dotpaths.split(",")]
 
 
@@ -123,6 +116,7 @@ def map_dotpaths_to_symbols(
     dotpaths: List[str], symbol_graph: SymbolGraph
 ) -> List[Symbol]:
     """Maps a list of dotpaths to their corresponding Symbol objects."""
+
     all_symbols = symbol_graph.get_sorted_supported_symbols()
     return [
         symbol for symbol in all_symbols if symbol.full_dotpath in dotpaths
