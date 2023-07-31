@@ -15,7 +15,6 @@ from automata.config import (
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient
 from automata.singletons.py_module_loader import py_module_loader
-from automata.tasks import IAutomataTaskExecution
 from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)

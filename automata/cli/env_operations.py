@@ -34,6 +34,8 @@ def get_key(dotenv_path: str, key_to_get: str) -> Optional[str]:
         if key == key_to_get:
             return value.rstrip()
 
+    return None
+
 
 def replace_key(dotenv_path: str, key_to_set: str, value_to_set: str) -> None:
     """Replace an existing key in a .env file."""
@@ -146,14 +148,14 @@ def update_key_value(dotenv_path: str, key: str) -> None:
     log_cli_output(f"The value of {key} has been updated.")
 
 
-def update_graph_type(dotenv_path: str, type: str) -> None:
+def update_graph_type(dotenv_path: str, graph_type: str) -> None:
     """Updates the type in the local environment."""
 
-    replace_key(dotenv_path, "GRAPH_TYPE", type)
+    replace_key(dotenv_path, "GRAPH_TYPE", graph_type)
     log_cli_output(f"The graph type has been updated to {type}.")
 
 
-def delete_key_value(dotenv_path: str, key: str):
+def delete_key_value(dotenv_path: str, key: str) -> None:
     """Deletes the key from the local task_environment."""
 
     user_confirmation = input(
