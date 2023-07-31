@@ -37,7 +37,3 @@ class OuterClass:
 
         def inner_method(self):
             """Inner method doc strings"""
-
-
-def g(x):
-    return x + 1
