@@ -22,9 +22,6 @@ def get_project_paths() -> tuple[str, str, str, str, str, str]:
     # Root directory of the Automata project
     automata_root = script_dir.parent.parent
 
-    # Directory where repositories are stored
-    repo_store_path = os.path.join(automata_root.parent, "repo_store")
-
     # Relative path from the Automata root to the directory where embedding data is stored
     embedding_data_path = os.path.relpath(
         os.path.join(automata_root, "automata-embedding-data"), automata_root
@@ -64,11 +61,11 @@ def install_indexing() -> None:
     """Attempts to execute the install indexing script"""
     (
         automata_root,
-        embedding_data_path,
-        factory_path,
-        project_name,
+        _,
+        _,
+        _,
         scip_python_path,
-        project_in_factory,
+        _,
     ) = get_project_paths()
 
     try:
@@ -91,7 +88,7 @@ def generate_local_indices() -> None:
         embedding_data_path,
         factory_path,
         project_name,
-        scip_python_path,
+        _,
         project_in_factory,
     ) = get_project_paths()
 
