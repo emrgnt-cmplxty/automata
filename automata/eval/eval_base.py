@@ -32,6 +32,10 @@ class Action(ABC):
     """An arbitrary action to be taken by an LLM, like an OpenAI function call"""
 
     @abstractmethod
+    def __init__(self) -> None:
+        pass
+
+    @abstractmethod
     def to_payload(self) -> Payload:
         """Converts the Action to a dictionary."""
         pass
@@ -61,14 +65,6 @@ class EvalResult(ABC):
     @abstractmethod
     def is_partial_match(self) -> bool:
         """Indicates whether the evaluation was a partial match."""
-
-    @abstractmethod
-    def get_details(self) -> Dict[str, Any]:
-        """Returns a dictionary with detailed information about the evaluation."""
-
-    @abstractmethod
-    def get_extra_info(self) -> Dict[str, Action]:
-        """Returns a dictionary with extra information about the evaluation."""
 
     @abstractmethod
     def to_payload(self) -> Payload:

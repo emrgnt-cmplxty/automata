@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 
 from automata.eval.eval_base import (
     Action,
@@ -40,19 +40,6 @@ class AgentEvalResult(EvalResult):
     def is_partial_match(self) -> bool:
         """Checks if the result is a partial match."""
         return any(self.match_results.values())
-
-    def get_details(self) -> Dict[str, Any]:
-        """Gets the details of the result."""
-        return {
-            str(action): result
-            for action, result in self.match_results.items()
-        }
-
-    def get_extra_info(self) -> Dict[str, Any]:
-        """Gets the extra info of the result."""
-        return {
-            "extra_actions": [str(action) for action in self.extra_actions]
-        }
 
     def to_payload(self) -> Payload:
         """Converts the result to a dictionary."""

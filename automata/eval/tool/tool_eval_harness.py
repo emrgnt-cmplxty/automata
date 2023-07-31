@@ -37,11 +37,11 @@ class ToolEvalSetLoader:
 
         for item in payloads:
             template = item["template"]
-            formatters = item["formatters"]
+            entries = item["entries"]
 
-            for formatter in formatters:
+            for entry in entries:
                 # TODO - Avoid using type ignore below.
-                payload = self.format_values(template, formatter)  # type: ignore
+                payload = self.format_values(template, entry)  # type: ignore
 
                 input_func_call = payload.get("input_function")
                 expected_action = payload.get("expected_action")
