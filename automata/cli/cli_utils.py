@@ -1,7 +1,11 @@
+"""
+This module contains utility functions for the CLI.
+"""
+
 import logging
 import os
 import shutil
-from typing import Any
+from typing import Any, List, Optional
 
 from questionary import Style, prompt
 
@@ -11,13 +15,19 @@ from automata.singletons.py_module_loader import py_module_loader
 logger = logging.getLogger(__name__)
 
 
-# TODO - Add types
-def initialize_py_module_loader(*args, **kwargs) -> None:
+def initialize_py_module_loader(
+    *args: Any,
+    project_root_fpath: Optional[str] = None,
+    project_name: Optional[str] = None,
+    project_project_name: Optional[str] = None,
+    **kwargs: Any
+) -> None:
     """Initializes the py_module_loader with the specified project name and root file path."""
 
-    root_path = kwargs.get("project_root_fpath") or get_root_fpath()
-    project_name = kwargs.get("project_name") or "automata"
-    project_name = kwargs.get("project_project_name") or project_name
+    kwargs.pop("log_level", None)
+
+    root_path = project_root_fpath or get_root_fpath()
+    project_name = project_project_name or project_name or "automata"
     py_module_loader.initialize(root_path, project_name)
 
 
@@ -61,8 +71,7 @@ def get_custom_style() -> Style:
     )
 
 
-# TODO - Can we get an explicit type here?
-def ask_choice(message, choices) -> Any:
+def ask_choice(message: str, choices: List[str]) -> str:
     """Asks the user for a specific choice."""
     questions = [
         {

@@ -119,7 +119,7 @@ class LoggingConfig(TypedDict, total=False):
 
 
 def get_logging_config(
-    log_level: int = logging.INFO, log_file: Optional[str] = None
+    log_level: int = logging.DEBUG, log_file: Optional[str] = None
 ) -> dict[str, Any]:
     """Returns logging configuration."""
 
@@ -148,7 +148,7 @@ def get_logging_config(
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "colored",
-                "level": logging.INFO,
+                "level": logging.DEBUG,
             },
             "cli_output": {
                 "class": "logging.StreamHandler",

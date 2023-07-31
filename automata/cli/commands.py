@@ -1,9 +1,13 @@
+"""
+This module contains the CLI commands for the Automata CLI.
+"""
+
 import logging
 import logging.config
 
 import click
 
-from automata.cli.cli_output_logger import CustomLogger
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
 from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
@@ -25,8 +29,11 @@ def reconfigure_logging(log_level_str: str) -> None:
     log_level = logging.DEBUG
     if log_level_str == "INFO":
         log_level = logging.INFO
+    elif log_level_str == "CLI_OUTPUT":
+        log_level = CLI_OUTPUT_LEVEL
     elif log_level_str != "DEBUG":
         raise ValueError(f"Unknown log level: {log_level_str}")
+
     logging_config = get_logging_config(log_level=log_level)
     logging.config.dictConfig(logging_config)
 
@@ -40,14 +47,16 @@ def reconfigure_logging(log_level_str: str) -> None:
 
 @click.group()
 @click.pass_context
-def cli(ctx) -> None:
+def cli(ctx: click.Context) -> None:
+    """Automata CLI"""
+
     pass
 
 
 @common_options
 @cli.command()
 @click.pass_context
-def configure(ctx, *args, **kwargs) -> None:
+def configure(ctx: click.Context, *args, **kwargs) -> None:
     """
     Configures environment variables for Automata
 
@@ -98,10 +107,13 @@ def configure(ctx, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
-def build(ctx, *args, **kwargs) -> None:
+def build(ctx: click.Context, *args, **kwargs) -> None:
     """Run the install_index script."""
 
-    from automata.cli.build import generate_local_indices, install_indexing
+    from automata.cli.install_indexing import (
+        generate_local_indices,
+        install_indexing,
+    )
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
 
@@ -115,13 +127,13 @@ def build(ctx, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
-def run_code_embedding(ctx, *args, **kwargs) -> None:
+def run_code_embedding(ctx: click.Context, *args, **kwargs) -> None:
     """Run the code embedding pipeline."""
 
     from automata.cli.scripts.run_code_embedding import main
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Calling run_code_embedding")
+    reconfigure_logging(kwargs.get("log-level", "INFO"))
+    logger.debug("Calling run_code_embedding")
     main(**kwargs)
 
 
@@ -138,10 +150,14 @@ def run_code_embedding(ctx, *args, **kwargs) -> None:
     default=False,
     help="Overwrite the existing doc embeddings in the database.",
 )
-def run_doc_embedding(ctx, symbols, overwrite, *args, **kwargs) -> None:
+def run_doc_embedding(
+    ctx: click.Context, symbols: str, overwrite: bool, *args, **kwargs
+) -> None:
+    """Run the document embedding pipeline."""
+
     from automata.cli.scripts.run_doc_embedding import main
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    reconfigure_logging(kwargs.get("log-level", "INFO"))
     logger.info("Calling run_doc_embedding")
 
     result = main(overwrite=overwrite, *args, **kwargs)
@@ -151,7 +167,7 @@ def run_doc_embedding(ctx, symbols, overwrite, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
-def run_doc_post_process(ctx, *args, **kwargs) -> None:
+def run_doc_post_process(ctx: click.Context, *args, **kwargs) -> None:
     """Run the document post-processor."""
 
     from automata.cli.scripts.run_doc_post_process import main
@@ -170,7 +186,7 @@ def run_doc_post_process(ctx, *args, **kwargs) -> None:
     help="Comma-separated list of issue numbers to fetch",
 )
 @click.pass_context
-def run_agent(ctx, *args, **kwargs) -> None:
+def run_agent(ctx: click.Context, *args, **kwargs) -> None:
     """Run the agent."""
     from automata.cli.scripts.run_agent import main
 
@@ -184,7 +200,7 @@ def run_agent(ctx, *args, **kwargs) -> None:
 @eval_options
 @cli.command()
 @click.pass_context
-def run_agent_eval(ctx, *args, **kwargs) -> None:
+def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     """
     Run the evaluation.
 
@@ -193,6 +209,7 @@ def run_agent_eval(ctx, *args, **kwargs) -> None:
 
 
     """
+
     from automata.cli.scripts.run_agent_eval import main
 
     if kwargs.get("instructions"):
@@ -208,14 +225,15 @@ def run_agent_eval(ctx, *args, **kwargs) -> None:
 @eval_options
 @cli.command()
 @click.pass_context
-def run_tool_eval(ctx, *args, **kwargs) -> None:
+def run_tool_eval(ctx: click.Context, *args, **kwargs) -> None:
     """
     Run the evaluation.
 
     Here is an exmaple command -
-    poetry run automata run-tool-eval --evals-filepath=automata/config/eval/search_payload.json --toolkits="symbol-search" --log-level=DEBUG
+    poetry run automata run-tool-eval --evals-filepath=automata/config/eval/single_target_search_payload.json --toolkits="symbol-search" --log-level=DEBUG
 
     """
+
     from automata.cli.scripts.run_tool_eval import main
 
     if kwargs.get("instructions"):
