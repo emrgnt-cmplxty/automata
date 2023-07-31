@@ -1,3 +1,7 @@
+"""
+This script is used to run an agent with a given set of instructions and tools.
+"""
+
 import logging
 from typing import List
 
@@ -44,7 +48,9 @@ def process_issues(
     return issue_infos
 
 
-def main(*args, **kwargs):
+def main(*args, **kwargs) -> str:
+    """Run the agent with the given instructions and tools."""
+
     py_module_loader.initialize()
     github_manager = GitHubClient(
         access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME
