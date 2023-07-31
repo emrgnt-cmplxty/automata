@@ -81,7 +81,7 @@ def test_cli_run_code_embedding():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        mock_reconfigure_logging.assert_called_once_with("INFO")
         mock_main.assert_called_once()
 
 
@@ -103,7 +103,7 @@ def test_cli_run_doc_embedding():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        mock_reconfigure_logging.assert_called_once_with("INFO")
         assert mock_main.called
 
 
