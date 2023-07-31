@@ -5,7 +5,7 @@ This module contains utility functions for the CLI.
 import logging
 import os
 import shutil
-from typing import Any, List
+from typing import Any, List, Optional
 
 from questionary import Style, prompt
 
@@ -13,9 +13,6 @@ from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
-
-
-from typing import Any, Optional
 
 
 def initialize_py_module_loader(
