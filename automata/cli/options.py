@@ -1,3 +1,7 @@
+"""
+Common options used across the CLI.
+"""
+
 import click
 
 

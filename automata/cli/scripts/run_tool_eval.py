@@ -1,5 +1,9 @@
+"""
+Script to run evaluation for a list of tasks specified in a JSON file.
+"""
+
 import logging
-from typing import List
+from typing import List, Optional
 
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
@@ -20,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 def run_eval_harness(
     evals_filepath: str,
-    evals: List[ToolEval] = [SymbolSearchEval()],
+    evals: Optional[List[ToolEval]] = None,
     *args,
     **kwargs,
 ) -> None:
@@ -36,6 +40,9 @@ def run_eval_harness(
 
     # Load the tasks and expected actions
     logger.info(f"Loading evals from {evals_filepath}...")
+
+    if evals is None:
+        evals = [SymbolSearchEval()]
 
     toolkits = kwargs.get("toolkits")
     if not isinstance(toolkits, str):

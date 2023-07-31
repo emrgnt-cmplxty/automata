@@ -1,7 +1,12 @@
+"""
+This script runs validation and compatibility tests on all YAML configuration files
+"""
+
 import glob
 import logging
 import logging.config
 import os
+from typing import Any
 
 import yaml
 from jsonschema import ValidationError, validate
@@ -12,43 +17,52 @@ from automata.core.utils import get_config_fpath, get_logging_config
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
 
-# Define the JSON schema for your YAML configuration files
-yaml_schema = {
-    "type": "object",
-    "properties": {
-        "system_template_variables": {
-            "type": "array",
-            "items": {"type": "string"},
+
+def yaml_schema() -> dict[str, Any]:
+    """Returns the JSON schema for the YAML configuration files."""
+
+    return {
+        "type": "object",
+        "properties": {
+            "system_template_variables": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "system_template": {"type": "string"},
+            "template_format": {"type": "string"},
+            "description": {"type": "string"},
+            # "number_of_expected_actions": {"type": "integer"},
         },
-        "system_template": {"type": "string"},
-        "template_format": {"type": "string"},
-        "description": {"type": "string"},
-        # "number_of_expected_actions": {"type": "integer"},
-    },
-    "required": [
-        "system_template_variables",
-        "system_template",
-        "template_format",
-        "description",
-        # "number_of_expected_actions",
-    ],
-}
+        "required": [
+            "system_template_variables",
+            "system_template",
+            "template_format",
+            "description",
+            # "number_of_expected_actions",
+        ],
+    }
 
 
 # Validation test function
-def test_yaml_validation(file_path) -> None:
+def test_yaml_validation(file_path: str) -> None:
+    """Tests that the YAML file is valid."""
+
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
 
     try:
-        validate(instance=yaml_data, schema=yaml_schema)
+        validate(instance=yaml_data, schema=yaml_schema())
         logger.debug(f"Validation test for {file_path} passed.")
     except ValidationError as e:
-        raise ValidationError(f"Validation test for {file_path} failed: {e}")
+        raise ValidationError(
+            f"Validation test for {file_path} failed."
+        ) from e
 
 
 # Compatibility test function
-def test_yaml_compatibility(file_path) -> None:
+def test_yaml_compatibility(file_path: str) -> None:
+    """Tests that the YAML file is compatible with the Automata CLI."""
+
     with open(file_path, "r") as file:
         yaml_data = yaml.safe_load(file)
 
