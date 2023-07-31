@@ -77,8 +77,10 @@ def install_indexing() -> None:
 
         os.chdir(os.path.join(scip_python_path, "packages/pyright-scip"))
         subprocess.run(["npm", "run", "build"], check=True)
+    except Exception as e:
+        logger.error(f"Failed to install indexing: {str(e)}")
+        raise
     finally:
-        logger.error("Failed to install the indexing")
         os.chdir(automata_root)
 
 
