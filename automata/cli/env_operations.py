@@ -20,6 +20,7 @@ def log_cli_output(message: str) -> None:
     """An override to log cli output messages"""
 
     logger.log(CLI_OUTPUT_LEVEL, message)
+    return None
 
 
 def get_key(dotenv_path: str, key_to_get: str) -> Optional[str]:
