@@ -1,3 +1,7 @@
+"""
+Runs symbol doc embedding post processing for the given symbol graph.
+"""
+
 import logging
 import os
 
@@ -17,6 +21,7 @@ def main(*args, **kwargs) -> str:
     """
     Update the symbol code embedding based on the specified SCIP index file.
     """
+
     project_name = kwargs.get("project_name") or "automata"
     initialize_py_module_loader(**kwargs)
 

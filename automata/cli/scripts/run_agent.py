@@ -1,3 +1,7 @@
+"""
+This script is used to run an agent with a given set of instructions and tools.
+"""
+
 import logging
 from typing import List
 
@@ -11,6 +15,7 @@ from automata.config import (
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient
 from automata.singletons.py_module_loader import py_module_loader
+from automata.tasks import IAutomataTaskExecution
 from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
@@ -44,7 +49,9 @@ def process_issues(
     return issue_infos
 
 
-def main(*args, **kwargs):
+def main(*args, **kwargs) -> str:
+    """Run the agent with the given instructions and tools."""
+
     py_module_loader.initialize()
     github_manager = GitHubClient(
         access_token=GITHUB_API_KEY, remote_name=REPOSITORY_NAME

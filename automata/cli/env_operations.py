@@ -1,6 +1,10 @@
+"""
+This module contains the functions to perform environment operations for the CLI.
+"""
+
 import logging
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from dotenv import load_dotenv
 
@@ -12,13 +16,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(CLI_OUTPUT_LEVEL)
 
 
-def log_cli_output(message):
+def log_cli_output(message: str) -> None:
     """An override to log cli output messages"""
 
     logger.log(CLI_OUTPUT_LEVEL, message)
 
 
-def get_key(dotenv_path: str, key_to_get: str):
+def get_key(dotenv_path: str, key_to_get: str) -> Optional[str]:
     """Get an existing key from a .env file."""
 
     with open(dotenv_path, "r") as file:
@@ -30,7 +34,7 @@ def get_key(dotenv_path: str, key_to_get: str):
             return value.rstrip()
 
 
-def replace_key(dotenv_path: str, key_to_set: str, value_to_set: str):
+def replace_key(dotenv_path: str, key_to_set: str, value_to_set: str) -> None:
     """Replace an existing key in a .env file."""
 
     with open(dotenv_path, "r") as file:
@@ -45,8 +49,9 @@ def replace_key(dotenv_path: str, key_to_set: str, value_to_set: str):
         file.writelines(lines)
 
 
-def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
+def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]) -> None:
     """Loads the env variables into the local env."""
+
     load_dotenv()
 
     for key, default_value in default_keys.items():
@@ -82,6 +87,7 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]):
 
 def ask_choice(prompt: str, choices: List[str]) -> str:
     """Prompt the user to select a choice from the given list."""
+
     while True:
         print(prompt)
         for i, choice in enumerate(choices, start=1):
@@ -97,6 +103,8 @@ def ask_choice(prompt: str, choices: List[str]) -> str:
 
 
 def select_graph_type() -> str:
+    """Prompt the user to select a graph type."""
+
     valid_options = [e.value for e in SymbolGraphType]
     valid_options = [re.escape(option) for option in valid_options]
     options_string = "".join(valid_options)
@@ -110,14 +118,14 @@ def select_graph_type() -> str:
             print(f"Invalid choice. Please select from {options_string}")
 
 
-def show_key_value(dotenv_path: str, key: str):
+def show_key_value(dotenv_path: str, key: str) -> None:
     """Shows the key value to the user."""
 
     value = get_key(dotenv_path, key)
     log_cli_output(f"The value of {key} is: {value}")
 
 
-def update_key_value(dotenv_path: str, key: str):
+def update_key_value(dotenv_path: str, key: str) -> None:
     """Updates the key value in the local task_environment."""
 
     if key == "DATA_ROOT_PATH":
@@ -137,7 +145,7 @@ def update_key_value(dotenv_path: str, key: str):
     log_cli_output(f"The value of {key} has been updated.")
 
 
-def update_graph_type(dotenv_path: str, type: str):
+def update_graph_type(dotenv_path: str, type: str) -> None:
     """Updates the type in the local environment."""
 
     replace_key(dotenv_path, "GRAPH_TYPE", type)

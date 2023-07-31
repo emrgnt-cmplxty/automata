@@ -1,3 +1,5 @@
+"""A custom logger which adheres to input specifications."""
+
 import logging
 
 CLI_OUTPUT_LEVEL = 25
@@ -10,7 +12,7 @@ class CustomLogger(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)  # call the base class constructor
 
-    # TODO - Add single-line comment.
-    def cli_output(self, message, *args, **kwargs):
+    def cli_output(self, message: str, *args, **kwargs) -> None:
+        """Logs a message at the CLI_OUTPUT level."""
         if self.isEnabledFor(CLI_OUTPUT_LEVEL):
             self._log(CLI_OUTPUT_LEVEL, message, args, **kwargs)
