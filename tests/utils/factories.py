@@ -21,7 +21,7 @@ def static_indices_graph_dynamic() -> SymbolGraph:
     # assuming the path to a valid index protobuf file, you should replace it with your own file path
     file_dir = os.path.dirname(os.path.abspath(__file__))
     index_path = os.path.join(file_dir, "..", "test.scip")
-    return SymbolGraph(index_path, pickle_graph=False)
+    return SymbolGraph(index_path, save_graph_pickle=False)
 
 
 @pytest.fixture
@@ -40,7 +40,7 @@ def static_indices_graph_static() -> SymbolGraph:
     """
     file_dir = os.path.dirname(os.path.abspath(__file__))
     index_path = os.path.join(file_dir, "..", "test.scip")
-    symbol_graph = SymbolGraph(index_path, pickle_graph=False)
+    symbol_graph = SymbolGraph(index_path, save_graph_pickle=False)
 
     stream = io.BytesIO()
     pickle.dump(symbol_graph, stream)
