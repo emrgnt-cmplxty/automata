@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from automata.eval.eval_base import (
     Action,
@@ -129,17 +129,6 @@ class SymbolSearchEvalResult(ToolEvalResult):
             else False
         )
 
-    def get_details(self) -> Dict[str, Union[Optional[Action], str]]:
-        """Gets the details of the result."""
-        return {
-            "expected_match": self.expected_match or "None",
-            "observed_action": self.observed_action,
-        }
-
-    def get_extra_info(self) -> Dict[str, Any]:
-        """Gets the extra info of the result."""
-        return {}
-
     def to_payload(self) -> Payload:
         """Converts the evaluation result to a dictionary (or other serializable format)."""
         return {
@@ -201,10 +190,10 @@ class SymbolSearchEval(ToolEval):
         input_function, result = input_action_tuple
         split_results: List[str] = []
 
-        if (
-            input_function.name == "symbol-rank-search"
-            or input_function.name == "symbol-similarity-search"
-        ):
+        if input_function.name in [
+            "symbol-rank-search",
+            "symbol-similarity-search",
+        ]:
             split_results = result.split("\n")
         else:
             raise ValueError("Only symbol-search is supported for now.")

@@ -10,7 +10,7 @@
             }
         ]
     },
-    "formatters": [
+    "entries": [
         {"object": "Symbol"},
         {"object": "OpenAIAutomataAgent"},
         {"object": "GitHubClient"},
