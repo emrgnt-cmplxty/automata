@@ -1572,11 +1572,11 @@
                 "result": "automata.tools.builders.py_reader_builder.PyReaderToolkitBuilder.build"
             },
             {
-                "query": "What function is associated with the tool 'py-retriever-code' in PyReaderToolkitBuilder?",
+                "query": "What function is associated with the tool 'retrieve-code' in PyReaderToolkitBuilder?",
                 "result": "automata.tools.builders.py_reader_builder.PyReaderToolkitBuilder._run_indexer_retrieve_code"
             },
             {
-                "query": "What function is associated with the tool 'py-retriever-retrieve-docstring' in PyReaderToolkitBuilder?",
+                "query": "What function is associated with the tool 'retrieve-docstring' in PyReaderToolkitBuilder?",
                 "result": "automata.tools.builders.py_reader_builder.PyReaderToolkitBuilder._run_indexer_retrieve_docstring"
             },
             {

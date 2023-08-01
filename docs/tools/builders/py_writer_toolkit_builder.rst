@@ -14,11 +14,11 @@ that defines whether the module is written to disk after updating.
 
 Its ``build`` method provides two functionalities:
 
-1. ``py-writer-update-module``: This inserts or updates python code of a
+1. ``update-module``: This inserts or updates python code of a
    function, class, method in an existing module. It can create new
    objects, modify existing code, or even introduce new import
    statements.
-2. ``py-writer-create-new-module``: It creates a new module at a given
+2. ``create-new-module``: It creates a new module at a given
    path with the given code.
 
 Related Symbols

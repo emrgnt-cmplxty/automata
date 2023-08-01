@@ -1,10 +1,12 @@
 # TODO - Agent tests should depend on actions for verification, not specific output
 import logging
+import random
 
 import pytest
 
+from automata.cli.commands import reconfigure_logging
 from automata.core.run_handlers import run_setup, run_with_eval
-from automata.eval import OpenAIFunctionCallAction
+from automata.eval import OpenAIFunctionCallAction, SymbolSearchEvalResult
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.llm import OpenAIEmbeddingProvider
 from automata.memory_store import OpenAIAutomataConversationDatabase
@@ -23,7 +25,7 @@ BASIC_PARAMS = (
     "instructions, agent_config, toolkit_list, model, max_iterations"
 )
 
-# ADVANCED_BASIC_PARAMS = f"{BASIC_PARAMS}"
+ADVANCED_PARAMS = f"{BASIC_PARAMS}, expected_actions"
 
 
 @pytest.fixture
@@ -101,3 +103,104 @@ def test_basic_eval_tasks(
     conversation_db = OpenAIAutomataConversationDatabase()
     messages = conversation_db.get_messages(session_id)
     assert len(messages) == 7
+
+
+random_suffix = random.randint(0, 1000000)
+
+
+@pytest.mark.regression
+@pytest.mark.parametrize(
+    f"{ADVANCED_PARAMS}",
+    [
+        (
+            "This is a dummy instruction, return True.",
+            "automata-main",
+            [],  # no tool necessary, default agent has a stop execution fn.
+            "gpt-3.5-turbo-16k",
+            2,
+            [
+                OpenAIFunctionCallAction(
+                    name="call_termination", arguments={"result": "True"}
+                )
+            ],
+        ),
+        (
+            "Fetch the source code for symbol search",
+            "automata-main",
+            ["agent-search"],
+            "gpt-4",
+            2,
+            [
+                OpenAIFunctionCallAction(
+                    name="search-best-match-code",
+                    arguments={"query": "symbol search"},
+                )
+            ],
+        ),
+        (
+            "Fetch the source code for VectorDatabaseProvider.",
+            "automata-main",
+            ["py-reader"],
+            "gpt-4",
+            2,
+            [
+                OpenAIFunctionCallAction(
+                    name="retrieve-code",
+                    arguments={
+                        "module_path": "automata.core.base.database.vector_database",
+                        "node_path": "VectorDatabaseProvider",
+                    },
+                )
+            ],
+        ),
+        (
+            f"Create a new module with the method ```python\ndef f(x):\n    return x**2``` in automata.test_module_{random_suffix}",
+            "automata-main",
+            ["py-writer"],
+            "gpt-4",
+            2,
+            [
+                OpenAIFunctionCallAction(
+                    name="create-new-module",
+                    arguments={
+                        "module_dotpath": f"automata.test_module_{random_suffix}",
+                        "code": "def f(x):\n    return x**2",
+                    },
+                )
+            ],
+        ),
+    ],
+)
+def test_action_based_eval_tasks(
+    instructions,
+    agent_config,
+    toolkit_list,
+    model,
+    max_iterations,
+    expected_actions,
+    automata_setup,
+):
+    """Test that the agent can execute a simple instruction."""
+    reconfigure_logging("DEBUG")
+    tools, agent_config_name = run_setup(agent_config, toolkit_list)
+
+    _, task_registry, task_environment = automata_setup
+
+    eval_result = run_with_eval(
+        instructions,
+        agent_config_name,
+        tools,
+        model,
+        max_iterations,
+        task_registry,
+        task_environment,
+        expected_actions=expected_actions,
+    )
+    # sourcery skip: no-conditionals-in-tests
+    if not eval_result.is_full_match:
+        if isinstance(eval_result, SymbolSearchEvalResult):
+            raise ValueError(
+                f"Expected actions did not match actual actions for eval result. Found matches {eval_result.match_results} and extra actions {eval_result.extra_actions}."
+            )
+        else:
+            raise ValueError("Found error ")
