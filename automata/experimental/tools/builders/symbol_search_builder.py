@@ -119,7 +119,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             SearchTool.AGENT_FACILITATED_SEARCH: self._symbol_agent_search_processor,
             SearchTool.SYMBOL_SIMILARITY_SEARCH: self._symbol_code_similarity_search_processor,
             SearchTool.SYMBOL_RANK_SEARCH: self._symbol_rank_search_processor,
-            SearchTool.SYMBOL_REFERENCES: self._symbol_symbol_references_processor,
+            SearchTool.SYMBOL_REFERENCES: self._symbol_references_processor,
             SearchTool.RETRIEVE_SOURCE_CODE_BY_SYMBOL: self._retrieve_source_code_by_symbol_processor,
             SearchTool.EXACT_SEARCH: self._exact_search_processor,
         }
@@ -214,7 +214,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             ]
         )
 
-    def _symbol_symbol_references_processor(self, query: str) -> str:
+    def _symbol_references_processor(self, query: str) -> str:
         query_result = self.symbol_search.symbol_references(query)
         return "\n".join(
             [

@@ -1,31 +1,11 @@
 import logging
 import uuid
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Type, Union
 
 logger = logging.getLogger(__name__)
 
 Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
-
-
-ACTION_REGISTRY = {}
-
-
-def register_action(cls) -> Dict[str, Any]:
-    """
-    A decorator for registering an Action subclass in the ACTION_REGISTRY
-    """
-    ACTION_REGISTRY[cls.__name__] = cls
-    return cls
-
-
-def parse_action_from_payload(payload: Payload) -> "Action":
-    """Parses out the corresponding action from a raw dictionary."""
-    action_type = payload.pop("type")
-    ActionClass = ACTION_REGISTRY.get(action_type)
-    if ActionClass is None:
-        raise ValueError(f"Unknown action type: {action_type}")
-    return ActionClass.from_payload(payload)
 
 
 class Action(ABC):
@@ -45,6 +25,29 @@ class Action(ABC):
     def from_payload(dct: Payload) -> "Action":
         """Creates an Action from a dictionary."""
         pass
+
+
+ACTION_REGISTRY = {}
+
+
+def register_action(cls: Type[Action]) -> Type[Action]:
+    """
+    A decorator for registering an Action subclass in the ACTION_REGISTRY
+    """
+    ACTION_REGISTRY[cls.__name__] = cls
+    return cls
+
+
+def parse_action_from_payload(payload: Payload) -> Action:
+    """Parses out the corresponding action from a raw dictionary."""
+    action_type = payload.pop("type")
+    if isinstance(action_type, str):
+        ActionClass = ACTION_REGISTRY.get(action_type)
+        if ActionClass is None:
+            raise ValueError(f"Unknown action type: {action_type}")
+        return ActionClass.from_payload(payload)
+    else:
+        raise ValueError("Action type must be a string.")
 
 
 class EvalResult(ABC):
