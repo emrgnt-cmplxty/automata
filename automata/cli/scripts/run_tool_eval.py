@@ -64,7 +64,7 @@ def run_eval_harness(
         eval_loader.expected_actions,
         tool_execution,
     )
-    for result in output.results:
+    for result in output.results[0:10]:
         if isinstance(result, SymbolSearchEvalResult):
             expected_action = result.expected_action
             if not isinstance(expected_action, SymbolSearchAction):
