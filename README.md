@@ -100,7 +100,6 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /
 [SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates symbols by dependencies across the codebase. New indices are generated and uploaded periodically for the Automata codebase, but programmers must be generate them manually if necessary for their local development. If you encounter issues, we recommend referring to the [instructions here](https://github.com/sourcegraph/scip-python).
 
 ```bash
-# Make sure you are in /scripts
 # Install dependencies and run indexing on the local codebase
 automata install-indexing
 ```
