@@ -28,26 +28,24 @@ from automata.memory_store import (
 )
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.github_client import GitHubClient
-from automata.symbol import Symbol
-from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol.symbol_parser import parse_symbol
+from automata.symbol import Symbol, SymbolGraph, parse_symbol
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
     SymbolDocEmbedding,
 )
-from automata.tasks.automata_task import AutomataTask
-from automata.tasks.task_database import AutomataAgentTaskDatabase
-from automata.tasks.task_environment import AutomataTaskEnvironment
-from automata.tasks.task_executor import (
+from automata.tasks import (
+    AutomataAgentTaskDatabase,
+    AutomataTask,
+    AutomataTaskEnvironment,
     AutomataTaskExecutor,
+    AutomataTaskRegistry,
     IAutomataTaskExecution,
 )
-from automata.tasks.task_registry import AutomataTaskRegistry
+from automata.tools import Tool, ToolExecution, ToolExecutor
 from automata.tools.agent_tool_factory import AgentToolFactory
-from automata.tools.tool_base import Tool
-from automata.tools.tool_executor import ToolExecution, ToolExecutor
+from automata.tools.builders import AgentifiedSearchToolkitBuilder
 
 # General Fixtures
 
@@ -567,3 +565,30 @@ def setup_tool(mocker, symbols):
     tool_execution = ToolExecution(symbol_search_tools)
 
     return ToolExecutor(execution=tool_execution)
+
+
+@pytest.fixture
+def agentified_search_tool_builder(symbols):
+    """Returns an agentified search tool builder mock"""
+    symbol_search_mock = MagicMock(spec=SymbolSearch)
+    symbol_doc_embedding_handler_mock = MagicMock()
+    completion_provider_mock = MagicMock()
+
+    # set the return value on the symbol_search_mock
+    symbol_search_mock.get_symbol_code_similarity_results = MagicMock(
+        return_value=[(symbols[0], 1), (symbols[1], 0.8), (symbols[2], 0.6)]
+    )
+
+    agentified_search_tool_builder = AgentifiedSearchToolkitBuilder(
+        symbol_search=symbol_search_mock,
+        symbol_doc_embedding_handler=symbol_doc_embedding_handler_mock,
+        completion_provider=completion_provider_mock,
+    )
+    agentified_search_tool_builder.completion_provider.standalone_call = (
+        MagicMock(return_value=symbols[1].full_dotpath)
+    )
+    print(
+        f"Mock id: {id(symbol_search_mock)}, Object id: {id(agentified_search_tool_builder.symbol_search)}"
+    )
+
+    return agentified_search_tool_builder

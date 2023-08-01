@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 from jinja2 import Template
 
 from automata.code_parsers.py import ContextComponent, PyContextHandler
-from automata.config import DEFAULT_DOC_GENERATION_PROMPT
+from automata.config import DOC_GENERATION_TEMPLATE
 from automata.core import get_docstring_from_node
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.search import SymbolSearch
@@ -168,7 +168,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             tertiary_active_components=tertiary_active_components,
         )
 
-        prompt = Template(DEFAULT_DOC_GENERATION_PROMPT).render(
+        prompt = Template(DOC_GENERATION_TEMPLATE).render(
             symbol_dotpath=abbreviated_selected_symbol,
             symbol_context=context,
         )

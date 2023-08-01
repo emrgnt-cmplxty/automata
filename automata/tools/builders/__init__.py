@@ -1,9 +1,22 @@
-from automata.tools.builders.py_reader_builder import PyReaderOpenAIToolkit
+# sourcery skip: docstrings-for-packages
+from automata.tools.builders.agentified_search_builder import (
+    AgentifiedSearchOpenAIToolkitBuilder,
+    AgentifiedSearchToolkitBuilder,
+)
+from automata.tools.builders.py_reader_builder import (
+    PyReaderOpenAIToolkitBuilder,
+    PyReaderToolkitBuilder,
+)
 from automata.tools.builders.py_writer_builder import (
     PyCodeWriterOpenAIToolkitBuilder,
+    PyCodeWriterToolkitBuilder,
 )
 
 __all__ = [
-    "PyReaderOpenAIToolkit",
+    "PyReaderToolkitBuilder",
+    "PyReaderOpenAIToolkitBuilder",
+    "PyCodeWriterToolkitBuilder",
     "PyCodeWriterOpenAIToolkitBuilder",
+    "AgentifiedSearchToolkitBuilder",
+    "AgentifiedSearchOpenAIToolkitBuilder",
 ]
