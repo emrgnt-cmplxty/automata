@@ -72,13 +72,14 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
     def __init__(
         self, access_token: str, remote_name: str, primary_branch: str = "main"
     ) -> None:
+        """Initialize the GitHub manager."""
         self.access_token = access_token
         self.client = Github(access_token)
-        self.remote_name = os.getenv(
-            "REPOSITORY_NAME", "emrgnt-cmplxty/automata"
-        )
-        self.repo = self.client.get_repo(self.remote_name)
-
+        repository_name = os.getenv("REPOSITORY_NAME")
+        if not repository_name or repository_name == "your_repository_name":
+            repository_name = "emrgnt-cmplxty/automata"
+        self.remote_name = repository_name
+        self.repo = self.client.get_repo(str(self.remote_name))
         self.primary_branch = primary_branch
 
     # Repository Manager methods

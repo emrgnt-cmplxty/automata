@@ -21,6 +21,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -34,6 +36,7 @@ Summary of content
        relationship_processor
        symbol_graph
        symbol_graph_navigator
+       symbol_graph_type
 
 ..  AUTO-GENERATED CONTENT END
 ..

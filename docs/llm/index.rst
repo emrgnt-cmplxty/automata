@@ -21,6 +21,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -32,6 +34,7 @@ Summary of content
        llm_completion_result
        llm_conversation
        llm_conversation_database_provider
+       eval/index
        foundation/index
        providers/index
 

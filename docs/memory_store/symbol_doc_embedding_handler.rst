@@ -1,21 +1,22 @@
--  Currently, the ``SymbolDocEmbeddingHandler`` only updates the symbol
-   commit hash and source code, without changing the existing embedding.
-   The addition of more functionalities for updating the existing
-   embedding has not been mentioned, but it could be a useful feature to
-   include in future iterations, especially as the source code could
-   change over time, implying a change in the symbol’s meaning too.
--  At the moment, the ``SymbolDocEmbeddingHandler`` only supports a
-   batch size of 1. There could be plans to support different batch
-   sizes in the future, but this is not specified. The batch size could
-   affect the speed and memory usage of the model, so it’s an aspect
-   worth considering.
--  If there is no source code available for a symbol, the current
-   implementation raises a ``ValueError``. Handling cases where source
-   code is not available might entail providing a placeholder or default
-   value, or skipping those particular symbols in the processing.
--  If the source code within a symbol is incorrect or faulty, it’s not
-   clearly specified how the ``SymbolDocEmbeddingHandler`` would handle
-   that. A robust system should ideally have some error-checking or
-   validation mechanisms to handle such scenarios. However, such details
-   were not mentioned and might depend on how the symbols are generally
-   created and how reliable that process is.
+The support for creating embeddings for batch sizes > 1 would be
+dependent upon the methods and tools that the specific codebase
+provides. If the particular project this class is from supports a batch
+processing approach, it is likely that this would be possible. However,
+the limitation specified for this class suggests that the batch size is
+restricted to 1. Therefore, another handling approach or class would
+likely be needed to process larger batch sizes.
+
+For the second question, the provision to support more ways of
+initiating embedding_builder would greatly depend on whether there were
+more subclasses of SymbolEmbeddingBuilder that could be used as
+alternatives to ``SymbolDocEmbeddingBuilder``. For instance, if there
+were various kinds of embedding builders for different kinds of symbols,
+then it would be reasonable to expand the functionality of the handler
+to accommodate these different builders. However, it would likely
+require significant modification of the ``SymbolDocEmbeddingHandler``
+class to allow for different kinds of embedding builder objects to be
+used. If the project’s architecture allows the creation or utilization
+of different symbol embedding builders, it could be a potential
+enhancement. Still, it’s important to note the specificity of the task
+at hand which is processing embeddings for Python symbols from source
+code - a task well suited for ``SymbolDocEmbeddingBuilder``.
