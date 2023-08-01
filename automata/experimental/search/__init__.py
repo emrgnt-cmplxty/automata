@@ -5,14 +5,16 @@ from .symbol_search import (
     SymbolRankResult,
     SymbolReferencesResult,
     SymbolSearch,
+    SymbolSimilarityResult,
 )
 
 __all__ = [
     "SymbolRank",
     "SymbolRankConfig",
-    "SymbolSearch",
     "ExactSearchResult",
     "SourceCodeResult",
     "SymbolRankResult",
     "SymbolReferencesResult",
+    "SymbolSimilarityResult",
+    "SymbolSearch",
 ]

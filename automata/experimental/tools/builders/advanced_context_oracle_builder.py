@@ -7,7 +7,7 @@ from automata.agent import (
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
 )
-from automata.config.config_base import LLMProvider
+from automata.config import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool

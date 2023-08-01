@@ -30,7 +30,7 @@ from .openai_config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )
-from .prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
+from .prompt.doc_generation import DOC_GENERATION_TEMPLATE
 
 load_dotenv()
 
@@ -60,7 +60,7 @@ __all__ = [
     "InstructionConfigVersion",
     "LLMProvider",
     "ModelInformation",
-    "DEFAULT_DOC_GENERATION_PROMPT",
+    "DOC_GENERATION_TEMPLATE",
     "OpenAIAutomataAgentConfig",
     "OpenAIAutomataAgentConfigBuilder",
 ]
