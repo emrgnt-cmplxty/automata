@@ -1,11 +1,13 @@
-name: Python application test with Pytest
+name: Check Import Sorting
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  build:
+  import-sorting:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +28,6 @@ jobs:
           poetry install
           poetry run python -m pip install -e .
 
-      - name: Test with pytest
+      - name: Check import sorting
         run: |
-          poetry run pytest .
+          poetry run isort --check-only --diff .

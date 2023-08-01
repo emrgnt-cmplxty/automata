@@ -1,9 +1,13 @@
-name: Check Import Sorting
+name: Type Checking
 
-on: [pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  import-sorting:
+  type-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +26,10 @@ jobs:
         run: |
           poetry run python -m pip install --upgrade pip
           poetry install
+          poetry add mypy
+          poetry add types-setuptools
           poetry run python -m pip install -e .
 
-      - name: Check import sorting
+      - name: Run type checker
         run: |
-          poetry run isort --check-only --diff .
+          poetry run mypy --config-file pyproject.toml .
