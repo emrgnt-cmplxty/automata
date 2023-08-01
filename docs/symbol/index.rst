@@ -24,6 +24,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -40,6 +42,7 @@ Summary of content
        symbol_reference
        base/index
        graph/index
+       symbol_base/index
 
 ..  AUTO-GENERATED CONTENT END
 ..

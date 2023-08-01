@@ -24,6 +24,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -35,10 +37,14 @@ Summary of content
        automata_task_environment
        automata_task_executor
        automata_task_registry
+       environment_mode
        i_automata_task_execution
        i_task_execution
        task
        task_environment
+       task_general_error
+       task_instructions_error
+       task_state_error
        task_status
 
 ..  AUTO-GENERATED CONTENT END

@@ -1,81 +1,33 @@
-AutomataTaskEnvironment
-=======================
+-  Extending ``AutomataTaskEnvironment`` to support other modes beyond
+   GitHub might involve creating additional environment types (e.g.,
+   bitbucket, gitlab, local file system, ftp, http, etc.) then adding
+   appropriate handling for each type in the ``AutomataTaskEnvironment``
+   class methods. This would involve implementing the necessary logic
+   for each operation (setup, validate, commit, etc.) for each new
+   environment type.
 
-``AutomataTaskEnvironment`` is a concrete implementation of the Abstract
-``TaskEnvironment`` specifically for automating task management in a
-GitHub repository.
+-  ``validate`` could ensure that the task structure, dependencies, and
+   metadata are correctly formed, ``reset`` could revert the task to its
+   initial state (probably by re-cloning the repository), and
+   ``teardown`` could remove any local resources associated with the
+   task. Whether these operations are needed depends on the workflow and
+   resources being used. They could be useful to ensure consistency
+   across tasks and users, manage resources carefully, and provide a
+   standard API for agents to interact with tasks.
 
-Overview
---------
+-  The limitation to ``AutomataTask`` might be due to specific
+   requirements or behaviors expected from tasks in the
+   ``AutomataTaskEnvironment`` that are only provided by the
+   ``AutomataTask`` implementation. If a different type of task were
+   expected to be used with the environment, it would likely need to
+   satisfy the same interface, or the ``AutomataTaskEnvironment`` would
+   need to be accommodated to support various types of tasks.
 
-``AutomataTaskEnvironment`` is built on a task management environment
-that is integrated with the GitHub repository system making it ideal for
-managing and supervising ``AutomataTask`` objects. It provides
-functionalities such as committing tasks to a remote repository, setting
-up the environment by cloning the needed repository, as well as several
-methods that await implementation like resetting, validating and tearing
-down the environment.
-
-Related Symbols
----------------
-
--  ``automata.tests.conftest.environment``
--  ``automata.tests.unit.test_task_database.task``
--  ``automata.tasks.tasks.AutomataTask``
--  ``automata.tests.conftest.task``
--  ``automata.tasks.base.TaskEnvironment``
--  ``automata.tests.unit.test_task_executor.test_execute_automata_task_success``
--  ``automata.tasks.executor.IAutomataTaskExecution``
--  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.agent.providers.OpenAIAutomataAgent``
--  ``automata.tests.unit.test_task.test_callback``
-
-Example
--------
-
-The following is an example of how to use ``AutomataTaskEnvironment`` to
-commit ``AutomataTask``:
-
-.. code:: python
-
-   from automata.github_management.client import GitHubClient
-   from automata.tasks.environment import AutomataTaskEnvironment
-   from automata.tasks.tasks import AutomataTask
-
-   github_manager = GitHubClient(access_token = "your_access_token_here", remote_name = "your_remote_name_here", primary_branch = "main")
-   task_env = AutomataTaskEnvironment(github_manager)
-
-   task = AutomataTask("task_name", instructions="list_of_instructions")
-
-   commit_message = "task commit"
-   pull_title = "pull request title"
-   pull_body = "pull request body"
-   pull_branch_name = "branch name"
-
-   # commit the task.
-   task_env.commit_task(task, commit_message, pull_title, pull_body, pull_branch_name)
-
-   # If successful, the method returns the pull request URL.
-
-Please note that this code assumes that you have API access to a GitHub
-repository, and you can get an access token from GitHub’s settings under
-the developer settings -> Personal access tokens.
-
-Limitations
------------
-
-The ``AutomataTaskEnvironment`` class currently has several methods
-unimplemented like resetting, validating and tearing down the
-environment which leads to reduced functionality. Additionally, it is
-also dependant on the GitHub manager leading to potential problems with
-other types of repositories.
-
-Follow-up Questions:
---------------------
-
--  Will the missing methods like ``reset``, ``validate``, ``teardown``
-   be implemented in future versions of this class?
--  How can we accommodate other types of repositories apart from GitHub
-   in this class?
--  Can we enhance the error handling mechanism to provide more specific
-   feedback on failure?
+-  The exact handling of failures in
+   ``AutomataTaskEnvironment.commit_task`` would depend on the
+   higher-level logic in the application. It could involve retries,
+   falling back to alternative operations, alerting the user, recording
+   error information for debugging, etc. The use of
+   ``AgentTaskException`` would be to signal to the higher-level logic
+   that a failure occurred, and additionally provide context-specific
+   information to help handle the failure appropriately.

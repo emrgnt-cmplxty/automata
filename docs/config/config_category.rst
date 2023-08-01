@@ -1,60 +1,40 @@
-ConfigCategory
-==============
+-  To add a new category in ``ConfigCategory``, you simply define a new
+   attribute in the ``ConfigCategory`` Enum class and assign it a unique
+   value. Following is an example of how to do this:
 
-Overview
---------
+::
 
-``ConfigCategory`` is an enumeration class in the
-``automata.config.base`` module of the Automata applications. These are
-used to represent different categories of configuration options in the
-context of the application. Current categories include ``AGENT``,
-``PROMPT``, ``SYMBOL``, and ``INSTRUCTION``. The string values
-correspond to the names of configuration folders in the
-``automata/configs`` directory.
+   from enum import Enum
 
-Related Symbols
----------------
+   class ConfigCategory(Enum):
+       AGENT = 1
+       PROMPT = 2
+       SYMBOL = 3
+       INSTRUCTION = 4
+       NEWCATEGORY = 5  # new category
 
--  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
--  ``automata.tests.unit.sample_modules.sample.EmptyClass``
--  ``automata.agent.agent.AgentInstance.Config``
--  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.agent.instances.OpenAIAutomataAgentInstance.Config``
--  ``automata.tests.unit.test_py_writer.MockCodeGenerator``
--  ``automata.tools.base.Tool.Config``
--  ``automata.config.base.AgentConfig.Config``
--  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU.__init__``
+-  As for the situation where there is a need for a sub-category,
+   ``ConfigCategory`` does not directly support sub-categories. If there
+   is a need for this, it may be an indicator that your code needs to be
+   restructured instead. However, you could potentially implement this
+   by storing another Enum as the value of a category. This might look
+   like this:
 
-Example
--------
+::
 
-To use a ``ConfigCategory``, import it from ``automata.config.base`` and
-you can use one of the predefined categories.
+   from enum import Enum
 
-.. code:: python
+   class Subcategory(Enum):
+       SUBCATEGORY1 = 1
+       SUBCATEGORY2 = 2
 
-   from automata.config.base import ConfigCategory
+   class ConfigCategory(Enum):
+       AGENT = 1
+       PROMPT = 2
+       SYMBOL = 3
+       INSTRUCTION = 4
+       NEWCATEGORY = Subcategory  # new category with sub-categories
 
-   def access_config(category: ConfigCategory):
-       # example function using ConfigCategory enum
-       pass
-
-   access_config(ConfigCategory.AGENT)
-
-In this example, the ``access_config`` function is an example function
-that uses ``ConfigCategory`` as an argument. The function is then called
-with ``ConfigCategory.AGENT``.
-
-Limitations
------------
-
-One possible limitation for the ``ConfigCategory`` is that adding a new
-category requires modification to the enum class. The new category
-follows the pattern of having a corresponding folder in
-``automata/configs``.
-
-Follow-up Questions:
---------------------
-
--  What is the best way to handle the addition of a new category to the
-   ``ConfigCategory`` enum?
+Keep in mind though that this would be somewhat unconventional and might
+make the code harder to understand. It would be better to consider other
+ways to structure your code if sub-categories are necessary.

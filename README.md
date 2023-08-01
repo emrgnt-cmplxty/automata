@@ -1,29 +1,27 @@
 # Automata: The Future is Self-Written
 
-![Banner](https://github.com/emrgnt-cmplxty/Automata/assets/68796651/61fe3c33-9b7a-4c1b-9726-a77140476b83)
-
 [![codecov](https://codecov.io/github/emrgnt-cmplxty/Automata/branch/main/graph/badge.svg?token=ZNE7RDUJQD)](https://codecov.io/github/emrgnt-cmplxty/Automata)
 [![CodeFactor](https://www.codefactor.io/repository/github/emrgnt-cmplxty/automata/badge)](https://www.codefactor.io/repository/github/emrgnt-cmplxty/automata)
   <a href="https://github.com/emrgnt-cmplxty/automata/blob/main/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=Apache 2.0&color=white" alt="License">
   </a> 
 [![Documentation Status](https://readthedocs.org/projects/automata/badge/?version=latest)](https://automata.readthedocs.io/en/latest/?badge=latest)
-[![GitHub star chart](https://img.shields.io/github/stars/emrgnt-cmplxty/Automata?style=social)](https://star-history.com/#emrgnt-cmplxty/Automata)
+
+## Socials
 [![Discord](https://img.shields.io/discord/1120774652915105934?logo=discord)](https://discord.gg/j9GxfbxqAe)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ocolegro?style=social)](https://twitter.com/ocolegro)
+[![GitHub star chart](https://img.shields.io/github/stars/emrgnt-cmplxty/Automata?style=social)](https://star-history.com/#emrgnt-cmplxty/Automata)
 
 
+
+### **Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
+
+Automata is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them. 
+
+More information follows below.
+
+## Codespace
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/emrgnt-cmplxty/Automata)
-
-**Automata's objective is to evolve into a fully autonomous, self-programming Artificial Intelligence system**.
-
-This project is inspired by the theory that code is essentially a form of memory, and when furnished with the right tools, AI can evolve real-time capabilities which can potentially lead to the creation of AGI. The word automata comes from the Greek word αὐτόματος, denoting "self-acting, self-willed, self-moving,", and [Automata theory](https://en.wikipedia.org/wiki/Automata_theory) is the study of abstract machines and [automata](https://en.wikipedia.org/wiki/Automaton), as well as the computational problems that can be solved using them. More information follows below.
-
----
-
-## Demo
-
-https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7
 
 ## Rough Schematic
 
@@ -32,6 +30,11 @@ https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af
 </p>
 
 ---
+
+## Demo
+
+https://github.com/emrgnt-cmplxty/Automata/assets/68796651/2e1ceb8c-ac93-432b-af42-c383ea7607d7
+
 
 ## Installation and Usage
 
@@ -100,26 +103,21 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /
 [SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates symbols by dependencies across the codebase. New indices are generated and uploaded periodically for the Automata codebase, but programmers must be generate them manually if necessary for their local development. If you encounter issues, we recommend referring to the [instructions here](https://github.com/sourcegraph/scip-python).
 
 ```bash
-# Make sure you are in /scripts
 # Install dependencies and run indexing on the local codebase
 automata install-indexing
 ```
 
 ### Build the embeddings + docs
 
-The following commands will build the embeddings and docs for the Automata Interpreter codebase. This process can take a while, so we recommend running it in the background.
-
-```bash
-# Build/refresh the code embeddings
-automata run-code-embedding
-
-# "L1" docs are the docstrings written into the code
-# "L2" docs are generated from the L1 docs + symbol context
-automata run-doc-embedding --embedding-level 2
-
-# "L3" docs are generated from the L2 docs + symbol context
-automata run-doc-embedding --embedding-level 3
 ```
+# Refresh the code embeddings (after making local changes)
+poetry run automata run-code-embedding
+
+# Refresh the documentation + embeddings
+poetry run automata run-doc-embedding --embedding-level=2
+
+```
+
 
 ### Run the system
 
@@ -224,10 +222,10 @@ symbol_doc_embedding = SymbolDocEmbedding(symbol, document, vector)
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
 
-**We use [GitHub issues](https://github.com/emrgnt-cmplxty/automata/issues) for
+We use [GitHub issues](https://github.com/emrgnt-cmplxty/automata/issues) for
 tracking requests and bugs, please see
 [Automata Discussions](https://github.com/emrgnt-cmplxty/Automata/discussions/) for general questions and
-discussion, and please direct specific questions.**
+discussion, and please direct specific questions.
 
 The Automata project strives to abide by generally accepted best practices in
 open-source software development.
