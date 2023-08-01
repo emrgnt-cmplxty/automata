@@ -78,10 +78,11 @@ This will start a Docker container with Automata installed and open an interacti
 
 <details>
 <summary>Windows Tips</summary>
-<br>
+
 Windows users may need to install C++ support through [Visual Studio's "Desktop development with C++"](https://visualstudio.microsoft.com/downloads/?q=build+tools) for certain dependencies.
 
 Additionally, updating to gcc-11 and g++-11 may be required. This can be done by running the following commands:
+
 ```bash
 # Adds the test toolchain repository, which contains newer versions of software
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -115,7 +116,6 @@ poetry run automata run-code-embedding
 
 # Refresh the documentation + embeddings
 poetry run automata run-doc-embedding --embedding-level=2
-
 ```
 
 
