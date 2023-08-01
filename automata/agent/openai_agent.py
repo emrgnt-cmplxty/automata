@@ -1,3 +1,4 @@
+"""Defines the concrete OpenAIAutomataAgent class."""
 import logging
 import uuid
 from abc import ABC, abstractmethod
@@ -9,12 +10,12 @@ from automata.agent.error import (
     AgentGeneralError,
     AgentMaxIterError,
     AgentResultError,
-    AgentStopIteration,
+    AgentStopIterationError,
 )
-from automata.config import ConfigCategory
-from automata.config.openai_config import OpenAIAutomataAgentConfig
+from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, load_config
 from automata.llm import (
+    FunctionCall,
     LLMChatMessage,
     LLMConversation,
     LLMConversationDatabaseProvider,
@@ -25,7 +26,6 @@ from automata.llm import (
     OpenAIFunction,
     OpenAITool,
 )
-from automata.llm.llm_base import FunctionCall
 from automata.tools import ToolExecution, ToolExecutor
 
 logger = logging.getLogger(__name__)
@@ -46,6 +46,7 @@ class OpenAIAutomataAgent(Agent):
     def __init__(
         self, instructions: str, config: OpenAIAutomataAgentConfig
     ) -> None:
+        # sourcery skip: docstrings-for-functions
         super().__init__(instructions)
         self.config = config
         self.iteration_count = 0
@@ -66,7 +67,7 @@ class OpenAIAutomataAgent(Agent):
         assistant and user messages.
 
         Raises:
-            AgentStopIteration: If the agent has already completed its task
+            AgentStopIterationError: If the agent has already completed its task
             or exceeded the maximum number of iterations.
 
         TODO:
@@ -76,7 +77,7 @@ class OpenAIAutomataAgent(Agent):
             self.completed
             or self.iteration_count >= self.config.max_iterations
         ):
-            raise AgentStopIteration
+            raise AgentStopIterationError
 
         logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
@@ -130,7 +131,7 @@ class OpenAIAutomataAgent(Agent):
         or the max iterations are exceeded.
 
         The agent must be setup before running.
-        This implementation calls next() on self until a AgentStopIteration exception is raised,
+        This implementation calls next() on self until a AgentStopIterationError exception is raised,
         at which point it will break out of the loop and return the final result.
 
         Returns:
@@ -147,7 +148,7 @@ class OpenAIAutomataAgent(Agent):
         while True:
             try:
                 next(self)
-            except AgentStopIteration:
+            except AgentStopIterationError:
                 break
 
         last_message = self._conversation.get_latest_message()
@@ -329,7 +330,8 @@ class OpenAIAutomataAgent(Agent):
     def _get_termination_tool(self) -> OpenAITool:
         """Gets the tool responsible for terminating the OpenAI agent."""
 
-        def terminate(result: str):
+        def terminate(result: str) -> str:
+            """Terminates the agent run."""
             self.completed = True
             return result
 
@@ -358,6 +360,6 @@ class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
         pass
 
     @classmethod
-    def can_handle(cls, tool_manager: AgentToolkitNames):
+    def can_handle(cls, tool_manager: AgentToolkitNames) -> bool:
         """Checks if the ToolkitBuilder matches the expecte dtool_manager type"""
         return cls.TOOL_NAME == tool_manager

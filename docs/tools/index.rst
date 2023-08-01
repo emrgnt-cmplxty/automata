@@ -18,6 +18,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -26,8 +28,10 @@ Summary of content
 
        agent_tool_factory
        tool
+       tool_executor
        base/index
        builders/index
+       tool_base/index
 
 ..  AUTO-GENERATED CONTENT END
 ..

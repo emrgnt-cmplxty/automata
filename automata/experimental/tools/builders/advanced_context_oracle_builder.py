@@ -1,3 +1,4 @@
+"""Module containing functions to build SymbolDocEmbedding objects."""
 import logging
 import textwrap
 from typing import List
@@ -7,14 +8,12 @@ from automata.agent import (
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
 )
-from automata.config.config_base import LLMProvider
+from automata.config import LLMProvider
 from automata.embedding import EmbeddingSimilarityCalculator
+from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
-from automata.memory_store import (
-    SymbolCodeEmbeddingHandler,
-    SymbolDocEmbeddingHandler,
-)
+from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )

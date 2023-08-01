@@ -72,7 +72,8 @@ def get_docstring_from_node(node: Optional[AST]) -> str:
 class DocstringRemover(NodeTransformer):
     """Removes docstrings from a class or function."""
 
-    def visit(self, node):
+    def visit(self, node: AST) -> Optional[AST]:
+        """Visits a node in the AST."""
         # If this node is a function, class, or module, remove its docstring.
         if (
             isinstance(node, (AsyncFunctionDef, ClassDef, FunctionDef, Module))
@@ -134,17 +135,19 @@ def find_syntax_tree_node(
 
     obj_parts = node_path.split(".")
 
-    def find_syntax_tree_node_pyast(code_obj: AST, node_path: List[str]):
+    def find_syntax_tree_node_pyast(
+        code_obj: AST, node_path: List[str]
+    ) -> Optional[AST]:
         """Finds the syntax tree node using the pyast library."""
 
-        def find_subnode(node, obj_name):
+        def find_subnode(node: AST, obj_name: str) -> Optional[AST]:
             """Finds a subnode of a node with the specified name."""
 
             for child in iter_child_nodes(node):
                 if (
                     isinstance(
                         child,
-                        (Module, ClassDef, FunctionDef, AsyncFunctionDef),
+                        (ClassDef, FunctionDef, AsyncFunctionDef),
                     )
                     and child.name == obj_name
                 ):
@@ -155,7 +158,7 @@ def find_syntax_tree_node(
             node = code_obj
             while node and node_path:
                 obj_name = node_path.pop(0)
-                node = find_subnode(node, obj_name)
+                node = find_subnode(node, obj_name)  # type: ignore
             return node
         return None
 

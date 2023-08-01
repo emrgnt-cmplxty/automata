@@ -107,17 +107,20 @@ def configure(ctx: click.Context, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
-def build(ctx: click.Context, *args, **kwargs) -> None:
+def install_indexing(ctx: click.Context, *args, **kwargs) -> None:
     """Run the install_index script."""
 
-    from automata.cli.build import generate_local_indices, install_indexing
+    from automata.cli.install_indexing import (
+        generate_local_indices,
+        install_indexing,
+    )
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
 
-    logger.info("Running install_index")
+    logger.info("Installing indices")
     install_indexing()
 
-    logger.info("Running generate_local_indices")
+    logger.info("Generating local indices")
     generate_local_indices()
 
 
@@ -184,7 +187,13 @@ def run_doc_post_process(ctx: click.Context, *args, **kwargs) -> None:
 )
 @click.pass_context
 def run_agent(ctx: click.Context, *args, **kwargs) -> None:
-    """Run the agent."""
+    """
+    Run the automata agent.
+
+    Ex:
+    poetry run automata run-agent --model="gpt-4" --toolkits="agent-search" --log-level=DEBUG --max-iterations=3 --instructions="Return the documentation for symbol search"
+
+    """
     from automata.cli.scripts.run_agent import main
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
@@ -201,10 +210,8 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     """
     Run the evaluation.
 
-    Here is an exmaple command -
+    Ex:
     poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="document-oracle,py-reader" --log-level=DEBUG --max-iterations=3
-
-
     """
 
     from automata.cli.scripts.run_agent_eval import main

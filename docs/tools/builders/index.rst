@@ -23,6 +23,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -31,6 +33,7 @@ Summary of content
 
        context_oracle_open_ai_toolkit_builder
        context_oracle_toolkit_builder
+       py_code_writer_toolkit_builder
        py_reader_open_ai_toolkit
        py_reader_toolkit_builder
        py_writer_open_ai_toolkit_builder

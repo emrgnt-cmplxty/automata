@@ -1,3 +1,4 @@
+"""Implements a map from module dotpaths to module filepaths"""
 import os.path
 from typing import Dict, Iterable, Tuple
 
@@ -23,6 +24,7 @@ class DotPathMap:
     DOT_SEP = "."
 
     def __init__(self, path: str, project_name: str) -> None:
+        # sourcery skip: docstrings-for-functions
         # TODO - Test that project_name works when path != local directory name
         self.prefix = project_name.replace(os.pathsep, DotPathMap.DOT_SEP)
         # Remove ending '.' in module fpath

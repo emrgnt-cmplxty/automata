@@ -3,6 +3,7 @@ This module contains the functions to perform environment operations for the CLI
 """
 
 import logging
+import os
 import re
 from typing import Dict, List, Optional
 
@@ -78,7 +79,14 @@ def load_env_vars(dotenv_path: str, default_keys: Dict[str, str]) -> None:
             else:
                 new_value = current_value
         elif current_value is None:
-            raise ValueError(f"Key {key} not found in the .env file")
+            # Check if the environment variable is set at the system level
+            system_value = os.getenv(key)
+            if system_value is not None:
+                new_value = system_value
+            else:
+                raise ValueError(
+                    f"Key {key} not found in the .env file and not set in system environment"
+                )
         elif not current_value or current_value == default_value:
             new_value = input(
                 f"{key} is not configured. Please enter your key: "
@@ -152,7 +160,7 @@ def update_graph_type(dotenv_path: str, graph_type: str) -> None:
     """Updates the type in the local environment."""
 
     replace_key(dotenv_path, "GRAPH_TYPE", graph_type)
-    log_cli_output(f"The graph type has been updated to {type}.")
+    log_cli_output(f"The graph type has been updated to {graph_type}.")
 
 
 def delete_key_value(dotenv_path: str, key: str) -> None:

@@ -1,3 +1,4 @@
+"""Implementation of a toolkit builder for the SymbolSearch API."""
 from enum import Enum
 from typing import List, Optional, Union
 
@@ -7,6 +8,7 @@ from automata.agent import (
     OpenAIAgentToolkitBuilder,
 )
 from automata.config.config_base import LLMProvider
+from automata.config.prompt import AGENTIFIED_SEARCH_TEMPLATE
 from automata.experimental.search import (
     ExactSearchResult,
     SourceCodeResult,
@@ -14,7 +16,11 @@ from automata.experimental.search import (
     SymbolReferencesResult,
     SymbolSearch,
 )
-from automata.llm import OpenAITool
+from automata.llm import (
+    OpenAIChatCompletionProvider,
+    OpenAIConversation,
+    OpenAITool,
+)
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
@@ -26,6 +32,7 @@ class SearchTool(Enum):
     Available search tools.
     """
 
+    AGENT_FACILITATED_SEARCH = "llm-facilitated-search"
     SYMBOL_SIMILARITY_SEARCH = "symbol-similarity-search"
     SYMBOL_RANK_SEARCH = "symbol-rank-search"
     SYMBOL_REFERENCES = "symbol-references"
@@ -41,7 +48,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
         self,
         symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
-        top_n: int = 10,
+        top_n: int = 20,
         *args,
         **kwargs,
     ) -> None:
@@ -52,13 +59,15 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def build_tool(self, tool_type: SearchTool) -> Tool:
         """Builds a suite of tools for searching the associated codebase."""
         tool_funcs = {
+            SearchTool.AGENT_FACILITATED_SEARCH: self._symbol_agent_search_processor,
             SearchTool.SYMBOL_SIMILARITY_SEARCH: self._symbol_code_similarity_search_processor,
             SearchTool.SYMBOL_RANK_SEARCH: self._symbol_rank_search_processor,
-            SearchTool.SYMBOL_REFERENCES: self._symbol_symbol_references_processor,
+            SearchTool.SYMBOL_REFERENCES: self._symbol_references_processor,
             SearchTool.RETRIEVE_SOURCE_CODE_BY_SYMBOL: self._retrieve_source_code_by_symbol_processor,
             SearchTool.EXACT_SEARCH: self._exact_search_processor,
         }
         tool_descriptions = {
+            SearchTool.AGENT_FACILITATED_SEARCH: "Performs an agent facilitated similarity based search of symbols based on a given query string.",
             SearchTool.SYMBOL_SIMILARITY_SEARCH: "Performs a similarity based search of symbols based on a given query string.",
             SearchTool.SYMBOL_RANK_SEARCH: "Performs a ranked search of symbols based on a given query string.",
             SearchTool.SYMBOL_REFERENCES: "Finds all the references to a given symbol within the codebase.",
@@ -98,6 +107,46 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             ]
         )
 
+    def _symbol_agent_search_processor(self, query: str) -> str:
+        query_result = self.symbol_search.get_symbol_code_similarity_results(
+            query
+        )
+        search_results = "\n".join(
+            [symbol.full_dotpath for symbol, _similarity in query_result][
+                : self.top_n
+            ]
+        )
+        formatted_input_prompt = AGENTIFIED_SEARCH_TEMPLATE.format(
+            SEARCH_RESULTS=search_results, QUERY=query
+        )
+
+        MODEL = "gpt-4"  # 3.5-turbo"
+        TEMPERATURE = 0.7
+        STREAM = True
+        conversation = OpenAIConversation()
+
+        completion_provider = OpenAIChatCompletionProvider(
+            model=MODEL,
+            temperature=TEMPERATURE,
+            stream=STREAM,
+            conversation=conversation,
+            functions=[],
+        )
+
+        # Call a one-time completion with the provided context
+        result = completion_provider.standalone_call(
+            formatted_input_prompt
+        ).strip()
+        if result in search_results:
+            return "\n".join(
+                [result]
+                + [
+                    symbol.full_dotpath for symbol, _similarity in query_result
+                ][: self.top_n]
+            )
+        else:
+            return search_results
+
     def _symbol_code_similarity_search_processor(self, query: str) -> str:
         query_result = self.symbol_search.get_symbol_code_similarity_results(
             query
@@ -108,7 +157,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             ]
         )
 
-    def _symbol_symbol_references_processor(self, query: str) -> str:
+    def _symbol_references_processor(self, query: str) -> str:
         query_result = self.symbol_search.symbol_references(query)
         return "\n".join(
             [

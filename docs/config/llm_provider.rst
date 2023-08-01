@@ -1,81 +1,38 @@
-LLMProvider
-===========
+To address the Follow-up Questions:
 
-The ``LLMProvider`` class is part of the ``automata.config.base`` module
-and serves as a crucial component in the architecture of the library,
-enabling the selection of the language learning model provider for an
-Automata agent.
+1. To decouple an LLM Provider when a new provider needs to be added,
+   one potential method is to implement a factory pattern. This pattern
+   allows the creation of objects without exposing the creation logic to
+   the client and use a common interface. This gives the flexibility to
+   add new providers while keeping the rest of the system unaware of the
+   specific types of providers.
 
-Exposed through the ``AgentConfig.get_llm_provider`` method, the
-``LLMProvider`` enumerates all the possible sources of language learning
-models that the library supports.
+2. Using a factory pattern or a registration mechanism can allow for
+   more flexibility in accepting different providers without modifying
+   the enumeration class. Instead of defining the providers in the enum,
+   a method can be created to register new providers. Each provider
+   could be implemented with a unique identifier string, which can be
+   used in place of the enum.
 
-Related Symbols
----------------
-
--  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``: A
-   sample test class for unit testing.
--  ``automata.tests.unit.sample_modules.sample_module_write.ldNZI``: A
-   sample function used in unit testing.
--  ``automata.config.base.AgentConfig.get_llm_provider``: Method to get
-   the LLM (Language Learning Model) Provider for the Automata agent.
--  ``automata.agent.agent.Agent.set_database_provider``: Method to set
-   the database provider, where potential LLM conversations may be
-   stored.
--  ``automata.tests.unit.test_context_oracle_tool.context_oracle_tool_builder``:
-   A test fixture that builds and returns a context oracle toolkit.
--  ``automata.config.openai_agent.OpenAIAutomataAgentConfig.get_llm_provider``:
-   Method to get the LLM Provider specifically for an OpenAI agent.
--  ``automata.tests.unit.test_py_reader.getter``: A test fixture that
-   creates and returns an instance of ``PyReader``.
--  ``automata.llm.foundation.LLMConversationDatabaseProvider``: Abstract
-   base class for different types of database providers specifically for
-   LLM conversation.
-
-Usage Example
--------------
+3. ``LLMProvider`` parameter is used in the configuration of an
+   AutomataAgent to specify the provider for performing language model
+   tasks. Below is a high-level example of how it could be used:
 
 .. code:: python
 
-   from automata.config.base import AgentConfig
-   from automata.config.openai_agent import OpenAIAutomataAgentConfig
+   from automata.config.config_base import AgentConfig, LLMProvider
 
-   # Instantiate the AgentConfig
-   agent_config = AgentConfig()
+   config = AgentConfig(
+       client_id='xyz',
+       client_access_token='123',
+       LLM_provider=LLMProvider.OPENAI
+   )
 
-   # Get the LLM Provider for the agent
-   provider = agent_config.get_llm_provider()
 
-   # Get the LLM Provider for an OpenAI agent
-   openai_provider = OpenAIAutomataAgentConfig.get_llm_provider()
+   agent = AutomataAgent(config)
 
-   # Assuming a database provider for LLM Conversation
-   def set_database_provider(self, provider):
-       self.provider = provider
-
-Limitations
------------
-
-The LLMProvider class depends directly on the enum definitions provided
-in the library, restricting its usage to the defined providers only. Any
-new provider addition would require the library’s codebase modification.
-
-The class also mandates the use of suitable methods that retrieve LLM
-providers, especially when handling specific agents, implying that the
-agent classes should adhere to the designated function signatures to
-ensure compatibility.
-
-Follow-up Questions:
---------------------
-
--  What is the process to introduce additional LLM Providers?
--  How do we handle LLM Providers unavailability or deprecation in the
-   market? How to reflect these changes in the ``LLMProvider``?
--  How can custom data providers be registered within the
-   ``LLMProvider`` list?
-
-Note: The descriptions for some related symbols such as
-``automata.tests.unit.sample_modules.sample_module_write.CsSWU`` and
-``automata.tests.unit.sample_modules.sample_module_write.ldNZI`` were
-generated from placeholder docstrings in the test suites and hence offer
-limited information about their roles and usage.
+In the above example, the ``LLMProvider`` parameter in the
+``AgentConfig`` tells the ``AutomataAgent`` that “when I have a task
+that requires the use of the Language Model (LLM), use the provider
+specified (OPENAI in this case)”. This could translate to different API
+calls depending on the provider selected.

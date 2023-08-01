@@ -32,6 +32,7 @@ from automata.config.openai_config import (
 )
 from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 
+
 load_dotenv()
 
 # Define environment variables
@@ -61,7 +62,7 @@ __all__ = [
     "InstructionConfigVersion",
     "LLMProvider",
     "ModelInformation",
-    "DEFAULT_DOC_GENERATION_PROMPT",
+    "DOC_GENERATION_TEMPLATE",
     "OpenAIAutomataAgentConfig",
     "OpenAIAutomataAgentConfigBuilder",
 ]
