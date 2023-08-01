@@ -64,7 +64,7 @@ def run_eval_harness(
         eval_loader.expected_actions,
         tool_execution,
     )
-    for result in output.results:
+    for result in output.results[0:10]:
         if isinstance(result, SymbolSearchEvalResult):
             expected_action = result.expected_action
             if not isinstance(expected_action, SymbolSearchAction):
@@ -84,9 +84,9 @@ def run_eval_harness(
                 print(
                     f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"
                 )
-                print(
-                    f"{TOP_K_MATCHES}-10 Search Results (not used in matching): {observed_action.search_results[TOP_K_MATCHES:]}\n"
-                )
+                # print(
+                #     f"{TOP_K_MATCHES}-10 Search Results (not used in matching): {observed_action.search_results[TOP_K_MATCHES:]}\n"
+                # )
 
             print(
                 f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"

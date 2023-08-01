@@ -26,6 +26,7 @@ class SearchTool(Enum):
     Available search tools.
     """
 
+    AGENT_FACILITATED_SEARCH = "llm-facilitated-search"
     SYMBOL_SIMILARITY_SEARCH = "symbol-similarity-search"
     SYMBOL_RANK_SEARCH = "symbol-rank-search"
     SYMBOL_REFERENCES = "symbol-references"

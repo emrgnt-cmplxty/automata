@@ -2892,10 +2892,6 @@
                 "result": "automata.singletons.py_module_loader.PyModuleLoader"
             },
             {
-                "query": "How can an instance of the PyModuleLoader be accessed?",
-                "result": "automata.singletons.py_module_loader.py_module_loader"
-            },
-            {
                 "query": "How is the PyModuleLoader initialized?",
                 "result": "automata.singletons.py_module_loader.PyModuleLoader.initialize"
             },
@@ -3044,10 +3040,6 @@
                 "result": "automata.tasks.task_base.Task.status"
             },
             {
-                "query": "How do you set the status of a Task?",
-                "result": "automata.tasks.task_base.Task.status.setter"
-            },
-            {
                 "query": "What method is used to generate a deterministic session id for a Task?",
                 "result": "automata.tasks.task_base.Task._deterministic_session_id"
             },
@@ -3104,10 +3096,6 @@
                 "result": "automata.llm.llm_base.LLMChatMessage.to_dict"
             },
             {
-                "query": "What type represents an optional Tuple of two LLMChatMessages?",
-                "result": "automata.llm.llm_base.LLMIterationResult"
-            },
-            {
                 "query": "What abstract base class represents different types of LLM conversations?",
                 "result": "automata.llm.llm_base.LLMConversation"
             },
@@ -3160,16 +3148,8 @@
                 "result": "automata.core.ast_handlers.LineItem"
             },
             {
-                "query": "How is the LineItem object created?",
-                "result": "automata.core.ast_handlers.LineItem.__init__"
-            },
-            {
                 "query": "What class is used to represent the bounding box of a symbol?",
                 "result": "automata.core.ast_handlers.BoundingBox"
-            },
-            {
-                "query": "How is the BoundingBox object constructed?",
-                "result": "automata.core.ast_handlers.BoundingBox.__init__"
             },
             {
                 "query": "What function finds the bounding box of a node in the AST?",
@@ -3270,20 +3250,6 @@
             {
                 "query": "What method gets all entries in the VectorDatabaseProvider?",
                 "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.get_all_ordered_embeddings"
-            },
-            {
-                "query": "What methods are used to add entries to the VectorDatabaseProvider?",
-                "result": [
-                    "automata.core.base.database.vector_database.VectorDatabaseProvider.add",
-                    "automata.core.base.database.vector_database.VectorDatabaseProvider.batch_add"
-                ]
-            },
-            {
-                "query": "What methods are used to update entries in the VectorDatabaseProvider?",
-                "result": [
-                    "automata.core.base.database.vector_database.VectorDatabaseProvider.update_entry",
-                    "automata.core.base.database.vector_database.VectorDatabaseProvider.batch_update"
-                ]
             },
             {
                 "query": "What method converts an entry to a unique key in the VectorDatabaseProvider?",
@@ -3430,13 +3396,6 @@
                 "result": "automata.embedding.embedding_base.EmbeddingVectorProvider"
             },
             {
-                "query": "Which methods are a part of the EmbeddingVectorProvider interface?",
-                "result": [
-                    "automata.embedding.embedding_base.EmbeddingVectorProvider.build_embedding_vector",
-                    "automata.embedding.embedding_base.EmbeddingVectorProvider.batch_build_embedding_vector"
-                ]
-            },
-            {
                 "query": "What abstract class represents different types of embeddings?",
                 "result": "automata.embedding.embedding_base.Embedding"
             },
@@ -3445,38 +3404,12 @@
                 "result": "automata.embedding.embedding_base.EmbeddingBuilder"
             },
             {
-                "query": "Which methods are part of the EmbeddingBuilder interface?",
-                "result": [
-                    "automata.embedding.embedding_base.EmbeddingBuilder.build",
-                    "automata.embedding.embedding_base.EmbeddingBuilder.batch_build",
-                    "automata.embedding.embedding_base.EmbeddingBuilder.fetch_embedding_source_code"
-                ]
-            },
-            {
                 "query": "What abstract class handles batch embeddings?",
                 "result": "automata.embedding.embedding_base.EmbeddingHandler"
             },
             {
-                "query": "Which methods are part of the EmbeddingHandler interface?",
-                "result": [
-                    "automata.embedding.embedding_base.EmbeddingHandler.get_embeddings",
-                    "automata.embedding.embedding_base.EmbeddingHandler.get_all_ordered_embeddings",
-                    "automata.embedding.embedding_base.EmbeddingHandler.process_embedding",
-                    "automata.embedding.embedding_base.EmbeddingHandler.flush"
-                ]
-            },
-            {
                 "query": "What class calculates the similarity between embeddings?",
                 "result": "automata.embedding.embedding_base.EmbeddingSimilarityCalculator"
-            },
-            {
-                "query": "What methods are important for the EmbeddingSimilarityCalculator?",
-                "result": [
-                    "automata.embedding.embedding_base.EmbeddingSimilarityCalculator.__init__",
-                    "automata.embedding.embedding_base.EmbeddingSimilarityCalculator.calculate_query_similarity_dict",
-                    "automata.embedding.embedding_base.EmbeddingSimilarityCalculator._calculate_embedding_similarity",
-                    "automata.embedding.embedding_base.EmbeddingSimilarityCalculator._normalize_embeddings"
-                ]
             },
             {
                 "query": "Which class is used for registering and tracking `ISymbolProvider` instances?",
@@ -3735,13 +3668,6 @@
                 "result": "automata.symbol.graph.symbol_graph_types.SymbolGraphType"
             },
             {
-                "query": "What are the possible values of the SymbolGraphType enumeration?",
-                "result": [
-                    "automata.symbol.graph.symbol_graph_types.SymbolGraphType.DYNAMIC",
-                    "automata.symbol.graph.symbol_graph_types.SymbolGraphType.STATIC"
-                ]
-            },
-            {
                 "query": "What class is raised when the agent exceeds the maximum iteration limit?",
                 "result": "automata.agent.error.AgentMaxIterError"
             },
@@ -3966,10 +3892,6 @@
                 "result": "automata.cli.cli_output_logger.CustomLogger.cli_output"
             },
             {
-                "query": "What special logging level is used for CLI output messages?",
-                "result": "automata.cli.cli_output_logger.CLI_OUTPUT_LEVEL"
-            },
-            {
                 "query": "What function is used to reconfigure the logging settings in the local project?",
                 "result": "automata.cli.commands.reconfigure_logging"
             },
@@ -4018,32 +3940,12 @@
                 "result": "automata.cli.scripts.run_agent.main"
             },
             {
-                "query": "Which concrete class represents the Automata Agent?",
-                "result": "automata.agent.OpenAIAutomataAgent"
-            },
-            {
-                "query": "Which concrete class is used to build the agent's configuration?",
-                "result": "automata.config.OpenAIAutomataAgentConfigBuilder"
-            },
-            {
                 "query": "What is the GitHub Client used for in the agent script?",
                 "result": "automata.singletons.github_client.GitHubClient"
             },
             {
-                "query": "How is the Python Module Loader initialized in the agent script?",
-                "result": "automata.singletons.py_module_loader.py_module_loader.initialize"
-            },
-            {
                 "query": "How are the agent tools built in the agent script?",
                 "result": "automata.tools.agent_tool_factory.AgentToolFactory.build_tools"
-            },
-            {
-                "query": "How are dependencies for the agent tools built?",
-                "result": "automata.singletons.dependency_factory.dependency_factory.build_dependencies_for_tools"
-            },
-            {
-                "query": "What standalone file is responsible for running the agent evaluation?",
-                "result": "automata.cli.scripts.run_agent_eval"
             },
             {
                 "query": "Which method is invoked to run evaluation for a list of tasks specified in a JSON file?",
@@ -4062,36 +3964,16 @@
                 "result": "automata.cli.scripts.run_agent_config_validation.test_yaml_compatibility"
             },
             {
-                "query": "What is the entry point of the script that validates the configuration files for agents?",
-                "result": "automata.cli.scripts.run_agent_config_validation.__main__"
-            },
-            {
-                "query": "Which module is used for scripts to run doc post processing?",
-                "result": "automata.cli.scripts.run_doc_post_process"
-            },
-            {
                 "query": "What function is used as an entry point for doc post processing?",
                 "result": "automata.cli.scripts.run_doc_post_process.main"
-            },
-            {
-                "query": "What module provides utility functions used in the CLI?",
-                "result": "automata.cli.cli_utils"
             },
             {
                 "query": "Which class is used to write python docs?",
                 "result": "automata.code_writers.py.py_doc_writer.PyDocWriter"
             },
             {
-                "query": "What modules are used to provide utility functions within Automata?",
-                "result": "automata.core.utils"
-            },
-            {
                 "query": "Which Singleton class is used to manage dependencies in Automata?",
                 "result": "automata.singletons.dependency_factory.DependencyFactory"
-            },
-            {
-                "query": "What classes are involved in embedding symbols for documentation?",
-                "result": "automata.symbol_embedding.ChromaSymbolEmbeddingVectorDatabase, automata.symbol_embedding.SymbolDocEmbedding"
             },
             {
                 "query": "What function initializes providers and prepares for symbol embedding?",
@@ -4136,42 +4018,6 @@
             {
                 "query": "What function is used to initialize the Python module loader?",
                 "result": "automata.cli.cli_utils.initialize_py_module_loader"
-            },
-            {
-                "query": "Where does the `SymbolSearchAction` class come from?",
-                "result": "automata.eval.SymbolSearchAction"
-            },
-            {
-                "query": "Where does the `SymbolSearchEval` class come from?",
-                "result": "automata.eval.SymbolSearchEval"
-            },
-            {
-                "query": "Where does the `SymbolSearchEvalResult` class come from?",
-                "result": "automata.eval.SymbolSearchEvalResult"
-            },
-            {
-                "query": "What is `ToolEval` used for in this script?",
-                "result": "automata.eval.ToolEval"
-            },
-            {
-                "query": "What role does the `ToolEvalSetLoader` play?",
-                "result": "automata.eval.ToolEvalSetLoader"
-            },
-            {
-                "query": "What is the purpose of the `ToolEvaluationHarness`?",
-                "result": "automata.eval.ToolEvaluationHarness"
-            },
-            {
-                "query": "Where does the constant `TOP_K_MATCHES` come from?",
-                "result": "automata.eval.tool.search_eval.TOP_K_MATCHES"
-            },
-            {
-                "query": "What is `dependency_factory` used for in this script?",
-                "result": "automata.singletons.dependency_factory.dependency_factory"
-            },
-            {
-                "query": "What is `ToolExecution` and what is its role?",
-                "result": "automata.tools.ToolExecution"
             },
             {
                 "query": "How are tools created in this script?",
@@ -4500,6 +4346,1766 @@
             {
                 "query": "How does the PyDocWriter check if a string is in camel case?",
                 "result": "automata.code_writers.py.py_doc_writer.PyDocWriter.check_camel_case"
+            },
+            {
+                "query": "What class provides various search methods for symbols?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch"
+            },
+            {
+                "query": "How is a SymbolSearch instance constructed?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.__init__"
+            },
+            {
+                "query": "What property in SymbolSearch class is utilized to get the symbol rank?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.symbol_rank"
+            },
+            {
+                "query": "What method in SymbolSearch provides symbol rank results?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.get_symbol_rank_results"
+            },
+            {
+                "query": "What method in SymbolSearch fetches the list of similar symbols sorted by embedding similarity?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.get_symbol_code_similarity_results"
+            },
+            {
+                "query": "Which method finds all references to a provided module, class, method, or standalone function?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.symbol_references"
+            },
+            {
+                "query": "How to retrieve the raw text or source code by specifying a symbol?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.retrieve_source_code_by_symbol"
+            },
+            {
+                "query": "What method in SymbolSearch performs a exact search across the indexed codebase?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.exact_search"
+            },
+            {
+                "query": "Which method processes an NLP-formatted query and returns the search results?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.process_query"
+            },
+            {
+                "query": "How does SymbolSearch class perform an exact pattern match search in all modules?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch._find_pattern_in_modules"
+            },
+            {
+                "query": "How does SymbolSearch class calculate the z-score, shift it to be positive, and then raise the scores to a specified power?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.shifted_z_score_powered"
+            },
+            {
+                "query": "How does SymbolSearch transform the values in a dictionary by applying a function?",
+                "result": "automata.experimental.search.symbol_search.SymbolSearch.transform_dict_values"
+            },
+            {
+                "query": "Which class is a Singleton for loading and caching Python modules in memory?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader"
+            },
+            {
+                "query": "What method is used to initialize the PyModuleLoader singleton?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.initialize"
+            },
+            {
+                "query": "How does the PyModuleLoader check if a dotpath is contained within it?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.__contains__"
+            },
+            {
+                "query": "What method is used to assert if the PyModuleLoader is initialized?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader._assert_initialized"
+            },
+            {
+                "query": "How does the PyModuleLoader fetch all items within it?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.items"
+            },
+            {
+                "query": "Which method is responsible for returning an abstract syntax tree module given a module dotpath?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.fetch_ast_module"
+            },
+            {
+                "query": "How can you get a module dotpath given the module object?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.fetch_existing_module_dotpath"
+            },
+            {
+                "query": "What method gets a module filepath given a module dotpath?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.fetch_existing_module_fpath_by_dotpath"
+            },
+            {
+                "query": "What method gets a module dotpath given a module filepath?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.get_module_dotpath_by_fpath"
+            },
+            {
+                "query": "How can you put a module and its dotpath in the PyModuleLoader?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.put_module"
+            },
+            {
+                "query": "Which method removes a module and its dotpath from the PyModuleLoader?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.delete_module"
+            },
+            {
+                "query": "What method is used to reset the PyModuleLoader to its initial state?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader.reset"
+            },
+            {
+                "query": "Which method is used to load all modules in the PyModuleLoader map?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader._load_all_modules"
+            },
+            {
+                "query": "How can you load a module from a file path and return its abstract syntax tree object?",
+                "result": "automata.singletons.py_module_loader.PyModuleLoader._load_module_from_fpath"
+            },
+            {
+                "query": "What is the global instance of PyModuleLoader available for use?",
+                "result": "automata.singletons.py_module_loader.py_module_loader"
+            },
+            {
+                "query": "What abstract class is provided for managing repositories?",
+                "result": "automata.singletons.github_client.RepositoryClient"
+            },
+            {
+                "query": "What method in RepositoryClient is used to clone a repository to the local path?",
+                "result": "automata.singletons.github_client.RepositoryClient.clone_repository"
+            },
+            {
+                "query": "Which method in RepositoryClient is used to create a new branch in the repository?",
+                "result": "automata.singletons.github_client.RepositoryClient.create_branch"
+            },
+            {
+                "query": "What function in RepositoryClient is responsible for checking out a branch in the repository?",
+                "result": "automata.singletons.github_client.RepositoryClient.checkout_branch"
+            },
+            {
+                "query": "Which method in RepositoryClient is used to stage all changes in the repository?",
+                "result": "automata.singletons.github_client.RepositoryClient.stage_all_changes"
+            },
+            {
+                "query": "What function in RepositoryClient is used to commit and push all changes in the repository?",
+                "result": "automata.singletons.github_client.RepositoryClient.commit_and_push_changes"
+            },
+            {
+                "query": "Which function in RepositoryClient is used to create a new pull request on the remote?",
+                "result": "automata.singletons.github_client.RepositoryClient.create_pull_request"
+            },
+            {
+                "query": "How can a pull request be merged on the remote using RepositoryClient?",
+                "result": "automata.singletons.github_client.RepositoryClient.merge_pull_request"
+            },
+            {
+                "query": "How can the existence of a branch on the remote be checked using RepositoryClient?",
+                "result": "automata.singletons.github_client.RepositoryClient.branch_exists"
+            },
+            {
+                "query": "What class provides an interface for interacting with GitHub repositories?",
+                "result": "automata.singletons.github_client.GitHubClient"
+            },
+            {
+                "query": "How to clone a repository to the local path using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.clone_repository"
+            },
+            {
+                "query": "How can a new branch be created in the repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.create_branch"
+            },
+            {
+                "query": "How can a branch in the repository be checked out using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.checkout_branch"
+            },
+            {
+                "query": "How to stage all changes in the repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.stage_all_changes"
+            },
+            {
+                "query": "How to commit and push all changes in the repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.commit_and_push_changes"
+            },
+            {
+                "query": "How to create a new pull request on GitHub using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.create_pull_request"
+            },
+            {
+                "query": "How to merge a pull request on GitHub using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.merge_pull_request"
+            },
+            {
+                "query": "How to check if a branch exists on GitHub using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.branch_exists"
+            },
+            {
+                "query": "How can open issues for the remote repository be fetched using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.get_open_issues"
+            },
+            {
+                "query": "How to get the open pull requests for the remote repository via GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.get_open_pull_requests"
+            },
+            {
+                "query": "How to create a new issue on GitHub using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.create_issue"
+            },
+            {
+                "query": "How to add a label to an issue on the remote repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.add_label"
+            },
+            {
+                "query": "How to remove a label from an issue on the remote repository with GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.remove_label"
+            },
+            {
+                "query": "How to add a comment to an issue on the remote repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.create_issue_comment"
+            },
+            {
+                "query": "How to remove a comment from an issue on the remote repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.remove_issue_comment"
+            },
+            {
+                "query": "How to fetch an issue from the remote repository using GitHubClient?",
+                "result": "automata.singletons.github_client.GitHubClient.fetch_issue"
+            },
+            {
+                "query": "What class represents the base class for different types of LLM completion results?",
+                "result": "automata.llm.llm_base.LLMCompletionResult"
+            },
+            {
+                "query": "What method fetches the role of the LLM completion result?",
+                "result": "automata.llm.llm_base.LLMCompletionResult.get_role"
+            },
+            {
+                "query": "What method fetches the content of the LLM completion result?",
+                "result": "automata.llm.llm_base.LLMCompletionResult.get_content"
+            },
+            {
+                "query": "What class represents the base class for different types of LLM chat messages?",
+                "result": "automata.llm.llm_base.LLMChatMessage"
+            },
+            {
+                "query": "What method converts a LLM chat message to a dictionary?",
+                "result": "automata.llm.llm_base.LLMChatMessage.to_dict"
+            },
+            {
+                "query": "What is understood by `LLMIterationResult`?",
+                "result": "It is an optional tuple consisting of two LLMChatMessage instances."
+            },
+            {
+                "query": "What abstract base class represents the different types of LLM conversations?",
+                "result": "automata.llm.llm_base.LLMConversation"
+            },
+            {
+                "query": "What type of exception is `LLMEmptyConversationError`?",
+                "result": "It's a custom Exception class within the LLMConversation hierarchy that is raised when the conversation is empty."
+            },
+            {
+                "query": "What does the `register_observer` method do in the LLMConversation class?",
+                "result": "automata.llm.llm_base.LLMConversation.register_observer"
+            },
+            {
+                "query": "What abstract base class represents different types of database providers for LLM conversations?",
+                "result": "automata.llm.llm_base.LLMConversationDatabaseProvider"
+            },
+            {
+                "query": "Which abstract method in the LLMConversationDatabaseProvider class is used to save a message to the database?",
+                "result": "automata.llm.llm_base.LLMConversationDatabaseProvider.save_message"
+            },
+            {
+                "query": "Which abstract base class represents different types of LLM chat completion providers?",
+                "result": "automata.llm.llm_base.LLMChatCompletionProvider"
+            },
+            {
+                "query": "What NamedTuple structure represents a function call to be made by the OpenAI agent?",
+                "result": "automata.llm.llm_base.FunctionCall"
+            },
+            {
+                "query": "Which method within the FunctionCall class is used to create a FunctionCall from a response dictionary?",
+                "result": "automata.llm.llm_base.FunctionCall.from_response_dict"
+            },
+            {
+                "query": "Which method within the FunctionCall class handles the termination message from the conversation?",
+                "result": "automata.llm.llm_base.FunctionCall.handle_termination"
+            },
+            {
+                "query": "Which method within the FunctionCall class converts the function call into a string?",
+                "result": "automata.llm.llm_base.FunctionCall.__str__"
+            },
+            {
+                "query": "What class represents a completion result from the OpenAI API?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatCompletionResult"
+            },
+            {
+                "query": "How is the `OpenAIChatCompletionResult` represented as a string?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatCompletionResult.__str__"
+            },
+            {
+                "query": "What method retrieves the function call from the completion result?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatCompletionResult.get_function_call"
+            },
+            {
+                "query": "What class represents a processed chat message TO or FROM the OpenAI LLM Chat API?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatMessage"
+            },
+            {
+                "query": "How is the `OpenAIChatMessage` represented as a string?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatMessage.__str__"
+            },
+            {
+                "query": "What method converts the chat message to a dictionary?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatMessage.to_dict"
+            },
+            {
+                "query": "What class represents a conversation with the OpenAI API?",
+                "result": "automata.llm.providers.openai_llm.OpenAIConversation"
+            },
+            {
+                "query": "What method is used to add a message to the OpenAI conversation?",
+                "result": "automata.llm.providers.openai_llm.OpenAIConversation.add_message"
+            },
+            {
+                "query": "What class represents a function callable by the OpenAI agent?",
+                "result": "automata.llm.providers.openai_llm.OpenAIFunction"
+            },
+            {
+                "query": "What class provides chat messages from the OpenAI API?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatCompletionProvider"
+            },
+            {
+                "query": "What method is used to get the next assistant completion from the OpenAI API?",
+                "result": "automata.llm.providers.openai_llm.OpenAIChatCompletionProvider.get_next_assistant_completion"
+            },
+            {
+                "query": "What class provides embeddings from the OpenAI API?",
+                "result": "automata.llm.providers.openai_llm.OpenAIEmbeddingProvider"
+            },
+            {
+                "query": "What method builds an embedding for a given source text?",
+                "result": "automata.llm.providers.openai_llm.OpenAIEmbeddingProvider.build_embedding_vector"
+            },
+            {
+                "query": "What class represents a tool that can be used by the OpenAI agent?",
+                "result": "automata.llm.providers.openai_llm.OpenAITool"
+            },
+            {
+                "query": "Which dataclass is used to represent a line item in a bounding box?",
+                "result": "automata.core.ast_handlers.LineItem"
+            },
+            {
+                "query": "Which dataclass is used to represent a bounding box?",
+                "result": "automata.core.ast_handlers.BoundingBox"
+            },
+            {
+                "query": "What function is used to find the bounding box of a node in the AST?",
+                "result": "automata.core.ast_handlers.fetch_bounding_box"
+            },
+            {
+                "query": "What function is used to get the docstring from a specific node?",
+                "result": "automata.core.ast_handlers.get_docstring_from_node"
+            },
+            {
+                "query": "Which class removes docstrings from a class or function?",
+                "result": "automata.core.ast_handlers.DocstringRemover"
+            },
+            {
+                "query": "What procedure is used to create a copy of a specific node without docstrings?",
+                "result": "automata.core.ast_handlers.get_node_without_docstrings"
+            },
+            {
+                "query": "Which class removes import statements from a module, class or function?",
+                "result": "automata.core.ast_handlers.ImportRemover"
+            },
+            {
+                "query": "What function is used to create a copy of a specific node without import statements?",
+                "result": "automata.core.ast_handlers.get_node_without_imports"
+            },
+            {
+                "query": "What function is used to find the imports for a specified module?",
+                "result": "automata.core.ast_handlers.find_imports"
+            },
+            {
+                "query": "What function is used to find a module, function, method, or class inside another module?",
+                "result": "automata.core.ast_handlers.find_syntax_tree_node"
+            },
+            {
+                "query": "Which function sets the OpenAI API key?",
+                "result": "automata.core.utils.set_openai_api_key"
+            },
+            {
+                "query": "Which function obtains the path to the root of the Automata python code directory?",
+                "result": "automata.core.utils.get_root_py_fpath"
+            },
+            {
+                "query": "Which function obtains the path to the root of the Automata directory?",
+                "result": "automata.core.utils.get_root_fpath"
+            },
+            {
+                "query": "Which function obtains the path to the root of the Automata embedding data directory?",
+                "result": "automata.core.utils.get_embedding_data_fpath"
+            },
+            {
+                "query": "Which function obtains the path to the root of the Automata config directory?",
+                "result": "automata.core.utils.get_config_fpath"
+            },
+            {
+                "query": "Which function loads a config file from the config directory?",
+                "result": "automata.core.utils.load_config"
+            },
+            {
+                "query": "Which function is used for string formatting in config?",
+                "result": "automata.core.utils.format_text"
+            },
+            {
+                "query": "Which function converts a kebab-case string to snake_case?",
+                "result": "automata.core.utils.convert_kebab_to_snake_case"
+            },
+            {
+                "query": "What is the HandlerDict class?",
+                "result": "automata.core.utils.HandlerDict"
+            },
+            {
+                "query": "What is the RootDict class?",
+                "result": "automata.core.utils.RootDict"
+            },
+            {
+                "query": "What is the LoggingConfig class?",
+                "result": "automata.core.utils.LoggingConfig"
+            },
+            {
+                "query": "Which function returns logging configuration?",
+                "result": "automata.core.utils.get_logging_config"
+            },
+            {
+                "query": "Which function checks if a list is sorted?",
+                "result": "automata.core.utils.is_sorted"
+            },
+            {
+                "query": "Which function calculates the similarity between two strings?",
+                "result": "automata.core.utils.calculate_similarity"
+            },
+            {
+                "query": "Which abstract class defines the base for different types of vector database providers?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider"
+            },
+            {
+                "query": "How is the vector database provider sized?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.__len__"
+            },
+            {
+                "query": "How does the vector database provider save data?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.save"
+            },
+            {
+                "query": "How does the vector database provider load data?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.load"
+            },
+            {
+                "query": "How does the vector database provider clear data?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.clear"
+            },
+            {
+                "query": "How does the vector database provider get ordered keys?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.get_ordered_keys"
+            },
+            {
+                "query": "How does the vector database provider get all ordered embeddings?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.get_all_ordered_embeddings"
+            },
+            {
+                "query": "How does the vector database provider add an entry?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.add"
+            },
+            {
+                "query": "How does the vector database provider batch add entries?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.batch_add"
+            },
+            {
+                "query": "How does the vector database provider update an entry?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.update_entry"
+            },
+            {
+                "query": "How does the vector database provider batch update entries?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.batch_update"
+            },
+            {
+                "query": "How does the vector database provider generate a unique hashable key from an entry?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.entry_to_key"
+            },
+            {
+                "query": "How does the vector database provider check if a specific entry is present in the database?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.contains"
+            },
+            {
+                "query": "How does the vector database provider get a specific entry?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.get"
+            },
+            {
+                "query": "How does the vector database provider get a batch of specific entries?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.batch_get"
+            },
+            {
+                "query": "How does the vector database provider discard a specific entry?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.discard"
+            },
+            {
+                "query": "How does the vector database provider discard a batch of specific entries?",
+                "result": "automata.core.base.database.vector_database.VectorDatabaseProvider.batch_discard"
+            },
+            {
+                "query": "What class represents a vector database that saves into a JSON file?",
+                "result": "automata.core.base.database.vector_database.JSONVectorDatabase"
+            },
+            {
+                "query": "How does the JSONVectorDatabase save the data to a JSON file?",
+                "result": "automata.core.base.database.vector_database.JSONVectorDatabase.save"
+            },
+            {
+                "query": "How does the JSONVectorDatabase load the data from a JSON file?",
+                "result": "automata.core.base.database.vector_database.JSONVectorDatabase.load"
+            },
+            {
+                "query": "What class provides a vector database that uses Chroma?",
+                "result": "automata.core.base.database.vector_database.ChromaVectorDatabase"
+            },
+            {
+                "query": "How does the ChromaVectorDatabase save data?",
+                "result": "automata.core.base.database.vector_database.ChromaVectorDatabase.save"
+            },
+            {
+                "query": "How does the ChromaVectorDatabase load data?",
+                "result": "automata.core.base.database.vector_database.ChromaVectorDatabase.load"
+            },
+            {
+                "query": "Which base class represents paths?",
+                "result": "automata.config.config_base.PathEnum"
+            },
+            {
+                "query": "Which class represents categories for embedding data configuration?",
+                "result": "automata.config.config_base.EmbeddingDataCategory"
+            },
+            {
+                "query": "Which class represents different configuration categories?",
+                "result": "automata.config.config_base.ConfigCategory"
+            },
+            {
+                "query": "Which class enumerates versions of instruction configurations?",
+                "result": "automata.config.config_base.InstructionConfigVersion"
+            },
+            {
+                "query": "Which class enumerates names for agent configurations?",
+                "result": "automata.config.config_base.AgentConfigName"
+            },
+            {
+                "query": "What class represents the LLM provider?",
+                "result": "automata.config.config_base.LLMProvider"
+            },
+            {
+                "query": "What data class represents model information?",
+                "result": "automata.config.config_base.ModelInformation"
+            },
+            {
+                "query": "Which class represents an abstract base for agent configuration?",
+                "result": "automata.config.config_base.AgentConfig"
+            },
+            {
+                "query": "Which class is utilized to build an agent configuration?",
+                "result": "automata.config.config_base.AgentConfigBuilder"
+            },
+            {
+                "query": "What method is used to build an agent instance with the current configuration?",
+                "result": "automata.config.config_base.AgentConfigBuilder.build"
+            },
+            {
+                "query": "What method allows you to create a specific configuration object?",
+                "result": "automata.config.config_base.AgentConfigBuilder.create_config"
+            },
+            {
+                "query": "Which method sets the model for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_model"
+            },
+            {
+                "query": "Which method is used to set the tools for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_tools"
+            },
+            {
+                "query": "Which method is used to set the stream for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_stream"
+            },
+            {
+                "query": "Which method is used to set verbosity for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_verbose"
+            },
+            {
+                "query": "Which method is used to set the max iterations for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_max_iterations"
+            },
+            {
+                "query": "How is the maximum token count set for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_max_tokens"
+            },
+            {
+                "query": "How is the temperature set for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_temperature"
+            },
+            {
+                "query": "How is the session ID set for an agent in the builder?",
+                "result": "automata.config.config_base.AgentConfigBuilder.with_session_id"
+            },
+            {
+                "query": "How can an AgentConfigBuilder instance be created using an existing configuration object?",
+                "result": "automata.config.config_base.AgentConfigBuilder.from_config"
+            },
+            {
+                "query": "How can an AgentConfigBuilder instance be created using a configuration object's name?",
+                "result": "automata.config.config_base.AgentConfigBuilder.from_name"
+            },
+            {
+                "query": "Which enumeration is used for the normalization type of an embedding?",
+                "result": "automata.embedding.embedding_base.EmbeddingNormType"
+            },
+            {
+                "query": "What is the abstract base class used for providing embeddings for symbols?",
+                "result": "automata.embedding.embedding_base.EmbeddingVectorProvider"
+            },
+            {
+                "query": "Which method in EmbeddingVectorProvider builds an embedding vector for a single document?",
+                "result": "automata.embedding.embedding_base.EmbeddingVectorProvider.build_embedding_vector"
+            },
+            {
+                "query": "Which method in EmbeddingVectorProvider builds embedding vectors for a batch of documents?",
+                "result": "automata.embedding.embedding_base.EmbeddingVectorProvider.batch_build_embedding_vector"
+            },
+            {
+                "query": "What is the abstract base class representing a type of embedding?",
+                "result": "automata.embedding.embedding_base.Embedding"
+            },
+            {
+                "query": "How is an instance of the Embedding class constructed?",
+                "result": "automata.embedding.embedding_base.Embedding.__init__"
+            },
+            {
+                "query": "Which class is abstract and is used to construct embeddings?",
+                "result": "automata.embedding.embedding_base.EmbeddingBuilder"
+            },
+            {
+                "query": "How is an instance of EmbeddingBuilder constructed?",
+                "result": "automata.embedding.embedding_base.EmbeddingBuilder.__init__"
+            },
+            {
+                "query": "Which method in EmbeddingBuilder builds the embedding for a single symbol?",
+                "result": "automata.embedding.embedding_base.EmbeddingBuilder.build"
+            },
+            {
+                "query": "Which method in EmbeddingBuilder builds the embedding for a batch of symbols?",
+                "result": "automata.embedding.embedding_base.EmbeddingBuilder.batch_build"
+            },
+            {
+                "query": "Which is the abstract base class that handles batch embeddings?",
+                "result": "automata.embedding.embedding_base.EmbeddingHandler"
+            },
+            {
+                "query": "Which method in EmbeddingHandler retrieves the embeddings for a list of symbols?",
+                "result": "automata.embedding.embedding_base.EmbeddingHandler.get_embeddings"
+            },
+            {
+                "query": "Which method in EmbeddingHandler retrieves all embeddings in a sorted order?",
+                "result": "automata.embedding.embedding_base.EmbeddingHandler.get_all_ordered_embeddings"
+            },
+            {
+                "query": "Which method processes the embeddings for a symbol in EmbeddingHandler?",
+                "result": "automata.embedding.embedding_base.EmbeddingHandler.process_embedding"
+            },
+            {
+                "query": "Which method in EmbeddingHandler performs any remaining updates that does not form a complete batch?",
+                "result": "automata.embedding.embedding_base.EmbeddingHandler.flush"
+            },
+            {
+                "query": "What is the concrete class responsible for calculating similarity of embeddings?",
+                "result": "automata.embedding.embedding_base.EmbeddingSimilarityCalculator"
+            },
+            {
+                "query": "How is an instance of EmbeddingSimilarityCalculator constructed?",
+                "result": "automata.embedding.embedding_base.EmbeddingSimilarityCalculator.__init__"
+            },
+            {
+                "query": "Which method of EmbeddingSimilarityCalculator calculates similarity scores for a query text?",
+                "result": "automata.embedding.embedding_base.EmbeddingSimilarityCalculator.calculate_query_similarity_dict"
+            },
+            {
+                "query": "Which method of EmbeddingSimilarityCalculator calculates similarity scores for an embedding with all symbols?",
+                "result": "automata.embedding.embedding_base.EmbeddingSimilarityCalculator._calculate_embedding_similarity"
+            },
+            {
+                "query": "Which method of EmbeddingSimilarityCalculator normalizes an array of embeddings?",
+                "result": "automata.embedding.embedding_base.EmbeddingSimilarityCalculator._normalize_embeddings"
+            },
+            {
+                "query": "What class is used to register and track `ISymbolProvider` instances?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderRegistry"
+            },
+            {
+                "query": "What method of the `SymbolProviderRegistry` registers a symbol provider?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderRegistry.register_provider"
+            },
+            {
+                "query": "What method of the `SymbolProviderRegistry` synchronizes all symbol providers?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderRegistry.synchronize"
+            },
+            {
+                "query": "Which method of the `SymbolProviderRegistry` returns a list of all supported symbols?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderRegistry.get_sorted_supported_symbols"
+            },
+            {
+                "query": "How is the `SymbolProviderRegistry` reset?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderRegistry.reset"
+            },
+            {
+                "query": "What class is used as a context manager for synchronizing symbol providers?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext"
+            },
+            {
+                "query": "How is a `SymbolProviderSynchronizationContext` object constructed?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.__init__"
+            },
+            {
+                "query": "What does the `__enter__` method of `SymbolProviderSynchronizationContext` return?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.__enter__"
+            },
+            {
+                "query": "Under what circumstances does the `__exit__` method of `SymbolProviderSynchronizationContext` raise an exception?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.__exit__"
+            },
+            {
+                "query": "What method of the `SymbolProviderSynchronizationContext` registers a symbol provider?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.register_provider"
+            },
+            {
+                "query": "What method of the `SymbolProviderSynchronizationContext` synchronizes all symbol providers?",
+                "result": "automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.synchronize"
+            },
+            {
+                "query": "Which private class parses Symbol URIs into a human-readable format?",
+                "result": "automata.symbol.symbol_parser._SymbolParser"
+            },
+            {
+                "query": "What method within _SymbolParser produces a ValueError with the current symbol and index?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.error"
+            },
+            {
+                "query": "What method within _SymbolParser returns the current character in the Symbol?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.current"
+            },
+            {
+                "query": "Which method within _SymbolParser looks ahead to the next character in the Symbol?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.peek_next"
+            },
+            {
+                "query": "Which method within _SymbolParser parses the list of Descriptors associated with the Symbol?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.parse_descriptors"
+            },
+            {
+                "query": "Which method within _SymbolParser parses a single Descriptor in the list associated with the Symbol?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.parse_descriptor"
+            },
+            {
+                "query": "Which method within _SymbolParser accepts an identifier from the Symbol?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.accept_identifier"
+            },
+            {
+                "query": "What method within _SymbolParser accepts an identifier from the Symbol, where the identifier is escaped by spaces?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.accept_space_escaped_identifier"
+            },
+            {
+                "query": "Which method within _SymbolParser accepts an identifier from the Symbol, where the identifier is escaped by backticks?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.accept_backtick_escaped_identifier"
+            },
+            {
+                "query": "Which method within _SymbolParser checks if a character is a valid identifier character?",
+                "result": "automata.symbol.symbol_parser._SymbolParser.is_identifier_character"
+            },
+            {
+                "query": "What standalone function parses a Symbol given a Symbol URI?",
+                "result": "automata.symbol.symbol_parser.parse_symbol"
+            },
+            {
+                "query": "What standalone function creates a new local Symbol?",
+                "result": "automata.symbol.symbol_parser.new_local_symbol"
+            },
+            {
+                "query": "Which standalone function retrieves an escaped name?",
+                "result": "automata.symbol.symbol_parser.get_escaped_name"
+            },
+            {
+                "query": "What standalone method checks if a name is a simple identifier, i.e. it doesn't need to be escaped?",
+                "result": "automata.symbol.symbol_parser.is_simple_identifier"
+            },
+            {
+                "query": "What class represents the description component of a Symbol URI?",
+                "result": "automata.symbol.symbol_base.SymbolDescriptor"
+            },
+            {
+                "query": "How is a SymbolDescriptor object constructed?",
+                "result": "automata.symbol.symbol_base.SymbolDescriptor.__init__"
+            },
+            {
+                "query": "How is a SymbolDescriptor represented as a string?",
+                "result": "automata.symbol.symbol_base.SymbolDescriptor.__repr__"
+            },
+            {
+                "query": "What method is used to convert a SymbolDescriptor back into URI string?",
+                "result": "automata.symbol.symbol_base.SymbolDescriptor.unparse"
+            },
+            {
+                "query": "How is the escaped name of a SymbolDescriptor obtained?",
+                "result": "automata.symbol.symbol_base.SymbolDescriptor.get_escaped_name"
+            },
+            {
+                "query": "How is a scip suffix converted to a python kind?",
+                "result": "automata.symbol.symbol_base.SymbolDescriptor.convert_scip_to_python_kind"
+            },
+            {
+                "query": "What class represents the package component of a Symbol URI?",
+                "result": "automata.symbol.symbol_base.SymbolPackage"
+            },
+            {
+                "query": "How is a SymbolPackage object represented as a string?",
+                "result": "automata.symbol.symbol_base.SymbolPackage.__repr__"
+            },
+            {
+                "query": "What method is used to convert a SymbolPackage back into URI string?",
+                "result": "automata.symbol.symbol_base.SymbolPackage.unparse"
+            },
+            {
+                "query": "What class represents and contains associated logic for a Symbol?",
+                "result": "automata.symbol.symbol_base.Symbol"
+            },
+            {
+                "query": "How is a Symbol represented as a string?",
+                "result": "automata.symbol.symbol_base.Symbol.__repr__"
+            },
+            {
+                "query": "How can one get the parent of a Symbol?",
+                "result": "automata.symbol.symbol_base.Symbol.parent"
+            },
+            {
+                "query": "How can one get the corresponding python kind of a Symbol?",
+                "result": "automata.symbol.symbol_base.Symbol.py_kind"
+            },
+            {
+                "query": "How can one get the full dot path of a Symbol?",
+                "result": "automata.symbol.symbol_base.Symbol.full_dotpath"
+            },
+            {
+                "query": "How can one get the module path of a Symbol?",
+                "result": "automata.symbol.symbol_base.Symbol.module_path"
+            },
+            {
+                "query": "How can one check if a Symbol is local?",
+                "result": "automata.symbol.symbol_base.Symbol.is_local"
+            },
+            {
+                "query": "How can one check if a Symbol is a protobuf?",
+                "result": "automata.symbol.symbol_base.Symbol.is_protobuf"
+            },
+            {
+                "query": "What class represents a reference to a symbol in a file?",
+                "result": "automata.symbol.symbol_base.SymbolReference"
+            },
+            {
+                "query": "What abstract class provides a method for getting a sorted list of supported symbols?",
+                "result": "automata.symbol.symbol_base.ISymbolProvider"
+            },
+            {
+                "query": "Which method allows to filter the sorted list of supported symbols?",
+                "result": "automata.symbol.symbol_base.ISymbolProvider.filter_symbols"
+            },
+            {
+                "query": "Which method allows to get the sorted list of supported symbols?",
+                "result": "automata.symbol.symbol_base.ISymbolProvider.get_sorted_supported_symbols"
+            },
+            {
+                "query": "Which method allows to set the synchronized flag?",
+                "result": "automata.symbol.symbol_base.ISymbolProvider.set_synchronized"
+            },
+            {
+                "query": "What class represents a graph of symbols and their relationships?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph"
+            },
+            {
+                "query": "How is the SymbolGraph object initialized?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.__init__"
+            },
+            {
+                "query": "What method in SymbolGraph is used to get dependencies of a symbol?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.get_symbol_dependencies"
+            },
+            {
+                "query": "What method in SymbolGraph is used to get relationships of a symbol?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.get_symbol_relationships"
+            },
+            {
+                "query": "What method in SymbolGraph is used to get potential callers of a symbol?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.get_potential_symbol_callers"
+            },
+            {
+                "query": "What method in SymbolGraph is used to get potential callees of a symbol?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.get_potential_symbol_callees"
+            },
+            {
+                "query": "What method in SymbolGraph is used to get references to a given symbol?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.get_references_to_symbol"
+            },
+            {
+                "query": "What method is used to create a symbol subgraph that only contains rankable symbols?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph._build_rankable_subgraph"
+            },
+            {
+                "query": "What method is used in SymbolGraph to create instance of itself from a MultiDiGraph instance?",
+                "result": "automata.symbol.graph.symbol_graph.SymbolGraph.from_graph"
+            },
+            {
+                "query": "Which class is a concrete class for building OpenAI agents?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent"
+            },
+            {
+                "query": "Which method of an OpenAI agent is responsible for running the agent?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.run"
+            },
+            {
+                "query": "Which method is used to construct the OpenAIAutomataAgent?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.__init__"
+            },
+            {
+                "query": "Which private method does the OpenAI agent call to perform setup?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent._setup"
+            },
+            {
+                "query": "What method gets the result of the OpenAI agent operation?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.get_result"
+            },
+            {
+                "query": "What method sets the database provider for the OpenAI agent?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.set_database_provider"
+            },
+            {
+                "query": "Which class is an abstract base class for building OpenAI agent tools?",
+                "result": "automata.agent.openai_agent.OpenAIAgentToolkitBuilder"
+            },
+            {
+                "query": "Which abstract method in OpenAIAgentToolkitBuilder builds OpenAI tools?",
+                "result": "automata.agent.openai_agent.OpenAIAgentToolkitBuilder.build_for_open_ai"
+            },
+            {
+                "query": "What method checks if the provided Tool Manager can be handled by the OpenAIAgentToolkitBuilder?",
+                "result": "automata.agent.openai_agent.OpenAIAgentToolkitBuilder.can_handle"
+            },
+            {
+                "query": "What abstract base class represents a node in the file tree?",
+                "result": "automata.code_parsers.directory.Node"
+            },
+            {
+                "query": "What class represents a file in the file tree?",
+                "result": "automata.code_parsers.directory.File"
+            },
+            {
+                "query": "What class represents a directory in the file tree?",
+                "result": "automata.code_parsers.directory.Directory"
+            },
+            {
+                "query": "What method is used to add a child node to a directory?",
+                "result": "automata.code_parsers.directory.Directory.add_child"
+            },
+            {
+                "query": "What method retrieves a list of file names in a directory?",
+                "result": "automata.code_parsers.directory.Directory.get_file_names"
+            },
+            {
+                "query": "What method retrieves a list of subdirectory names in a directory?",
+                "result": "automata.code_parsers.directory.Directory.get_subdirectories"
+            },
+            {
+                "query": "What method determines if a directory is the root directory?",
+                "result": "automata.code_parsers.directory.Directory.is_root_dir"
+            },
+            {
+                "query": "What method determines if a directory is a leaf directory?",
+                "result": "automata.code_parsers.directory.Directory.is_leaf_dir"
+            },
+            {
+                "query": "What class handles operations related to the directory structure?",
+                "result": "automata.code_parsers.directory.DirectoryManager"
+            },
+            {
+                "query": "What method loads the structure of a directory into Directory and File objects",
+                "result": "automata.code_parsers.directory.DirectoryManager._load_directory_structure"
+            },
+            {
+                "query": "How does a DirectoryManager get a list of files in a specific directory?",
+                "result": "automata.code_parsers.directory.DirectoryManager.get_files_in_dir"
+            },
+            {
+                "query": "How does a DirectoryManager get a list of subdirectories in a specific directory?",
+                "result": "automata.code_parsers.directory.DirectoryManager.get_subdirectories"
+            },
+            {
+                "query": "How does a DirectoryManager ensure a specific directory exists?",
+                "result": "automata.code_parsers.directory.DirectoryManager.ensure_directory_exists"
+            },
+            {
+                "query": "How does a DirectoryManager find the node for a given path?",
+                "result": "automata.code_parsers.directory.DirectoryManager._get_node_for_path"
+            },
+            {
+                "query": "What class is responsible for fetching Python code?",
+                "result": "automata.code_parsers.py.py_reader.PyReader"
+            },
+            {
+                "query": "How is the PyReader object constructed?",
+                "result": "automata.code_parsers.py.py_reader.PyReader.__init__"
+            },
+            {
+                "query": "What method is used to get source code for a specified module, class, or function/method?",
+                "result": "automata.code_parsers.py.py_reader.PyReader.get_source_code"
+            },
+            {
+                "query": "What method is used to get the docstring for a specified module, class, or function/method?",
+                "result": "automata.code_parsers.py.py_reader.PyReader.get_docstring"
+            },
+            {
+                "query": "What method is used to get source code without docstrings for a specified module, class, or function/method?",
+                "result": "automata.code_parsers.py.py_reader.PyReader.get_source_code_without_docstrings"
+            },
+            {
+                "query": "How can the docstring be extracted from a given node?",
+                "result": "automata.code_parsers.py.py_reader.PyReader.get_docstring_from_node"
+            },
+            {
+                "query": "What Enum defines the components of the code context processing?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.ContextComponent"
+            },
+            {
+                "query": "What abstract base class represents a context component?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.BaseContextComponent"
+            },
+            {
+                "query": "What method of BaseContextComponent is used to increase the indentation?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.BaseContextComponent.increased_indentation"
+            },
+            {
+                "query": "Which abstract method must a subclass of BaseContextComponent implement?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.BaseContextComponent.generate"
+            },
+            {
+                "query": "What concrete context component is used to generate a headline from a symbol?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.HeadlineContextComponent"
+            },
+            {
+                "query": "What method is used to generate a headline from a symbol?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.HeadlineContextComponent.generate"
+            },
+            {
+                "query": "What concrete context component is used to convert a symbol into underlying source code?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.SourceCodeContextComponent"
+            },
+            {
+                "query": "What method is used to convert a symbol into underlying source code?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.SourceCodeContextComponent.generate"
+            },
+            {
+                "query": "What class is used to convert a symbol into an interface, skipping 'private' methods/classes if indicated?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.InterfaceContextComponent"
+            },
+            {
+                "query": "What method is used to convert a symbol into an interface?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.InterfaceContextComponent.generate"
+            },
+            {
+                "query": "What method is used to process all classes and methods in the ast_object?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.InterfaceContextComponent._process_classes_and_methods"
+            },
+            {
+                "query": "What class is used to retrieve the context of a symbol in a python project?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.PyContextRetriever"
+            },
+            {
+                "query": "What method is used to process the context of a specified symbol?",
+                "result": "automata.code_parsers.py.context_processing.context_retriever.PyContextRetriever.process_symbol"
+            },
+            {
+                "query": "What is the utility class for writing Python code along Abstract Syntax Tree nodes?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter"
+            },
+            {
+                "query": "Which exception is raised when a module is not found in the module dictionary?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.ModuleNotFound"
+            },
+            {
+                "query": "Which exception is raised when an Abstract Syntax Tree Statement is not found in the module?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.StatementNotFound"
+            },
+            {
+                "query": "Which exception is raised when invalid arguments are passed to a method?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.InvalidArguments"
+            },
+            {
+                "query": "How is the PyCodeWriter object initialized?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.__init__"
+            },
+            {
+                "query": "What method is used to create a new module object from source code?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.create_new_module"
+            },
+            {
+                "query": "What method is used to write the modified module to a file at the specified output path?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.write_module_to_disk"
+            },
+            {
+                "query": "Which private method is used to write the source code to disk and format it using 'black' and 'isort'?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter._write_to_disk_and_format"
+            },
+            {
+                "query": "What method is used to upsert the nodes from a new module into an existing module?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.upsert_to_module"
+            },
+            {
+                "query": "What method is used to remove nodes from a module?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.delete_from_module"
+            },
+            {
+                "query": "What method is used to delete a module from a module dictionary?",
+                "result": "automata.code_writers.py.py_code_writer.PyCodeWriter.delete_module"
+            },
+            {
+                "query": "What does the Payload represent in the code?",
+                "result": "automata.eval.eval_base.Payload"
+            },
+            {
+                "query": "What function registers an Action subclass in the ACTION_REGISTRY?",
+                "result": "automata.eval.eval_base.register_action"
+            },
+            {
+                "query": "What function parses out the corresponding action from a raw dictionary?",
+                "result": "automata.eval.eval_base.parse_action_from_payload"
+            },
+            {
+                "query": "What abstract base class represents an arbitrary action to be taken by an LLM?",
+                "result": "automata.eval.eval_base.Action"
+            },
+            {
+                "query": "How is the Action object constructed?",
+                "result": "automata.eval.eval_base.Action.__init__"
+            },
+            {
+                "query": "What method in the Action class is used to convert the action to a dictionary?",
+                "result": "automata.eval.eval_base.Action.to_payload"
+            },
+            {
+                "query": "How can an Action instance be created from a dictionary?",
+                "result": "automata.eval.eval_base.Action.from_payload"
+            },
+            {
+                "query": "What abstract base class represents the result of an evaluation?",
+                "result": "automata.eval.eval_base.EvalResult"
+            },
+            {
+                "query": "How is the EvalResult object constructed?",
+                "result": "automata.eval.eval_base.EvalResult.__init__"
+            },
+            {
+                "query": "What abstract method is used to determine if an evaluation was a full match?",
+                "result": "automata.eval.eval_base.EvalResult.is_full_match"
+            },
+            {
+                "query": "What abstract method is used to determine if an evaluation was a partial match?",
+                "result": "automata.eval.eval_base.EvalResult.is_partial_match"
+            },
+            {
+                "query": "What abstract method is used to convert an evaluation into a `Payload`?",
+                "result": "automata.eval.eval_base.EvalResult.to_payload"
+            },
+            {
+                "query": "How can an EvalResult instance be created from a `Payload`?",
+                "result": "automata.eval.eval_base.EvalResult.from_payload"
+            },
+            {
+                "query": "What abstract class is used for evaluating an LLM's performance?",
+                "result": "automata.eval.eval_base.Eval"
+            },
+            {
+                "query": "How is an Eval object constructed?",
+                "result": "automata.eval.eval_base.Eval.__init__"
+            },
+            {
+                "query": "Which method is used to generate an eval result for a given set of instructions and expected actions?",
+                "result": "automata.eval.eval_base.Eval.generate_eval_result"
+            },
+            {
+                "query": "Which method is used to extract a list of action from the given message?",
+                "result": "automata.eval.eval_base.Eval.extract_action"
+            },
+            {
+                "query": "Which method is used to filter a list of actions that are relevant to the eval?",
+                "result": "automata.eval.eval_base.Eval._filter_actions"
+            },
+            {
+                "query": "What class represents an OpenAI function call action?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction"
+            },
+            {
+                "query": "Which method in OpenAIFunctionCallAction is tasked with comparing different instances of the class?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction.__eq__"
+            },
+            {
+                "query": "Which method in OpenAIFunctionCallAction generates a unique hash value for each instance?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction.__hash__"
+            },
+            {
+                "query": "Which method in OpenAIFunctionCallAction is used to provide a string representation of instances?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction.__str__"
+            },
+            {
+                "query": "How can OpenAIFunctionCallAction instances be represented for debugging purposes?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction.__repr__"
+            },
+            {
+                "query": "How can an OpenAIFunctionCallAction instance be converted into a storable format or payload?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction.to_payload"
+            },
+            {
+                "query": "How can an OpenAIFunctionCallAction instance be recovered from a storable format or payload?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionCallAction.from_payload"
+            },
+            {
+                "query": "What class evaluates OpenAI messages for function call actions?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionEval"
+            },
+            {
+                "query": "How is the OpenAIFunctionEval object constructed?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionEval.__init__"
+            },
+            {
+                "query": "How are OpenAIFunctionEval instances represented for debugging?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionEval.__repr__"
+            },
+            {
+                "query": "How are actions extracted from messages in the OpenAIFunctionEval class?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionEval.extract_action"
+            },
+            {
+                "query": "How are non-OpenAIFunctionCallActions filtered out in the OpenAIFunctionEval() class?",
+                "result": "automata.eval.agent.openai_function_eval.OpenAIFunctionEval._filter_actions"
+            },
+            {
+                "query": "What class evaluates detailed metrics from a sequence of EvalResults?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics"
+            },
+            {
+                "query": "How is the AgentEvaluationMetrics object constructed?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.__init__"
+            },
+            {
+                "query": "How does the AgentEvaluationMetrics object represent itself as a string?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.__str__"
+            },
+            {
+                "query": "How are the total number of full matches calculated?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_full_matches"
+            },
+            {
+                "query": "How are the total number of partial matches calculated?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_partial_matches"
+            },
+            {
+                "query": "How are the total number of actions calculated?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_actions"
+            },
+            {
+                "query": "How are the total number of successful actions calculated?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_successful_actions"
+            },
+            {
+                "query": "What property determines the full match success rate?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.full_match_rate"
+            },
+            {
+                "query": "What property determines the partial match success rate?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.partial_match_rate"
+            },
+            {
+                "query": "What property determines the action success rate?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.action_success_rate"
+            },
+            {
+                "query": "How is the total extra actions calculated?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_extra_actions"
+            },
+            {
+                "query": "What property determines the frequency of extra actions?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.extra_action_frequency"
+            },
+            {
+                "query": "What property determines the frequency of successful actions?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.successful_actions_frequency"
+            },
+            {
+                "query": "What property determines the frequency of failed actions?",
+                "result": "automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.failed_actions_frequency"
+            },
+            {
+                "query": "What class loads a list of tasks from a JSON file?",
+                "result": "automata.eval.agent.agent_eval_harness.AgentEvalSetLoader"
+            },
+            {
+                "query": "What method in the AgentEvalSetLoader class loads the JSON file?",
+                "result": "automata.eval.agent.agent_eval_harness.AgentEvalSetLoader.load_json"
+            },
+            {
+                "query": "What function is used to recursively convert dictionary values to strings?",
+                "result": "automata.eval.agent.agent_eval_harness.create_payload"
+            },
+            {
+                "query": "What function is used to recursively convert strings to dictionaries?",
+                "result": "automata.eval.agent.agent_eval_harness.load_payload"
+            },
+            {
+                "query": "What function processes a single task and returns the evaluation results?",
+                "result": "automata.eval.agent.agent_eval_harness.process_task"
+            },
+            {
+                "query": "What class evaluates a list of instructions against a list of expected actions?",
+                "result": "automata.eval.agent.agent_eval_harness.AgentEvaluationHarness"
+            },
+            {
+                "query": "What method in the AgentEvaluationHarness class checks the evaluation metrics for the given instructions and expected actions?",
+                "result": "automata.eval.agent.agent_eval_harness.AgentEvaluationHarness.evaluate"
+            },
+            {
+                "query": "What function aggregates a list of `AgentEvalResult` objects into a single result?",
+                "result": "automata.eval.agent.agent_eval_composite.aggregate_agent_result"
+            },
+            {
+                "query": "What function checks that all evaluators are of different types?",
+                "result": "automata.eval.agent.agent_eval_composite.check_eval_uniqueness"
+            },
+            {
+                "query": "Which class creates a composite evaluator from a list of evaluator classes?",
+                "result": "automata.eval.agent.agent_eval_composite.AgentEvalComposite"
+            },
+            {
+                "query": "What method in `AgentEvalComposite` generates an eval result for a given set of instructions and expected actions?",
+                "result": "automata.eval.agent.agent_eval_composite.AgentEvalComposite.generate_eval_result"
+            },
+            {
+                "query": "What method extracts a list of action from the given message in `AgentEvalComposite` class?",
+                "result": "automata.eval.agent.agent_eval_composite.AgentEvalComposite.extract_action"
+            },
+            {
+                "query": "Which method filters a list of actions to only contain actions that are relevant to the eval?",
+                "result": "automata.eval.agent.agent_eval_composite.AgentEvalComposite._filter_actions"
+            },
+            {
+                "query": "How is the `AgentEvalComposite` object constructed?",
+                "result": "automata.eval.agent.agent_eval_composite.AgentEvalComposite.__init__"
+            },
+            {
+                "query": "What exception is raised if there's an error executing the code?",
+                "result": "automata.eval.agent.code_writing_eval.CodeExecutionError"
+            },
+            {
+                "query": "What error is thrown when the target variable is not found?",
+                "result": "automata.eval.agent.code_writing_eval.VariableNotFoundError"
+            },
+            {
+                "query": "What class represents a concrete action representing written code?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction"
+            },
+            {
+                "query": "What method is used to construct the CodeWritingAction object?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction.__init__"
+            },
+            {
+                "query": "How is the CodeWritingAction hash value determined?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction.__hash__"
+            },
+            {
+                "query": "How is the CodeWritingAction output represented as a string?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction.__repr__"
+            },
+            {
+                "query": "What method is used to convert a CodeWritingAction into a payload?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction.to_payload"
+            },
+            {
+                "query": "How can a CodeWritingAction be created from a payload?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction.from_payload"
+            },
+            {
+                "query": "What utility does the `_extract_snippet` method provide in CodeWritingAction?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingAction._extract_snippet"
+            },
+            {
+                "query": "What class evaluates an LLM's code writing ability?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingEval"
+            },
+            {
+                "query": "How is the CodeWritingEval object constructed?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingEval.__init__"
+            },
+            {
+                "query": "What method extracts the coding action in CodeWritingEval?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingEval.extract_action"
+            },
+            {
+                "query": "How is a code snippet parsed in CodeWritingEval?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingEval._parse_code_snippet"
+            },
+            {
+                "query": "What method filters out non-CodeWritingActions in CodeWritingEval?",
+                "result": "automata.eval.agent.code_writing_eval.CodeWritingEval._filter_actions"
+            },
+            {
+                "query": "What class is used to write evaluation results to a SQLite database?",
+                "result": "automata.eval.agent.agent_eval_database.AgentEvalResultDatabase"
+            },
+            {
+                "query": "What method is used to initialize the AgentEvalResultDatabase?",
+                "result": "automata.eval.agent.agent_eval_database.AgentEvalResultDatabase.__init__"
+            },
+            {
+                "query": "What method is used to write an AgentEvalResult instance to the database?",
+                "result": "automata.eval.agent.agent_eval_database.AgentEvalResultDatabase.write_result"
+            },
+            {
+                "query": "What method is used to retrieve AgentEvalResult instances from the database?",
+                "result": "automata.eval.agent.agent_eval_database.AgentEvalResultDatabase.get_results"
+            },
+            {
+                "query": "What action represents a concrete symbol search?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchAction"
+            },
+            {
+                "query": "What is the method used to construct a SymbolSearchAction?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchAction.__init__"
+            },
+            {
+                "query": "How is the SymbolSearchAction represented as a string for debugging?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchAction.__repr__"
+            },
+            {
+                "query": "What method is used to convert a SymbolSearchAction into a `Payload`?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchAction.to_payload"
+            },
+            {
+                "query": "How can a SymbolSearchAction instance be created from a `Payload`?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchAction.from_payload"
+            },
+            {
+                "query": "What class represents the result of a symbol search evaluation?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult"
+            },
+            {
+                "query": "What method is used to construct a SymbolSearchEvalResult?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult.__init__"
+            },
+            {
+                "query": "How is the SymbolSearchEvalResult represented as a string for debugging?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult.__repr__"
+            },
+            {
+                "query": "What property is used to determine if a symbol search evaluation was a full match?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult.is_full_match"
+            },
+            {
+                "query": "What property is used to determine if a symbol search evaluation was a partial match?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult.is_partial_match"
+            },
+            {
+                "query": "What method is used to convert a SymbolSearchEvalResult into a `Payload`?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult.to_payload"
+            },
+            {
+                "query": "How can a SymbolSearchEvalResult instance be created from a `Payload`?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEvalResult.from_payload"
+            },
+            {
+                "query": "What class is used to evaluate an LLM's symbol searching ability?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEval"
+            },
+            {
+                "query": "What method is used to extract the search action in a SymbolSearchEval?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEval.extract_action"
+            },
+            {
+                "query": "How is a ToolEvalResult generated in a SymbolSearchEval?",
+                "result": "automata.eval.tool.search_eval.SymbolSearchEval.to_tool_result"
+            },
+            {
+                "query": "Which class is used to evaluate detailed metrics from a sequence of ToolEvalResults?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics"
+            },
+            {
+                "query": "How is the ToolEvaluationMetrics object constructed?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.__init__"
+            },
+            {
+                "query": "What property is used to retrieve the total number of evaluations?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.total_evaluations"
+            },
+            {
+                "query": "What property is used to retrieve the total number of full matches?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.total_full_matches"
+            },
+            {
+                "query": "What property is used to retrieve the total number of partial matches?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.total_partial_matches"
+            },
+            {
+                "query": "What property is used to determine the full match rate?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.full_match_rate"
+            },
+            {
+                "query": "What property is used to determine the partial match rate?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.partial_match_rate"
+            },
+            {
+                "query": "How is the ToolEvaluationMetrics object represented as a string?",
+                "result": "automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.__str__"
+            },
+            {
+                "query": "Which class is used for loading a list of function calls and their expected actions from a JSON file?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvalSetLoader"
+            },
+            {
+                "query": "What method loads JSON data from the given file in ToolEvalSetLoader?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvalSetLoader.load_json"
+            },
+            {
+                "query": "What method in ToolEvalSetLoader formats values throughout a dictionary?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvalSetLoader.format_values"
+            },
+            {
+                "query": "What method constructs a ToolEvalSetLoader instance?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvalSetLoader.__init__"
+            },
+            {
+                "query": "What is the exception raised for errors during JSON loading?",
+                "result": "automata.eval.tool.tool_eval_harness.EvalLoadingError"
+            },
+            {
+                "query": "Which class evaluates a list of function calls against a list of expected actions?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvaluationHarness"
+            },
+            {
+                "query": "Which method conducts the evaluation process in the ToolEvaluationHarness?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvaluationHarness.evaluate"
+            },
+            {
+                "query": "Which method initializes the ToolEvaluationHarness?",
+                "result": "automata.eval.tool.tool_eval_harness.ToolEvaluationHarness.__init__"
+            },
+            {
+                "query": "What is the exception raised for errors during evaluation execution?",
+                "result": "automata.eval.tool.tool_eval_harness.EvalExecutionError"
+            },
+            {
+                "query": "Which abstract class represents the result of a tool evaluation?",
+                "result": "automata.eval.tool.tool_eval.ToolEvalResult"
+            },
+            {
+                "query": "How is a ToolEvalResult object constructed?",
+                "result": "automata.eval.tool.tool_eval.ToolEvalResult.__init__"
+            },
+            {
+                "query": "What abstract class is used for evaluating tools' performance?",
+                "result": "automata.eval.tool.tool_eval.ToolEval"
+            },
+            {
+                "query": "Which method generates a tool evaluation result?",
+                "result": "automata.eval.tool.tool_eval.ToolEval.generate_eval_result"
+            },
+            {
+                "query": "What abstract method is used to extract action from an input action tuple?",
+                "result": "automata.eval.tool.tool_eval.ToolEval.extract_action"
+            },
+            {
+                "query": "What function is used to filter actions in the context of ToolEval?",
+                "result": "automata.eval.tool.tool_eval.ToolEval._filter_actions"
+            },
+            {
+                "query": "Which abstract method is used to convert the evaluation result to a `ToolEvalResult`?",
+                "result": "automata.eval.tool.tool_eval.ToolEval.to_tool_result"
+            },
+            {
+                "query": "What interface provides an embedding lookup?",
+                "result": "automata.symbol_embedding.vector_databases.IEmbeddingLookupProvider"
+            },
+            {
+                "query": "Which method creates a hashable key from a Symbol?",
+                "result": "automata.symbol_embedding.vector_databases.IEmbeddingLookupProvider.embedding_to_key"
+            },
+            {
+                "query": "What class is used to create a vector database that saves into a Chroma db?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase"
+            },
+            {
+                "query": "How to get all database keys in a sorted order?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.get_ordered_keys"
+            },
+            {
+                "query": "How to get all entries in the database in a sorted order?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.get_all_ordered_embeddings"
+            },
+            {
+                "query": "What method is used to add a new entry to the collection?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.add"
+            },
+            {
+                "query": "Which method is used to add multiple entries to the collection?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.batch_add"
+            },
+            {
+                "query": "Which method is used to update an entry in the database?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.update_entry"
+            },
+            {
+                "query": "What method is used to update multiple entries in the database?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.batch_update"
+            },
+            {
+                "query": "Which method is used to get an entry from the database using a key?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.get"
+            },
+            {
+                "query": "Which method is used to get multiple entries from the database using keys?",
+                "result": "automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.batch_get"
+            },
+            {
+                "query": "Which class provides a vector database that saves into a JSON file?",
+                "result": "automata.symbol_embedding.vector_databases.JSONSymbolEmbeddingVectorDatabase"
+            },
+            {
+                "query": "Which method is used to get all keys in the database sorted?",
+                "result": "automata.symbol_embedding.vector_databases.JSONSymbolEmbeddingVectorDatabase.get_ordered_keys"
+            },
+            {
+                "query": "Which method is used to get all entries in the database sorted?",
+                "result": "automata.symbol_embedding.vector_databases.JSONSymbolEmbeddingVectorDatabase.get_all_ordered_embeddings"
+            },
+            {
+                "query": "Which class is responsible for building `Symbol` source code embeddings?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolCodeEmbeddingBuilder"
+            },
+            {
+                "query": "Which method from `SymbolCodeEmbeddingBuilder` builds the embedding for a symbol's source code?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolCodeEmbeddingBuilder.build"
+            },
+            {
+                "query": "Which method from `SymbolCodeEmbeddingBuilder` builds embeddings for a list of symbols' source code?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolCodeEmbeddingBuilder.batch_build"
+            },
+            {
+                "query": "Which class is responsible for building `Symbol` documentation embeddings?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder"
+            },
+            {
+                "query": "In `SymbolDocEmbeddingBuilder`, how is the embedding for a symbol's documentation built?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder.build"
+            },
+            {
+                "query": "In `SymbolDocEmbeddingBuilder`, how is the embedding for a non-class type symbol's documentation built?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder.build_non_class"
+            },
+            {
+                "query": "In `SymbolDocEmbeddingBuilder`, how is the summary for a class document built?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder._build_class_document_summary"
+            },
+            {
+                "query": "In `SymbolDocEmbeddingBuilder`, how is the document for a class symbol built?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder._build_class_document"
+            },
+            {
+                "query": "In `SymbolDocEmbeddingBuilder`, how is the prompt for a symbol documentation generation built?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder._build_prompt"
+            },
+            {
+                "query": "In `SymbolDocEmbeddingBuilder`, how is a search list generated?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder._generate_search_list"
+            },
+            {
+                "query": "Which method from `SymbolDocEmbeddingBuilder` is not yet implemented?",
+                "result": "automata.symbol_embedding.symbol_embedding_builders.SymbolDocEmbeddingBuilder.batch_build"
+            },
+            {
+                "query": "What abstract class is designed for symbol code embeddings?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding"
+            },
+            {
+                "query": "Which method is used to initialize a SymbolEmbedding?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding.__init__"
+            },
+            {
+                "query": "How is a SymbolEmbedding 'stringified'?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding.__str__"
+            },
+            {
+                "query": "What property is used to access the symbol of SymbolEmbedding?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding.symbol"
+            },
+            {
+                "query": "How can metadata be accessed in a SymbolEmbedding?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding.metadata"
+            },
+            {
+                "query": "How can a SymbolEmbedding instance be created from known arguments?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding.from_args"
+            },
+            {
+                "query": "What concrete class is designed for symbol code embeddings?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolCodeEmbedding"
+            },
+            {
+                "query": "How is a SymbolCodeEmbedding 'stringified'?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolCodeEmbedding.__str__"
+            },
+            {
+                "query": "How can metadata be accessed in a SymbolCodeEmbedding?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolCodeEmbedding.metadata"
+            },
+            {
+                "query": "What concrete class is designed for symbol document embeddings?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolDocEmbedding"
+            },
+            {
+                "query": "How is a SymbolDocEmbedding 'stringified'?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolDocEmbedding.__str__"
+            },
+            {
+                "query": "How can metadata be accessed in a SymbolDocEmbedding?",
+                "result": "automata.symbol_embedding.symbol_embedding_base.SymbolDocEmbedding.metadata"
+            },
+            {
+                "query": "Which class in the module is responsible for handling the embedding of symbols?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler"
+            },
+            {
+                "query": "How is the SymbolEmbeddingHandler object constructed?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.__init__"
+            },
+            {
+                "query": "Which method in SymbolEmbeddingHandler is used to process the embedding for a symbol?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.process_embedding"
+            },
+            {
+                "query": "How does the SymbolEmbeddingHandler get the embeddings for a list of symbols?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.get_embeddings"
+            },
+            {
+                "query": "How does the SymbolEmbeddingHandler get the embeddings for all symbols in the database?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.get_all_ordered_embeddings"
+            },
+            {
+                "query": "What method in the SymbolEmbeddingHandler is used to perform any remaining updates that do not form a complete batch?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.flush"
+            },
+            {
+                "query": "What method is used in SymbolEmbeddingHandler to get the sorted supported symbols?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler._get_sorted_supported_symbols"
+            },
+            {
+                "query": "How does the SymbolEmbeddingHandler filter the symbols?",
+                "result": "automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.filter_symbols"
             }
         ]
     }
