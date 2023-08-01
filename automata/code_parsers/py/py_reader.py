@@ -1,3 +1,4 @@
+"""Defines the core logic for reading python files, e.g. `PyReader`"""
 from __future__ import annotations
 
 import copy

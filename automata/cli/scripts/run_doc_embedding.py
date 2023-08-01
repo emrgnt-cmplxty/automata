@@ -12,11 +12,9 @@ from automata.cli.cli_utils import initialize_py_module_loader
 from automata.context_providers.symbol_synchronization_context import (
     SymbolProviderSynchronizationContext,
 )
+from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.llm import OpenAIEmbeddingProvider
-from automata.memory_store import (
-    SymbolCodeEmbeddingHandler,
-    SymbolDocEmbeddingHandler,
-)
+from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,

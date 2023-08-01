@@ -20,7 +20,7 @@ def test_init(symbol_search_tool_builder):
 
 def test_build(symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
-    assert len(tools) == 5
+    assert len(tools) == 6
     for tool in tools:
         assert isinstance(tool, Tool)
 

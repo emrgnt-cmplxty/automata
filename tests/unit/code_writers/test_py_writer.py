@@ -470,7 +470,7 @@ def test_create_new_module(py_writer):
     py_writer.create_new_module("test_module_3", ast.parse(source_code))
     module_obj = py_module_loader.fetch_ast_module("test_module_3")
     assert module_obj is not None
-    with pytest.raises(PyCodeWriter.InvalidArguments):
+    with pytest.raises(PyCodeWriter.InvalidArgumentsError):
         py_writer.create_new_module("test_module_3", ast.parse(source_code))
 
 
@@ -483,7 +483,7 @@ def test_write_module_to_disk(py_writer):
         os.path.join(py_module_loader.root_fpath, "test_module_4.py")
     )
     py_writer.delete_module("test_module_4")
-    with pytest.raises(PyCodeWriter.ModuleNotFound):
+    with pytest.raises(PyCodeWriter.ModuleNotFoundError):
         py_writer.write_module_to_disk("non_existent_module")
 
 
@@ -540,11 +540,11 @@ def test_delete_from_module_non_existent_node(py_writer):
 
     # Act & Assert: Attempt to delete a non-existent node should raise an exception
     module = py_module_loader.fetch_ast_module("test_module_delete")
-    with pytest.raises(PyCodeWriter.StatementNotFound):
+    with pytest.raises(PyCodeWriter.StatementNotFoundError):
         py_writer.delete_from_module(module, deletion_module)
 
 
 def test_delete_module_non_existent_module(py_writer):
     # Act & Assert: Attempt to delete a non-existent module should raise an exception
-    with pytest.raises(PyCodeWriter.InvalidArguments):
+    with pytest.raises(PyCodeWriter.InvalidArgumentsError):
         py_writer.delete_module("non_existent_module")

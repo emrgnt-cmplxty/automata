@@ -1,3 +1,4 @@
+"""Implements the registry for all the tool builders in the toolkit."""
 import pkgutil
 from typing import List, Set, Type
 
@@ -6,11 +7,15 @@ from automata.core.base import Singleton
 
 
 class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
+    """Registry for all the tool builders in the toolkit."""
+
     _all_builders: Set[Type[OpenAIAgentToolkitBuilder]] = set([])
     _is_initialized: bool = False
 
     @staticmethod
-    def register_tool_manager(cls: Type[OpenAIAgentToolkitBuilder]):
+    def register_tool_manager(
+        cls: Type[OpenAIAgentToolkitBuilder],
+    ) -> Type[OpenAIAgentToolkitBuilder]:
         """Register a tool manager with the registry."""
         OpenAIAutomataAgentToolkitRegistry._all_builders.add(cls)
         return cls
@@ -27,7 +32,7 @@ class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
         return list(OpenAIAutomataAgentToolkitRegistry._all_builders)
 
     @staticmethod
-    def initialize():
+    def initialize() -> None:
         """
         Initializes the registry builders by calling an import on the modules in the builder package.
         This triggers the registration of the builders through the register_tool_manager decorator.
@@ -55,4 +60,5 @@ class OpenAIAutomataAgentToolkitRegistry(metaclass=Singleton):
         OpenAIAutomataAgentToolkitRegistry._is_initialized = True
 
 
+# sourcery skip: avoid-global-variables
 open_ai_agent_toolkit_registry = OpenAIAutomataAgentToolkitRegistry()

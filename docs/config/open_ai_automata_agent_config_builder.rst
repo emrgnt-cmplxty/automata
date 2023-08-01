@@ -1,73 +1,29 @@
-OpenAIAutomataAgentConfigBuilder
-================================
+Extending the builder to support custom agent configuration schemas:
 
-This class is part of the ``automata.config.openai_agent`` module and is
-a subclass of ``AgentConfigBuilder``. The
-``OpenAIAutomataAgentConfigBuilder`` class is used to build instances of
-``AutomataAgents``, providing a flexible way to set different properties
-of the agent before instantiation.
+The builder pattern by design is modular and extendable, thus custom
+schemata or settings can be added in the following ways:
 
-Overview
---------
+1. **Method Additions**: Add new methods to the
+   ``OpenAIAutomataAgentConfigBuilder`` corresponding to new
+   configuration settings. Each method should perform necessary
+   validation and update the builder’s internal state.
 
-The ``OpenAIAutomataAgentConfigBuilder`` class takes an
-``OpenAIAutomataAgentConfig`` object as an attribute. This object holds
-various configuration settings for the agent such as the model,
-instruction version, system template formatter, etc.
+2. **Subclassing**: If the customization involves significant changes in
+   logic, one may consider creating a new builder class altogether,
+   inheriting from ``OpenAIAutomataAgentConfigBuilder``.
 
-The builder provides static methods ``create_config`` and
-``create_from_args`` for instantiating the ``OpenAIAutomataAgentConfig``
-class.
+Adding a more descriptive error when the model is not found:
 
-Individual properties of the agent can be set using the ``with_*``
-methods such as ``with_model``, ``with_system_template_formatter``, or
-``with_instruction_version``. For example, to specify the model for the
-agent, the ``with_model`` method would be used, assuming the model is
-present in the list of ``SUPPORTED_MODELS`` in
-``OpenAIAutomataAgentConfig``.
+This can be achieved by adding a method that checks if the model
+(provided as argument) is found in the list of supported models before
+setting the model. If the model is not found, a ``ValueError`` or a
+custom error can be raised, indicating that the input model is not
+supported. The error message can additionally provide a list of
+supported models for user reference. To facilitate this:
 
-Related Symbols
----------------
+1. A dedicated method can be added to check the model against the list
+   of supported ones. This method should be invoked in the
+   ``.with_model()`` method.
 
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``:
-   A test to check if the builder creates the expected instance.
--  ``automata.tests.conftest.automata_agent_config_builder``: Pytest
-   fixture that sets up a mocked ``OpenAIAutomataAgentConfigBuilder``.
--  ``automata.config.openai_agent.OpenAIAutomataAgentConfig``: Holds the
-   configuration for the Automata OpenAI Agent.
--  ``automata.agent.providers.OpenAIAutomataAgent``: An autonomous agent
-   designed to execute instructions and report the results back to the
-   main system with interactions with OpenAI API.
-
-Example
--------
-
-The below example demonstrates how to use the
-``OpenAIAutomataAgentConfigBuilder`` to build and set up an
-``OpenAIAutomataAgentConfig``:
-
-.. code:: python
-
-   from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-   from automata.config.base import AgentConfigName
-
-   # Create an instance of OpenAIAutomataAgentConfig using create_config method
-   config = OpenAIAutomataAgentConfigBuilder.create_config(config_name=AgentConfigName.DEFAULT)
-
-   # Create an instance of OpenAIAutomataAgentConfigBuilder using with_model method
-   builder = OpenAIAutomataAgentConfigBuilder.with_model("gpt-4")
-
-Limitations
------------
-
-Using ``OpenAIAutomataAgentConfigBuilder`` requires a good understanding
-of the different properties that can be set on the
-``OpenAIAutomataAgentConfig`` object. Furthermore, errors may need to be
-manually handled when invalid values are passed to the ``with_*``
-methods.
-
-Follow-up Questions
--------------------
-
--  What are the valid models that the ``with_model`` method will accept?
--  What happens if an invalid value is passed in the ``with_*`` methods?
+2. Enhance the ``.with_model()`` method itself to include the above
+   check and raise an error in case of mismatch.

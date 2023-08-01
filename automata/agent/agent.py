@@ -1,3 +1,4 @@
+"""Defines the abstract base classes and enums for agent objects"""
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -45,7 +46,7 @@ class Agent(ABC):
         a new 'asisstant' message, and parsing the reply from the 'user'.
 
         Raises:
-            AgentStopIteration: If the agent has already completed its task
+            AgentStopIterationError: If the agent has already completed its task
             or exceeded the maximum number of iterations.
         """
         pass
@@ -101,11 +102,15 @@ class AgentToolkitNames(Enum):
     The associated builders are located in automata/core/agent/builder/*
     """
 
+    # Experimental Tools
     SYMBOL_SEARCH = "symbol-search"
     ADVANCED_CONTEXT_ORACLE = "advanced-context-oracle"
     DOCUMENT_ORACLE = "document-oracle"
+
+    # Core tools
     PY_READER = "py-reader"
     PY_WRITER = "py-writer"
+    AGENTIFIED_SEARCH = "agent-search"
 
 
 class AgentToolkitBuilder(ABC):

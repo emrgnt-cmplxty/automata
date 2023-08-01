@@ -69,7 +69,7 @@ DOC_EXAMPLE_1 = textwrap.dedent(
 
 symbol_dotpath = "{{symbol_dotpath}}"
 symbol_context = "{{symbol_context}}"
-DEFAULT_DOC_GENERATION_PROMPT = textwrap.dedent(
+DOC_GENERATION_TEMPLATE = textwrap.dedent(
     f"""
     Generate the documentation for {symbol_dotpath} using the context shown below -\n{symbol_context}\n
     The output documentation should include an overview section, related symbols, examples, and discussion around limitations.

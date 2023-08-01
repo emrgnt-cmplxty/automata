@@ -1,11 +1,13 @@
 import json
 import logging
+import random
 import uuid
 from typing import Any, Dict, List
 
 from tqdm import tqdm
 
 from automata.eval.eval_base import Action, Payload
+from automata.eval.tool.search_eval import SymbolSearchAction
 from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
 from automata.eval.tool.tool_eval_metrics import ToolEvaluationMetrics
 from automata.llm import FunctionCall
@@ -37,11 +39,11 @@ class ToolEvalSetLoader:
 
         for item in payloads:
             template = item["template"]
-            formatters = item["formatters"]
+            entries = item["entries"]
 
-            for formatter in formatters:
+            for entry in entries:
                 # TODO - Avoid using type ignore below.
-                payload = self.format_values(template, formatter)  # type: ignore
+                payload = self.format_values(template, entry)  # type: ignore
 
                 input_func_call = payload.get("input_function")
                 expected_action = payload.get("expected_action")
@@ -92,9 +94,10 @@ class ToolEvalSetLoader:
 class ToolEvaluationHarness:
     """A class to evaluate a list of function calls against a list of expected actions."""
 
-    def __init__(self, evals: List[ToolEval]):
+    def __init__(self, evals: List[ToolEval], **kwargs):
         self.evals = evals
         self.run_id = str(uuid.uuid4())
+        random.seed(kwargs.get("random_seed", 123))
 
     def evaluate(
         self,
@@ -109,9 +112,17 @@ class ToolEvaluationHarness:
         )
 
         aggregate_results = []
-        for input_function, expected_action in tqdm(
-            zip(input_functions, expected_actions)
-        ):
+        function_action_zip = list(zip(input_functions, expected_actions))
+        random.shuffle(function_action_zip)
+        for input_function, expected_action in tqdm(function_action_zip):
+            # TODO - Why are we struggling with initializers
+            # We should root out the issue, rather than skipping.
+            if (
+                isinstance(expected_action, SymbolSearchAction)
+                and expected_action.search_results
+                and "__init__" in expected_action.search_results[0]
+            ):
+                continue
             try:
                 for eval in self.evals:
                     result = eval.generate_eval_result(

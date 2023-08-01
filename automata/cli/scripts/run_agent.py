@@ -86,7 +86,7 @@ def main(*args, **kwargs) -> str:
     agent_config_builder = (
         OpenAIAutomataAgentConfigBuilder.from_name(config_name)
         .with_tools(tools)
-        .with_model(kwargs.get("model", "gpt-4-0613"))
+        .with_model(kwargs.get("model", "gpt-4"))
     )
 
     max_iterations = kwargs.get("max_iterations", None)

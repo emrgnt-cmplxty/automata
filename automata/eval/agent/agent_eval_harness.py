@@ -81,10 +81,10 @@ class AgentEvalSetLoader:
             payloads = []
             for item in data:
                 template = item["template"]
-                formatters = item["formatters"]
+                entries = item["entries"]
 
-                for formatter in formatters:
-                    payload = format_values(template, formatter)
+                for entry in entries:
+                    payload = format_values(template, entry)
                     payloads.append(payload)
 
             logging.info(f"Loaded {len(payloads)} tasks.")

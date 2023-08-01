@@ -1,14 +1,16 @@
-from .symbol_embedding_base import (
+# sourcery skip: docstrings-for-packages
+from automata.symbol_embedding.symbol_embedding_base import (
     SymbolCodeEmbedding,
     SymbolDocEmbedding,
     SymbolEmbedding,
 )
-from .symbol_embedding_builders import (
+from automata.symbol_embedding.symbol_embedding_builders import (
     SymbolCodeEmbeddingBuilder,
-    SymbolDocEmbeddingBuilder,
 )
-from .symbol_embedding_handler import SymbolEmbeddingHandler
-from .vector_databases import (
+from automata.symbol_embedding.symbol_embedding_handler import (
+    SymbolEmbeddingHandler,
+)
+from automata.symbol_embedding.vector_databases import (
     ChromaSymbolEmbeddingVectorDatabase,
     JSONSymbolEmbeddingVectorDatabase,
 )

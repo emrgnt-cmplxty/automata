@@ -3,13 +3,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.code_parsers.py import (
+from automata.core.utils import get_root_fpath
+from automata.experimental.code_parsers import (
     ContextComponent,
     PyContextHandler,
     PyContextHandlerConfig,
     PyContextRetriever,
 )
-from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import parse_symbol
 

@@ -1,4 +1,4 @@
-# sourcery skip: docstrings-for-modules
+# sourcery skip: docstrings-for-modules, docstrings-for-packages
 from automata.eval.agent.agent_eval import (
     AgentEval,
     AgentEvalResult,

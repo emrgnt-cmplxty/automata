@@ -27,8 +27,8 @@ def test_connect_close(db):
 
     db.close()
 
-    assert db.conn is None
-    assert db.cursor is None
+    assert isinstance(db.conn, SQLDatabase.NullConnection)
+    assert isinstance(db.cursor, SQLDatabase.NullCursor)
 
 
 def test_create_table(db):

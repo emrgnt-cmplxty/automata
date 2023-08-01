@@ -5,12 +5,12 @@ from automata.config import AgentConfigName, OpenAIAutomataAgentConfigBuilder
 from automata.core.utils import get_root_fpath
 from automata.eval import (
     Action,
+    AgentEvalComposite,
     CodeWritingEval,
     Eval,
     EvalResult,
     OpenAIFunctionEval,
 )
-from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.singletons.dependency_factory import dependency_factory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.tasks import (

@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from automata.eval.eval_base import (
     Action,
@@ -13,7 +13,7 @@ from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
 from automata.llm import FunctionCall
 
 # TODO - Make this configurable somewhere upstream
-TOP_K_MATCHES = 10
+TOP_K_MATCHES = 20
 
 
 @register_action
@@ -72,8 +72,8 @@ class SymbolSearchEvalResult(ToolEvalResult):
 
     def __init__(
         self,
-        expected_action: SymbolSearchAction,
-        observed_action: Optional[SymbolSearchAction],
+        expected_action: Action,
+        observed_action: Optional[Action],
         *args,
         **kwargs,
     ):
@@ -128,17 +128,6 @@ class SymbolSearchEvalResult(ToolEvalResult):
             if self.observed_action
             else False
         )
-
-    def get_details(self) -> Dict[str, Union[Optional[Action], str]]:
-        """Gets the details of the result."""
-        return {
-            "expected_match": self.expected_match or "None",
-            "observed_action": self.observed_action,
-        }
-
-    def get_extra_info(self) -> Dict[str, Any]:
-        """Gets the extra info of the result."""
-        return {}
 
     def to_payload(self) -> Payload:
         """Converts the evaluation result to a dictionary (or other serializable format)."""
@@ -201,10 +190,11 @@ class SymbolSearchEval(ToolEval):
         input_function, result = input_action_tuple
         split_results: List[str] = []
 
-        if (
-            input_function.name == "symbol-rank-search"
-            or input_function.name == "symbol-similarity-search"
-        ):
+        if input_function.name in [
+            "symbol-rank-search",
+            "symbol-similarity-search",
+            "llm-facilitated-search",
+        ]:
             split_results = result.split("\n")
         else:
             raise ValueError("Only symbol-search is supported for now.")

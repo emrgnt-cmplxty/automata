@@ -15,7 +15,7 @@ Overview
 ``disambiguator`` during its initialization and it provides several
 methods to interact with and manipulate these attributes. The class
 implements a ``__repr__`` method for generating a string representation
-of the instance. The ``convert_scip_to_python_kind`` is a crucial
+of the instance. The ``convert_scip_to_python_suffix`` is a crucial
 method that maps a descriptor suffix from the SCIP protocol to the
 Python-specific kind of that descriptor. In addition, it provides
 methods to generate a URI-ready version of a name and to unparse a name
