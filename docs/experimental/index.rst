@@ -15,6 +15,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -22,6 +24,7 @@ Summary of content
        :maxdepth: 1
 
        search/index
+       tools/index
 
 ..  AUTO-GENERATED CONTENT END
 ..

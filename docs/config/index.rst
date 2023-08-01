@@ -27,6 +27,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -45,6 +47,7 @@ Summary of content
        path_enum
        template_formatter
        base/index
+       config_base/index
        openai_agent/index
 
 ..  AUTO-GENERATED CONTENT END

@@ -86,6 +86,8 @@ The following module documents are auto-generated via the run-doc-embedding pipe
 
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -99,10 +101,12 @@ The following module documents are auto-generated via the run-doc-embedding pipe
        agent/index
        code_handling/index
        code_parsers/index
+       code_writers/index
        config/index
        context_providers/index
        core/index
        embedding/index
+       eval/index
        experimental/index
        github_management/index
        llm/index

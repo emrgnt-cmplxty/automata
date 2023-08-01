@@ -1,93 +1,25 @@
-Automata.core.agent.agent.Agent
-===============================
+-  The ``Agent`` class is typically used as a base for creating
+   autonomous agents that interact with different APIs or data sources.
+   These agents can be used for a variety of tasks including but not
+   limited to text generation, translation, summarization or any task
+   that involves natural language processing.
 
-``Agent`` class is an abstract base class, used as blueprint for
-creating autonomous agents that can perform tasks and communicate.
-Instantiation and primary operations of the agent are defined within the
-class and are often implemented in subclasses.
+-  The ``OpenAIAutomataAgent`` is one specific implementation of the
+   ``Agent`` class. Depending on the library, there might be other
+   concrete implementations to interact with different APIs.
 
-Overview
---------
+-  A custom database provider for the ``set_database_provider`` method
+   could be any class that implements a common interface for database
+   operations. For instance, this could be a provider that interacts
+   with a SQL database, a NoSQL database like MongoDB, or a simple
+   in-memory database for testing purposes.
 
-The ``Agent`` is an abstract base class that contains several abstract
-methods. These methods are ``__iter__``, ``__next__``, ``run`` and
-``set_database_provider``. Derived classes that inherit from ``Agent``
-must provide implementations for these methods.
-
-Import Statement
-----------------
-
-.. code:: python
-
-   from automata.agent.agent import Agent
-
-Methods
--------
-
--  ``__init__ (self, instructions: str) -> None``:
-
-   Constructor method that initializes an agent with a set of
-   instructions and sets task completion status and
-   ``database_provider`` to None.
-
--  ``__iter__ (self) -> None``:
-
-   An abstract method that should be overridden in subclasses, and used
-   for iterating over the agent.
-
--  ``__next__ (self) -> LLMIterationResult``:
-
-   Abstract method used to move the agent one step forward in its task.
-   Result of this operation is returned as an instance of
-   ``LLMIterationResult``, or None if task either completed or isn’t
-   initialized.
-
--  ``run (self) -> str``:
-
-   Abstract method that should be overridden in subclasses. Designed to
-   execute the agent’s task until it’s complete - meaning, until
-   ``__next__`` method returns None. May raise an ``AgentError`` if an
-   attempt is made to run a task that has already been completed or
-   exceeds the permissible number of iterations.
-
--  ``set_database_provider (self, provider: LLMConversationDatabaseProvider) -> None``:
-
-   Abstract method that should be overridden in subclasses. Used to set
-   the iteration provider for the database. If an agent fails to set a
-   database provider, ``AgentDatabaseError`` is raised.
-
-Related Symbols
----------------
-
--  ``automata.tests.unit.test_automata_agent_builder.test_automata_agent_init``
--  ``automata.tests.unit.test_automata_agent.test_build_initial_messages``
--  ``automata.agent.providers.OpenAIAutomataAgent``
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.agent.error.AgentResultError``
--  ``automata.tests.conftest.task``
--  ``automata.tests.unit.sample_modules.sample2.PythonAgentToolkit.python_agent_python_task``
--  ``automata.agent.error.AgentGeneralError``
--  ``automata.tests.conftest.automata_agent_config_builder``
--  ``automata.agent.error.AgentDatabaseError``
-
-Dependencies
-------------
-
--  ``automata.llm.foundation.LLMConversationDatabaseProvider``
-
-Limitations
------------
-
-The ``Agent`` class provides a foundation for creating classes for
-specific autonomous agents. However, as it is an abstract base class, it
-cannot be instantiated or used on its own. It must be subclassed and its
-methods must be implemented according to the specific requirements of
-the derived classes.
-
-Follow-up Questions:
---------------------
-
--  What are some common agents that can be implemented from this base
-   class?
--  Can we further expand the ``Agent`` class to include additional
-   optional base functionalities?
+-  The ``LLMConversation`` typically represents a series of exchanges or
+   “turns” between the agent and user, where each “turn” includes a user
+   message and an assistant message. The ``LLMIterationResult``
+   typically contains the result of a single iteration of processing,
+   which includes the assistant’s message for the current turn and when
+   implemented, could include other metadata such as response time,
+   temperature for generation, use of p, etc. Kindly note that the
+   actual implementation might differ based on specific implementation
+   of ``Agent`` and the context it is being used in.

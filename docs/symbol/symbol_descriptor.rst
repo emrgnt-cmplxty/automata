@@ -1,59 +1,19 @@
-SymbolDescriptor
-================
-
-Overview
---------
-
-``SymbolDescriptor`` is a class that helps in representing the
-description component of a Symbol URI. A Symbol URI contains necessary
-details about a symbol, including its name, suffix, and an optional
-disambiguator. The key functionalities of this class include
-initialization of symbol properties, formatting of object representation
-strings, and parsing symbol names.
-
-Related Symbols
----------------
-
--  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
--  ``automata.tests.unit.test_symbol_parser.test_parse_symbol``
--  ``automata.symbol.base.Symbol``
--  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
--  ``automata.tests.regression.test_symbol_searcher_regression.get_top_n_results_desc_name``
--  ``automata.symbol.parser._SymbolParser.parse_descriptors``
--  ``automata.tests.unit.test_symbol_search_tool.test_init``
--  ``automata.symbol.base.Symbol.__repr__``
--  ``automata.tests.unit.test_symbol_search.test_symbol_references``
--  ``automata.symbol.parser.new_local_symbol``
-
-Example
--------
-
-Here is an example of ``SymbolDescriptor`` utilization:
-
-.. code:: python
-
-   from automata.symbol.base import SymbolDescriptor
-   from automata.symbol.scip_pb2 import Descriptor as DescriptorProto
-
-   symbol_descriptor = SymbolDescriptor('name', DescriptorProto.Type, 'disambiguator')
-   assert str(symbol_descriptor) == "Descriptor(name, Type, disambiguator)"
-
-Limitations
------------
-
-The ``SymbolDescriptor`` class is mostly used for representing internal
-symbol structures and might not have direct use cases in applications.
-Also, it’s highly dependent on specific kinds of suffix descriptors,
-making it less flexible.
-
-Follow-up Questions:
---------------------
-
--  Can ``SymbolDescriptor`` be extended to support more types of
-   languages or symbol structures?
--  What happens if ``SymbolDescriptor`` encounters an unrecognized
-   suffix descriptor?
--  Is there any specific reason to limit the name of
-   ``SymbolDescriptor`` to a given set of characters?
--  Can the disambiguator handle more complex structures rather than just
-   strings?
+-  The ``unparse()`` method of the ``SymbolDescriptor`` class encodes
+   unusual or special characters in the symbol string as Unicode
+   escapes. This is done to ensure proper conversion of symbols into URI
+   strings that can be transmitted and received without errors. However,
+   it’s important to handle these characters carefully to avoid possible
+   misinterpretation.
+-  Future additions to the ``DescriptorProto``, which contains the
+   suffixes for the ``SymbolDescriptor``, would largely depend on the
+   potential use cases that may arise. The current set of suffixes (such
+   as ``METHOD``, ``TYPE``, etc.) covers a broad range of symbols types.
+   However, there is a possibility that more specific or different types
+   of symbols might be required in future iterations or versions of the
+   software.
+-  Using unrecognized descriptor suffixes can lead to parsing errors
+   when trying to unparse the symbol, and it may raise a ``ValueError``.
+   This could cause scripts or programs that use the
+   ``SymbolDescriptor`` to stop abruptly or behave unexpectedly. It is
+   important to use only recognized and properly defined symbol
+   descriptors to prevent such issues.

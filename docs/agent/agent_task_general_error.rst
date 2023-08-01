@@ -1,73 +1,32 @@
-AgentTaskGeneralError
-=====================
+-  The specific reasons for the general failure can vary significantly.
+   Therefore, it’s best practice to chain exceptions to maintain the
+   context of the original error. This could include problems such as
+   network failure, insufficient permissions, mathematical errors, or
+   even internal issues within the service itself.
 
-``AgentTaskGeneralError`` is an exception class that is raised whenever
-a general type of error arises during task execution in an Automata
-agent. This error may encompass a wide range of issues, from coding or
-logical errors in the tasks to unforeseen scenarios causing an
-exception.
+-  The recovery or cleanup operations for this error would entirely
+   depend on the nature of the task and kind of operations being
+   conducted when the error was raised. For instance, this might involve
+   closing open network connections, writing any changes to databases,
+   deleting any temporary files, or freeing up system resources. Always,
+   it’s good to have a detailed debugging record, a log trace to aid in
+   diagnosing the problem.
 
-Related Symbols
----------------
+-  In some cases, you may wish to implement a retry mechanism,
+   particularly for transient errors. For example, if a task is
+   retrieving data from an API, and the API temporarily goes down, it
+   may be appropriate to retry the request after a brief pause.
 
--  ``automata.tests.unit.test_task_executor.test_execute_automata_task_fail``
--  ``automata.tests.unit.test_task_environment.test_commit_task``
--  ``automata.agent.error.AgentGeneralError``
--  ``automata.tests.unit.test_task.test_task_inital_state``
--  ``automata.agent.error.AgentTaskGitError``
--  ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
--  ``automata.agent.error.AgentTaskInstructions``
--  ``automata.tests.unit.test_task_environment.TestURL``
--  ``automata.agent.error.AgentTaskStateError``
--  ``automata.tests.unit.test_task_executor.TestExecuteBehavior``
+-  If your service is running as a part of a distributed system, you
+   might want to notify other parts of the system about the failure. For
+   instance, if your service is part of a pipeline, you would want to
+   ensure that downstream services are not waiting on results that will
+   never arrive.
 
-Example
--------
+-  Depending on the severity of the error and the architecture of your
+   system, you might also consider alerting, flagging the task as failed
+   for manual review, or shutting down the service for safety reasons.
 
-The following example demonstrates how the ``AgentTaskGeneralError``
-exception could be used in a test case scenario.
-
-.. code:: python
-
-   from unittest.mock import patch, MagicMock
-   from automata.agent.error import AgentTaskGeneralError
-   import pytest
-
-   @patch("logging.config.dictConfig", return_value=None)
-   def test_execute_automata_task_fail(_, module_loader, task, environment, registry):
-       registry.register(task)
-       environment.setup(task)
-
-       execution = MagicMock()
-       task_executor = AutomataTaskExecutor(execution)
-       task_executor.execution.execute.side_effect = AgentTaskGeneralError("Execution failed")
-
-       with pytest.raises(AgentTaskGeneralError, match="Execution failed"):
-           task_executor.execute(task)
-
-       assert task.status == TaskStatus.FAILED
-       assert task.error == "Execution failed"
-
-Limitations
------------
-
-The ``AgentTaskGeneralError`` class correlates directly with the type
-definition provided by Python’s native exception handling system. Hence,
-it inherits the limitations from Python’s exception system. Also, as it
-is a general error, it might not provide the specific error details
-needed for debugging.
-
-Follow-up Questions:
---------------------
-
--  What types of errors specifically fall under
-   ``AgentTaskGeneralError``?
--  What are the common types of general errors encountered during task
-   execution?
--  What details are generally encompassed in the error message of
-   ``AgentTaskGeneralError``?
-
-Please note that while ``Mock`` objects are significantly featured in
-the presented examples, they are primarily used for testing and
-simplifying interactions with complex objects. Please replace mocks with
-actual objects during real implementation.
+-  Creating a comprehensive test suite can help catch such generic
+   errors during the development phase itself, thus reducing their
+   occurrence in production.
