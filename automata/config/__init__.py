@@ -30,8 +30,7 @@ from automata.config.openai_config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )
-from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
-
+from automata.config.prompt.doc_generation import DOC_GENERATION_TEMPLATE
 
 load_dotenv()
 
