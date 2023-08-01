@@ -18,12 +18,15 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
     .. toctree::
        :maxdepth: 1
 
+       bounding_box
        handler_dict
        logging_config
        root_dict

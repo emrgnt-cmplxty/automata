@@ -21,6 +21,8 @@ how to :ref:`installation` the project.
 
 
 Summary of content
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -34,6 +36,7 @@ Summary of content
        dot_path_map
        line_item
        py_context_retriever
+       context_processing/index
 
 ..  AUTO-GENERATED CONTENT END
 ..
