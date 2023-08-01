@@ -36,7 +36,7 @@ class PyCodeWriterToolkitBuilder(AgentToolkitBuilder):
         """Builds a suite of tools for writing python code."""
         return [
             Tool(
-                name="py-writer-update-module",
+                name="update-module",
                 function=self._update_existing_module,
                 description=f"Inserts or updates the python code of a function, class, method in an existing module."
                 f" If a given object or its child object do not exist, they are created automatically."
@@ -48,7 +48,7 @@ class PyCodeWriterToolkitBuilder(AgentToolkitBuilder):
                 f" Provide the full code as input, as this tool has no context outside of passed arguments.\n",
             ),
             Tool(
-                name="py-writer-create-new-module",
+                name="create-new-module",
                 function=self._create_new_module,
                 description=f"Creates a new module at the given path with the given code. For example,"
                 f'{{"arguments": ["my_folder.my_file", "import math\\ndef my_method():\\n   \\"My Method\\"\\"\\n    print(math.sqrt(4))\\n"]}}',
