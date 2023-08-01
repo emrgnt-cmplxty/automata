@@ -1,3 +1,4 @@
+"""Defines all agent-related exceptions."""
 from automata.core.base import AutomataError
 
 
@@ -7,7 +8,7 @@ class AgentMaxIterError(AutomataError):
     pass
 
 
-class AgentStopIteration(AutomataError):
+class AgentStopIterationError(AutomataError):
     """An exception raised when the agent iteration process terminates."""
 
     pass

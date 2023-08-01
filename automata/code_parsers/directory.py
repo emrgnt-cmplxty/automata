@@ -1,3 +1,4 @@
+"""Defines concrete classes for manipulating directory structures."""
 import logging
 import os
 from typing import Dict, List, Optional
@@ -9,6 +10,7 @@ class Node:
     """Abstract base class for a node in the file tree"""
 
     def __init__(self, name: str, parent: Optional["Node"] = None) -> None:
+        # sourcery skip: docstrings-for-functions
         self.name = name
         self.parent = parent
 
@@ -17,6 +19,7 @@ class File(Node):
     """Represents a file in the tree"""
 
     def __init__(self, name: str, parent: Optional["Node"] = None) -> None:
+        # sourcery skip: docstrings-for-functions
         super().__init__(name, parent)
 
 
@@ -24,6 +27,7 @@ class Directory(Node):
     """Represents a directory. Has children which can be directories or files"""
 
     def __init__(self, name: str, parent: Optional["Node"] = None) -> None:
+        # sourcery skip: docstrings-for-functions
         super().__init__(name, parent)
         self.children: Dict[str, Node] = {}
 
@@ -70,6 +74,7 @@ class DirectoryManager:
     """Handles operations related to directory structure."""
 
     def __init__(self, base_path: str) -> None:
+        # sourcery skip: docstrings-for-functions
         self.root = self._load_directory_structure(base_path)
 
     def _load_directory_structure(self, root_dir: str) -> "Directory":

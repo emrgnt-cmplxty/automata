@@ -3673,7 +3673,7 @@
             },
             {
                 "query": "What class is raised when the agent iteration process terminates?",
-                "result": "automata.agent.error.AgentStopIteration"
+                "result": "automata.agent.error.AgentStopIterationError"
             },
             {
                 "query": "What class is raised when the agent fails to produce a result?",

@@ -1,6 +1,11 @@
+# sourcery skip: docstrings-for-packages
 from automata.experimental.tools.builders.advanced_context_oracle_builder import (
     AdvancedContextOracleOpenAIToolkitBuilder,
     AdvancedContextOracleToolkitBuilder,
+)
+from automata.experimental.tools.builders.agentified_search_builder import (
+    AgentifiedSearchOpenAIToolkitBuilder,
+    AgentifiedSearchToolkitBuilder,
 )
 from automata.experimental.tools.builders.document_oracle_builder import (
     DocumentOracleOpenAIToolkitBuilder,
@@ -12,6 +17,8 @@ from automata.experimental.tools.builders.symbol_search_builder import (
 )
 
 __all__ = [
+    "AgentifiedSearchToolkitBuilder",
+    "AgentifiedSearchOpenAIToolkitBuilder",
     "AdvancedContextOracleToolkitBuilder",
     "AdvancedContextOracleOpenAIToolkitBuilder",
     "DocumentOracleToolkitBuilder",

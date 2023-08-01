@@ -5,15 +5,18 @@ import textwrap
 
 import pytest
 
-from automata.code_parsers.py import ContextComponent, PyContextRetriever
-from automata.code_parsers.py.context_processing.context_utils import (
+from automata.core.utils import get_root_fpath
+from automata.experimental.code_parsers import (
+    ContextComponent,
+    PyContextRetriever,
+)
+from automata.experimental.code_parsers.py.context_processing.context_utils import (
     _get_method_return_annotation,
     get_all_classes,
     get_all_methods,
     is_private_method,
     process_method,
 )
-from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import parse_symbol
 from tests.unit.sample_modules.my_project.core.calculator import Calculator

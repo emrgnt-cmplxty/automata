@@ -32,6 +32,6 @@ jobs:
           for notebook in $(find ./examples -name "*.ipynb"); do
             echo "Testing $notebook"
             cd "$(dirname "$notebook")"
-            poetry run python -m nbconvert --to notebook --execute "$(basename "$notebook")" --allow-errors
+            poetry run python -m nbconvert --to notebook --execute "$(basename "$notebook")"
             cd -
           done

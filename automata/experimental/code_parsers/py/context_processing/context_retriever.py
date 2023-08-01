@@ -5,18 +5,18 @@ from contextlib import contextmanager
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Optional, Set
 
-from automata.code_parsers.py.context_processing.context_utils import (
-    get_all_attributes,
-    get_all_classes,
-    get_all_methods,
-    is_private_method,
-    process_method,
-)
 from automata.core import (
     AST_NO_RESULT_FOUND,
     get_docstring_from_node,
     get_node_without_docstrings,
     get_node_without_imports,
+)
+from automata.experimental.code_parsers.py.context_processing.context_utils import (
+    get_all_attributes,
+    get_all_classes,
+    get_all_methods,
+    is_private_method,
+    process_method,
 )
 
 if TYPE_CHECKING:
