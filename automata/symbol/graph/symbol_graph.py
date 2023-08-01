@@ -59,6 +59,7 @@ class SymbolGraph(ISymbolProvider):
         self.navigator = SymbolGraphNavigator(self._graph)
         self.from_pickle = from_pickle
         self.subgraph_pickle_path = f"{DATA_ROOT_PATH}/symbol_subgraph.pkl"
+        self.save_graph_pickle = save_graph_pickle
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         """
@@ -118,27 +119,17 @@ class SymbolGraph(ISymbolProvider):
         """
         Creates a subgraph of the original `SymbolGraph`
         """
-        if self.from_pickle and os.path.exists(self.subgraph_pickle_path):
-            return self._load_subgraph_from_pickle()
+        if not self.from_pickle or not os.path.exists(self.subgraph_pickle_path):
+            subgraph = self._build_rankable_subgraph()
 
-        subgraph = self._build_rankable_subgraph()
-        self._save_subgraph_to_pickle(subgraph)
+            if self.save_graph_pickle:
+                with open(self.subgraph_pickle_path, "wb") as f:
+                    pickle.dump(subgraph, f)
+
+        else:
+            subgraph = pickle.load(open(self.subgraph_pickle_path, "rb"))
 
         return subgraph
-
-    def _load_subgraph_from_pickle(self) -> nx.DiGraph:
-        """
-        Loads a subgraph from a pickle file.
-        """
-        with open(self.subgraph_pickle_path, "rb") as f:
-            return pickle.load(f)
-
-    def _save_subgraph_to_pickle(self, subgraph: nx.DiGraph) -> None:
-        """
-        Saves a subgraph to a pickle file.
-        """
-        with open(self.subgraph_pickle_path, "wb") as f:
-            pickle.dump(subgraph, f)
 
     def _build_rankable_subgraph(
         self, path_filter: Optional[str] = None
