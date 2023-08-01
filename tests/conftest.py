@@ -21,6 +21,7 @@ from automata.eval import (
 from automata.eval.agent.agent_eval_composite import AgentEvalComposite
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.experimental.search import SymbolRankConfig, SymbolSearch
+from automata.experimental.tools import AgentifiedSearchToolkitBuilder
 from automata.llm import FunctionCall
 from automata.memory_store import (
     OpenAIAutomataConversationDatabase,
@@ -45,7 +46,6 @@ from automata.tasks import (
 )
 from automata.tools import Tool, ToolExecution, ToolExecutor
 from automata.tools.agent_tool_factory import AgentToolFactory
-from automata.tools.builders import AgentifiedSearchToolkitBuilder
 
 # General Fixtures
 

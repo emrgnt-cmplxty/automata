@@ -1,3 +1,5 @@
+"""Implementation of the DependencyFactory singleton class."""
+# TODO - Move experimental features to an experimental loader.
 import logging
 import os
 from functools import lru_cache
@@ -6,12 +8,7 @@ from typing import Any, Dict, List, Set, Tuple
 import networkx as nx
 
 from automata.agent import AgentToolkitNames
-from automata.code_parsers.py import (
-    PyContextHandler,
-    PyContextHandlerConfig,
-    PyContextRetriever,
-    PyReader,
-)
+from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
 from automata.config import EmbeddingDataCategory
 from automata.context_providers import (
@@ -21,26 +18,31 @@ from automata.context_providers import (
 from automata.core.base import Singleton
 from automata.core.utils import get_embedding_data_fpath
 from automata.embedding import EmbeddingSimilarityCalculator
+from automata.experimental.code_parsers import (
+    PyContextHandler,
+    PyContextHandlerConfig,
+    PyContextRetriever,
+)
+from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import (
     SymbolRank,
     SymbolRankConfig,
     SymbolSearch,
 )
-from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
-from automata.memory_store import (
-    SymbolCodeEmbeddingHandler,
-    SymbolDocEmbeddingHandler,
+from automata.experimental.symbol_embedding.symbol_doc_embedding_builder import (
+    SymbolDocEmbeddingBuilder,
 )
+from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
+from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.symbol import ISymbolProvider, SymbolGraph
 from automata.symbol_embedding import (
     ChromaSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
     SymbolCodeEmbeddingBuilder,
     SymbolDocEmbedding,
-    SymbolDocEmbeddingBuilder,
 )
+from automata.tools import UnknownToolError
 from automata.tools.agent_tool_factory import AgentToolFactory
-from automata.tools.tool_error import UnknownToolError
 
 logger = logging.getLogger(__name__)
 
@@ -85,8 +87,9 @@ class DependencyFactory(metaclass=Singleton):
         self.overrides = kwargs
 
     def set_overrides(self, **kwargs) -> None:
+        """Sets overrides for the dependency factory."""
         if self._class_cache:
-            raise Exception(
+            raise ValueError(
                 "Cannot set overrides after dependencies have been created."
             )
 
@@ -115,7 +118,7 @@ class DependencyFactory(metaclass=Singleton):
 
         method_name = f"create_{dependency}"
         if not hasattr(self, method_name):
-            raise Exception(f"Dependency {dependency} not found.")
+            raise ValueError(f"Dependency {dependency} not found.")
 
         creation_method = getattr(self, method_name)
         logger.info(f"Creating dependency {dependency}")
@@ -338,7 +341,7 @@ class DependencyFactory(metaclass=Singleton):
         """Creates `PyCodeWriter` for use in all dependencies."""
         return PyCodeWriter(self.get("py_reader"))
 
-    def reset(self):
+    def reset(self) -> None:
         """Resets the entire dependency cache."""
 
         SymbolProviderRegistry.reset()
@@ -354,4 +357,5 @@ class DependencyFactory(metaclass=Singleton):
                     attr_value.cache_clear()
 
 
+# sourcery skip: avoid-global-variables
 dependency_factory = DependencyFactory()

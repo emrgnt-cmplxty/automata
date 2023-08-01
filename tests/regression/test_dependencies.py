@@ -44,7 +44,12 @@ def test_build_automata_class_dependencies(classes_to_build):
 @pytest.mark.parametrize(
     "toolkits_to_build",
     [
+        ["symbol-search"],
         ["advanced-context-oracle"],
+        ["document-oracle"],
+        ["py-reader"],
+        ["py-writer"],
+        ["agent-search"],
     ],
 )
 def test_build_automata_tools(toolkits_to_build):

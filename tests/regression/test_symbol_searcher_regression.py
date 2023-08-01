@@ -33,7 +33,6 @@ def check_hits(expected_in_top_hits, found_top_hits):
             [
                 "SymbolEmbeddingHandler",
                 "EmbeddingBuilder",
-                "SymbolDocEmbeddingHandler",
                 "SymbolEmbedding",
                 "Embedding",
             ],

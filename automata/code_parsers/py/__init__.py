@@ -1,19 +1,8 @@
-from .context_processing.context_handler import (
-    PyContextHandler,
-    PyContextHandlerConfig,
-)
-from .context_processing.context_retriever import (
-    ContextComponent,
-    PyContextRetriever,
-)
-from .dotpath_map import DotPathMap
-from .py_reader import PyReader
+# sourcery skip: docstrings-for-packages
+from automata.code_parsers.py.dotpath_map import DotPathMap
+from automata.code_parsers.py.py_reader import PyReader
 
 __all__ = [
-    "PyContextRetriever",
-    "PyContextHandler",
-    "PyContextHandlerConfig",
-    "PyReader",
-    "ContextComponent",
     "DotPathMap",
+    "PyReader",
 ]

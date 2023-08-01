@@ -1,16 +1,16 @@
+"""A class to handle the embedding of `Symbol` documents."""
 import logging
 
 from automata.core.base import VectorDatabaseProvider
-from automata.symbol import Symbol, SymbolDescriptor
-from automata.symbol_embedding import (
+from automata.experimental.symbol_embedding.symbol_doc_embedding_builder import (
     SymbolDocEmbeddingBuilder,
-    SymbolEmbeddingHandler,
 )
+from automata.symbol import Symbol, SymbolDescriptor
+from automata.symbol_embedding import SymbolEmbeddingHandler
 
 logger = logging.getLogger(__name__)
 
 
-# TODO - `SymbolDocEmbeddingHandler` is still in an experimental state
 # TODO - Implement some form of batch handling
 class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
     """A class to handle the embedding of symbols."""

@@ -187,7 +187,13 @@ def run_doc_post_process(ctx: click.Context, *args, **kwargs) -> None:
 )
 @click.pass_context
 def run_agent(ctx: click.Context, *args, **kwargs) -> None:
-    """Run the agent."""
+    """
+    Run the automata agent.
+
+    Ex:
+    poetry run automata run-agent --model="gpt-4" --toolkits="agent-search" --log-level=DEBUG --max-iterations=3 --instructions="Return the documentation for symbol search"
+
+    """
     from automata.cli.scripts.run_agent import main
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
@@ -204,10 +210,8 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     """
     Run the evaluation.
 
-    Here is an exmaple command -
+    Ex:
     poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="document-oracle,py-reader" --log-level=DEBUG --max-iterations=3
-
-
     """
 
     from automata.cli.scripts.run_agent_eval import main

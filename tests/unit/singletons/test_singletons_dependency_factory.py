@@ -65,7 +65,7 @@ def test_create_symbol_code_embedding_handler(mock_init, dependency_factory):
 
 
 @patch(
-    "automata.memory_store.SymbolDocEmbeddingHandler.__init__",
+    "automata.experimental.memory_store.SymbolDocEmbeddingHandler.__init__",
     return_value=None,
 )
 def test_create_symbol_doc_embedding_handler(mock_init, dependency_factory):

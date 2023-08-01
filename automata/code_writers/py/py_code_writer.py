@@ -1,3 +1,4 @@
+"""Module containing functions to build SymbolDocEmbedding objects."""
 import ast
 import logging
 import subprocess
@@ -12,17 +13,17 @@ logger = logging.getLogger(__name__)
 class PyCodeWriter:
     """A utility class for writing Python code along AST nodes"""
 
-    class ModuleNotFound(Exception):
+    class ModuleNotFoundError(Exception):
         """Raised when a module is not found in the module dictionary"""
 
         pass
 
-    class StatementNotFound(Exception):
+    class StatementNotFoundError(Exception):
         """Raised when a provided ast.Statement is not found in the module"""
 
         pass
 
-    class InvalidArguments(Exception):
+    class InvalidArgumentsError(Exception):
         """Raised when invalid arguments are passed to a method"""
 
         pass
@@ -43,11 +44,11 @@ class PyCodeWriter:
         Create a new module object from source code, with option to write to disk.
 
         Raises:
-            PyCodeWriter.InvalidArguments: If the module already exists in the module dictionary.
-            PyCodeWriter.ModuleNotFound: If the module writeout fails.
+            PyCodeWriter.InvalidArgumentsError: If the module already exists in the module dictionary.
+            PyCodeWriter.ModuleNotFoundError: If the module writeout fails.
         """
         if module_dotpath in py_module_loader:
-            raise PyCodeWriter.InvalidArguments(
+            raise PyCodeWriter.InvalidArgumentsError(
                 "Module already exists in module dictionary."
             )
         py_module_loader.put_module(module_dotpath, module)
@@ -58,12 +59,12 @@ class PyCodeWriter:
         """Write the modified module to a file at the specified output path
 
         Raises:
-            ModuleNotFound: If the module is not found in the module dictionary
+            ModuleNotFoundError: If the module is not found in the module dictionary
         """
         if not (
             module_ast := py_module_loader.fetch_ast_module(module_dotpath)
         ):
-            raise PyCodeWriter.ModuleNotFound(
+            raise PyCodeWriter.ModuleNotFoundError(
                 f"Module fpath found in module map for dotpath: {module_dotpath}"
             )
         source_code = ast.unparse(module_ast)
@@ -73,7 +74,7 @@ class PyCodeWriter:
         )
 
         if not module_fpath:
-            raise PyCodeWriter.ModuleNotFound(
+            raise PyCodeWriter.ModuleNotFoundError(
                 f"Module fpath found in module map for dotpath: {module_dotpath}"
             )
         module_fpath = cast(str, module_fpath)
@@ -94,16 +95,14 @@ class PyCodeWriter:
         """Upserts the nodes from a new_module into an existing module."""
 
         # For quick lookup, create a dictionary with key as the node name and value as the node.
-        module_dict = {
-            getattr(node, "name", None): node for node in module.body
-        }
+        nodes = {getattr(node, "name", None): node for node in module.body}
 
         for new_node in new_module.body:
             new_node_name = getattr(new_node, "name", None)
 
             # If the new node already exists in the module, remove the old node.
-            if new_node_name in module_dict:
-                module.body.remove(module_dict[new_node_name])
+            if new_node_name in nodes:
+                module.body.remove(nodes[new_node_name])
 
             # Add the new node (either as an insert or an update)
             module.body.append(new_node)
@@ -119,32 +118,30 @@ class PyCodeWriter:
         """
 
         # For quick lookup, create a dictionary with key as the node name and value as the node.
-        module_dict = {
-            getattr(node, "name", None): node for node in module.body
-        }
+        nodes = {getattr(node, "name", None): node for node in module.body}
 
         for deletion_node in deletion_module.body:
             deletion_node_name = getattr(deletion_node, "name", None)
 
             # If the node to be deleted is not found in the module, raise an exception.
-            if deletion_node_name not in module_dict:
-                raise PyCodeWriter.StatementNotFound(
+            if deletion_node_name not in nodes:
+                raise PyCodeWriter.StatementNotFoundError(
                     f"Node with name '{deletion_node_name}' not found in module"
                 )
 
             # Delete the node from the module body.
-            module.body.remove(module_dict[deletion_node_name])
+            module.body.remove(nodes[deletion_node_name])
 
     def delete_module(self, module_dotpath: str) -> None:
         """
         Create a new module object from source code, with option to write to disk.
 
         Raises:
-            PyCodeWriter.InvalidArguments: If the module already exists in the module dictionary.
-            PyCodeWriter.ModuleNotFound: If the module writeout fails.
+            PyCodeWriter.InvalidArgumentsError: If the module already exists in the module dictionary.
+            PyCodeWriter.ModuleNotFoundError: If the module writeout fails.
         """
         if module_dotpath not in py_module_loader:
-            raise PyCodeWriter.InvalidArguments(
+            raise PyCodeWriter.InvalidArgumentsError(
                 "Module does not exist in module dictionary."
             )
         py_module_loader.delete_module(module_dotpath)

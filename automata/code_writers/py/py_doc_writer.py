@@ -1,3 +1,4 @@
+"""This module contains the PyDocWriter class, which is used to generate"""
 import logging
 import os
 import re

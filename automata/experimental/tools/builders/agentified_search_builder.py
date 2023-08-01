@@ -12,6 +12,7 @@ from automata.agent import (
 )
 from automata.config import LLMProvider
 from automata.config.prompt import AGENTIFIED_SEARCH_TEMPLATE
+from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import SymbolSearch, SymbolSimilarityResult
 from automata.llm import (
     LLMChatCompletionProvider,
@@ -19,7 +20,6 @@ from automata.llm import (
     OpenAIConversation,
     OpenAITool,
 )
-from automata.memory_store import SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )

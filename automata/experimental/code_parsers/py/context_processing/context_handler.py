@@ -1,6 +1,7 @@
+"""Contains `PyContextHandler` a class for handling the context associated to a symbol."""
 from typing import TYPE_CHECKING, Dict, List, Set
 
-from automata.code_parsers.py.context_processing.context_retriever import (
+from automata.experimental.code_parsers.py.context_processing.context_retriever import (
     ContextComponent,
     PyContextRetriever,
 )
@@ -23,6 +24,8 @@ class PyContextHandlerConfig:
 
 
 class PyContextHandler:
+    """The class for handling the context associated to a symbol."""
+
     def __init__(
         self,
         config: PyContextHandlerConfig,

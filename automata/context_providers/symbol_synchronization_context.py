@@ -1,3 +1,4 @@
+"""Module containing functions to build SymbolDocEmbedding objects."""
 from typing import List, Set
 
 from automata.symbol import ISymbolProvider, Symbol
@@ -79,13 +80,13 @@ class SymbolProviderSynchronizationContext:
                 "Must synchronize symbol providers in synchronization context"
             )
 
-    def register_provider(self, provider: ISymbolProvider):
+    def register_provider(self, provider: ISymbolProvider) -> None:
         """Registers a symbol provider."""
 
         SymbolProviderRegistry.register_provider(provider)
         self._was_synchronized = False
 
-    def synchronize(self):
+    def synchronize(self) -> None:
         """Synchronizes all symbol providers."""
 
         SymbolProviderRegistry.synchronize()

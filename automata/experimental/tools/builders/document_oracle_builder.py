@@ -9,9 +9,9 @@ from automata.agent import (
     OpenAIAgentToolkitBuilder,
 )
 from automata.config.config_base import LLMProvider
+from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
-from automata.memory_store import SymbolDocEmbeddingHandler
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )

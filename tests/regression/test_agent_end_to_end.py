@@ -19,39 +19,50 @@ from automata.tasks import (
 logger = logging.getLogger(__name__)
 
 EMBEDDING_PROVIDER = OpenAIEmbeddingProvider()
-CORE_PARAMS = "instructions, agent_config, toolkit_list, model, max_iterations"
-
-
-@pytest.mark.regression
-@pytest.mark.parametrize(
-    f"{CORE_PARAMS}",
-    [
-        # A simple 'hello-world' style instruction with task framework
-        (
-            "This is a dummy instruction, return True.",
-            "automata-main",
-            [],
-            "gpt-3.5-turbo-16k",
-            1,
-        ),
-    ],
+BASIC_PARAMS = (
+    "instructions, agent_config, toolkit_list, model, max_iterations"
 )
-def test_basic_eval_task(
-    instructions,
-    agent_config,
-    toolkit_list,
-    model,
-    max_iterations,
-):
-    """Test that the agent can execute a simple instruction."""
 
-    tools, agent_config_name = run_setup(agent_config, toolkit_list)
+# ADVANCED_BASIC_PARAMS = f"{BASIC_PARAMS}"
 
+
+@pytest.fixture
+def automata_setup():
     task_db = AutomataAgentTaskDatabase()
     task_registry = AutomataTaskRegistry(task_db)
     task_environment = AutomataTaskEnvironment(
         environment_mode=EnvironmentMode.LOCAL_COPY
     )
+
+    return task_db, task_registry, task_environment
+
+
+@pytest.mark.regression
+@pytest.mark.parametrize(
+    f"{BASIC_PARAMS}",
+    [
+        (
+            "This is a dummy instruction, return True.",
+            "automata-main",
+            [],  # no tool necessary, default agent has a stop execution fn.
+            "gpt-3.5-turbo-16k",
+            1,
+        ),
+    ],
+)
+def test_basic_eval_tasks(
+    instructions,
+    agent_config,
+    toolkit_list,
+    model,
+    max_iterations,
+    automata_setup,
+):
+    """Test that the agent can execute a simple instruction."""
+
+    tools, agent_config_name = run_setup(agent_config, toolkit_list)
+
+    task_db, task_registry, task_environment = automata_setup
 
     eval_result = run_with_eval(
         instructions,
