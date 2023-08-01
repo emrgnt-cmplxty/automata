@@ -51,8 +51,7 @@ class SymbolGraph(ISymbolProvider):
         build_references: bool = True,
         build_relationships: bool = True,
         build_caller_relationships: bool = False,
-        from_pickle: bool = GRAPH_TYPE
-        == "static",  # we would want this to be static, right???
+        from_pickle: bool = GRAPH_TYPE == "static",
         save_graph_pickle: bool = True,
     ) -> None:
         """
