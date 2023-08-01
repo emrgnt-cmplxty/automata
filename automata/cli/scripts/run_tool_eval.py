@@ -71,6 +71,7 @@ def run_eval_harness(
                 raise ValueError(
                     "Expected action must be a SymbolSearchAction."
                 )
+
             print(f"Search Query: {expected_action.query}")
             print(f"Truth Top Match: {expected_action.search_results[0]}\n")
 
@@ -93,7 +94,6 @@ def run_eval_harness(
             )
 
             print("=" * 150)
-
     print(output)
     print("=" * 150)
 

@@ -72,8 +72,8 @@ class SymbolSearchEvalResult(ToolEvalResult):
 
     def __init__(
         self,
-        expected_action: SymbolSearchAction,
-        observed_action: Optional[SymbolSearchAction],
+        expected_action: Action,
+        observed_action: Optional[Action],
         *args,
         **kwargs,
     ):

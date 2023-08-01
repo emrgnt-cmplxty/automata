@@ -144,7 +144,7 @@ def find_syntax_tree_node(
                 if (
                     isinstance(
                         child,
-                        (Module, ClassDef, FunctionDef, AsyncFunctionDef),
+                        (ClassDef, FunctionDef, AsyncFunctionDef),
                     )
                     and child.name == obj_name
                 ):
