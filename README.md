@@ -45,8 +45,11 @@ Follow these steps to setup the Automata environment
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/
 
-# Install dependencies
-poetry install
+# Initialize git submodules
+git submodule update --init
+
+# Install poetry and the project
+pip3 install poetry && poetry install
 
 # Configure the environment and setup files
 automata configure
@@ -99,7 +102,7 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /
 ```bash
 # Make sure you are in /scripts
 # Install dependencies and run indexing on the local codebase
-./install_indexing.sh && ./regenerate_index.sh
+automata install-indexing
 ```
 
 ### Build the embeddings + docs
