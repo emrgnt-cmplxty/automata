@@ -74,11 +74,13 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
     ) -> None:
         self.access_token = access_token
         self.client = Github(access_token)
-        self.remote_name = os.getenv(
-            "REPOSITORY_NAME", "emrgnt-cmplxty/automata"
+        self.remote_name = (
+            os.getenv("REPOSITORY_NAME")
+            if os.getenv("REPOSITORY_NAME")
+            not in ["your_repository_name", None]
+            else "emrgnt-cmplxty/automata"
         )
-        self.repo = self.client.get_repo(self.remote_name)
-
+        self.repo = self.client.get_repo(str(self.remote_name))
         self.primary_branch = primary_branch
 
     # Repository Manager methods
