@@ -3,7 +3,7 @@
         "template": {
             "input_function": {
                 "type": "FunctionCall",
-                "name": "symbol-similarity-search",
+                "name": "llm-facilitated-search",
                 "arguments": {
                     "query": "{query}"
                 }

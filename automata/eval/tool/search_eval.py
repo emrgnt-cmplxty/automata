@@ -13,7 +13,7 @@ from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
 from automata.llm import FunctionCall
 
 # TODO - Make this configurable somewhere upstream
-TOP_K_MATCHES = 10
+TOP_K_MATCHES = 20
 
 
 @register_action
@@ -193,6 +193,7 @@ class SymbolSearchEval(ToolEval):
         if input_function.name in [
             "symbol-rank-search",
             "symbol-similarity-search",
+            "llm-facilitated-search",
         ]:
             split_results = result.split("\n")
         else:

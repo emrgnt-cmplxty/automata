@@ -1,3 +1,4 @@
+import textwrap
 from enum import Enum
 from typing import List, Optional, Union
 
@@ -14,11 +15,73 @@ from automata.experimental.search import (
     SymbolReferencesResult,
     SymbolSearch,
 )
-from automata.llm import OpenAITool
+from automata.llm import (
+    OpenAIChatCompletionProvider,
+    OpenAIConversation,
+    OpenAITool,
+)
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
 from automata.tools import Tool, UnknownToolError
+
+AGENT_PROMPT = textwrap.dedent(
+    """
+                               
+                               Here are a few examples of matchign a search query to a best match
+
+
+Example 1
+----------
+
+Search Query: What method is used in SymbolEmbeddingHandler to get the sorted supported symbols?
+
+- Observed Results - 
+
+Top 10 Search Results: ['automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler._get_sorted_supported_symbols', 'automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler', 'automata.symbol.graph.symbol_graph.SymbolGraph._get_sorted_supported_symbols', 'automata.symbol.symbol_base.ISymbolProvider._get_sorted_supported_symbols', 'automata.symbol.symbol_base.ISymbolProvider.get_sorted_supported_symbols', 'automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.get_all_ordered_embeddings', 'automata.context_providers.symbol_synchronization_context.SymbolProviderRegistry.get_sorted_supported_symbols', 'automata.symbol.graph.symbol_navigator.SymbolGraphNavigator.get_sorted_supported_symbols', 'automata.symbol.symbol_base.ISymbolProvider', 'automata.memory_store.symbol_doc_embedding_handler.SymbolDocEmbeddingHandler']
+
+
+Best Match: automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler._get_sorted_supported_symbols
+
+
+
+Example 2
+----------
+
+Search Query: Which method generates a tool evaluation result?
+
+- Observed Results - 
+o
+Top 10 Search Results: ['automata.eval.tool.tool_eval.ToolEval', 'automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics', 'automata.eval.tool.tool_eval.ToolEvalResult', 'automata.eval.tool.tool_eval_harness.ToolEvaluationHarness', 'automata.eval.tool.tool_eval_harness.ToolEvaluationHarness.__init__', 'automata.cli.commands.run_tool_eval', 'automata.eval.tool.tool_eval.ToolEval.generate_eval_result', 'automata.eval.tool.search_eval.SymbolSearchEval', 'automata.experimental.tools.builders.advanced_context_oracle_builder.AdvancedContextOracleToolkitBuilder.build', 'automata.eval.tool.tool_eval_harness.ToolEvaluationHarness.evaluate']
+
+Best Match: automata.eval.tool.tool_eval.ToolEval.generate_eval_result
+
+
+Example 3
+----------
+
+
+Search Query: What property is used to retrieve the total number of partial matches?
+
+- Observed Results - 
+
+Top 10 Search Results: ['automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_partial_matches', 'automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.total_partial_matches', 'automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_full_matches', 'automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.total_full_matches', 'automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.partial_match_rate', 'automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.partial_match_rate', 'automata.eval.agent.agent_eval.AgentEvalResult.is_partial_match', 'automata.eval.eval_base.EvalResult.is_partial_match', 'automata.eval.tool.search_eval.SymbolSearchEvalResult.is_partial_match', 'automata.eval.agent.agent_eval_metrics.AgentEvaluationMetrics.total_actions']
+
+
+Best Match: automata.eval.tool.tool_eval_metrics.ToolEvaluationMetrics.total_partial_matches
+
+
+
+Repeat for the following question -
+
+Search Query: {QUERY}
+
+- Observed Results - 
+
+Top 10 Search Results: {SEARCH_RESULTS}
+
+Best Match:"""
+)
 
 
 class SearchTool(Enum):
@@ -42,7 +105,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
         self,
         symbol_search: SymbolSearch,
         search_tools: Optional[List[SearchTool]] = None,
-        top_n: int = 10,
+        top_n: int = 20,
         *args,
         **kwargs,
     ) -> None:
@@ -53,6 +116,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def build_tool(self, tool_type: SearchTool) -> Tool:
         """Builds a suite of tools for searching the associated codebase."""
         tool_funcs = {
+            SearchTool.AGENT_FACILITATED_SEARCH: self._symbol_agent_search_processor,
             SearchTool.SYMBOL_SIMILARITY_SEARCH: self._symbol_code_similarity_search_processor,
             SearchTool.SYMBOL_RANK_SEARCH: self._symbol_rank_search_processor,
             SearchTool.SYMBOL_REFERENCES: self._symbol_symbol_references_processor,
@@ -60,6 +124,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             SearchTool.EXACT_SEARCH: self._exact_search_processor,
         }
         tool_descriptions = {
+            SearchTool.AGENT_FACILITATED_SEARCH: "Performs an agent facilitated similarity based search of symbols based on a given query string.",
             SearchTool.SYMBOL_SIMILARITY_SEARCH: "Performs a similarity based search of symbols based on a given query string.",
             SearchTool.SYMBOL_RANK_SEARCH: "Performs a ranked search of symbols based on a given query string.",
             SearchTool.SYMBOL_REFERENCES: "Finds all the references to a given symbol within the codebase.",
@@ -98,6 +163,46 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
                 : self.top_n
             ]
         )
+
+    def _symbol_agent_search_processor(self, query: str) -> str:
+        query_result = self.symbol_search.get_symbol_code_similarity_results(
+            query
+        )
+        search_results = "\n".join(
+            [symbol.full_dotpath for symbol, _similarity in query_result][
+                : self.top_n
+            ]
+        )
+        cleaned_input_prompt = AGENT_PROMPT.replace(
+            "{SEARCH_RESULTS}", search_results
+        ).replace("{QUERY}", query)
+
+        MODEL = "gpt-4"  # 3.5-turbo"
+        TEMPERATURE = 0.7
+        STREAM = True
+        conversation = OpenAIConversation()
+
+        completion_provider = OpenAIChatCompletionProvider(
+            model=MODEL,
+            temperature=TEMPERATURE,
+            stream=STREAM,
+            conversation=conversation,
+            functions=[],
+        )
+
+        # Call a one-time completion with the provided context
+        result = completion_provider.standalone_call(
+            cleaned_input_prompt
+        ).strip()
+        if result in search_results:
+            return "\n".join(
+                [result]
+                + [
+                    symbol.full_dotpath for symbol, _similarity in query_result
+                ][: self.top_n]
+            )
+        else:
+            return search_results
 
     def _symbol_code_similarity_search_processor(self, query: str) -> str:
         query_result = self.symbol_search.get_symbol_code_similarity_results(
