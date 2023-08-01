@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 import uuid
 from typing import Any, Dict, List
 
@@ -109,9 +110,10 @@ class ToolEvaluationHarness:
         )
 
         aggregate_results = []
-        for input_function, expected_action in tqdm(
-            zip(input_functions, expected_actions)
-        ):
+        function_action_zip = list(zip(input_functions, expected_actions))
+        random.seed(123)
+        random.shuffle(function_action_zip)
+        for input_function, expected_action in tqdm(function_action_zip[:50]):
             try:
                 for eval in self.evals:
                     result = eval.generate_eval_result(

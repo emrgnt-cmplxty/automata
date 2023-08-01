@@ -258,7 +258,7 @@ Example 3
 ]
 
 
-Here is the source code for which your task is to extract a similar JSON payload - 
+Below is the source code for which your task is to extract a similar JSON payload. Reminder, for this task each query should correspond to a specific class, method, or standalone function in the defined module. Lastly, the result should be a single line item. Begin - 
 
 ```python
 {SOURCE_CODE}
