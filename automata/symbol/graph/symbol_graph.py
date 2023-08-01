@@ -13,7 +13,8 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
-from automata.config import DATA_ROOT_PATH, GRAPH_TYPE
+from automata.config import GRAPH_TYPE, PICKLED_DATA_PATH
+from automata.config.config_base import DataCategory
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
@@ -25,6 +26,16 @@ from automata.symbol.symbol_base import (
 from automata.symbol.symbol_utils import get_rankable_symbols
 
 logger = logging.getLogger(__name__)
+
+
+def _load_index_protobuf(path: str) -> Index:
+    """
+    Loads and returns an Index protobuf object from the given file path.
+    """
+    index = Index()
+    with open(path, "rb") as f:
+        index.ParseFromString(f.read())
+    return index
 
 
 class SymbolGraph(ISymbolProvider):
@@ -48,7 +59,7 @@ class SymbolGraph(ISymbolProvider):
         Initializes a new instance of `SymbolGraph`.
         """
         super().__init__()
-        index = self._load_index_protobuf(index_path)
+        index = _load_index_protobuf(index_path)
         builder = GraphBuilder(
             index,
             build_references,
@@ -58,7 +69,9 @@ class SymbolGraph(ISymbolProvider):
         self._graph = builder.build_graph(from_pickle, save_graph_pickle)
         self.navigator = SymbolGraphNavigator(self._graph)
         self.from_pickle = from_pickle
-        self.subgraph_pickle_path = f"{DATA_ROOT_PATH}/symbol_subgraph.pkl"
+        self.subgraph_pickle_path = os.path.join(
+            PICKLED_DATA_PATH, DataCategory.PICKLED_SYMBOL_SUBGRAPH.value
+        )
         self.save_graph_pickle = save_graph_pickle
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
@@ -110,7 +123,6 @@ class SymbolGraph(ISymbolProvider):
         """
         Gets the default rankable subgraph. This subgraph contains only the nodes and edges of the original
         graph that can be ranked. This may be a cached version of the graph for faster loading.
-        @TODO: Pickle this for faster loading.
         """
         return self._build_default_rankable_subgraph()
 
@@ -119,7 +131,11 @@ class SymbolGraph(ISymbolProvider):
         """
         Creates a subgraph of the original `SymbolGraph`
         """
-        if not self.from_pickle or not os.path.exists(self.subgraph_pickle_path):
+        os.makedirs(PICKLED_DATA_PATH, exist_ok=True)
+
+        if not self.from_pickle or not os.path.exists(
+            self.subgraph_pickle_path
+        ):
             subgraph = self._build_rankable_subgraph()
 
             if self.save_graph_pickle:
@@ -142,7 +158,7 @@ class SymbolGraph(ISymbolProvider):
 
         TODO - Think of how to handle relationships here.
         """
-        G = nx.DiGraph()
+        Graph = nx.DiGraph()
 
         filtered_symbols = get_rankable_symbols(
             self.get_sorted_supported_symbols()
@@ -164,13 +180,13 @@ class SymbolGraph(ISymbolProvider):
                     if ele in self.get_sorted_supported_symbols()
                 ]
                 for dependency in dependencies:
-                    G.add_edge(symbol, dependency)
-                    G.add_edge(dependency, symbol)
+                    Graph.add_edge(symbol, dependency)
+                    Graph.add_edge(dependency, symbol)
             except Exception as e:
                 logger.error(f"Error processing {symbol.uri}: {e}")
 
         logger.info("Built the rankable symbol subgraph")
-        return G
+        return Graph
 
     # ISymbolProvider methods
     def _get_sorted_supported_symbols(self) -> List[Symbol]:
@@ -190,16 +206,6 @@ class SymbolGraph(ISymbolProvider):
                     and node not in sorted_supported_symbols
                 ):
                     self._graph.remove_node(node)
-
-    @staticmethod
-    def _load_index_protobuf(path: str) -> Index:
-        """
-        Loads and returns an Index protobuf object from the given file path.
-        """
-        index = Index()
-        with open(path, "rb") as f:
-            index.ParseFromString(f.read())
-        return index
 
     @classmethod
     def from_graph(cls, graph: nx.MultiDiGraph) -> "SymbolGraph":

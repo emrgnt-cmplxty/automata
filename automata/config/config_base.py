@@ -42,6 +42,16 @@ class ConfigCategory(PathEnum):
     INSTRUCTION = "instruction-configs"
 
 
+class DataCategory(PathEnum):
+    """
+    A class to represent the different categories of serialized data
+    Corresponds folders in automata/automata-embedding-data/*
+    """
+
+    PICKLED_SYMBOL_GRAPH = "symbol_graph.pkl"
+    PICKLED_SYMBOL_SUBGRAPH = "symbol_subgraph.pkl"
+
+
 class InstructionConfigVersion(PathEnum):
     """
     InstructionConfigVersion: Enum of instruction versions.

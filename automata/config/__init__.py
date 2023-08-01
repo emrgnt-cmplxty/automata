@@ -16,7 +16,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .config_base import (
+from automata.config.config_base import (
     AgentConfig,
     AgentConfigBuilder,
     AgentConfigName,
@@ -26,11 +26,11 @@ from .config_base import (
     LLMProvider,
     ModelInformation,
 )
-from .openai_config import (
+from automata.config.openai_config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )
-from .prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
+from automata.config.prompt.doc_generation import DEFAULT_DOC_GENERATION_PROMPT
 
 load_dotenv()
 
@@ -48,6 +48,7 @@ TASK_OUTPUT_PATH = os.getenv(
 REPOSITORY_NAME = os.getenv("REPOSITORY_NAME", "emrgnt-cmplxty/Automata")
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", 8))
 DATA_ROOT_PATH = os.getenv("DATA_ROOT_PATH", "automata-embedding-data")
+PICKLED_DATA_PATH = os.path.join(DATA_ROOT_PATH, "graphs")
 
 GRAPH_TYPE = os.getenv("GRAPH_TYPE", "dynamic")
 
