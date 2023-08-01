@@ -1,5 +1,5 @@
 """
-This script introduces a way to install indexing and generate local indices directly from the CLI.
+This script instealls indexing and generates local indices directly from the CLI.
 """
 
 import logging
@@ -7,6 +7,7 @@ import os
 import pathlib
 import shutil
 import subprocess
+from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,6 @@ def get_project_paths() -> tuple[str, str, str, str, str, str]:
     """
     Defines the paths used for the project and returns them as a tuple.
     """
-
     # Directory of the script being executed
     script_dir = pathlib.Path(__file__).parent.absolute()
 
@@ -88,13 +88,15 @@ def generate_local_indices() -> None:
         embedding_data_path,
         factory_path,
         project_name,
-        _,
+        scip_python_path,
         project_in_factory,
     ) = get_project_paths()
 
     project_indices = os.path.join(
         embedding_data_path, "indices", f"{project_name}.scip"
     )
+
+    # Remove the old index if it exists
     if os.path.exists(project_indices):
         os.remove(project_indices)
 
@@ -108,15 +110,44 @@ def generate_local_indices() -> None:
 
     shutil.copytree(automata_root, project_in_factory, ignore=ignore_dirs)
 
-    node_command = [
-        "node",
-        "scip-python/packages/pyright-scip/index",
-        "index",
-        "--project-name",
-        "automata",
-        "--output",
-        "automata-embedding-data/indices/automata.scip",
-        "--target-only",
-        "automata",
+    commands = install_nvm_and_nodejs("16.10.0")
+
+    node_command = " ".join(
+        [
+            "node",
+            os.path.join(
+                scip_python_path, "packages", "pyright-scip", "index"
+            ),
+            "index",
+            "--project-name",
+            project_name,
+            "--output",
+            "automata-embedding-data/indices/automata.scip",
+            "--target-only",
+            project_name,
+        ]
+    )
+
+    logger.info(f"Running: {node_command}")
+
+    commands.append(node_command)
+    command_string = " && ".join(commands)
+
+    subprocess.run(command_string, check=True, shell=True)
+
+
+def install_nvm_and_nodejs(version: str) -> List[str]:
+    """
+    Installs NVM (Node Version Manager) and a specific Node.js version.
+
+    This function expects that you have curl and bash installed on your system.
+    """
+    # Download and install NVM
+    return [
+        "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash",
+        'export NVM_DIR="$HOME/.nvm"',
+        '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"',
+        '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"',
+        f"nvm install {version}",
+        f"nvm use {version}",
     ]
-    subprocess.run(node_command)

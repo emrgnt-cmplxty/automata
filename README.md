@@ -48,8 +48,11 @@ Follow these steps to setup the Automata environment
 # Clone the repository
 git clone git@github.com:emrgnt-cmplxty/Automata.git && cd Automata/
 
-# Install dependencies
-poetry install
+# Initialize git submodules
+git submodule update --init
+
+# Install poetry and the project
+pip3 install poetry && poetry install
 
 # Configure the environment and setup files
 automata configure
@@ -100,12 +103,13 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /
 [SCIP indices](https://about.sourcegraph.com/blog/announcing-scip) are required to run the Automata Search. These indices are used to create the code graph which relates symbols by dependencies across the codebase. New indices are generated and uploaded periodically for the Automata codebase, but programmers must be generate them manually if necessary for their local development. If you encounter issues, we recommend referring to the [instructions here](https://github.com/sourcegraph/scip-python).
 
 ```bash
-# Change to the scripts directory
-# cd $AUTOMATA_ROOT/scripts
-
 # Install dependencies and run indexing on the local codebase
-./install_indexing.sh && ./regenerate_index.sh
+automata install-indexing
+```
 
+### Build the embeddings + docs
+
+```
 # Refresh the code embeddings (after making local changes)
 poetry run automata run-code-embedding
 

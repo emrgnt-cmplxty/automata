@@ -107,7 +107,7 @@ def configure(ctx: click.Context, *args, **kwargs) -> None:
 @common_options
 @cli.command()
 @click.pass_context
-def build(ctx: click.Context, *args, **kwargs) -> None:
+def install_indexing(ctx: click.Context, *args, **kwargs) -> None:
     """Run the install_index script."""
 
     from automata.cli.install_indexing import (
@@ -117,10 +117,10 @@ def build(ctx: click.Context, *args, **kwargs) -> None:
 
     reconfigure_logging(kwargs.get("log-level", "DEBUG"))
 
-    logger.info("Running install_index")
+    logger.info("Installing indices")
     install_indexing()
 
-    logger.info("Running generate_local_indices")
+    logger.info("Generating local indices")
     generate_local_indices()
 
 

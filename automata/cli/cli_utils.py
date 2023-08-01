@@ -4,7 +4,9 @@ This module contains utility functions for the CLI.
 
 import logging
 import os
+import pathlib
 import shutil
+import subprocess
 from typing import Any, List, Optional
 
 from questionary import Style, prompt
@@ -33,19 +35,6 @@ def initialize_py_module_loader(
 
 def setup_files(scripts_path: str, dotenv_path: str) -> None:
     """Setup the files necessary for the local task_environment."""
-
-    if not os.path.exists(os.path.join(scripts_path, "setup.sh")):
-        try:
-            logger.info("Copying setup.sh")
-            shutil.copy(
-                os.path.join(scripts_path, ".setup.sh.example"),
-                os.path.join(scripts_path, "setup.sh"),
-            )
-        except FileNotFoundError as e:
-            raise FileNotFoundError(
-                "File .setup.sh.example not found in the scripts path"
-            ) from e
-
     if not os.path.exists(dotenv_path):
         try:
             logger.info("Copying .env")
@@ -54,9 +43,6 @@ def setup_files(scripts_path: str, dotenv_path: str) -> None:
             raise FileNotFoundError(
                 "File .env.example not found in the project root path"
             ) from exc
-
-    # Allow for execution
-    os.chmod(os.path.join(scripts_path, "setup.sh"), 0o700)
 
 
 def get_custom_style() -> Style:
