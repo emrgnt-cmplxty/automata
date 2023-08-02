@@ -30,5 +30,5 @@ echo 'running command', node scip-python/packages/pyright-scip/index index --pro
 node scip-python/packages/pyright-scip/index index --project-name $PROJECT_NAME --output $EMBEDDING_DATA_DIR/indices/$PROJECT_NAME.scip --target-only $TARGET_DIR
 
 poetry run automata run-code-embedding
-#poetry run automata run-doc-embedding
+poetry run automata run-doc-embedding
 cd -
