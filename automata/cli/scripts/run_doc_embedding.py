@@ -131,6 +131,8 @@ def main(*args, **kwargs) -> str:
     logger.info("Looping over filtered symbols...")
     for symbol in tqdm(filtered_symbols):
         try:
+            if "automata.tests" in symbol.dotpath:
+                continue
             logger.info(f"Caching embedding for {symbol}")
             symbol_doc_embedding_handler.process_embedding(symbol)
         except Exception as e:

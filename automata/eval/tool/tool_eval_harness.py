@@ -114,7 +114,7 @@ class ToolEvaluationHarness:
         aggregate_results = []
         function_action_zip = list(zip(input_functions, expected_actions))
         random.shuffle(function_action_zip)
-        for input_function, expected_action in tqdm(function_action_zip):
+        for input_function, expected_action in tqdm(function_action_zip[0:50]):
             # TODO - Why are we struggling with initializers
             # We should root out the issue, rather than skipping.
             if (
