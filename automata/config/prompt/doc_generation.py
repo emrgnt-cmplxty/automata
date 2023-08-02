@@ -1,3 +1,4 @@
+"""Module containing functions to build SymbolDocEmbedding objects."""
 import textwrap
 
 DOC_EXAMPLE_0 = textwrap.dedent(
@@ -67,19 +68,27 @@ DOC_EXAMPLE_1 = textwrap.dedent(
     """
 )
 
-symbol_dotpath = "{{symbol_dotpath}}"
-symbol_context = "{{symbol_context}}"
-DOC_GENERATION_TEMPLATE = textwrap.dedent(
-    f"""
-    Generate the documentation for {symbol_dotpath} using the context shown below -\n{symbol_context}\n
-    The output documentation should include an overview section, related symbols, examples, and discussion around limitations.
-    Examples should be comprehensive and readily executable (e.g. correct imports and values).
-    If there are references to 'Mock' objects in test files from your context, do your best to replace these with the actual underlying object.
-    If that is not possible, note this in a footnote. Mock objects are used in testing to simplify working with complex objects.
-    For reference, write in the style of in the original Python Library documentation -\n{DOC_EXAMPLE_0}\n
-    For further reference, see the local documentation here -\n{DOC_EXAMPLE_1}\n
-    Some information is just included for contextual reference, and this may be omitted from the output documentation.
-    Start the documentation with a header that includes only the class name.
-    Lastly, if some points are unclear, note these in a footnote that begins with ## Follow-up Questions:
-    """
+DOC_GENERATION_TEMPLATE = (
+    "You are Automata Master, an advanced autonomous software architect developed"
+    + " by OpenAI. You are specifically designed to operate within local Python"
+    + " repositories.\nWith your capability to understand and process natural"
+    + " language instructions, you perform tasks efficiently using your"
+    + " available functions. Your task for this session is to generate the"
+    + " documentation for {{symbol_dotpath}}. To assist you in your task,"
+    + " carefully read the relevant context shown below:\n\n{{symbol_context}}\n"
+    + "The output documentation should include an overview section, related"
+    + " symbols, examples, and discussion around limitations. Examples should"
+    + " be comprehensive and readily executable (e.g. correct imports and"
+    + " values). If there are references to 'Mock' objects in test files from"
+    + " your context, do your best to replace these with the actual underlying"
+    + " object. If that is not possible, note this in a footnote. Mock objects"
+    + " are used in testing to simplify working with complex objects. For"
+    + " reference, write in the style of in the original Python Library"
+    + f" documentation -\n{DOC_EXAMPLE_0}\nFor further reference, see the local"
+    + f" documentation here -\n{DOC_EXAMPLE_1}\nSome information is just included"
+    + " included for contextual reference, and this may be omitted from the"
+    + " output documentation. Start the documentation with a header that"
+    + " includes only the class name. Lastly, if some points are unclear, note"
+    + " these in a footnote that begins with `## Follow-up Questions:`."
+    + "\nBegin writing your documentation for {{symbol_dotpath}} below:\n\n"
 )

@@ -9,7 +9,7 @@ from automata.symbol.symbol_base import SymbolDescriptor
 class FakeSymbol:
     def __init__(
         self,
-        full_dotpath,
+        dotpath,
         uri="some_uri",
         py_kind=SymbolDescriptor.PyKind.Method,
         is_protobuf=False,
@@ -17,7 +17,7 @@ class FakeSymbol:
         is_meta=False,
         is_parameter=False,
     ):
-        self.full_dotpath = full_dotpath
+        self.dotpath = dotpath
         self.uri = uri
         self.py_kind = py_kind
         self.is_protobuf = is_protobuf

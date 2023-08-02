@@ -292,7 +292,7 @@ def get_processed_paths(
     processed_paths = set([])
     for item in data:
         for entry in item["entries"]:
-            print(f"Loading Entry {entry}")
+            logger.info(f"Loading Entry {entry}")
             processed_paths.add(entry["result"])
     return processed_paths
 
@@ -375,10 +375,10 @@ def process_missing_symbols(
     for symbol in missing_symbols_dotpaths:
         if module_dot_fpath in symbol:
             if not is_missing_entry:
-                print(f"Processing module {module_dot_fpath}")
-                print("  Listing missing symbols:")
+                logger.info(f"Processing module {module_dot_fpath}")
+                logger.info("  Listing missing symbols:")
                 is_missing_entry = True
-            print(f"    {symbol}")
+            logger.info(f"    {symbol}")
     if is_missing_entry:
         try:
             processed_payload = call_completion_provider(
@@ -389,7 +389,7 @@ def process_missing_symbols(
             # Save the JSON data just in case of crash
             # because completion operations are expensive
             save_json_data(data_path, filtered_data)
-            print(
+            logger.info(
                 f'There are now {len(filtered_data[0]["entries"])} entries in the dataset.'
             )
         except Exception as e:
@@ -433,7 +433,7 @@ def process_symbol_graph() -> Set[str]:
     symbol_graph = dependency_factory.get("symbol_graph")
     symbol_graph._initialized = True  # mock initialization
     return {
-        symbol.full_dotpath
+        symbol.dotpath
         for symbol in get_rankable_symbols(
             symbol_graph.get_sorted_supported_symbols()
         )
@@ -496,7 +496,7 @@ def main(eval_rootpath: str, payloads: Optional[List[str]] = None) -> None:
 
 if __name__ == "__main__":
     logger.setLevel(logging.INFO)
-    print("Running tool eval")
+    logger.info("Running tool eval")
 
     # Load the target evals
     main(EVAL_ROOT_PATH)

@@ -38,9 +38,7 @@ def main(*args, **kwargs) -> str:
         for embedding in doc_embedding_db.get_all_ordered_embeddings()
     ]
 
-    docs = {
-        symbol: doc_embedding_db.get(symbol.full_dotpath) for symbol in symbols
-    }
+    docs = {symbol: doc_embedding_db.get(symbol.dotpath) for symbol in symbols}
 
     doc_writer.write_documentation(docs, symbols, os.path.join(get_root_fpath(), "docs"))  # type: ignore
     return "Success"

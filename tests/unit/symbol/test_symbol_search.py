@@ -33,7 +33,7 @@ def test_symbol_rank_search(symbols, symbol_search_tool_builder):
     tools = symbol_search_tool_builder.build()
     for tool in tools:
         if tool.name == "symbol-rank-search":
-            assert tool.function("symbol") == symbols[0].full_dotpath
+            assert tool.function("symbol") == symbols[0].dotpath
 
 
 def test_symbol_references(symbol_search_tool_builder):

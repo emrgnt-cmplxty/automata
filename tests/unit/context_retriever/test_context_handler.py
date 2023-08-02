@@ -29,7 +29,7 @@ def local_module_loader():
 @pytest.fixture
 def context_handler():
     config = PyContextHandlerConfig(
-        top_n_symbol_rank_matches=3, top_n_dependency_matches=3
+        top_n_symbol_rank_matches=10, top_n_dependency_matches=10
     )
     retriever = PyContextRetriever()
     symbol_search = MagicMock()

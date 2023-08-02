@@ -17,7 +17,7 @@ def test_parsed_symbol(parsed_symbol):
     assert parsed_symbol.package.version == "v0.0.0"
     assert parsed_symbol.module_path == "config.automata_agent_config"
     assert (
-        parsed_symbol.full_dotpath
+        parsed_symbol.dotpath
         == "config.automata_agent_config.AutomataAgentConfig.description"
     )
     assert parsed_symbol.descriptors[-1].name == "description"

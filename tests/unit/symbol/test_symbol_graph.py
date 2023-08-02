@@ -25,7 +25,7 @@ def test_get_all_symbols(static_indices_graph_dynamic, sync_context):  # noqa
 def test_build_real_graph(static_indices_graph_dynamic, sync_context):  # noqa
     all_symbols = sorted(
         static_indices_graph_dynamic.get_sorted_supported_symbols(),
-        key=lambda x: x.full_dotpath,
+        key=lambda x: x.dotpath,
     )
 
     assert isinstance(static_indices_graph_dynamic, SymbolGraph)

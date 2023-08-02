@@ -70,7 +70,7 @@ class PyDocWriter:
                 continue
 
             snaked_symbol_name = PyDocWriter.camel_to_snake(symbol_name)
-            module_dir = "/".join(symbol.full_dotpath.split(".")[1:-2])
+            module_dir = "/".join(symbol.dotpath.split(".")[1:-2])
 
             new_module_dir = os.path.join(docs_dir, module_dir)
             self.directory_manager.ensure_directory_exists(new_module_dir)

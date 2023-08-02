@@ -98,7 +98,7 @@ def initialize_providers(
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     filtered_symbols = sorted(
-        get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
+        get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath
     )
 
     return symbol_doc_embedding_handler, filtered_symbols
@@ -116,9 +116,7 @@ def map_dotpaths_to_symbols(
     """Maps a list of dotpaths to their corresponding Symbol objects."""
 
     all_symbols = symbol_graph.get_sorted_supported_symbols()
-    return [
-        symbol for symbol in all_symbols if symbol.full_dotpath in dotpaths
-    ]
+    return [symbol for symbol in all_symbols if symbol.dotpath in dotpaths]
 
 
 def main(*args, **kwargs) -> str:

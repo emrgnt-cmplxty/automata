@@ -67,7 +67,7 @@ def test_symbol_rank_search_on_symbol(
     py_module_loader.initialize()
     results = symbol_search_live.get_symbol_rank_results(search)
     filtered_results = [
-        result for result in results if ".tests." not in result[0].full_dotpath
+        result for result in results if ".tests." not in result[0].dotpath
     ]
     found_top_hits = get_top_n_results_desc_name(filtered_results, 10)
     check_hits(expected_in_top_hits, found_top_hits)

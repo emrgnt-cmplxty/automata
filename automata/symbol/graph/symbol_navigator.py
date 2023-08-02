@@ -48,7 +48,7 @@ class SymbolGraphNavigator:
             for node, data in self._graph.nodes(data=True)
             if data.get("label") == "symbol"
         ]
-        return sorted(unsorted_symbols, key=lambda x: x.full_dotpath)
+        return sorted(unsorted_symbols, key=lambda x: x.dotpath)
 
     def get_symbol_dependencies(self, symbol: Symbol) -> Set[Symbol]:
         references_in_range = self._get_symbol_references_in_scope(symbol)

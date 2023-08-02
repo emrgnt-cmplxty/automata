@@ -69,7 +69,7 @@ class HeadlineContextComponent(BaseContextComponent):
     ) -> str:
         """Convert a symbol into a headline."""
 
-        return self.process_entry(symbol.full_dotpath)
+        return self.process_entry(symbol.dotpath)
 
 
 class SourceCodeContextComponent(BaseContextComponent):
