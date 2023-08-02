@@ -96,6 +96,7 @@ def main(*args, **kwargs) -> str:
     symbol_graph, symbol_code_embedding_handler = initialize_resources(
         **kwargs
     )
+    dependency_factory.create_subgraph()
     filtered_symbols = collect_symbols(symbol_graph)
     process_embeddings(symbol_code_embedding_handler, filtered_symbols)
 
