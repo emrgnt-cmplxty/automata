@@ -38,3 +38,5 @@ jobs:
             poetry run python -m nbconvert --to notebook --execute "$(basename "$notebook")"
             cd -
           done
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
