@@ -19,22 +19,6 @@ how to :ref:`installation` the project.
 Summary of content
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ..  AUTO-GENERATED CONTENT START
 ..
 
