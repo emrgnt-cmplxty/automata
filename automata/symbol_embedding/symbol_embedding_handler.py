@@ -39,13 +39,13 @@ class SymbolEmbeddingHandler(EmbeddingHandler, ISymbolProvider):
     def get_embeddings(self, symbols: List[Symbol]) -> List[SymbolEmbedding]:
         """Get the embeddings for a list of symbols"""
         return self.embedding_db.batch_get(
-            [symbol.full_dotpath for symbol in symbols]
+            [symbol.dotpath for symbol in symbols]
         )
 
     def get_all_ordered_embeddings(self) -> List[SymbolEmbedding]:
         """Get the embeddings for all symbols in the database"""
         return self.embedding_db.batch_get(
-            [symbol.full_dotpath for symbol in self.sorted_supported_symbols]
+            [symbol.dotpath for symbol in self.sorted_supported_symbols]
         )
 
     def flush(self):

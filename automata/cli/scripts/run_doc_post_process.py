@@ -32,15 +32,26 @@ def main(*args, **kwargs) -> str:
         persist_directory=DependencyFactory.DEFAULT_DOC_EMBEDDING_FPATH,
         factory=SymbolDocEmbedding.from_args,
     )
+    print(
+        "doc_embedding_db.get_all_ordered_embeddings() = ",
+        doc_embedding_db.get_all_ordered_embeddings(),
+    )
 
     symbols = [
         embedding.symbol
         for embedding in doc_embedding_db.get_all_ordered_embeddings()
     ]
 
-    docs = {
-        symbol: doc_embedding_db.get(symbol.full_dotpath) for symbol in symbols
-    }
+    print(f"Looping over {len(symbols)} symbols")
+    for symbol in symbols:
+        embedding = doc_embedding_db.get(symbol.dotpath)
+        print("-" * 100)
+        print(f"Symbol = {symbol}")
+        # print(f"Embedding Context = {embedding.context}")
+        print(f"Embedding Document = {embedding.document}")
+        break
+
+    docs = {symbol: doc_embedding_db.get(symbol.dotpath) for symbol in symbols}
 
     doc_writer.write_documentation(docs, symbols, os.path.join(get_root_fpath(), "docs"))  # type: ignore
     return "Success"

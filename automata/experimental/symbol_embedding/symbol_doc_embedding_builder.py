@@ -1,4 +1,5 @@
 """Symbol documentation embedding builder."""
+from copy import copy
 from typing import Any, Dict, List
 
 from jinja2 import Template
@@ -85,10 +86,33 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         customizability provided by ``AgentConfig``?
         """
         prompt = self._build_prompt(symbol)
-        document = self._build_class_document(prompt)
-        summary = self._build_class_document_summary(document)
-        embedding = self.embedding_provider.build_embedding_vector(document)
+        import tiktoken
 
+        print("prompt = ", prompt)
+        print(
+            "prompt length =  = ",
+            len(tiktoken.encoding_for_model("gpt-4").encode(prompt)),
+        )
+
+        document = self._build_class_document(copy(prompt))
+        # print("A")
+        # print("prompt = ", prompt)
+        # print("document = ", document)
+
+        summary = self._build_class_document_summary(copy(document))
+        # print("B")
+        # print("prompt = ", prompt)
+        # print("document = ", document)
+        # print("summary = ", summary)
+
+        embedding = self.embedding_provider.build_embedding_vector(
+            copy(document)
+        )
+        # print("C")
+        # print("prompt = ", prompt)
+        # print("document = ", document)
+        # print("summary = ", summary)
+        # print("embedding = ", embedding)
         return SymbolDocEmbedding(
             symbol,
             vector=embedding,
@@ -105,7 +129,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
 
         ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
-        document = f"Symbol: {symbol.full_dotpath}\n{raw_doctring}"
+        document = f"Symbol: {symbol.dotpath}\n{raw_doctring}"
 
         embedding = self.embedding_provider.build_embedding_vector(document)
 
@@ -132,6 +156,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         """Build the prompt for a symbol doc generation."""
 
         abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
+        print("abbreviated_selected_symbol = ", abbreviated_selected_symbol)
         primary_active_components: Dict[ContextComponent, Any] = {
             ContextComponent.HEADLINE: {},
             ContextComponent.SOURCE_CODE: {},
@@ -146,12 +171,10 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
             tertiary_active_components=tertiary_active_components,
         )
 
-        prompt = Template(DOC_GENERATION_TEMPLATE).render(
+        return Template(DOC_GENERATION_TEMPLATE).render(
             symbol_dotpath=abbreviated_selected_symbol,
             symbol_context=context,
         )
-
-        return self.completion_provider.standalone_call(prompt)
 
     def _generate_search_list(
         self, abbreviated_selected_symbol: str
@@ -189,5 +212,5 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
 
     def batch_build(self, source_text: List[str], symbol: List[Symbol]) -> Any:
         raise NotImplementedError(
-            "Batch building not yet implemented for doc embeddings."
+            "Batch building not yet implemented for document embeddings."
         )

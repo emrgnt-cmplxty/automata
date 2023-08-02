@@ -433,7 +433,7 @@ def process_symbol_graph() -> Set[str]:
     symbol_graph = dependency_factory.get("symbol_graph")
     symbol_graph._initialized = True  # mock initialization
     return {
-        symbol.full_dotpath
+        symbol.dotpath
         for symbol in get_rankable_symbols(
             symbol_graph.get_sorted_supported_symbols()
         )

@@ -84,7 +84,7 @@ def test_collect_symbols(
     symbol_graph_mock,
 ):
     mock_symbol = MagicMock()
-    mock_symbol.full_dotpath = "test_path"
+    mock_symbol.dotpath = "test_path"
     mock_symbol.uri = "test_uri"
     mock_symbol.py_kind = py_kind
     mock_symbol.is_protobuf = is_protobuf
@@ -102,7 +102,7 @@ def test_collect_symbols(
 @patch("automata.cli.scripts.run_code_embedding.tqdm")
 def test_process_embeddings(tqdm_mock, symbol_code_embedding_handler_mock):
     symbol_mock = MagicMock()
-    symbol_mock.full_dotpath = "test_path"
+    symbol_mock.dotpath = "test_path"
     tqdm_mock.return_value = [symbol_mock]
 
     process_embeddings(symbol_code_embedding_handler_mock, [symbol_mock])
@@ -150,13 +150,13 @@ def test_process_embeddings_exception(
     tqdm_mock, symbol_code_embedding_handler_mock
 ):
     symbol_mock = MagicMock()
-    symbol_mock.full_dotpath = "test_path"
+    symbol_mock.dotpath = "test_path"
     tqdm_mock.return_value = [symbol_mock]
 
     with patch.object(logger, "error") as logger_error_mock:
         process_embeddings(symbol_code_embedding_handler_mock, [symbol_mock])
         logger_error_mock.assert_called_once_with(
-            f"Failed to update embedding for {symbol_mock.full_dotpath}: Test exception"
+            f"Failed to update embedding for {symbol_mock.dotpath}: Test exception"
         )
 
     symbol_code_embedding_handler_mock.flush.assert_called_once()

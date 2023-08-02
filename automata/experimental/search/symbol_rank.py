@@ -118,7 +118,7 @@ class SymbolRank:
         """Get the top N symbols according to their ranks."""
 
         ranks = self.get_ordered_ranks()
-        return [(symbol.full_dotpath, rank) for symbol, rank in ranks[:n]]
+        return [(symbol.dotpath, rank) for symbol, rank in ranks[:n]]
 
     def _prepare_graph(self) -> nx.DiGraph:
         """

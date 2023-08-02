@@ -69,7 +69,7 @@ class HeadlineContextComponent(BaseContextComponent):
     ) -> str:
         """Convert a symbol into a headline."""
 
-        return self.process_entry(symbol.full_dotpath)
+        return self.process_entry(symbol.dotpath)
 
 
 class SourceCodeContextComponent(BaseContextComponent):
@@ -244,6 +244,7 @@ class PyContextRetriever:
         Process the context of a specified `Symbol`. The caller has the responsibility
         to decide the indent level and context components to be processed.
         """
+        print("processing symbol = ", symbol)
 
         from automata.symbol import convert_to_ast_object
 

@@ -67,7 +67,7 @@ def collect_symbols(symbol_graph: SymbolGraph) -> List[Symbol]:
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     return sorted(
-        get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
+        get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath
     )
 
 
@@ -82,7 +82,7 @@ def process_embeddings(
             symbol_code_embedding_handler.process_embedding(symbol)
         except Exception as e:
             logger.error(
-                f"Failed to update embedding for {symbol.full_dotpath}: {e}"
+                f"Failed to update embedding for {symbol.dotpath}: {e}"
             )
 
     symbol_code_embedding_handler.flush()  # Final flush for any remaining symbols that didn't form a complete batch

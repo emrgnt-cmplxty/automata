@@ -302,18 +302,19 @@ class ChromaVectorDatabase(VectorDatabaseProvider, Generic[K, V]):
         pass
 
     # Keyed dependent methods (e.g. K dependent)
-    # TODO - PyLance is complaining about the type of the ids parameter below
-    # Can we constrain the TypeVar to be a Chroma compatible type (e.g. ID)?
 
     def contains(self, key: K) -> bool:
+        """Checks if a specific key is present in the collection."""
         result = self._collection.get(ids=[key])
         return len(result["ids"]) != 0
 
     def discard(self, key: K) -> None:
+        """Discards a specific key from the collection."""
         self._collection.delete(ids=[key])
         self._save()
 
     def batch_discard(self, keys: List[K]) -> None:
+        """Discards a batch of keys from the collection."""
         self._collection.delete(ids=keys)
         self._save()
 

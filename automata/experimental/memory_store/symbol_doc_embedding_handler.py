@@ -42,9 +42,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         if not source_code:
             raise ValueError(f"Symbol {symbol} has no source code")
 
-        if self.overwrite or not self.embedding_db.contains(
-            symbol.full_dotpath
-        ):
+        if self.overwrite or not self.embedding_db.contains(symbol.dotpath):
             self._create_new_embedding(source_code, symbol)
         else:
             self._update_existing_embedding(source_code, symbol)
@@ -65,6 +63,9 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             raise ValueError(
                 "SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder"
             )
+        print(f"Made a new symbol embedding = {symbol_embedding}")
+        print(f"Made a new document = {symbol_embedding.document}")
+        print(f"Made a new context = {symbol_embedding.context}")
         self.embedding_db.add(symbol_embedding)
         logger.debug("Successfully added...")
 
@@ -72,7 +73,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         self, source_code: str, symbol: Symbol
     ) -> None:
         """Updates the existing embedding for a symbol if necessary."""
-        existing_embedding = self.embedding_db.get(symbol.full_dotpath)
+        existing_embedding = self.embedding_db.get(symbol.dotpath)
         if (
             existing_embedding.symbol != symbol
             or existing_embedding.source_code != source_code
@@ -80,7 +81,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             logger.debug(
                 f"Rolling forward the embedding for {existing_embedding.symbol} to {symbol}"
             )
-            self.embedding_db.discard(symbol.full_dotpath)
+            self.embedding_db.discard(symbol.dotpath)
             existing_embedding.symbol = symbol
             existing_embedding.source_code = source_code
             self.embedding_db.add(existing_embedding)

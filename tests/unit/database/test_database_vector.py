@@ -9,7 +9,7 @@ def test_add_symbol(json_vector_db, embedded_symbol):
 
 def test_delete_symbol(json_vector_db, embedded_symbol):
     json_vector_db.add(embedded_symbol)
-    json_vector_db.discard(embedded_symbol.symbol.full_dotpath)
+    json_vector_db.discard(embedded_symbol.symbol.dotpath)
 
 
 def test_add_symbols(json_vector_db, symbols, embedded_symbol):
@@ -18,15 +18,15 @@ def test_add_symbols(json_vector_db, symbols, embedded_symbol):
 
 def test_lookup_symbol(json_vector_db, embedded_symbol):
     json_vector_db.add(embedded_symbol)
-    json_vector_db.get(embedded_symbol.symbol.full_dotpath)
+    json_vector_db.get(embedded_symbol.symbol.dotpath)
 
 
 def test_lookup_symbol_fail(json_vector_db, embedded_symbol):
     json_vector_db.add(embedded_symbol)
-    json_vector_db.discard(embedded_symbol.symbol.full_dotpath)
+    json_vector_db.discard(embedded_symbol.symbol.dotpath)
 
     with pytest.raises(KeyError):
-        json_vector_db.get(embedded_symbol.symbol.full_dotpath)
+        json_vector_db.get(embedded_symbol.symbol.dotpath)
 
 
 def test_save(json_vector_db, embedded_symbol):

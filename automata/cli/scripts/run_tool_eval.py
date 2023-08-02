@@ -85,10 +85,6 @@ def run_eval_harness(
                 print(
                     f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"
                 )
-                # print(
-                #     f"{TOP_K_MATCHES}-10 Search Results (not used in matching): {observed_action.search_results[TOP_K_MATCHES:]}\n"
-                # )
-
             print(
                 f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"
             )

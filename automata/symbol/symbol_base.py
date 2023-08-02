@@ -202,7 +202,7 @@ class Symbol:
         )
 
     @property
-    def full_dotpath(self) -> str:
+    def dotpath(self) -> str:
         return ".".join([ele.name for ele in self.descriptors])
 
     @property
@@ -291,7 +291,7 @@ class ISymbolProvider(abc.ABC):
 
         sorted_symbols = self._get_sorted_supported_symbols()
 
-        if not is_sorted([symbol.full_dotpath for symbol in sorted_symbols]):
+        if not is_sorted([symbol.dotpath for symbol in sorted_symbols]):
             raise ValueError("sorted_supported_symbols must be sorted")
 
         return sorted_symbols

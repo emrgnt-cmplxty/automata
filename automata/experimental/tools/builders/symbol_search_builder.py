@@ -102,9 +102,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
     def _symbol_rank_search_processor(self, query: str) -> str:
         query_result = self.symbol_search.get_symbol_rank_results(query)
         return "\n".join(
-            [symbol.full_dotpath for symbol, _rank in query_result][
-                : self.top_n
-            ]
+            [symbol.dotpath for symbol, _rank in query_result][: self.top_n]
         )
 
     def _symbol_agent_search_processor(self, query: str) -> str:
@@ -112,7 +110,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             query
         )
         search_results = "\n".join(
-            [symbol.full_dotpath for symbol, _similarity in query_result][
+            [symbol.dotpath for symbol, _similarity in query_result][
                 : self.top_n
             ]
         )
@@ -140,9 +138,9 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
         if result in search_results:
             return "\n".join(
                 [result]
-                + [
-                    symbol.full_dotpath for symbol, _similarity in query_result
-                ][: self.top_n]
+                + [symbol.dotpath for symbol, _similarity in query_result][
+                    : self.top_n
+                ]
             )
         else:
             return search_results
@@ -152,7 +150,7 @@ class SymbolSearchToolkitBuilder(AgentToolkitBuilder):
             query
         )
         return "\n".join(
-            [symbol.full_dotpath for symbol, _similarity in query_result][
+            [symbol.dotpath for symbol, _similarity in query_result][
                 : self.top_n
             ]
         )

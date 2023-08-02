@@ -37,7 +37,7 @@ class SymbolProviderRegistry:
             )
 
         sorted_supported_symbols = sorted(
-            list(supported_symbols), key=lambda x: x.full_dotpath
+            list(supported_symbols), key=lambda x: x.dotpath
         )
 
         for provider in SymbolProviderRegistry._providers:

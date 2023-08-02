@@ -105,7 +105,6 @@ class AgentifiedSearchToolkitBuilder(AgentToolkitBuilder):
         query_result = self.symbol_search.get_symbol_code_similarity_results(
             query
         )
-        print("query_result = ", query_result)
         best_match = self._agent_selected_best_match(query, query_result)
 
         # Move the best match to the front of the list
@@ -124,10 +123,8 @@ class AgentifiedSearchToolkitBuilder(AgentToolkitBuilder):
         """
         Formats the search results into a string with each dotpath on a new line.
         """
-        # print('query_result = ', query_result[0])
-        # print('query_result.full_dotpath = ', query_result[0][0].full_dotpath)
         return "\n".join(
-            [symbol.full_dotpath for symbol, _ in query_result][: self.top_n]
+            [symbol.dotpath for symbol, _ in query_result][: self.top_n]
         )
 
     def _agent_selected_best_match(
@@ -154,7 +151,7 @@ class AgentifiedSearchToolkitBuilder(AgentToolkitBuilder):
             (
                 symbol
                 for symbol, _ in query_result
-                if symbol.full_dotpath == best_match_dotpath
+                if symbol.dotpath == best_match_dotpath
             ),
             None,
         )

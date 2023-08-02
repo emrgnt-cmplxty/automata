@@ -1,3 +1,4 @@
+# sourcery skip: avoid-single-character-names-variables
 import abc
 from copy import deepcopy
 from typing import (
@@ -29,7 +30,7 @@ class IEmbeddingLookupProvider(abc.ABC):
 
     def embedding_to_key(self, entry: SymbolEmbedding) -> str:
         """Concrete implementation to generate a simple hashable key from a Symbol."""
-        return entry.symbol.full_dotpath
+        return entry.symbol.dotpath
 
 
 class ChromaSymbolEmbeddingVectorDatabase(
@@ -198,7 +199,6 @@ class ChromaSymbolEmbeddingVectorDatabase(
         metadatas["key"] = parse_symbol(metadatas.pop("symbol_uri"))
         metadatas["vector"] = np.array(result["embeddings"][0]).astype(float)
         metadatas["document"] = result["documents"][0]
-
         return self._factory(**metadatas)
 
     def _sort_entries(self, results: Dict[str, List[Any]]) -> List[V]:
@@ -217,7 +217,7 @@ class ChromaSymbolEmbeddingVectorDatabase(
                 results["embeddings"],
             )
         ]
-        return sorted(entries, key=lambda x: x.symbol.full_dotpath)
+        return sorted(entries, key=lambda x: x.symbol.dotpath)
 
 
 class JSONSymbolEmbeddingVectorDatabase(
@@ -230,7 +230,7 @@ class JSONSymbolEmbeddingVectorDatabase(
 
     def get_ordered_keys(self) -> List[str]:
         return [
-            ele.symbol.full_dotpath
+            ele.symbol.dotpath
             for ele in sorted(self.data, key=lambda x: self.entry_to_key(x))
         ]
 

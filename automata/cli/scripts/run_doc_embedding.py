@@ -19,7 +19,7 @@ from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,
 )
-from automata.symbol import Symbol
+from automata.symbol import Symbol, SymbolDescriptor
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding import (
@@ -98,7 +98,7 @@ def initialize_providers(
 
     all_defined_symbols = symbol_graph.get_sorted_supported_symbols()
     filtered_symbols = sorted(
-        get_rankable_symbols(all_defined_symbols), key=lambda x: x.full_dotpath
+        get_rankable_symbols(all_defined_symbols), key=lambda x: x.dotpath
     )
 
     return symbol_doc_embedding_handler, filtered_symbols
@@ -116,9 +116,7 @@ def map_dotpaths_to_symbols(
     """Maps a list of dotpaths to their corresponding Symbol objects."""
 
     all_symbols = symbol_graph.get_sorted_supported_symbols()
-    return [
-        symbol for symbol in all_symbols if symbol.full_dotpath in dotpaths
-    ]
+    return [symbol for symbol in all_symbols if symbol.dotpath in dotpaths]
 
 
 def main(*args, **kwargs) -> str:
@@ -132,10 +130,20 @@ def main(*args, **kwargs) -> str:
 
     logger.info("Looping over filtered symbols...")
     for symbol in tqdm(filtered_symbols):
-        try:
-            logger.info(f"Caching embedding for {symbol}")
-            symbol_doc_embedding_handler.process_embedding(symbol)
-        except Exception as e:
-            logger.info(f"Error {e} for symbol {symbol}")
+        if (
+            "automata.agent.openai_agent.OpenAIAutomataAgent"
+            not in symbol.dotpath
+            or symbol.py_kind != SymbolDescriptor.PyKind.Class
+        ):
+            continue
+        # print("symbol = ", symbol)
+
+        # print(" pykind = ", symbol.py_kind)
+        # try:
+        logger.info(f"Caching embedding for {symbol}")
+        symbol_doc_embedding_handler.process_embedding(symbol)
+        break
+        # except Exception as e:
+        # logger.info(f"Error {e} for symbol {symbol}")
 
     return "Success"
