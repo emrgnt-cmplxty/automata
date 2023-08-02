@@ -85,23 +85,29 @@ def configure(ctx: click.Context, *args, **kwargs) -> None:
 
     logger.info("Configuring Automata:")
 
-    config_choice = ask_choice(
-        "Select item to configure", list(DEFAULT_KEYS.keys())
-    )
-    operation_choice = ask_choice(
-        "Select operation", ["Show", "Update", "Delete"]
-    )
+    while True:
+        config_choice = ask_choice(
+            "Select item to configure", list(DEFAULT_KEYS.keys()) + ["Exit"]
+        )
+        if config_choice == "Exit":
+            break
 
-    if operation_choice == "Show":
-        show_key_value(DOTENV_PATH, config_choice)
-    elif operation_choice == "Update":
-        if config_choice != "GRAPH_TYPE":
-            update_key_value(DOTENV_PATH, config_choice)
-            return
-        graph_choice = ask_choice("Select graph type", ["dynamic", "static"])
-        update_graph_type(DOTENV_PATH, graph_choice)
-    elif operation_choice == "Delete":
-        delete_key_value(DOTENV_PATH, config_choice)
+        operation_choice = ask_choice(
+            "Select operation", ["Show", "Update", "Delete"]
+        )
+
+        if operation_choice == "Show":
+            show_key_value(DOTENV_PATH, config_choice)
+        elif operation_choice == "Update":
+            if config_choice != "GRAPH_TYPE":
+                update_key_value(DOTENV_PATH, config_choice)
+            else:
+                graph_choice = ask_choice(
+                    "Select graph type", ["dynamic", "static"]
+                )
+                update_graph_type(DOTENV_PATH, graph_choice)
+        elif operation_choice == "Delete":
+            delete_key_value(DOTENV_PATH, config_choice)
 
 
 @common_options
