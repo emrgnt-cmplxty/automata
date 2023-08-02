@@ -19,7 +19,7 @@ from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,
 )
-from automata.symbol import Symbol, SymbolDescriptor
+from automata.symbol import Symbol
 from automata.symbol.graph.symbol_graph import SymbolGraph
 from automata.symbol.symbol_utils import get_rankable_symbols
 from automata.symbol_embedding import (
@@ -130,20 +130,10 @@ def main(*args, **kwargs) -> str:
 
     logger.info("Looping over filtered symbols...")
     for symbol in tqdm(filtered_symbols):
-        if (
-            "automata.agent.openai_agent.OpenAIAutomataAgent"
-            not in symbol.dotpath
-            or symbol.py_kind != SymbolDescriptor.PyKind.Class
-        ):
-            continue
-        # print("symbol = ", symbol)
-
-        # print(" pykind = ", symbol.py_kind)
-        # try:
-        logger.info(f"Caching embedding for {symbol}")
-        symbol_doc_embedding_handler.process_embedding(symbol)
-        break
-        # except Exception as e:
-        # logger.info(f"Error {e} for symbol {symbol}")
+        try:
+            logger.info(f"Caching embedding for {symbol}")
+            symbol_doc_embedding_handler.process_embedding(symbol)
+        except Exception as e:
+            logger.info(f"Error {e} for symbol {symbol}")
 
     return "Success"

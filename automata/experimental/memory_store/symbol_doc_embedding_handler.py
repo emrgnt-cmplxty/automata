@@ -63,9 +63,6 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             raise ValueError(
                 "SymbolDocEmbeddingHandler requires a SymbolDocEmbeddingBuilder"
             )
-        print(f"Made a new symbol embedding = {symbol_embedding}")
-        print(f"Made a new document = {symbol_embedding.document}")
-        print(f"Made a new context = {symbol_embedding.context}")
         self.embedding_db.add(symbol_embedding)
         logger.debug("Successfully added...")
 

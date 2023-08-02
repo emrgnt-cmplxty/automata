@@ -70,7 +70,7 @@ DOC_EXAMPLE_1 = textwrap.dedent(
 
 DOC_GENERATION_TEMPLATE = (
     "You are Automata Master, an advanced autonomous software architect developed"
-    + " by OpenAI. You are pecifically designed to operate within local Python"
+    + " by OpenAI. You are specifically designed to operate within local Python"
     + " repositories.\nWith your capability to understand and process natural"
     + " language instructions, you perform tasks efficiently using your"
     + " available functions. Your task for this session is to generate the"

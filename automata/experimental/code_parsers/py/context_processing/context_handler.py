@@ -53,10 +53,6 @@ class PyContextHandler:
         self.obs_symbols.add(symbol)
         base_context = f"{self.retriever.process_symbol(symbol, primary_active_components)}"
 
-        print(
-            "self.config.top_n_symbol_rank_matches = ",
-            self.config.top_n_symbol_rank_matches,
-        )
         counter = 0
 
         if self.config.top_n_symbol_rank_matches > 0:
@@ -64,7 +60,6 @@ class PyContextHandler:
                 f"\n{self.retriever.spacer}{related_symbols_header}\n\n"
             )
             secondary_symbols = self.get_symbol_rank_matches(symbol)
-            print("secondary_symbols = ", secondary_symbols)
             for secondary_symbol in secondary_symbols:
                 # continue over symbols which are contained in our primary symbol
                 if f"{primary_symbol_path}." in secondary_symbol.dotpath:
@@ -82,10 +77,6 @@ class PyContextHandler:
                 if counter >= self.config.top_n_symbol_rank_matches:
                     break
 
-        print(
-            "self.config.top_n_dependency_matches = ",
-            self.config.top_n_dependency_matches,
-        )
         if self.config.top_n_dependency_matches > 0:
             base_context += (
                 f"\n{self.retriever.spacer}{dependent_symbols_header}\n\n"
@@ -93,7 +84,6 @@ class PyContextHandler:
 
             dependent_symbols = self.get_symbol_dependencies(symbol)
             counter = 0
-            print("dependent_symbols = ", dependent_symbols)
             for dependent_symbol in dependent_symbols:
                 # continue over symbols which are contained in our primary symbol
                 if f"{dependent_symbol}." in secondary_symbol.dotpath:
@@ -104,10 +94,6 @@ class PyContextHandler:
                 counter += 1
                 self.obs_symbols.add(dependent_symbol)
 
-                print(
-                    "processing dependent_symbol = ",
-                    dependent_symbol,
-                )
                 try:
                     base_context += self.retriever.process_symbol(
                         dependent_symbol,
@@ -139,5 +125,4 @@ class PyContextHandler:
         symbol_dependencies = (
             self.symbol_search.symbol_graph.get_symbol_dependencies(symbol)
         )
-        print("symbol_dependencies = ", symbol_dependencies)
         return list(symbol_dependencies)

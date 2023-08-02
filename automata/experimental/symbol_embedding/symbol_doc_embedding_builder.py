@@ -86,33 +86,11 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         customizability provided by ``AgentConfig``?
         """
         prompt = self._build_prompt(symbol)
-        import tiktoken
-
-        print("prompt = ", prompt)
-        print(
-            "prompt length =  = ",
-            len(tiktoken.encoding_for_model("gpt-4").encode(prompt)),
-        )
-
         document = self._build_class_document(copy(prompt))
-        # print("A")
-        # print("prompt = ", prompt)
-        # print("document = ", document)
-
         summary = self._build_class_document_summary(copy(document))
-        # print("B")
-        # print("prompt = ", prompt)
-        # print("document = ", document)
-        # print("summary = ", summary)
-
         embedding = self.embedding_provider.build_embedding_vector(
             copy(document)
         )
-        # print("C")
-        # print("prompt = ", prompt)
-        # print("document = ", document)
-        # print("summary = ", summary)
-        # print("embedding = ", embedding)
         return SymbolDocEmbedding(
             symbol,
             vector=embedding,
@@ -156,7 +134,6 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         """Build the prompt for a symbol doc generation."""
 
         abbreviated_selected_symbol = symbol.uri.split("/")[1].split("#")[0]
-        print("abbreviated_selected_symbol = ", abbreviated_selected_symbol)
         primary_active_components: Dict[ContextComponent, Any] = {
             ContextComponent.HEADLINE: {},
             ContextComponent.SOURCE_CODE: {},

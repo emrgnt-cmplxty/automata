@@ -587,8 +587,5 @@ def agentified_search_tool_builder(symbols):
     agentified_search_tool_builder.completion_provider.standalone_call = (
         MagicMock(return_value=symbols[1].dotpath)
     )
-    print(
-        f"Mock id: {id(symbol_search_mock)}, Object id: {id(agentified_search_tool_builder.symbol_search)}"
-    )
 
     return agentified_search_tool_builder
