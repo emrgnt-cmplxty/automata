@@ -442,7 +442,7 @@ class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
 
     def build_embedding_vector(self, source: str) -> np.ndarray:
         """Gets an embedding for the given source text."""
-        # wait to import build_embedding_vector to allow easy mocking of the function in tests.
+        # wait to import build_embedding_vector to allow easy mocking of the function in automata.tests.
         from openai.embeddings_utils import get_embedding
 
         return np.array(get_embedding(source, engine=self.engine))

@@ -3,13 +3,13 @@ import os
 
 import pytest
 
-from automata.core.utils import get_root_fpath
+from automata.core.utils import get_root_py_fpath
 from automata.singletons.py_module_loader import py_module_loader
 
 
 @pytest.fixture()
 def root_path():
-    return os.path.join(get_root_fpath(), "tests", "unit", "sample_modules")
+    return os.path.join(get_root_py_fpath(), "tests", "unit", "sample_modules")
 
 
 @pytest.fixture()
@@ -57,7 +57,7 @@ def test_dotpath_map(local_module_loader):
         )
     )
 
-    abs_path = os.path.join(get_root_fpath(), "tests", "unit")
+    abs_path = os.path.join(get_root_py_fpath(), "tests", "unit")
     # Test that we can correctly retrieve dotpaths from file paths
     assert (
         "my_project.core.calculator"
@@ -143,7 +143,9 @@ def test_multiple_initializations(local_module_loader):
     # Test behavior when initialize is called more than once without setting initialized = False
     with pytest.raises(Exception):  # replace with your actual exception
         local_module_loader.initialize(
-            os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+            os.path.join(
+                get_root_py_fpath(), "tests", "unit", "sample_modules"
+            ),
             "my_project",
         )
 

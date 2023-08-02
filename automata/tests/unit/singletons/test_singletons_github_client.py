@@ -1,8 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from git import Git
-from git.repo.base import Repo
 from github.MainClass import Github
 
 from automata.singletons.github_client import GitHubClient
@@ -67,8 +65,8 @@ def test_commit_and_push_changes(gh_client):
 def test_create_pull_request(gh_client):
     with patch.object(
         gh_client.client, "get_repo", return_value=gh_client.repo
-    ) as mock_get_repo:
-        pr = gh_client.create_pull_request(
+    ) as _:
+        _ = gh_client.create_pull_request(
             "test_branch", "test_title", "test_body"
         )
         gh_client.repo.create_pull.assert_called_once_with(
@@ -82,7 +80,7 @@ def test_create_pull_request(gh_client):
 def test_create_issue(gh_client):
     with patch.object(
         gh_client.client, "get_repo", return_value=gh_client.repo
-    ) as mock_get_repo:
+    ) as _:
         gh_client.create_issue("test_title", "test_body", ["label1", "label2"])
         gh_client.repo.create_issue.assert_called_once_with(
             title="test_title", body="test_body", labels=["label1", "label2"]

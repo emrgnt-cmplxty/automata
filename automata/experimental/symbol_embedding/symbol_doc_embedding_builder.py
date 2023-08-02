@@ -156,7 +156,7 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     def _generate_search_list(
         self, abbreviated_selected_symbol: str
     ) -> List[Symbol]:
-        """Generate a search list by splicing the search results on the symbol with the search results biased on tests."""
+        """Generate a search list by splicing the search results on the symbol with the search results biased on automata.tests."""
 
         search_results = self.symbol_search.get_symbol_rank_results(
             f"{abbreviated_selected_symbol}"
