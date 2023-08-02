@@ -40,21 +40,23 @@ def symbol_graph_mocked_index():
     return graph
 
 
-def test_subgraph_pickle_creation(symbol_graph):
-    symbol_graph.default_rankable_subgraph
+def test_subgraph_pickle_creation(symbol_graph_mocked_index):
+    symbol_graph_mocked_index.default_rankable_subgraph
 
     with mock.patch("os.path.exists") as mock_exists:
         mock_exists.return_value = True
         assert os.path.exists(
-            symbol_graph.subgraph_pickle_path
-        ), f"No pickle file found at {symbol_graph.subgraph_pickle_path}"
+            symbol_graph_mocked_index.subgraph_pickle_path
+        ), f"No pickle file found at {symbol_graph_mocked_index.subgraph_pickle_path}"
 
         with mock.patch(
             "builtins.open",
             new_callable=mock.mock_open,
             read_data=pickle.dumps(nx.DiGraph()),
         ) as mock_open:
-            with open(symbol_graph.subgraph_pickle_path, "rb") as f:
+            with open(
+                symbol_graph_mocked_index.subgraph_pickle_path, "rb"
+            ) as f:
                 pickled_subgraph = pickle.load(f)
 
     assert isinstance(pickled_subgraph, nx.DiGraph)
