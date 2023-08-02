@@ -13,8 +13,8 @@ from typing import Dict, List, Optional, Set
 import networkx as nx
 from tqdm import tqdm
 
-from automata.config import GRAPH_TYPE, PICKLED_DATA_PATH
-from automata.config.config_base import DataCategory
+from automata.config import GRAPH_TYPE
+from automata.config.config_base import SerializedDataCategory
 from automata.symbol.graph.graph_builder import GraphBuilder
 from automata.symbol.graph.symbol_navigator import SymbolGraphNavigator
 from automata.symbol.scip_pb2 import Index  # type: ignore
@@ -23,7 +23,7 @@ from automata.symbol.symbol_base import (
     Symbol,
     SymbolReference,
 )
-from automata.symbol.symbol_utils import get_rankable_symbols
+from automata.symbol.symbol_utils import get_rankable_symbols, load_data_path
 
 logger = logging.getLogger(__name__)
 
@@ -68,8 +68,10 @@ class SymbolGraph(ISymbolProvider):
         self._graph = builder.build_graph(from_pickle, save_graph_pickle)
         self.navigator = SymbolGraphNavigator(self._graph)
         self.from_pickle = from_pickle
+        self.pickled_data_path = load_data_path()
         self.subgraph_pickle_path = os.path.join(
-            PICKLED_DATA_PATH, DataCategory.PICKLED_SYMBOL_SUBGRAPH.value
+            self.pickled_data_path,
+            SerializedDataCategory.PICKLED_SYMBOL_SUBGRAPH.value,
         )
         self.save_graph_pickle = save_graph_pickle
 
@@ -130,7 +132,7 @@ class SymbolGraph(ISymbolProvider):
         """
         Creates a subgraph of the original `SymbolGraph`
         """
-        os.makedirs(PICKLED_DATA_PATH, exist_ok=True)
+        os.makedirs(self.pickled_data_path, exist_ok=True)
 
         if not self.from_pickle or not os.path.exists(
             self.subgraph_pickle_path
@@ -157,7 +159,7 @@ class SymbolGraph(ISymbolProvider):
 
         TODO - Think of how to handle relationships here.
         """
-        Graph = nx.DiGraph()
+        graph = nx.DiGraph()
 
         filtered_symbols = get_rankable_symbols(
             self.get_sorted_supported_symbols()
@@ -179,13 +181,13 @@ class SymbolGraph(ISymbolProvider):
                     if ele in self.get_sorted_supported_symbols()
                 ]
                 for dependency in dependencies:
-                    Graph.add_edge(symbol, dependency)
-                    Graph.add_edge(dependency, symbol)
+                    graph.add_edge(symbol, dependency)
+                    graph.add_edge(dependency, symbol)
             except Exception as e:
                 logger.error(f"Error processing {symbol.uri}: {e}")
 
         logger.info("Built the rankable symbol subgraph")
-        return Graph
+        return graph
 
     # ISymbolProvider methods
     def _get_sorted_supported_symbols(self) -> List[Symbol]:

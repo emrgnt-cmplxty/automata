@@ -1,3 +1,7 @@
+"""
+Base classes for configuration options.
+"""
+
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -42,12 +46,13 @@ class ConfigCategory(PathEnum):
     INSTRUCTION = "instruction-configs"
 
 
-class DataCategory(PathEnum):
+class SerializedDataCategory(PathEnum):
     """
     A class to represent the different categories of serialized data
     Corresponds folders in automata/automata-embedding-data/*
     """
 
+    PICKLED_DATA_PATH = "graphs"
     PICKLED_SYMBOL_GRAPH = "symbol_graph.pkl"
     PICKLED_SYMBOL_SUBGRAPH = "symbol_subgraph.pkl"
 

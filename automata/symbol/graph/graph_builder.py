@@ -9,13 +9,13 @@ from typing import Any
 
 import networkx as nx
 
-from automata.config import PICKLED_DATA_PATH
-from automata.config.config_base import DataCategory
+from automata.config.config_base import SerializedDataCategory
 from automata.symbol.graph.symbol_caller_callees import CallerCalleeProcessor
 from automata.symbol.graph.symbol_references import ReferenceProcessor
 from automata.symbol.graph.symbol_relationships import RelationshipProcessor
 from automata.symbol.scip_pb2 import Index  # type: ignore
 from automata.symbol.symbol_parser import parse_symbol
+from automata.symbol.symbol_utils import load_data_path
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ class GraphBuilder:
         self.build_relationships = build_relationships
         self.build_caller_relationships = build_caller_relationships
         self._graph = nx.MultiDiGraph()
+        self.pickled_data_path = load_data_path()
 
     def build_graph(
         self, from_pickle: bool, save_graph_pickle: bool
@@ -48,13 +49,14 @@ class GraphBuilder:
         The `Document` type, along with others, is defined in the scip_pb2.py file.
         Edges are added for relationships, references, and calls between `Symbol` nodes.
         """
-        os.makedirs(PICKLED_DATA_PATH, exist_ok=True)
+        os.makedirs(self.pickled_data_path, exist_ok=True)
 
-        pickle_graph_path = os.path.join(
-            PICKLED_DATA_PATH, DataCategory.PICKLED_SYMBOL_GRAPH.value
+        graph_pickle_path = os.path.join(
+            self.pickled_data_path,
+            SerializedDataCategory.PICKLED_SYMBOL_GRAPH.value,
         )
 
-        if not from_pickle or not os.path.exists(pickle_graph_path):
+        if not from_pickle or not os.path.exists(graph_pickle_path):
             for document in self.index.documents:
                 self._add_symbol_vertices(document)
                 if self.build_relationships:
@@ -65,11 +67,11 @@ class GraphBuilder:
                     self._process_caller_callee_relationships(document)
 
             if save_graph_pickle:
-                with open(pickle_graph_path, "wb") as f:
+                with open(graph_pickle_path, "wb") as f:
                     pickle.dump(self._graph, f)
 
         else:
-            self._graph = pickle.load(open(pickle_graph_path, "rb"))
+            self._graph = pickle.load(open(graph_pickle_path, "rb"))
 
         return self._graph
 

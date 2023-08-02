@@ -23,7 +23,7 @@ class MockDocument:
 
 
 @pytest.fixture
-def symbol_graph():
+def symbol_graph_mocked_index():
     initialize_py_module_loader()
     with mock.patch(
         "automata.symbol.graph.symbol_graph._load_index_protobuf",

@@ -1,9 +1,15 @@
+"""
+Utilities for working with symbols.
+"""
+
 import ast
+import os
 from typing import List, Optional
 
+from automata.config import DATA_ROOT_PATH
+from automata.config.config_base import SerializedDataCategory
 from automata.singletons.py_module_loader import py_module_loader
-
-from .symbol_base import Symbol, SymbolDescriptor
+from automata.symbol.symbol_base import Symbol, SymbolDescriptor
 
 
 def convert_to_ast_object(symbol: Symbol) -> ast.AST:
@@ -101,3 +107,12 @@ def get_rankable_symbols(
 
         filtered_symbols.append(symbol)
     return filtered_symbols
+
+
+def load_data_path() -> str:
+    """
+    Returns the path to the serialized data directory.
+    """
+    return os.path.join(
+        DATA_ROOT_PATH, SerializedDataCategory.PICKLED_DATA_PATH.value
+    )
