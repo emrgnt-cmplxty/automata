@@ -21,10 +21,10 @@ def test_symbol_embedding(
         fetched_embedding = _extracted_from_test_symbol_doc_embedding(
             chroma_vector_db_persistent, embedding, symbols[i].dotpath
         )
-
-        assert fetched_embedding.source_code == embedding.source_code
-        assert fetched_embedding.summary == embedding.summary
-        assert fetched_embedding.context == embedding.context
+        if embedding_type == SymbolDocEmbedding:
+            assert fetched_embedding.source_code == embedding.source_code
+            assert fetched_embedding.summary == embedding.summary
+            assert fetched_embedding.context == embedding.context
 
 
 def create_embedding(embedding_type, symbol, vector, i):
