@@ -16,7 +16,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .config_base import (
+from automata.config.config_base import (
     AgentConfig,
     AgentConfigBuilder,
     AgentConfigName,
@@ -26,11 +26,11 @@ from .config_base import (
     LLMProvider,
     ModelInformation,
 )
-from .openai_config import (
+from automata.config.openai_config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )
-from .prompt.doc_generation import DOC_GENERATION_TEMPLATE
+from automata.config.prompt.doc_generation import DOC_GENERATION_TEMPLATE
 
 load_dotenv()
 

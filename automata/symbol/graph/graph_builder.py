@@ -1,3 +1,7 @@
+"""
+Contains the `GraphBuilder` class, which builds a `SymbolGraph` from a corresponding Index.
+"""
+
 import logging
 import os
 import pickle
@@ -5,12 +9,13 @@ from typing import Any
 
 import networkx as nx
 
-from automata.config import DATA_ROOT_PATH
+from automata.config.config_base import SerializedDataCategory
 from automata.symbol.graph.symbol_caller_callees import CallerCalleeProcessor
 from automata.symbol.graph.symbol_references import ReferenceProcessor
 from automata.symbol.graph.symbol_relationships import RelationshipProcessor
 from automata.symbol.scip_pb2 import Index  # type: ignore
 from automata.symbol.symbol_parser import parse_symbol
+from automata.symbol.symbol_utils import load_data_path
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +30,15 @@ class GraphBuilder:
         build_relationships: bool,
         build_caller_relationships: bool,
     ) -> None:
+        """
+        Initializes a new instance of `GraphBuilder`.
+        """
         self.index = index
         self.build_references = build_references
         self.build_relationships = build_relationships
         self.build_caller_relationships = build_caller_relationships
         self._graph = nx.MultiDiGraph()
+        self.pickled_data_path = load_data_path()
 
     def build_graph(
         self, from_pickle: bool, save_graph_pickle: bool
@@ -40,8 +49,12 @@ class GraphBuilder:
         The `Document` type, along with others, is defined in the scip_pb2.py file.
         Edges are added for relationships, references, and calls between `Symbol` nodes.
         """
+        os.makedirs(self.pickled_data_path, exist_ok=True)
 
-        graph_pickle_path = f"{DATA_ROOT_PATH}/symbol_graph.pkl"
+        graph_pickle_path = os.path.join(
+            self.pickled_data_path,
+            SerializedDataCategory.PICKLED_SYMBOL_GRAPH.value,
+        )
 
         if not from_pickle or not os.path.exists(graph_pickle_path):
             for document in self.index.documents:
