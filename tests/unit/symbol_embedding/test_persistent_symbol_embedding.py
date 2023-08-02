@@ -25,7 +25,6 @@ def test_symbol_embedding(
         assert fetched_embedding.source_code == embedding.source_code
         assert fetched_embedding.summary == embedding.summary
         assert fetched_embedding.context == embedding.context
-        assert False
 
 
 def create_embedding(embedding_type, symbol, vector, i):
