@@ -5,7 +5,7 @@ from automata.context_providers.symbol_synchronization_context import (
 )
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import Symbol, SymbolGraph
-from tests.utils.factories import static_indices_graph_dynamic  # noqa
+from automata.tests.utils.factories import static_indices_graph_dynamic  # noqa
 
 
 @pytest.fixture

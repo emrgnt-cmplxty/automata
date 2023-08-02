@@ -5,7 +5,7 @@ import textwrap
 
 import pytest
 
-from automata.core.utils import get_root_fpath
+from automata.core.utils import get_root_py_fpath
 from automata.experimental.code_parsers import (
     ContextComponent,
     PyContextRetriever,
@@ -19,7 +19,9 @@ from automata.experimental.code_parsers.py.context_processing.context_utils impo
 )
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol import parse_symbol
-from tests.unit.sample_modules.my_project.core.calculator import Calculator
+from automata.tests.unit.sample_modules.my_project.core.calculator import (
+    Calculator,
+)
 
 
 # TODO - Unify module loader fixture
@@ -28,7 +30,7 @@ def local_module_loader():
     # FIXME - This can't be a good pattern, let's cleanup later.
     py_module_loader.reset()
     py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+        os.path.join(get_root_py_fpath(), "tests", "unit", "sample_modules"),
         "my_project",
     )
     yield py_module_loader

@@ -53,7 +53,7 @@ def test_subgraph_pickle_creation(symbol_graph_mocked_index):
             "builtins.open",
             new_callable=mock.mock_open,
             read_data=pickle.dumps(nx.DiGraph()),
-        ) as mock_open:
+        ) as _:
             with open(
                 symbol_graph_mocked_index.subgraph_pickle_path, "rb"
             ) as f:

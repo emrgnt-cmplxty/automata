@@ -58,7 +58,7 @@ def test_fetch_bounding_box_with_class_node():
 
 
 def test_fetch_bounding_box_with_class_node_in_file():
-    with open("tests/unit/sample_modules/sample3.py") as f:
+    with open("automata/tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
     module = ast.parse(file_content)
@@ -73,7 +73,7 @@ def test_fetch_bounding_box_with_class_node_in_file():
 
 
 def test_fetch_bounding_box_with_method_node():
-    with open("tests/unit/sample_modules/sample3.py") as f:
+    with open("automata/tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
     module = ast.parse(file_content)
@@ -89,7 +89,7 @@ def test_fetch_bounding_box_with_method_node():
 
 
 def test_fetch_bounding_box_with_function_node_in_file():
-    with open("tests/unit/sample_modules/sample3.py") as f:
+    with open("automata/tests/unit/sample_modules/sample3.py") as f:
         file_content = f.read()
 
     module = ast.parse(file_content)

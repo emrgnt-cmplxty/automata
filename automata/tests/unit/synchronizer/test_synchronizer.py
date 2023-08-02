@@ -12,7 +12,7 @@ from automata.symbol_embedding import (
     JSONSymbolEmbeddingVectorDatabase,
     SymbolCodeEmbedding,
 )
-from tests.utils.factories import (  # noqa: F401, F811
+from automata.tests.utils.factories import (  # noqa: F401, F811
     static_indices_graph_dynamic,
 )
 

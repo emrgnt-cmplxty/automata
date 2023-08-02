@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from automata.core.utils import get_root_fpath
+from automata.core.utils import get_root_py_fpath
 from automata.experimental.code_parsers import (
     ContextComponent,
     PyContextHandler,
@@ -20,7 +20,7 @@ def local_module_loader():
     # FIXME - This can't be a good pattern, let's cleanup later.
     py_module_loader.reset()
     py_module_loader.initialize(
-        os.path.join(get_root_fpath(), "tests", "unit", "sample_modules"),
+        os.path.join(get_root_py_fpath(), "tests", "unit", "sample_modules"),
         "my_project",
     )
     yield py_module_loader

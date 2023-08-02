@@ -1,7 +1,7 @@
 import pytest
 
 from automata.singletons.py_module_loader import py_module_loader
-from tests.utils.factories import symbol_search_live  # noqa
+from automata.tests.utils.factories import symbol_search_live  # noqa
 
 
 def get_top_n_results_desc_name(result, n=0):
@@ -67,7 +67,9 @@ def test_symbol_rank_search_on_symbol(
     py_module_loader.initialize()
     results = symbol_search_live.get_symbol_rank_results(search)
     filtered_results = [
-        result for result in results if ".tests." not in result[0].dotpath
+        result
+        for result in results
+        if ".automata.tests." not in result[0].dotpath
     ]
     found_top_hits = get_top_n_results_desc_name(filtered_results, 10)
     check_hits(expected_in_top_hits, found_top_hits)
