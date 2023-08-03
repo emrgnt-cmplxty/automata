@@ -4,6 +4,7 @@ This module contains the CLI commands for the Automata CLI.
 
 import logging
 import logging.config
+from typing import Optional
 
 import click
 
@@ -12,6 +13,7 @@ from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
     load_env_vars,
+    replace_key,
     show_key_value,
     update_graph_type,
     update_key_value,
@@ -55,8 +57,16 @@ def cli(ctx: click.Context) -> None:
 
 @common_options
 @cli.command()
+@click.option("--GITHUB_API_KEY", default="", help="GitHub API key")
+@click.option("--OPENAI_API_KEY", default="", help="OpenAI API key")
 @click.pass_context
-def configure(ctx: click.Context, *args, **kwargs) -> None:
+def configure(
+    ctx: click.Context,
+    github_api_key: Optional[str],
+    openai_api_key: Optional[str],
+    *args,
+    **kwargs,
+) -> None:
     """
     Configures environment variables for Automata
 
@@ -82,6 +92,15 @@ def configure(ctx: click.Context, *args, **kwargs) -> None:
 
     setup_files(scripts_path=SCRIPTS_PATH, dotenv_path=DOTENV_PATH)
     load_env_vars(dotenv_path=DOTENV_PATH, default_keys=DEFAULT_KEYS)
+
+    if github_api_key:
+        replace_key(DOTENV_PATH, "GITHUB_API_KEY", github_api_key)
+
+    if openai_api_key:
+        replace_key(DOTENV_PATH, "OPENAI_API_KEY", openai_api_key)
+
+    if github_api_key and openai_api_key:
+        return
 
     logger.info("Configuring Automata:")
 
