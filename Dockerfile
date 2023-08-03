@@ -20,11 +20,16 @@ RUN apt-get install -y nodejs
 # Install dependencies and run indexing on the local codebase
 RUN automata install-indexing
 
-# Refresh the code embeddings (after making local changes)
-RUN poetry run automata run-code-embedding
+# Create a script that will be run when the container is started
+RUN echo "#!/bin/bash\n\
+poetry run automata configure --GITHUB_API_KEY=\$GITHUB_API_KEY --OPENAI_API_KEY=\$OPENAI_API_KEY\n\
+poetry run automata run-code-embedding\n\
+poetry run automata run-doc-embedding --embedding-level=2\n\
+exec \"\$@\"" > entrypoint.sh
+RUN chmod +x entrypoint.sh
 
-# Refresh the documentation + embeddings
-RUN poetry run automata run-doc-embedding --embedding-level=2
+# Set this script as the entrypoint for the Docker container
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Instructions on how to run the Docker container
 # These instructions will not be executed during the Docker build
