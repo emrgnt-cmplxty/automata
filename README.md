@@ -70,7 +70,7 @@ $ docker pull ghcr.io/emrgnt-cmplxty/automata:latest
 
 Run the Docker image:
 ```console
-$ docker run -it --rm ghcr.io/emrgnt-cmplxty/automata:latest
+$ docker run --name automata_container -it --rm -e OPENAI_API_KEY=<your_openai_key> -e GITHUB_API_KEY=<your_github_key> ghcr.io/emrgnt-cmplxty/automata:latest
 ```
 
 This will start a Docker container with Automata installed and open an interactive shell for you to use.
