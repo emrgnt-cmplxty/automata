@@ -63,7 +63,7 @@ class PyInterpreter:
 class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
     """A builder for tools which provide an execution environment for the agent"""
 
-    def __init__(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         self.python_interpreter = PyInterpreter()
 
     def build(self) -> List[Tool]:
@@ -86,7 +86,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
 class PyInterpreterOpenAIToolkitBuilder(
     PyInterpreterToolkitBuilder, OpenAIAgentToolkitBuilder
 ):
-    TOOL_NAME = AgentToolkitNames.PYTHON_INTERPRETER
+    TOOL_NAME = AgentToolkitNames.PY_INTERPRETER
     LLM_PROVIDER = LLMProvider.OPENAI
 
     def build_for_open_ai(self) -> List[OpenAITool]:
