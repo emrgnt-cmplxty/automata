@@ -5185,7 +5185,7 @@
             },
             {
                 "query": "How can one get the full dot path of a Symbol?",
-                "result": "automata.symbol.symbol_base.Symbol.full_dotpath"
+                "result": "automata.symbol.symbol_base.Symbol.dotpath"
             },
             {
                 "query": "How can one get the module path of a Symbol?",

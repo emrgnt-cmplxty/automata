@@ -1,4 +1,5 @@
 """Symbol documentation embedding builder."""
+import logging
 from copy import copy
 from typing import Any, Dict, List
 
@@ -16,6 +17,8 @@ from automata.llm import LLMChatCompletionProvider
 from automata.symbol import Symbol, convert_to_ast_object
 from automata.symbol_embedding import SymbolDocEmbedding
 
+logger = logging.getLogger(__name__)
+
 
 class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
     """Builds `Symbol` documentation embeddings."""
@@ -27,11 +30,13 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         completion_provider: LLMChatCompletionProvider,
         symbol_search: SymbolSearch,
         handler: PyContextHandler,
+        class_cut_size: int = 500,
     ) -> None:
         super().__init__(embedding_provider)
         self.completion_provider = completion_provider
         self.symbol_search = symbol_search
         self.handler = handler
+        self.class_cut_size = class_cut_size
 
     def build(self, source_code: str, symbol: Symbol) -> SymbolDocEmbedding:
         """
@@ -85,6 +90,13 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         -  How can we ensure type safety while maintaining the flexibility and
         customizability provided by ``AgentConfig``?
         """
+
+        if len(source_code) < self.class_cut_size:
+            logger.info(
+                f"Skipping {symbol} with source code {source_code} because of it's small length {len(source_code)})"
+            )
+            return self.build_non_class(source_code, symbol)
+
         prompt = self._build_prompt(symbol)
         document = self._build_class_document(copy(prompt))
         summary = self._build_class_document_summary(copy(document))
@@ -104,6 +116,23 @@ class SymbolDocEmbeddingBuilder(EmbeddingBuilder):
         self, source_code: str, symbol: Symbol
     ) -> SymbolDocEmbedding:
         """Build the embedding for a non-class type symbol's documentation."""
+
+        if len(source_code) < self.class_cut_size:
+            logger.info(
+                f"Returning {symbol} with source code {source_code} embedding because of it's small length {len(source_code)})"
+            )
+            embedding = self.embedding_provider.build_embedding_vector(
+                copy(source_code)
+            )
+
+            return SymbolDocEmbedding(
+                symbol,
+                vector=embedding,
+                source_code=source_code,
+                document=source_code,
+                summary=source_code,
+                context="",
+            )
 
         ast_object = convert_to_ast_object(symbol)
         raw_doctring = get_docstring_from_node(ast_object)
