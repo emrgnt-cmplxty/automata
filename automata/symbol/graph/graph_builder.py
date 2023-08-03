@@ -5,7 +5,7 @@ Contains the `GraphBuilder` class, which builds a `SymbolGraph` from a correspon
 import logging
 import os
 import pickle
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 
