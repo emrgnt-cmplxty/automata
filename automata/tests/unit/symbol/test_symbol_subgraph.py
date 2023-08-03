@@ -4,16 +4,10 @@ from unittest import mock
 
 import networkx as nx
 import pytest
-from google.protobuf.message import Message
 
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.singletons.dependency_factory import DependencyFactory
 from automata.symbol import SymbolGraph
-
-
-class MockProtoBuf(Message):
-    def __init__(self, *args, **kwargs):
-        self.documents = []
 
 
 class MockDocument:
@@ -25,17 +19,10 @@ class MockDocument:
 @pytest.fixture
 def symbol_graph_mocked_index():
     initialize_py_module_loader()
-    with mock.patch(
-        "automata.symbol.graph.symbol_graph._load_index_protobuf",
-        return_value=MockProtoBuf(),
-    ) as mock_load:
-        mock_load.return_value.documents = [MockDocument(), MockDocument()]
-        graph = SymbolGraph(
-            os.path.join(
-                DependencyFactory.DEFAULT_SCIP_FPATH, "automata.scip"
-            ),
-            save_graph_pickle=True,
-        )
+    graph = SymbolGraph(
+        os.path.join(DependencyFactory.DEFAULT_SCIP_FPATH, "automata.scip"),
+        save_graph_pickle=True,
+    )
     graph.is_synchronized = True
     return graph
 
