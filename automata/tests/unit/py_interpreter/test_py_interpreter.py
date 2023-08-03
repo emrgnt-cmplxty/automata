@@ -27,7 +27,6 @@ def test_python_interpreter_persistent_execute():
     assert (
         interpreter.persistent_execute("x = 5") == PyInterpreter.SUCCESS_STRING
     )
-    print("interpreter = ", interpreter)
     assert (
         interpreter.persistent_execute("y = x + 5")
         == PyInterpreter.SUCCESS_STRING
