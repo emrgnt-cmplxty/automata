@@ -15,9 +15,12 @@ def test_python_interpreter_init():
 
 def test_python_interpreter_execute_code():
     interpreter = PyInterpreter()
-    assert interpreter.execute_code("x = 5") == PyInterpreter.SUCCESS_STRING
     assert (
-        interpreter.execute_code("y = x + 5")
+        interpreter.execute_code("```python\nx = 5```")
+        == PyInterpreter.SUCCESS_STRING
+    )
+    assert (
+        interpreter.execute_code("```python\ny = x + 5```")
         == "Execution failed with error = name 'x' is not defined"
     )
 

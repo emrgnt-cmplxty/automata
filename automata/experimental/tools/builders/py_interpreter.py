@@ -26,10 +26,14 @@ class PyInterpreter:
     def __init__(self):
         self.execution_context: List[str] = []
 
+    def __repr__(self) -> str:
+        return f"PyInterpreter(execution_context={self.execution_context})"
+
     def execute_code(self, code: str) -> str:
         """Attempts to execute the provided code."""
         try:
             # Execute the code within the existing execution context
+            code = self._clean_markdown(code)
             payload = "\n".join(self.execution_context) + "\n" + code
             exec(payload)
             return PyInterpreter.SUCCESS_STRING
@@ -56,8 +60,10 @@ class PyInterpreter:
         """Clears the execution context."""
         self.execution_context = []
 
-    def __repr__(self) -> str:
-        return f"PyInterpreter(execution_context={self.execution_context})"
+    @staticmethod
+    def _clean_markdown(code: str) -> str:
+        """Clean the markdown code to be executable."""
+        return code.replace("```python", "").replace("```", "")
 
 
 class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
@@ -70,14 +76,14 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools for the interpreter."""
         return [
             Tool(
-                name="persistent-execute-python-code",
+                name="append-and-execute-python-code",
                 function=self.python_interpreter.persistent_execute,
-                description="Executes the given Python code and maintains the state of variables across executions. Useful for development.",
+                description="Attempts to execute the given Python markdown snippet and then persists the newly given state across executions if successful. E.g. a snippet which reads like '```python\nx=5```'. This is a very useful tool for development, note that the environment has all relevant dependencies pre-installed.",
             ),
             Tool(
                 name="clear-and-execute-execute-python-code",
                 function=self.python_interpreter.clear_and_persistent_execute,
-                description="Clears the current execution context and executes the given Python code. The latest executed code will persist if successful",
+                description="Clears the current execution context and then attempts to execute the given Python markdown snippet. The latest executed code will persist if successful",
             ),
         ]
 
