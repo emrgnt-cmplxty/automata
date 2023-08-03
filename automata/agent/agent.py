@@ -110,6 +110,7 @@ class AgentToolkitNames(Enum):
     # Core tools
     PY_READER = "py-reader"
     PY_WRITER = "py-writer"
+    PY_INTERPRETER = "py-interpreter"
     AGENTIFIED_SEARCH = "agent-search"
 
 

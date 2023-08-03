@@ -49,6 +49,7 @@ def test_build_automata_class_dependencies(classes_to_build):
         ["document-oracle"],
         ["py-reader"],
         ["py-writer"],
+        ["py-interpreter"],
         ["agent-search"],
     ],
 )
