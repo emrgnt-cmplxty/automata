@@ -42,7 +42,7 @@ def test_generate_function_eval_result_match(
     ]
 
     assert task.status == TaskStatus.SUCCESS
-    assert task.result == "Success"
+    assert task.result == "Observation:\nSuccess\n"
 
     saved_messages = conversation_db.get_messages(automata_agent.session_id)
     assert len(saved_messages) == 11

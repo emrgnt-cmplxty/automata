@@ -90,7 +90,7 @@ class ModelInformation:
 
     prompt_token_cost: float
     completion_token_cost: float
-    max_tokens: int
+    abs_max_tokens: int
 
 
 class AgentConfig(ABC, BaseModel):
@@ -104,7 +104,8 @@ class AgentConfig(ABC, BaseModel):
     stream: bool = False
     verbose: bool = False
     max_iterations: int = 50
-    max_tokens: int = 8192
+    abs_max_tokens: int = 8192
+    max_token_percentage: float = 0.9
     temperature: float = 0.7
     session_id: Optional[str] = None
 
@@ -211,11 +212,22 @@ class AgentConfigBuilder(Generic[T]):
         self._config.max_iterations = max_iters
         return self
 
-    def with_max_tokens(self, max_tokens: int) -> "AgentConfigBuilder":
-        """Set the max tokens for the agent."""
+    def with_abs_max_tokens(self, abs_max_tokens: int) -> "AgentConfigBuilder":
+        """Set the absolute max tokens for the agent."""
 
-        self._validate_type(max_tokens, int, "Max iterations")
-        self._config.max_tokens = max_tokens
+        self._validate_type(abs_max_tokens, int, "Max iterations")
+        self._config.abs_max_tokens = abs_max_tokens
+        return self
+
+    def with_max_token_percentage(
+        self, max_token_percentage: float
+    ) -> "AgentConfigBuilder":
+        """Set the max percentage of absolute max tokens the agent can use."""
+
+        self._validate_type(
+            max_token_percentage, float, "Max token percentage"
+        )
+        self._config.max_token_percentage = max_token_percentage
         return self
 
     def with_temperature(self, temperature: float) -> "AgentConfigBuilder":

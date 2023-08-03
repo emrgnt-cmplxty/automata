@@ -117,7 +117,7 @@ random_suffix = random.randint(0, 1000000)
             "automata-main",
             [],  # no tool necessary, default agent has a stop execution fn.
             "gpt-3.5-turbo-16k",
-            2,
+            1,
             [
                 OpenAIFunctionCallAction(
                     name="call_termination", arguments={"result": "True"}
@@ -129,7 +129,7 @@ random_suffix = random.randint(0, 1000000)
             "automata-main",
             ["agent-search"],
             "gpt-4",
-            2,
+            1,
             [
                 OpenAIFunctionCallAction(
                     name="search-best-match-code",
@@ -142,7 +142,7 @@ random_suffix = random.randint(0, 1000000)
             "automata-main",
             ["py-reader"],
             "gpt-4",
-            2,
+            1,
             [
                 OpenAIFunctionCallAction(
                     name="retrieve-code",
@@ -158,7 +158,7 @@ random_suffix = random.randint(0, 1000000)
             "automata-main",
             ["py-writer"],
             "gpt-4",
-            2,
+            1,
             [
                 OpenAIFunctionCallAction(
                     name="create-new-module",

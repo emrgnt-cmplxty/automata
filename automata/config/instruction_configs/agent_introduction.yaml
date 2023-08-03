@@ -2,13 +2,13 @@ input_variables:
   - initializer_dummy_tool
   - user_input_instructions
 initial_messages:
-  - role: "assistant"
+  - role: assistant
     content: Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?
-  - role: "user"
-    content: Please carry out the following instruction {user_input_instructions}
-  - role: "assistant"
+  - role: user
+    content: Please carry out the following instruction "{user_input_instructions}"
+  - role: assistant
     function_call:
-      name: "initializer"
-      arguments: "{}"
-  - role: "user"
+      name: initializer
+      arguments: {}
+  - role: user
     content: Continue...

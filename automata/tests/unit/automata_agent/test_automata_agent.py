@@ -135,7 +135,7 @@ def test_run_with_completion_message(
     result = automata_agent.run()
 
     # Check if the result is None, indicating that the agent has completed
-    assert result == "Success"
+    assert result == "Observation:\nSuccess\n"
 
     # Verify that the agent's completed attribute is set to True
     assert automata_agent.completed is True
@@ -179,7 +179,7 @@ def test_agent_saves_messages_to_database(
     result = automata_agent.run()
 
     # Check if the result is None, indicating that the agent has completed
-    assert result == "Success"
+    assert result == "Observation:\nSuccess\n"
 
     # Verify that the agent's completed attribute is set to True
     assert automata_agent.completed is True

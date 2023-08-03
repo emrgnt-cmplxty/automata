@@ -148,7 +148,7 @@ def test_execute_automata_task_with_database_saving(
     task_executor.execute(task)
 
     assert task.status == TaskStatus.SUCCESS
-    assert task.result == "Success"
+    assert task.result == "Observation:\nSuccess\n"
 
     saved_messages = db.get_messages(automata_agent.session_id)
     assert len(saved_messages) == 7
