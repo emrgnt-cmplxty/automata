@@ -3369,7 +3369,7 @@
             },
             {
                 "query": "Which method sets the max tokens for the agent's configuration?",
-                "result": "automata.config.config_base.AgentConfigBuilder.with_max_tokens"
+                "result": "automata.config.config_base.AgentConfigBuilder.with_abs_max_tokens"
             },
             {
                 "query": "Which method sets the temperature setting for the agent's configuration?",
@@ -4933,7 +4933,7 @@
             },
             {
                 "query": "How is the maximum token count set for an agent in the builder?",
-                "result": "automata.config.config_base.AgentConfigBuilder.with_max_tokens"
+                "result": "automata.config.config_base.AgentConfigBuilder.with_abs_max_tokens"
             },
             {
                 "query": "How is the temperature set for an agent in the builder?",

@@ -266,6 +266,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.stream = stream
         self.functions = functions
         self.conversation = conversation
+        self.encoding = tiktoken.encoding_for_model(self.model)
         set_openai_api_key()
 
     @property
@@ -276,12 +277,11 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         Note:
             This method can be made handling chat messages and functions identically to OpenAI.
         """
-        encoding = tiktoken.encoding_for_model(self.model)
         result = "".join(
             f"{ele['role']}:\n{ele['content']}\n\n"
             for ele in self.conversation.get_messages_for_next_completion()
         ) + "\n".join(ele.prompt_format for ele in self.functions)
-        return len(encoding.encode(result))
+        return len(self.encoding.encode(result))
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
         """Get the next completion from the assistant."""
@@ -349,7 +349,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         else:
             self.conversation.add_message(message, session_id)
         logger.debug(
-            f"Approximately {self.approximate_tokens_consumed} tokens were after adding the latest message."
+            f"Approximately {self.approximate_tokens_consumed} tokens were consumed after adding the latest message."
         )
 
     @staticmethod
@@ -366,8 +366,12 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         }
         latest_accumulation = ""
         stream_separator = " "
+        called_function = False
 
-        def process_delta(delta, response):
+        def process_delta(
+            delta: Dict[str, Any], response: Dict[str, Any]
+        ) -> None:
+            nonlocal called_function
             nonlocal latest_accumulation
             if "content" in delta:
                 delta_content = delta["content"]
@@ -385,7 +389,14 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                         response["function_call"][
                             "name"
                         ] = delta_function_call["name"]
-                        latest_accumulation += f'Function Call:\n{delta_function_call["name"]}\n\nArguments:\n'
+
+                        if not called_function:
+                            latest_accumulation += "\nFunction Call:\n"
+                            called_function = True
+
+                        latest_accumulation += (
+                            f'{delta_function_call["name"]}\n\nArguments:\n'
+                        )
 
                     if "arguments" in delta_function_call:
                         response["function_call"][
@@ -398,6 +409,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                 for word in words[:-1]:
                     print(colored(str(word), "green"), end=" ", flush=True)
                 latest_accumulation = words[-1]
+            return None
 
         for chunk in response_summary:
             delta = chunk["choices"][0]["delta"]

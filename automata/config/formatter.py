@@ -24,6 +24,11 @@ class TemplateFormatter:
                     top_symbols, key=lambda x: x[1], reverse=True
                 )
             )
+            # TODO - Why are we duplicating max_tokens calculation?
+            # This should be cleaned up.
             formatter["max_iterations"] = str(config.max_iterations)
+            formatter["max_tokens"] = str(
+                int(config.abs_max_tokens * config.max_token_percentage)
+            )
 
         return formatter

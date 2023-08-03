@@ -2,7 +2,7 @@
 import logging
 import uuid
 from abc import ABC, abstractmethod
-from typing import Dict, Final, List, Sequence
+from typing import Dict, Final, List, Optional, Sequence
 
 from automata.agent import Agent, AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.error import (
@@ -40,8 +40,9 @@ class OpenAIAutomataAgent(Agent):
     """
 
     CONTINUE_PREFIX: Final = f"Continue..."
-    GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nPlease return a result with call_termination when ready or if you are nearing limits."
-    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS, RETURN A RESULT NOW WITH call_termination."
+    OBSERVATION_MESSAGE: Final = "Observation:\n"
+    GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens."
+    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call_termination."
 
     def __init__(
         self, instructions: str, config: OpenAIAutomataAgentConfig
@@ -73,10 +74,7 @@ class OpenAIAutomataAgent(Agent):
         TODO:
             - Add support for hierarchical agents.
         """
-        if (
-            self.completed
-            or self.iteration_count >= self.config.max_iterations
-        ):
+        if self.completed or self.iteration_count > self.config.max_iterations:
             raise AgentStopIterationError
 
         logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
@@ -154,7 +152,7 @@ class OpenAIAutomataAgent(Agent):
         last_message = self._conversation.get_latest_message()
         if (
             not self.completed
-            and self.iteration_count >= self.config.max_iterations
+            and self.iteration_count > self.config.max_iterations
         ):
             raise AgentMaxIterError(
                 "The agent exceeded the maximum number of iterations."
@@ -250,34 +248,50 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
-        if self.iteration_count != self.config.max_iterations - 1:
-            iteration_message = OpenAIAutomataAgent.GENERAL_SUFFIX.format(
-                iteration_count=self.iteration_count,
-                max_iterations=self.config.max_iterations,
-                estimated_tokens=self.chat_provider.approximate_tokens_consumed,
-                max_tokens=self.config.max_tokens,
-            )
-        else:
-            iteration_message = OpenAIAutomataAgent.STOPPING_SUFFIX
-
         if assistant_message.function_call:
             try:
                 result = self.tool_executor.execute(
                     assistant_message.function_call
                 )
                 function_iteration_message = (
-                    "" if self.completed else f"\n\n{iteration_message}"
+                    ""
+                    if self.completed
+                    else f"\n\n{self._get_iteration_status(result)}"
                 )
+                # TODO - Indent the result and iteration messages
                 return OpenAIChatMessage(
                     role="user",
-                    content=f"{result}{function_iteration_message}",
+                    content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
             except Exception as e:
                 logging.exception(f"Tool execution failed: {e}")
         return OpenAIChatMessage(
             role="user",
-            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{iteration_message}",
+            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{self._get_iteration_status()}",
         )
+
+    def _get_iteration_status(
+        self, message_content: Optional[str] = None
+    ) -> str:
+        if self.iteration_count != self.config.max_iterations:
+            return OpenAIAutomataAgent.GENERAL_SUFFIX.format(
+                iteration_count=self.iteration_count,
+                max_iterations=self.config.max_iterations,
+                max_tokens=str(
+                    int(
+                        self.config.abs_max_tokens
+                        * self.config.max_token_percentage
+                    )
+                ),
+                estimated_tokens=self.chat_provider.approximate_tokens_consumed
+                + (
+                    len(self.chat_provider.encoding.encode(message_content))
+                    if message_content
+                    else 0
+                ),
+            )
+        else:
+            return OpenAIAutomataAgent.STOPPING_SUFFIX
 
     def _setup(self) -> None:
         """
