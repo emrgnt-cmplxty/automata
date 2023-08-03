@@ -11,7 +11,7 @@ from automata.experimental.tools.builders.document_oracle_builder import (
     DocumentOracleOpenAIToolkitBuilder,
     DocumentOracleToolkitBuilder,
 )
-from automata.experimental.tools.builders.python_interpreter import (
+from automata.experimental.tools.builders.py_interpreter import (
     PyInterpreter,
     PyInterpreterToolkitBuilder,
 )

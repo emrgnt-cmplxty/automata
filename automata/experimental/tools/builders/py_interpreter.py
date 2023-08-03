@@ -72,7 +72,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
             Tool(
                 name="persistent-execute-python-code",
                 function=self.python_interpreter.persistent_execute,
-                description="Executes the given Python code and maintains the state of variables across executions. Useful for development.",
+                description="Executes the given Python code and maintains the state of variables across executions. This tool is very useful for development, note that the environment has all relevant dependencies pre-installed.",
             ),
             Tool(
                 name="clear-and-execute-execute-python-code",
