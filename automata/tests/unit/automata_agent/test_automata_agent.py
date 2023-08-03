@@ -101,7 +101,9 @@ def test_run_with_no_completion(
     with pytest.raises(AgentMaxIterError):
         automata_agent.run()
 
-    assert automata_agent.iteration_count == max_iterations
+    assert (
+        automata_agent.iteration_count == max_iterations + 1
+    )  # + 1 since the agent is allowed to return a response.
 
 
 def mock_openai_response_with_completion_message():

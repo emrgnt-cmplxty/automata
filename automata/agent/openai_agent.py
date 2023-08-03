@@ -74,10 +74,7 @@ class OpenAIAutomataAgent(Agent):
         TODO:
             - Add support for hierarchical agents.
         """
-        if (
-            self.completed
-            or self.iteration_count >= self.config.max_iterations
-        ):
+        if self.completed or self.iteration_count > self.config.max_iterations:
             raise AgentStopIterationError
 
         logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
@@ -155,7 +152,7 @@ class OpenAIAutomataAgent(Agent):
         last_message = self._conversation.get_latest_message()
         if (
             not self.completed
-            and self.iteration_count >= self.config.max_iterations
+            and self.iteration_count > self.config.max_iterations
         ):
             raise AgentMaxIterError(
                 "The agent exceeded the maximum number of iterations."
