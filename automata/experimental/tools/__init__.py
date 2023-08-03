@@ -11,6 +11,10 @@ from automata.experimental.tools.builders.document_oracle_builder import (
     DocumentOracleOpenAIToolkitBuilder,
     DocumentOracleToolkitBuilder,
 )
+from automata.experimental.tools.builders.python_interpreter import (
+    PyInterpreter,
+    PyInterpreterToolkitBuilder,
+)
 from automata.experimental.tools.builders.symbol_search_builder import (
     SymbolSearchOpenAIToolkitBuilder,
     SymbolSearchToolkitBuilder,
@@ -25,4 +29,6 @@ __all__ = [
     "DocumentOracleOpenAIToolkitBuilder",
     "SymbolSearchToolkitBuilder",
     "SymbolSearchOpenAIToolkitBuilder",
+    "PyInterpreter",
+    "PyInterpreterToolkitBuilder",
 ]

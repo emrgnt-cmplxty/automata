@@ -111,6 +111,7 @@ class AgentToolkitNames(Enum):
     PY_READER = "py-reader"
     PY_WRITER = "py-writer"
     AGENTIFIED_SEARCH = "agent-search"
+    PYTHON_INTERPRETER = "py-interpreter"
 
 
 class AgentToolkitBuilder(ABC):
