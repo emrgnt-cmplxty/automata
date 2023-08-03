@@ -7,8 +7,9 @@ initial_messages:
   - role: user
     content: Please carry out the following instruction "{user_input_instructions}"
   - role: assistant
+    content: 'Thought:\n First, I will initialize myself. Then I will continue on to carefully consider the user task and carry out the necessary actions.\nAction:\n I will call `initializer` to initialize myself.'
     function_call:
       name: initializer
       arguments: {}
   - role: user
-    content: Continue...
+    content: Observation:\nContinue...

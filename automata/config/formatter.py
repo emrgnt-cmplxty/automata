@@ -11,7 +11,7 @@ class TemplateFormatter:
     def create_default_formatter(
         config: AgentConfig,
         symbol_rank: "SymbolRank",
-        max_default_overview_symbols: int = 100,
+        max_default_overview_symbols: int = 10,
     ) -> Dict[str, str]:
         formatter: Dict[str, str] = {}
         if config.config_name == AgentConfigName.AUTOMATA_MAIN:

@@ -273,22 +273,23 @@ class OpenAIAutomataAgent(Agent):
     def _get_iteration_status(
         self, message_content: Optional[str] = None
     ) -> str:
-        if self.iteration_count != self.config.max_iterations:
+        estimated_tokens_consumed = (
+            self.chat_provider.approximate_tokens_consumed
+            + (
+                len(self.chat_provider.encoding.encode(message_content))
+                if message_content
+                else 0
+            )
+        )
+        if (
+            self.iteration_count != self.config.max_iterations
+            or estimated_tokens_consumed > self.config.max_tokens
+        ):
             return OpenAIAutomataAgent.GENERAL_SUFFIX.format(
                 iteration_count=self.iteration_count,
                 max_iterations=self.config.max_iterations,
-                max_tokens=str(
-                    int(
-                        self.config.abs_max_tokens
-                        * self.config.max_token_percentage
-                    )
-                ),
-                estimated_tokens=self.chat_provider.approximate_tokens_consumed
-                + (
-                    len(self.chat_provider.encoding.encode(message_content))
-                    if message_content
-                    else 0
-                ),
+                max_tokens=self.config.max_tokens,
+                estimated_tokens=estimated_tokens_consumed,
             )
         else:
             return OpenAIAutomataAgent.STOPPING_SUFFIX
