@@ -13,7 +13,7 @@ from automata.eval.tool.tool_eval import ToolEval, ToolEvalResult
 from automata.llm import FunctionCall
 
 # TODO - Make this configurable somewhere upstream
-TOP_K_MATCHES = 20
+TOP_K_MATCHES = 10
 
 
 @register_action

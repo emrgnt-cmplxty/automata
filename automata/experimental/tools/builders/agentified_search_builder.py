@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 class AgentifiedSearchToolkitBuilder(AgentToolkitBuilder):
     """Builds tools for agent facilitated search"""
 
-    TOP_N = 20
+    TOP_N = 10
     MODEL = "gpt-4"
     TEMPERATURE = 0.7
     STREAM = True

@@ -287,9 +287,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         """Get the next completion from the assistant."""
 
         functions = [ele.to_dict() for ele in self.functions]
-        logger.debug(
-            f"Approximately {self.approximate_tokens_consumed} tokens were consumed prior to completion generation."
-        )
         if functions:
             response = openai.ChatCompletion.create(
                 model=self.model,
@@ -348,9 +345,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             )
         else:
             self.conversation.add_message(message, session_id)
-        logger.debug(
-            f"Approximately {self.approximate_tokens_consumed} tokens were consumed after adding the latest message."
-        )
 
     @staticmethod
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:

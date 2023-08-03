@@ -106,6 +106,7 @@ class AgentConfig(ABC, BaseModel):
     max_iterations: int = 50
     abs_max_tokens: int = 8192
     max_token_percentage: float = 0.9
+    max_tokens = int(0.9 * 8192)
     temperature: float = 0.7
     session_id: Optional[str] = None
 

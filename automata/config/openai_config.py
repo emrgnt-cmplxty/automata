@@ -51,6 +51,7 @@ class OpenAIAutomataAgentConfig(AgentConfig):
     system_instruction: Optional[str] = None
 
     def setup(self) -> None:
+        """Performs setup for the agent."""
         if not self.session_id:
             self.session_id = str(uuid.uuid4())
         if not self.system_template_formatter:
@@ -65,6 +66,7 @@ class OpenAIAutomataAgentConfig(AgentConfig):
             )
         if not self.system_instruction:
             self.system_instruction = self._formatted_instruction()
+        self.max_tokens = int(self.abs_max_tokens * self.max_token_percentage)
 
     @classmethod
     def load(cls, config_name: AgentConfigName) -> "OpenAIAutomataAgentConfig":
