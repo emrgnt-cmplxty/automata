@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 
 import numpy as np
 import openai
+from litellm import completion
 import tiktoken
 from termcolor import colored
 
@@ -291,7 +292,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             f"Approximately {self.approximate_tokens_consumed} tokens were consumed prior to completion generation."
         )
         if functions:
-            response = openai.ChatCompletion.create(
+            response = completion(
                 model=self.model,
                 messages=self.conversation.get_messages_for_next_completion(),
                 functions=functions,
@@ -299,7 +300,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
                 stream=self.stream,
             )
         else:
-            response = openai.ChatCompletion.create(
+            response = completion(
                 model=self.model,
                 messages=self.conversation.get_messages_for_next_completion(),
                 stream=self.stream,
