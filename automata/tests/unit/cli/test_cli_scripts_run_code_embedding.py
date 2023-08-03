@@ -10,10 +10,8 @@ from automata.cli.scripts.run_code_embedding import (
     main,
     process_embeddings,
 )
-from automata.singletons.dependency_factory import DependencyFactory
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.graph.symbol_graph import SymbolGraph
-from automata.symbol_embedding import SymbolCodeEmbedding
 
 
 @pytest.fixture
@@ -65,8 +63,6 @@ def test_initialize_resources(
     symbol_code_embedding_handler_class_mock.return_value = (
         symbol_code_embedding_handler_mock
     )
-
-    original_os_path_join = os.path.join
 
     symbol_graph, symbol_code_embedding_handler = initialize_resources(
         project_name
