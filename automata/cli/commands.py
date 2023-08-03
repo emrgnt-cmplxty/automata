@@ -197,7 +197,7 @@ def run_agent(ctx: click.Context, *args, **kwargs) -> None:
     Run the automata agent.
 
     Ex:
-    poetry run automata run-agent --model="gpt-4" --toolkits="agent-search" --log-level=DEBUG --max-iterations=3 --instructions="Return the documentation for symbol search"
+    poetry run automata run-agent --model="gpt-4" --toolkits="agent-search" --log-level=DEBUG --max-iterations=3 --instructions="Fetch the source code for symbol search"
 
     """
     from automata.cli.scripts.run_agent import main

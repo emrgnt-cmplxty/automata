@@ -19,9 +19,11 @@ class PyContextHandlerConfig:
 
     def __init__(
         self,
+        top_n_test_matches: int = 10,
         top_n_symbol_rank_matches: int = 10,
         top_n_dependency_matches: int = 20,
     ) -> None:
+        self.top_n_test_matches = top_n_test_matches
         self.top_n_symbol_rank_matches = top_n_symbol_rank_matches
         self.top_n_dependency_matches = top_n_dependency_matches
 
@@ -45,22 +47,47 @@ class PyContextHandler:
         symbol: "Symbol",
         primary_active_components: Dict[ContextComponent, Dict],
         tertiary_active_components: Dict[ContextComponent, Dict],
+        tests_headers="Related Tests:",
         related_symbols_header="Related Symbols:",
         dependent_symbols_header="Dependent Symbols:",
     ) -> str:
         """Construct the context for a symbol."""
+        # TODO - Clean up this method.
         primary_symbol_path = symbol.dotpath
         self.obs_symbols.add(symbol)
         base_context = f"{self.retriever.process_symbol(symbol, primary_active_components)}"
 
         counter = 0
+        secondary_symbols = self.get_symbol_rank_matches(symbol)
 
+        if self.config.top_n_test_matches > 0:
+            base_context += f"\n\n{self.retriever.spacer}{tests_headers}\n\n"
+            for secondary_symbol in secondary_symbols:
+                # TODO - Remove hard coded reference to automata.test
+                if "automata.test" in secondary_symbol.dotpath:
+                    if f"{primary_symbol_path}." in secondary_symbol.dotpath:
+                        continue
+                    if secondary_symbol in self.obs_symbols:
+                        continue
+                    counter += 1
+                    self.obs_symbols.add(secondary_symbol)
+
+                    for line in self.retriever.process_symbol(
+                        secondary_symbol,
+                        primary_active_components,
+                    ).split("\n"):
+                        base_context += f"{2*self.retriever.spacer}{line}\n"
+                    base_context += "\n\n"
+                    if counter >= self.config.top_n_test_matches:
+                        break
+        counter = 0
         if self.config.top_n_symbol_rank_matches > 0:
             base_context += (
-                f"\n{self.retriever.spacer}{related_symbols_header}\n\n"
+                f"\n\n{self.retriever.spacer}{related_symbols_header}\n\n"
             )
-            secondary_symbols = self.get_symbol_rank_matches(symbol)
             for secondary_symbol in secondary_symbols:
+                if "automata.test" in secondary_symbol.dotpath:
+                    continue
                 # continue over symbols which are contained in our primary symbol
                 if f"{primary_symbol_path}." in secondary_symbol.dotpath:
                     continue
