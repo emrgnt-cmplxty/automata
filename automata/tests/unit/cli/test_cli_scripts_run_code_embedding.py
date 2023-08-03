@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock, patch
+import os
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -9,58 +10,81 @@ from automata.cli.scripts.run_code_embedding import (
     main,
     process_embeddings,
 )
+from automata.singletons.dependency_factory import DependencyFactory
 from automata.singletons.py_module_loader import py_module_loader
+from automata.symbol.graph.symbol_graph import SymbolGraph
+from automata.symbol_embedding import SymbolCodeEmbedding
 
 
 @pytest.fixture
 def symbol_graph_mock():
-    return MagicMock()
+    mock = MagicMock()
+    type(mock).is_synchronized = PropertyMock(return_value=True)
+    return mock
 
 
 @pytest.fixture
 def symbol_code_embedding_handler_mock():
     mock = MagicMock()
+    type(mock).is_synchronized = PropertyMock(return_value=True)
     mock.process_embedding.side_effect = Exception("Test exception")
     return mock
 
 
-@patch("automata.cli.scripts.run_code_embedding.SymbolGraph")
-@patch(
-    "automata.cli.scripts.run_code_embedding.ChromaSymbolEmbeddingVectorDatabase"
+@pytest.mark.skip(
+    "Fixme"
+)  # TODO - Investigate why this test is acting strangely.
+@pytest.mark.parametrize(
+    "project_name", ["test_project", "another_test_project"]
 )
-@patch("automata.cli.scripts.run_code_embedding.OpenAIEmbeddingProvider")
+@patch("automata.llm.OpenAIEmbeddingProvider")
+@patch("automata.memory_store.SymbolCodeEmbeddingHandler")
+@patch("automata.symbol_embedding.ChromaSymbolEmbeddingVectorDatabase")
+@patch("automata.symbol.SymbolGraph.__new__")
+@patch("automata.singletons.dependency_factory.dependency_factory")
 @patch(
-    "automata.cli.scripts.run_code_embedding.DependencyFactory.set_overrides"
+    "automata.symbol.graph.symbol_graph._load_index_protobuf",
+    return_value=MagicMock(),
 )
-@patch("automata.cli.scripts.run_code_embedding.DependencyFactory.get")
-@pytest.mark.skip("Fixme")
 def test_initialize_resources(
-    get_mock,
-    set_overrides_mock,
-    OpenAIEmbeddingProvider_mock,
-    ChromaSymbolEmbeddingVectorDatabase_mock,
-    SymbolGraph_mock,
+    load_index_protobuf_mock,
+    dependency_factory_mock,
     symbol_graph_mock,
+    chroma_db_class_mock,
+    embedding_provider_class_mock,
+    symbol_code_embedding_handler_class_mock,
+    project_name,
 ):
-    SymbolGraph_mock.return_value = symbol_graph_mock
-    ChromaSymbolEmbeddingVectorDatabase_mock.return_value = MagicMock()
-    OpenAIEmbeddingProvider_mock.return_value = MagicMock()
-    get_mock.return_value = MagicMock()
+    # Prepare
+    symbol_graph_instance = MagicMock()
+    symbol_graph_instance.is_synchronized = True
+    symbol_graph_mock.return_value = symbol_graph_instance
+
+    symbol_code_embedding_handler_mock = MagicMock()
+    symbol_code_embedding_handler_mock.is_synchronized = True
+    symbol_code_embedding_handler_class_mock.return_value = (
+        symbol_code_embedding_handler_mock
+    )
+
+    original_os_path_join = os.path.join
 
     symbol_graph, symbol_code_embedding_handler = initialize_resources(
-        "test_project"
+        project_name
     )
+
+    # Assert
+    # Get the first argument with which symbol_graph_mock was called
+    called_with_args = symbol_graph_mock.call_args[0]
+    assert called_with_args[0] == SymbolGraph
+    assert isinstance(
+        called_with_args[1], str
+    )  # check if the second argument is a string
+    assert (
+        ".scip" in called_with_args[1]
+    )  # check if the second argument includes '.scip'
 
     assert symbol_graph.is_synchronized
     assert symbol_code_embedding_handler.is_synchronized
-
-    overrides = {
-        "symbol_graph": symbol_graph_mock,
-        "code_embedding_db": ChromaSymbolEmbeddingVectorDatabase_mock.return_value,
-        "embedding_provider": OpenAIEmbeddingProvider_mock.return_value,
-        "disable_synchronization": True,
-    }
-    set_overrides_mock.assert_called_once_with(**overrides)
 
 
 @pytest.mark.parametrize(
