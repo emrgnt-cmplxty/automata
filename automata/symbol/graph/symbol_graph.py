@@ -58,7 +58,11 @@ class SymbolGraph(ISymbolProvider):
         Initializes a new instance of `SymbolGraph`.
         """
         super().__init__()
-        index = _load_index_protobuf(index_path)
+        index = (
+            _load_index_protobuf(index_path)
+            if index_path is not None
+            else None
+        )
         builder = GraphBuilder(
             index,
             build_references,
