@@ -4,12 +4,16 @@ FROM python:3.10-slim-buster
 # Set the working directory in the container to the root of the project
 WORKDIR /automata
 
-# Copy the current directory contents (root of the project) into the container at /automata
-COPY . .
-
 # Install dependencies
-RUN apt-get update && apt-get install -y gcc g++ curl
+RUN apt-get update && apt-get install -y gcc g++ curl git
 RUN pip install --no-cache-dir poetry
+
+# Clone the repository
+RUN git clone https://github.com/emrgnt-cmplxty/automata.git .
+
+# Initialize and update submodules
+RUN git submodule update --init --recursive
+
 RUN poetry config virtualenvs.create false
 RUN poetry install
 
@@ -18,7 +22,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 # Install dependencies and run indexing on the local codebase
-RUN automata install-indexing
+RUN poetry run automata install-indexing
 
 # Create a script that will be run when the container is started
 RUN echo "#!/bin/bash\n\
