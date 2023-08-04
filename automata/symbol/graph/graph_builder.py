@@ -5,7 +5,7 @@ Contains the `GraphBuilder` class, which builds a `SymbolGraph` from a correspon
 import logging
 import os
 import pickle
-from typing import Any
+from typing import Any, Optional
 
 import networkx as nx
 
@@ -25,7 +25,7 @@ class GraphBuilder:
 
     def __init__(
         self,
-        index: Index,
+        index: Optional[Index],
         build_references: bool,
         build_relationships: bool,
         build_caller_relationships: bool,
@@ -56,7 +56,10 @@ class GraphBuilder:
             SerializedDataCategory.PICKLED_SYMBOL_GRAPH.value,
         )
 
-        if not from_pickle or not os.path.exists(graph_pickle_path):
+        if from_pickle and os.path.exists(graph_pickle_path):
+            self._graph = pickle.load(open(graph_pickle_path, "rb"))
+
+        elif self.index is not None:
             for document in self.index.documents:
                 self._add_symbol_vertices(document)
                 if self.build_relationships:
@@ -69,9 +72,10 @@ class GraphBuilder:
             if save_graph_pickle:
                 with open(graph_pickle_path, "wb") as f:
                     pickle.dump(self._graph, f)
-
         else:
-            self._graph = pickle.load(open(graph_pickle_path, "rb"))
+            raise ValueError(
+                "Index file could not be loaded. Please check if the index file exists and is accessible."
+            )
 
         return self._graph
 
