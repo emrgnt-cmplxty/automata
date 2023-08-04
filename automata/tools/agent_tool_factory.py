@@ -37,6 +37,7 @@ class AgentToolFactory:
             ("symbol_search", SymbolSearch),
             ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
         ],
+        AgentToolkitNames.PY_INTERPRETER: [],
     }
 
     @staticmethod

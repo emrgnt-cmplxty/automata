@@ -216,8 +216,7 @@ def run_agent(ctx: click.Context, *args, **kwargs) -> None:
     Run the automata agent.
 
     Ex:
-    poetry run automata run-agent --model="gpt-4" --toolkits="agent-search" --log-level=DEBUG --max-iterations=3 --instructions="Return a markdown snippet containing python code which creates an instance of symbol search  and stores it into a variable `x` when executed."
-
+    poetry run automata run-agent --model="gpt-4" --toolkits="agent-search,py-reader,py-interpreter" --log-level=DEBUG --max-iterations=20 --instructions="Return a markdown snippet containing python code which creates an instance of symbol search  and stores it into a variable `x` when executed."
     """
     from automata.cli.scripts.run_agent import main
 
@@ -236,7 +235,7 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     Run the evaluation.
 
     Ex:
-    poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="document-oracle,py-reader" --log-level=DEBUG --max-iterations=3
+    poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="agent-search,py-reader,py-interpreter" --log-level=DEBUG --max-iterations=5
     """
 
     from automata.cli.scripts.run_agent_eval import main

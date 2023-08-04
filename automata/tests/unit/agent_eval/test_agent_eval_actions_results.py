@@ -3,6 +3,7 @@ from automata.eval import CodeWritingAction, OpenAIFunctionCallAction
 from automata.tasks.task_base import TaskStatus
 
 from .conftest import (
+    COMPLICATED_ACTION,
     EXPECTED_CODE_ACTIONS,
     EXPECTED_FUNCTION_ACTIONS,
     mock_openai_response_with_function_completion_message_final,
@@ -112,7 +113,6 @@ def test_generate_code_writing_eval_result_match(
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_code_writing_eval_result_match"
     ]
-
     # Act
     result = code_evaluator.generate_eval_result(
         task, EXPECTED_CODE_ACTIONS, task_executor, run_id="test"
@@ -124,7 +124,7 @@ def test_generate_code_writing_eval_result_match(
         action: True for action in EXPECTED_CODE_ACTIONS
     }
     assert result.extra_actions == [
-        CodeWritingAction(object_value_repr="3.14", object_type="float")
+        CodeWritingAction(py_object=3.14, error=None)
     ]
 
 
@@ -212,9 +212,7 @@ def test_composite_eval_result_match(
     assert result.match_results == {
         action: True for action in expected_actions
     }
-    assert result.extra_actions == [
-        CodeWritingAction(object_value_repr="3.14", object_type="float"),
-    ]
+    assert result.extra_actions == [CodeWritingAction(py_object=3.14)]
 
 
 def test_composite_eval_no_match(
@@ -277,20 +275,28 @@ def test_code_execution_error(composite_evaluator, tasks, setup):
     ]
 
 
-def test_partial_matches():
-    obj1 = CodeWritingAction(
-        object_type="int", object_value_repr="1", error=None
-    )
-    obj2 = CodeWritingAction(
-        object_type="float", object_value_repr="2.0", error=None
-    )
+def test_matching():
+    obj1 = CodeWritingAction(py_object=1, error=None)
+    obj2 = CodeWritingAction(py_object=2.0, error=None)
+    obj3 = CodeWritingAction(py_object=1, error=None)
 
-    action_1 = CodeWritingAction(
-        object_type=str(type(obj1)), object_value_repr=repr(obj1), error=None
-    )
+    action_1 = CodeWritingAction(py_object=obj1, error=None)
+    action_2 = CodeWritingAction(py_object=obj2, error=None)
+    action_3 = CodeWritingAction(py_object=obj3, error=None)
 
-    action_2 = CodeWritingAction(
-        object_type=str(type(obj2)), object_value_repr=repr(obj2), error=None
-    )
+    assert action_1 != action_2
+    assert action_1 == action_3
 
-    assert action_1 == action_2
+
+def test_complex_payload():
+    payload_0 = EXPECTED_CODE_ACTIONS[0].to_payload()
+    loaded_action_0 = CodeWritingAction.from_payload(payload_0)
+    assert EXPECTED_CODE_ACTIONS[0] == loaded_action_0
+
+    payload_1 = EXPECTED_CODE_ACTIONS[1].to_payload()
+    loaded_action_1 = CodeWritingAction.from_payload(payload_1)
+    assert EXPECTED_CODE_ACTIONS[1] == loaded_action_1
+
+    payload_2 = COMPLICATED_ACTION.to_payload()
+    loaded_action_2 = CodeWritingAction.from_payload(payload_2)
+    assert COMPLICATED_ACTION == loaded_action_2

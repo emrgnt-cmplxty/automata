@@ -41,8 +41,8 @@ class OpenAIAutomataAgent(Agent):
 
     CONTINUE_PREFIX: Final = f"Continue..."
     OBSERVATION_MESSAGE: Final = "Observation:\n"
-    GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens."
-    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call_termination."
+    GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{instructions}'"
+    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call_termination.\nRECALL, YOUR INSTRUCTIONS WERE '{instructions}."
 
     def __init__(
         self, instructions: str, config: OpenAIAutomataAgentConfig
@@ -290,9 +290,12 @@ class OpenAIAutomataAgent(Agent):
                 max_iterations=self.config.max_iterations,
                 max_tokens=self.config.max_tokens,
                 estimated_tokens=estimated_tokens_consumed,
+                instructions=self.instructions,
             )
         else:
-            return OpenAIAutomataAgent.STOPPING_SUFFIX
+            return OpenAIAutomataAgent.STOPPING_SUFFIX.format(
+                instructions=self.instructions
+            )
 
     def _setup(self) -> None:
         """
