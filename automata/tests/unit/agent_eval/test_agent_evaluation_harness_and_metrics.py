@@ -58,5 +58,5 @@ def test_evaluation_harness_and_metrics(agent_eval_harness, tasks, setup):
         }
     )
     assert metrics.extra_action_frequency == Counter(
-        {"call_termination({'result': 'Success'})": 2}
+        {"call_termination({'result': '```python\\nx = 1```'})": 2}
     )
