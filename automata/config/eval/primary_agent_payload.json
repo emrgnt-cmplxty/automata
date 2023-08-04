@@ -1,29 +1,16 @@
 [
     {
     "template": {
-        "instructions": "Return a markdown python snippet which when executed creates a valid instance of a `{object}` and stores it into a local variable `x`.",
+        "instructions": "Return a markdown python snippet which when executed {instruction} and stores it into a local variable `x`.",
         "expected_actions": [
             {
                 "type": "CodeWritingAction",
-                "object_type": "{object}",
-                "object_value_repr": "None"
+                "output_object": "{object}"
             }
         ]
     },
     "entries": [
-        {"object": "Symbol"},
-        {"object": "OpenAIAutomataAgent"},
-        {"object": "GitHubClient"},
-        {"object": "ChromaVectorDatabase"},
-        {"object": "DependencyFactory"},
-        {"object": "JSONVectorDatabase"},
-        {"object": "SymbolGraph"},
-        {"object": "AutomataTaskEnvironment"},
-        {"object": "PyCodeWriter"},
-        {"object": "PyModuleLoader"},
-        {"object": "SymbolSearch"},
-        {"object": "OpenAIChatMessage"},
-        {"object": "SymbolDescriptor"}
+        {"instruction": "creates a valid instance of a `Symbol` with ", "object": {"py/object": "automata.symbol.symbol_base.Symbol", "uri": "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description.", "scheme": "scip-python", "package": {"py/object": "automata.symbol.symbol_base.SymbolPackage", "manager": "python", "name": "automata", "version": "v0.0.0"}, "descriptors": {"py/tuple": [{"py/object": "automata.symbol.symbol_base.SymbolDescriptor", "name": "config.automata_agent_config", "suffix": 1, "disambiguator": null}, {"py/object": "automata.symbol.symbol_base.SymbolDescriptor", "name": "AutomataAgentConfig", "suffix": 2, "disambiguator": null}, {"py/object": "automata.symbol.symbol_base.SymbolDescriptor", "name": "description", "suffix": 3, "disambiguator": null}]}}}
     ]
     }
 ]

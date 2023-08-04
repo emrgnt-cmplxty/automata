@@ -235,7 +235,7 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     Run the evaluation.
 
     Ex:
-    poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="document-oracle,py-reader" --log-level=DEBUG --max-iterations=3
+    poetry run automata run-agent-eval --evals-filepath=automata/config/eval/primary_agent_payload.json --model="gpt-4" --toolkits="agent-search,py-reader,py-interpreter" --log-level=DEBUG --max-iterations=5
     """
 
     from automata.cli.scripts.run_agent_eval import main

@@ -156,6 +156,7 @@ system_template: >
 
   ...
 
+
   *Assistant*
     content:
       Thought:
@@ -170,6 +171,7 @@ system_template: >
         ...
 
   ...
+
 
   *Assistant*
     content:

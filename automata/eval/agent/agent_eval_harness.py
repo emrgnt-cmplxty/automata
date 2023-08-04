@@ -77,7 +77,6 @@ class AgentEvalSetLoader:
             logging.info(f"Loading json from {self.filepath}...")
             with open(self.filepath, "r") as f:
                 data = json.load(f)
-
             payloads = []
             for item in data:
                 template = item["template"]

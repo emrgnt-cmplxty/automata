@@ -35,7 +35,6 @@ class PyInterpreter:
             # Execute the code within the existing execution context
             code = self._clean_markdown(code)
             payload = "\n".join(self.execution_context) + "\n" + code
-            print("payload = ", payload)
             exec(payload)
             return PyInterpreter.SUCCESS_STRING
         except Exception as e:
