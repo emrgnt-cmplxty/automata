@@ -113,3 +113,18 @@ def test_python_interpreter_toolkit_builder_tool_functions(
         if tool.name == tool_name:
             result = tool.function(code)
             assert result == expected_result
+
+
+def test_build_py_writer():
+    interpreter = PyInterpreter()
+
+    result_0 = interpreter.persistent_execute(
+        "```python\nfrom automata.code_parsers.py.py_reader import PyReader\n\nreader = PyReader()\n```"
+    )
+
+    assert result_0 == PyInterpreter.SUCCESS_STRING
+    result_1 = interpreter.persistent_execute(
+        "```python\nfrom automata.code_writers.py.py_code_writer import PyCodeWriter\n\nx = PyCodeWriter(reader)\n```"
+    )
+
+    assert result_1 == PyInterpreter.SUCCESS_STRING
