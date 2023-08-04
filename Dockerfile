@@ -8,8 +8,8 @@ WORKDIR /automata
 RUN apt-get update && apt-get install -y gcc g++ curl git
 RUN pip install --no-cache-dir poetry
 
-# Clone the repository
-RUN git clone https://github.com/emrgnt-cmplxty/automata.git .
+# Copy the current directory contents (root of the project) into the container at /automata
+COPY . .
 
 # Initialize and update submodules
 RUN git submodule update --init --recursive

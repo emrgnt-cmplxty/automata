@@ -4,4 +4,4 @@
         ignore = all # necessary to avoid issues from modified package-lock.json
 [submodule "automata-embedding-data"]
 	path = automata-embedding-data
-	url = git@github.com:emrgnt-cmplxty/automata-embedding-data.git
+	url = https://github.com/emrgnt-cmplxty/automata-embedding-data.git
