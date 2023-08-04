@@ -55,7 +55,7 @@ git submodule update --init
 pip3 install poetry && poetry install
 
 # Configure the environment and setup files
-automata configure
+poetry run automata configure
 ```
 
 <details>
@@ -105,7 +105,7 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /
 
 ```bash
 # Install dependencies and run indexing on the local codebase
-automata install-indexing
+poetry run automata install-indexing
 ```
 
 ### Build the embeddings + docs
@@ -125,10 +125,10 @@ The following commands illustrate how to run the system with a trivial instructi
 
 ```bash
 # Run a single agent w/ trivial instruction
-automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
+poetry run  automata run-agent --instructions="Return true" --model=gpt-3.5-turbo-0613
 
 # Run a single agent w/ a non-trivial instruction
-automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent."
+poetry run automata run-agent --instructions="Explain what AutomataAgent is and how it works, include an example to initialize an instance of AutomataAgent."
 ```
 
 ---
