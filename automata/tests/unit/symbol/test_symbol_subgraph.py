@@ -26,7 +26,7 @@ class MockDocument:
 def symbol_graph_mocked_index():
     initialize_py_module_loader()
     with mock.patch(
-        "automata.symbol.graph.symbol_graph._load_index_protobuf",
+        "automata.symbol.graph.graph_builder._load_index_protobuf",
         return_value=MockProtoBuf(),
     ) as mock_load:
         mock_load.return_value.documents = [MockDocument(), MockDocument()]

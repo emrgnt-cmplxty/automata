@@ -20,6 +20,16 @@ from automata.symbol.symbol_utils import load_data_path
 logger = logging.getLogger(__name__)
 
 
+def _load_index_protobuf(path: str) -> Index:
+    """
+    Loads and returns an Index protobuf object from the given file path.
+    """
+    index = Index()
+    with open(path, "rb") as f:
+        index.ParseFromString(f.read())
+    return index
+
+
 class GraphBuilder:
     """Builds a `SymbolGraph` from a corresponding Index."""
 
@@ -33,7 +43,7 @@ class GraphBuilder:
         """
         Initializes a new instance of `GraphBuilder`.
         """
-        self.index = index
+        self.index_path = index_path
         self.build_references = build_references
         self.build_relationships = build_relationships
         self.build_caller_relationships = build_caller_relationships
@@ -56,18 +66,23 @@ class GraphBuilder:
             SerializedDataCategory.PICKLED_SYMBOL_GRAPH.value,
         )
 
-        if from_pickle and os.path.exists(graph_pickle_path):
-            self._graph = pickle.load(open(graph_pickle_path, "rb"))
-
-        elif self.index is not None:
-            for document in self.index.documents:
-                self._add_symbol_vertices(document)
-                if self.build_relationships:
-                    self._process_relationships(document)
-                if self.build_references:
-                    self._process_references(document)
-                if self.build_caller_relationships:
-                    self._process_caller_callee_relationships(document)
+        if not from_pickle or not os.path.exists(graph_pickle_path):
+            self.index = (
+                None if from_pickle else _load_index_protobuf(self.index_path)
+            )
+            if self.index is not None:
+                for document in self.index.documents:
+                    self._add_symbol_vertices(document)
+                    if self.build_relationships:
+                        self._process_relationships(document)
+                    if self.build_references:
+                        self._process_references(document)
+                    if self.build_caller_relationships:
+                        self._process_caller_callee_relationships(document)
+            else:
+                raise ValueError(
+                    "Index file could not be loaded. Please check if the index file exists and is accessible."
+                )
 
             if save_graph_pickle:
                 with open(graph_pickle_path, "wb") as f:

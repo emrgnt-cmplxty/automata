@@ -28,16 +28,6 @@ from automata.symbol.symbol_utils import get_rankable_symbols, load_data_path
 logger = logging.getLogger(__name__)
 
 
-def _load_index_protobuf(path: str) -> Index:
-    """
-    Loads and returns an Index protobuf object from the given file path.
-    """
-    index = Index()
-    with open(path, "rb") as f:
-        index.ParseFromString(f.read())
-    return index
-
-
 class SymbolGraph(ISymbolProvider):
     """
     A `SymbolGraph` contains the symbols and relationships between them.e
@@ -64,7 +54,7 @@ class SymbolGraph(ISymbolProvider):
             else None
         )
         builder = GraphBuilder(
-            index,
+            index_path,
             build_references,
             build_relationships,
             build_caller_relationships,
