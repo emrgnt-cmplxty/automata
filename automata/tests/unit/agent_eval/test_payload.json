@@ -16,7 +16,7 @@
     },
     {
         "template": {
-            "instructions": "Return a markdown python snippet which when executed deletes a `{object}`.",
+            "instructions": "Return a markdown python snippet which when executed creates a `{object}`.",
             "expected_actions": [
                 {
                     "type": "CodeWritingAction",
@@ -27,7 +27,7 @@
         "entries": [
             {
                 "object": "CodeWritingAction", 
-                "py_object": "{\"py/object\": \"automata.eval.agent.code_writing_eval.CodeWritingAction\", \"py_object\": \"test2\", \"error\": null}"
+                "py_object": {"py/object": "automata.eval.agent.code_writing_eval.CodeWritingAction", "py_object": "test2", "error": null}
             }
         ]
     }

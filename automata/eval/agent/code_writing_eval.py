@@ -67,8 +67,25 @@ class CodeWritingAction(Action):
             raise ValueError(
                 f"Object types of type={type(object)} received, instead of str."
             )
+        # Extract the string from the payload
+        json_string = payload["py_object"]
 
-        py_object = jsonpickle.decode(payload["py_object"])
+        if not isinstance(json_string, str):
+            raise ValueError(
+                "Expected a string, but received a non-string object."
+            )
+
+        # Replace single quotes with double quotes
+        json_string_with_double_quotes = json_string.replace("'", '"')
+
+        # Replace None with null
+        json_string_with_double_quotes = (
+            json_string_with_double_quotes.replace("None", "null")
+        )
+
+        # Decode the corrected JSON string using jsonpickle
+        py_object = jsonpickle.decode(json_string_with_double_quotes)
+
         error = payload.get("error")
         if error is not None and not isinstance(error, str):
             raise ValueError(

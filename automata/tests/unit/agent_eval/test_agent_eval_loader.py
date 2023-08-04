@@ -26,5 +26,5 @@ def test_eval_loader(loader):
 
     assert (
         loader.tasks[1].instructions
-        == "Return a markdown python snippet which when executed deletes a `CodeWritingAction`."
+        == "Return a markdown python snippet which when executed creates a `CodeWritingAction`."
     ), "Instruction not loaded correctly"

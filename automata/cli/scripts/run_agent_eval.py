@@ -95,7 +95,6 @@ def run_eval_harness(
     metrics = evaluation_harness.evaluate(
         tasks, tasks_expected_actions, task_executor
     )
-
     # Log the metrics
     logging.info(f"Evaluation metrics: {metrics}")
 

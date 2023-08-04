@@ -1,0 +1,24 @@
+[
+    {
+        "template": {
+            "input_function": {
+                "type": "FunctionCall",
+                "name": "llm-facilitated-search",
+                "arguments": {
+                    "query": "{query}"
+                }
+            },
+            "expected_action": {
+                "type": "SymbolSearchAction",
+                "query": "{query}",
+                "search_results": "{result}"
+            }
+        },
+        "entries": [
+            {
+                "query": "Which class is an abstract base class for building for agents?",
+                "result": "automata.agent.agent.Agent"
+            }        
+        ]
+    }
+]
