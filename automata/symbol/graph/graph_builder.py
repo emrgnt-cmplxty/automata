@@ -79,6 +79,10 @@ class GraphBuilder:
                         self._process_references(document)
                     if self.build_caller_relationships:
                         self._process_caller_callee_relationships(document)
+            else:
+                raise ValueError(
+                    "Index file could not be loaded. Please check if the index file exists and is accessible."
+                )
 
             if save_graph_pickle:
                 with open(graph_pickle_path, "wb") as f:
