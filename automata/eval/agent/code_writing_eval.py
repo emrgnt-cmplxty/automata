@@ -149,17 +149,17 @@ class CodeWritingEval(AgentEval):
                     }
                 ]
 
-            targets = [
+            if targets := [
                 isolated_locals.get(target_variable)
                 for target_variable in self.target_variables
                 if target_variable in isolated_locals
-            ]
-            if not targets:
+            ]:
+                return [{"py_object": py_object} for py_object in targets]
+
+            else:
                 raise VariableNotFoundError(
                     f"Variables '{self.target_variables}' not found in the executed code."
                 )
-            return [{"py_object": py_object} for py_object in targets]
-
         except Exception as e:
             # If there's an error executing the code, return that.
             raise CodeExecutionError(f"Error executing code: {str(e)}") from e
