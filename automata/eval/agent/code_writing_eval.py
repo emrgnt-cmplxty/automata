@@ -42,17 +42,6 @@ class CodeWritingAction(Action):
     def __eq__(self, other):  # sourcery skip: docstrings-for-functions
         if not isinstance(other, CodeWritingAction):
             return False
-        print("self.py_object = ", self.py_object)
-        print("other.py_object = ", other.py_object)
-        print(
-            "self.py_object == other.py_object = ",
-            self.py_object == other.py_object,
-        )
-        print(
-            "stringified self.py_object == other.py_object = ",
-            str(self.py_object) == str(other.py_object),
-        )
-
         return self.py_object == other.py_object
 
     def __hash__(self):
@@ -74,15 +63,12 @@ class CodeWritingAction(Action):
     def from_payload(cls, payload: Payload) -> "CodeWritingAction":
         """Converts a payload CodeWritingAction into underlying payload."""
 
-        print("payload = ", payload)
         if not isinstance(payload["py_object"], (str, dict)):
             raise ValueError(
                 f"Object types of type={type(object)} received, instead of str."
             )
-        print("payload = ", payload["py_object"])
-        print("payload = ", type(payload["py_object"]))
+
         py_object = jsonpickle.decode(payload["py_object"])
-        print("success...")
         error = payload.get("error")
         if error is not None and not isinstance(error, str):
             raise ValueError(
@@ -127,7 +113,6 @@ class CodeWritingEval(AgentEval):
         # Parse the code snippet to extract set variables and their types
         try:
             parsed_snippets = self._parse_code_snippet(message.content)
-            print("parsed_snippets = ", parsed_snippets)
         except Exception as e:
             logger.debug(f"Failed to parse code snippet with {e}")
             parsed_snippets = []
@@ -139,7 +124,6 @@ class CodeWritingEval(AgentEval):
                 error=snippet.get("error"),
             )
             actions.append(action)
-        print(f"returning actions = {actions}")
         return actions
 
     def _parse_code_snippet(self, raw_content: str) -> List[Dict[str, Any]]:

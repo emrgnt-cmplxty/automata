@@ -113,20 +113,12 @@ def test_generate_code_writing_eval_result_match(
     mock_openai_chatcompletion_create.side_effect = params[
         "test_generate_code_writing_eval_result_match"
     ]
-
-    print(
-        "side effects = ",
-        params["test_generate_code_writing_eval_result_match"],
-    )
     # Act
     result = code_evaluator.generate_eval_result(
         task, EXPECTED_CODE_ACTIONS, task_executor, run_id="test"
     )
 
     # Assert
-    print("result.match_results=", result.match_results)
-    print("result.extra_actions=", result.extra_actions)
-
     assert result.is_full_match
     assert result.match_results == {
         action: True for action in EXPECTED_CODE_ACTIONS
