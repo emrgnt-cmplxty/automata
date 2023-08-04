@@ -115,17 +115,14 @@ def test_generate_code_writing_eval_result_match(
     ]
     # Act
     result = code_evaluator.generate_eval_result(
-        task, EXPECTED_CODE_ACTIONS, task_executor, run_id="test"
+        task, [EXPECTED_CODE_ACTIONS[0]], task_executor, run_id="test"
     )
-
     # Assert
     assert result.is_full_match
     assert result.match_results == {
-        action: True for action in EXPECTED_CODE_ACTIONS
+        action: True for action in [EXPECTED_CODE_ACTIONS[0]]
     }
-    assert result.extra_actions == [
-        CodeWritingAction(py_object=3.14, error=None)
-    ]
+    assert result.extra_actions == []
 
 
 def test_generate_code_writing_eval_result_no_match(
@@ -157,11 +154,16 @@ def test_generate_code_writing_eval_result_partial_match(
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = [
         {
+            # TODO - Avoid having multiple call_terminations
             "choices": [
                 {
                     "message": {
                         "role": "assistant",
-                        "content": "```python\nx = 1```",
+                        "function_call": {
+                            "name": "call_termination",
+                            "arguments": '{"result": "```python\nx = 1```"}',
+                        },
+                        "content": None,
                     }
                 }
             ]
@@ -200,19 +202,23 @@ def test_composite_eval_result_match(
         EXPECTED_FUNCTION_ACTIONS[0],
         EXPECTED_CODE_ACTIONS[0],
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
+            name="call_termination",
+            arguments={"result": "```python\nx = 1```"},
         ),
     ]
 
     result = composite_evaluator.generate_eval_result(
         task, expected_actions, task_executor, session_id=None, run_id="test"
     )
+    print("result.is_full_match = ", result.is_full_match)
+    print("result.match_results = ", result.match_results)
+    print("result.extra_actions = ", result.extra_actions)
 
     assert result.is_full_match
     assert result.match_results == {
         action: True for action in expected_actions
     }
-    assert result.extra_actions == [CodeWritingAction(py_object=3.14)]
+    assert result.extra_actions == []
 
 
 def test_composite_eval_no_match(

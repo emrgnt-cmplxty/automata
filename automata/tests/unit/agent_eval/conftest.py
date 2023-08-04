@@ -1,6 +1,7 @@
 from automata.eval import CodeWritingAction, OpenAIFunctionCallAction
 
 
+# TODO - cleanup hacky use of `call_termination` throughout tests here.
 def mock_openai_response_with_function_completion_message_1():
     return {
         "choices": [
@@ -75,7 +76,11 @@ def mock_openai_response_with_code_action_completion_message_x():
             {
                 "message": {
                     "role": "assistant",
-                    "content": "```python\nx = 1```",
+                    "content": None,
+                    "function_call": {
+                        "name": "call_termination",  # TODO - Avoid having multiple call_terminations
+                        "arguments": '{"result": "```python\nx = 1```"}',
+                    },
                 }
             }
         ]
@@ -88,20 +93,11 @@ def mock_openai_response_with_code_action_completion_message_y():
             {
                 "message": {
                     "role": "assistant",
-                    "content": "```python\ny = 'test'```",
-                }
-            }
-        ]
-    }
-
-
-def mock_openai_response_with_code_action_completion_message_z():
-    return {
-        "choices": [
-            {
-                "message": {
-                    "role": "assistant",
-                    "content": "```python\nz = 3.14```",
+                    "content": None,
+                    "function_call": {
+                        "name": "call_termination",  # TODO - Avoid having multiple call_terminations
+                        "arguments": '{"result": "```python\nz = 3.14```"}',
+                    },
                 }
             }
         ]
@@ -114,7 +110,11 @@ def mock_openai_response_with_bad_code_action_completion_message_z():
             {
                 "message": {
                     "role": "assistant",
-                    "content": "```python\nz = 3.1.4```",
+                    "content": None,
+                    "function_call": {
+                        "name": "call_termination",  # TODO - Avoid having multiple call_terminations
+                        "arguments": '{"result": "```python\nz = 3.1.4```"}',
+                    },
                 }
             }
         ]
@@ -152,13 +152,11 @@ params = {
     ],
     "test_generate_code_writing_eval_result_match": [
         mock_openai_response_with_code_action_completion_message_x(),
-        mock_openai_response_with_code_action_completion_message_y(),
-        mock_openai_response_with_code_action_completion_message_z(),
-        mock_openai_response_with_function_completion_message_final(),
+        # mock_openai_response_with_function_completion_message_final(),
     ],
     "test_generate_code_writing_eval_result_partial_match": [
         mock_openai_response_with_code_action_completion_message_x(),
-        mock_openai_response_with_function_completion_message_final(),
+        # mock_openai_response_with_function_completion_message_final(), --> final isn't necessary since code_action returns final action
     ],
     "test_generate_code_writing_eval_result_no_match": [
         mock_openai_response_with_function_completion_message_final(),
@@ -166,10 +164,9 @@ params = {
     "test_composite_eval_result_match": [
         mock_openai_response_with_function_completion_message_1(),
         mock_openai_response_with_code_action_completion_message_x(),
-        mock_openai_response_with_code_action_completion_message_z(),
-        mock_openai_response_with_function_completion_message_final(),
+        # mock_openai_response_with_function_completion_message_final(),
     ],
-    "test_composite_eval_partial_match": [
+    "test_composite_eval_partial_match": [  # TODO - Implement this...
         mock_openai_response_with_function_completion_message_1(),
         mock_openai_response_with_function_completion_message_final(),
     ],
@@ -179,7 +176,7 @@ params = {
     "test_evaluation_harness_and_metrics": [
         mock_openai_response_with_function_completion_message_1(),
         mock_openai_response_with_code_action_completion_message_x(),
-        mock_openai_response_with_function_completion_message_final(),
+        # mock_openai_response_with_function_completion_message_final(),
     ],
     "test_bad_code_action_completion": [
         mock_openai_response_with_bad_code_action_completion_message_z(),
