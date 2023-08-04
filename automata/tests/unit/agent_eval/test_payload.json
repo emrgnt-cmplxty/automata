@@ -20,14 +20,15 @@
             "expected_actions": [
                 {
                     "type": "CodeWritingAction",
-                    "object_type": "{object}",
-                    "object_value_repr": "None"
+                    "py_object": "{py_object}"
                 }
             ]
         },
         "entries": [
-            {"object": "GitHubClient"},
-            {"object": "ChromaVectorDatabase"}
+            {
+                "object": "CodeWritingAction", 
+                "py_object": "{\"py/object\": \"automata.eval.agent.code_writing_eval.CodeWritingAction\", \"py_object\": \"test2\", \"error\": null}"
+            }
         ]
     }
 ]

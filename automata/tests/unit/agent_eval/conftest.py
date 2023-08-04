@@ -128,9 +128,12 @@ EXPECTED_FUNCTION_ACTIONS = [
 
 
 EXPECTED_CODE_ACTIONS = [
-    CodeWritingAction(object_type="int", object_value_repr="1", error=None),
-    CodeWritingAction(object_type="str", object_value_repr="test"),
+    CodeWritingAction(py_object=1, error=None),
+    CodeWritingAction(py_object="test", error=None),
 ]
+COMPLICATED_ACTION = CodeWritingAction(
+    py_object=CodeWritingAction(py_object="test2", error=None), error=None
+)
 
 
 params = {

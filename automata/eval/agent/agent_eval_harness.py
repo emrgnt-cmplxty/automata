@@ -75,16 +75,21 @@ class AgentEvalSetLoader:
 
         try:
             logging.info(f"Loading json from {self.filepath}...")
+            print("loading data...")
             with open(self.filepath, "r") as f:
                 data = json.load(f)
-
+            print("loaded data...")
+            print("data =", data)
             payloads = []
             for item in data:
                 template = item["template"]
                 entries = item["entries"]
 
                 for entry in entries:
+                    print(f"template = ", template)
+                    print(f"formatting payload entry {entry}...")
                     payload = format_values(template, entry)
+                    print("formatted payload = ", payload)
                     payloads.append(payload)
 
             logging.info(f"Loaded {len(payloads)} tasks.")
