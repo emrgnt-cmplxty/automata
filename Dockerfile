@@ -7,14 +7,15 @@ WORKDIR /automata
 # Install dependencies
 RUN apt-get update && apt-get install -y gcc g++ curl git
 RUN pip install --no-cache-dir poetry
-RUN poetry config virtualenvs.create false
-RUN poetry install
 
 # Clone the repository
 RUN git clone https://github.com/emrgnt-cmplxty/automata.git .
 
 # Initialize and update submodules
 RUN git submodule update --init --recursive
+
+RUN poetry config virtualenvs.create false
+RUN poetry install
 
 # Install Node.js
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
