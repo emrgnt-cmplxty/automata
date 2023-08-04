@@ -210,9 +210,6 @@ def test_composite_eval_result_match(
     result = composite_evaluator.generate_eval_result(
         task, expected_actions, task_executor, session_id=None, run_id="test"
     )
-    print("result.is_full_match = ", result.is_full_match)
-    print("result.match_results = ", result.match_results)
-    print("result.extra_actions = ", result.extra_actions)
 
     assert result.is_full_match
     assert result.match_results == {
