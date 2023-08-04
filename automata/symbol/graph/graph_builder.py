@@ -70,20 +70,19 @@ class GraphBuilder:
             self.index = (
                 None if from_pickle else _load_index_protobuf(self.index_path)
             )
-            if self.index is not None:
-                for document in self.index.documents:
-                    self._add_symbol_vertices(document)
-                    if self.build_relationships:
-                        self._process_relationships(document)
-                    if self.build_references:
-                        self._process_references(document)
-                    if self.build_caller_relationships:
-                        self._process_caller_callee_relationships(document)
-            else:
+            if self.index is None:
                 raise ValueError(
                     "Index file could not be loaded. Please check if the index file exists and is accessible."
                 )
 
+            for document in self.index.documents:
+                self._add_symbol_vertices(document)
+                if self.build_relationships:
+                    self._process_relationships(document)
+                if self.build_references:
+                    self._process_references(document)
+                if self.build_caller_relationships:
+                    self._process_caller_callee_relationships(document)
             if save_graph_pickle:
                 with open(graph_pickle_path, "wb") as f:
                     pickle.dump(self._graph, f)
