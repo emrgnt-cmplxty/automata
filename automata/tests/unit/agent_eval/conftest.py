@@ -75,7 +75,11 @@ def mock_openai_response_with_code_action_completion_message_x():
             {
                 "message": {
                     "role": "assistant",
-                    "content": "```python\nx = 1```",
+                    "content": None,
+                    "function_call": {
+                        "name": "call_termination",
+                        "arguments": '{"result": "```python\nx = 1```"}',
+                    },
                 }
             }
         ]

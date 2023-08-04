@@ -5,12 +5,15 @@
         "expected_actions": [
             {
                 "type": "CodeWritingAction",
-                "output_object": "{object}"
+                "py_object": "{py_object}"
             }
         ]
     },
     "entries": [
-        {"instruction": "creates a valid instance of a `Symbol` with ", "object": {"py/object": "automata.symbol.symbol_base.Symbol", "uri": "scip-python python automata v0.0.0 `config.automata_agent_config`/AutomataAgentConfig#description.", "scheme": "scip-python", "package": {"py/object": "automata.symbol.symbol_base.SymbolPackage", "manager": "python", "name": "automata", "version": "v0.0.0"}, "descriptors": {"py/tuple": [{"py/object": "automata.symbol.symbol_base.SymbolDescriptor", "name": "config.automata_agent_config", "suffix": 1, "disambiguator": null}, {"py/object": "automata.symbol.symbol_base.SymbolDescriptor", "name": "AutomataAgentConfig", "suffix": 2, "disambiguator": null}, {"py/object": "automata.symbol.symbol_base.SymbolDescriptor", "name": "description", "suffix": 3, "disambiguator": null}]}}}
+        {
+            "instruction": "Create a CodeWritingAction with a py_object \"test_2\" and no error.", 
+            "py_object": "{\"py/object\": \"automata.eval.agent.code_writing_eval.CodeWritingAction\", \"py_object\": \"test_2\", \"error\": null}"
+        }
     ]
     }
 ]

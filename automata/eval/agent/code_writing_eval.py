@@ -7,7 +7,7 @@ import jsonpickle
 from automata.core.base import AutomataError
 from automata.eval.agent.agent_eval import AgentEval
 from automata.eval.eval_base import Action, Payload, register_action
-from automata.llm import LLMChatMessage
+from automata.llm import LLMChatMessage, OpenAIChatMessage
 
 logger = logging.getLogger(__name__)
 
@@ -107,23 +107,27 @@ class CodeWritingEval(AgentEval):
 
         actions: List[Action] = []
 
-        if not message.content:
+        if (
+            not isinstance(message, OpenAIChatMessage)
+            or not message.function_call
+            or message.function_call.name != "call_termination"
+        ):
             return actions
 
-        # Parse the code snippet to extract set variables and their types
-        try:
-            parsed_snippets = self._parse_code_snippet(message.content)
-        except Exception as e:
-            logger.debug(f"Failed to parse code snippet with {e}")
-            parsed_snippets = []
+        arguments = message.function_call.arguments
 
-        # Clean errors from parsed snippet
+        if "result" not in arguments:
+            return actions
+
+        parsed_snippets = self._parse_code_snippet(arguments["result"])
+
         for snippet in parsed_snippets:
             action = CodeWritingAction(
                 py_object=snippet.get("py_object"),
                 error=snippet.get("error"),
             )
             actions.append(action)
+
         return actions
 
     def _parse_code_snippet(self, raw_content: str) -> List[Dict[str, Any]]:
