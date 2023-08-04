@@ -22,7 +22,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 # Install dependencies and run indexing on the local codebase
-RUN automata install-indexing
+RUN poetry run automata install-indexing
 
 # Create a script that will be run when the container is started
 RUN echo "#!/bin/bash\n\
