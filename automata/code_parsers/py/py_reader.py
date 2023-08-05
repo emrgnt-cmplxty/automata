@@ -28,6 +28,11 @@ class PyReader:
     def __init__(self) -> None:
         pass
 
+    def __eq__(self, other: object) -> bool:
+        # Since there are no internal variables, just check if other is an
+        # instance of PyReader
+        return isinstance(other, PyReader)
+
     def get_source_code(
         self, module_dotpath: str, node_path: Optional[str] = None
     ) -> str:
