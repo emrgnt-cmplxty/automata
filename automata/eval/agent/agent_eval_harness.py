@@ -85,7 +85,6 @@ class AgentEvalSetLoader:
                 for entry in entries:
                     payload = format_values(template, entry)
                     payloads.append(payload)
-
             logging.info(f"Loaded {len(payloads)} tasks.")
         except Exception as e:
             raise EvalLoadingError from e

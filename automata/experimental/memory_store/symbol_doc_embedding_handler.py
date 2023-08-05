@@ -73,7 +73,7 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
         existing_embedding = self.embedding_db.get(symbol.dotpath)
         if (
             existing_embedding.symbol != symbol
-            or existing_embedding.source_code != source_code
+            and existing_embedding.source_code == source_code
         ):
             logger.debug(
                 f"Rolling forward the embedding for {existing_embedding.symbol} to {symbol}"
@@ -82,5 +82,9 @@ class SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):
             existing_embedding.symbol = symbol
             existing_embedding.source_code = source_code
             self.embedding_db.add(existing_embedding)
+        elif existing_embedding.source_code != source_code:
+            self.embedding_db.discard(symbol.dotpath)
+            self._create_new_embedding(source_code, symbol)
+
         else:
             logger.debug(f"Doing nothing for symbol {symbol}")

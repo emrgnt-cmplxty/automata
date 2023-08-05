@@ -29,13 +29,16 @@ class PyCodeWriter:
         pass
 
     def __init__(self, py_reader: PyReader) -> None:
-        """
-        Initialize the PyCodeWriter with a PyReader instance
-
-        Args:
-            py_reader (PyReader): The PyReader instance to use
-        """
         self.py_reader = py_reader
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, PyCodeWriter):
+            return False
+        # Since there are no internal variables, just check if other is an
+        # instance of PyReader
+        return self.py_reader == other.py_reader and isinstance(
+            other, PyCodeWriter
+        )
 
     def create_new_module(
         self, module_dotpath: str, module: ast.Module, do_write: bool = False
