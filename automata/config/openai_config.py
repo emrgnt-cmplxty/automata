@@ -119,7 +119,7 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
     _config: OpenAIAutomataAgentConfig = PrivateAttr()
 
     @staticmethod
-    def create_config(config_name: Optional[AgentConfigName]) -> OpenAIAutomataAgentConfig:  # type: ignore
+    def create_config(config_name: Optional[AgentConfigName] = None) -> OpenAIAutomataAgentConfig:  # type: ignore
         if config_name:
             return OpenAIAutomataAgentConfig.load(config_name)
         return OpenAIAutomataAgentConfig()
