@@ -1,6 +1,4 @@
 """Implements an evaluation for code writing ability."""
-import ast
-import json
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -77,16 +75,16 @@ class CodeWritingAction(Action):
                 "Expected a string, but received a non-string object."
             )
 
-        python_obj = ast.literal_eval(json_string)
+        # Replace single quotes with double quotes
+        json_string_with_double_quotes = json_string.replace("'", '"')
 
-        # Convert the Python object back to a JSON string
-        json_string_corrected = json.dumps(python_obj)
-
-        # Decode with jsonpickle
-        py_object = jsonpickle.decode(json_string_corrected)
+        # Replace None with null
+        json_string_with_double_quotes = (
+            json_string_with_double_quotes.replace("None", "null")
+        )
 
         # Decode the corrected JSON string using jsonpickle
-        # py_object = jsonpickle.decode(json_string_with_double_quotes)
+        py_object = jsonpickle.decode(json_string_with_double_quotes)
 
         error = payload.get("error")
         if error is not None and not isinstance(error, str):
