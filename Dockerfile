@@ -21,12 +21,10 @@ RUN poetry install
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
-# Install dependencies and run indexing on the local codebase
-RUN poetry run automata install-indexing
-
 # Create a script that will be run when the container is started
 RUN echo "#!/bin/bash\n\
 poetry run automata configure --GITHUB_API_KEY=\$GITHUB_API_KEY --OPENAI_API_KEY=\$OPENAI_API_KEY\n\
+poetry run automata install-indexing\n\
 poetry run automata run-code-embedding\n\
 poetry run automata run-doc-embedding --embedding-level=2\n\
 exec \"\$@\"" > entrypoint.sh
