@@ -38,7 +38,6 @@ class PyInterpreter:
             # Execute the code within the existing execution context
             code = self._clean_markdown(code)
             payload = "\n".join(self.execution_context) + "\n" + code
-            print("payload = ", payload)
             with contextlib.redirect_stdout(output_buffer):
                 exec(payload, {})
             execution_output = output_buffer.getvalue().strip()

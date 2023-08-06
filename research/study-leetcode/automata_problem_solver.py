@@ -1,7 +1,6 @@
 # sourcery skip: avoid-global-variables, require-parameter-annotation, require-return-annotation
 """Study the dataset."""
 import argparse
-import logging
 import os
 import textwrap
 
@@ -200,7 +199,7 @@ class LeetCodeLoader:
     def get_problem(self, idx):
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
-        return f"{row['title']}:\n{row['description']}"
+        return f"{row['title']}:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - {row['python3_code_snippet']}"
 
 
 def main():
@@ -240,7 +239,8 @@ def main():
     args = parser.parse_args()
 
     loader = LeetCodeLoader(args.data_path)
-    problem = loader.get_problem(2)
+    problem = loader.get_problem(100)
+    print(f"Initialize for problem {problem}")
 
     embedding_provider = OpenAIEmbeddingProvider()
     finder = OpenAISolutionFinder(
