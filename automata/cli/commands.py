@@ -25,7 +25,7 @@ logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
 
 
-def reconfigure_logging(log_level_str: str) -> None:
+def configure_logging(log_level_str: str) -> None:
     """Reconfigures the logging for the local project."""
 
     log_level = logging.DEBUG
@@ -79,7 +79,7 @@ def configure(
 
     logger.info("Configuring Automata:")
 
-    reconfigure_logging(kwargs.get("log-level", "INFO"))
+    configure_logging(kwargs.get("log-level", "INFO"))
 
     DOTENV_PATH = ".env"
     SCRIPTS_PATH = "scripts/"
@@ -140,7 +140,7 @@ def install_indexing(ctx: click.Context, *args, **kwargs) -> None:
         install_indexing,
     )
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    configure_logging(kwargs.get("log-level", "DEBUG"))
 
     logger.info("Installing indices")
     install_indexing()
@@ -157,7 +157,7 @@ def run_code_embedding(ctx: click.Context, *args, **kwargs) -> None:
 
     from automata.cli.scripts.run_code_embedding import main
 
-    reconfigure_logging(kwargs.get("log-level", "INFO"))
+    configure_logging(kwargs.get("log-level", "INFO"))
     logger.debug("Calling run_code_embedding")
     main(**kwargs)
 
@@ -182,7 +182,7 @@ def run_doc_embedding(
 
     from automata.cli.scripts.run_doc_embedding import main
 
-    reconfigure_logging(kwargs.get("log-level", "INFO"))
+    configure_logging(kwargs.get("log-level", "INFO"))
     logger.info("Calling run_doc_embedding")
 
     result = main(overwrite=overwrite, *args, **kwargs)
@@ -197,7 +197,7 @@ def run_doc_post_process(ctx: click.Context, *args, **kwargs) -> None:
 
     from automata.cli.scripts.run_doc_post_process import main
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    configure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running doc post-process")
     main(**kwargs)
 
@@ -220,7 +220,7 @@ def run_agent(ctx: click.Context, *args, **kwargs) -> None:
     """
     from automata.cli.scripts.run_agent import main
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    configure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running agent")
     main(**kwargs)
 
@@ -243,7 +243,7 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     if kwargs.get("instructions"):
         raise ValueError("Instructions should not be passed to run_agent_eval")
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    configure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running Evaluation")
     main(**kwargs)
 
@@ -267,6 +267,6 @@ def run_tool_eval(ctx: click.Context, *args, **kwargs) -> None:
     if kwargs.get("instructions"):
         raise ValueError("Instructions should not be passed to run_agent_eval")
 
-    reconfigure_logging(kwargs.get("log-level", "DEBUG"))
+    configure_logging(kwargs.get("log-level", "DEBUG"))
     logger.info("Running Evaluation")
     main(**kwargs)

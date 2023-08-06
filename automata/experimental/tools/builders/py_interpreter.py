@@ -1,4 +1,6 @@
 """This module contains the PyInterpreterToolkitBuilder class."""
+import contextlib
+import io
 import logging
 from typing import List
 
@@ -31,12 +33,18 @@ class PyInterpreter:
 
     def execute_code(self, code: str) -> str:
         """Attempts to execute the provided code."""
+        output_buffer = io.StringIO()
         try:
             # Execute the code within the existing execution context
             code = self._clean_markdown(code)
             payload = "\n".join(self.execution_context) + "\n" + code
-            exec(payload)
-            return PyInterpreter.SUCCESS_STRING
+            with contextlib.redirect_stdout(output_buffer):
+                exec(payload)
+            execution_output = output_buffer.getvalue().strip()
+            result = PyInterpreter.SUCCESS_STRING
+            if execution_output:
+                result += f"Output:\n{execution_output}"
+            return result
         except Exception as e:
             return f"Execution failed with error = {e}"
 

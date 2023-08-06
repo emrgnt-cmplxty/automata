@@ -100,7 +100,7 @@ class AgentConfig(ABC, BaseModel):
     tools: List[Tool] = []
     instructions: str = ""
     description: str = ""
-    model: str = ""
+    model: str = "gpt-4"
     stream: bool = False
     verbose: bool = False
     max_iterations: int = 50
