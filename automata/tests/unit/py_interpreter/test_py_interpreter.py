@@ -128,3 +128,116 @@ def test_build_py_writer():
     )
 
     assert result_1 == PyInterpreter.SUCCESS_STRING
+
+
+import textwrap
+
+example_text = textwrap.dedent(
+    """
+```python
+import heapq
+
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+class Solution:
+    def mergeKLists(self, lists):
+        dummy = ListNode(None)
+        curr = dummy
+        h = []
+        for i in range(len(lists)):
+            if lists[i] is not None:
+                h.append((lists[i].val, i))
+                lists[i] = lists[i].next
+        heapq.heapify(h)
+        while h:
+            val, i = heapq.heappop(h)
+            curr.next = ListNode(val)
+            curr = curr.next
+            if lists[i] is not None:
+                heapq.heappush(h, (lists[i].val, i))
+                lists[i] = lists[i].next
+        return dummy.next
+
+# function to convert list to linked list
+
+def listToLinkedList(lst):
+    dummy = ListNode(0)
+    ptr = dummy
+    for i in lst:
+        ptr.next = ListNode(i)
+        ptr = ptr.next
+    return dummy.next
+
+# function to convert linked list to list
+def linkedListToList(node):
+    res = []
+    while node:
+        res.append(node.val)
+        node = node.next
+    return res
+```
+"""
+)
+
+
+def test_python_interpreter_execute_code_advanced():
+    interpreter = PyInterpreter()
+    assert (
+        interpreter.execute_code(example_text) == PyInterpreter.SUCCESS_STRING
+    )
+
+
+example_text_2 = textwrap.dedent(
+    """
+import heapq
+
+# Define the structure for the linked list node.
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+# Main function to solve the problem
+def mergeKLists(lists):
+    # Custom comparison for heap elements
+    ListNode.__lt__ = lambda x, y : x.val < y.val
+    
+    # Initialize min heap and fill it
+    preprocess = [i for i in lists if i]
+    heapq.heapify(preprocess)
+
+    # Use dummy head technique to easily return the result
+    dummyHead = node = ListNode(0)
+
+    while preprocess:
+        temp = heapq.heappop(preprocess)
+        if temp.next:
+            heapq.heappush(preprocess, temp.next)
+        node.next = temp
+        node = node.next
+
+    return dummyHead.next
+"""
+)
+
+
+def test_python_interpreter_execute_code_advanced_2():
+    interpreter = PyInterpreter()
+    assert (
+        interpreter.execute_code(example_text_2)
+        == PyInterpreter.SUCCESS_STRING
+    )
+
+
+example_text_3 = "```python\nimport heapq\n\ndef smallestRange(nums):\n    minHeap = []\n    maxVal = -1e9\n    \n    for i, lst in enumerate(nums):\n        heapq.heappush(minHeap, (lst[0], i))\n        maxVal = max(maxVal, lst[0])\n        \n    listIndices = [0] * len(nums)\n    minRange = 1e9\n    start, end = -1, -1\n    \n    while len(minHeap) == len(nums):\n        val, listIdx = heapq.heappop(minHeap)\n        range_ = maxVal - val\n        \n        if range_ < minRange:\n            minRange = range_\n            start, end = val, maxVal\n            \n        listIndices[listIdx] += 1\n        if listIndices[listIdx] < len(nums[listIdx]):\n            newVal = nums[listIdx][listIndices[listIdx]]\n            heapq.heappush(minHeap, (newVal, listIdx))\n            maxVal = max(maxVal, newVal)\n            \n    return [start, end]\n\nprint(smallestRange([[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]))\nprint(smallestRange([[1,2,3],[1,2,3],[1,2,3]]))\n```"
+
+
+def test_python_interpreter_execute_code_advanced_3():
+    interpreter = PyInterpreter()
+    result = interpreter.execute_code(example_text_3)
+    assert (
+        result == f"{PyInterpreter.SUCCESS_STRING}\nOutput:\n[20, 24]\n[1, 1]"
+    )

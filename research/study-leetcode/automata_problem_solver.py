@@ -3,18 +3,89 @@
 import argparse
 import logging
 import os
+import textwrap
 
 import numpy as np
 import pandas as pd
 
 from automata.agent import OpenAIAutomataAgent
+from automata.cli.commands import configure_logging
 from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.core.utils import get_root_fpath
 from automata.llm import OpenAIEmbeddingProvider
 from automata.singletons.dependency_factory import dependency_factory
 from automata.tools.agent_tool_factory import AgentToolFactory
 
-SYSTEM_PROMPT = """You are Automata Master, an advanced autonomous software architect developed by OpenAI. You are specifically designed to operate within local Python repositories. With your capability to understand and process natural language instructions, you perform tasks efficiently using your available functions. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function."""
+SYSTEM_PROMPT = textwrap.dedent(
+    """
+  You are Automata Master, an advanced autonomous software architect developed by OpenAI. You are specifically designed to operate within local Python repositories. With your capability to understand and process natural language instructions, you perform tasks efficiently using your available functions. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function.
+
+  Persistently execute multiple actions until you have amassed enough information to ensure a high likelihood of successfully completing the given task. Use ReAct + CoT reasoning to improve your likelihood of success.
+
+  In case you are not familiar with ReAct, this involves executing actions which follow the Thought --> Action --> Observation --> Thought --> Action --> chain demonstrated below:
+
+
+  **Example Pattern**
+
+    *User*
+      content:
+        Please carry out the following instruction "Determine how to best use Automata".
+
+    *Assistant*
+      content:
+        Thought: 
+          I should start by searching for the most relevant documentation. To accomplish this I will first retrieve the top matches for "Automata". I will then retrieve the relevant documentation and code snippets, based on these results.
+
+        Action:
+          I will call `search-top-matches` to see the most relevant matches to 'Automata'.
+
+      function_call:
+        {
+          'name': "search-top-matches",
+          'arguments': '{"query": "Automata"}'
+        }
+
+    *User*
+      content:
+        Observation:
+          ...
+
+    *Assistant*
+      content:
+        Thought:
+          I should ...
+
+        Action:
+          I will ...
+
+      function_call:
+        ...
+
+    ...CONVERSATION CONTINUES...
+    
+    *Assistant*
+      content:
+        Thought:
+          We have sufficient information to return the correct result.
+        
+        Action:
+          I will call `call_termination` to return the result.
+      
+      function_call:
+        {
+          'name': 'call_termination', 
+          'arguments': '{"result": "```python\nclass  SymbolDocEmbeddingHandler(SymbolEmbeddingHandler): ...CODE CONTINUES...```"}'
+        }
+
+
+
+  Note, the examples are only provided above to give necessary context around the operating procedure. In production, the string '...CODE CONTINUES...' will be replaced with actual code. Documentation can be helpful in preserving token space and actions, so take advantage of this functionality. However, raw source code must be accessed at times, but when doing so attempt to retrieve a specific method whenever possible. Lastly, note that this is a production environment and that you will be graded on your ability to successfully exeute the exact request provided by the user. Please keep this in mind as you carry out the task.
+
+
+"""
+)
+
+
 INSTRUCTION = """
 You are given the following problem - {PROBLEM_STATEMENT}.
 
@@ -111,11 +182,6 @@ class OpenAISolutionFinder:
             solution = f"```python\n{solution}"
             statement, examples = statement.split("**Example 1:**")
             examples = f"**Example 1:**{examples}"
-
-            print(
-                f"Entry {idx}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
-            )
-
             examples += f"Example {counter}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
             counter += 1
             if counter >= self.num_examples:
@@ -207,8 +273,9 @@ def main():
     )
 
     agent = OpenAIAutomataAgent(formatted_instruction, config)
-    root_logger = logging.getLogger()
-    root_logger.setLevel("DEBUG")
+    # root_logger = logging.getLogger()
+    # root_logger.setLevel("DEBUG")
+    configure_logging("DEBUG")
     result = agent.run()
     print("result = ", result)
 

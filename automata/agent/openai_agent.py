@@ -1,5 +1,4 @@
 """Defines the concrete OpenAIAutomataAgent class."""
-import logging
 import uuid
 from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Optional, Sequence
@@ -27,8 +26,6 @@ from automata.llm import (
     OpenAITool,
 )
 from automata.tools import ToolExecution, ToolExecutor
-
-logger = logging.getLogger(__name__)
 
 
 class OpenAIAutomataAgent(Agent):
@@ -77,19 +74,19 @@ class OpenAIAutomataAgent(Agent):
         if self.completed or self.iteration_count > self.config.max_iterations:
             raise AgentStopIterationError
 
-        logging.debug(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
+        print(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
         self.chat_provider.add_message(assistant_message, self.session_id)
         if not self.config.stream:
-            logger.debug(f"{assistant_message}\n")
-        logging.debug(f"\n{('-' * 120)}")
+            print(f"{assistant_message}\n")
+        print(f"\n{('-' * 120)}")
 
         self.iteration_count += 1
 
         user_message = self._get_next_user_response(assistant_message)
-        logger.debug(f"Latest User Message -- \n{user_message}\n")
+        print(f"Latest User Message -- \n{user_message}\n")
         self.chat_provider.add_message(user_message, self.session_id)
-        logging.debug(f"\n{('-' * 120)}")
+        print(f"\n{('-' * 120)}")
 
         return (assistant_message, user_message)
 
@@ -264,7 +261,7 @@ class OpenAIAutomataAgent(Agent):
                     content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
             except Exception as e:
-                logging.exception(f"Tool execution failed: {e}")
+                print(f"Tool execution failed: {e}")
         return OpenAIChatMessage(
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{self._get_iteration_status()}",
@@ -290,11 +287,11 @@ class OpenAIAutomataAgent(Agent):
                 max_iterations=self.config.max_iterations,
                 max_tokens=self.config.max_tokens,
                 estimated_tokens=estimated_tokens_consumed,
-                instructions=self.instructions,
+                instructions=f"{self.instructions[:200]}...",
             )
         else:
             return OpenAIAutomataAgent.STOPPING_SUFFIX.format(
-                instructions=self.instructions
+                instructions=f"{self.instructions[:200]}..."
             )
 
     def _setup(self) -> None:
@@ -308,23 +305,28 @@ class OpenAIAutomataAgent(Agent):
             AgentError: If the agent fails to initialize.
         """
 
-        logger.debug(f"Setting up agent with tools = {self.config.tools}")
+        print(f"Setting up agent with tools = {self.config.tools}")
         self._conversation.add_message(
             OpenAIChatMessage(
                 role="system", content=self.config.system_instruction
             ),
             self.session_id,
         )
+
+        print(
+            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
+        )
+
         for message in list(
             self._build_initial_messages(
                 {"user_input_instructions": self.instructions}
             )
         ):
-            logger.debug(
+            print(
                 f"Adding the following initial mesasge to the conversation {message}"
             )
             self._conversation.add_message(message, self.session_id)
-            logging.debug(f"\n{('-' * 120)}")
+            print(f"\n{('-' * 120)}")
 
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
@@ -337,13 +339,7 @@ class OpenAIAutomataAgent(Agent):
         self.tool_executor = ToolExecutor(ToolExecution(self.tools))
 
         self._initialized = True
-
-        logger.debug(
-            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
-        )
-        logger.debug(
-            f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n"
-        )
+        print(f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n")
 
     def _get_termination_tool(self) -> OpenAITool:
         """Gets the tool responsible for terminating the OpenAI agent."""

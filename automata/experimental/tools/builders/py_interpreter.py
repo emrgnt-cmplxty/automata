@@ -38,12 +38,13 @@ class PyInterpreter:
             # Execute the code within the existing execution context
             code = self._clean_markdown(code)
             payload = "\n".join(self.execution_context) + "\n" + code
+            print("payload = ", payload)
             with contextlib.redirect_stdout(output_buffer):
-                exec(payload)
+                exec(payload, {})
             execution_output = output_buffer.getvalue().strip()
             result = PyInterpreter.SUCCESS_STRING
             if execution_output:
-                result += f"Output:\n{execution_output}"
+                result += f"\nOutput:\n{execution_output}"
             return result
         except Exception as e:
             return f"Execution failed with error = {e}"
@@ -88,7 +89,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
             Tool(
                 name="append-and-execute-python-code",
                 function=self.python_interpreter.persistent_execute,
-                description="Attempts to execute the given Python markdown snippet and then persists the newly given state across executions if successful. E.g. a snippet which reads like '```python\nx=5```'. This is a very useful tool for development, note that the environment has all relevant dependencies pre-installed.",
+                description="Attempts to execute the given Python markdown snippet and then persists the newly given state across executions if successful. This tool expects an snippet which reads like '```python\nx=5```'. Note that this is a very useful tool for software development. Further, note that the environment has all relevant dependencies pre-installed.",
             ),
             Tool(
                 name="clear-and-execute-execute-python-code",
@@ -113,7 +114,7 @@ class PyInterpreterOpenAIToolkitBuilder(
         properties = {
             "code": {
                 "type": "string",
-                "description": "The given Python code to execute, with newlines separated by the newline char '\n'.",
+                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\n[CODE]``` and with newlines separated by the newline char '\n'.",
             },
         }
         required = ["code"]
