@@ -4,7 +4,7 @@ import random
 
 import pytest
 
-from automata.cli.commands import reconfigure_logging
+from automata.cli.commands import configure_logging
 from automata.core.run_handlers import run_setup, run_with_eval
 from automata.eval import OpenAIFunctionCallAction, SymbolSearchEvalResult
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
@@ -181,7 +181,7 @@ def test_action_based_eval_tasks(
     automata_setup,
 ):
     """Test that the agent can execute a simple instruction."""
-    reconfigure_logging("DEBUG")
+    configure_logging("DEBUG")
     tools, agent_config_name = run_setup(agent_config, toolkit_list)
 
     _, task_registry, task_environment = automata_setup

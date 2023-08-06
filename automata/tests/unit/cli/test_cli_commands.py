@@ -41,7 +41,7 @@ def test_reconfigure_logging_debug():
         "logging.config.dictConfig"
     ) as mock_dictConfig:
         mock_get_logging_config.return_value = {}
-        automata.cli.commands.reconfigure_logging("DEBUG")
+        automata.cli.commands.configure_logging("DEBUG")
         mock_get_logging_config.assert_called_once_with(
             log_level=logging.DEBUG
         )
@@ -55,21 +55,21 @@ def test_reconfigure_logging_info():
         "logging.config.dictConfig"
     ) as mock_dictConfig:
         mock_get_logging_config.return_value = {}
-        automata.cli.commands.reconfigure_logging("INFO")
+        automata.cli.commands.configure_logging("INFO")
         mock_get_logging_config.assert_called_once_with(log_level=logging.INFO)
         mock_dictConfig.assert_called_once_with({})
 
 
 def test_reconfigure_logging_invalid():
     with pytest.raises(ValueError):
-        automata.cli.commands.reconfigure_logging("INVALID")
+        automata.cli.commands.configure_logging("INVALID")
 
 
 def test_cli_run_code_embedding():
     with patch(
         "automata.cli.scripts.run_code_embedding.main"
     ) as mock_main, patch(
-        "automata.cli.commands.reconfigure_logging"
+        "automata.cli.commands.configure_logging"
     ) as mock_reconfigure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
@@ -89,7 +89,7 @@ def test_cli_run_doc_embedding():
     with patch(
         "automata.cli.scripts.run_doc_embedding.main"
     ) as mock_main, patch(
-        "automata.cli.commands.reconfigure_logging"
+        "automata.cli.commands.configure_logging"
     ) as mock_reconfigure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
@@ -111,7 +111,7 @@ def test_cli_run_doc_post_process():
     with patch(
         "automata.cli.scripts.run_doc_post_process.main"
     ) as mock_main, patch(
-        "automata.cli.commands.reconfigure_logging"
+        "automata.cli.commands.configure_logging"
     ) as mock_reconfigure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
@@ -129,7 +129,7 @@ def test_cli_run_doc_post_process():
 
 def test_cli_run_agent():
     with patch("automata.cli.scripts.run_agent.main") as mock_main, patch(
-        "automata.cli.commands.reconfigure_logging"
+        "automata.cli.commands.configure_logging"
     ) as mock_reconfigure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
@@ -176,7 +176,7 @@ def test_reconfigure_logging_quiet_libraries():
         mock_logger = MagicMock(spec=logging.Logger)
         mock_getLogger.return_value = mock_logger
 
-        automata.cli.commands.reconfigure_logging("DEBUG")
+        automata.cli.commands.configure_logging("DEBUG")
 
         mock_get_logging_config.assert_called_once_with(
             log_level=logging.DEBUG
