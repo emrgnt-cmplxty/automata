@@ -41,9 +41,10 @@ class PyInterpreter:
             with contextlib.redirect_stdout(output_buffer):
                 exec(payload)
             execution_output = output_buffer.getvalue().strip()
-            return (
-                f"{PyInterpreter.SUCCESS_STRING}\nOutput:\n{execution_output}"
-            )
+            result = PyInterpreter.SUCCESS_STRING
+            if execution_output:
+                result += f"Output:\n{execution_output}"
+            return result
         except Exception as e:
             return f"Execution failed with error = {e}"
 
