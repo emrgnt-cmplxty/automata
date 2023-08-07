@@ -1,9 +1,14 @@
+"""
+This module provides an interface for interacting with GitHub repositories.
+"""
+
 import os
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
 from git import Git, Repo
 from github import (
+    Auth,
     Github,
     GitRef,
     Issue,
@@ -74,7 +79,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
     ) -> None:
         """Initialize the GitHub manager."""
         self.access_token = access_token
-        self.client = Github(access_token)
+        self.client = Github(auth=Auth.Token(self.access_token))
         repository_name = os.getenv("REPOSITORY_NAME")
         if not repository_name or repository_name == "your_repository_name":
             repository_name = "emrgnt-cmplxty/automata"
@@ -108,7 +113,7 @@ class GitHubClient(RepositoryClient, metaclass=Singleton):
         )
 
     def checkout_branch(
-        self, repo_local_path: str, branch_name: str, b=True
+        self, repo_local_path: str, branch_name: str, b: bool = True
     ) -> None:
         """Checkout a branch in the repository."""
         repo = Repo(repo_local_path)
