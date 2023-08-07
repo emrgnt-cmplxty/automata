@@ -513,7 +513,8 @@ def test_tool(request) -> TestTool:
 
 @pytest.mark.tool_name("TestTool")
 @pytest.mark.tool_description("A test tool for testing purposes")
-def test_tool_instantiation(test_tool):
+def test_tool_instantiation(test_tool: TestTool) -> None:
+    """Test that the TestTool class can be instantiated."""
     assert test_tool.name == "TestTool"
     assert test_tool.description == "A test tool for testing purposes"
     assert test_tool.function is not None
