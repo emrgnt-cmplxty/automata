@@ -201,9 +201,14 @@ class LeetCodeExamplesFinder:
             statement, solution = entry.split("```python")
             solution = f"```python\n{solution}"
             statement, local_examples = statement.split("**Example 1:**")
+            # examples.append(
+            #     f"Example {counter}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
+            # )
+            # We are ignoring similarity for now as it seems to confuse the model
             examples.append(
-                f"Example {counter}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
+                f"Example {counter}:\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
             )
+
             counter += 1
             if counter >= self.num_examples_to_screen:
                 break
