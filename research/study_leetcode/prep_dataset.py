@@ -12,7 +12,7 @@ FILE_NAME = "leetcode-solutions.json"
 
 # Load the JSON file into a pandas DataFrame
 df = pd.read_json(
-    os.path.join(get_root_fpath(), "research", "study-leetcode", FILE_NAME)
+    os.path.join(get_root_fpath(), "research", "study_leetcode", FILE_NAME)
 )
 
 print("df = ", df)

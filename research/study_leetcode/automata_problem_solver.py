@@ -132,7 +132,7 @@ Finally, return the final result as a python markdown snippet using `call_termin
 
 PROBLEM_DATA_PATH = "research/leetcode-hard-gym/leetcode_dataset/data/with_snippets/leetcode_hard_with_snippets_uncontaminated_tests.csv"
 SOLUTIONS_DATA_PATH = (
-    "research/study-leetcode/leetcode-solutions-embedded.json"
+    "research/study_leetcode/leetcode-solutions-embedded.json"
 )
 MAX_ENTRY_ID = 2000
 NUM_EXAMPLES = 5
