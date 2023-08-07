@@ -175,6 +175,16 @@ class FunctionCall(NamedTuple):
     ) -> "FunctionCall":
         """Create a FunctionCall from a response dictionary."""
 
+        def preprocess_json_string(json_string: str) -> str:
+            """Preprocess the JSON string to handle control characters."""
+            import re
+
+            # Match only the newline characters that are not preceded by a backslash
+            json_string = re.sub(r"(?<!\\)\n", "\\n", json_string)
+            # Do the same for tabs or any other control characters
+            json_string = re.sub(r"(?<!\\)\t", "\\t", json_string)
+            return json_string
+
         if (
             response_dict["name"] == "call_termination"
             and '"result":' in response_dict["arguments"]
@@ -185,10 +195,19 @@ class FunctionCall(NamedTuple):
                     response_dict["arguments"]
                 ),
             )
-        return cls(
-            name=response_dict["name"],
-            arguments=json.loads(response_dict["arguments"]),
-        )
+        try:
+            return cls(
+                name=response_dict["name"],
+                arguments=json.loads(
+                    preprocess_json_string(response_dict["arguments"])
+                ),
+            )
+        except Exception as e:
+            # TODO - put robust infra sot his bubbles back up to the agent
+            return cls(
+                name="error-occurred",
+                arguments={"error": f"Error occurred: {e}"},
+            )
 
     @staticmethod
     def handle_termination(arguments: str) -> Dict[str, str]:

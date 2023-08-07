@@ -2,7 +2,7 @@
 import contextlib
 import io
 import logging
-from typing import List
+from typing import List, Tuple
 
 # Import the entire symbol module so that we can properly patch convert_to_ast_object
 from automata.agent import (
@@ -31,38 +31,51 @@ class PyInterpreter:
     def __repr__(self) -> str:
         return f"PyInterpreter(execution_context={self.execution_context})"
 
-    def execute_code(self, code: str) -> str:
+    def _execute_code(
+        self, code: str, output_buffer: io.StringIO
+    ) -> Tuple[bool, str]:
+        """Attempts to execute the provided code."""
+        with contextlib.redirect_stdout(output_buffer):
+            exec(code, {})
+        execution_output = output_buffer.getvalue().strip()
+        result = PyInterpreter.SUCCESS_STRING
+        if execution_output:
+            result += f"\nOutput:\n{execution_output}"
+        return True, result
+
+    def _attempt_execution(self, code: str) -> Tuple[bool, str]:
         """Attempts to execute the provided code."""
         output_buffer = io.StringIO()
         try:
-            # Execute the code within the existing execution context
-            code = self._clean_markdown(code)
-            payload = "\n".join(self.execution_context) + "\n" + code
-            with contextlib.redirect_stdout(output_buffer):
-                exec(payload, {})
-            execution_output = output_buffer.getvalue().strip()
-            result = PyInterpreter.SUCCESS_STRING
-            if execution_output:
-                result += f"\nOutput:\n{execution_output}"
-            return result
+            return self._execute_code(code, output_buffer)
         except Exception as e:
-            return f"Execution failed with error = {e}"
+            print(f"EXECUTION EXCEPTION = {e}")
+            error_message = str(e) or "Unknown error occurred"
+            error_output = output_buffer.getvalue().strip()
+            if error_output:
+                error_message += f"\nOutput before error:\n{error_output}"
+            return False, f"Execution failed with error = {error_message}"
 
     def persistent_execute(self, code: str) -> str:
-        """
-        Executes the provided code and persists the context to the local execution buffer.
-        """
-        result = self.execute_code(code)
-        if result == PyInterpreter.SUCCESS_STRING:
+        """Executes the provided code and persists the context to the local execution buffer."""
+        code = self._clean_markdown(code)
+        payload = "\n".join(self.execution_context) + "\n" + code
+        status, result = self._attempt_execution(payload)
+        if status:
             self.execution_context.extend(
                 self._clean_markdown(code).split("\n")
             )
         return result
 
+    def standalone_execute(self, code: str) -> str:
+        """Executes the provided code, after executing code in the local execution buffer."""
+        code = self._clean_markdown(code)
+        payload = "\n".join(self.execution_context) + "\n" + code
+        _, result = self._attempt_execution(payload)
+        return result
+
     def clear_and_persistent_execute(self, code: str) -> str:
-        """
-        Clears the execution context and executes the provided code.
-        """
+        """Clears the execution context and executes the provided code."""
         self.execution_context.clear()
         return self.persistent_execute(code)
 
@@ -86,14 +99,19 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools for the interpreter."""
         return [
             Tool(
-                name="append-and-execute-python-code",
-                function=self.python_interpreter.persistent_execute,
-                description="Attempts to execute the given Python markdown snippet and then persists the newly given state across executions if successful. This tool expects an snippet which reads like '```python\nx=5```'. Note that this is a very useful tool for software development. Further, note that the environment has all relevant dependencies pre-installed.",
+                name="py-execute-discard",
+                function=self.python_interpreter.standalone_execute,
+                description="Attempts to execute the given Python markdown snippet in the local environment. Snippets are expected to read like '```python\\nx=5```'. The final return result contains the output text from execution and/or any associated errors.",
             ),
             Tool(
-                name="clear-and-execute-execute-python-code",
+                name="py-execute-persist",
+                function=self.python_interpreter.persistent_execute,
+                description="Similar to standalone py-execute-discard, except if successful, the provided code snippet is persisted in the local execution environment across interactions.",
+            ),
+            Tool(
+                name="py-clear-and-execute-persist",
                 function=self.python_interpreter.clear_and_persistent_execute,
-                description="Clears the current execution context and then attempts to execute the given Python markdown snippet. The latest executed code will persist if successful",
+                description="Similar to py-execute-persist, except the local environment is permanently cleared before running py-execute-persist.",
             ),
         ]
 

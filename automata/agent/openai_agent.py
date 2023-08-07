@@ -280,7 +280,7 @@ class OpenAIAutomataAgent(Agent):
         )
         if (
             self.iteration_count != self.config.max_iterations
-            or estimated_tokens_consumed > self.config.max_tokens
+            and estimated_tokens_consumed < self.config.max_tokens
         ):
             return OpenAIAutomataAgent.GENERAL_SUFFIX.format(
                 iteration_count=self.iteration_count,
