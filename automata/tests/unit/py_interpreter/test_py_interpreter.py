@@ -12,7 +12,10 @@ from automata.tools.tool_base import Tool
 def test_python_interpreter_init():
     interpreter = PyInterpreter()
     assert isinstance(interpreter, PyInterpreter)
-    assert interpreter.execution_context == []
+    assert (
+        interpreter.execution_context
+        == PyInterpreter.DEFAULT_CONTEXT.split("\n")
+    )
 
 
 def test_python_interpreter_execute_code():
@@ -23,7 +26,15 @@ def test_python_interpreter_execute_code():
     )
     assert (
         interpreter.standalone_execute("```python\ny = x + 5```")
-        == "Execution failed with error = name 'x' is not defined"
+        == "Execution failed with error 'name 'x' is not defined' after outputting None"
+    )
+
+
+def test_python_interpreter_assertion():
+    interpreter = PyInterpreter()
+    assert (
+        interpreter.standalone_execute("```python\nassert False```")
+        == "Execution failed with error 'An assertion error occurred on line 6' after outputting None"
     )
 
 
@@ -44,8 +55,9 @@ def test_python_interpreter_persistent_execute():
         interpreter.persistent_execute("z == 20")
         == PyInterpreter.SUCCESS_STRING
     )
-
-    assert interpreter.execution_context == [
+    assert interpreter.execution_context == interpreter.DEFAULT_CONTEXT.split(
+        "\n"
+    ) + [
         "x = 5",
         "y = x + 5",
         "z = x + y + 5",
@@ -66,14 +78,20 @@ def test_python_interpreter_clear_and_persistent_execute():
         interpreter.clear_and_persistent_execute("y = 10")
         == PyInterpreter.SUCCESS_STRING
     )
-    assert interpreter.execution_context == ["y = 10"]
+    assert (
+        interpreter.execution_context
+        == PyInterpreter.DEFAULT_CONTEXT.split("\n") + ["y = 10"]
+    )
 
 
 def test_python_interpreter_clear():
     interpreter = PyInterpreter()
     interpreter.persistent_execute("x = 5")
     interpreter.clear()
-    assert interpreter.execution_context == []
+    assert (
+        interpreter.execution_context
+        == PyInterpreter.DEFAULT_CONTEXT.split("\n")
+    )
 
 
 def test_python_interpreter_toolkit_builder_init():
@@ -242,3 +260,20 @@ def test_python_interpreter_execute_code_advanced_3():
     assert (
         result == f"{PyInterpreter.SUCCESS_STRING}\nOutput:\n[20, 24]\n[1, 1]"
     )
+
+
+def test_python_interpreter_execute_code_advanced_4():
+    example_text_4 = """```python\\nfrom typing import List\\n\\nclass Solution:\\n    def minReverseOperations(self, n: int, p: int, banned: List[int], k: int) -> List[int]:\\n        # Initialize the array with 0's, except at position p\\n        arr = [0 for _ in range(n)]\\n        arr[p] = 1\\n\\n        # Apply the banned positions\\n        for pos in banned:\\n            arr[pos] = 0\\n\\n        # Initialize the result array with -1's\\n        ans = [-1 for _ in range(n)]\\n\\n        # For each position, we check if we can move the 1 there\\n        for i in range(0, n):\\n            if i == p:  # No operations needed\\n                ans[i] = 0\\n                continue\\n\\n            # Using sliding window approach and two pointers\\n            j = max(0, i - k + 1)  # Start of the window\\n            while j + k - 1 < n:  # Until the window goes out of the array\\n                valid = True\\n                for banned_pos in banned:\\n                    if banned_pos >= j and banned_pos < j + k:  # If a banned position is in the window\\n                        valid = False\\n                        break\\n\\n                if valid and abs(p - i) % k == 0:  # If we can move the 1 inside the window\\n                    op_count = abs(p - i) // k\\n                    if ans[i] == -1 or ans[i] > op_count:  # We're looking for the minimum operation count\\n                        ans[i] = op_count\\n\\n                j += 1  # Slide the window\\n\\n        return ans\\n```"""
+
+    example_text_4 = """```python
+from typing import List
+
+class Solution:
+    def minReverseOperations(self, n: int, p: int, banned: List[int], k: int) -> List[int]:
+        return n
+    
+```"""
+
+    interpreter = PyInterpreter()
+    result = interpreter.persistent_execute(example_text_4)
+    result == PyInterpreter.SUCCESS_STRING

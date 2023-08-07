@@ -96,7 +96,7 @@ SYSTEM_PROMPT = textwrap.dedent(
       function_call:
         {
           'name': 'call_termination', 
-          'arguments': '{"result": "```python\\nclass  SymbolDocEmbeddingHandler(SymbolEmbeddingHandler): ...CODE CONTINUES...```"}'
+          'arguments': '{"result": "```python\\nclass  SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):\\n...CODE CONTINUES...```"}'
         }
 
 
@@ -122,15 +122,15 @@ Continue on now to provide the Python code which solves the problem statement:
 {SHORTENED_PROBLEM_STATEMENT}
 
 
-First, devise five unique test cases which will be used to test the final algorithm. Next, perform a step by step analysis on the provided similar examples (some may be irrelevant).
+First, devise three unique test cases which will be used to test the provided algorithms. Next, perform a step by step analysis on the provided similar examples (some may be irrelevant).
 
 After devising test cases and reviewing the similar examples, plan a step by step approach for implementing an algorithm which solves the problem (don't worry about efficiency yet).
 
-Next, proceed to write your algorithm and then check it against the pre-selected test examples. After your algorithm fails it is recommend that you call "clear-and-execute-execute-python-code" in your next pass to reset your python environment.
+Next, proceed to write your algorithm and then check it against the pre-selected test examples. After your algorithm fails it is recommend that you call "py-clear-and-execute-persist" in your next pass to reset your python environment.
 
-If your algorithm passes the tests, then optimize the algorithm and repeat the tests. Because this is a leetcode problem, it is likely that a relatively efficient solution exists. If your algorithm fails the tests, then proceed to modify the algorithm until all test cases are passed. 
+If your algorithm passes the tests, then optimize the algorithm and repeat the tests. Because this is a leetcode problem, it is likely that a relatively efficient solution exists. If your algorithm fails the tests, then proceed to modify the algorithm until all test cases are passed. Reflect carefully after each failure, and do not be afried to completely change your approach.
 
-Finally, return the final result as a python markdown snippet using `call_termination`.
+Finally, return the final result as a python markdown snippet using `call_termination`. Lastly, remember that passed newline chars should be double-escaped, like \\n.
 """
 
 PROBLEM_DATA_PATH = "research/leetcode-hard-gym/leetcode_dataset/data/with_snippets/leetcode_hard_with_snippets_uncontaminated_tests.csv"
@@ -138,7 +138,7 @@ SOLUTIONS_DATA_PATH = (
     "research/study_leetcode/leetcode-solutions-embedded.json"
 )
 MAX_ENTRY_ID = 2000
-NUM_EXAMPLES = 5
+NUM_EXAMPLES = 3
 MAX_TOKENS = 8192
 
 
@@ -152,10 +152,15 @@ class LeetCodeExamplesFinder:
         num_examples_to_screen=25,  # TODO - Set a constant above like elsewhere.
         solutions_data_path=SOLUTIONS_DATA_PATH,
         max_entry_id=MAX_ENTRY_ID,  # The last LeetCode id to include
+        lowest_difficulty="Medium",
     ):
         self.embedding_provider = embedding_provider
         self.num_examples = num_examples
         self.num_examples_to_screen = num_examples_to_screen
+        self.available_difficulties = ["Easy", "Medium", "Hard"]
+        self.allowed_difficulties = self.available_difficulties[
+            self.available_difficulties.index(lowest_difficulty) :
+        ]
         self.load_data(solutions_data_path, max_entry_id)
 
     def load_data(self, solutions_data_path, max_entry_id):
@@ -165,6 +170,27 @@ class LeetCodeExamplesFinder:
         )
         self.solutions_data = self.solutions_data[
             self.solutions_data["id"] < max_entry_id
+        ]
+
+        # check that allowed_difficulties are in the 'code_with_data' column for each entry
+        difficulty = []
+        for entry in self.solutions_data["code_with_data"].values:
+            split_entry = entry.split("\n")
+            found_match = False
+            for line in split_entry:
+                if any(
+                    f"# {entry}" in line
+                    for entry in self.available_difficulties
+                ):
+                    difficulty.append(line.split("# ")[1])
+                    found_match = True
+                    break
+            if not found_match:
+                difficulty.append("Easy")
+
+        self.solutions_data["difficulty"] = difficulty
+        self.solutions_data = self.solutions_data[
+            self.solutions_data["difficulty"].isin(self.allowed_difficulties)
         ]
 
     def get_embedding(self, document):
@@ -201,11 +227,11 @@ class LeetCodeExamplesFinder:
             problem_similarity.values, 1
         ):
             statement, solution = entry.split("```python")
-            solution = f"```python\n{solution}"
+            solution = f"```python\\n{solution}"
             statement, local_examples = statement.split("**Example 1:**")
 
             examples.append(
-                f"Example {counter}:\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
+                f"Related Solution {counter}:\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
             )
 
             counter += 1
@@ -229,11 +255,11 @@ class LeetCodeExamplesFinder:
                 len(examples_formatted),
             )
         ]
-        formatted_instruction = f"Your are given the following problem as context - {problem} \n. Your task is to select the {self.num_examples} of the following shown examples, which will together provide the best context to help with solving the presented problem:\n{examples_formatted}\nThese selected examples will be forwarded on as additional context to a programmer whose task is to write a solution to the given problem. Return the final result as a simple array of integers, like [12,3,0,1,5]."
+        formatted_instruction = f"Your are given the following problem as context - {problem} \n. Your task is to select the {self.num_examples} of the following shown Related Solutions, which when combined together provide the best context to help with solving the previously presented problem:\n{examples_formatted}\nYour selected Related Solutions will be forwarded on as additional context to a programmer whose task is to write a solution to the originally given problem. Try to select more difficult solutions, as the stated problem is quite difficult. Return the final result as a simple array of integers, like [12,3,0,1,5]."
 
         config = (
             OpenAIAutomataAgentConfigBuilder()
-            .with_stream(False)
+            .with_stream(True)
             .with_verbose(False)
             .with_tools([])
             .with_system_template(
@@ -253,9 +279,11 @@ class LeetCodeExamplesFinder:
             )  # an integer array like [0, 5, ...]
         except Exception as e:
             logger.error("An error occurred while selecting the best examples")
-            selected = [0, 1, 2, 3, 4]
+            selected = [0, 1, 2]
 
-        return "\n".join([ele for it, ele in enumerate(examples) if it in selected])
+        return "\n".join(
+            [ele for it, ele in enumerate(examples) if it in selected]
+        )
 
 
 class LeetCodeLoader:
@@ -268,14 +296,13 @@ class LeetCodeLoader:
     def get_problem_context(self, idx):
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
-
-        return f"Title:\n{row['question_title']}:\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - {row['python3_snippet']}"
+        return f"Title:\n\n{row['question_title']}:\n\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - {row['python3_snippet']}"
 
     def get_problem_id_slug(self, idx):
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
         return (
-            int(row["question_id"]),
+            int(row["frontend_question_id"]),
             row["question_slug"],
         )
 
@@ -312,19 +339,15 @@ def main():
     print(f"Loading problem data from {args.data_path}")
     loader = LeetCodeLoader(args.data_path)
     embedding_provider = OpenAIEmbeddingProvider()
-    finder = LeetCodeExamplesFinder(
-        embedding_provider,
-        num_examples=args.num_examples,
-        solutions_data_path=args.solutions_data_path,
-        max_entry_id=args.max_entry_id,
-    )
 
     print(f"Number of examples to run = {len(loader.data)}")
     success_count = 0
     results = {}
-    for i in range(len(loader.data)):
+    for i in range(10, len(loader.data)):
         try:
-            print(f"Running w/ problem {i} = {loader.get_problem_context(i)}")
+            print(
+                f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}"
+            )
 
             problem_context, (
                 problem_id,
@@ -332,6 +355,13 @@ def main():
             ) = loader.get_problem_context(i), loader.get_problem_id_slug(i)
             print(
                 f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
+            )
+
+            finder = LeetCodeExamplesFinder(
+                embedding_provider,
+                num_examples=args.num_examples,
+                solutions_data_path=args.solutions_data_path,
+                max_entry_id=problem_id,
             )
 
             examples = finder.find_similar_solutions(problem_context)
@@ -360,10 +390,8 @@ def main():
             agent = OpenAIAutomataAgent(formatted_instruction, config)
             configure_logging("DEBUG")
             result = agent.run()
-            print("result = ", result)
 
             code = result.split("```python")[1].split("```")[0]
-            print("code =", code)
             lang = ProgrammingLanguage.PYTHON3
             sub = LeetCodeSubmission(
                 code=code,
@@ -381,6 +409,7 @@ def main():
         except Exception as e:
             print(f"Exception occurred = {e}")
             _log_result(False, results, i, success_count)
+        break
 
 
 # TODO Rename this here and in `main`
