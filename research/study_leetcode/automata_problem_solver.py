@@ -230,8 +230,6 @@ class LeetCodeLoader:
     def get_problem_id_slug(self, idx):
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
-        print("row = ", row)
-        print("row[description] = ", row["description"])
         return (
             int(row["question_id"]),
             row["question_slug"],
@@ -267,75 +265,86 @@ def main():
     )
 
     args = parser.parse_args()
-    print(f'Loading problem data from {args.data_path}')
+    print(f"Loading problem data from {args.data_path}")
     loader = LeetCodeLoader(args.data_path)
     print(f"Number of examples to run = {len(loader.data)}")
     success_count = 0
+    results = {}
     for i in range(len(loader.data)):
-        print(f"Running w/ problem {i} = {loader.get_problem_context(i)}")
+        try:
+            print(f"Running w/ problem {i} = {loader.get_problem_context(i)}")
 
-        problem_context, (
-            problem_id,
-            problem_slug,
-        ) = loader.get_problem_context(i), loader.get_problem_id_slug(i)
-        print(
-            f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
-        )
+            problem_context, (
+                problem_id,
+                problem_slug,
+            ) = loader.get_problem_context(i), loader.get_problem_id_slug(i)
+            print(
+                f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
+            )
 
-        embedding_provider = OpenAIEmbeddingProvider()
-        finder = OpenAISolutionFinder(
-            embedding_provider,
-            num_examples=args.num_examples,
-            solutions_data_path=args.solutions_data_path,
-            max_entry_id=args.max_entry_id,
-        )
-        examples = finder.find_similar_solutions(problem_context)
+            embedding_provider = OpenAIEmbeddingProvider()
+            finder = OpenAISolutionFinder(
+                embedding_provider,
+                num_examples=args.num_examples,
+                solutions_data_path=args.solutions_data_path,
+                max_entry_id=args.max_entry_id,
+            )
+            examples = finder.find_similar_solutions(problem_context)
 
-        formatted_instruction = INSTRUCTION.format(
-            PROBLEM_STATEMENT=problem_context,
-            SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-            EXAMPLES=examples,
-        )
+            formatted_instruction = INSTRUCTION.format(
+                PROBLEM_STATEMENT=problem_context,
+                SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+                EXAMPLES=examples,
+            )
 
-        toolkits = ["py-interpreter"]
-        tool_dependencies = dependency_factory.build_dependencies_for_tools(
-            toolkits
-        )
-        tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
+            toolkits = ["py-interpreter"]
+            tool_dependencies = (
+                dependency_factory.build_dependencies_for_tools(toolkits)
+            )
+            tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
 
-        config = (
-            OpenAIAutomataAgentConfigBuilder()
-            .with_stream(True)
-            .with_verbose(True)
-            .with_tools(tools)
-            .with_system_template(SYSTEM_PROMPT)
-            .build()
-        )
+            config = (
+                OpenAIAutomataAgentConfigBuilder()
+                .with_stream(True)
+                .with_verbose(True)
+                .with_tools(tools)
+                .with_system_template(SYSTEM_PROMPT)
+                .build()
+            )
 
-        agent = OpenAIAutomataAgent(formatted_instruction, config)
-        configure_logging("DEBUG")
-        result = agent.run()
-        print("result = ", result)
+            agent = OpenAIAutomataAgent(formatted_instruction, config)
+            configure_logging("DEBUG")
+            result = agent.run()
+            print("result = ", result)
 
-        code = result.split("```python")[1].split("```")[0]
-        print("code =", code)
-        lang = ProgrammingLanguage.PYTHON3
-        sub = LeetCodeSubmission(
-            code=code,
-            lang=lang,
-            question_id=problem_id,
-            question_slug=problem_slug,
-        )
+            code = result.split("```python")[1].split("```")[0]
+            print("code =", code)
+            lang = ProgrammingLanguage.PYTHON3
+            sub = LeetCodeSubmission(
+                code=code,
+                lang=lang,
+                question_id=problem_id,
+                question_slug=problem_slug,
+            )
 
-        print("-" * 200)
-        env = LeetCodeEnv()
+            env = LeetCodeEnv()
 
-        status, reward, done, submission_result = env.step(sub)
-        success_count += reward
-        print(status, reward, done, submission_result)
-        print(f"passed {success_count} out of {i+1}")
+            status, reward, done, submission_result = env.step(sub)
+            success_count += reward
+            print(status, reward, done, submission_result)
+            _log_result(reward, results, i, success_count)
+        except Exception as e:
+            print(f"Exception occurred = {e}")
+            _log_result(False, results, i, success_count)
 
-        print("-" * 200)
+
+# TODO Rename this here and in `main`
+def _log_result(result, results, i, success_count):
+    results[i] = result
+    print("-" * 200)
+    print(f"passed {success_count} out of {i+1}")
+    print(f"results dict = {results}")
+    print("-" * 200)
 
 
 if __name__ == "__main__":

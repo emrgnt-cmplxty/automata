@@ -101,7 +101,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
             Tool(
                 name="py-execute-discard",
                 function=self.python_interpreter.standalone_execute,
-                description="Attempts to execute the given Python markdown snippet in the local environment. Snippets are expected to read like '```python\\nx=5```'. The final return result contains the output text from execution and/or any associated errors.",
+                description="Attempts to execute the given Python markdown snippet in the local environment. Snippets are expected to read like '```python\\nx=5```'. The final return result contains the output text from execution and/or any associated errors. This tool should typically be used for executing test runs.",
             ),
             Tool(
                 name="py-execute-persist",
