@@ -51,8 +51,7 @@ class PyInterpreter:
         except Exception as e:
             print(f"EXECUTION EXCEPTION = {e}")
             error_message = str(e) or "Unknown error occurred"
-            error_output = output_buffer.getvalue().strip()
-            if error_output:
+            if error_output := output_buffer.getvalue().strip():
                 error_message += f"\nOutput before error:\n{error_output}"
             return False, f"Execution failed with error = {error_message}"
 
