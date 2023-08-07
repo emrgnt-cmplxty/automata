@@ -109,10 +109,35 @@ def get_rankable_symbols(
     return filtered_symbols
 
 
+def find_project_root(
+    start_path: Optional[str] = None, marker_file: str = ".env"
+) -> str:
+    """
+    Finds the project root by searching upwards for the marker file.
+    """
+    if start_path is None:
+        start_path = os.path.dirname(os.path.abspath(__file__))
+    current_path = start_path
+
+    while current_path != os.path.dirname(
+        current_path
+    ):  # Stop at the root directory
+        if os.path.exists(os.path.join(current_path, marker_file)):
+            return current_path
+        current_path = os.path.dirname(current_path)
+
+    raise FileNotFoundError(
+        f"Project root with marker file '{marker_file}' not found."
+    )
+
+
 def load_data_path() -> str:
     """
     Returns the path to the serialized data directory.
     """
+    project_root = find_project_root()
     return os.path.join(
-        DATA_ROOT_PATH, SerializedDataCategory.PICKLED_DATA_PATH.value
+        project_root,
+        DATA_ROOT_PATH,
+        SerializedDataCategory.PICKLED_DATA_PATH.value,
     )
