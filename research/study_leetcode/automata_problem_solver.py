@@ -3,6 +3,7 @@
 """Study the dataset."""
 import argparse
 import ast
+import logging
 import os
 import sys
 import textwrap
@@ -19,6 +20,7 @@ from automata.llm import OpenAIEmbeddingProvider
 from automata.singletons.dependency_factory import dependency_factory
 from automata.tools.agent_tool_factory import AgentToolFactory
 
+logger = logging.getLogger(__name__)
 # Get the absolute path of the parent directory
 parent_dir = os.path.join(
     get_root_fpath(), "research", "leetcode-hard-gym"  # , "leetcode_env"
@@ -201,10 +203,7 @@ class LeetCodeExamplesFinder:
             statement, solution = entry.split("```python")
             solution = f"```python\n{solution}"
             statement, local_examples = statement.split("**Example 1:**")
-            # examples.append(
-            #     f"Example {counter}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
-            # )
-            # We are ignoring similarity for now as it seems to confuse the model
+
             examples.append(
                 f"Example {counter}:\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
             )
@@ -230,15 +229,12 @@ class LeetCodeExamplesFinder:
                 len(examples_formatted),
             )
         ]
-        print(
-            f"Selecting the best {self.num_examples} examples from the following: {examples_formatted}"
-        )
         formatted_instruction = f"Your are given the following problem as context - {problem} \n. Your task is to select the {self.num_examples} of the following shown examples, which will together provide the best context to help with solving the presented problem:\n{examples_formatted}\nThese selected examples will be forwarded on as additional context to a programmer whose task is to write a solution to the given problem. Return the final result as a simple array of integers, like [12,3,0,1,5]."
 
         config = (
             OpenAIAutomataAgentConfigBuilder()
-            .with_stream(True)
-            .with_verbose(True)
+            .with_stream(False)
+            .with_verbose(False)
             .with_tools([])
             .with_system_template(
                 "You are Automata Master, an advanced autonomous software architect developed by OpenAI. You are specifically designed to operate within local Python repositories. With your capability to understand and process natural language instructions, you perform tasks efficiently using your available functions. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function."
@@ -246,17 +242,19 @@ class LeetCodeExamplesFinder:
             .build()
         )
 
-        agent = OpenAIAutomataAgent(formatted_instruction, config)
-        configure_logging("DEBUG")
-        result = agent.run()
+        try:
+            print("Attempting to fetch the best examples now...")
+            agent = OpenAIAutomataAgent(formatted_instruction, config)
+            result = agent.run()
 
-        extracted_result = result.split("[")[1].split("]")[0]
-        selected = ast.literal_eval(
-            f"[{extracted_result}]"
-        )  # an integer array like [0, 5, ...]
-        print(
-            f"Selecting Examples = {[ele for it, ele in enumerate(examples) if it in selected]}"
-        )
+            extracted_result = result.split("[")[1].split("]")[0]
+            selected = ast.literal_eval(
+                f"[{extracted_result}]"
+            )  # an integer array like [0, 5, ...]
+        except Exception as e:
+            logger.error("An error occurred while selecting the best examples")
+            selected = [0, 1, 2, 3, 4]
+
         return "\n".join([ele for it, ele in enumerate(examples) if it in selected])
 
 
