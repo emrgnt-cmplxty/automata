@@ -138,8 +138,8 @@ MAX_ENTRY_ID = 2000
 NUM_EXAMPLES = 5
 
 
-class OpenAISolutionFinder:
-    """A class to find solutions to problems using OpenAI."""
+class LeetCodeExamplesFinder:
+    """A class to find example solutions using OpenAI."""
 
     def __init__(
         self,
@@ -267,6 +267,14 @@ def main():
     args = parser.parse_args()
     print(f"Loading problem data from {args.data_path}")
     loader = LeetCodeLoader(args.data_path)
+    embedding_provider = OpenAIEmbeddingProvider()
+    finder = LeetCodeExamplesFinder(
+        embedding_provider,
+        num_examples=args.num_examples,
+        solutions_data_path=args.solutions_data_path,
+        max_entry_id=args.max_entry_id,
+    )
+
     print(f"Number of examples to run = {len(loader.data)}")
     success_count = 0
     results = {}
@@ -282,13 +290,6 @@ def main():
                 f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
             )
 
-            embedding_provider = OpenAIEmbeddingProvider()
-            finder = OpenAISolutionFinder(
-                embedding_provider,
-                num_examples=args.num_examples,
-                solutions_data_path=args.solutions_data_path,
-                max_entry_id=args.max_entry_id,
-            )
             examples = finder.find_similar_solutions(problem_context)
 
             formatted_instruction = INSTRUCTION.format(
