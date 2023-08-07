@@ -7,4 +7,4 @@
 	url = https://github.com/emrgnt-cmplxty/automata-embedding-data.git
 [submodule "research/leetcode-hard-gym"]
 	path = research/leetcode-hard-gym
-	url = git@github.com:GammaTauAI/leetcode-hard-gym.git
+	url = https://github.com/GammaTauAI/leetcode-hard-gym.git
