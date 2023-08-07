@@ -9,6 +9,7 @@ import textwrap
 
 import numpy as np
 import pandas as pd
+import tiktoken
 
 from automata.agent import OpenAIAutomataAgent
 from automata.cli.commands import configure_logging
@@ -136,6 +137,7 @@ SOLUTIONS_DATA_PATH = (
 )
 MAX_ENTRY_ID = 2000
 NUM_EXAMPLES = 5
+MAX_TOKENS = 8192
 
 
 class LeetCodeExamplesFinder:
@@ -145,11 +147,13 @@ class LeetCodeExamplesFinder:
         self,
         embedding_provider,
         num_examples=NUM_EXAMPLES,
+        num_examples_to_screen=25,  # TODO - Set a constant above like elsewhere.
         solutions_data_path=SOLUTIONS_DATA_PATH,
         max_entry_id=MAX_ENTRY_ID,  # The last LeetCode id to include
     ):
         self.embedding_provider = embedding_provider
         self.num_examples = num_examples
+        self.num_examples_to_screen = num_examples_to_screen
         self.load_data(solutions_data_path, max_entry_id)
 
     def load_data(self, solutions_data_path, max_entry_id):
@@ -190,18 +194,65 @@ class LeetCodeExamplesFinder:
             ["code_with_problem", "id", "similarity"]
         ]
 
-        examples, counter = "", 0
+        examples, counter = [], 0
         for idx, (entry, id, similarity) in enumerate(
             problem_similarity.values, 1
         ):
             statement, solution = entry.split("```python")
             solution = f"```python\n{solution}"
             statement, local_examples = statement.split("**Example 1:**")
-            examples += f"Example {counter}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
+            examples.append(
+                f"Example {counter}:\nSimilarity: {similarity:.4f}\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
+            )
             counter += 1
-            if counter >= self.num_examples:
+            if counter >= self.num_examples_to_screen:
                 break
-        return examples
+
+        encoding = tiktoken.encoding_for_model("gpt-4")
+
+        examples_formatted = "\n".join(examples)
+
+        examples_tokens_consumed = len(encoding.encode(examples_formatted))
+        # truncate the examples if they are exceeding our available context
+        examples_formatted = examples_formatted[
+            : max(
+                int(
+                    MAX_TOKENS
+                    / examples_tokens_consumed
+                    * 0.9
+                    * len(examples_formatted)
+                ),
+                len(examples_formatted),
+            )
+        ]
+        print(
+            f"Selecting the best {self.num_examples} examples from the following: {examples_formatted}"
+        )
+        formatted_instruction = f"Your are given the following problem as context - {problem} \n. Your task is to select the {self.num_examples} of the following shown examples, which will together provide the best context to help with solving the presented problem:\n{examples_formatted}\nThese selected examples will be forwarded on as additional context to a programmer whose task is to write a solution to the given problem. Return the final result as a simple array of integers, like [12,3,0,1,5]."
+
+        config = (
+            OpenAIAutomataAgentConfigBuilder()
+            .with_stream(True)
+            .with_verbose(True)
+            .with_tools([])
+            .with_system_template(
+                "You are Automata Master, an advanced autonomous software architect developed by OpenAI. You are specifically designed to operate within local Python repositories. With your capability to understand and process natural language instructions, you perform tasks efficiently using your available functions. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function."
+            )
+            .build()
+        )
+
+        agent = OpenAIAutomataAgent(formatted_instruction, config)
+        configure_logging("DEBUG")
+        result = agent.run()
+
+        extracted_result = result.split("[")[1].split("]")[0]
+        selected = ast.literal_eval(
+            f"[{extracted_result}]"
+        )  # an integer array like [0, 5, ...]
+        print(
+            f"Selecting Examples = {[ele for it, ele in enumerate(examples) if it in selected]}"
+        )
+        return "\n".join([ele for it, ele in enumerate(examples) if it in selected])
 
 
 class LeetCodeLoader:
@@ -215,16 +266,6 @@ class LeetCodeLoader:
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
 
-        def format_examples(payload):
-            formatted_output = ""
-
-            for i, (inp, out) in enumerate(ast.literal_eval(payload), start=1):
-                formatted_output += f"Example {i}:\n\n"
-                formatted_output += f"Input: {inp}"
-                formatted_output += f"Output: {out}\n\n"
-            return formatted_output
-
-        # examples = format_examples(row["example_test_cases"]) - Sometimes these are misformatted.
         return f"Title:\n{row['question_title']}:\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - {row['python3_snippet']}"
 
     def get_problem_id_slug(self, idx):
