@@ -1,3 +1,5 @@
+import textwrap
+
 import pytest
 
 from automata.experimental.tools import (
@@ -16,11 +18,11 @@ def test_python_interpreter_init():
 def test_python_interpreter_execute_code():
     interpreter = PyInterpreter()
     assert (
-        interpreter.execute_code("```python\nx = 5```")
+        interpreter.standalone_execute("```python\nx = 5```")
         == PyInterpreter.SUCCESS_STRING
     )
     assert (
-        interpreter.execute_code("```python\ny = x + 5```")
+        interpreter.standalone_execute("```python\ny = x + 5```")
         == "Execution failed with error = name 'x' is not defined"
     )
 
@@ -53,8 +55,8 @@ def test_python_interpreter_persistent_execute():
 
 def test_python_interpreter_import():
     interpreter = PyInterpreter()
-    assert interpreter.execute_code("import random")
-    assert interpreter.execute_code("import automata")
+    assert interpreter.persistent_execute("import random")
+    assert interpreter.persistent_execute("import automata")
 
 
 def test_python_interpreter_clear_and_persistent_execute():
@@ -82,7 +84,7 @@ def test_python_interpreter_toolkit_builder_init():
 def test_python_interpreter_toolkit_builder_build():
     builder = PyInterpreterToolkitBuilder()
     tools = builder.build()
-    assert len(tools) == 2
+    assert len(tools) == 3
     for tool in tools:
         assert isinstance(tool, Tool)
 
@@ -129,8 +131,6 @@ def test_build_py_writer():
 
     assert result_1 == PyInterpreter.SUCCESS_STRING
 
-
-import textwrap
 
 example_text = textwrap.dedent(
     """
@@ -186,7 +186,8 @@ def linkedListToList(node):
 def test_python_interpreter_execute_code_advanced():
     interpreter = PyInterpreter()
     assert (
-        interpreter.execute_code(example_text) == PyInterpreter.SUCCESS_STRING
+        interpreter.persistent_execute(example_text)
+        == PyInterpreter.SUCCESS_STRING
     )
 
 
@@ -227,7 +228,7 @@ def mergeKLists(lists):
 def test_python_interpreter_execute_code_advanced_2():
     interpreter = PyInterpreter()
     assert (
-        interpreter.execute_code(example_text_2)
+        interpreter.persistent_execute(example_text_2)
         == PyInterpreter.SUCCESS_STRING
     )
 
@@ -237,7 +238,7 @@ example_text_3 = "```python\nimport heapq\n\ndef smallestRange(nums):\n    minHe
 
 def test_python_interpreter_execute_code_advanced_3():
     interpreter = PyInterpreter()
-    result = interpreter.execute_code(example_text_3)
+    result = interpreter.persistent_execute(example_text_3)
     assert (
         result == f"{PyInterpreter.SUCCESS_STRING}\nOutput:\n[20, 24]\n[1, 1]"
     )
