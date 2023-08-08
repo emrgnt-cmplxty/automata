@@ -2,13 +2,11 @@
 # flake8: noqa
 """Study the dataset."""
 import argparse
-import ast
 import logging
 import os
 import sys
 from typing import Dict
 
-import pandas as pd
 from constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
