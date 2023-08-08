@@ -100,17 +100,21 @@ def ask_choice(prompt: str, choices: List[str]) -> str:
     """Prompt the user to select a choice from the given list."""
 
     while True:
-        print(prompt)
+        logger.log(CLI_OUTPUT_LEVEL, prompt)
         for i, choice in enumerate(choices, start=1):
-            print(f"{i}. {choice}")
+            logger.log(CLI_OUTPUT_LEVEL, f"{i}. {choice}")
         try:
             choice_index = int(input("Enter the number of your choice: ")) - 1
             if 0 <= choice_index < len(choices):
                 return choices[choice_index]
             else:
-                print("Invalid choice. Please try again.")
+                logger.log(
+                    CLI_OUTPUT_LEVEL, "Invalid choice. Please try again."
+                )
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            logger.log(
+                CLI_OUTPUT_LEVEL, "Invalid input. Please enter a number."
+            )
 
 
 def select_graph_type() -> str:
@@ -126,7 +130,10 @@ def select_graph_type() -> str:
         if user_input in valid_options:
             return user_input
         else:
-            print(f"Invalid choice. Please select from {options_string}")
+            logger.log(
+                CLI_OUTPUT_LEVEL,
+                f"Invalid choice. Please select from {options_string}",
+            )
 
 
 def show_key_value(dotenv_path: str, key: str) -> None:

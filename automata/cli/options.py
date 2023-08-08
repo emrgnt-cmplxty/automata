@@ -20,7 +20,7 @@ def common_options(command: click.Command, *args, **kwargs) -> click.Command:
         click.option(
             "--log-level",
             type=str,
-            default="DEBUG",
+            default="INFO",
             help="Execute script in verbose mode?",
         ),
         click.option(

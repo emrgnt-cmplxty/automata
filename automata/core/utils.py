@@ -1,3 +1,7 @@
+"""
+Utility functions for the Automata package.
+"""
+
 import json
 import logging
 import os
@@ -119,7 +123,7 @@ class LoggingConfig(TypedDict, total=False):
 
 
 def get_logging_config(
-    log_level: int = logging.DEBUG, log_file: Optional[str] = None
+    log_level: int = logging.INFO, log_file: Optional[str] = None
 ) -> dict[str, Any]:
     """Returns logging configuration."""
 
@@ -148,7 +152,7 @@ def get_logging_config(
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "colored",
-                "level": logging.DEBUG,
+                "level": log_level,
             },
             # "cli_output": {
             #     "class": "logging.StreamHandler",
@@ -171,7 +175,7 @@ def get_logging_config(
     return cast(dict[str, Any], logging_config)
 
 
-def is_sorted(lst):
+def is_sorted(lst: List[Any]) -> bool:
     """Check if a list is sorted."""
 
     return all(a <= b for a, b in zip(lst, lst[1:]))

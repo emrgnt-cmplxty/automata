@@ -9,7 +9,7 @@ logging.addLevelName(CLI_OUTPUT_LEVEL, "CLI_OUTPUT")
 class CustomLogger(logging.Logger):
     """A custom logger which adheres to input specifications."""
 
-    def __init__(self, name, level=logging.NOTSET):
+    def __init__(self, name, level=logging.INFO):
         super().__init__(name, level)  # call the base class constructor
 
     def cli_output(self, message: str, *args, **kwargs) -> None:
