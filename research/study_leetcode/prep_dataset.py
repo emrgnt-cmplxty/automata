@@ -9,24 +9,20 @@ from automata.llm import OpenAIEmbeddingProvider
 
 # Specify the path to your JSON file
 FILE_NAME = "leetcode-solutions.json"
+CHUNK_SIZE = 512
 
 # Load the JSON file into a pandas DataFrame
 df = pd.read_json(
     os.path.join(get_root_fpath(), "research", "study_leetcode", FILE_NAME)
 )
 
-print("df = ", df)
-print("df.columns = ", df.columns)
-
-# # Extract cleaned explanations by splitting at "```"
+# Extract cleaned explanations by splitting at "```"
 cleaned_explanations = [
     ele.split("```")[0] for ele in df["code_with_problem"].values
 ]
 
-# # Initialize the embedding provider
+# Initialize the embedding provider
 embedding_provider = OpenAIEmbeddingProvider()
-
-all_embeddings = []
 
 
 def chunks(lst, n):
@@ -35,8 +31,9 @@ def chunks(lst, n):
         yield lst[i : i + n]
 
 
-# Loop through the cleaned_explanations in chunks of 1024
-for chunk in chunks(cleaned_explanations, 512):
+all_embeddings = []
+# Loop through the cleaned_explanations in chunks of CHUNK_SIZE
+for chunk in chunks(cleaned_explanations, CHUNK_SIZE):
     # Build embedding vectors for each chunk
     chunk_embeddings = embedding_provider.batch_build_embedding_vector(chunk)
     all_embeddings.extend(chunk_embeddings)
