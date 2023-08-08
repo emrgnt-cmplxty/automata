@@ -7,6 +7,9 @@ import os
 import sys
 from typing import Dict
 
+from agentified_solution_oracle import (
+    AgentifiedSolutionOracleOpenAIToolkitBuilder,
+)
 from constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
@@ -23,7 +26,11 @@ from automata.agent import OpenAIAutomataAgent
 from automata.cli.commands import configure_logging
 from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.core.utils import get_root_fpath
-from automata.llm import OpenAIEmbeddingProvider
+from automata.llm import (
+    FunctionCall,
+    OpenAIChatMessage,
+    OpenAIEmbeddingProvider,
+)
 from automata.singletons.dependency_factory import dependency_factory
 from automata.tools.agent_tool_factory import AgentToolFactory
 
@@ -31,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 # Get the absolute path of the parent directory
 leetcode_gym_location = os.path.join(
-    get_root_fpath(), "research", "leetcode-hard-gym"  # , "leetcode_env"
+    get_root_fpath(), "research", "leetcode_hard_gym"  # , "leetcode_env"
 )
 
 # Add the parent directory to the PYTHONPATH
@@ -45,7 +52,7 @@ from leetcode_env.leetcode_types import (  # type: ignore
 )
 
 
-def main():
+def main():  # sourcery skip: docstrings-for-functions
     # Argument parsing setup
     parser = argparse.ArgumentParser(
         description="Find similar solutions to LeetCode problems using OpenAI."
@@ -118,14 +125,9 @@ def main():
                 lowest_difficulty=args.lowest_difficulty_supported,
             )
 
-            examples = finder.find_best_solution_and_explanation(
-                problem_header
-            )
-
             formatted_instructions = SOLVER_INSTRUCTIONS.format(
                 PROBLEM_STATEMENT=problem_context,
                 SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-                EXAMPLES=examples,
             )
 
             toolkits = ["py-interpreter"]
@@ -133,6 +135,9 @@ def main():
                 dependency_factory.build_dependencies_for_tools(toolkits)
             )
             tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
+            tools += AgentifiedSolutionOracleOpenAIToolkitBuilder(
+                leetcode_solution_finder=finder
+            ).build_for_open_ai()
 
             config = (
                 OpenAIAutomataAgentConfigBuilder()
@@ -144,6 +149,29 @@ def main():
             )
 
             agent = OpenAIAutomataAgent(formatted_instructions, config)
+
+            initial_query = f"Find the best example to help me solve the following problem:\n{problem_header}"
+            # Take the agent's first action before running
+            assistant_message = OpenAIChatMessage(
+                role="assistant",
+                content="I will now query the oracle for help solving",
+                function_call=FunctionCall(
+                    name="solution-oracle",
+                    arguments={"query": initial_query},
+                ),
+            )
+            agent.chat_provider.add_message(
+                assistant_message, agent.session_id
+            )
+
+            solution = finder.find_best_match_and_explanation(initial_query)
+
+            user_message = OpenAIChatMessage(
+                role="user",
+                content=solution,
+            )
+            agent.chat_provider.add_message(user_message, agent.session_id)
+
             configure_logging("DEBUG")
             result = agent.run()
 

@@ -1,5 +1,4 @@
 """Finds issues from the associated leetcode solutions store"""
-import ast
 import logging
 from typing import Optional
 
@@ -85,16 +84,17 @@ class LeetCodeSolutionsFinder:
         magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
         return dot_product / (magnitude_a * magnitude_b)
 
-    def find_best_solution_and_explanation(self, problem: str) -> str:
-        """Find and print solutions with similar embeddings."""
-        print("problem = ", problem)
-        problem_embedding = self.get_embedding(problem)
+    def find_best_match_and_explanation(self, query: str) -> str:
+        """Find the best matching solution."""
+        context_embedding = self.get_embedding(query)
 
         # Calculate similarities between solution embeddings and latest problem
         # and store in a new column
         self.solutions_data["similarity"] = self.solutions_data[
             "embedding"
-        ].apply(lambda x: self.calculate_similarity(x, problem_embedding))
+        ].apply(
+            lambda x: self.calculate_similarity(x, context_embedding)
+        )  # type: ignore
 
         # Sort solutions by similarity
         solutions_data_sorted = self.solutions_data.sort_values(
@@ -139,7 +139,7 @@ class LeetCodeSolutionsFinder:
         )
 
         formatted_instructions = FETCHER_INSTRUCTIONS.format(
-            PROBLEM=problem,
+            QUERY=query,
             MAX_NUM_EXAMPLES=str(self.max_num_examples),
             FORMATTED_EXAMPLES=examples_formatted,
         )

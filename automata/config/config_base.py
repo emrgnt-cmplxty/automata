@@ -101,6 +101,7 @@ class AgentConfig(ABC, BaseModel):
     tools: List[Tool] = []
     instructions: str = ""
     description: str = ""
+    system_template: str = ""
     model: str = "gpt-4"
     stream: bool = False
     verbose: bool = False

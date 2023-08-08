@@ -45,7 +45,7 @@ termcolor = "2.3.0"
 tiktoken = "0.4.0"
 types-protobuf = "4.23.0.2"
 GitPython = "3.1.32"
-PyGithub = "1.59.1"
+PyGithub = "1.59.0"
 PyYAML = "6.0.1"
 chromadb = "^0.3.29"
 astunparse = "^1.6.3"
@@ -95,7 +95,7 @@ exclude = '''
     | random
     | build
     | scip-python
-    | research/leetcode-hard-gym
+    | research/leetcode_hard_gym
     | local_tasks
   )/
 )
@@ -105,7 +105,7 @@ exclude = '''
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground)/'
+exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground|leetcode_hard_gym)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"

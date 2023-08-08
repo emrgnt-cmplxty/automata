@@ -25,7 +25,7 @@ LEETCODE_SOLUTIONS_PATH = os.path.join(
 # problems dataset
 LEETCODE_PROBLEMS_PATH = os.path.join(
     get_root_fpath(),
-    "research/leetcode-hard-gym/leetcode_dataset/data/with_snippets/leetcode_hard_with_snippets_uncontaminated_tests.csv",
+    "research/leetcode_hard_gym/leetcode_dataset/data/with_snippets/leetcode_hard_with_snippets_uncontaminated_tests.csv",
 )
 
 # agent prompts
@@ -102,26 +102,18 @@ SOLVER_SYSTEM_PROMPT = textwrap.dedent(
 
 
 SOLVER_INSTRUCTIONS = """
-You are given the following problem - {PROBLEM_STATEMENT}.
+You are tasked with solving the following problem with an algorithm implemented in python:
+{PROBLEM_STATEMENT}
 
-Your task is to provide a solution to the stated problem using python code. 
+To solve this, start by querying the solution oracle for the most similar solution.
 
-Below are some solved problem statements which you should use as references to assist you in completing this task. When you attempt to answer, think step by step about how these questions could be related to the problem at hand, and think about what insights you might glean from them.
+Next, analyze hte provided response and then proceed to devise three unique test cases which will be used to test your final solution. 
 
-{EXAMPLES}
+Afterwards, in your next planning sequence you should outline a step by step approach for implementing your solution.
 
-Continue on now to provide the Python code which solves the problem statement:
+Then, proceed to write your algorithm and test it against the pre-selected test examples. 
 
-{SHORTENED_PROBLEM_STATEMENT}
-
-
-First, devise three unique test cases which will be used to test the provided algorithms. Next, perform a step by step analysis on the provided similar examples (some may be irrelevant).
-
-After devising test cases and reviewing the similar examples, plan a step by step approach for implementing an algorithm which solves the problem (don't worry about efficiency yet).
-
-Next, proceed to write your algorithm and then check it against the pre-selected test examples. After your algorithm fails it is recommend that you call "py-clear-and-execute-persist" in your next pass to reset your python environment.
-
-If your algorithm passes the tests, then optimize the algorithm and repeat the tests. Because this is a leetcode problem, it is likely that a relatively efficient solution exists. If your algorithm fails the tests, then proceed to modify the algorithm until all test cases are passed. Reflect carefully after each failure, and do not be afried to completely change your approach.
+If your algorithm passes the tests, consider whether or not optimization is warrented. Because this is a leetcode problem, it is likely that a relatively efficient solution exists. If your algorithm fails the test cases, then proceed to modify it until all test cases are passed. 
 
 Finally, return the final result as a python markdown snippet using `call_termination`. Lastly, remember that passed newline chars should be double-escaped, like \\n.
 """
@@ -135,10 +127,10 @@ You are specifically designed to assist with the most difficult of codign tasks.
 """
 
 FETCHER_INSTRUCTIONS = """
-You are given the following problem:
-{PROBLEM}
+You are given the following query:
+{QUERY}
 
-Your task is to select at most {MAX_NUM_EXAMPLES}, or None of the following shown Related Solutions:
+Your task is to select at most {MAX_NUM_EXAMPLES}, or None of the following shown Related Solutions to address this query:
 {FORMATTED_EXAMPLES}
 
 You should select the solution which will be most helpful in aiding a downstream agent tasked with solving the given problem. Further, you should provide justification for why this selection was made and provide an explanation to the agent on why the solution is relevant and how the provided it might be used to help solve the given problem.
