@@ -5,6 +5,15 @@ from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
 from automata.core.utils import get_root_fpath
 
 # environment constants
+
+# examples finder
+MAX_CONTEXT_EXAMPLES = 1
+MAX_NUM_EXAMPLES_TO_SCREEN = 25
+MAX_TOKENS = 8192
+LOWEST_DIFFICULTY_SUPPORTED = "Medium"
+DIFFICULTIES = ["Easy", "Medium", "Hard"]
+
+# solutions dataset
 LEETCODE_SOLUTIONS_FILE_NAME = "leetcode-solutions-embedded.json"
 LEETCODE_SOLUTIONS_PATH = os.path.join(
     get_root_fpath(),
@@ -13,6 +22,11 @@ LEETCODE_SOLUTIONS_PATH = os.path.join(
     LEETCODE_SOLUTIONS_FILE_NAME,
 )
 
+# problems dataset
+LEETCODE_PROBLEMS_PATH = os.path.join(
+    get_root_fpath(),
+    "research/leetcode-hard-gym/leetcode_dataset/data/with_snippets/leetcode_hard_with_snippets_uncontaminated_tests.csv",
+)
 
 # agent prompts
 SYSTEM_PROMPT = textwrap.dedent(
