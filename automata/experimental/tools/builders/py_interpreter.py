@@ -80,25 +80,25 @@ class PyInterpreter:
                 f"Execution failed with error '{e}' after outputting {output_buffer.getvalue().strip() or None}",
             )
 
-    def persistent_execute(self, code: str) -> str:
-        """Executes the provided code and persists the context to the local execution buffer."""
+    def set_code(self, code: str) -> str:
+        """Sets up the provided code and persists the context to the local execution buffer."""
         code = self._clean_markdown(code)
         status, result = self._attempt_execution(code)
         if status:
             self.execution_context.extend(code.split("\n"))
         return result
 
-    def standalone_execute(self, code: str) -> str:
-        """Executes the provided code, after executing code in the local execution buffer."""
+    def run_tests(self, code: str) -> str:
+        """Runs the provided test code, without affecting the persistent context."""
         code = self._clean_markdown(code)
         _, result = self._attempt_execution(code)
         return result
 
-    def clear_and_persistent_execute(self, code: str) -> str:
-        """Clears the execution context and executes the provided code."""
-        self.execution_context.clear()
-        self.execution_context = PyInterpreter.DEFAULT_CONTEXT.split("\n")
-        return self.persistent_execute(code)
+    def set_code_and_run_tests(self, code: str, test_code: str) -> str:
+        """Sets up the provided code and then runs the provided test code."""
+        set_code_result = self.set_code(code)
+        run_tests_result = self.run_tests(test_code)
+        return f"Set code result: {set_code_result}\nRun tests result: {run_tests_result}"
 
     def clear(self) -> None:
         """Clears the execution context."""
@@ -122,19 +122,19 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools for the interpreter."""
         return [
             Tool(
-                name="py-execute-discard",
-                function=self.python_interpreter.standalone_execute,
-                description="Attempts to execute the given Python markdown snippet in the local environment. Snippets are expected to read like 'Here is my code: ```python\\nx=5\\ny=7```'. The final return result contains the output text from execution and/or any associated errors. This tool should typically be used for executing test runs. If calling assert, be sure to specify an output string.",
+                name="py-set-code",
+                function=self.python_interpreter.set_code,
+                description="Sets up the provided Python markdown snippet in the local environment. The code is executed and its context is persisted across interactions.",
             ),
             Tool(
-                name="py-execute-persist",
-                function=self.python_interpreter.persistent_execute,
-                description="Similar to standalone py-execute-discard, except if successful, the provided code snippet is persisted in the local execution environment across interactions.",
+                name="py-run-tests",
+                function=self.python_interpreter.run_tests,
+                description="Runs the provided Python markdown snippet in the local environment. The code is executed without affecting the persistent context. This tool is ideal for running tests.",
             ),
             Tool(
-                name="py-clear-and-execute-persist",
-                function=self.python_interpreter.clear_and_persistent_execute,
-                description="Similar to py-execute-persist, except the local environment is permanently cleared before running py-execute-persist.",
+                name="py-set-code-and-run-tests",
+                function=self.python_interpreter.set_code_and_run_tests,
+                description="Sets up the provided Python markdown snippet and then runs the provided test code in the local environment. The setup code's context is persisted, but the test code does not affect the persistent context.",
             ),
         ]
 
