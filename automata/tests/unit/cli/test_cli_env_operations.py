@@ -64,7 +64,6 @@ def test_load_env_vars(dotenv_path, default_keys):
     mock_replace_key.assert_has_calls(calls, any_order=True)
 
 
-@pytest.mark.skip(reason="Fix w/ Nolans next PR.")
 def test_show_key_value(dotenv_path):
     with patch(
         "automata.cli.env_operations.get_key", return_value="value"
@@ -73,7 +72,6 @@ def test_show_key_value(dotenv_path):
         mock_log.assert_called_once_with("The value of KEY is: value")
 
 
-@pytest.mark.skip(reason="Fix w/ Nolans next PR.")
 def test_update_key_value(dotenv_path):
     with patch("automata.cli.env_operations.input", return_value="new"), patch(
         "automata.cli.env_operations.replace_key"
@@ -85,7 +83,6 @@ def test_update_key_value(dotenv_path):
         mock_log.assert_called_once_with("The value of KEY has been updated.")
 
 
-@pytest.mark.skip(reason="Fix w/ Nolans next PR.")
 def test_delete_key_value(dotenv_path):
     with patch("automata.cli.env_operations.input", return_value="y"), patch(
         "automata.cli.env_operations.replace_key"

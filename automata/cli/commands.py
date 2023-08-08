@@ -8,7 +8,7 @@ from typing import Optional
 
 import click
 
-# from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
 from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
