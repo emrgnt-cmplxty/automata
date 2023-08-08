@@ -31,6 +31,7 @@ class EmbeddingDataCategory(PathEnum):
 
     CODE_EMBEDDING = "code-embedding"
     DOC_EMBEDDING = "doc-embedding-l2"
+    RESEARCH = "research"
     INDICES = "indices"
 
 
@@ -246,6 +247,15 @@ class AgentConfigBuilder(Generic[T]):
         if session_id:
             self._validate_type(session_id, str, "Session Id")
         self._config.session_id = session_id
+        return self
+
+    def with_system_template(
+        self, system_template: str
+    ) -> "AgentConfigBuilder":
+        """Set the system template for the AutomataAgent instance."""
+
+        self._validate_type(system_template, str, "System template")
+        self._config.system_template = system_template
         return self
 
     @classmethod

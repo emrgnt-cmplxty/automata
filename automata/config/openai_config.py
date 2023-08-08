@@ -161,15 +161,6 @@ class OpenAIAutomataAgentConfigBuilder(AgentConfigBuilder):
         )
         return self
 
-    def with_system_template(
-        self, system_template: str
-    ) -> "OpenAIAutomataAgentConfigBuilder":
-        """Set the system template for the AutomataAgent instance."""
-
-        self._validate_type(system_template, str, "System template")
-        self._config.system_template = system_template
-        return self
-
     @staticmethod
     def create_from_args(*args, **kwargs) -> OpenAIAutomataAgentConfig:
         """Creates an AutomataAgentConfig instance from the provided arguments."""
