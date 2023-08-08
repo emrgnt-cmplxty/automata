@@ -81,7 +81,7 @@ def install_indexing() -> None:
         os.chdir(automata_root)
 
 
-def generate_local_indices() -> None:
+def generate_local_indices(from_docker: bool = False) -> None:
     """Generates the local project indices"""
     (
         automata_root,
@@ -110,7 +110,10 @@ def generate_local_indices() -> None:
 
     shutil.copytree(automata_root, project_in_factory, ignore=ignore_dirs)
 
-    commands = install_nvm_and_nodejs("16.10.0")
+    commands = []
+
+    if not from_docker:
+        commands.extend(install_nvm_and_nodejs("16.10.0"))
 
     node_command = " ".join(
         [

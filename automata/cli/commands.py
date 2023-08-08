@@ -145,9 +145,15 @@ def configure(
     help="Logging level",
     type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
 )
+@click.option(
+    "--from-docker",
+    is_flag=True,
+    default=False,
+    help="Signal if the command is coming from Docker",
+)
 @click.pass_context
 def install_indexing(
-    ctx: click.Context, log_level: str, *args, **kwargs
+    ctx: click.Context, log_level: str, from_docker: bool, *args, **kwargs
 ) -> None:
     """Run the install_index script."""
 
@@ -162,7 +168,7 @@ def install_indexing(
     install_indexing()
 
     logger.info("Generating local indices:")
-    generate_local_indices()
+    generate_local_indices(from_docker=from_docker)
 
 
 @common_options
