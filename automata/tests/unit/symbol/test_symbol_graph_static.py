@@ -32,7 +32,6 @@ def test_build_real_graph(static_indices_graph_static, sync_context):  # noqa
     assert len(all_symbols) == 1_874
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_build_real_graph_and_subgraph(
     static_indices_graph_static, sync_context  # noqa
 ):  # noqa
@@ -41,5 +40,5 @@ def test_build_real_graph_and_subgraph(
 
     # build the subgraph
     subgraph = static_indices_graph_static.default_rankable_subgraph
-    assert len(subgraph) == 46
+    assert len(subgraph) == 43
     py_module_loader.reset()

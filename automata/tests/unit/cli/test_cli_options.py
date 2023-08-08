@@ -35,8 +35,7 @@ def test_common_options_project_name(command_with_options):
     assert project_name_option.default == "automata"
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_common_options_log_level(command_with_options):
     log_level_option = command_with_options.params[3]
     assert log_level_option.name == "log_level"
-    assert log_level_option.default == "DEBUG"
+    assert log_level_option.default == "INFO"

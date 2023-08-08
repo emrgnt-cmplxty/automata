@@ -65,7 +65,6 @@ def test_reconfigure_logging_invalid():
         automata.cli.commands.configure_logging("INVALID")
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_cli_run_code_embedding():
     with patch(
         "automata.cli.scripts.run_code_embedding.main"
@@ -82,11 +81,10 @@ def test_cli_run_code_embedding():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with("INFO")
+        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
         mock_main.assert_called_once()
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_cli_run_doc_embedding():
     with patch(
         "automata.cli.scripts.run_doc_embedding.main"
@@ -105,11 +103,10 @@ def test_cli_run_doc_embedding():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with("INFO")
+        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
         assert mock_main.called
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_cli_run_doc_post_process():
     with patch(
         "automata.cli.scripts.run_doc_post_process.main"
@@ -126,11 +123,10 @@ def test_cli_run_doc_post_process():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
         mock_main.assert_called_once()
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_cli_run_agent():
     with patch("automata.cli.scripts.run_agent.main") as mock_main, patch(
         "automata.cli.commands.configure_logging"
@@ -145,7 +141,7 @@ def test_cli_run_agent():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with("DEBUG")
+        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
         assert mock_main.called
 
 
@@ -168,7 +164,6 @@ def test_configure_load_env_vars_called(load_env_vars_mock):
     )
 
 
-@pytest.mark.skip(reason="Logging changes broke test, need to fix")
 def test_reconfigure_logging_quiet_libraries():
     with patch(
         "automata.cli.commands.get_logging_config"
@@ -188,7 +183,7 @@ def test_reconfigure_logging_quiet_libraries():
         )
         mock_dictConfig.assert_called_once_with({})
         assert (
-            mock_getLogger.call_count == 5
-        )  # 4 for external libraries, 1 for __name__
+            mock_getLogger.call_count == 6
+        )  # 5 for external libraries, 1 for __name__
 
         mock_logger.setLevel.assert_called_with(logging.INFO)
