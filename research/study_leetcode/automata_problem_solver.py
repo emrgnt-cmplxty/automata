@@ -239,13 +239,12 @@ class LeetCodeExamplesFinder:
                 break
 
         encoding = tiktoken.encoding_for_model("gpt-4")
-
         examples_formatted = "\n".join(examples)
-
         examples_tokens_consumed = len(encoding.encode(examples_formatted))
+
         # truncate the examples if they are exceeding our available context
         examples_formatted = examples_formatted[
-            : max(
+            : min(
                 int(
                     MAX_TOKENS
                     / examples_tokens_consumed
@@ -255,6 +254,11 @@ class LeetCodeExamplesFinder:
                 len(examples_formatted),
             )
         ]
+
+        print(
+            f"Tokens consumed (after reduction) = {examples_tokens_consumed}"
+        )
+
         formatted_instruction = f"Your are given the following problem as context - {problem} \n. Your task is to select the {self.num_examples} of the following shown Related Solutions, which when combined together provide the best context to help with solving the previously presented problem:\n{examples_formatted}\nYour selected Related Solutions will be forwarded on as additional context to a programmer whose task is to write a solution to the originally given problem. Try to select more difficult solutions, as the stated problem is quite difficult. Return the final result as a simple array of integers, like [12,3,0,1,5]."
 
         config = (
@@ -278,7 +282,9 @@ class LeetCodeExamplesFinder:
                 f"[{extracted_result}]"
             )  # an integer array like [0, 5, ...]
         except Exception as e:
-            logger.error("An error occurred while selecting the best examples")
+            logger.error(
+                f"An error {e} occurred while selecting the best examples"
+            )
             selected = [0, 1, 2]
 
         return "\n".join(
@@ -343,7 +349,7 @@ def main():
     print(f"Number of examples to run = {len(loader.data)}")
     success_count = 0
     results = {}
-    for i in range(10, len(loader.data)):
+    for i in range(len(loader.data)):
         try:
             print(
                 f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}"
