@@ -6,9 +6,9 @@ import ast
 import logging
 import os
 import sys
+from typing import Dict
 
 import pandas as pd
-from typing import Dict
 from constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
@@ -171,7 +171,7 @@ def main():
 
 # TODO Rename this here and in `main`
 def _log_result(
-    result: str, results: Dict[int, bool], i: int, success_count: int
+    result: bool, results: Dict[int, bool], i: int, success_count: int
 ):
     """Log the result of the current run."""
     results[i] = result
