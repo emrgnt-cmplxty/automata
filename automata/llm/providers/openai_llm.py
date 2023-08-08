@@ -278,7 +278,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             This method can be made handling chat messages and functions identically to OpenAI.
         """
         result = "".join(
-            f"{ele['role']}:\n{ele['content']}\n\n"
+            f"{ele['role']}:\n{ele['content']}\n{ele.get('function_call')}\n"
             for ele in self.conversation.get_messages_for_next_completion()
         ) + "\n".join(ele.prompt_format for ele in self.functions)
         return len(self.encoding.encode(result))

@@ -95,6 +95,7 @@ exclude = '''
     | random
     | build
     | scip-python
+    | research/leetcode-hard-gym
     | local_tasks
   )/
 )
