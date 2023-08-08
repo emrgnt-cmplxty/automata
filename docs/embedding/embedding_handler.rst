@@ -1,93 +1,87 @@
 EmbeddingHandler
 ================
 
-``EmbeddingHandler`` is an abstract base class designed to handle
-embeddings in the Automata library. It acts as an interface that
-dictates the basic functions an embedding handler must implement.
+``EmbeddingHandler`` is an abstract base class (abc) to handle batch
+embeddings. This abstract class lays out the structure and expected
+methods for any derived class that is to handle batch embeddings.
 
 Overview
 --------
 
-The ``EmbeddingHandler`` symbol provides a standardised interface for
-embedding handling. It is designed to be used as a base class for other
-specific implementations like ``SymbolEmbeddingHandler`` and
-``SymbolDocEmbeddingHandler``.
-
-It handles the interaction with both the ``embedding_db``
-(VectorDatabaseProvider instance) and ``embedding_builder``
-(EmbeddingBuilder instance), requiring these as parameters during the
-class initialisation.
+``EmbeddingHandler`` provides a structured interface with four abstract
+methods to be implemented by any derived class. These methods provide a
+mechanism to get embeddings for a list of symbols, get all the
+embeddings in a sorted order, process the embeddings for a list of
+symbols, as well as perform any remaining updates following completion
+of full batch processing.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.embedding.base.EmbeddingBuilder``
--  ``automata.symbol.base.Symbol``
--  ``automata.symbol_embedding.base.SymbolEmbeddingHandler``
--  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.memory_store.symbol_code_embedding.SymbolCodeEmbeddingHandler``
+-  ``automata.cli.scripts.run_code_embedding.process_embeddings``
+-  ``automata.experimental.tools.builders.advanced_context_oracle_builder.AdvancedContextOracleToolkitBuilder.__init__``
+-  ``automata.experimental.tools.builders.document_oracle_builder.DocumentOracleToolkitBuilder.__init__``
+-  ``automata.experimental.memory_store.symbol_doc_embedding_handler.SymbolDocEmbeddingHandler.process_embedding``
+-  ``automata.core.utils.HandlerDict``
+-  ``automata.cli.scripts.run_code_embedding.main``
+-  ``automata.core.utils.LoggingConfig``
+-  ``automata.cli.commands.run_doc_embedding``
+-  ``automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler.process_embedding``
+-  ``automata.config.config_base.EmbeddingDataCategory``
+-  ``automata.embedding.embedding_base.EmbeddingHandler.flush``
+-  ``automata.embedding.embedding_base.EmbeddingHandler.get_embeddings``
+-  ``automata.embedding.embedding_base.EmbeddingHandler.get_all_ordered_embeddings``
+-  ``automata.embedding.embedding_base.EmbeddingHandler.process_embedding``
 
-Methods
+Example
 -------
 
-``__init__``
-~~~~~~~~~~~~
-
-This is the constructor method for the ``EmbeddingHandler`` and it is
-responsible for initialising the instance with the provided
-``embedding_db`` and ``embedding_builder``. As an abstract method, it
-simply sets these two properties without any further processing.
+As ``EmbeddingHandler`` is an abstract base class, it cannot be
+instantiated directly and doesn’t provide any functionality on its own.
+The following code sample is a mock example of how a subclass may look
+like when ``EmbeddingHandler`` is extended:
 
 .. code:: python
 
-   def __init__(self, embedding_db: VectorDatabaseProvider, embedding_builder: EmbeddingBuilder) -> None:
-       self.embedding_db = embedding_db
-       self.embedding_builder = embedding_builder
+   from typing import Any, List
+   from automata.common.symbol import Symbol
+   from automata.embedding.embedding_base import EmbeddingHandler
 
-``get_embedding``
-~~~~~~~~~~~~~~~~~
+   class MyEmbeddingHandler(EmbeddingHandler):
+       def get_embeddings(self, symbols: List[Symbol]) -> List[Any]:
+           # Implement method to return embeddings for a list of symbols
+           pass
 
-This abstract method is designed to return the embedding for a specific
-symbol. The specific implementation will be dependent on the child
-class.
+       def get_all_ordered_embeddings(self) -> List[Any]:
+           # Implement method to return all embeddings in a sorted order
+           pass
 
-.. code:: python
+       def process_embedding(self, symbols: Symbol) -> None:
+           # Implement method to process embeddings for a list of symbols
+           pass
 
-   @abc.abstractmethod
-   def get_embedding(self, symbol: Symbol) -> Any:
-       pass
-
-``process_embedding``
-~~~~~~~~~~~~~~~~~~~~~
-
-This abstract method is designed to process the embedding for a specific
-symbol. The specific implementation will be dependent on the child
-class.
-
-.. code:: python
-
-   @abc.abstractmethod
-   def process_embedding(self, symbol: Symbol) -> None:
-       pass
+       def flush(self) -> None:
+           # Implement method to perform any remaining updates 
+           pass
 
 Limitations
 -----------
 
-As ``EmbeddingHandler`` is an abstract class, it can’t be instantiated
-directly. Instead, it must be subclassed, and at least ``get_embedding``
-and ``process_embedding`` methods must be implemented in the child
-class.
+The primary limitations of the ``EmbeddingHandler`` are tied to specific
+implementations in derived classes. Since ``EmbeddingHandler`` is an
+abstract base class, it doesn’t pose limitations on its own but it gives
+a layout to be followed, meaning that the limitations of its
+implementations are up to the specific subclass.
 
-Follow-up Questions:
---------------------
+Follow-up Questions
+-------------------
 
--  How is the ``get_embedding`` method expected to behave? Does it
-   always access live data, cache results, or some combination of the
-   two?
--  How is the ``process_embedding`` method expected to behave? What sort
-   of preprocessing might it do?
--  Are there expected side-effects to either the ``get_embedding`` or
-   ``process_embedding`` methods?
--  What is the expected type of the returned embeddings?
--  How are symbols identified for embedding processing?
+-  Are there more specific templates or guidelines for each of the
+   abstract methods to be implemented for better consistency across
+   different implementations?
+-  Could type hints be provided for the return types of the methods of
+   ``EmbeddingHandler`` to enhance usage clarity of the respective
+   methods?
+-  How are errors and exceptions handled across derived classes of
+   ``EmbeddingHandler`` considering it doesn’t define any error handling
+   procedures in its interface?

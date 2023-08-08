@@ -20,6 +20,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -27,7 +29,10 @@ Summary of content
        :maxdepth: 1
 
        bounding_box
+       docstring_remover
        handler_dict
+       import_remover
+       line_item
        logging_config
        root_dict
        base/index

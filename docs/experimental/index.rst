@@ -17,13 +17,18 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
     .. toctree::
        :maxdepth: 1
 
+       code_parsers/index
+       memory_store/index
        search/index
+       symbol_embedding/index
        tools/index
 
 ..  AUTO-GENERATED CONTENT END

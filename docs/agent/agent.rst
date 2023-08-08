@@ -1,25 +1,89 @@
--  The ``Agent`` class is typically used as a base for creating
-   autonomous agents that interact with different APIs or data sources.
-   These agents can be used for a variety of tasks including but not
-   limited to text generation, translation, summarization or any task
-   that involves natural language processing.
+Agent Class
+===========
 
--  The ``OpenAIAutomataAgent`` is one specific implementation of the
-   ``Agent`` class. Depending on the library, there might be other
-   concrete implementations to interact with different APIs.
+Overview
+--------
 
--  A custom database provider for the ``set_database_provider`` method
-   could be any class that implements a common interface for database
-   operations. For instance, this could be a provider that interacts
-   with a SQL database, a NoSQL database like MongoDB, or a simple
-   in-memory database for testing purposes.
+The ``Agent`` is an abstract class for creating autonomous agents. These
+agents can perform actions and communicate with other providers. During
+instantiation, an agent is initialized with a set of instructions and
+can optionally be linked with a database provider.
 
--  The ``LLMConversation`` typically represents a series of exchanges or
-   “turns” between the agent and user, where each “turn” includes a user
-   message and an assistant message. The ``LLMIterationResult``
-   typically contains the result of a single iteration of processing,
-   which includes the assistant’s message for the current turn and when
-   implemented, could include other metadata such as response time,
-   temperature for generation, use of p, etc. Kindly note that the
-   actual implementation might differ based on specific implementation
-   of ``Agent`` and the context it is being used in.
+An ``Agent`` works by advancing through a sequence of tasks. It
+implements iterator methods (``__iter__`` and ``__next__``) for this
+purpose. Each iteration corresponds to a step of the task that the
+``Agent`` has been designed to accomplish. This step could be a
+conversation turn, which involves generating a new message from the
+‘assistant’ and then parsing the reply from the ‘user’. The ``run``
+method can be used to execute these tasks until completion, with the
+task being deemed complete when the ``__next__`` method returns
+``None``.
+
+It has abstract properties for fetching its responses, associated
+conversation, and tools, whose concrete implementation is instantiated
+by subclasses. It also has an abstract method for setting a database
+provider, essential for managing conversations with the user.
+
+Usage Example:
+--------------
+
+The following example shows a basic creation of a subclass of ``Agent``:
+
+.. code:: python
+
+   class SimpleAgent(Agent):
+       """Implements the abstract Agent class for a simple specific agent."""
+
+       def __init__(self, instructions: str) -> None:
+           super().__init__(instructions)
+
+       def __iter__(self):
+           ...
+
+       def __next__(self) -> str:
+           ...
+
+       @property
+       def conversation(self) -> LLMConversation:
+           ...
+
+       @property
+       def agent_responses(self) -> List[LLMChatMessage]:
+           ...
+
+       @property
+       def tools(self) -> Sequence[Tool]:
+           ...
+
+       def run(self) -> str:
+           ...
+
+This example shows a simple implementation of the ``Agent`` abstract
+class. The ``...`` represents sections of code that must be implemented
+to define the specific behaviour of the ``SimpleAgent``.
+
+Related Symbols
+---------------
+
+-  ``LLMChatMessage``, ``LLMConversation``: Models for handling and
+   representing chat messages and conversations.
+-  ``Tool``: An abstraction for different types of tools associated with
+   the agent.
+-  ``LLMConversationDatabaseProvider``: Abstract base class for database
+   providers.
+
+Limitations
+-----------
+
+The ``Agent`` abstract class doesn’t provide an easy method to modify or
+control the flow of execution. It assumes that all tasks are to be
+performed in a cyclical manner and that they complete after a specific
+number of steps.
+
+Follow-up Questions:
+--------------------
+
+-  How to handle more complex workflows that require non-linear
+   execution paths?
+-  Is it possible to dynamically adjust the maximum number of iterations
+   based on the task complexity?

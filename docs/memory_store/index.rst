@@ -19,6 +19,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -26,6 +28,7 @@ Summary of content
        :maxdepth: 1
 
        agent_conversation_database
+       open_ai_automata_conversation_database
        symbol_code_embedding_handler
        symbol_doc_embedding_handler
 

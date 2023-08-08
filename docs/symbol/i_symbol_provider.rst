@@ -1,89 +1,81 @@
 ISymbolProvider
 ===============
 
-``ISymbolProvider`` is an abstract base class that provides an interface
-for classes that work with a collection of symbols. It contains several
-methods aimed at managing, updating, and retrieving symbols.
-
 Overview
 --------
 
-``ISymbolProvider`` is an abstract base class in the Automata library.
-Its main purpose is to enforce a standard interface for classes that
-manage symbolic representations in the library. It includes methods to
-filter, sort, and manipulate symbols, as well as methods to mark symbol
-collection as synchronized. ``ISymbolProvider`` is instantiated
-indirectly via a child class.
+``ISymbolProvider`` is an abstract base class that represents an
+interface for providing access to symbols. Here, symbols are defined as
+objects that represent certain attributes or functionalities in the
+system. The class contains methods for retrieving and filtering
+supported symbols, as well as setting a “synchronized” flag which
+indicates whether symbols are ready for retrieval.
 
-Methods
--------
+The class appears to be designed with a pattern for inheriting classes
+to define their own ways of obtaining and filtering symbols. Once these
+symbols are processed and synchronized, the
+``get_sorted_supported_symbols`` method can be used to retrieve them.
 
-The core methods in the ``ISymbolProvider`` class include:
+Notably, the ``ISymbolProvider`` requires sorted symbols and provides
+error handling in the ``get_sorted_supported_symbols`` method to make
+sure that the symbols are sorted and synchronized before retrieval.
 
--  ``__init__``: Initializes a new instance of an ``ISymbolProvider``
-   subclass with the ``is_synchronized`` flag set to ``False``.
-
--  ``filter_symbols``: An abstract method that needs to be implemented
-   by any subclass. It is designed to filter the set of symbols managed
-   by the class.
-
--  ``get_sorted_supported_symbols``: This method retrieves a list of
-   sorted symbols. If the ``is_synchronized`` flag is ``False``, a
-   ``RuntimeError`` is raised. It checks that the symbols are properly
-   sorted.
-
--  ``set_synchronized``: This method sets the ``is_synchronized`` flag
-   to the provided value. This method is used to update the state of the
-   ``ISymbolProvider`` instance.
+The following methods are included in ``ISymbolProvider``:
+``_get_sorted_supported_symbols, filter_symbols, get_sorted_supported_symbols, set_synchronized``.
 
 Related Symbols
 ---------------
 
-Some symbolic classes and methods that are related to
-``ISymbolProvider`` include:
+At this time, none have been specified.
 
--  ``automata.tests.unit.test_symbol_graph.test_get_all_symbols``
--  ``automata.tests.unit.test_symbol_graph.test_build_real_graph``
--  ``automata.context_providers.symbol_synchronization.SymbolProviderRegistry``
--  ``automata.tests.unit.test_symbol_search_tool.test_retrieve_source_code_by_symbol``
+Usage Example
+-------------
 
-Example
--------
-
-As ``ISymbolProvider`` is an abstract class, it cannot be directly
-instantiated. A subclass implementing the ``filter_symbols`` function
-must be created:
+Due to the abstract nature of the ``ISymbolProvider`` class, we cannot
+create an instance of it directly. Instead, we need to create a subclass
+that implements the abstract methods, like so:
 
 .. code:: python
 
-   class SymbolProviderExample(ISymbolProvider):
-       def filter_symbols(self, sorted_supported_symbols: List[Symbol]) -> None:
-           self.sorted_supported_symbols = sorted_supported_symbols
+   from automata.symbol.symbol_base import ISymbolProvider, Symbol
+
+   class MySymbolProvider(ISymbolProvider):
+
+       def _get_sorted_supported_symbols(self):
+           # For demo purpose, we will simply return a list of Symbols objects.
+           # In practical scenario, the implementation will fetch the right set of Symbol objects
+           return [Symbol("symbol_1"), Symbol("symbol_2"), Symbol("symbol_3")]
+
+       def filter_symbols(self, sorted_supported_symbols):
+           # For demo purpose, we will not filter the symbols.
+           # In practical scenario, the implementation may return a subset of the symbols based on certain criteria
+           return sorted_supported_symbols
+
+   provider = MySymbolProvider()
+   provider.set_synchronized(True)
+
+   symbols = provider.get_sorted_supported_symbols()
+   print(symbols)  # Outputs: [Symbol("symbol_1"), Symbol("symbol_2"), Symbol("symbol_3")]
 
 Limitations
 -----------
 
-One major limitation of ``ISymbolProvider`` is that it is an abstract
-class. This means it cannot be directly instantiated. Instead,
-developers must subclass ``ISymbolProvider`` and provide an
-implementation for the ``filter_symbols`` method.
-
-Another potential limitation is the synchronization requirement, where
-the ``is_synchronized`` flag needs to be set prior to attempting to
-retrieve symbols. This could potentially lead to runtime exceptions
-depending on the order of operations.
+``ISymbolProvider`` doesn’t impose any kind of constraints on what the
+supported symbols can be or how they are provided. The nature of the
+symbols and their sources are fully dependent on the specific
+implementation of the subclass. As such, ``ISymbolProvider`` by itself
+does not provide a usable implementation and does not have any
+meaningful limitations. Any limitations would be inherent to the
+specific subclass implementation.
 
 Follow-up Questions:
 --------------------
 
-1. How are subclasses of ``ISymbolProvider`` intended to implement the
-   ``filter_symbols`` method? What criteria should they use to filter
-   symbols?
-2. Are there any performance implications associated with the checks
-   performed in the ``get_sorted_supported_symbols`` method?
-3. What happens if the sorted_symbols list is not correctly sorted? How
-   does this impact the performance and reliability of the symbol
-   provider?
-4. Can there be multiple instances of a child class of
-   ``ISymbolProvider`` working with different sets of symbols? If so,
-   how is the synchronization managed across different instances?
+1. What are the criteria for a Symbol to be considered ‘supported’?
+2. What is the significance of the ``is_synchronized`` flag?
+3. Are there any threading concerns or race conditions if multiple
+   threads may be using an instance of an ``ISymbolProvider`` subclass?
+4. What sort of objects are the ``Symbol`` class used here expected to
+   represent?
+5. How are symbols expected to be sorted in
+   ``_get_sorted_supported_symbols``?

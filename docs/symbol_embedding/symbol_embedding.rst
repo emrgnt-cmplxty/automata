@@ -1,88 +1,73 @@
 SymbolEmbedding
 ===============
 
-``SymbolEmbedding`` is an abstract base class designed for the handling
-of symbol code embeddings within the Automata framework. In machine
-learning and natural language processing, embeddings represent data such
-as words, sentences, or symbols as vectors in high-dimensional space.
-These vector representations capture the inherent relationships and
-features of the original data in a format that can be efficiently
-processed by machine learning algorithms. The ``SymbolEmbedding`` class
-abstracts the embedding process for code symbols, representing them as
-vectors that can be further used for tasks such as code analysis,
-search, or semantic reasoning.
+``SymbolEmbedding`` is an abstract class for creating and managing
+symbol code embeddings. This class is used to embed symbols into a high
+dimensional space and provides helper functions to manage these embedded
+representations in efficient ways. It extends the ``Embedding`` class
+and specifies certain features required for handling symbol
+representations.
+
+Key attributes of this class include ``key``, ``document``, and
+``vector``. The ``key`` attribute represents the unique identifier for
+the symbol. The ``document`` attribute refers to the document where the
+symbol was found. The ``vector`` attribute represents the vectorized
+form of the symbol.
 
 Overview
 --------
 
-The ``SymbolEmbedding`` class defines a standard interface for symbol
-embeddings by providing an initiation method and an abstract string
-representation method. It provides property and setter methods for the
-symbol key, allowing for flexible usage and the potential for future
-extensions. This class needs to be inherited and the abstract methods
-need to be implemented to make a concrete class for specific types of
-symbol embeddings.
+``SymbolEmbedding`` allows the creation of an embedding of a symbol,
+storing useful information like where the symbol was found and its
+vector representation. It also contains properties for easy access to
+core attributes such as ``symbol`` and ``metadata``.
+
+In addition, ``SymbolEmbedding`` can be tailored and created directly
+from given arguments using the ``from_args`` class method.
 
 Related Symbols
 ---------------
 
--  ``SymbolEmbedding`` is the base class for ``SymbolCodeEmbedding`` and
-   ``SymbolDocEmbedding``, which are concrete implementations of symbol
-   embeddings for code symbols and document symbols respectively.
+-  ``automata.symbol_embedding.symbol_embedding_base.Embedding``
+-  ``numpy.ndarray``
+-  ``typing.Dict``
+-  ``abc.abstractmethod``
 
--  ``SymbolCodeEmbeddingHandler`` is a class that handles the embedding
-   of code symbols, which uses ``SymbolCodeEmbedding``.
+Example
+-------
 
--  ``SymbolDocEmbeddingHandler`` is a class to handle the embedding of
-   document symbols, which uses ``SymbolDocEmbedding``.
-
-Usage Example
--------------
-
-Here’s an example of how a subclass ``SymbolCodeEmbedding`` inherits
-from ``SymbolEmbedding``. Note that as ``SymbolEmbedding`` is an
-abstract class, it can’t be instantiated directly.
+The following example demonstrates how to create an instance of
+``SymbolEmbedding`` using valid argument values.
 
 .. code:: python
 
-   from automata.symbol_embedding.base import SymbolEmbedding, Symbol
+   from automata.symbol_embedding.symbol_embedding_base import SymbolEmbedding
    import numpy as np
 
-   class SymbolCodeEmbedding(SymbolEmbedding):
-       def __init__(self, symbol: Symbol, source_code: str, vector: np.ndarray):
-           super().__init__(symbol, source_code, vector)
+   symbol_key = 'exampleSymbol'
+   document = 'exampleDocument.txt'
+   vector = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
 
-       def __str__(self) -> str:
-           return f"SymbolCodeEmbedding for Symbol: {self.symbol}, with vector: {self.vector}"
-
-Create an instance of ``SymbolCodeEmbedding``:
-
-.. code:: python
-
-   from automata.symbol.base import Symbol
-   symbol = Symbol.from_string("Sample symbol string")
-   vector = np.array([1, 0, 0, 0])
-   embedding_instance = SymbolCodeEmbedding(symbol, "source code", vector)
-
-Print Embedding:
-
-.. code:: python
-
-   print(embedding_instance)
+   symbol_embedding = SymbolEmbedding(symbol_key, document, vector)
 
 Limitations
 -----------
 
-The class in itself does not perform any computations for symbol
-embedding, but it sets an interface for what methods an embedding class
-should implement. Therefore, the actual effectiveness of the embedding
-is dependent on the concrete implementation of methods in the subclasses
-like ``SymbolCodeEmbedding`` and ``SymbolDocEmbedding``.
+One of the main limitations of ``SymbolEmbedding`` is that it relies
+heavily on the definition of the ``metadata`` property. Since
+``metadata`` is an abstract method, any sub-class of ``SymbolEmbedding``
+must provide its own implementation of this method.
+
+Another limitation is that the structure of a symbol’s vector
+representation is not enforced. This relies on the user to ensure they
+are creating consistent and meaningful vector representations.
 
 Follow-up Questions:
 --------------------
 
--  What specific implementations are possible or planned for this
-   abstract class in the automata project itself?
--  Are there any planned methods or enhancements for these embeddings,
-   such as embedding update or real-time learning of embeddings?
+-  What is the ideal dimensionality or structure of a symbols vector
+   representation?
+-  How is the metadata for a specific symbol defined and used in the
+   representation?
+-  If a large number of symbols are embedded, how would memory and
+   computation constraints be managed?

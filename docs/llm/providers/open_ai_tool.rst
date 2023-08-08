@@ -1,77 +1,77 @@
 OpenAITool
 ==========
 
+``OpenAITool`` is a class in the OpenAI language learning model (LLM)
+that helps in using the OpenAI agent. By standardizing the necessary
+components like the properties and required attributes needed for OpenAI
+functions, it offers structured integration and usage of OpenAI.
+
 Overview
 --------
 
-``OpenAITool`` is a class intended to represent a tool that can be
-implemented by the OpenAI agent. This class mainly provides
-functionalities for initializing OpenAI tools with specific functions,
-names, descriptions, properties, and requirements. The initialization
-process of ``OpenAITool`` involves invoking the ``OpenAIFunction``
-class.
-
-This class is primarily used by OpenAI’s toolkit builders, such as
-``ContextOracleOpenAIToolkitBuilder``, ``PyWriterOpenAIToolkitBuilder``,
-and ``SymbolSearchOpenAIToolkitBuilder``, to create lists of
-``OpenAITool`` instances for OpenAI.
+``OpenAITool`` helps streamline operations with the OpenAI agent. It
+holds the properties required to use the OpenAI function. The required
+properties and a list of optional properties are stored in a dictionary,
+with the function and its description stored separately. Upon
+initialization, the function, name, description, properties, and the
+required list are passed to set up the tool.
 
 Related Symbols
 ---------------
 
--  ``automata.embedding.base.EmbeddingVectorProvider``
--  ``automata.llm.foundation.LLMChatCompletionProvider``
--  ``automata.llm.foundation.LLMChatMessage``
--  ``automata.llm.foundation.LLMCompletionResult``
--  ``automata.llm.foundation.LLMConversation``
--  ``automata.tools.base.Tool``
--  ``automata.tests.unit.test_tool.TestTool``
+Since context does not provide related symbols to ``OpenAITool``,
+detailed related symbols cannot be provided here. Assumed related
+symbols might be modules or classes which use ``OpenAITool`` or are used
+by ``OpenAITool``.
 
 Example
 -------
 
-Below is an example of how to instantiate an ``OpenAITool`` using the
-test tool as a function, which simply returns a string “TestTool
-response” irrespective of the input provided.
+The following is an example demonstrating how to use the ``OpenAITool``
+class.
 
 .. code:: python
 
-   from automata.llm.providers.openai import OpenAITool
-   from automata.tests.unit.test_tool import TestTool
+   from automata.llm.providers.openai_llm import OpenAITool
 
-   tool = TestTool(
-       name="TestTool",
-       description="A test tool for testing purposes",
-       function=lambda x: "TestTool response",
-   )
+   def my_function(input_string):
+       # insert function logic here
+       pass
+
+   properties = {
+       'property_1': {'description': 'description', 'type': 'str'},
+       'property_2': {'description': 'description', 'type': 'int'}
+   }
 
    openai_tool = OpenAITool(
-       function=tool.run,
-       name=tool.name,
-       description=tool.description,
-       properties={'test_prop': {'description': 'A test property', 'type': 'string'}},
+      function=my_function, 
+      name="OpenAI Tool", 
+      description="This is a generic function description.", 
+      properties=properties, 
+      required=['property_1', 'property_2']
    )
 
-Here the ``run`` method of the ``TestTool`` instance ``tool`` is passed
-as the ``function`` parameter to ``OpenAITool``. The ``properties`` is a
-dictionary that includes additional data about the tool, such as a
-description and type for each property. The ``name`` and ``description``
-are self-explanatory.
+In this example, we have created a new instance of ``OpenAITool`` with a
+dummy function ``my_function``, a name, description, a dictionary of
+properties and a list of required properties.
 
 Limitations
 -----------
 
-The OpenAITool provides a basic framework to facilitate the creation and
-usage of tools for the OpenAI agent. The actual functionality of the
-tool would largely depend on the function passed during its
-instantiation. Also, even though it provides a property variable for
-additional data storage, it does not inherently provide methods to
-handle or manipulate these properties.
+The ``OpenAITool`` class relies on the ``OpenAIFunction`` for its
+functioning. It ensures the required properties for the OpenAI function
+are available and correctly formatted. However, it doesn’t provide
+explicit error handling or checks for the function itself. As such, it
+assumes that the function provided during instantiation is correct and
+valid. Any errors within the function can lead to a breakdown in the
+operations of the ``OpenAITool`` object.
 
 Follow-up Questions:
 --------------------
 
--  How are the properties of the OpenAITool used in the toolkit builders
-   and eventually by the OpenAI agent?
--  Are there any specific requirements or constraints for the function
-   that is passed during the initialisation of an OpenAITool?
+-  How is error handling performed within ``OpenAITool`` beyond property
+   validation?
+-  Is there a way to update the properties of ``OpenAITool`` instances
+   after creation?
+-  Could we improve the ``OpenAITool`` class by adding type checking for
+   the input function during instantiation?

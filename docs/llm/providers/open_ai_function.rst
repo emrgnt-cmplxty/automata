@@ -1,79 +1,70 @@
 OpenAIFunction
 ==============
 
-``OpenAIFunction`` represents a callable function in the OpenAI agent.
-It encapsulates required information related to a function such as its
-name, description, properties, and optional parameters.
+``OpenAIFunction`` is a class that represents a function callable by the
+OpenAI agent. It provides methods to convert this function definition
+into a dictionary, and to present the function in a format similar to
+the way OpenAI handles it internally.
 
-Detailed Description
---------------------
+Overview
+--------
 
-The ``OpenAIFunction`` class encapsulates the necessary details needed
-to define a function that can be used by the OpenAI agent. The
-information includes the name, description, properties, and a list of
-required properties for the function. The class also provides the
-``to_dict`` method to get the information about the function in a
-dictionary format.
+The ``OpenAIFunction`` class helps define a function with name,
+description, properties, and required fields. After defining this
+function, you can use the ``to_dict`` method to transform this function
+definition into a dictionary. Additionally, the ``prompt_format``
+property can be used to obtain the function definition in the format
+used by OpenAI internally.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.sample_modules.sample.sample_function``: An
-   example of a function that can be represented by ``OpenAIFunction``.
--  ``automata.agent.providers.OpenAIAutomataAgent.functions``: A method
-   that returns a list of ``OpenAIFunction`` instances representing the
-   available functions for the agent.
--  ``automata.llm.providers.openai.OpenAITool``: A class representing a
-   tool that can be used by the OpenAI agent which utilizes
-   ``OpenAIFunction``.
+The ``OpenAIFunction`` class typically operates independently and does
+not explicitly relate to other symbols.
 
-Usage Example
--------------
+Example
+-------
 
-The following is an example demonstrating how to create an instance of
-``OpenAIFunction`` and get its data in dictionary format using
-``to_dict`` method:
+Here’s an example of defining a new function using ``OpenAIFunction``,
+converting it to a dictionary and retrieving its prompt format.
 
 .. code:: python
 
-   from automata.llm.providers.openai import OpenAIFunction
+   from automata.llm.providers.openai_llm import OpenAIFunction
 
-   # Initialize OpenAIFunction object
+   # define a function
    function = OpenAIFunction(
-       name="Sample Function",
-       description="This is a sample function",
-       properties={"Parameter 1": {"description": "Description for parameter 1"}},
-       required=["Parameter 1"]
+       name="get_current_weather",
+       description="Get the current weather in a given location",
+       properties={
+           "location": {
+               "type": "string",
+               "description": "The city and state, e.g. San Francisco, CA",
+           },
+           "unit": {
+               "type": "string",
+               "description": "Unit of measurement, either 'celsius' or 'fahrenheit'."
+           }
+       },
+       required=["location"],
    )
 
-   # Get function information in a dictionary format
-   function_info = function.to_dict()
-   print(function_info)  
+   # convert it to a dictionary
+   function_dict = function.to_dict()
 
-In the above example, we first import the ``OpenAIFunction`` class. We
-then create an instance of ``OpenAIFunction`` named ``function``,
-providing its necessary details such as the name, description,
-properties, and the list of required properties. Finally, we get the
-information about ``function`` in the form of a dictionary using the
-``to_dict`` method, and print this information.
+   # retrieve its prompt format
+   function_prompt_format = function.prompt_format
 
 Limitations
 -----------
 
-The main limitation of ``OpenAIFunction`` is that it strictly assumes
-the defined function resides in the OpenAI agent. Externally defined
-functions cannot be passed directly, and need to be encapsulated in
-``OpenAIFunction`` for the agent to use them.
-
-Next, note that the ``properties`` argument in
-``OpenAIFunction.__init__()`` expects a dictionary where each key-value
-pair defines a parameter. We can probably make this more specific to
-provide better context about the parameters.
+A limitation of ``OpenAIFunction`` is that it assumes the OpenAI’s
+internal format while returning the function definition in
+``prompt_format`` property.
 
 Follow-up Questions:
 --------------------
 
--  Can we include an example demonstrating how to define a function that
-   can be utilized by ``OpenAIFunction``?
--  What are the specific attributes that should be included in the
-   ``properties`` argument when defining an ``OpenAIFunction`` instance?
+-  What are the possible types for the parameters in the ``properties``
+   dictionary while defining a function using ``OpenAIFunction``?
+-  How can complex properties be represented using ``OpenAIFunction``?

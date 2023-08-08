@@ -4,70 +4,81 @@ SymbolProviderRegistry
 Overview
 --------
 
-``SymbolProviderRegistry`` is a central registry management class which
-keeps track of the multiple symbol providers in the system. The primary
-role of the ``SymbolProviderRegistry`` is to synchronize the symbols
-supported by several symbol providers and maintain them in a sorted
-order. It ensures that only the common symbols across the system are
-taken into account by the application.
-
-This class operates primarily on singleton methods to maintain and
-provide a single central registry.
+``SymbolProviderRegistry`` is a class for managing instances of
+``ISymbolProvider`` objects. It provides methods for registering,
+tracking, and synchronizing symbol providers across numerous parts of
+the system. This class uses singleton design pattern, thus there is only
+one unique ``SymbolProviderRegistry`` instance during the runtime. The
+registry keeps track of two primary attributes: a set ``_providers`` of
+all registered symbol providers, and a list ``sorted_supported_symbols``
+of all symbols supported by every registered provider.
 
 Related Symbols
 ---------------
 
--  ``automata.symbol.base.Symbol``
--  ``automata.symbol.base.ISymbolProvider``
--  ``automata.tests.unit.test_symbol_graph.test_get_all_symbols``
--  ``automata.tests.unit.test_symbol_graph.test_build_real_graph``
--  ``automata.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext.register_provider``
--  ``automata.context_providers.symbol_synchronization.SymbolProviderSynchronizationContext.synchronize``
+-  ``automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.register_provider``
+-  ``automata.context_providers.symbol_synchronization_context.SymbolProviderSynchronizationContext.synchronize``
+-  ``automata.singletons.dependency_factory.DependencyFactory._synchronize_provider``
+-  ``automata.symbol.symbol_base.ISymbolProvider``
+-  ``automata.cli.scripts.run_doc_embedding.initialize_providers``
 
 Usage Example
 -------------
 
+Synchronization of symbol providers and their supported symbols is an
+important operation in application involving symbolic representations of
+data. Here is an example of using ``SymbolProviderRegistry`` for
+registering and synchronizing symbol providers:
+
 .. code:: python
 
-   from automata.symbol.base import ISymbolProvider, Symbol
-   from automata.context_providers.symbol_synchronization import SymbolProviderRegistry
+   from automata.context_providers.symbol_synchronization_context import SymbolProviderRegistry
+   from your_module import SymbolProviderExample  # Assume this class implements ISymbolProvider interface
 
-   # Define a custom symbol provider
-   class CustomSymbolProvider(ISymbolProvider):
-       ...
+   provider_one = SymbolProviderExample()
+   provider_two = SymbolProviderExample()
 
-   custom_provider = CustomSymbolProvider()
+   SymbolProviderRegistry.register_provider(provider_one)
+   SymbolProviderRegistry.register_provider(provider_two)
 
-   # Register your custom provider
-   SymbolProviderRegistry.register_provider(custom_provider)
-
-   # Synchronize the symbols across all providers
    SymbolProviderRegistry.synchronize()
 
-   # Get the sorted list of supported symbols
-   symbols = SymbolProviderRegistry.get_sorted_supported_symbols()
+   filtered_supported_symbols = SymbolProviderRegistry.get_sorted_supported_symbols()
 
-   # Your code with the symbol
-   ...
+In the above example, we first register ``provider_one`` and
+``provider_two``. Subsequently, we synchronize all registered providers
+using ``synchronize()``. After synchronizing, we use
+``get_sorted_supported_symbols()`` to retrieve the supported symbols,
+which now includes only those symbols supported by all providers.
 
 Limitations
 -----------
 
-``SymbolProviderRegistry`` relies on the symbol providers in the system
-implementing the ``ISymbolProvider`` interface correctly. If a symbol
-provider provides incorrect or incomplete information about supported
-symbols, it may introduce errors in the sorted symbols list.
-Additionally, the registry assumes that all symbol providers will be
-registered before any get or synchronize operation is performed. If a
-new symbol provider is added after synchronization, it will not be
-considered until the next synchronization.
+``SymbolProviderRegistry`` imposes a common subset of symbols ideology
+among all registered providers, leading to a situation where if there is
+no common subset between them, an exception will be raised. This
+approach might not be desirable for cases where it’s completely
+acceptable to have providers with no overlapping symbols.
+
+Furthermore, the functionality provided by this class is limited by the
+correct implementation of ``ISymbolProvider``\ ’s methods by symbol
+providers. If methods like ``set_synchronized``, ``filter_symbols``,
+``_get_sorted_supported_symbols`` are not implemented correctly, the
+``SymbolProviderRegistry`` may not operate as expected.
+
+Lastly, it’s important to note that this class uses a Singleton pattern
+and can only support one distinct instance of ``SymbolProviderRegistry``
+during the system’s runtime.
 
 Follow-up Questions
 -------------------
 
--  How does adding a new symbol provider after synchronization affect
-   the result? Is there a watch mechanism or notification setup in
-   symbol providers when new symbols get added?
--  What precautions or considerations should be taken while implementing
-   a custom symbol provider to ensure compatibility with
-   ``SymbolProviderRegistry``?
+-  How well does this class handle cases where there is a need to
+   maintain different registries for different symbol providers?
+-  How well can the synchronization mechanism handle future extensions
+   to the ISymbolProvider interface, such as the addition of new
+   initialization states?
+-  What happens when a registered symbol provider does not implement the
+   ISymbolProvider methods correctly? Are there sufficient error handle
+   mechanisms in place to inform the user about potential issues caused
+   by this?

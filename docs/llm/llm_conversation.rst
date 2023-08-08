@@ -1,102 +1,92 @@
 LLMConversation
 ===============
 
-``LLMConversation`` is an abstract base class for different types of
-Language-Learning Model (LLM) conversations in the Automata framework.
-It provides a blueprint for managing multiple conversations with
-different observers in a multithreaded application scenario.
+``LLMConversation`` acts as an abstract base class defining the
+essential features and behaviour for different types of LLM (logic and
+language model) conversation models. It provides the structure for
+conversation implementations, including getting messages, registering
+and notifying observers, and resetting conversations.
+
+``LLMConversation`` also includes an internal
+``LLMEmptyConversationError`` Exception class thrown when the
+conversation is empty.
 
 Overview
 --------
 
-``LLMConversation`` uses the Observer design pattern to manage updates
-to the state of the conversation. It contains abstract methods that
-provide the structure for handling different types of LLM chat messages
-and can be expanded and customized for specific implementations. As an
-abstract base class, ``LLMConversation`` cannot be instantiated directly
-and must be subclassed to be utilized.
+``LLMConversation`` serves as the foundational class for any LLM
+conversations. It specifies the necessary interface but does not
+implement these methods, expecting the child classes to provide specific
+implementations. Key methods available include message retrieval
+options, observer management operations, and procedures for obtaining
+conversation-specific information like length and the latest message.
 
 Related Symbols
 ---------------
 
--  ``automata.llm.providers.openai.OpenAIConversation.get_latest_message``
--  ``automata.llm.foundation.LLMChatMessage``
--  ``automata.tests.unit.test_conversation_database.test_put_message_increments_interaction_id``
--  ``automata.tests.unit.test_conversation_database.test_get_messages_returns_all_messages_for_session``
--  ``automata.llm.providers.openai.OpenAIConversation``
--  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
--  ``automata.core.base.patterns.observer.Observer``
+-  ``automata.llm.llm_chat_message.LLMChatMessage``
+-  ``automata.llm.llm_base.LLMEmptyConversationError``
+-  ``automata.llm.observers.Observer``
 
 Example
 -------
 
-Below is an example of how a subclass of ``LLMConversation`` might be
-designed:
+As ``LLMConversation`` is an abstract base class, it cannot be
+instantiated directly. Instead, a child class inheriting from
+``LLMConversation`` should implement all the abstract methods. Here’s an
+example:
 
 .. code:: python
 
-   from automata.llm.foundation import LLMConversation, LLMChatMessage
-   from automata.core.base.patterns.observer import Observer
+   from automata.llm.llm_base import LLMConversation
+   from automata.llm.llm_chat_message import LLMChatMessage
 
-   class CustomConversation(LLMConversation):
+   class SimpleLLMConversation(LLMConversation):
        def __init__(self):
            super().__init__()
-           self.messages = []
+           self.conversation = []
 
-       def __len__(self):
-           return len(self.messages)
+       @property
+       def messages(self) -> Sequence[LLMChatMessage]:
+           return self.conversation
+
+       def __len__(self) -> int:
+           return len(self.conversation)
+
+       def get_messages_for_next_completion(self) -> Any:
+           return self.conversation[-1] if self.conversation else None
 
        def get_latest_message(self) -> LLMChatMessage:
-           return self.messages[-1]
-
-       def get_messages_for_next_completion(self):
-           return self.messages
+           return self.conversation[-1] if self.conversation else None
 
        def reset_conversation(self) -> None:
-           self.messages = []
-
-   # Subscribing an observer to the custom conversation
-   class CustomObserver(Observer):
-       def update(self, subject: LLMConversation) -> None:
-           print(f"Observer notified. Latest message: {subject.get_latest_message().to_dict()}")
-
-   conversation = CustomConversation()
-   observer = CustomObserver()
-   conversation.register_observer(observer)
-
-   # Create and add a message to the conversation
-   message = LLMChatMessage(role="user", content="Hello!")
-   conversation.messages.append(message)
-   # Notify observers of the change
-   conversation.notify_observers()
-
-In this script: 1. A custom conversation class is built by subclassing
-``LLMConversation`` and defining the required methods. 2. An observer
-class is built by subclassing ``Observer`` and implementing the
-``update`` method. 3. An instance of the custom conversation is created
-and an observer is registered. 4. A new message is created and added to
-the conversation, and the ``notify_observers`` method is called to
-update all registered observers.
+           self.conversation = []
 
 Limitations
 -----------
 
-``LLMConversation`` is an abstract class and cannot be used until all
-its abstract methods are implemented in the subclass. The
-responsibilities attached to the abstract methods should be
-well-understood before implementing a subclass.
+``LLMConversation`` assumes that any inheriting class will provide
+concrete implementations for all abstract methods. It’s thus crucial to
+ensure that all these methods are adequately defined in child classes.
+
+Some methods, like notifying observers, assume a traditional observer
+pattern. If a different design is used for managing observers, these
+methods may need to be overridden or adapted.
+
+Lastly, the actual interaction with the chat infrastructure (for
+example, sending and receiving LLMChatMessages) is not specified within
+this class and should be implemented contextually in the subclasses or
+surrounding code.
 
 Follow-up Questions:
 --------------------
 
--  Are there any performance considerations to keep in mind while
-   implementing the abstract methods, especially when conversations get
-   too long?
--  What is the underlying infrastructure to support notifications to a
-   possibly large number of observers? Is there a limit on the number of
-   observers that can be registered to an instance of
-   ``LLMConversation``?
--  What additional functionality might be useful to include in the base
-   ``LLMConversation`` class that would be universal across all types of
-   chatbot conversations? Can this be extended to include multimedia
-   messages along with text?
+-  How does ``LLMConversation`` interact directly with the LLM if it
+   requires message information?
+-  Are there guidelines or standards that must be observed when
+   implementing the abstract methods? For instance, what should be
+   considered the “next” messages for the
+   ``get_messages_for_next_completion`` method?
+-  How to handle updates to the class due to changes in observer
+   methods? How should the class be structured to accommodate potential
+   changes in the notification mechanism?
