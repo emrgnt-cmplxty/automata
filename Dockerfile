@@ -23,7 +23,7 @@ RUN poetry install
 RUN echo "#!/bin/bash\n\
 set -e\n\
 poetry run automata configure --GITHUB_API_KEY=\$GITHUB_API_KEY --OPENAI_API_KEY=\$OPENAI_API_KEY\n\
-poetry run automata install-indexing --from-docker=TRUE\n\
+poetry run automata install-indexing --from-docker\n\
 poetry run automata run-code-embedding\n\
 poetry run automata run-doc-embedding --embedding-level=2\n\
 exec \"\$@\"" > entrypoint.sh
