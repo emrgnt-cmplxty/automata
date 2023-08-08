@@ -238,7 +238,7 @@ class PyContextRetriever:
         self,
         symbol: "Symbol",
         ordered_active_components: Dict[ContextComponent, Dict],
-        indent_level=0,
+        indent_level: int = 0,
     ) -> str:
         """
         Process the context of a specified `Symbol`. The caller has the responsibility
@@ -264,7 +264,7 @@ class PyContextRetriever:
                     symbol, ast_object, **kwargs
                 )
             else:
-                logger.warn(
+                logger.warning(
                     f"Warning: {component} is not a valid context component."
                 )
         return context

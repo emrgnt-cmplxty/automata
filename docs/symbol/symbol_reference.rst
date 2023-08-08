@@ -1,74 +1,71 @@
 SymbolReference
 ===============
 
-``SymbolReference`` is a class in the ``automata.symbol.base`` module
-that represents a reference to a symbol in a file. It is particularly
-useful in complex code structures where the same symbol can be used in
-different parts of the code, and these references need to be identified
-or compared.
+``SymbolReference`` is a data class that represents a reference to a
+particular symbol within a text file. Each instance of
+``SymbolReference`` includes information pertaining to the symbol, the
+line number and column number where the symbol is located, as well as
+miscellaneous roles associated with the symbol.
 
 Overview
 --------
 
-The ``SymbolReference`` class has two magic methods ``__eq__`` and
-``__hash__`` which are used to evaluate equality and generate an
-immutable hash, respectively. The class is used to compare instances of
-``SymbolReference`` and check the equality of the ``uri``,
-``line_number`` and ``column_number`` of the symbol reference. They are
-also important for the usage of ``SymbolReference`` instances in sets or
-dictionaries, where hash values are required.
+The ``SymbolReference`` class provides a succinct way to manage and
+trace usages of individual symbols across a set of text files. It stores
+a ``Symbol`` object, which encapsulates the information related to the
+symbol, and the precise location details (line and column numbers). The
+roles dictionary (``Dict[str, Any]``) highlights additional attributes
+or roles that the symbol may have.
 
-Methods
--------
-
-The class ``SymbolReference`` contains the following methods:
-
--  ``__eq__(self, other) -> bool`` : It checks the equality of two
-   instances of ``SymbolReference`` by comparing the ``uri``,
-   ``line_number`` and ``column_number`` of the ``SymbolReference``
-   instances.
-
--  ``__hash__(self) -> int`` : This method creates a hash value for the
-   instance of ``SymbolReference`` using the ``uri``, ``line_number``
-   and ``column_number``.
-
-It should be noted that the ``__hash__`` method could cause collisions
-if the same symbol is referenced in different files at the same
-location.
+The class defines the ``__hash__`` and ``__eq__`` dunder methods, to
+allow for comparison of two ``SymbolReference`` instances and calculate
+a unique hash value for each instance. This is useful when inserting
+these instances into data structures that rely on hashing, like a Python
+set or a dictionary.
 
 Related Symbols
 ---------------
 
--  ``automata.symbol.base.Symbol``
--  ``automata.symbol.graph.SymbolGraph``
--  ``automata.symbol.parser.parse_symbol``
--  ``automata.tests.unit.test_symbol_search.test_symbol_references``
--  ``automata.tests.unit.test_symbol_search_tool.test_symbol_references``
+There are no related symbols provided in the context.
 
-Examples
---------
-
-The following is an example demonstrating how to create an instance of
-``SymbolReference`` and how to use the ``__eq__`` method.
+Example
+-------
 
 .. code:: python
 
-   from automata.symbol.base import Symbol, SymbolReference
-   from automata.symbol.parser import parse_symbol
+   from automata.symbol.symbol_base import Symbol, SymbolReference
 
-   symbol_uri = "scip-python python automata 75482692a6fe30c72db516201a6f47d9fb4af065 `automata.agent.agent_enums`/ActionIndicator#"
-   symbol = parse_symbol(symbol_uri)
+   # Creating a symbol instance
+   symbol = Symbol(uri="file://path/to/file.py", name="MyClass", kind="class")
 
-   symbol_ref_1 = SymbolReference(symbol=symbol, line_number=10, column_number=20)
-   symbol_ref_2 = SymbolReference(symbol=symbol, line_number=10, column_number=20)
+   # Creating a symbol reference instance
+   symbol_reference = SymbolReference(
+       symbol=symbol, 
+       line_number=30, 
+       column_number=25, 
+       roles={"is_method": False}
+   )
 
-   print(symbol_ref_1 == symbol_ref_2)  # Will output: True
+   # Comparing two symbol references
+   if symbol_reference == symbol_reference:
+       print("Both symbol references point to the same location.")
 
-Follow-Up Questions:
+Limitations
+-----------
+
+It should be noted that the ``SymbolReference`` class does not perform
+any validity checks on the line or column numbers. Also, it does not
+check if the given symbol actually exists in the provided location. If
+the file or the symbol do not exist, or the line or column numbers are
+invalid, the ``SymbolReference`` will still be created, but it may not
+be accurate or useful.
+
+Follow-up Questions:
 --------------------
 
--  How are instances of ``SymbolReference`` generated in the system?
--  What are the likely scenarios where symbol collisions can occur and
-   how are these handled?
--  Potential limitations or drawbacks of the ``__hash__`` implementation
-   weren’t specified, can these be determined and documented?
+-  What kind of validation could be included to strengthen the
+   ``SymbolReference`` class?
+-  What implications could exist for using ``SymbolReference`` instances
+   in hash-based data structures?
+-  How can the dict-type attribute ``roles`` be utilized in different
+   applications?

@@ -1,18 +1,22 @@
-1. What metadata is expected for ``SymbolCodeEmbedding``?
+class SymbolCodeEmbedding(SymbolEmbedding): ‘A concrete class for symbol
+code embeddings’
 
-   -  The metadata for ``SymbolCodeEmbedding`` is expected to be the
-      information about the data being processed, such as the name of
-      the document or code that the symbol was extracted from, and other
-      related information that might be useful in understanding the
-      context of the symbol or the embedding in a larger project or
-      system.
+::
 
-2. Is the current method implementation as expected?
+   def __init__(self, key: Symbol, document: str, vector: np.ndarray):
+       super().__init__(key, document, vector)
 
-   -  As the details about the method implementation are not completely
-      mentioned it’s difficult to comment on this. However, in general,
-      the method implementation would largely depend on how
-      ``SymbolCodeEmbedding`` is being used in the project. If the
-      method is not returning the expected results or expected behavior
-      then it might need to be re-looked at or debugged for
-      improvements.
+   def __str__(self) -> str:
+       return f'''SymbolCodeEmbedding(
+
+symbol={self.symbol},
+
+embedding_source={self.document}
+
+vector_length={len(self.vector)} )’’’
+
+::
+
+   @property
+   def metadata(self) -> Dict[(str, str)]:
+       return {}

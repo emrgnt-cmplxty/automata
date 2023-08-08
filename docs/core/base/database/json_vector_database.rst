@@ -1,84 +1,80 @@
 JSONVectorDatabase
 ==================
 
-``JSONVectorDatabase`` is a concrete class providing a vector database
-that implements storage and retrieval operations into a JSON file.
-
 Overview
 --------
 
-The ``JSONVectorDatabase`` performs the following operations:
+``JSONVectorDatabase`` is an abstraction that provides a vector database
+which saves its elements in a JSON file. It’s a simple yet effective way
+to utilize the file system as storage for vectors. It’s designed to be
+general, implementing the ``VectorDatabaseProvider`` interface, and is
+also modular with types ``K`` for keys and ``V`` for values provided in
+a generic fashion.
 
--  Initialize an empty vector database or load an existing one from a
-   JSON file.
--  Add and discard entries in the vector database.
--  Check if a certain entry exists in the vector database.
--  Get a specific entry from the vector database based on its key.
--  Load the vector database from a JSON file and save it back to the
-   JSON file.
--  Update an existing entry in the vector database.
+It can handle basic database operations like adding, getting, and
+discarding entries individually or in batches, as well as ability to
+update entries. Additional functionalities include checking if a key
+exists, getting all ordered embeddings, and clearing all entries in the
+database.
+
+Note that ``JSONVectorDatabase`` was not designed with efficiency in
+mind and might become slow when handling large number of vectors.
 
 Related Symbols
 ---------------
 
--  ``automata.core.base.database.vector.VectorDatabaseProvider``: An
-   abstract base class that ``JSONVectorDatabase`` inherits from, which
-   lays out the fundamental methods a vector database should implement.
--  ``automata.tests.unit.test_database_vector.test_init_vector``,
-   ``automata.tests.unit.test_database_vector.test_load``,
-   ``automata.tests.unit.test_database_vector.test_save``,
-   ``automata.tests.unit.test_database_vector.test_delete_symbol``,
-   ``automata.tests.unit.test_database_vector.test_add_symbol``,
-   ``automata.tests.unit.test_database_vector.test_add_symbols``,
-   ``automata.tests.unit.test_database_vector.test_lookup_symbol``: Unit
-   test files that provide examples on how to utilize
-   ``JSONVectorDatabase``\ ’s methods.
+-  ``VectorDatabaseProvider``: The interface implemented by
+   ``JSONVectorDatabase``.
+-  ``jsonpickle``: Used in encoding and decoding objects for JSON
+   representation.
 
 Example
 -------
 
-The following is an example demonstrating the usage of
+The following is an example demonstrating how to use
 ``JSONVectorDatabase``.
 
 .. code:: python
 
-   from automata.core.base.database.vector import JSONVectorDatabase
+   from automata.core.base.database.vector_database import JSONVectorDatabase
 
-   file_path = "db.json"
-   vector_db = JSONVectorDatabase(file_path)
+   # Define custom database with string keys and int value vectors
+   class CustomDatabase(JSONVectorDatabase[str, int]):
+       def get_ordered_keys(self):
+           return sorted(self.index.keys())
+           
+       def entry_to_key(self, entry):
+           return str(entry)
 
-   # Add an entry
-   vector_db.add("apple")
-   assert vector_db.contains("apple")
+   db = CustomDatabase("/path/to/your/database.json")
 
-   # Save the database to the json file
-   vector_db.save()
+   # Add entries to the database
+   db.add(5)
+   db.add(7)
+   db.add(2)
 
-   # Discard an entry
-   vector_db.discard("apple")
-   assert not vector_db.contains("apple")
+   # Save the database to the JSON file
+   db.save()
 
-   # Load the database from the json file
-   vector_db.load()
+   # Load the database from the JSON file
+   db.load()
 
-   # Update an entry
-   vector_db.update_database("banana")
+   # Prints [2, 5, 7]
+   print(db.get_all_ordered_embeddings())
 
 Limitations
 -----------
 
-``JSONVectorDatabase`` currently only supports JSON files and does not
-maintain order when loading back from the file due to the inherent
-property of JSON objects. Additionally, the entry keys in the vector
-database are strictly hashable, limiting the types of objects you can
-add in the database.
+``JSONVectorDatabase`` has some limitations. The JSON file format is not
+designed to support large datasets, so performance may degrade when
+handling large number of vectors. It is also not designed with
+concurrency in mind, so concurrent writes and reads might lead to
+inconsistent data.
 
 Follow-up Questions:
 --------------------
 
--  Is it possible to extend the functionality of ``JSONVectorDatabase``
-   to support other file types, i.e., csv or yaml?
--  What happens when we try to add an object to the database that is not
-   hashable as an entry?
--  Can we consider using ordered dictionaries (collections.OrderedDict
-   in Python) to maintain the order when loading and saving databases?
+-  What is a good alternative to JSON for handling larger databases more
+   efficiently?
+-  How can we modify ``JSONVectorDatabase`` to support concurrent writes
+   and reads?

@@ -1,77 +1,77 @@
 OpenAIEmbeddingProvider
 =======================
 
-``OpenAIEmbeddingProvider`` is a class in the Automata codebase that is
-used to generate embeddings from the OpenAI API. The class works by
-passing a given source text to the OpenAI API, which then returns an
-embedding in the form of a numpy array.
+``OpenAIEmbeddingProvider`` is a class that extracts embeddings from the
+OpenAI API. It is subclassed from ``EmbeddingVectorProvider``.
 
 Overview
 --------
 
-``OpenAIEmbeddingProvider`` implements ``EmbeddingVectorProvider``, and
-uses the OpenAI API to generate embeddings for given input text. This
-class relies heavily on OpenAI’s API and therefore, a key feature of
-this embedding provider is its flexibility as the capability of the
-provider will extend with any future enhancements made to the core API.
+The ``OpenAPIEmbeddingProvider`` class provides methods to create
+embeddings from source text or batch of texts using OpenAI API. Its main
+functionality is embedded primarily in two methods:
+``build_embedding_vector()`` and ``batch_build_embedding_vector()``. The
+first method generates an embedding for a single string of text, while
+the latter performs the same operation for multiple strings contained
+within a list.
 
-In this class, the engine used for generating embeddings is specified at
-the time of object initialization, and the default engine used is
-“text-embedding-ada-002”.
+The class needs the OpenAI API key to be set for it to work properly. By
+default, it utilizes the ‘text-embedding-ada-002’ engine. However, it
+can also operate with the engine designated in the constructor at object
+creation.
 
 Related Symbols
 ---------------
 
--  ``automata.embedding.base.EmbeddingVectorProvider``
--  ``automata.llm.foundation.LLMChatCompletionProvider``
--  ``automata.llm.foundation.LLMChatMessage``
--  ``automata.llm.foundation.LLMCompletionResult``
--  ``automata.llm.foundation.LLMConversation``
--  ``automata.singletons.dependency_factory.DependencyFactory``
--  ``automata.config.base.LLMProvider``
--  ``automata.tools.base.Tool``
+The related symbols for the ``OpenAIEmbeddingProvider`` class are
+methods imported from the ``openai.embeddings_utils`` module. They are:
+- ``get_embedding()`` - ``get_embeddings()``
 
 Example
 -------
 
-Below is an example demonstrating how to use the
-``OpenAIEmbeddingProvider``:
+Here is an example demonstrating the usage of the
+``OpenAIEmbeddingProvider`` class. This includes the full process of
+creating an instance, building an embedding vector, and a batch of
+vectors.
 
 .. code:: python
 
-   from automata.llm.providers.openai import OpenAIEmbeddingProvider
+   from automata.llm.providers.openai_llm import OpenAIEmbeddingProvider
    import numpy as np
 
-   # Create an instance of OpenAIEmbeddingProvider
-   embedding_provider = OpenAIEmbeddingProvider(engine="text-embedding-ada-002")
+   # Instantiating the provider using the default engine
+   provider = OpenAIEmbeddingProvider()
 
-   # Generate the embedding for a text
-   source_text = "This is an example text."
-   embedding = embedding_provider.build_embedding_vector(source_text)
+   # Building an embedding vector for a single source
+   source_text = "OpenAI is an artificial intelligence research lab."
+   embedding_vector = provider.build_embedding_vector(source_text)
+   print(embedding_vector)  # Outputs the resulting numpy array
 
-   # Make sure the embedding is a numpy array
-   assert isinstance(embedding, np.ndarray)
+   # Building embedding vectors for a batch of sources
+   sources_batch = ["OpenAI was founded in December 2015.", 
+                            "The lab is associated with Elon Musk."]
+   batch_embedding_vector = provider.batch_build_embedding_vector(sources_batch)
+   for vector in batch_embedding_vector:
+       print(vector)  # Outputs numpy arrays
 
 Limitations
 -----------
 
-One of the main limitations of the ``OpenAIEmbeddingProvider`` is that
-its performance and capabilities are directly linked to the OpenAI API.
-This means that any limitations in the API, such as maximum input text
-size or rate limits, will also apply to the ``OpenAIEmbeddingProvider``.
-
-For testing purposes, ``OpenAIEmbeddingProvider`` makes use of mocking
-to simulate the behavior of actual objects. The mock objects are
-instances of the ``Mock`` or ``MagicMock`` class in the
-``unittest.mock`` module, which is a built-in module for constructing
-mock objects in Python.
+The ``OpenAIEmbeddingProvider`` class is reliant on the OpenAI API. As a
+result, if the OpenAI API is down or inaccessible, it will also be
+unable to function properly. Furthermore, the class requires an OpenAI
+API key to operate, which might be a hurdle if you’re not an OpenAI
+user. Also, the quality of embeddings depends upon the chosen engine. By
+default it uses ‘text-embedding-ada-002’ engine but OpenAI provides
+other engines too which might give different results as per their
+training.
 
 Follow-up Questions:
 --------------------
 
--  How does ``OpenAIEmbeddingProvider`` handle potential rate limit
-   restrictions from the OpenAI API?
--  What are the specific error handling strategies in place for API
-   failures?
--  How can customization be introduced to enhance the use of different
-   ‘engine’ types for different requirements?
+-  What are the different engines supported by OpenAI for text
+   embedding?
+-  How to handle the situation if OpenAI API is down momentarily?
+-  Is there a way to use a different API key for different instances of
+   ``OpenAIEmbeddingProvider``?

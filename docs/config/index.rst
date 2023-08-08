@@ -29,6 +29,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -42,9 +44,11 @@ Summary of content
        embedding_data_category
        instruction_config_version
        llm_provider
+       model_information
        open_ai_automata_agent_config
        open_ai_automata_agent_config_builder
        path_enum
+       serialized_data_category
        template_formatter
        base/index
        config_base/index

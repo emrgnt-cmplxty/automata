@@ -27,10 +27,10 @@ colorlog = "6.7.0"
 isort = "5.12.0"
 jinja2 = "3.1.2"
 jsonpickle = "3.0.1"
-jsonschema = "4.18.4"
+jsonschema = "4.19.0"
 matplotlib = "3.7.2"
 networkx = "3.1"
-numpy = "1.25.1"
+numpy = "1.25.2"
 openai = "0.27.8"
 pandas = "2.0.3"
 plotly = "5.15.0"
@@ -45,7 +45,7 @@ termcolor = "2.3.0"
 tiktoken = "0.4.0"
 types-protobuf = "4.23.0.2"
 GitPython = "3.1.32"
-PyGithub = "1.59.0"
+PyGithub = "1.59.1"
 PyYAML = "6.0.1"
 chromadb = "^0.3.29"
 astunparse = "^1.6.3"
@@ -53,7 +53,7 @@ ipykernel = "^6.24.0"
 pathlib = "^1.0.1"
 pytest-shutil = "^1.7.0"
 flask = "^2.3.2"
-responses = "^0.23.1"
+responses = "^0.23.3"
 pytest-rerunfailures = "^12.0"
 questionary = "^1.10.0"
 
@@ -68,8 +68,13 @@ sphinx_panels = "0.6.0" # Used on Windows
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
 addopts = "-m 'not regression and not evaluation' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=local_tasks/"
-markers = ["regression: marks tests as regression tests", "evaluation: mark a test as part of the evaluation suite"]
-    
+markers = [
+    "regression: marks tests as regression tests",
+    "evaluation: mark a test as part of the evaluation suite",
+    "tool_name: description of tool_name marker",
+    "tool_description: description of the tool's functionality",
+    "performance: marks tests as performance tests",
+]    
 
 [tool.black]
 line-length = 79
@@ -90,6 +95,7 @@ exclude = '''
     | random
     | build
     | scip-python
+    | research/leetcode-hard-gym
     | local_tasks
   )/
 )

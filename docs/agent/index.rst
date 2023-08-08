@@ -35,6 +35,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -47,6 +49,7 @@ Summary of content
        agent_max_iter_error
        agent_result_error
        agent_stop_iteration
+       agent_stop_iteration_error
        agent_task_general_error
        agent_task_git_error
        agent_task_instructions

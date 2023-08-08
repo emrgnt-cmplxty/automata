@@ -20,6 +20,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -27,8 +29,11 @@ Summary of content
        :maxdepth: 1
 
        agent_tool_factory
+       i_tool_execution
        tool
+       tool_execution
        tool_executor
+       unknown_tool_error
        base/index
        builders/index
        tool_base/index
