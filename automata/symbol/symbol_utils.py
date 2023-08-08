@@ -8,6 +8,7 @@ from typing import List, Optional
 
 from automata.config import DATA_ROOT_PATH
 from automata.config.config_base import SerializedDataCategory
+from automata.core.utils import get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
 from automata.symbol.symbol_base import Symbol, SymbolDescriptor
 
@@ -113,6 +114,9 @@ def load_data_path() -> str:
     """
     Returns the path to the serialized data directory.
     """
+    project_root = get_root_fpath()
     return os.path.join(
-        DATA_ROOT_PATH, SerializedDataCategory.PICKLED_DATA_PATH.value
+        project_root,
+        DATA_ROOT_PATH,
+        SerializedDataCategory.PICKLED_DATA_PATH.value,
     )
