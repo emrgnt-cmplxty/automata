@@ -17,7 +17,7 @@ import numpy as np
 import openai
 import yaml
 
-from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
+# from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
 
 if TYPE_CHECKING:
     from automata.embedding.embedding_base import EmbeddingVectorProvider
@@ -150,11 +150,11 @@ def get_logging_config(
                 "formatter": "colored",
                 "level": logging.DEBUG,
             },
-            "cli_output": {
-                "class": "logging.StreamHandler",
-                "formatter": "colored",
-                "level": CLI_OUTPUT_LEVEL,
-            },
+            # "cli_output": {
+            #     "class": "logging.StreamHandler",
+            #     "formatter": "colored",
+            #     "level": CLI_OUTPUT_LEVEL,
+            # },
         },
         "root": {"handlers": ["console"], "level": log_level},
     }
