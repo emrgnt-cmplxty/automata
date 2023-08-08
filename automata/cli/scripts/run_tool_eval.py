@@ -72,26 +72,28 @@ def run_eval_harness(
                     "Expected action must be a SymbolSearchAction."
                 )
 
-            print(f"Search Query: {expected_action.query}")
-            print(f"Truth Top Match: {expected_action.search_results[0]}\n")
+            logger.debug(f"Search Query: {expected_action.query}")
+            logger.debug(
+                f"Truth Top Match: {expected_action.search_results[0]}\n"
+            )
 
-            print("- Observed Results - \n")
+            logger.debug("- Observed Results - \n")
             if observed_action := result.observed_action:
                 if not isinstance(observed_action, SymbolSearchAction):
                     raise ValueError(
                         "Observed action must be a SymbolSearchAction."
                     )
 
-                print(
+                logger.debug(
                     f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"
                 )
-            print(
+            logger.debug(
                 f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"
             )
 
-            print("=" * 150)
-    print(output)
-    print("=" * 150)
+            logger.debug("=" * 150)
+    logger.debug(output)
+    logger.debug("=" * 150)
 
 
 def main(*args, **kwargs) -> None:

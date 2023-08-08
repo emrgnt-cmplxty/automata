@@ -28,12 +28,14 @@ logger = logging.getLogger(__name__)
 def configure_logging(log_level_str: str) -> None:
     """Reconfigures the logging for the local project."""
 
-    log_level = logging.DEBUG
+    log_level = logging.INFO
     if log_level_str == "INFO":
         log_level = logging.INFO
     elif log_level_str == "CLI_OUTPUT":
         log_level = CLI_OUTPUT_LEVEL
-    elif log_level_str != "DEBUG":
+    elif log_level_str == "DEBUG":
+        log_level = logging.DEBUG
+    else:
         raise ValueError(f"Unknown log level: {log_level_str}")
 
     logging_config = get_logging_config(log_level=log_level)
@@ -41,9 +43,10 @@ def configure_logging(log_level_str: str) -> None:
 
     root_logger = logging.getLogger()
     root_logger.setLevel(log_level)
+    logger.setLevel(log_level)
 
     # External libraries we want to quiet down
-    for library in ["urllib3", "matplotlib", "openai", "github"]:
+    for library in ["urllib3", "matplotlib", "openai", "github", "asyncio"]:
         logging.getLogger(library).setLevel(logging.INFO)
 
 
@@ -57,11 +60,18 @@ def cli(ctx: click.Context) -> None:
 
 @common_options
 @cli.command()
+@click.option(
+    "--log-level",
+    default="INFO",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.option("--GITHUB_API_KEY", default="", help="GitHub API key")
 @click.option("--OPENAI_API_KEY", default="", help="OpenAI API key")
 @click.pass_context
 def configure(
     ctx: click.Context,
+    log_level: str,
     github_api_key: Optional[str],
     openai_api_key: Optional[str],
     *args,
@@ -77,9 +87,9 @@ def configure(
     have to manually edit the .env file.
     """
 
-    logger.info("Configuring Automata:")
+    configure_logging(log_level_str=log_level)
 
-    configure_logging(kwargs.get("log-level", "INFO"))
+    logger.info("Configuring Automata:")
 
     DOTENV_PATH = ".env"
     SCRIPTS_PATH = "scripts/"
@@ -101,8 +111,6 @@ def configure(
 
     if github_api_key and openai_api_key:
         return
-
-    logger.info("Configuring Automata:")
 
     while True:
         config_choice = ask_choice(
@@ -131,8 +139,16 @@ def configure(
 
 @common_options
 @cli.command()
+@click.option(
+    "--log-level",
+    default="INFO",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.pass_context
-def install_indexing(ctx: click.Context, *args, **kwargs) -> None:
+def install_indexing(
+    ctx: click.Context, log_level: str, *args, **kwargs
+) -> None:
     """Run the install_index script."""
 
     from automata.cli.install_indexing import (
@@ -140,31 +156,39 @@ def install_indexing(ctx: click.Context, *args, **kwargs) -> None:
         install_indexing,
     )
 
-    configure_logging(kwargs.get("log-level", "DEBUG"))
+    configure_logging(log_level_str=log_level)
 
-    logger.info("Installing indices")
+    logger.info("Installing indices:")
     install_indexing()
 
-    logger.info("Generating local indices")
+    logger.info("Generating local indices:")
     generate_local_indices()
 
 
 @common_options
 @cli.command()
+@click.option(
+    "--log-level",
+    default="INFO",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.pass_context
-def run_code_embedding(ctx: click.Context, *args, **kwargs) -> None:
+def run_code_embedding(
+    ctx: click.Context, log_level: str, *args, **kwargs
+) -> None:
     """Run the code embedding pipeline."""
 
     from automata.cli.scripts.run_code_embedding import main
 
-    configure_logging(kwargs.get("log-level", "INFO"))
-    logger.debug("Calling run_code_embedding")
+    configure_logging(log_level_str=log_level)
+
+    logger.info("Running code embeddings:")
     main(**kwargs)
 
 
 @common_options
 @cli.command()
-@click.pass_context
 @click.argument("symbols", nargs=-1)
 @click.option(
     "--embedding-level", type=int, default=2, help="Level of the embedding."
@@ -175,15 +199,28 @@ def run_code_embedding(ctx: click.Context, *args, **kwargs) -> None:
     default=False,
     help="Overwrite the existing doc embeddings in the database.",
 )
+@click.option(
+    "--log-level",
+    default="INFO",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
+@click.pass_context
 def run_doc_embedding(
-    ctx: click.Context, symbols: str, overwrite: bool, *args, **kwargs
+    ctx: click.Context,
+    log_level: str,
+    symbols: str,
+    overwrite: bool,
+    *args,
+    **kwargs,
 ) -> None:
     """Run the document embedding pipeline."""
 
     from automata.cli.scripts.run_doc_embedding import main
 
-    configure_logging(kwargs.get("log-level", "INFO"))
-    logger.info("Calling run_doc_embedding")
+    configure_logging(log_level_str=log_level)
+
+    logger.info("Running doc embeddings:")
 
     result = main(overwrite=overwrite, *args, **kwargs)
     logger.info(f"Result = {result}")
@@ -191,14 +228,22 @@ def run_doc_embedding(
 
 @common_options
 @cli.command()
+@click.option(
+    "--log-level",
+    default="DEBUG",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.pass_context
-def run_doc_post_process(ctx: click.Context, *args, **kwargs) -> None:
+def run_doc_post_process(
+    ctx: click.Context, log_level: str, *args, **kwargs
+) -> None:
     """Run the document post-processor."""
 
     from automata.cli.scripts.run_doc_post_process import main
 
-    configure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Running doc post-process")
+    configure_logging(log_level_str=log_level)
+    logger.info("Running doc post-process:")
     main(**kwargs)
 
 
@@ -210,8 +255,14 @@ def run_doc_post_process(ctx: click.Context, *args, **kwargs) -> None:
     default="",
     help="Comma-separated list of issue numbers to fetch",
 )
+@click.option(
+    "--log-level",
+    default="INFO",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.pass_context
-def run_agent(ctx: click.Context, *args, **kwargs) -> None:
+def run_agent(ctx: click.Context, log_level: str, *args, **kwargs) -> None:
     """
     Run the automata agent.
 
@@ -220,8 +271,9 @@ def run_agent(ctx: click.Context, *args, **kwargs) -> None:
     """
     from automata.cli.scripts.run_agent import main
 
-    configure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Running agent")
+    configure_logging(log_level_str=log_level)
+
+    logger.info("Running agent:")
     main(**kwargs)
 
 
@@ -229,8 +281,16 @@ def run_agent(ctx: click.Context, *args, **kwargs) -> None:
 @agent_options
 @eval_options
 @cli.command()
+@click.option(
+    "--log-level",
+    default="DEBUG",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.pass_context
-def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
+def run_agent_eval(
+    ctx: click.Context, log_level: str, *args, **kwargs
+) -> None:
     """
     Run the evaluation.
 
@@ -243,8 +303,9 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
     if kwargs.get("instructions"):
         raise ValueError("Instructions should not be passed to run_agent_eval")
 
-    configure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Running Evaluation")
+    configure_logging(log_level_str=log_level)
+
+    logger.info("Running Evaluation:")
     main(**kwargs)
 
 
@@ -252,8 +313,14 @@ def run_agent_eval(ctx: click.Context, *args, **kwargs) -> None:
 @agent_options
 @eval_options
 @cli.command()
+@click.option(
+    "--log-level",
+    default="DEBUG",
+    help="Logging level",
+    type=click.Choice(["DEBUG", "INFO", "CLI_OUTPUT"], case_sensitive=False),
+)
 @click.pass_context
-def run_tool_eval(ctx: click.Context, *args, **kwargs) -> None:
+def run_tool_eval(ctx: click.Context, log_level: str, *args, **kwargs) -> None:
     """
     Run the evaluation.
 
@@ -267,6 +334,7 @@ def run_tool_eval(ctx: click.Context, *args, **kwargs) -> None:
     if kwargs.get("instructions"):
         raise ValueError("Instructions should not be passed to run_agent_eval")
 
-    configure_logging(kwargs.get("log-level", "DEBUG"))
-    logger.info("Running Evaluation")
+    configure_logging(log_level_str=log_level)
+
+    logger.info("Running Evaluation:")
     main(**kwargs)
