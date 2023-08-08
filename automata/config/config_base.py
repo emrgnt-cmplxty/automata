@@ -31,6 +31,7 @@ class EmbeddingDataCategory(PathEnum):
 
     CODE_EMBEDDING = "code-embedding"
     DOC_EMBEDDING = "doc-embedding-l2"
+    RESEARCH = "research"
     INDICES = "indices"
 
 

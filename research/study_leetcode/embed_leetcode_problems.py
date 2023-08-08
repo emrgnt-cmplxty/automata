@@ -1,0 +1,126 @@
+"""Prepares the dataset for agent evaluation"""
+# sourcery skip: avoid-global-variables
+import argparse
+import os
+from typing import Any, Generator, List, Tuple
+
+import pandas as pd
+
+from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
+from automata.core.utils import get_root_fpath
+from automata.llm import OpenAIEmbeddingProvider
+
+# Specify the path to your JSON file
+FILE_NAME = "leetcode-solutions-embedded.json"
+PROBLEM_CHUNK_SIZE = 512
+
+
+def chunks(lst: List, n: int) -> Generator[Tuple, Any, Any]:
+    """Yield successive n-sized chunks from a `List` object lst."""
+    for i in range(0, len(lst), n):
+        yield i, lst[i : i + n]
+
+
+def main(input_dataset_path: str, output_dataset_path: str) -> None:
+    """
+    Reads the dataset from the input path,
+    adds embeddings, and writes the dataset to the output path.
+    """
+    print(f"Loading input dataset from {input_dataset_path}")
+    # Load the JSON file into a pandas DataFrame
+    # Data sourced from HF
+    # [https://huggingface.co/datasets/mhhmm/leetcode-solutions-python]
+    # Schema:
+    #   Index(['id', 'code_with_data', 'code_only', 'code_with_problem',
+    #    'explanation_only', 'embedding'], dtype='object')
+    df = pd.read_json(input_dataset_path)
+
+    # code_with_data is the primary column,
+    # print(df['code_with_data'][0])
+    # ```bash
+    # # two-sum
+    # # Two Sum
+    # # Easy
+    # # Given an array of integers `nums` and an integer `target`, return _indices of the two numbers such that they add up to `target`_.
+
+    # You may assume that each input would have **_exactly_ one solution**, and you may not use the _same_ element twice.
+
+    # You can return the answer in any order.
+    #
+    # **Example 1:**
+    # ...
+    # ```
+
+    # print(df['code_with_problem'][0])
+    # ```bash
+    # ... Repeat L29-42 above ...
+    # ```python
+    # def twoSum(nums, target):
+    #     map = {}
+    #     for i, num in enumerate(nums):
+    #         complement = target - num
+    #         if complement in map:
+    #             return [map[complement], i]
+    #         map[num] = i
+    #     return []
+    # ```
+
+    print("Cleaning problem statements")
+    # Extract cleaned explanations by removing everything from `**Example 1:` and downwards
+    # e.g. we move further examples, constraints, and follow-ups
+    cleaned_problem_statements = [
+        ele.split("**Example 1:")[0] for ele in df["code_with_data"].values
+    ]
+
+    print("Producing embeddings")
+    # Initialize the embedding provider
+    embedding_provider = OpenAIEmbeddingProvider()
+
+    # Loop through the cleaned_explanations and produce
+    embedded_problem_statements = []
+    for counter, data_chunk in chunks(
+        cleaned_problem_statements, PROBLEM_CHUNK_SIZE
+    ):
+        print(f"Running chunk {counter}")
+        # Build embedding vectors for each chunk
+        chunk_embeddings = embedding_provider.batch_build_embedding_vector(
+            data_chunk
+        )
+        embedded_problem_statements.extend(chunk_embeddings)
+
+    print("Adding embeddings to the DataFrame")
+    # Add the embeddings to the DataFrame as a new column
+    df["embedding"] = embedded_problem_statements
+
+    print(f"Saving output to {output_dataset_path}")
+    # Save the modified DataFrame back to the original JSON file
+    df.to_json(output_dataset_path)
+
+
+if __name__ == "__main__":
+    # Argument parsing setup
+    parser = argparse.ArgumentParser(
+        description="Find similar solutions to LeetCode problems using OpenAI."
+    )
+    default_data_path = os.path.join(
+        get_root_fpath(),
+        DATA_ROOT_PATH,
+        EmbeddingDataCategory.RESEARCH.value,
+        FILE_NAME,
+    )
+
+    parser.add_argument(
+        "--input_data_path",
+        default=default_data_path,
+        help="Path to read the LeetCode problems data from.",
+    )
+
+    parser.add_argument(
+        "--output_data_path",
+        default=default_data_path,
+        help="Path to write the LeetCode problems data to.",
+    )
+
+    args = parser.parse_args()
+
+    main(args.input_data_path, args.output_data_path)
