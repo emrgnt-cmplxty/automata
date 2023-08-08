@@ -6,7 +6,12 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import tiktoken
-from constants import DIFFICULTIES, MAX_TOKENS
+from constants import (
+    DIFFICULTIES,
+    FETCHER_INSTRUCTIONS,
+    MAX_TOKENS,
+    RETRIEVER_SYSTEM_PROMPT,
+)
 
 from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
@@ -80,9 +85,7 @@ class LeetCodeSolutionsFinder:
         magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
         return dot_product / (magnitude_a * magnitude_b)
 
-    def find_best_solution_and_explanation(
-        self, problem: str
-    ) -> Optional[str]:
+    def find_best_solution_and_explanation(self, problem: str) -> str:
         """Find and print solutions with similar embeddings."""
         print("problem = ", problem)
         problem_embedding = self.get_embedding(problem)
@@ -98,7 +101,7 @@ class LeetCodeSolutionsFinder:
             by="similarity", ascending=False
         )
 
-        examples, counter = [], 0
+        solutions, counter = [], 0
         for code_with_problem in solutions_data_sorted[
             "code_with_problem"
         ].values:
@@ -106,7 +109,7 @@ class LeetCodeSolutionsFinder:
             solution = f"```python\\n{solution}"
             statement, _ = statement.split("**Example 1:**")
 
-            examples.append(
+            solutions.append(
                 f"Related Solution {counter}:\nStatement:\n{statement}\nSolution:\n{solution}\n{'-'*50}\n"
             )
 
@@ -115,10 +118,10 @@ class LeetCodeSolutionsFinder:
                 break
 
         encoding = tiktoken.encoding_for_model("gpt-4")
-        examples_formatted = "\n".join(examples)
+        examples_formatted = "\n".join(solutions)
         examples_tokens_consumed = len(encoding.encode(examples_formatted))
 
-        # truncate the examples if they are exceeding our available context
+        # truncate the solutions if they are exceeding our available context
         examples_formatted = examples_formatted[
             : min(
                 int(
@@ -135,34 +138,44 @@ class LeetCodeSolutionsFinder:
             f"Tokens consumed (after reduction) = {examples_tokens_consumed}"
         )
 
-        formatted_instruction = f"Your are given the following problem as context - {problem} \n. Your task is to select at most {self.max_num_examples}, or None, of the following shown Related Solutions, which when combined together provide the best context to help with solving the previously presented problem:\n{examples_formatted}\nYour selected Related Solutions will be forwarded on as additional context to a programmer whose task is to write a solution to the originally given problem. Try to select more difficult solutions, as the stated problem is quite difficult. Return the final result as a simple array of integers, like [12,3,0,1,5]."
+        formatted_instructions = FETCHER_INSTRUCTIONS.format(
+            PROBLEM=problem,
+            MAX_NUM_EXAMPLES=str(self.max_num_examples),
+            FORMATTED_EXAMPLES=examples_formatted,
+        )
 
         config = (
             OpenAIAutomataAgentConfigBuilder()
             .with_stream(True)
             .with_verbose(False)
             .with_tools([])
-            .with_system_template(
-                "You are Automata Master, an advanced autonomous software architect developed by OpenAI. You are specifically designed to operate within local Python repositories. With your capability to understand and process natural language instructions, you perform tasks efficiently using your available functions. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function."
-            )
+            .with_system_template(RETRIEVER_SYSTEM_PROMPT)
             .build()
         )
 
+        selected: Optional[int] = None
         try:
-            logging.info("Attempting to fetch the best examples now...")
-            agent = OpenAIAutomataAgent(formatted_instruction, config)
+            logging.info("Attempting to fetch the best solutions now...")
+            agent = OpenAIAutomataAgent(formatted_instructions, config)
             result = agent.run()
-
-            extracted_result = result.split("[")[1].split("]")[0]
-            selected = ast.literal_eval(
-                f"[{extracted_result}]"
-            )  # an integer array like [0, 5, ...]
+            selected_input = (
+                result.split("Solution:")[1].split("\n")[0].strip()
+            )
+            selected = (
+                None if selected_input == "None" else int(selected_input)
+            )
+            explanation = str(result.split("Explanation:")[1].strip())
         except Exception as e:
             logger.error(
-                f"An error {e} occurred while selecting the best examples"
+                f"An error {e} occurred while selecting the best solutions"
             )
-            selected = [0, 1, 2]
+            selected = 0
+            explanation = "Agentified fetching failed, so we defaulted to the most semantically similar solution."
 
-        return "\n".join(
-            [ele for it, ele in enumerate(examples) if it in selected]
+        selected_solution = solutions[selected] if selected else "None"
+        final_result = (
+            "To assist you with solving the given problem, you have been",
+            f" provdied the following solution:\n{selected_solution}.\n",
+            f"\nThis problem was deemed useful because:\n{explanation}",
         )
+        return "".join(final_result)
