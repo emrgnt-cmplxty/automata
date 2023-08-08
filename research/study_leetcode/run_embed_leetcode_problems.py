@@ -1,6 +1,7 @@
 """Prepares the dataset for agent evaluation"""
 # sourcery skip: avoid-global-variables, no-relative-imports
 import argparse
+import logging
 from typing import Any, Generator, List, Tuple
 
 import pandas as pd
@@ -10,6 +11,8 @@ from automata.llm import OpenAIEmbeddingProvider
 
 # Specify the path to your JSON file
 PROBLEM_CHUNK_SIZE = 512
+
+logger = logging.getLogger(__name__)
 
 
 def chunks(lst: List, n: int) -> Generator[Tuple, Any, Any]:
@@ -23,7 +26,7 @@ def main(input_dataset_path: str, output_dataset_path: str) -> None:
     Reads the dataset from the input path,
     adds embeddings, and writes the dataset to the output path.
     """
-    print(f"Loading input dataset from {input_dataset_path}")
+    logger.info(f"Loading input dataset from {input_dataset_path}")
     # Load the JSON file into a pandas DataFrame
     # Data sourced from HF
     # [https://huggingface.co/datasets/mhhmm/leetcode-solutions-python]
@@ -62,14 +65,24 @@ def main(input_dataset_path: str, output_dataset_path: str) -> None:
     #     return []
     # ```
 
-    print("Cleaning problem statements")
+    logger.info("Cleaning problem statements")
     # Extract cleaned explanations by removing everything from `**Example 1:` and downwards
     # e.g. we move further examples, constraints, and follow-ups
-    cleaned_problem_statements = [
-        ele.split("**Example 1:")[0] for ele in df["code_with_data"].values
+    problem_statements_no_examples = [
+        ele.split("**Example 1:")[0].strip()
+        for ele in df["code_with_data"].values
     ]
 
-    print("Producing embeddings")
+    # Remove blob / difficulty-tag and format
+    cleaned_problem_statements = []
+    for entry in problem_statements_no_examples:
+        split_entry = entry.split("#")
+        title = split_entry[2]
+        description = "#".join(split_entry[4:])
+        cleaned_problem_statements.append(
+            f"Title:{title}\n\nDescription:\n{description}"
+        )
+    logger.info("Producing embeddings")
     # Initialize the embedding provider
     embedding_provider = OpenAIEmbeddingProvider()
 
@@ -78,18 +91,18 @@ def main(input_dataset_path: str, output_dataset_path: str) -> None:
     for counter, data_chunk in chunks(
         cleaned_problem_statements, PROBLEM_CHUNK_SIZE
     ):
-        print(f"Running chunk {counter}")
+        logger.info(f"Running chunk {counter}")
         # Build embedding vectors for each chunk
         chunk_embeddings = embedding_provider.batch_build_embedding_vector(
             data_chunk
         )
         embedded_problem_statements.extend(chunk_embeddings)
 
-    print("Adding embeddings to the DataFrame")
+    logger.info("Adding embeddings to the DataFrame")
     # Add the embeddings to the DataFrame as a new column
     df["embedding"] = embedded_problem_statements
 
-    print(f"Saving output to {output_dataset_path}")
+    logger.info(f"Saving output to {output_dataset_path}")
     # Save the modified DataFrame back to the original JSON file
     df.to_json(output_dataset_path)
 
@@ -112,5 +125,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+    logger.setLevel(logging.INFO)
 
     main(args.input_data_path, args.output_data_path)
