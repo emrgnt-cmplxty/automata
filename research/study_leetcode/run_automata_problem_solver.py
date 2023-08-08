@@ -8,6 +8,7 @@ import os
 import sys
 
 import pandas as pd
+from typing import Dict
 from constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
@@ -89,85 +90,90 @@ def main():
     success_count = 0
     results = {}
     for i in range(len(loader.data)):
-        # try:
-        print(f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}")
+        try:
+            print(
+                f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}"
+            )
 
-        (
-            problem_header,
-            problem_context,
             (
-                problem_id,
-                problem_slug,
-            ),
-        ) = (
-            loader.get_problem_header(i),
-            loader.get_problem_context(i),
-            loader.get_problem_id_slug(i),
-        )
-        print(
-            f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
-        )
+                problem_header,
+                problem_context,
+                (
+                    problem_id,
+                    problem_slug,
+                ),
+            ) = (
+                loader.get_problem_header(i),
+                loader.get_problem_context(i),
+                loader.get_problem_id_slug(i),
+            )
+            print(
+                f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
+            )
 
-        finder = LeetCodeSolutionsFinder(
-            embedding_provider,
-            max_entry_id=problem_id,
-            max_num_examples=args.max_num_examples,
-            num_examples_to_screen=args.num_examples_to_screen,
-            solutions_data_path=args.solutions_data_path,
-            lowest_difficulty=args.lowest_difficulty_supported,
-        )
+            finder = LeetCodeSolutionsFinder(
+                embedding_provider,
+                max_entry_id=problem_id,
+                max_num_examples=args.max_num_examples,
+                num_examples_to_screen=args.num_examples_to_screen,
+                solutions_data_path=args.solutions_data_path,
+                lowest_difficulty=args.lowest_difficulty_supported,
+            )
 
-        examples = finder.find_best_solution_and_explanation(problem_header)
-        break
+            examples = finder.find_best_solution_and_explanation(
+                problem_header
+            )
 
-    #     formatted_instructions = SOLVER_INSTRUCTIONS.format(
-    #         PROBLEM_STATEMENT=problem_context,
-    #         SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-    #         EXAMPLES=examples,
-    #     )
+            formatted_instructions = SOLVER_INSTRUCTIONS.format(
+                PROBLEM_STATEMENT=problem_context,
+                SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+                EXAMPLES=examples,
+            )
 
-    #     toolkits = ["py-interpreter"]
-    #     tool_dependencies = (
-    #         dependency_factory.build_dependencies_for_tools(toolkits)
-    #     )
-    #     tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
+            toolkits = ["py-interpreter"]
+            tool_dependencies = (
+                dependency_factory.build_dependencies_for_tools(toolkits)
+            )
+            tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
 
-    #     config = (
-    #         OpenAIAutomataAgentConfigBuilder()
-    #         .with_stream(True)
-    #         .with_verbose(True)
-    #         .with_tools(tools)
-    #         .with_system_template(SOLVER_SYSTEM_PROMPT)
-    #         .build()
-    #     )
+            config = (
+                OpenAIAutomataAgentConfigBuilder()
+                .with_stream(True)
+                .with_verbose(True)
+                .with_tools(tools)
+                .with_system_template(SOLVER_SYSTEM_PROMPT)
+                .build()
+            )
 
-    #     agent = OpenAIAutomataAgent(formatted_instructions, config)
-    #     configure_logging("DEBUG")
-    #     result = agent.run()
+            agent = OpenAIAutomataAgent(formatted_instructions, config)
+            configure_logging("DEBUG")
+            result = agent.run()
 
-    #     code = result.split("```python")[1].split("```")[0]
-    #     lang = ProgrammingLanguage.PYTHON3
-    #     sub = LeetCodeSubmission(
-    #         code=code,
-    #         lang=lang,
-    #         question_id=problem_id,
-    #         question_slug=problem_slug,
-    #     )
+            code = result.split("```python")[1].split("```")[0]
+            lang = ProgrammingLanguage.PYTHON3
+            sub = LeetCodeSubmission(
+                code=code,
+                lang=lang,
+                question_id=problem_id,
+                question_slug=problem_slug,
+            )
 
-    #     env = LeetCodeEnv()
+            env = LeetCodeEnv()
 
-    #     status, reward, done, submission_result = env.step(sub)
-    #     success_count += reward
-    #     print(status, reward, done, submission_result)
-    #     _log_result(reward, results, i, success_count)
-    # except Exception as e:
-    #     print(f"Exception occurred = {e}")
-    #     _log_result(False, results, i, success_count)
-    # break
+            status, reward, done, submission_result = env.step(sub)
+            success_count += reward
+            print(status, reward, done, submission_result)
+            _log_result(reward, results, i, success_count)
+        except Exception as e:
+            print(f"Exception occurred = {e}")
+            _log_result(False, results, i, success_count)
 
 
 # TODO Rename this here and in `main`
-def _log_result(result, results, i, success_count):
+def _log_result(
+    result: str, results: Dict[int, bool], i: int, success_count: int
+):
+    """Log the result of the current run."""
     results[i] = result
     print("-" * 200)
     print(f"passed {success_count} out of {i+1}")
