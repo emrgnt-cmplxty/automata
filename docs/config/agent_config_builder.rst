@@ -1,73 +1,105 @@
 AgentConfigBuilder
 ==================
 
-``AgentConfigBuilder`` is a builder class that helps in the creation of
-Agent configurations. It extends the generic type ``T`` and requires the
-implementor to implement methods for creating the specific configuration
-object and associating the correct model with the agent.
+The ``AgentConfigBuilder`` class in the ``automata.config.config_base``
+module is an abstract base class used to build configuration objects
+used by agents. In this context, agent refers to the Agent instances in
+the automata system - this could include symbol search agents, python
+code retrieval agents, and more.
 
 Overview
 --------
 
-``AgentConfigBuilder`` primarily functions by taking an optional
-``config`` object, upon instantiation which defaults to the result of
-the ``create_config`` function if not provided. The configuration object
-can be constructed from scratch or from existing configurations by using
-the ``from_config`` or ``from_name`` methods, respectively.
+The ``AgentConfigBuilder`` helps in setting up agent configurations
+through its various methods that allow adding or modifying properties
+such as model, tools, stream, verbosity, max iterations, tokens and
+temperature. The built configuration is used to tailor the functionality
+of an agent. Setting different configurations can affect how the agent
+performs and functions.
 
-This configuration builder also has the capability to set specific
-parameters related to the Agent including the tools it will use, the
-model it should run, whether it will stream output, verbosity of
-logging, maximum iterations the agent should run, and others. The
-validity of all parameter types is thoroughly checked before being
-updated in the builder configuration.
+This class is intended to be subclassed, with the subclasses providing
+specific implementation for particular types of agents. As such, some
+methods (such as ``create_config``\ and ``with_model``) are abstract and
+require a concrete implementation in the subclass.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_default_config``
--  ``automata.config.openai_agent.OpenAIAutomataAgentConfigBuilder``
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_creates_proper_instance``
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_provided_parameters_override_defaults``
--  ``automata.agent.agent.AgentInstance.Config``
--  ``automata.tests.unit.test_automata_agent_builder.test_builder_accepts_all_fields``
--  ``automata.agent.instances.OpenAIAutomataAgentInstance.Config``
--  ``automata.config.base.AgentConfigName``
--  ``automata.tools.base.Tool``
+-  ``automata.symbol.graph.symbol_graph.SymbolGraph``: The graph
+   containing the symbols and relationships between them.
+-  ``automata.embedding.embedding_base.EmbeddingBuilder``: An abstract
+   class to build embeddings.
+-  ``automata.code_writers.py.py_code_writer.PyCodeWriter``: A utility
+   class for writing Python code along AST nodes.
+-  ``automata.tools.builders.py_reader_builder.PyReaderToolkitBuilder``:
+   A class for interacting with the PythonIndexer API, which provides
+   functionality to retrieve python code.
 
-Usage Example
--------------
+Example
+-------
+
+As AgentConfigBuilder is an abstract base class, we cannot create an
+instance of it directly. Instead, we will show an example of a
+hypothetical subclass named ``AutomataAgentConfigBuilder``.
 
 .. code:: python
 
-   from automata.config.openai_agent import OpenAIAutomataAgentConfigBuilder
-   from automata.config.base import AgentConfigName
+   from automata.config.config_base import AgentConfigBuilder
+   from typing import TypeVar, Optional
+   from automata.singletons.tokenizer.single_tokenizer import SingleTokenizer
 
-   # Using builder to construct with default config
-   builder_default_config = OpenAIAutomataAgentConfigBuilder()
-   config_default = builder_default_config.build()
+   T = TypeVar('T')
 
-   # Using builder to construct with existing config
-   builder_from_config = OpenAIAutomataAgentConfigBuilder.from_config(config_default)
-   config_from_config = builder_from_config.build()
+   class AutomataAgentConfigBuilder(AgentConfigBuilder[T]):
 
-   # Using builder to construct from named config
-   builder_from_name = OpenAIAutomataAgentConfigBuilder.from_name(AgentConfigName.TEST)
-   config_from_name = builder_from_name.build()
+       def create_config(self, config_name: Optional[str]=None) -> T:
+           
+           # In this hypothetical example, the create_config method 
+           # returns an instance of a hypothetical AutomataAgentConfig.
+           return AutomataAgentConfig(config_name)
+
+       def with_model(self, model: str) -> 'AutomataAgentConfigBuilder':
+           
+           # In this example, the 'model' attribute may determine 
+           # the internal workings of the AutomataAgentConfig.
+           self._config.model = model
+           return self
+
+   # Usage:
+   builder = AutomataAgentConfigBuilder()
+   config = (builder.with_model("model_v1")
+       .with_stream(True)
+       .with_max_iterations(100)
+       .build())
+
+This example demonstrates how a subclass of ``AgentConfigBuilder`` could
+be implemented and used. The ``AutomataAgentConfigBuilder`` implements
+the ``create_config`` and ``with_model`` methods specific to its needs.
+When building the ``AutomataAgentConfig``, the ``with_model`` method is
+used to specify the model and the ``with_stream``,
+``with_max_iterations`` methods are used to specify other attributes.
 
 Limitations
 -----------
 
-The builder pattern, while providing a clean API, can lead to over
-complicated code since each attribute is set individually. Be careful of
-overusing builders and consider passing a single object with many
-parameters. This can also make it more difficult to understand as the
-logical groups of parameters can be broken up.
+Since ``AgentConfigBuilder`` is an abstract base class, it cannot be
+used on its own and requires subclasses to provide implementations for
+the ``create_config`` and ``with_model`` methods. It is also tightly
+coupled to the structure and functionality of Agent objects and other
+related entities in the ``automata`` system.
 
 Follow-up Questions:
 --------------------
 
--  Is there a way to populate the builder with a group of related
-   parameters at once?
--  How can we ensure each attribute is being updated in a consistent
-   manner?
+-  What specific Agent configurations are required in the different
+   subclasses of AgentConfigBuilder?
+-  Are there any restrictions in setting up the configurations - should
+   properties be set in a certain sequence or are there any dependencies
+   among properties?
+
+This documentation was written based on the provided context in code
+comments, method signatures, related tests and related symbols. Without
+actual source code or sample responses, the specifics of method
+implementations and returned results are hypothetical. Further
+clarification may be necessary for a complete understanding of the class
+and its use.

@@ -1,33 +1,70 @@
--  Extending ``AutomataTaskEnvironment`` to support other modes beyond
-   GitHub might involve creating additional environment types (e.g.,
-   bitbucket, gitlab, local file system, ftp, http, etc.) then adding
-   appropriate handling for each type in the ``AutomataTaskEnvironment``
-   class methods. This would involve implementing the necessary logic
-   for each operation (setup, validate, commit, etc.) for each new
-   environment type.
+AutomataTaskEnvironment
+=======================
 
--  ``validate`` could ensure that the task structure, dependencies, and
-   metadata are correctly formed, ``reset`` could revert the task to its
-   initial state (probably by re-cloning the repository), and
-   ``teardown`` could remove any local resources associated with the
-   task. Whether these operations are needed depends on the workflow and
-   resources being used. They could be useful to ensure consistency
-   across tasks and users, manage resources carefully, and provide a
-   standard API for agents to interact with tasks.
+``AutomataTaskEnvironment`` is a concrete implementation of the
+``Abstract TaskEnvironment`` specifically designed for Automata
+providers. The class provides avenue for setting-up, validating,
+resetting and tearing down environments for tasks during its execution
+within an Automata environment.
 
--  The limitation to ``AutomataTask`` might be due to specific
-   requirements or behaviors expected from tasks in the
-   ``AutomataTaskEnvironment`` that are only provided by the
-   ``AutomataTask`` implementation. If a different type of task were
-   expected to be used with the environment, it would likely need to
-   satisfy the same interface, or the ``AutomataTaskEnvironment`` would
-   need to be accommodated to support various types of tasks.
+Instances of ``AutomataTaskEnvironment`` are associated with a Github
+Manager and an ``EnvironmentMode``, and provide features for setting-up
+the environment (modeled on a Github repository in the ``GITHUB`` mode),
+as well as committing executed tasks to the remote repository.
 
--  The exact handling of failures in
-   ``AutomataTaskEnvironment.commit_task`` would depend on the
-   higher-level logic in the application. It could involve retries,
-   falling back to alternative operations, alerting the user, recording
-   error information for debugging, etc. The use of
-   ``AgentTaskException`` would be to signal to the higher-level logic
-   that a failure occurred, and additionally provide context-specific
-   information to help handle the failure appropriately.
+The ``AutomataTaskEnvironment`` works best with instances of
+``AutomataTask`` and raises exceptions when operations involve
+invalid/incorrect task instances.
+
+Related Symbols
+---------------
+
+-  ``TaskEnvironment``
+-  ``GitHubClient``
+-  ``EnvironmentMode``
+-  ``Task``
+-  ``AutomataTask``
+-  ``TaskStateError``
+-  ``TaskGeneralError``
+
+Usage Example
+-------------
+
+In the example below, we create an instance of
+``AutomataTaskEnvironment`` using a ``GITHUB`` ``EnvironmentMode`` and
+then set up an ``AutomataTask``.
+
+.. code:: python
+
+   from automata.tasks.task_environment import AutomataTaskEnvironment
+   from automata.github.client import GitHubClient
+   from automata.tasks.task_enum import EnvironmentMode
+   from automata.tasks.automata_task import AutomataTask
+
+   github_manager = GitHubClient(token="<your-github-token>", owner="<github-owner>", repository="<repository-name>")
+   environment = AutomataTaskEnvironment(github_manager, EnvironmentMode.GITHUB)
+
+   # Assume a valid AutomataTask instance created earlier
+   task = AutomataTask(session_id="654321")
+   environment.setup(task)
+
+Limitations
+-----------
+
+``AutomataTaskEnvironment`` requires valid ``AutomataTask`` instances
+and a proper ``GitHubClient`` initialised with the correct Github token,
+owner name and repository name for it to function correctly. It also
+expects the Github repository to be available and accessible. Commits on
+Github could fail if the branch already exists or if there are checkout
+or commit failures.
+
+Follow-up Questions:
+--------------------
+
+-  How can the ``AutomataTaskEnvironment`` handle recovery/resumption of
+   tasks interrupted during execution?
+-  Could the class be extended to support other ``EnvironmentMode``
+   apart from Github? If yes, how would this affect the existing methods
+   and how could they be made more generic?
+-  What would be the expected behavior of ``AutomataTaskEnvironment``
+   when there are network failures during Github operations?

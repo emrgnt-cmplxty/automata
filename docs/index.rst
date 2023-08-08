@@ -88,6 +88,8 @@ The following module documents are auto-generated via the run-doc-embedding pipe
 
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -99,6 +101,7 @@ The following module documents are auto-generated via the run-doc-embedding pipe
        faq
        setup_guide
        agent/index
+       cli/index
        code_handling/index
        code_parsers/index
        code_writers/index

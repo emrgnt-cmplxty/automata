@@ -1,75 +1,59 @@
 OpenAIChatMessage
 =================
 
+``OpenAIChatMessage`` is a class that acts as a representation for a
+processed message that is sent TO or FROM the OpenAI LLM Chat API.
+
 Overview
 --------
 
-``OpenAIChatMessage`` is a class that represents a processed chat
-message TO or FROM the OpenAI LLM Chat API. It provides convenient
-methods to parse and generate messages compatible with the OpenAI Chat
-API.
-
-This class is a part of the ``automata.llm.providers.openai`` module and
-extends the ``LLMChatMessage`` base class, adding unique fields and
-methods suitable for communication with the OpenAI API.
+``OpenAIChatMessage`` inherits from the superclass ``LLMChatMessage``.
+It is initialized with the role, content, and optionally a function
+call. It provides methods to represent the message as a string, convert
+it to a dictionary and create a chat message from a completion result.
 
 Related Symbols
 ---------------
 
--  ``automata.llm.providers.openai.OpenAIChatCompletionResult``
--  ``automata.llm.providers.openai.OpenAIConversation``
--  ``automata.llm.providers.openai.OpenAIChatCompletionProvider``
--  ``automata.llm.foundation.LLMChatMessage``
+-  ``automata.singletons.github_client.GitHubClient.remove_label``
+-  ``automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.entry_to_key``
+-  ``automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.add``
+-  ``automata.cli.scripts.run_doc_embedding.parse_dotpaths``
+-  ``automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase.batch_add``
+-  ``automata.core.utils.is_sorted``
 
-Example
--------
-
-Below is an example of creating a message, converting it to a
-dictionary, and retrieving it from a completion result:
+Usage Example
+-------------
 
 .. code:: python
 
-   from automata.llm.providers.openai import FunctionCall, OpenAIChatCompletionResult, OpenAIChatMessage
+   from automata.llm.providers.openai_llm import OpenAIChatMessage, OpenAIChatCompletionResult
 
-   # The function call 
-   function_call = FunctionCall.from_response_dict({
-       "name": "call_termination",
-       "arguments": '{"result": "Success"}',
-   })
+   # Create a completion result
+   completion_result = OpenAIChatCompletionResult(role="system", content="Hello, I'm an AI.")
 
-   # Create an OpenAI Chat Message instance
-   message = OpenAIChatMessage(role="assistant", function_call=function_call)
+   # Create a chat message from a completion result
+   message = OpenAIChatMessage.from_completion_result(completion_result)
 
-   # Convert message to dictionary
-   message_dict = message.to_dict()
+   # Convert the message to a string
+   print(str(message))  # Outputs: "OpenAIChatMessage(role=system, content=Hello, I'm an AI., function_call=None)"
 
-   # Create a mock OpenAI Chat Completion Result
-   completion_result = OpenAIChatCompletionResult.from_args(
-       role="assistant",
-       content=None,
-       function_call=function_call
-   )
-
-   # Retrieve the OpenAI Chat Message from the completion result
-   retrieved_message = OpenAIChatMessage.from_completion_result(completion_result)
+   # Convert the message to a dictionary
+   print(message.to_dict())  # Outputs: {'role': 'system', 'content': "Hello, I'm an AI."}
 
 Limitations
 -----------
 
-This class assumes that the ``OpenAIChatCompletionResult`` already has
-the required fields parsed in the expected format. Consequently, if the
-OpenAI API changes its response format, the ``from_completion_result``
-method may not function as expected.
+The methods within ``OpenAIChatMessage`` are all directly related to the
+OpenAI LLM Chat API and do not have wider applications outside of their
+specific context. The class is designed to specifically interact with
+the OpenAI LLM Chat API, so it cannot be used as a general-purpose chat
+message manipulator.
 
-Machines created from ``OpenAIChatMessage`` may not contain a
-``function_call`` field if the processed message does not instruct a
-function call.
+Follow-up Questions
+-------------------
 
-Follow-up Questions:
---------------------
-
--  How does ``OpenAIChatMessage`` handle unexpected
-   ``OpenAIChatCompletionResult`` structures?
--  Are there safety measures in place to ensure ``OpenAIChatMessage``
-   instances are created correctly when a ``function_call`` field is
-   missing from a message?
+-  Can this class be modified to support more general use, outside of
+   the OpenAI LLM Chat API?
+-  How can we extend the functionality to incorporate more features of
+   the Chat API, like message logs or instructions?

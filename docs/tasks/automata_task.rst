@@ -1,68 +1,62 @@
 AutomataTask
 ============
 
-``AutomataTask`` class is designed to be executed by the TaskExecutor.
-The tasks initiated by this class are set up with instructions and a
-path to a root python folder.
+``AutomataTask`` is a class extended from ``Task`` that is executed by
+``TaskExecutor``. This class represents a single auto-executable task
+with a specific set of instructions. A task in this context is an
+operation or series of operations packaged together for the
+``TaskExecutor`` to execute and monitor. It also includes functionality
+to initialize logging for the task and accumulate logs for the task’s
+execution.
 
 Overview
 --------
 
-``AutomataTask`` manages tasks to be executed by initializing its
-properties and validating its instructions. It also manages the logging
-for the task by creating a log file in the task directory and fetches
-log content. The class utilizes parent class ``Task`` from
-``automata.tasks.base`` to handle the underlying procedures.
+An ``AutomataTask`` gets initialized with a set of arguments and keyword
+arguments. Two critical keyword arguments that are necessary for task
+initialization include ``instructions`` - the instructions for the task,
+and ``path_to_root_py`` - the path to the root python folder. Provided
+instructions cannot be empty; otherwise, it raises a
+``TaskInstructionsError``. The Initialize logs and get logs methods are
+used to configure logging for the task execution.
 
 Related Symbols
 ---------------
 
--  ``automata.tasks.environment.AutomataTaskEnvironment``
--  ``automata.tasks.agent_database.AutomataTaskRegistry.get_all_tasks``
--  ``automata.tasks.agent_database.AutomataAgentTaskDatabase.insert_task``
--  ``automata.tasks.executor.IAutomataTaskExecution``
+-  ``automata.tasks.Task``
+-  ``automata.tasks.TaskExecutor``
+-  ``automata.errors.TaskInstructionsError``
 
 Example
 -------
 
-Examples on how to create instances of ``AutomataTask``:
+The following example demonstrates how to create an instance of
+``AutomataTask``.
 
 .. code:: python
 
-   from automata.tasks.tasks import AutomataTask
+   from automata.tasks.automata_task import AutomataTask
 
-   task = AutomataTask("task1", instructions="instruction1")
+   instructions = "These are the task instructions"
+   path_to_root_py = "/path/to/root/python/directory"
 
-.. code:: python
-
-   from automata.tasks.tasks import AutomataTask
-   from tests.mocks import MockRepositoryClient
-   from config.config_enums import AgentConfigName
-
-   repo_manager = MockRepositoryClient()
-
-   task = AutomataTask(
-       repo_manager,
-       config_to_load=AgentConfigName.TEST.value,
-       generate_deterministic_id=False,
-       instructions="This is a test.",
-   )
+   task = AutomataTask(instructions=instructions, path_to_root_py=path_to_root_py)
 
 Limitations
 -----------
 
-``task_id`` generated here can take either a deterministic form based on
-the hash of hashable keyword arguments or a random ``uuid`` depending on
-the ``generate_deterministic_id`` flag. There’s no way to provide a
-custom method of generating task_id.
+The primary limitation of ``AutomataTask`` is that it heavily relies on
+the arguments and keyword arguments provided during its instantiation.
+If the keyword argument ``instructions`` is not provided or is empty, a
+``TaskInstructionsError`` will be raised. Additionally, ``AutomataTask``
+assumes the existence of a specific directory structure for logging.
 
-``AutomataTask`` assumes the python folder is in the root folder, which
-can limit the extraction of python files if the directory structure
-changes.
+Follow-up Questions:
+--------------------
 
-Follow-up Questions
--------------------
-
--  Can a custom task_id generation method be facilitated?
--  Can the assumption of the python folder being in the root folder be
-   eliminated, making it more robust?
+-  Can we include a validation method for arguments and keyword
+   arguments necessary for the AutomataTask?
+-  What happens when the path provided in ``path_to_root_py`` does not
+   exist or is not accessible?
+-  Is there a way to customise the logging path or log file from outside
+   the class? Is it possible to decide not to log the task at all?

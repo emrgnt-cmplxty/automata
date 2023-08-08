@@ -1,69 +1,84 @@
 SymbolRankConfig
 ================
 
-``SymbolRankConfig`` is a configuration class for the SymbolRank object.
-It is derived from the BaseModel class and is used to set up
-configurations such as alpha, max_iterations, tolerance, and weight_key
-for SymbolRank.
+``SymbolRankConfig`` is a configuration class meant for use with the
+``SymbolRank`` module. Its purpose is to configure and manage various
+aspects of the SymbolRank algorithm such as alpha (damping factor),
+maximum iterations, tolerance, and weight key. This config allows the
+users to manipulate the preprocessing parameters of the SymbolRank
+algorithm.
 
 Overview
 --------
 
-``SymbolRankConfig`` allows for the setup of various parameters:
+The ``SymbolRankConfig`` class provides a way to specify and validate
+configuration options for the SymbolRank algorithm. The parameters for
+the algorithm include:
 
--  alpha: It affects the damping factor used in the calculation of the
-   SymbolRank. Default value is 0.25.
--  max_iterations: Sets the maximum number of iterations for the
-   SymbolRank calculation. Default value is 100.
--  tolerance: Specifies the tolerance for error in the SymbolRank
-   calculations. The default is 1.0e-6.
--  weight_key: Specifies the key for accessing edge weights. The default
-   is “weight”.
+-  ``alpha``: This is the damping factor used in the algorithm, a float
+   in (0, 1). This influences how the algorithm balances between more
+   specific and more general symbols when forming a ranked list of
+   symbols. The default value for alpha is 0.25.
 
-An instance of ``SymbolRankConfig`` then validates these values to
-ensure that they are within certain bounds. If they fall outside these
-bounds, it raises a ValueError.
+-  ``max_iterations``: This is the maximum number of iterations for the
+   algorithm to perform, an integer. The default value for
+   max_iterations is 100.
+
+-  ``tolerance``: This is the tolerance for the calculation, a float in
+   (1e-4, 1e-8). When the difference between iteratively calculated
+   values falls below this threshold, the calculation is stopped. The
+   default value for tolerance is 1e-06.
+
+-  ``weight_key``: This is the key used to retrieve weights from a
+   graph, a string. The default value for weight_key is ‘weight’.
+
+The ``validate_config`` function ensures the correctness of the
+specified configuration parameters, raising a ``ValueError`` where the
+parameters fall outside of their respective valid ranges.
 
 Related Symbols
 ---------------
 
--  ``automata.experimental.search.rank.SymbolRank``
--  ``automata.tests.unit.test_symbol_rank.test_get_ranks``
--  ``automata.tests.unit.test_symbol_rank.test_get_ranks_small_graph``
--  ``automata.experimental.search.symbol_search.SymbolSearch.symbol_rank``
--  ``automata.tests.unit.test_symbol_rank.test_prepare_initial_ranks``
--  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_rank``
--  ``automata.tests.unit.test_symbol_search_tool.test_symbol_rank_search``
--  ``automata.tests.unit.test_symbol_rank.test_pagerank_config_validation``
--  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_search``
--  ``automata.tests.regression.test_symbol_searcher_regression.test_symbol_rank_search_on_symbol``
+The following interfaces and procedures are related:
 
-Example
--------
+-  ``automata.cli.cli_utils.get_custom_style``
+-  ``automata.symbol_embedding.vector_databases.JSONSymbolEmbeddingVectorDatabase.get_all_ordered_embeddings``
+-  ``automata.singletons.dependency_factory.DependencyFactory.create_symbol_graph``
+-  ``automata.symbol_embedding.symbol_embedding_handler.SymbolEmbeddingHandler._get_sorted_supported_symbols``
+-  ``automata.cli.scripts.run_agent_config_validation.yaml_schema``
+-  ``automata.symbol.symbol_base.Symbol.__repr__``
+-  ``automata.symbol.symbol_base.SymbolDescriptor.__init__``
+-  ``automata.symbol_embedding.vector_databases.ChromaSymbolEmbeddingVectorDatabase._sort_entries``
+-  ``automata.cli.env_operations.select_graph_type``
+-  ``automata.llm.llm_base.LLMChatMessage.to_dict``
 
-Below is a simple example on instantiation and validation of
-SymbolRankConfig.
+Usage Example
+-------------
 
 .. code:: python
 
-   from automata.experimental.search.rank import SymbolRankConfig
-   config = SymbolRankConfig(alpha=0.5, max_iterations=100, tolerance=1.0e-6)
+   from automata.experimental.search.symbol_rank import SymbolRankConfig
+   config = SymbolRankConfig(alpha=0.3, max_iterations=200, tolerance=1e-06, weight_key='weight')
    config.validate_config(config)
 
 Limitations
 -----------
 
-``SymbolRankConfig`` is currently constrained to validate only alpha and
-tolerance parameters. However, validation for other parameters such as
-max_iterations and weight_key can also be crucial depending upon the
-nature of graph and its edges.
+``SymbolRankConfig`` mainly validates and ensures that the parameters
+are in their respective valid ranges. However, it does not verify if
+these parameters are suitable for the specific data or context in which
+the SymbolRank algorithm is applied. It’s the user’s responsibility to
+ensure that these parameters help the SymbolRank algorithm yield
+meaningful and accurate results for their particular application.
+
+``SymbolRankConfig`` does not support dynamic reconfiguration. All
+parameters must be correctly defined when an instance of this
+configuration is created.
 
 Follow-up Questions:
 --------------------
 
--  Are there plans to add any further parameters or configurations in
-   the ``SymbolRankConfig`` class?
--  Is there any specific reason to keep the default value of weight_key
-   as “weight”?
--  What kind of use cases are typically supported by the
-   ``SymbolRankConfig`` class?
+-  Are there any safeguards to rectify or handle parameters that don’t
+   yield meaningful results?
+-  Would there be benefits to allowing dynamic reconfiguration of
+   parameters?

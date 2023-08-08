@@ -21,6 +21,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -31,7 +33,6 @@ Summary of content
        test_execute_behavior
        test_tool
        test_url
-       sample_modules/index
 
 ..  AUTO-GENERATED CONTENT END
 ..

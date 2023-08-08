@@ -8,6 +8,8 @@ how to :ref:`installation` the project.
 
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -15,8 +17,10 @@ how to :ref:`installation` the project.
        :maxdepth: 1
 
        invalid_arguments
+       invalid_arguments_error
        module_not_found
        statement_not_found
+       statement_not_found_error
 
 ..  AUTO-GENERATED CONTENT END
 ..

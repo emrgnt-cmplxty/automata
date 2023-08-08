@@ -1,93 +1,73 @@
 SymbolCodeEmbeddingBuilder
 ==========================
 
-``SymbolCodeEmbeddingBuilder`` is a builder class that constructs
-``Symbol`` source code embeddings. An embedding is essentially a
-mathematical representation of the symbol’s source code and is used to
-measure the similarity between different symbols. The
-``SymbolCodeEmbeddingBuilder`` specifically creates the
-``SymbolCodeEmbedding`` from the source code and the ``Symbol``, both of
-which are provided as input arguments.
-
-``SymbolCodeEmbeddingBuilder`` plays a critical role in understanding
-and processing python codes in a way that allows more sophisticated
-operations, like similarity measurement and recommending pieces of codes
-based on existing ones. This is achieved by transforming the code from
-its primitive form to numerical representations (vectors) that can be
-differentiated and compared.
+``SymbolCodeEmbeddingBuilder`` is a class in the
+automata.symbol_embedding.symbol_embedding_builders module. It’s
+primarily used for generating source code embeddings for a given symbol.
 
 Overview
 --------
 
-The ``SymbolCodeEmbeddingBuilder`` uses an ``EmbeddingVectorProvider``
-to build an embedding vector from the source code. The embedding vector
-captures the syntactical and perhaps some semantic essence of the code,
-and in effect, creates a numerical representation for it. The
-``SymbolCodeEmbeddingBuilder`` then leverages the source code, the
-symbol, and the embedding vector to build a ``SymbolCodeEmbedding``.
+``SymbolCodeEmbeddingBuilder`` contains two methods: ``build`` and
+``batch_build``. The ``build`` method generates the embedding for a
+symbol’s source code, and the ``batch_build`` method generates the
+embeddings for a list of symbols’ source code.
+
+The class inherits from the ``EmbeddingBuilder`` and is instrumental in
+building the ``SymbolCodeEmbedding``, which consists of the symbol, its
+source code, and the corresponding embedding vector.
 
 Related Symbols
 ---------------
 
--  ``automata.embedding.base.EmbeddingBuilder``: An abstract class to
-   build embeddings, from which ``SymbolCodeEmbeddingBuilder`` inherits.
--  ``automata.embedding.base.EmbeddingVectorProvider``: An abstract
-   class that provides a standard API for creating embedding vectors.
--  ``automata.symbol_embedding.base.SymbolCodeEmbedding``: A class for
-   symbol code embeddings.
--  ``automata.symbol.base.Symbol``: A class which contains the
-   associated logic for a Symbol.
+-  ``symbol_representation.symbol.Symbol``
+-  ``symbol_representation.symbol_code_embedding.SymbolCodeEmbedding``
+-  ``embedding_provider.EmbeddingProvider``
+-  ``symbol_embedding.EmdeddingBuilder``
 
 Example
 -------
 
-This is an example demonstrating how to create an instance of
-``SymbolCodeEmbedding`` using ``SymbolCodeEmbeddingBuilder``.
+The following example demonstrates building a ``SymbolCodeEmbedding``:
 
 .. code:: python
 
-   # Required imports
-   from automata.symbol_embedding.builders import SymbolCodeEmbeddingBuilder
-   from automata.symbol.base import Symbol
-   from automata.embedding.base import EmbeddingVectorProvider
+   from automata.symbol_embedding.symbol_embedding_builders import SymbolCodeEmbeddingBuilder
+   from symbol_representation.symbol import Symbol
+   from symbol_representation.symbol_code_embedding import SymbolCodeEmbedding
 
-   # Instantiate embedding vector provider
-   embedding_provider = EmbeddingVectorProvider()  # Replace with specific instance of embedding vector provider.
+   symbol_code = "def hello_world(): print('Hello, world!')"
+   symbol = Symbol('hello_world', symbol_code)
+   embedding_builder = SymbolCodeEmbeddingBuilder()
 
-   # Instantiate SymbolCodeEmbeddingBuilder
-   embedding_builder = SymbolCodeEmbeddingBuilder(embedding_provider)
+   # Building SymbolCodeEmbedding for a single symbol
+   symbol_code_embedding = embedding_builder.build(symbol_code, symbol)
+   print(symbol_code_embedding)
 
-   # Define the source code and symbol
-   source_code = "def hello_world():\n    print('Hello, world!')"
-   symbol = Symbol.from_string("scip-python python HelloWorld 1a2b3c HelloWorld#")
-
-   # Build the SymbolCodeEmbedding
-   code_embedding = embedding_builder.build(source_code, symbol)
+   # Building SymbolCodeEmbedding for a batch of symbols
+   symbol_codes = [symbol_code, symbol_code]
+   symbols = [symbol, symbol]
+   symbol_code_embeddings = embedding_builder.batch_build(symbol_codes, symbols)
+   print(symbol_code_embeddings)
 
 Limitations
 -----------
 
-One limitation with the ``SymbolCodeEmbeddingBuilder`` is that the
-quality of the ``SymbolCodeEmbedding`` that it builds is highly
-dependent on the ``EmbeddingVectorProvider`` used. Different providers
-may create different quality embeddings.
+``SymbolCodeEmbeddingBuilder`` does not handle symbols that are not
+identifiable in the source code, like variables or symbols from imported
+modules. Ensuring that the source code passed to the ``build`` or
+``batch_build`` methods contains the defined symbol is crucial for
+proper functionality.
 
-Another limitation is that word, line, symbol, variable or class usages
-that span across different files or projects may not be embedded or
-tracked correctly.
+In addition, the actual implementation of the ``EmbeddingBuilder`` and
+``EmbeddingProvider`` is not shown in the context, so assumptions have
+been made in the example provided. Depending on the specific
+implementations of those classes, additional set-up may be required.
 
 Follow-up Questions:
 --------------------
 
--  What makes a good ``EmbeddingVectorProvider``?
--  What are the trade-offs of relying on ``SymbolCodeEmbedding`` vs
-   simpler forms of text representations such as Bag of Words or TF-IDF?
--  How does the builder handle different scopes in python source code
-   (i.e. local, global, nonlocal, class scopes)?
-
-Note:
------
-
-This example assumes there’s an implementation of
-EmbeddingVectorProvider available. In actuality, you might need to
-implement a specific Embedding Provider or use a third-party library.
+-  Are there specific requirements or best practice guidelines for
+   source code passed to this builder class?
+-  How are symbols that are not defined in the provided source code
+   handled?

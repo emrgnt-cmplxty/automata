@@ -1,75 +1,93 @@
 OpenAIAutomataAgentToolkitRegistry
 ==================================
 
-The ``OpenAIAutomataAgentToolkitRegistry`` is a Singleton [1]_ class
-that is responsible for managing and providing access to all the
-registered OpenAI agent toolkit builders. This allows different parts of
-the system to retrieve the correct toolkit builder when needed, without
-needing to have direct knowledge of the specifics of each builder.
+``OpenAIAutomataAgentToolkitRegistry`` is a singleton class that
+registers and manages different types of tool builders within the
+toolkit. It provides an interface to register a new toolkit builder,
+fetch a list of all registered builder types, and initialize the
+registry by importing modules from the builders’ package.
 
 Overview
 --------
 
-The ``OpenAIAutomataAgentToolkitRegistry`` class has three main
-responsibilities: 1. It maintains a list of all registered toolkit
-builders. This is done using the ``register_tool_manager`` static method
-that accepts a class of type ``OpenAIAgentToolkitBuilder`` and adds it
-to a list. 2. It provides a method, ``get_all_builders``, to retrieve
-all the registered builders. 3. It provides an ``initialize`` method to
-load all the registered builders when the system starts.
+``OpenAIAutomataAgentToolkitRegistry`` uses a metaclass Singleton to
+manage and maintain the lifecycle of tool builders, ensuring there is
+only a single instance of registry across the application. The class
+uses two static data variables:
+
+-  ``_all_builders``: A set that holds instances of the
+   ``OpenAIAgentToolkitBuilder`` class.
+-  ``_is_initialized``: A boolean value indicating if the registry is
+   initialized.
+
+This class exposes three static methods to manage the registry:
+
+-  ``register_tool_manager(cls)``: Adds a builder class to the
+   ``_all_builders`` set.
+-  ``get_all_builders()``: Returns a list of all registered builders.
+   Initializes the registry if it is not initialized yet.
+-  ``initialize()``: Imports modules from the builder package,
+   triggering the registration of the builders.
 
 Related Symbols
 ---------------
 
--  ``automata.agent.providers.OpenAIAgentToolkitBuilder``: This is the
-   base class for all toolkit builders. Each specific toolkit builder
-   must subclass this and implement its methods.
--  ``automata.tools.builders.PyReaderOpenAIToolkitBuilder``: This is an
-   example of a specific toolkit builder. It is responsible for building
-   ``PyReader`` tools for the OpenAI agent.
--  ``automata.tools.builders.PyWriterOpenAIToolkitBuilder``: This is
-   another example of a specific toolkit builder. It is responsible for
-   building ``PyWriter`` tools for the OpenAI agent.
+This class references the following symbols in its implementation:
 
-Usage Example
--------------
+-  ``Type[OpenAIAgentToolkitBuilder]``: The expected type of the tool
+   builders that are registerable with
+   ``OpenAIAutomataAgentToolkitRegistry``.
+-  ``automata.experimental.tools.builders``
+-  ``automata.tools.builders``
+
+Example
+-------
+
+Below is an example of how to use the
+``OpenAIAutomataAgentToolkitRegistry``. In this example, a custom
+builder class CustomToolkitBuilder is registered and retrieved using the
+``OpenAIAutomataAgentToolkitRegistry``.
 
 .. code:: python
 
-   from automata.singletons.toolkit_registries import OpenAIAutomataAgentToolkitRegistry
-   from automata.tools.builders.py_reader import PyReaderOpenAIToolkitBuilder
+   from automata.singletons.toolkit_registry import OpenAIAutomataAgentToolkitRegistry
 
-   # registering a builder
-   OpenAIAutomataAgentToolkitRegistry.register_tool_manager(PyReaderOpenAIToolkitBuilder)
+   class CustomToolkitBuilder:
+       pass
 
-   # retrieving all builders
-   builders = OpenAIAutomataAgentToolkitRegistry.get_all_builders()
+   # Register a new Builder
+   OpenAIAutomataAgentToolkitRegistry.register_tool_manager(CustomToolkitBuilder)
 
-   for builder in builders:
-       print(builder)
+   # Get all registered Builders
+   all_builders = OpenAIAutomataAgentToolkitRegistry.get_all_builders()
+
+   print(all_builders)  # This will print [<class '__main__.CustomToolkitBuilder'>]
 
 Limitations
 -----------
 
-The ``OpenAIAutomataAgentToolkitRegistry`` class assumes that all
-toolkit builders are subclasses of ``OpenAIAgentToolkitBuilder`` and
-implement its interface. If a class does not implement this interface
-correctly, ``OpenAIAutomataAgentToolkitRegistry`` may not work correctly
-with that class.
+There is a limitation to ensure that the tool builders are set up
+properly and the correct modules are imported during the initialization
+of the ``OpenAIAutomataAgentToolkitRegistry``. If builders are not
+imported correctly during initialization, they might not be registered
+correctly to the Toolkit Registry.
+
+Further, this class requires all builder classes to be compliant with
+the ``OpenAIAgentToolkitBuilder`` type. Tool builders not meeting this
+requirement might not be registered correctly.
 
 Follow-up Questions:
 --------------------
 
--  What if we need to support additional types of builders that do not
-   subclass ``OpenAIAgentToolkitBuilder``?
-
-Over time, we may need to support additional types of toolkits for new
-agent models. Given this class’s current design, we would need to create
-a new toolkit builder base class for each new type, and then modify
-``OpenAIAutomataAgentToolkitRegistry`` to support instances of that new
-class.
-
-.. [1]
-   A singleton is a design pattern that restricts a class to a single
-   instance. In other words, there can only ever be one instance of the
-   singleton class in the application.
+-  How can we ensure all required module builders are imported correctly
+   during the initialization?
+-  Can we handle the registration of toolkit builders that are not
+   compliant with the ``OpenAIAgentToolkitBuilder`` type? How can we
+   validate the classes being registered to the Toolkit Registry?
+-  How efficient is the Toolkit Registry when registering and fetching a
+   large number of builder instances? Is there any room for performance
+   optimizations?
+-  It’s unclear what the primary use cases for retrieving all toolkit
+   builders are. What scenarios or functions rely on the capability to
+   get all registered builders? When should a builder be retrieved
+   individually vs. collectively?

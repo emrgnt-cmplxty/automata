@@ -1,91 +1,97 @@
 DependencyFactory
 =================
 
-``DependencyFactory`` is a source class found in
-**automata.singleton.dependency_factory** that is utilized in the
-creation of dependencies for input Tool construction.
+``DependencyFactory`` is a Singleton class that is responsible for
+creating and managing dependencies that are required for tool
+construction. It serves as a centralized location to handle
+dependencies, allowing a single point of access to share, coordinate and
+manage these dependencies for avoiding conflicts and minimizing
+redundancy.
 
-The main functionality of ``DependencyFactory`` is to ensure that the
-dependencies required by any given set of tools are created and made
-available for use.
+Overview
+--------
 
-The ``DependencyFactory`` class implements singleton design pattern,
-means there will only be one instance of this class and all the required
-dependencies are created on this single instance.
+``DependencyFactory`` provides various methods to get, set, reset and
+directly create dependencies. When creating dependencies, it also
+supports specification and override of keyword arguments during
+initialization. Internally, it maintains a cache of class instances
+promoting efficiency.
 
-Import Statements:
-------------------
+It can be used to create dependencies like SymbolGraph, SymbolRank,
+SymbolSearch, etc. It also supports retrieving pre-created instances of
+dependencies, building dependencies required for a given set of tools,
+and even allows to override the creation parameters for dependencies.
 
-When making use of the ``DependencyFactory`` class, below are the
-dependencies to import,
+Related Symbols
+---------------
 
-.. code:: python
+-  ``automata.singletons.Singleton``
+-  ``automata.utils.symbol_provider.SynchronizationContext, ISymbolProvider``
+-  ``automata.base_config.SymbolRankConfig, PyContextHandlerConfig, EmbeddingDataCategory``
+-  ``automata.structures.SymbolGraph, SymbolRank, SymbolSearch``
+-  ``automata.embedding_handler.SymbolCodeEmbeddingHandler, SymbolDocEmbeddingHandler``
+-  ``automata.py_context.PyContextHandler, PyContextRetriever``
+-  ``automata.py_io.PyReader, PyCodeWriter``
+-  ``automata.exceptions.UnknownToolError``
+-  ``automata.toolkits.agent_tool.Toolkits, AgentToolkitNames, AgentToolFactory``
 
-   import os
-   import networkx as nx
-   from functools import lru_cache
-   from typing import Any, Dict, List, Set, Tuple
-   from automata.config.base import ConfigCategory
-   from automata.agent.agent import AgentToolkitNames
-   from automata.agent.error import AgentGeneralError, UnknownToolError
-   from automata.core.base.patterns.singleton import Singleton
-   from automata.code_handling.py.reader import PyReader
-   from automata.code_handling.py.writer import PyWriter
-   from automata.embedding.base import EmbeddingSimilarityCalculator
-   from automata.experimental.search.rank import SymbolRank, SymbolRankConfig
-   from automata.experimental.search.symbol_search import SymbolSearch
-   from automata.llm.providers.openai import (
-         OpenAIChatCompletionProvider,
-         OpenAIEmbeddingProvider,
-     )
-   from automata.memory_store.symbol_code_embedding import SymbolCodeEmbeddingHandler
-   from automata.memory_store.symbol_doc_embedding import SymbolDocEmbeddingHandler
-   from automata.retrievers.py.context import (
-         PyContextRetriever,
-         PyContextRetrieverConfig,
-     )
-   from automata.symbol.graph import SymbolGraph
-   from automata.symbol_embedding.base import JSONSymbolEmbeddingVectorDatabase
-   from automata.symbol_embedding.builders import (
-         SymbolCodeEmbeddingBuilder,
-         SymbolDocEmbeddingBuilder,
-     )
-   from automata.tools.factory import AgentToolFactory, logger
-   from automata.core.utils import get_config_fpath
+Example
+-------
 
-Usage Example
--------------
-
-Here is an example that showcases how ``DependencyFactory`` is used:
+This example demonstrates how to initialize a ``DependencyFactory`` and
+create a SymbolGraph instance:
 
 .. code:: python
 
    from automata.singletons.dependency_factory import DependencyFactory
+   from automata.utils.interface import EmbeddingDataCategory
+   from automata.base_config import get_embedding_data_fpath
 
-   # Create a DependencyFactory object setting the overrides
-   dep_factory = DependencyFactory(py_context_retriever_config=PyContextRetrieverConfig())
+   factory = DependencyFactory()
+   symbol_graph = factory.get('symbol_graph')
 
-   # To get the instance of a created dependency use 'get' method
-   symbol_ranker = dep_factory.get('symbol_rank')
+In the above example, ``symbol_graph`` will have the instance returned
+by the ``create_symbol_graph`` method of the ``DependencyFactory``. The
+instance creation is cached, all further calls to
+``get('symbol_graph')`` will return the same instance.
 
-   # After using the instances, do not forget to reset overrides
-   dep_factory.set_overrides()
+Returning custom ``SymbolGraph`` instance with overridden arguments:
+
+.. code:: python
+
+   factory = DependencyFactory(symbol_graph_scip_fpath="/custom/path/to/scip")
+   symbol_graph = factory.get('symbol_graph')
+
+``symbol_graph`` in this case will be the instance created using the
+overridden ``scip_filepath``.
+
+Resetting all dependencies:
+
+.. code:: python
+
+   factory.reset()
+
+After calling ``reset()``, all cached dependencies are cleared and
+``factory.get('symbol_graph')`` will create a new SymbolGraph.
 
 Limitations
 -----------
 
-The DependencyFactory class doesn’t handle concurrent requests.
-Therefore it is not suitable for a multi-threaded or a multi-processed
-environment.
-
-To build more complex dependencies, the DependencyFactory class can
-become a bit bloated and difficult to manage as the number of
-dependencies increases.
+-  It is important to understand that the behavior of ``get`` method
+   will differ based on when it is called, especially if overrides have
+   been set.
+-  If setting overrides after Dependency Factory has already created
+   dependencies, ``Dependency Factory`` will not allow and raise
+   ValueError. It is suggested to set the overrides during
+   initialization or just after, prior to creating any dependencies.
+-  Depending upon the argument values provided, object creation might
+   fail. Make sure the arguments are in their expected formats and
+   contain the correct values.
 
 Follow-up Questions:
 --------------------
 
--  What are some of the solutions to handle concurrent requests for
-   building dependencies?
--  How to manage DependencyFactory when number of dependencies
-   increases?
+-  How does DependencyFactory handle object initialization errors when
+   creating dependencies?
+-  What happens when an invalid argument is passed to the get method, is
+   there a default response mechanism?

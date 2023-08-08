@@ -1,37 +1,91 @@
-1. Extending ``SymbolGraph`` to support more types of relationships like
-   inheritance and usage is feasible and indeed very useful. This would
-   involve adding additional logic to detect and represent these
-   relationships in the underlying data structures. The complexity would
-   depend on various factors such as the specifics of the file format
-   and programming language(s) being analyzed. It’s important to note
-   however, that supporting such relationships may increase memory usage
-   and computation time, and therefore it is important to optimize the
-   representations and processing algorithms.
+SymbolGraph
+===========
 
-2. Currently, ``automata`` doesn’t support the generation of the index
-   file. This is a valid suggestion and could potentially add
-   significantly to the usefulness of ``SymbolGraph``. Including this
-   functionality directly in ``automata`` could help users create and
-   manipulate ``SymbolGraph`` objects without needing to interact with
-   external tools. This could be implemented as a new feature request if
-   it aligns with the library’s overall goals and design philosophy.
+The ``SymbolGraph`` class constructs a graph that consists of symbols
+that represent files and their relationships. The dependencies between
+the symbols are represented as either “contains”, “reference”,
+“relationship”, “caller”, or “callee”.
 
-3. Performance is a key concern when working with large codebases. As
-   the number of symbols and relationships increases, so does the
-   complexity and memory usage of the graph. It’s hard to provide
-   specific numbers without implementation details and benchmarks, but
-   in principle, handling millions of symbols and relationships would
-   require efficient graph algorithms and data structures, and might
-   necessitate the use of techniques such as graph pruning or
-   partitioning.
+Each ``SymbolGraph`` instance could be initialized with ``index_path``
+(a string that represents the path where the index file located),
+``build_references``, ``build_relationships``,
+``build_caller_relationships`` boolean values to specify the type of
+relationships to build, ``from_pickle`` option to specify if the graph
+needs loading from a pickle file, and ``save_graph_pickle`` option to
+decide if the generated graph should be saved in a pickle.
 
-   Furthermore, performance doesn’t depend only on the number of symbols
-   and relationships. The kinds of operations performed on the graph
-   (e.g. query speed, update speed), the types of relationships
-   considered, and the density of the graph also play a role.
+``SymbolGraph`` also provides several methods to retrieve information
+about the symbols, such as ``get_symbol_dependencies`` that returns a
+set of symbols that a given symbol directly references or uses, and
+``get_symbol_relationships`` that returns a set of symbols that have any
+type of relationships with the given symbol.
 
-   Overall, this reinforces the need for continued care in the design
-   and implementation of ``SymbolGraph`` to strike the right balance
-   between expressive power and scalability. Design decisions and
-   optimizations would need to be carefully considered to cater to the
-   varying needs of different users.
+The ``SymbolGraph`` class provides methods like
+``default_rankable_subgraph`` to create a subgraph that only contains
+rankable symbols and their dependencies. ``filter_symbols`` is used to
+remove symbol nodes from the graph that are not present in the provided
+list.
+
+Using the ``from_graph`` classmethod, you can create a new instance of
+``SymbolGraph`` from an existing networkx MultiDiGraph object.
+
+Usage Example
+-------------
+
+This section presents a simple example of how to create and use a
+``SymbolGraph`` instance.
+
+.. code:: python
+
+   from automata.symbol.graph.symbol_graph import SymbolGraph
+   from automata.symbol.symbol_base import Symbol
+
+   # Initialize a SymbolGraph
+   symbol_graph = SymbolGraph(
+       index_path="/path/to/index", 
+       build_references=True, 
+       build_relationships=True, 
+       build_caller_relationships=True, 
+       from_pickle=True, 
+       save_graph_pickle=True
+   )
+
+   # Assume we have a Symbol instance
+   symbol = Symbol(...)
+
+   # Get all symbol dependencies
+   dependencies = symbol_graph.get_symbol_dependencies(symbol)
+
+   # Get all symbol relationships
+   relationships = symbol_graph.get_symbol_relationships(symbol)
+
+   # Get potential callers of the given symbol
+   potential_callers = symbol_graph.get_potential_symbol_callers(symbol)
+
+   # Get potential callees of the given symbol
+   potential_callees = symbol_graph.get_potential_symbol_callees(symbol)
+
+   # Get the references to the given symbol
+   references = symbol_graph.get_references_to_symbol(symbol)
+
+Limitations
+-----------
+
+``SymbolGraph`` is very dependent on the correct structure of the index
+file provided at initialization. Improperly structured index files may
+lead to wrong relationships between symbols. The current implementation
+uses Set to store the symbols, which can eliminate duplications but do
+not retain order. It might be worth considering a List to preserve order
+in future implementations.
+
+Follow-up Questions:
+--------------------
+
+-  How would the relationships in the graph change if List was used to
+   store the symbols instead of Set?
+-  What kind of error handling or validation could be implemented to
+   guard against improperly structured index files? Would it be helpful
+   to create an index file validator or reader?
+-  Would it be beneficial to extend the SymbolGraph class to handle
+   different types of graphs other than the current one built around
+   ranked symbols?

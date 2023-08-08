@@ -1,93 +1,94 @@
 SQLDatabase
 ===========
 
-``SQLDatabase`` is a concrete class that enables interaction with an
-SQLite database. It encapsulates various common operations that one
-needs to perform on a SQL database such as creation and deletion of
-tables, data insertion, selection, and deletion as well as closing the
-database connection.
-
 Overview
 --------
 
-``SQLDatabase`` opens a connection to a SQLite database file and
-provides a set of methods to execute SQL queries for Data Definition
-Language (DDL) like ``create_table`` and Data Manipulation Language
-(DML) like ``delete``, ``insert``, ``select``, and ``update_database``.
-
-Import Statements
------------------
-
-.. code:: python
-
-   import sqlite3
-   from abc import ABC, abstractmethod
-   from typing import Dict, List
-   from automata.config import CONVERSATION_DB_PATH
+``SQLDatabase`` is a concrete implementation class derived from
+``RelationalDatabase`` to manage operations with SQLite databases. It
+abstracts basic operations like creating a table, inserting data into a
+table, selecting data from a table, updating an entry in a table and
+deleting data from a table. Two important utilities
+i.e. ``NullConnection`` and ``NullCursor`` are used to represent null
+database connection and cursor respectively.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.test_task_database.db``
--  ``automata.tests.unit.test_conversation_database.db``
--  ``automata.tasks.agent_database.AutomataAgentTaskDatabase``
--  ``automata.core.base.database.relational.RelationalDatabase``
--  ``automata.memory_store.agent_conversation_database.AgentConversationDatabase``
+-  ``sqlite3.Connection, sqlite3.Cursor``
+-  ``automata.core.base.database.relational_database.RelationalDatabase``
+   - The base class of ``SQLDatabase``.
 
 Example
 -------
 
-This example demonstrates the way to use the ``SQLDatabase`` for
-performing the basic SQL operations.
+This example demonstrates creating an SQLite Database and performing
+simple operations like creating a table, inserting and selecting data.
 
 .. code:: python
 
-   # Create instance of SQLDatabase
+   from automata.core.base.database.relational_database import SQLDatabase
+
+   # Initialize SQLDatabase Object
    database = SQLDatabase()
 
-   # Connect to the SQLite database
-   database.connect('example.db')
+   # Connect to Database
+   database.connect(db_path="my_database.sqlite3")
 
-   # Create a table
-   database.create_table('students', {'name': 'TEXT', 'age': 'INTEGER'})
+   # Define Table Name and Fields
+   table_name = "Employees"
+   fields = {
+       "ID": "INTEGER PRIMARY KEY",
+       "NAME": "TEXT",
+       "AGE": "INT",
+       "ADDRESS": "CHAR(50)",
+       "SALARY": "REAL"
+   }
 
-   # Insert data into the table
-   database.insert('students', {'name': 'John', 'age': 20})
+   # Create new table
+   database.create_table(table_name, fields)
 
-   # Select data from the table
-   data = database.select('students', ['name', 'age'])
+   # Insert data
+   data = {
+       "NAME": "Paul",
+       "AGE": 32,
+       "ADDRESS": "California",
+       "SALARY": 20000.00
+   }
+   database.insert(table_name, data)
 
-   print(data)
+   # Select data
+   fields = ["NAME", "AGE"]
+   conditions = {"AGE": 32}
+   employees = database.select(table_name, fields, conditions)
 
-   # Delete data from the table
-   database.delete('students', {'name': 'John'})
+   # Update data
+   data = {"SALARY": 25000.00}
+   conditions = {"NAME": "Paul"}
+   database.update_entry(table_name, data, conditions)
 
    # Close the database connection
    database.close()
 
+Please ensure that the file path and data used are modified as per your
+system and needs.
+
 Limitations
 -----------
 
-The ``SQLDatabase`` class specifically designed for SQLite databases. It
-is not explicitly designed to work with other types of SQL databases,
-for example MySQL or PostgreSQL.
+-  The ``SQLDatabase`` class is designed specifically to work with
+   SQLite databases and hence may not be compatible with other types of
+   SQL databases like MySQL, PostgreSQL, etc.
+-  The ``commit`` method of ``NullConnection`` and ``execute``,
+   ``fetchall`` methods of ``NullCursor`` raise ``NotImplementedError``.
+   These classes serve as placeholders for null connection and cursor
+   and not expected to have these methods operational.
 
 Follow-up Questions:
 --------------------
 
--  Is ``SQLDatabase`` compatible with all versions of SQLite or only
-   with particular ones?
--  How is exception handling managed in the ``SQLDatabase`` class?
--  Are there any plans to extend ``SQLDatabase`` class for compatibility
-   with other types of SQL databases?
-
-Notes
------
-
--  Mock objects referenced in test files have been replaced with actual
-   objects for this documentation.
--  Information provided for
-   ``automata.tests.unit.sample_modules.sample_module_write.CsSWU``
-   class has been excluded from this documentation, as it appears to be
-   unrelated to the primary symbol. If this class is important to
-   understanding ``SQLDatabase``, more context would be helpful.
+-  Does the SQLDatabase support different type of SQL databases other
+   than SQLite?
+-  Can SQLDatabase handle composite primary keys while creating tables?
+-  How does SQLDatabase handle SQL injection attacks in its current
+   form?

@@ -1,32 +1,34 @@
 SymbolDocEmbedding
 ==================
 
-``SymbolDocEmbedding`` is a class in Automata for embedding documents
-related to symbols. Each instance of ``SymbolDocEmbedding`` represents a
-specific symbol document embedding, with a given symbol, document,
-vector, and optional source code, summary, and context.
+``SymbolDocEmbedding`` is a concrete class designed for symbol document
+embeddings. This class builds upon the ``SymbolEmbedding`` base class to
+provide functionality specifically geared towards handling document
+embeddings. Paramount in its usage is being able to link associated
+source code, summary, and context to the embedded object.
 
 Overview
 --------
 
-``SymbolDocEmbedding`` helps with connecting metadata about symbols, for
-example, linking documentation or source code to the symbol. This
-process aids in maintaining semantic associations between pieces of
-code, enhancing document retrieval and category analysis functions in
-the Automata system.
+``SymbolDocEmbedding`` takes four main parameters during initialization
+- ``key``, ``document``, ``vector``, ``source_code``, ``summary``,
+``context``, with ``source_code``, ``summary``, and ``context`` being
+optional parameters. The ``key`` is the Symbol for document embedding,
+and the ``document`` is a string representation of the text data to be
+embedded. ``vector`` is the NumPy ndarray object shared between source
+text data and embedding space. ``source_code``, ``summary``, and
+``context`` provide additional context to the symbol document.
+
+The ``SymbolDocEmbedding`` class primarily provides a str method to
+print a string representation that includes the key symbol, the source
+document, length of the vector, source code if available, summary and
+context. It also gives a metadata property that returns a dictionary of
+the symbol object’s source code, summary, and context.
 
 Related Symbols
 ---------------
 
--  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass``
--  ``automata.tests.unit.sample_modules.sample.OuterClass``
--  ``automata.tests.unit.sample_modules.sample.OuterClass.InnerClass.inner_method``
--  ``automata.symbol_embedding.builders.SymbolDocEmbeddingBuilder``
--  ``automata.tests.unit.test_py_reader.test_get_docstring_nested_class_method``
--  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler.get_embedding``
--  ``automata.tests.unit.test_py_reader.test_get_docstring_nested_class``
--  ``automata.memory_store.symbol_doc_embedding.SymbolDocEmbeddingHandler``
--  ``automata.tests.unit.test_py_reader.test_get_docstring_no_docstring_class``
+-  ``automata.symbol_embedding.symbol_embedding_base.SymbolEmbedding``
 
 Example
 -------
@@ -36,44 +38,33 @@ The following is an example demonstrating how to create an instance of
 
 .. code:: python
 
-   from automata.symbol_embedding.base import SymbolDocEmbedding
-   from automata.symbol.base import Symbol
+   from automata.symbol_embedding.symbol_embedding_base import SymbolDocEmbedding
    import numpy as np
 
-   symbol = Symbol.from_string('scip-python python automata')
-   document = 'Sample document'
-   vector = np.array([1,2,3])
-   source_code = 'def sample(): pass'
-   summary = 'Sample function'
+   key = 'example_symbol'
+   document = 'This is an example document for embedding.'
+   vector = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
+   source_code = 'print("Hello World!")'
+   summary = 'An example source code printing Hello World.'
+   context = 'Used for illustrating how to use SymbolDocEmbedding.'
 
-   embedding = SymbolDocEmbedding(symbol, document, vector, source_code, summary)
+   embedding = SymbolDocEmbedding(key, document, vector, source_code, summary, context)
+   print(str(embedding))
 
 Limitations
 -----------
 
-``SymbolDocEmbedding`` class requires connection to a running instance
-of the Automata system as it connects to its database to retrieve and
-process embedding vector and metadata. It may not offer versatility to
-work with other database or storage methods.
-
-Moreover, it is reliant on the numpy library for vector storage, and may
-not adapt to alternative vector representations out of the box.
-
-Dependencies
-~~~~~~~~~~~~
-
-This class relies on the
-``automata.symbol_embedding.base.SymbolEmbedding`` and
-``automata.symbol.base.Symbol`` classes.
+``SymbolDocEmbedding`` requires that the input ``document`` and input
+``vector`` have compatible dimensions. If these values are not aligned,
+the embedding process may fail. ``source_code``, ``summary``, and
+``context`` aim to enhance the utility of the embedding by introducing
+more context, their absence does not impact the creation of an embedding
+but reduces the amount of information in the embedding.
 
 Follow-up Questions:
 --------------------
 
--  What functionality does ``SymbolDocEmbedding`` offer for error
-   checking or handling missing metadata elements?
--  How would the ``SymbolDocEmbedding`` handle embeddings for symbols
-   sourced from external Python libraries outside Automata’s codebase?
--  What considerations should be made if we want to use a different
-   library other than numpy for vector representation and manipulation?
--  How would the ``SymbolDocEmbedding`` work in an environment without a
-   database or when disconnected from the Automata system?
+-  How does the class handle embeddings when the size of the input
+   document and vector are not compatible?
+-  What are the default behaviors of the class when optional parameters
+   are not provided?

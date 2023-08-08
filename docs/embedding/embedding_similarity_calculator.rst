@@ -1,84 +1,84 @@
 EmbeddingSimilarityCalculator
 =============================
 
-``EmbeddingSimilarityCalculator`` is a class in the
-``automata.embedding.base`` module. It takes an instance of
-``EmbeddingVectorProvider`` and calculates the similarity score between
-a query text and symbol embeddings.
+``EmbeddingSimilarityCalculator`` is a class that computes similarity
+scores between embedding vectors. Specifically, it calculates the dot
+product similarity between a query vector and a set of vectors
+corresponding to symbols.
 
 Overview
 --------
 
-``EmbeddingSimilarityCalculator`` leverages embeddings representation to
-quantify the similarity between code symbols and a given query text. It
-uses the dot product of the query embedding and the symbol embeddings.
-If required, the resulting similarity scores can be sorted in descending
-order by default.
+At its core, ``EmbeddingSimilarityCalculator`` provides an interface to
+calculate similarity scores between a query and multiple embeddings. The
+query is first converted into an embedding vector using an
+``EmbeddingVectorProvider``, and then dot product similarity scores are
+calculated between this query vector and a sequence of symbol
+embeddings. The results can be sorted in descending order of similarity
+scores.
 
-Every instance of ``EmbeddingSimilarityCalculator`` is initialized with
-an ``EmbeddingVectorProvider`` and a type of norm for vector
-normalization (``EmbeddingNormType``). Initially, it sets these
-parameters with the corresponding values.
-
-The main method in this class is ``calculate_query_similarity_dict``.
-This method retrieves the embedding for a provided query text,
-calculates the similarity scores with the existing symbol embeddings,
-constructs a dictionary with these scores indexed by the symbols and
-optionally sorts the dictionary.
+The class also offers normalization methods to normalize the embeddings
+according to specified norm types: L1, L2, and Softmax.
 
 Related Symbols
 ---------------
 
--  ``automata.embedding.base.EmbeddingVectorProvider``
--  ``automata.embedding.base.EmbeddingNormType``
--  ``automata.embedding.base.Embedding``
--  ``automata.core.base.database.vector.VectorDatabaseProvider``
--  ``automata.symbol.base.Symbol``
+-  ``EmbeddingVectorProvider``
+-  ``Symbol``
+-  ``EmbeddingNormType``
+-  ``Embedding``
 
-Example:
---------
-
-In this example, ``EmbeddingSimilarityCalculator`` is utilized to find
-the symbol most similar to a given query text:
+Usage Example
+-------------
 
 .. code:: python
 
-   from automata.embedding.base import EmbeddingSimilarityCalculator, EmbeddingVectorProvider
-   from automata.symbol.base import Symbol
-   from numpy import array
+   from automata.embedding.embedding_base import EmbeddingSimilarityCalculator, EmbeddingNormType
+   from automata.embedding.embedding_vector_provider import EmbeddingVectorProvider
+   from automata.symbol import Symbol
+   from automata.embedding.embedding import Embedding
 
-   # Create an instance of the class
-   mock_provider = EmbeddingVectorProvider()
-   embedding_sim_calc = EmbeddingSimilarityCalculator(mock_provider)
+   # Assuming an instance of EmbeddingVectorProvider
+   embedding_provider = EmbeddingVectorProvider(model_name='bert-base-uncased', do_lower_case=True)
 
-   # Define query_text, and embeddings 
-   query_text = "symbol1"
-   ordered_embeddings = [Embedding(Symbol('symbol1'), 'symbol1', array([1,0,0,0])),
-                         Embedding(Symbol('symbol2'), 'symbol2', array([0,1,0,0])), 
-                         Embedding(Symbol('symbol3'), 'symbol3', array([0,0,1,0]))]
+   # Initialize EmbeddingSimilarityCalculator
+   similarity_calculator = EmbeddingSimilarityCalculator(embedding_provider, EmbeddingNormType.L2)
 
-   # Use the calculate_query_similarity_dict method
-   result = embedding_sim_calc.calculate_query_similarity_dict(ordered_embeddings, query_text)
+   # Assume some embeddings
+   ordered_embeddings = [
+     Embedding(vector=np.array([1, 0, 0]), key=Symbol(name='Sym1')),
+     Embedding(vector=np.array([0, 1, 0]), key=Symbol(name='Sym2')),
+     Embedding(vector=np.array([0, 0, 1]), key=Symbol(name='Sym3')),
+   ]
 
-   print(result)
+   # Query text
+   query_text = 'house'
 
-**Note:** In real scenario ``EmbeddingVectorProvider`` would be an
-instance of class that provides actual embeddings like
-``OpenAIEmbedding``.
+   # Calculate query similarity dictionary
+   similarity_dict = similarity_calculator.calculate_query_similarity_dict(ordered_embeddings, query_text, return_sorted=True)
+   print(similarity_dict)
+
+Please note that in practice, embeddings are typically high-dimensional
+and are computed from trained language models. This example is greatly
+simplified for demonstration purposes.
 
 Limitations
 -----------
 
-The accuracy of ``EmbeddingSimilarityCalculator`` heavily depends on the
-quality of the embeddings produced by ``EmbeddingVectorProvider``. Poor
-embeddings can result in inaccurate similarity scores. Additionally, it
-does not inherently handle cases where symbols might have the same
-embedding values.
+The key limitation of ``EmbeddingSimilarityCalculator`` is that it
+relies on an ``EmbeddingVectorProvider`` to convert the query into an
+embedding vector. Therefore, the effectiveness of
+``EmbeddingSimilarityCalculator`` is contingent upon the quality of the
+underlying language model used in ``EmbeddingVectorProvider``. Another
+limitation is the presence of only three types of normalization methods.
+Depending on the use case, users might need to employ other
+normalization techniques.
 
 Follow-up Questions:
 --------------------
 
--  If two symbols end up having the same embedding, how does the
-   ``EmbeddingSimilarityCalculator`` differentiate between them?
--  How are the results affected if a different norm type
-   (``EmbeddingNormType``) is used?
+-  Is it possible to include custom embedding providers?
+-  Can we extend the class to support more types of normalization
+   techniques?
+-  What specific similarity measures (beyond dot product) could be
+   implemented to provide better results in certain contexts?

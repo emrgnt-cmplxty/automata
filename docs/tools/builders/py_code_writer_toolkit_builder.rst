@@ -1,24 +1,71 @@
-1. Code validation can be introduced in ``PyCodeWriterToolkitBuilder``
-   using the ``ast.parse()`` function provided by Python’s built-in
-   Abstract Syntax Trees (AST) module. This can be done before
-   attempting to create or update a module. If ``ast.parse()`` raises a
-   ``SyntaxError``, it signifies that the input python code is invalid.
+PyCodeWriterToolkitBuilder
+==========================
 
-2. A configuration option, perhaps as a boolean variable, can be
-   introduced to the ``PyCodeWriterToolkitBuilder``. This option would
-   determine whether or not to throw error when a module does not exist.
-   The builder checks if the module exists, and if not, uses this
-   configuration to decide if they should be created. If the config
-   option is set to not create new modules, an error should be raised
-   when a non-existent module is encountered.
+Overview
+--------
 
-3. Extending ``PyCodeWriterToolkitBuilder`` to handle other programming
-   languages or generic text files would require building similar
-   toolkit builders for those languages or files, as they would likely
-   have unique syntax and specifications. However, this could greatly
-   improve the versatility of the toolkits and broaden their areas of
-   application. Note that building these systems could be complex, given
-   the differences in syntax and semantics across programming languages.
-   Design considerations would need to be made to ensure the tools
-   retain a common interface while supporting different languages’
-   specifics.
+``PyCodeWriterToolkitBuilder`` is a class developed for interacting with
+the PythonWriter API. The class provides functionality to modify python
+code with the help of built-in methods that can create or update
+existing python modules. Class’s initialization requires an instance of
+``PyCodeWriter`` and a boolean variable ``do_write`` deciding whether to
+write these changes to disk.
+
+Important methods contained in this class include ``build``,
+``_update_existing_module``, and ``_create_new_module``. The ``build``
+method generates a toolkit that includes two functionalities: updating
+existing python code and creating a new python module. If a required
+object doesn’t exist in the module being modified, it is created
+automatically. If it already exists, the existing code is modified. To
+create a new module, the complete code is provided as a parameter.
+
+Related Symbols
+---------------
+
+-  ``automata.tools.builders.AgentToolkitBuilder``
+-  ``automata.tools.builder.PyCodeWriter``
+
+Example
+-------
+
+The following examples demonstrate how to use
+``PyCodeWriterToolkitBuilder`` for modifying an existing python module
+and creating a new python module.
+
+.. code:: python
+
+   from automata.tools.builders.py_writer_builder import PyCodeWriterToolkitBuilder
+   from automata.tools.writer import PyCodeWriter
+
+   py_writer = PyCodeWriter()
+   py_writer_builder_toolkit = PyCodeWriterToolkitBuilder(py_writer)
+
+   update_module_tool = py_writer_builder_toolkit.build()[0]
+   result = update_module_tool.function('my_folder.my_file.MyClass', 'def my_method():\n   "My Method"\n    print("hello world")\n')
+
+   create_module_tool = py_writer_builder_toolkit.build()[1]
+   result = create_module_tool.function('my_folder.my_new_file', 'import math\ndef my_method():\n   "My Method"\n    print(math.sqrt(4))\n')
+
+Limitations
+-----------
+
+The primary limitation is that ``PyCodeWriterToolkitBuilder`` can only
+modify the python code of an existing module or create a new module with
+provided complete code. This toolkit has no context outside of the
+passed arguments. Any additional statements, especially any import
+statements that the code block may depend upon, should be included
+within the code block itself.
+
+Also, Error handling within the toolkit can return generic exceptions
+which might not provide a clear understanding of the exact issue
+limiting the ease of debugging.
+
+Follow-up Questions:
+--------------------
+
+-  Could we provide a way to have better error handling or return more
+   specific exceptions? Would that help usability in large projects?
+-  Can we provide the ability to read and write the changes on the go as
+   per user requirements?
+-  Is there a possibility to add a feature that can directly modify code
+   within the actual Project’s structure itself?

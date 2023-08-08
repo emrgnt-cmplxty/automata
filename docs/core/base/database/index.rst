@@ -21,6 +21,8 @@ how to :ref:`installation` the project.
 Summary of content
 
 
+
+
 ..  AUTO-GENERATED CONTENT START
 ..
 
@@ -32,6 +34,7 @@ Summary of content
        relational_database
        sql_database
        vector_database_provider
+       relational_database/index
 
 ..  AUTO-GENERATED CONTENT END
 ..
