@@ -9,19 +9,19 @@ from typing import Dict, List, Optional
 
 from dotenv import load_dotenv
 
-# from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
 from automata.symbol.graph.symbol_graph_types import SymbolGraphType
 
-# logging.setLoggerClass(CustomLogger)
+logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
-# logger.setLevel(CLI_OUTPUT_LEVEL)
+logger.setLevel(CLI_OUTPUT_LEVEL)
 
 
-# def log_cli_output(message: str) -> None:
-#     """An override to log cli output messages"""
+def log_cli_output(message: str) -> None:
+    """An override to log cli output messages"""
 
-#     logger.log(CLI_OUTPUT_LEVEL, message)
-#     return None
+    logger.log(CLI_OUTPUT_LEVEL, message)
+    return None
 
 
 def get_key(dotenv_path: str, key_to_get: str) -> Optional[str]:
