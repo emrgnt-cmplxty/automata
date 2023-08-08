@@ -118,51 +118,50 @@ def main():
         )
 
         examples = finder.find_best_solution_and_explanation(problem_header)
-        break
-    #     formatted_instruction = INSTRUCTION.format(
-    #         PROBLEM_STATEMENT=problem_context,
-    #         SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-    #         EXAMPLES=examples,
-    #     )
+        formatted_instruction = INSTRUCTION.format(
+            PROBLEM_STATEMENT=problem_context,
+            SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+            EXAMPLES=examples,
+        )
 
-    #     toolkits = ["py-interpreter"]
-    #     tool_dependencies = (
-    #         dependency_factory.build_dependencies_for_tools(toolkits)
-    #     )
-    #     tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
+        toolkits = ["py-interpreter"]
+        tool_dependencies = (
+            dependency_factory.build_dependencies_for_tools(toolkits)
+        )
+        tools = AgentToolFactory.build_tools(toolkits, **tool_dependencies)
 
-    #     config = (
-    #         OpenAIAutomataAgentConfigBuilder()
-    #         .with_stream(True)
-    #         .with_verbose(True)
-    #         .with_tools(tools)
-    #         .with_system_template(SYSTEM_PROMPT)
-    #         .build()
-    #     )
+        config = (
+            OpenAIAutomataAgentConfigBuilder()
+            .with_stream(True)
+            .with_verbose(True)
+            .with_tools(tools)
+            .with_system_template(SYSTEM_PROMPT)
+            .build()
+        )
 
-    #     agent = OpenAIAutomataAgent(formatted_instruction, config)
-    #     configure_logging("DEBUG")
-    #     result = agent.run()
+        agent = OpenAIAutomataAgent(formatted_instruction, config)
+        configure_logging("DEBUG")
+        result = agent.run()
 
-    #     code = result.split("```python")[1].split("```")[0]
-    #     lang = ProgrammingLanguage.PYTHON3
-    #     sub = LeetCodeSubmission(
-    #         code=code,
-    #         lang=lang,
-    #         question_id=problem_id,
-    #         question_slug=problem_slug,
-    #     )
+        code = result.split("```python")[1].split("```")[0]
+        lang = ProgrammingLanguage.PYTHON3
+        sub = LeetCodeSubmission(
+            code=code,
+            lang=lang,
+            question_id=problem_id,
+            question_slug=problem_slug,
+        )
 
-    #     env = LeetCodeEnv()
+        env = LeetCodeEnv()
 
-    #     status, reward, done, submission_result = env.step(sub)
-    #     success_count += reward
-    #     print(status, reward, done, submission_result)
-    #     _log_result(reward, results, i, success_count)
-    # except Exception as e:
-    #     print(f"Exception occurred = {e}")
-    #     _log_result(False, results, i, success_count)
-    # break
+        status, reward, done, submission_result = env.step(sub)
+        success_count += reward
+        print(status, reward, done, submission_result)
+        _log_result(reward, results, i, success_count)
+    except Exception as e:
+        print(f"Exception occurred = {e}")
+        _log_result(False, results, i, success_count)
+    break
 
 
 # TODO Rename this here and in `main`
