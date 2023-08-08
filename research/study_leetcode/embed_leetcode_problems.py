@@ -1,17 +1,14 @@
 """Prepares the dataset for agent evaluation"""
-# sourcery skip: avoid-global-variables
+# sourcery skip: avoid-global-variables, no-relative-imports
 import argparse
-import os
 from typing import Any, Generator, List, Tuple
 
 import pandas as pd
+from constants import LEETCODE_SOLUTIONS_PATH
 
-from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
-from automata.core.utils import get_root_fpath
 from automata.llm import OpenAIEmbeddingProvider
 
 # Specify the path to your JSON file
-FILE_NAME = "leetcode-solutions-embedded.json"
 PROBLEM_CHUNK_SIZE = 512
 
 
@@ -102,22 +99,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Find similar solutions to LeetCode problems using OpenAI."
     )
-    default_data_path = os.path.join(
-        get_root_fpath(),
-        DATA_ROOT_PATH,
-        EmbeddingDataCategory.RESEARCH.value,
-        FILE_NAME,
-    )
-
     parser.add_argument(
         "--input_data_path",
-        default=default_data_path,
+        default=LEETCODE_SOLUTIONS_PATH,
         help="Path to read the LeetCode problems data from.",
     )
 
     parser.add_argument(
         "--output_data_path",
-        default=default_data_path,
+        default=LEETCODE_SOLUTIONS_PATH,
         help="Path to write the LeetCode problems data to.",
     )
 
