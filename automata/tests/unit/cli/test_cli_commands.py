@@ -34,7 +34,7 @@ def runner():
     return click.testing.CliRunner()
 
 
-def test_reconfigure_logging_debug():
+def test_configure_logging_debug():
     with patch(
         "automata.cli.commands.get_logging_config"
     ) as mock_get_logging_config, patch(
@@ -48,7 +48,7 @@ def test_reconfigure_logging_debug():
         mock_dictConfig.assert_called_once_with({})
 
 
-def test_reconfigure_logging_info():
+def test_configure_logging_info():
     with patch(
         "automata.cli.commands.get_logging_config"
     ) as mock_get_logging_config, patch(
@@ -60,7 +60,7 @@ def test_reconfigure_logging_info():
         mock_dictConfig.assert_called_once_with({})
 
 
-def test_reconfigure_logging_invalid():
+def test_configure_logging_invalid():
     with pytest.raises(ValueError):
         automata.cli.commands.configure_logging("INVALID")
 
@@ -70,7 +70,7 @@ def test_cli_run_code_embedding():
         "automata.cli.scripts.run_code_embedding.main"
     ) as mock_main, patch(
         "automata.cli.commands.configure_logging"
-    ) as mock_reconfigure_logging, patch(
+    ) as mock_configure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
         mock_getLogger.return_value = MagicMock(spec=logging.Logger)
@@ -81,7 +81,7 @@ def test_cli_run_code_embedding():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
+        mock_configure_logging.assert_called_once_with(log_level_str="INFO")
         mock_main.assert_called_once()
 
 
@@ -90,7 +90,7 @@ def test_cli_run_doc_embedding():
         "automata.cli.scripts.run_doc_embedding.main"
     ) as mock_main, patch(
         "automata.cli.commands.configure_logging"
-    ) as mock_reconfigure_logging, patch(
+    ) as mock_configure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
         mock_getLogger.return_value = MagicMock(spec=logging.Logger)
@@ -103,7 +103,7 @@ def test_cli_run_doc_embedding():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
+        mock_configure_logging.assert_called_once_with(log_level_str="INFO")
         assert mock_main.called
 
 
@@ -112,7 +112,7 @@ def test_cli_run_doc_post_process():
         "automata.cli.scripts.run_doc_post_process.main"
     ) as mock_main, patch(
         "automata.cli.commands.configure_logging"
-    ) as mock_reconfigure_logging, patch(
+    ) as mock_configure_logging, patch(
         "logging.getLogger"
     ) as mock_getLogger:
         mock_getLogger.return_value = MagicMock(spec=logging.Logger)
@@ -123,16 +123,14 @@ def test_cli_run_doc_post_process():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
+        mock_configure_logging.assert_called_once_with(log_level_str="INFO")
         mock_main.assert_called_once()
 
 
 def test_cli_run_agent():
     with patch("automata.cli.scripts.run_agent.main") as mock_main, patch(
         "automata.cli.commands.configure_logging"
-    ) as mock_reconfigure_logging, patch(
-        "logging.getLogger"
-    ) as mock_getLogger:
+    ) as mock_configure_logging, patch("logging.getLogger") as mock_getLogger:
         mock_getLogger.return_value = MagicMock(spec=logging.Logger)
 
         runner = click.testing.CliRunner()
@@ -141,7 +139,7 @@ def test_cli_run_agent():
         )
 
         assert result.exit_code == 0
-        mock_reconfigure_logging.assert_called_once_with(log_level_str="INFO")
+        mock_configure_logging.assert_called_once_with(log_level_str="INFO")
         assert mock_main.called
 
 
@@ -164,7 +162,7 @@ def test_configure_load_env_vars_called(load_env_vars_mock):
     )
 
 
-def test_reconfigure_logging_quiet_libraries():
+def test_configure_logging_quiet_libraries():
     with patch(
         "automata.cli.commands.get_logging_config"
     ) as mock_get_logging_config, patch(
