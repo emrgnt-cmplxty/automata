@@ -97,7 +97,6 @@ class LeetCodeSolutionsFinder:
         solutions_data_sorted = self.solutions_data.sort_values(
             by="similarity", ascending=False
         )
-        solutions = solutions_data_sorted[["code_with_problem", "id"]]
 
         examples, counter = [], 0
         for code_with_problem in solutions_data_sorted[
