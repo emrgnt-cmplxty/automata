@@ -27,10 +27,10 @@ colorlog = "6.7.0"
 isort = "5.12.0"
 jinja2 = "3.1.2"
 jsonpickle = "3.0.1"
-jsonschema = "4.18.4"
+jsonschema = "4.19.0"
 matplotlib = "3.7.2"
 networkx = "3.1"
-numpy = "1.25.1"
+numpy = "1.25.2"
 openai = "0.27.8"
 pandas = "2.0.3"
 plotly = "5.15.0"
@@ -95,6 +95,7 @@ exclude = '''
     | random
     | build
     | scip-python
+    | research/leetcode-hard-gym
     | local_tasks
   )/
 )

@@ -8,7 +8,7 @@ from typing import Optional
 
 import click
 
-from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
+# from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL, CustomLogger
 from automata.cli.cli_utils import ask_choice, setup_files
 from automata.cli.env_operations import (
     delete_key_value,
@@ -21,7 +21,7 @@ from automata.cli.env_operations import (
 from automata.cli.options import agent_options, common_options, eval_options
 from automata.core.utils import get_logging_config
 
-logging.setLoggerClass(CustomLogger)
+# logging.setLoggerClass(CustomLogger)
 logger = logging.getLogger(__name__)
 
 
@@ -31,8 +31,8 @@ def configure_logging(log_level_str: str) -> None:
     log_level = logging.DEBUG
     if log_level_str == "INFO":
         log_level = logging.INFO
-    elif log_level_str == "CLI_OUTPUT":
-        log_level = CLI_OUTPUT_LEVEL
+    # elif log_level_str == "CLI_OUTPUT":
+    #     log_level = CLI_OUTPUT_LEVEL
     elif log_level_str != "DEBUG":
         raise ValueError(f"Unknown log level: {log_level_str}")
 
