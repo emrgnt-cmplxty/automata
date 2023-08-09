@@ -149,7 +149,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
             Tool(
                 name="py-set-tests",
                 function=self.python_interpreter.set_tests,
-                description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten.",
+                description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten. The user should note that using assertions in tests results in poor error reporting due to the code environment, for this reason it is better to raise exceptions directly.",
             ),
             Tool(
                 name="py-set-code-and-run-tests",
@@ -174,7 +174,7 @@ class PyInterpreterOpenAIToolkitBuilder(
         properties = {
             "code": {
                 "type": "string",
-                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
+                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'. When providing tests, favor raising exceptions directly to asserting.",
             },
             "overwrite": {
                 "type": "string",
