@@ -1,4 +1,5 @@
 """This module contains the PyInterpreterToolkitBuilder class."""
+import ast
 import contextlib
 import io
 import logging
@@ -24,22 +25,27 @@ class PyInterpreter:
     """This class provides an execution environment for the agent."""
 
     SUCCESS_STRING = "Execution successful."
-    DEFAULT_CONTEXT = "from typing import *\nfrom collections import *\n"
+    DEFAULT_CODE_CONTEXT = "from typing import *\nfrom collections import *\n"
+    DEFAULT_TEST_CONTEXT = ""
 
     def __init__(self):
-        self.execution_context: List[
+        self.code_context: List[
             str
-        ] = PyInterpreter.DEFAULT_CONTEXT.split("\n")
+        ] = PyInterpreter.DEFAULT_CODE_CONTEXT.split("\n")
+
+        self.test_context: List[
+            str
+        ] = PyInterpreter.DEFAULT_TEST_CONTEXT.split("\n")
 
     def __repr__(self) -> str:
-        return f"PyInterpreter(execution_context={self.execution_context})"
+        return f"PyInterpreter(code_context={self.code_context}, test_context={self.test_context})"
 
     def _attempt_execution(self, code: str) -> Tuple[bool, str]:
         """Attempts to execute the provided code."""
         output_buffer = io.StringIO()
         try:
             return self._execute_code(
-                "\n".join(self.execution_context) + "\n" + code, output_buffer
+                "\n".join(self.code_context) + "\n" + code, output_buffer
             )
         except Exception as e:
             error_message = str(e) or "Unknown error occurred."
@@ -53,7 +59,7 @@ class PyInterpreter:
     ) -> Tuple[bool, str]:
         """Attempts to execute the provided code."""
         exec_payload = "try:\n" + "\n".join(
-            [f"    {line}" for line in code.split("\n")]
+            [f"    {line}" for line in code.split("\n") + ["pass"]]
         )
         exec_payload += "\nexcept AssertionError as ae:\n"
         exec_payload += "    global_exception = 'AssertionError on line ' + str(ae.__traceback__.tb_lineno) + ': ' + str(ae)\n"
@@ -80,29 +86,48 @@ class PyInterpreter:
                 f"Execution failed with error '{e}' after outputting {output_buffer.getvalue().strip() or None}",
             )
 
-    def set_code(self, code: str) -> str:
+    def set_tests(self, code: str, overwrite: bool = True) -> str:
         """Sets up the provided code and persists the context to the local execution buffer."""
+        # Add extra handling for string input
+        if isinstance(overwrite, str):
+            overwrite = overwrite.lower() == "true"
+        if overwrite:
+            self.test_context = []
+        code = self._clean_markdown(code)
+        try:
+            ast.parse(code)
+            self.test_context.extend(code.split("\n"))
+            return PyInterpreter.SUCCESS_STRING
+        except Exception as e:
+            return f"Execution failed with error '{e}'."
+
+    def set_code(self, code: str, overwrite: bool = True) -> Tuple[bool, str]:
+        """Sets up the provided code and persists the context to the local execution buffer."""
+        # Add extra handling for string input
+        if isinstance(overwrite, str):
+            overwrite = overwrite.lower() == "true"
+        if overwrite:
+            self.code_context = []
         code = self._clean_markdown(code)
         status, result = self._attempt_execution(code)
+        print("status = ", status)
+        print("result = ", result)
         if status:
-            self.execution_context.extend(code.split("\n"))
+            self.code_context.extend(code.split("\n"))
+        return status, result
+
+    def set_code_and_run_tests(self, code: str, overwrite: bool = True) -> str:
+        """Set hte code and then run the local tests"""
+        status, result = self.set_code(code, overwrite)
+        if status:
+            result += "\n" + self._run_tests()
         return result
 
-    def run_tests(self, code: str) -> str:
-        """Runs the provided test code, without affecting the persistent context."""
-        code = self._clean_markdown(code)
+    def _run_tests(self) -> str:
+        """Runs the internal test code."""
+        code = "\n".join(self.test_context)
         _, result = self._attempt_execution(code)
         return result
-
-    def set_code_and_run_tests(self, code: str, test_code: str) -> str:
-        """Sets up the provided code and then runs the provided test code."""
-        set_code_result = self.set_code(code)
-        run_tests_result = self.run_tests(test_code)
-        return f"Set code result: {set_code_result}\nRun tests result: {run_tests_result}"
-
-    def clear(self) -> None:
-        """Clears the execution context."""
-        self.execution_context = PyInterpreter.DEFAULT_CONTEXT.split("\n")
 
     @staticmethod
     def _clean_markdown(code: str) -> str:
@@ -122,19 +147,14 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools for the interpreter."""
         return [
             Tool(
-                name="py-set-code",
-                function=self.python_interpreter.set_code,
-                description="Sets up the provided Python markdown snippet in the local environment. The code is executed and its context is persisted across interactions.",
-            ),
-            Tool(
-                name="py-run-tests",
-                function=self.python_interpreter.run_tests,
-                description="Runs the provided Python markdown snippet in the local environment. The code is executed without affecting the persistent context. This tool is ideal for running tests.",
+                name="py-set-tests",
+                function=self.python_interpreter.set_tests,
+                description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten.",
             ),
             Tool(
                 name="py-set-code-and-run-tests",
                 function=self.python_interpreter.set_code_and_run_tests,
-                description="Sets up the provided Python markdown snippet and then runs the provided test code in the local environment. The setup code's context is persisted, but the test code does not affect the persistent context.",
+                description="Sets up the provided Python markdown snippet in the local source environment. The code is executed and its context is persisted in the source environment across interactions. After successfully executing the provided code, the provided tests are then ran. If `overwrite` is set to true then existing source code environment is overwritten (but not the tests).",
             ),
         ]
 
@@ -155,6 +175,11 @@ class PyInterpreterOpenAIToolkitBuilder(
             "code": {
                 "type": "string",
                 "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
+            },
+            "overwrite": {
+                "type": "bool",
+                "description": "Specifies whether or not the given code should overwrite the existing code in the interpreter.",
+                "default": "True",
             },
         }
         required = ["code"]
