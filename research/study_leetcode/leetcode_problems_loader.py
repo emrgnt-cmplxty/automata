@@ -20,7 +20,12 @@ class LeetCodeLoader:
     def get_problem_context(self, idx: int) -> str:
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
-        return f"Title:{row['question_title']}\n\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - ```python\\n{row['python3_snippet']}```"
+        description = row["description"]
+        ### We remove constraints since they are improperly formatted
+        description_ex_constraints = description.split("Constraints:")[
+            0
+        ].strip()
+        return f"Title:{row['question_title']}\n\nDescription:\n{description_ex_constraints}\n\nNote, your final solution MUST conform to the snippet shown here - ```python\\n{row['python3_snippet']}```"
 
     def get_problem_id_slug(self, idx: int) -> Tuple[int, int, Any]:
         """Retrieve a problem by its index."""

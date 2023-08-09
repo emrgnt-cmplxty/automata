@@ -31,7 +31,6 @@ class AgentifiedSolutionOracleToolkitBuilder(AgentToolkitBuilder):
         **kwargs,
     ) -> None:  # sourcery skip: docstrings-for-functions
         self.leetcode_solution_finder = leetcode_solution_finder
-        self.leetcode_solution_finder = leetcode_solution_finder
 
     def build(self) -> List[Tool]:
         """Builds tools associated with agentified solution oracle."""
@@ -44,12 +43,12 @@ class AgentifiedSolutionOracleToolkitBuilder(AgentToolkitBuilder):
             ),
         ]
 
-    def _get_solution(self, query: str) -> str:
+    def _get_solution(self, query: str, extra_context: str = "") -> str:
         """Find the best matching solution for the input query."""
         try:
             return (
                 self.leetcode_solution_finder.find_best_match_and_explanation(
-                    query
+                    query, extra_context
                 )
             )
         except Exception as e:
@@ -77,6 +76,11 @@ class AgentifiedSolutionOracleOpenAIToolkitBuilder(
             "query": {
                 "type": "string",
                 "description": "The query string to search for.",
+            },
+            "extra_context": {
+                "type": "string",
+                "description": "The extra context provided for the agent to assist with the query.",
+                "default": "",
             },
         }
         required = ["query"]
