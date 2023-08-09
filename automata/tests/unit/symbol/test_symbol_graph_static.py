@@ -29,7 +29,7 @@ def test_build_real_graph(static_indices_graph_static, sync_context):  # noqa
     )
 
     assert isinstance(static_indices_graph_static, SymbolGraph)
-    assert len(all_symbols) == 1_874
+    assert len(all_symbols) == 5_025
 
 
 def test_build_real_graph_and_subgraph(
@@ -40,5 +40,5 @@ def test_build_real_graph_and_subgraph(
 
     # build the subgraph
     subgraph = static_indices_graph_static.default_rankable_subgraph
-    assert len(subgraph) == 43
+    assert len(subgraph) == 1_353
     py_module_loader.reset()

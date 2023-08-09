@@ -1,3 +1,4 @@
+"""Agentified solution oracle toolkit builder."""
 import logging
 from typing import List
 
