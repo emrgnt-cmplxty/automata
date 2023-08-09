@@ -75,7 +75,10 @@ def test_py_interpreter_empty_code_and_tests():
     assert status
     assert result == PyInterpreter.SUCCESS_STRING
     result = interpreter.set_tests("```python\n\n```")
-    assert result == PyInterpreter.SUCCESS_STRING
+    assert (
+        result
+        == f"{PyInterpreter.SUCCESS_STRING}\nresult = {PyInterpreter.SUCCESS_STRING}"
+    )
 
 
 def test_py_interpreter_non_python_code():

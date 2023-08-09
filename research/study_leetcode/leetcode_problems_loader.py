@@ -27,5 +27,6 @@ class LeetCodeLoader:
         row = self.data.iloc[idx]
         return (
             int(row["frontend_question_id"]),
+            int(row["question_id"]),
             row["question_slug"],
         )
