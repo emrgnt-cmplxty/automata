@@ -49,8 +49,7 @@ class PyInterpreter:
             )
         except Exception as e:
             error_message = str(e) or "Unknown error occurred."
-            error_output = output_buffer.getvalue().strip()
-            if error_output:
+            if error_output := output_buffer.getvalue().strip():
                 error_message += f"\nOutput before error:\n{error_output}"
             return False, f"Execution failed with error = {error_message}"
 
@@ -72,8 +71,7 @@ class PyInterpreter:
         try:
             with contextlib.redirect_stdout(output_buffer):
                 exec(exec_payload, {**globals()})
-            execution_output = output_buffer.getvalue().strip()
-            if execution_output:
+            if execution_output := output_buffer.getvalue().strip():
                 return (
                     True,
                     f"{PyInterpreter.SUCCESS_STRING}\nOutput:\n{execution_output}",
