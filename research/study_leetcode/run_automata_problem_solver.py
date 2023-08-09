@@ -105,6 +105,7 @@ def main():  # sourcery skip: docstrings-for-functions
                 problem_context,
                 (
                     problem_id,
+                    backend_problem_id,
                     problem_slug,
                 ),
             ) = (
@@ -175,12 +176,16 @@ def main():  # sourcery skip: docstrings-for-functions
             configure_logging("DEBUG")
             result = agent.run()
 
-            code = result.split("```python")[1].split("```")[0]
+            code = (
+                result.split("```python")[1]
+                .split("```")[0]
+                .replace("\\n", "\n")
+            )
             lang = ProgrammingLanguage.PYTHON3
             sub = LeetCodeSubmission(
                 code=code,
                 lang=lang,
-                question_id=problem_id,
+                question_id=backend_problem_id,
                 question_slug=problem_slug,
             )
 

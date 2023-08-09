@@ -3,7 +3,7 @@ import ast
 import contextlib
 import io
 import logging
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 # Import the entire symbol module so that we can properly patch convert_to_ast_object
 from automata.agent import (
@@ -93,9 +93,21 @@ class PyInterpreter:
             self.test_context = []
         code = self._clean_markdown(code)
         try:
+            result: Optional[str] = None
             ast.parse(code)
+            if self.code_context != PyInterpreter.DEFAULT_CODE_CONTEXT.split(
+                "\n"
+            ):
+                code = "\n".join(self.code_context) + "\n" + code
+                status, result = self._attempt_execution(code)
+                if not status:
+                    return result
             self.test_context.extend(code.split("\n"))
-            return PyInterpreter.SUCCESS_STRING
+            return (
+                f"{PyInterpreter.SUCCESS_STRING}\nresult = {result}"
+                if result is not None
+                else PyInterpreter.SUCCESS_STRING
+            )
         except Exception as e:
             return f"Execution failed with error '{e}'."
 
@@ -117,10 +129,11 @@ class PyInterpreter:
         return status, result
 
     def set_code_and_run_tests(self, code: str, overwrite: bool = True) -> str:
-        """Set hte code and then run the local tests"""
+        """Set the code and then run the local tests"""
         status, result = self.set_code(code, overwrite)
+        result = f"Code Exec Result:\n{result}"
         if status:
-            result += "\n" + self._run_tests()
+            result += "\n" + f"Test Exec Result:\n{self._run_tests()}"
         return result
 
     def _run_tests(self) -> str:
