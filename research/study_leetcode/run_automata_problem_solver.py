@@ -4,6 +4,7 @@
 import argparse
 import logging
 import os
+import random
 import sys
 from copy import deepcopy
 from typing import Dict
@@ -121,10 +122,10 @@ def main():  # sourcery skip: docstrings-for-functions
                 lowest_difficulty=args.lowest_difficulty_supported,
             )
 
-            formatted_instructions = SOLVER_INSTRUCTIONS.format(
-                PROBLEM_STATEMENT=problem_context,
-                SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-            )
+        formatted_instructions = SOLVER_INSTRUCTIONS.format(
+            PROBLEM_STATEMENT=problem_context,
+            SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+        )
 
             # Construcs an agent that will provide a solution to the
             # given LeetCode problem when ran
@@ -234,7 +235,15 @@ def main():  # sourcery skip: docstrings-for-functions
                 question_slug=loader.get_problem_slug(index),
             )
 
-            env = LeetCodeEnv()
+        pdb.set_trace()
+        break
+    #     lang = ProgrammingLanguage.PYTHON3
+    #     sub = LeetCodeSubmission(
+    #         code=formatter.to_leetcode(code),
+    #         lang=lang,
+    #         question_id=backend_problem_id,
+    #         question_slug=problem_slug,
+    #     )
 
             status, reward, done, submission_result = env.step(sub)
             print(status, reward, done, submission_result)
