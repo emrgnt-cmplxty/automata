@@ -217,7 +217,7 @@ def test_pyinterpreter_toolkit_builder_build_for_open_ai():
                 "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
             },
             "overwrite": {
-                "type": "bool",
+                "type": "string",
                 "description": "Specifies whether or not the given code should overwrite the existing code in the interpreter.",
                 "default": "True",
             },

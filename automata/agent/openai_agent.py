@@ -36,7 +36,7 @@ class OpenAIAutomataAgent(Agent):
     instructions and manages interactions with various tools.
     """
 
-    CONTINUE_PREFIX: Final = f"Continue..."
+    CONTINUE_PREFIX: Final = f"Continue...\n"
     OBSERVATION_MESSAGE: Final = "Observation:\n"
     GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{instructions}'"
     STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call_termination.\nRECALL, YOUR INSTRUCTIONS WERE '{instructions}."
@@ -264,7 +264,7 @@ class OpenAIAutomataAgent(Agent):
                 print(f"Tool execution failed: {e}")
         return OpenAIChatMessage(
             role="user",
-            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}{self._get_iteration_status()}",
+            content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}\n{self._get_iteration_status()}",
         )
 
     def _get_iteration_status(
