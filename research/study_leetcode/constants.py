@@ -47,7 +47,7 @@ SOLVER_SYSTEM_PROMPT = textwrap.dedent(
             Explanation: 342 + 465 = 807.
 
           Please write a function `addTwoNumbers` conforming to the snippet shown here:
-          ```python\\nclass Solution:\\n  def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:```
+          ```python\\ndef addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:```
 
       *Assistant*
         content:
@@ -89,7 +89,7 @@ SOLVER_SYSTEM_PROMPT = textwrap.dedent(
             function_call:
               {
                 'name': 'call_termination', 
-                'arguments': '{"result": "```python\\nclass Solution:\\n  def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\\n    # Final implementation goes here```"}'
+                'arguments': '{"result": "```python\\def addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\\n  # Final implementation goes here```"}'
               }
 
       Note, the examples are only provided above to give necessary context around the operating procedure. In production, `# ... (Continued interaction) ...` will be replaced with actual conversation contents. 
