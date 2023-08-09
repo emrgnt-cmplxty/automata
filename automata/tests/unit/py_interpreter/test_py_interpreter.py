@@ -7,7 +7,7 @@ from automata.llm import OpenAITool
 from automata.tools.tool_base import Tool
 
 
-def test_python_interpreter_init():
+def test_py_interpreter_init():
     interpreter = PyInterpreter()
     assert isinstance(interpreter, PyInterpreter)
     assert (
@@ -20,7 +20,7 @@ def test_python_interpreter_init():
     )
 
 
-def test_python_interpreter_set_code():
+def test_py_interpreter_set_code():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code("```python\nx = 5```")
     assert status
@@ -28,21 +28,21 @@ def test_python_interpreter_set_code():
     assert "x = 5" in interpreter.code_context
 
 
-def test_python_interpreter_set_code_invalid_code():
+def test_py_interpreter_set_code_invalid_code():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code("```python\nx = 5 / 0```")
     assert not status
     assert "Execution failed with error" in result
 
 
-def test_python_interpreter_set_tests():
+def test_py_interpreter_set_tests():
     interpreter = PyInterpreter()
     result = interpreter.set_tests("```python\nassert x == 5```")
     assert result == PyInterpreter.SUCCESS_STRING
     assert "assert x == 5" in interpreter.test_context
 
 
-def test_python_interpreter_set_tests_invalid_code():
+def test_py_interpreter_set_tests_invalid_code():
     interpreter = PyInterpreter()
     result = interpreter.set_tests("```python\nx = / 5```")  # invalid syntax
     assert (
@@ -51,7 +51,7 @@ def test_python_interpreter_set_tests_invalid_code():
     )
 
 
-def test_python_interpreter_set_code_and_run_tests():
+def test_py_interpreter_set_code_and_run_tests():
     interpreter = PyInterpreter()
     interpreter.set_tests("```python\nassert x == 5```")
     result = interpreter.set_code_and_run_tests("```python\nx = 5```")
@@ -60,7 +60,7 @@ def test_python_interpreter_set_code_and_run_tests():
     assert "assert x == 5" in interpreter.test_context
 
 
-def test_python_interpreter_set_code_and_run_tests_fail():
+def test_py_interpreter_set_code_and_run_tests_fail():
     interpreter = PyInterpreter()
     interpreter.set_tests("```python\nassert x == 5```")
     result = interpreter.set_code_and_run_tests("```python\nx = 4```")
@@ -69,7 +69,7 @@ def test_python_interpreter_set_code_and_run_tests_fail():
     assert "assert x == 5" in interpreter.test_context
 
 
-def test_python_interpreter_empty_code_and_tests():
+def test_py_interpreter_empty_code_and_tests():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code("```python\n\n```")
     assert status
@@ -78,40 +78,40 @@ def test_python_interpreter_empty_code_and_tests():
     assert result == PyInterpreter.SUCCESS_STRING
 
 
-def test_python_interpreter_non_python_code():
+def test_py_interpreter_non_python_code():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code(
         "```python\nThis is not Python code.```"
     )
     assert not status
     assert (
-        "Execution failed with error 'invalid syntax (<string>, line 4)'"
+        "Execution failed with error 'invalid syntax (<string>, line 6)'"
         in result
     )
 
 
-def test_python_interpreter_runtime_error():
+def test_py_interpreter_runtime_error():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code("```python\nx = 5 / 0```")
     assert not status
     assert "Execution failed with error 'division by zero'" in result
 
 
-def test_python_interpreter_assertion_error():
+def test_py_interpreter_assertion_error():
     interpreter = PyInterpreter()
     interpreter.set_tests("```python\nassert x == 0```")
     result = interpreter.set_code_and_run_tests("```python\nx = 5```")
     assert "Execution failed with error" in result
 
 
-def test_python_interpreter_large_code_block():
+def test_py_interpreter_large_code_block():
     interpreter = PyInterpreter()
     large_code = "```python\n" + "x = 5\n" * 10000 + "```"
     result = interpreter.set_code(large_code)
     assert result == (True, PyInterpreter.SUCCESS_STRING)
 
 
-def test_python_interpreter_set_code_no_overwrite():
+def test_py_interpreter_set_code_no_overwrite():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code("```python\nx = 5```")
     assert status
@@ -126,7 +126,7 @@ def test_python_interpreter_set_code_no_overwrite():
     )
 
 
-def test_python_interpreter_set_tests_no_overwrite():
+def test_py_interpreter_set_tests_no_overwrite():
     interpreter = PyInterpreter()
     interpreter.set_tests("```python\nassert x == 5```")
     assert "assert x == 5" in interpreter.test_context
@@ -137,7 +137,7 @@ def test_python_interpreter_set_tests_no_overwrite():
     )
 
 
-def test_python_interpreter_capture_output():
+def test_py_interpreter_capture_output():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code(
         "```python\nprint('Hello, world!')```"
@@ -146,7 +146,7 @@ def test_python_interpreter_capture_output():
     assert "Hello, world!" in result
 
 
-def test_python_interpreter_capture_multiple_outputs():
+def test_py_interpreter_capture_multiple_outputs():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code(
         "```python\nprint('Hello,'); print('world!')```"
@@ -174,7 +174,7 @@ def test_pyinterpreter_toolkit_builder_build():
     assert callable(tools[1].function)
 
 
-def test_python_interpreter_context_persistence():
+def test_py_interpreter_context_persistence():
     interpreter = PyInterpreter()
     status, result = interpreter.set_code(
         "```python\ndef add(a, b): return a + b```"
@@ -214,7 +214,7 @@ def test_pyinterpreter_toolkit_builder_build_for_open_ai():
         == {
             "code": {
                 "type": "string",
-                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
+                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'. When providing tests, favor raising exceptions directly to asserting.",
             },
             "overwrite": {
                 "type": "string",
@@ -224,3 +224,27 @@ def test_pyinterpreter_toolkit_builder_build_for_open_ai():
         }
     )
     assert tools[0].required == tools[1].required == ["code"]
+
+
+def test_pyinterpreter_toolkit_builder_build_for_open_ai_string_overwrite():
+    py_interpreter = PyInterpreter()
+    toolkit_builder = PyInterpreterOpenAIToolkitBuilder(py_interpreter)
+
+    tools = toolkit_builder.build_for_open_ai()
+
+    # Assume we have a valid Python code snippet
+    code = "```python\nx = 5```"
+
+    tools[1].function(code, "False")
+
+    assert "x = 5" in toolkit_builder.py_interpreter.code_context
+
+    # Test with overwrite as "False" string
+    tools[1].function("```python\ny = 10```", "False")
+    assert "x = 5" in toolkit_builder.py_interpreter.code_context
+    assert "y = 10" in toolkit_builder.py_interpreter.code_context
+
+    tools[1].function("```python\nz = 15```", "True")
+    assert "x = 5" not in toolkit_builder.py_interpreter.code_context
+    assert "y = 10" not in toolkit_builder.py_interpreter.code_context
+    assert "z = 15" in toolkit_builder.py_interpreter.code_context

@@ -107,11 +107,13 @@ class PyInterpreter:
         if isinstance(overwrite, str):
             overwrite = overwrite.lower() == "true"
         if overwrite:
-            self.code_context = []
+            self.code_context = [
+                str(ele)
+                for ele in PyInterpreter.DEFAULT_CODE_CONTEXT.split("\n")
+            ]
+
         code = self._clean_markdown(code)
         status, result = self._attempt_execution(code)
-        print("status = ", status)
-        print("result = ", result)
         if status:
             self.code_context.extend(code.split("\n"))
         return status, result
@@ -141,19 +143,19 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
     """A builder for tools which provide an execution environment for the agent"""
 
     def __init__(self, *args, **kwargs) -> None:
-        self.python_interpreter = PyInterpreter()
+        self.py_interpreter = PyInterpreter()
 
     def build(self) -> List[Tool]:
         """Builds the tools for the interpreter."""
         return [
             Tool(
                 name="py-set-tests",
-                function=self.python_interpreter.set_tests,
+                function=self.py_interpreter.set_tests,
                 description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten. The user should note that using assertions in tests results in poor error reporting due to the code environment, for this reason it is better to raise exceptions directly.",
             ),
             Tool(
                 name="py-set-code-and-run-tests",
-                function=self.python_interpreter.set_code_and_run_tests,
+                function=self.py_interpreter.set_code_and_run_tests,
                 description="Sets up the provided Python markdown snippet in the local source environment. The code is executed and its context is persisted in the source environment across interactions. After successfully executing the provided code, the provided tests are then ran. If `overwrite` is set to true then existing source code environment is overwritten (but not the tests).",
             ),
         ]
