@@ -122,7 +122,7 @@ class LeetCodeTestStand:
 
         return final_result
 
-    def run_test_for_example(
+    def run_tests_for_example(
         self,
         example_index: int,
         function_string: str,

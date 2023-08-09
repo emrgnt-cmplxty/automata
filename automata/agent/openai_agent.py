@@ -362,47 +362,6 @@ class OpenAIAutomataAgent(Agent):
             function=terminate,
         )
 
-    def reflexion(
-        self,
-        reflection_prompt,
-        reflection_instructions,
-        persistent_messages: List[OpenAIChatMessage] = [],
-    ) -> None:
-        if not self.completed:
-            raise ValueError(
-                "Reflexion can only be done after the agent has completed its instructions."
-            )
-
-        self._conversation = OpenAIConversation()
-        self._conversation.add_message(
-            OpenAIChatMessage(role="system", content=reflection_prompt),
-            self.session_id,
-        )
-
-        self._conversation.add_message(
-            OpenAIChatMessage(
-                role="user",
-                content=reflection_instructions,
-            ),
-            self.session_id,
-        )
-        print("Running reflection with buffer = ", self._conversation.messages)
-        self.completed = False
-        self.chat_provider = OpenAIChatCompletionProvider(
-            model=self.config.model,
-            temperature=self.config.temperature,
-            stream=self.config.stream,
-            conversation=self._conversation,
-            functions=self.functions,
-        )
-
-        reflection_result = self.run()
-        print("reflection_result = ", reflection_result)
-
-        # self._setup()
-        # for message in persistent_messages:
-        #     self.conversation.add_message(message, self.session_id)
-
 
 class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
     """OpenAIAgentToolkitBuilder is an abstract class for building OpenAI agent tools."""

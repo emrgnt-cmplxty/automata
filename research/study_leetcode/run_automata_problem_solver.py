@@ -5,6 +5,7 @@ import argparse
 import logging
 import os
 import sys
+from copy import deepcopy
 from typing import Dict
 
 from constants import (
@@ -140,7 +141,9 @@ def main():  # sourcery skip: docstrings-for-functions
     # If a related solution was fetched, update the agent message buffer
     # so that these messages will be included after reflexion in future iterations
     if args.include_leetcode_best_old_solution:
-        agent_message_buffer = solution_agent.conversation.messages[-2:]
+        agent_message_buffer = deepcopy(
+            solution_agent.conversation.messages[-2:]
+        )
         print(f"Storing an agent message buffer = {agent_message_buffer}")
     result = solution_agent.run()
 
@@ -149,9 +152,18 @@ def main():  # sourcery skip: docstrings-for-functions
     )
     print(f"Final Cleaned Result:\n{cleaned_result}")
 
-    exception, test_result = test_stand.run_test_for_example(
+    exception, test_result = test_stand.run_tests_for_example(
         index, cleaned_result
     )
+
+    reflection_message = solver.build_reflection_agent(
+        solution_agent,  # warning, this call mutates the solution agent
+        loader.get_problem_header(index).split("Constraints")[0],
+        result,
+        test_result,
+        exception,
+    )
+    # reflection = solution_agent.reflexion()
     print(
         f"~~~Testing~~~\n\nException:\n{exception}\nTest Result:\n{test_result}"
     )
