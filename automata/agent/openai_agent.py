@@ -369,6 +369,20 @@ class OpenAIAutomataAgent(Agent):
             function=terminate,
         )
 
+    def reflexion(
+        self,
+        instructions,
+        system_prompt="You are an evaluation agent.",
+        persistent_messages: List[OpenAIChatMessage] = [],
+    ) -> None:
+        if not self.completed:
+            raise ValueError(
+                "Reflexion can only be done after the agent has completed its instructions."
+            )
+        # self.completed = False
+        # self.conversation = []
+        # self._setup()
+
 
 class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
     """OpenAIAgentToolkitBuilder is an abstract class for building OpenAI agent tools."""
