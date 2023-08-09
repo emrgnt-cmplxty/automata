@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Any, Tuple
 
 import pandas as pd
 
@@ -22,7 +22,7 @@ class LeetCodeLoader:
         row = self.data.iloc[idx]
         return f"Title:{row['question_title']}\n\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - ```python\\n{row['python3_snippet']}```"
 
-    def get_problem_id_slug(self, idx: int) -> Tuple[int, str]:
+    def get_problem_id_slug(self, idx: int) -> Tuple[int, int, Any]:
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
         return (

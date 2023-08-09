@@ -93,8 +93,8 @@ class LeetCodeSolutionsFinder:
         self.solutions_data["similarity"] = self.solutions_data[
             "embedding"
         ].apply(
-            lambda x: self.calculate_similarity(x, context_embedding)
-        )  # type: ignore
+            lambda x: self.calculate_similarity(x, context_embedding)  # type: ignore
+        )
 
         # Sort solutions by similarity
         solutions_data_sorted = self.solutions_data.sort_values(

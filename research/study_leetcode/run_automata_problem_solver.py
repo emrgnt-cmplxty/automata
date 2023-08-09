@@ -50,6 +50,7 @@ from leetcode_env.leetcode_types import (  # type: ignore
     LeetCodeSubmission,
     ProgrammingLanguage,
 )
+from leetcode_env.utils import PySubmissionFormatter
 
 
 def main():  # sourcery skip: docstrings-for-functions
@@ -90,7 +91,7 @@ def main():  # sourcery skip: docstrings-for-functions
     print(f"Loading problem data from {args.problems_data_path}")
     loader = LeetCodeLoader(args.problems_data_path)
     embedding_provider = OpenAIEmbeddingProvider()
-
+    formatter = PySubmissionFormatter
     print(f"Number of examples to run = {len(loader.data)}")
     success_count = 0
     results = {}
@@ -183,7 +184,7 @@ def main():  # sourcery skip: docstrings-for-functions
             )
             lang = ProgrammingLanguage.PYTHON3
             sub = LeetCodeSubmission(
-                code=code,
+                code=formatter.to_leetcode(code),
                 lang=lang,
                 question_id=backend_problem_id,
                 question_slug=problem_slug,
