@@ -1,3 +1,4 @@
+import textwrap
 from typing import Any, Tuple
 
 import pandas as pd
@@ -25,7 +26,16 @@ class LeetCodeLoader:
         description_ex_constraints = description.split("Constraints:")[
             0
         ].strip()
-        return f"Title:{row['question_title']}\n\nDescription:\n{description_ex_constraints}\n\nNote, your final solution MUST conform to the snippet shown here - ```python\\n{row['python3_snippet']}```"
+
+        snippet_text = (
+            row["python3_snippet"]
+            .replace("class Solution:\n", "")
+            .replace("self, ", "")
+            .strip()
+        )
+        cleaned_snippet = textwrap.dedent(snippet_text)  # type: ignore
+
+        return f"Title:{row['question_title']}\n\nDescription:\n{description_ex_constraints}\n\nNote, your final solution MUST conform to the snippet shown here - ```python\\n{cleaned_snippet}```"
 
     def get_problem_id_slug(self, idx: int) -> Tuple[int, int, Any]:
         """Retrieve a problem by its index."""

@@ -53,7 +53,6 @@ from leetcode_env.leetcode_types import (  # type: ignore
     LeetCodeSubmission,
     ProgrammingLanguage,
 )
-from leetcode_env.utils import PySubmissionFormatter
 
 
 def main():  # sourcery skip: docstrings-for-functions
@@ -94,7 +93,6 @@ def main():  # sourcery skip: docstrings-for-functions
     print(f"Loading problem data from {args.problems_data_path}")
     loader = LeetCodeLoader(args.problems_data_path)
     embedding_provider = OpenAIEmbeddingProvider()
-    formatter = PySubmissionFormatter
     print(f"Number of examples to run = {len(loader.data)}")
     success_count = 0
     results = {}
@@ -102,111 +100,113 @@ def main():  # sourcery skip: docstrings-for-functions
     random.shuffle(indices)
 
     for i in indices:
-        # try:
-        print(f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}")
+        try:
+            print(
+                f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}"
+            )
 
-        (
-            problem_header,
-            problem_context,
             (
-                problem_id,
-                backend_problem_id,
-                problem_slug,
-            ),
-        ) = (
-            loader.get_problem_header(i),
-            loader.get_problem_context(i),
-            loader.get_problem_id_slug(i),
-        )
-        # print(
-        #     f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
-        # )
-        print("loader.data[i] = ", loader.data.iloc[i]["example_test_cases"])
+                problem_header,
+                problem_context,
+                (
+                    problem_id,
+                    backend_problem_id,
+                    problem_slug,
+                ),
+            ) = (
+                loader.get_problem_header(i),
+                loader.get_problem_context(i),
+                loader.get_problem_id_slug(i),
+            )
+            print(
+                f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
+            )
 
-        finder = LeetCodeSolutionsFinder(
-            embedding_provider,
-            max_entry_id=problem_id,
-            max_num_examples=args.max_num_examples,
-            num_examples_to_screen=args.num_examples_to_screen,
-            solutions_data_path=args.solutions_data_path,
-            lowest_difficulty=args.lowest_difficulty_supported,
-        )
+            finder = LeetCodeSolutionsFinder(
+                embedding_provider,
+                max_entry_id=problem_id,
+                max_num_examples=args.max_num_examples,
+                num_examples_to_screen=args.num_examples_to_screen,
+                solutions_data_path=args.solutions_data_path,
+                lowest_difficulty=args.lowest_difficulty_supported,
+            )
 
-        formatted_instructions = SOLVER_INSTRUCTIONS.format(
-            PROBLEM_STATEMENT=problem_context,
-            SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-        )
+            formatted_instructions = SOLVER_INSTRUCTIONS.format(
+                PROBLEM_STATEMENT=problem_context,
+                SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+            )
 
-        tools = AgentifiedSolutionOracleOpenAIToolkitBuilder(
-            leetcode_solution_finder=finder
-        ).build_for_open_ai()
+            tools = AgentifiedSolutionOracleOpenAIToolkitBuilder(
+                leetcode_solution_finder=finder
+            ).build_for_open_ai()
 
-        config = (
-            OpenAIAutomataAgentConfigBuilder()
-            .with_stream(True)
-            .with_verbose(True)
-            .with_tools(tools)
-            .with_system_template(SOLVER_SYSTEM_PROMPT)
-            .build()
-        )
+            config = (
+                OpenAIAutomataAgentConfigBuilder()
+                .with_stream(True)
+                .with_verbose(True)
+                .with_tools(tools)
+                .with_system_template(SOLVER_SYSTEM_PROMPT)
+                .build()
+            )
 
-        agent = OpenAIAutomataAgent(formatted_instructions, config)
+            agent = OpenAIAutomataAgent(formatted_instructions, config)
 
-        initial_query = f"{problem_header}"
-        extra_context = (
-            "Find the best example to help me solve the provided problem."
-        )
-        # Take the agent's first action before running
-        assistant_message = OpenAIChatMessage(
-            role="assistant",
-            content="Thoughts:\n  I will start by gathering relevant context.\nAction:\n  I will search for similar solutions to the problem",
-            function_call=FunctionCall(
-                name="solution-oracle",
-                arguments={
-                    "query": initial_query,
-                    "extra_context": extra_context,
-                },
-            ),
-        )
-        agent.chat_provider.add_message(assistant_message, agent.session_id)
+            initial_query = f"{problem_header}"
+            extra_context = (
+                "Find the best example to help me solve the provided problem."
+            )
+            # Take the agent's first action before running
+            assistant_message = OpenAIChatMessage(
+                role="assistant",
+                content="Thoughts:\n  I will start by gathering relevant context.\nAction:\n  I will search for similar solutions to the problem",
+                function_call=FunctionCall(
+                    name="solution-oracle",
+                    arguments={
+                        "query": initial_query,
+                        "extra_context": extra_context,
+                    },
+                ),
+            )
+            agent.chat_provider.add_message(
+                assistant_message, agent.session_id
+            )
 
-        solution = finder.find_best_match_and_explanation(
-            initial_query, extra_context
-        )
+            solution = finder.find_best_match_and_explanation(
+                initial_query, extra_context
+            )
 
-        user_message = OpenAIChatMessage(
-            role="user",
-            content=solution,
-        )
-        agent.chat_provider.add_message(user_message, agent.session_id)
+            user_message = OpenAIChatMessage(
+                role="user",
+                content=solution,
+            )
+            agent.chat_provider.add_message(user_message, agent.session_id)
 
-        configure_logging("DEBUG")
-        result = agent.run()
+            configure_logging("DEBUG")
+            result = agent.run()
 
-        code = (
-            result.split("```python")[1].split("```")[0].replace("\\n", "\n")
-        )
-        import pdb
+            cleaned_result = (
+                result.split("```python")[1]
+                .split("```")[0]
+                .replace("\\n", "\n")
+            )
+            print(f"Final Cleaned Result:\n{cleaned_result}")
+            lang = ProgrammingLanguage.PYTHON3
+            sub = LeetCodeSubmission(
+                code=cleaned_result,
+                lang=lang,
+                question_id=backend_problem_id,
+                question_slug=problem_slug,
+            )
 
-        pdb.set_trace()
-        break
-    #     lang = ProgrammingLanguage.PYTHON3
-    #     sub = LeetCodeSubmission(
-    #         code=formatter.to_leetcode(code),
-    #         lang=lang,
-    #         question_id=backend_problem_id,
-    #         question_slug=problem_slug,
-    #     )
+            env = LeetCodeEnv()
 
-    #     env = LeetCodeEnv()
-
-    #     status, reward, done, submission_result = env.step(sub)
-    #     success_count += reward
-    #     print(status, reward, done, submission_result)
-    #     _log_result(reward, results, i, success_count)
-    # except Exception as e:
-    #     print(f"Exception occurred = {e}")
-    #     _log_result(False, results, i, success_count)
+            status, reward, done, submission_result = env.step(sub)
+            success_count += reward
+            print(status, reward, done, submission_result)
+            _log_result(reward, results, i, success_count)
+        except Exception as e:
+            print(f"Exception occurred = {e}")
+            _log_result(False, results, i, success_count)
 
 
 # TODO Rename this here and in `main`

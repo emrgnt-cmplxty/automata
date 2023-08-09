@@ -151,38 +151,3 @@ class LeetCodeTestStand:
             return None, result
         except Exception as e:
             return str(e), None
-
-    # def test_functions(self):
-    #     # Main loop to iterate through data and test functions
-    #     for i in range(len(self.loader.data)):
-    #         function_string = (
-    #             self.loader.data.iloc[i]["python3_snippet"]
-    #             .split("Solution:\n")[1]
-    #             .strip()
-    #             .replace("self, ", "")
-    #             + "\n  pass"
-    #         )
-
-    #         local_scope = {}
-    #         exec(function_string, globals(), local_scope)
-
-    #         # Find the function object
-    #         function_obj = None
-    #         for name, obj in local_scope.items():
-    #             if inspect.isfunction(obj):
-    #                 function_obj = obj
-    #                 break
-
-    #         print("Running test cases - ")
-    #         self.run_tests(
-    #             function_obj,
-    #             ast.literal_eval(
-    #                 self.loader.data.iloc[i]["example_test_cases"]
-    #             ),
-    #         )
-
-
-# Usage
-# loader = ... # Define loader here
-# tester = FunctionTester(loader)
-# tester.test_functions()
