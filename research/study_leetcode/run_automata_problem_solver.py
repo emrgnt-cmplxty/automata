@@ -4,15 +4,9 @@
 import argparse
 import logging
 import os
-import random
 import sys
 from typing import Dict
 
-random.seed(0)
-
-from agentified_solution_oracle import (
-    AgentifiedSolutionOracleOpenAIToolkitBuilder,
-)
 from constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
@@ -22,12 +16,11 @@ from constants import (
     SOLVER_INSTRUCTIONS,
     SOLVER_SYSTEM_PROMPT,
 )
+from leetcode_problem_solver import LeetCodeSolver
 from leetcode_problems_loader import LeetCodeLoader
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
+from leetcode_test_stand import LeetCodeTestStand
 
-from automata.agent import OpenAIAutomataAgent
-from automata.cli.commands import configure_logging
-from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.core.utils import get_root_fpath
 from automata.llm import (
     FunctionCall,
@@ -88,138 +81,108 @@ def main():  # sourcery skip: docstrings-for-functions
         default=LOWEST_DIFFICULTY_SUPPORTED,
         help="Lowest difficulty to support for solutions searched over.",
     )
+    parser.add_argument(
+        "--include_leetcode_best_old_solution",
+        type=str,
+        default=True,
+        help="Should related solutions be returned to the agent?",
+    )
 
     args = parser.parse_args()
     print(f"Loading problem data from {args.problems_data_path}")
     loader = LeetCodeLoader(args.problems_data_path)
+    num_examples = len(loader.data)
+    print(f"Number of examples to run = {num_examples}")
+
+    solver = LeetCodeSolver(num_examples)
     embedding_provider = OpenAIEmbeddingProvider()
-    print(f"Number of examples to run = {len(loader.data)}")
-    success_count = 0
-    results = {}
-    indices = list(range(len(loader.data)))
-    random.shuffle(indices)
 
-    for i in indices:
-        try:
-            print(
-                f"Running w/ problem {i}:\n\n{loader.get_problem_context(i)}"
-            )
+    test_stand = LeetCodeTestStand(loader=loader)
 
-            (
-                problem_header,
-                problem_context,
-                (
-                    problem_id,
-                    backend_problem_id,
-                    problem_slug,
-                ),
-            ) = (
-                loader.get_problem_header(i),
-                loader.get_problem_context(i),
-                loader.get_problem_id_slug(i),
-            )
-            print(
-                f"Initializing for problem {problem_context}, problem_id = {problem_id}, problem_slug = {problem_slug}"
-            )
+    # for index in solver.indices:
+    index = solver.indices[0]
+    reflexion_count = 0
 
-            finder = LeetCodeSolutionsFinder(
-                embedding_provider,
-                max_entry_id=problem_id,
-                max_num_examples=args.max_num_examples,
-                num_examples_to_screen=args.num_examples_to_screen,
-                solutions_data_path=args.solutions_data_path,
-                lowest_difficulty=args.lowest_difficulty_supported,
-            )
+    # try:
+    problem_context = loader.get_problem_context(index)
+    agent_message_buffer = []
 
-            formatted_instructions = SOLVER_INSTRUCTIONS.format(
-                PROBLEM_STATEMENT=problem_context,
-                SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-            )
+    print(
+        f"Running w/ problem at index {index} and context:\n\n{problem_context}"
+    )
 
-            tools = AgentifiedSolutionOracleOpenAIToolkitBuilder(
-                leetcode_solution_finder=finder
-            ).build_for_open_ai()
+    solutions_finder = LeetCodeSolutionsFinder(
+        embedding_provider,
+        max_entry_id=loader.get_frontend_problem_id(
+            index
+        ),  # Solutions are indexed along frontend problem id
+        max_num_examples=args.max_num_examples,
+        num_examples_to_screen=args.num_examples_to_screen,
+        solutions_data_path=args.solutions_data_path,
+        lowest_difficulty=args.lowest_difficulty_supported,
+    )
 
-            config = (
-                OpenAIAutomataAgentConfigBuilder()
-                .with_stream(True)
-                .with_verbose(True)
-                .with_tools(tools)
-                .with_system_template(SOLVER_SYSTEM_PROMPT)
-                .build()
-            )
+    formatted_instructions = SOLVER_INSTRUCTIONS.format(
+        PROBLEM_STATEMENT=problem_context,
+        SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+    )
 
-            agent = OpenAIAutomataAgent(formatted_instructions, config)
+    # Construcs an agent that will provide a solution to the
+    # given LeetCode problem when ran
 
-            initial_query = f"{problem_header}"
-            extra_context = (
-                "Find the best example to help me solve the provided problem."
-            )
-            # Take the agent's first action before running
-            assistant_message = OpenAIChatMessage(
-                role="assistant",
-                content="Thoughts:\n  I will start by gathering relevant context.\nAction:\n  I will search for similar solutions to the problem",
-                function_call=FunctionCall(
-                    name="solution-oracle",
-                    arguments={
-                        "query": initial_query,
-                        "extra_context": extra_context,
-                    },
-                ),
-            )
-            agent.chat_provider.add_message(
-                assistant_message, agent.session_id
-            )
+    solution_agent = solver.construct_agent(
+        loader.get_problem_header(index),
+        formatted_instructions,
+        solutions_finder,
+        args.include_leetcode_best_old_solution,
+    )
 
-            solution = finder.find_best_match_and_explanation(
-                initial_query, extra_context
-            )
+    # If a related solution was fetched, update the agent message buffer
+    # so that these messages will be included after reflexion in future iterations
+    if args.include_leetcode_best_old_solution:
+        agent_message_buffer = solution_agent.conversation.messages[-2:]
+        print(f"Storing an agent message buffer = {agent_message_buffer}")
+    result = solution_agent.run()
 
-            user_message = OpenAIChatMessage(
-                role="user",
-                content=solution,
-            )
-            agent.chat_provider.add_message(user_message, agent.session_id)
+    cleaned_result = (
+        result.split("```python")[1].split("```")[0].replace("\\n", "\n")
+    )
+    print(f"Final Cleaned Result:\n{cleaned_result}")
 
-            configure_logging("DEBUG")
-            result = agent.run()
+    exception, test_result = test_stand.run_test_for_example(
+        index, cleaned_result
+    )
+    print(
+        f"~~~Testing~~~\n\nException:\n{exception}\nTest Result:\n{test_result}"
+    )
 
-            cleaned_result = (
-                result.split("```python")[1]
-                .split("```")[0]
-                .replace("\\n", "\n")
-            )
-            print(f"Final Cleaned Result:\n{cleaned_result}")
-            lang = ProgrammingLanguage.PYTHON3
-            sub = LeetCodeSubmission(
-                code=cleaned_result,
-                lang=lang,
-                question_id=backend_problem_id,
-                question_slug=problem_slug,
-            )
+    def prep_for_leetcode(code: str) -> str:
+        lines = code.split("\n")
+        modified_lines = ["class Solution():"]
+        for line in lines:
+            if line.startswith("def "):
+                line = "def " + line[4:].replace("(", "(self, ", 1)
+            modified_lines.append(f"  {line}")
+        return "\n".join(modified_lines)
 
-            env = LeetCodeEnv()
+    lang = ProgrammingLanguage.PYTHON3
+    sub = LeetCodeSubmission(
+        code=prep_for_leetcode(cleaned_result),
+        lang=lang,
+        question_id=loader.get_backend_problem_id(index),
+        question_slug=loader.get_problem_slug(index),
+    )
 
-            status, reward, done, submission_result = env.step(sub)
-            success_count += reward
-            print(status, reward, done, submission_result)
-            _log_result(reward, results, i, success_count)
-        except Exception as e:
-            print(f"Exception occurred = {e}")
-            _log_result(False, results, i, success_count)
+    env = LeetCodeEnv()
 
-
-# TODO Rename this here and in `main`
-def _log_result(
-    result: bool, results: Dict[int, bool], i: int, success_count: int
-):
-    """Log the result of the current run."""
-    results[i] = result
-    print("-" * 200)
-    print(f"passed {success_count} out of {i+1}")
-    print(f"results dict = {results}")
-    print("-" * 200)
+    status, reward, done, submission_result = env.step(sub)
+    solver.success_count += reward
+    print(status, reward, done, submission_result)
+    solver.log_result(index, reward)
 
 
 if __name__ == "__main__":
+    from automata.cli.commands import configure_logging
+
+    configure_logging("DEBUG")
     main()

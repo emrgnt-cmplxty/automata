@@ -24,7 +24,7 @@ class LeetCodeSolutionsFinder:
     def __init__(
         self,
         embedding_provider,
-        max_entry_id,
+        max_entry_id,  # Solutions are indexed along frontend problem id
         max_num_examples,
         num_examples_to_screen,
         solutions_data_path,
