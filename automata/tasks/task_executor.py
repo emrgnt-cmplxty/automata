@@ -3,6 +3,7 @@ import logging.config
 import time
 from typing import Any
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.memory_store import OpenAIAutomataConversationDatabase

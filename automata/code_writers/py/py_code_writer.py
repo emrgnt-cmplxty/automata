@@ -4,6 +4,7 @@ import logging
 import subprocess
 from typing import cast
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.code_parsers.py.py_reader import PyReader
 from automata.singletons.py_module_loader import py_module_loader
 

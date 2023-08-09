@@ -3,6 +3,7 @@
 import logging
 from typing import Any, Dict, List, Sequence, Tuple
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter

@@ -18,6 +18,8 @@ from ast import (
 from dataclasses import dataclass
 from typing import List, Optional
 
+import automata.core.utils  # pylint: disable=unused-import
+
 logger = logging.getLogger(__name__)
 
 AST_NO_RESULT_FOUND = "No result found."

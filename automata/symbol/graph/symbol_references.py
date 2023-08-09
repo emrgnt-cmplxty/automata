@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 import networkx as nx
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.symbol.graph.symbol_graph_base import GraphProcessor
 from automata.symbol.symbol_base import SymbolReference
 from automata.symbol.symbol_parser import parse_symbol

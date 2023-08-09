@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 import jsonpickle
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.config import TASK_DB_PATH
 from automata.core.base import SQLDatabase
 from automata.tasks.automata_task import AutomataTask

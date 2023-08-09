@@ -4,6 +4,7 @@ from typing import Any
 import networkx as nx
 from google.protobuf.json_format import MessageToDict  # type: ignore
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.symbol.graph.symbol_graph_base import GraphProcessor
 from automata.symbol.symbol_parser import parse_symbol
 

@@ -3,6 +3,7 @@ import logging
 import textwrap
 from typing import List
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import (
     AgentToolkitBuilder,
     AgentToolkitNames,

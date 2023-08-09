@@ -7,6 +7,7 @@ from typing import Any, Generator, List, Tuple
 import pandas as pd
 from constants import LEETCODE_SOLUTIONS_PATH
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.llm import OpenAIEmbeddingProvider
 
 # Specify the path to your JSON file

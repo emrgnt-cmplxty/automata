@@ -5,6 +5,7 @@ This script is used to run an agent with a given set of instructions and tools.
 import logging
 from typing import List
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import OpenAIAutomataAgent
 from automata.config import (
     GITHUB_API_KEY,

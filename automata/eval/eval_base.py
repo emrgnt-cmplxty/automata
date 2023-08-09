@@ -3,6 +3,8 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Type, Union
 
+import automata.core.utils  # pylint: disable=unused-import
+
 logger = logging.getLogger(__name__)
 
 Payload = Dict[str, Union[List[str], str, Dict[str, str]]]

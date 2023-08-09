@@ -3,6 +3,7 @@ import os
 
 import pytest
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.core.run_handlers import initialize_automata
 from automata.singletons.dependency_factory import (
     DependencyFactory,

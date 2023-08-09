@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Sequence
 import astunparse
 import numpy as np
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.symbol import Symbol
 
 logger = logging.getLogger(__name__)

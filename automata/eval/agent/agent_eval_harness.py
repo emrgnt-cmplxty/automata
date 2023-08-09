@@ -5,6 +5,7 @@ import logging
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
 from automata.eval.agent.agent_eval_composite import (
     aggregate_agent_result,

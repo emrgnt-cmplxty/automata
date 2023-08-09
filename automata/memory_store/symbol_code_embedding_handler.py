@@ -1,6 +1,7 @@
 import logging
 from typing import List, Tuple
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.core.base import VectorDatabaseProvider
 from automata.symbol import Symbol
 from automata.symbol_embedding import (

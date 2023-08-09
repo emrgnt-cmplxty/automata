@@ -3,6 +3,8 @@ import ast
 import logging
 from typing import List, Optional
 
+import automata.core.utils  # pylint: disable=unused-import
+
 # Import the entire symbol module so that we can properly patch convert_to_ast_object
 import automata.symbol
 from automata.agent import (

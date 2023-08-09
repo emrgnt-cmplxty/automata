@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Dict, List
 import numpy as np
 import pypandoc
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.code_parsers import DirectoryManager
 
 if TYPE_CHECKING:

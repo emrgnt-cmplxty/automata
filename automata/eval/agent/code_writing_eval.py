@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import jsonpickle
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.core.base import AutomataError
 from automata.eval.agent.agent_eval import AgentEval
 from automata.eval.eval_base import Action, Payload, register_action

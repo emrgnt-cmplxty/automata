@@ -2,6 +2,7 @@
 import logging
 from typing import TYPE_CHECKING, Dict, List, Set
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.experimental.code_parsers.py.context_processing.context_retriever import (
     ContextComponent,
     PyContextRetriever,

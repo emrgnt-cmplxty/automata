@@ -1,6 +1,7 @@
 import logging
 from typing import List, Optional
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.openai_agent import OpenAIAgentToolkitBuilder
 from automata.code_parsers.py import PyReader

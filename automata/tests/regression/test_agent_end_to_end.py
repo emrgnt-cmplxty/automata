@@ -4,6 +4,7 @@ import random
 
 import pytest
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.cli.commands import configure_logging
 from automata.core.run_handlers import run_setup, run_with_eval
 from automata.eval import OpenAIFunctionCallAction, SymbolSearchEvalResult

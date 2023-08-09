@@ -3,6 +3,8 @@ import logging
 import os
 from typing import Dict, List, Optional
 
+import automata.core.utils  # pylint: disable=unused-import
+
 logger = logging.getLogger(__name__)
 
 

@@ -1,7 +1,6 @@
 """
-Utility functions for the Automata package.
+Utility functions for Automata.
 """
-
 import json
 import logging
 import os
@@ -21,7 +20,7 @@ import numpy as np
 import openai
 import yaml
 
-# from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
+from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
 
 if TYPE_CHECKING:
     from automata.embedding.embedding_base import EmbeddingVectorProvider
@@ -105,6 +104,14 @@ class HandlerDict(TypedDict):
     filename: Optional[str]
 
 
+class LoggerDict(TypedDict):
+    """A dictionary representing a specific logger configuration"""
+
+    handlers: List[str]
+    level: int
+    propagate: bool
+
+
 class RootDict(TypedDict):
     """A dictionary representing the root logger"""
 
@@ -119,15 +126,25 @@ class LoggingConfig(TypedDict, total=False):
     disable_existing_loggers: bool
     formatters: dict
     handlers: dict[str, Union[HandlerDict, dict]]
+    loggers: dict[str, LoggerDict]
     root: RootDict
 
 
-def get_logging_config(
-    log_level: int = logging.INFO, log_file: Optional[str] = None
-) -> dict[str, Any]:
-    """Returns logging configuration."""
+class ColorScheme(TypedDict):
+    """A dictionary representing the color scheme for the CLI"""
 
-    color_scheme = {
+    DEBUG: str
+    INFO: str
+    WARNING: str
+    ERROR: str
+    CRITICAL: str
+    CLI_OUTPUT: str
+
+
+class ColorConfig:
+    """A class representing the color scheme for the CLI"""
+
+    color_scheme: ColorScheme = {
         "DEBUG": "cyan",
         "INFO": "green",
         "WARNING": "yellow",
@@ -135,6 +152,32 @@ def get_logging_config(
         "CRITICAL": "bold_red",
         "CLI_OUTPUT": "bold_white",
     }
+
+
+def ensure_stream_handler_for_root() -> None:
+    """Ensure the root logger has a StreamHandler with colored formatting."""
+    root_logger = logging.getLogger()
+    if not any(
+        isinstance(handler, logging.StreamHandler)
+        for handler in root_logger.handlers
+    ):
+        stream_handler = logging.StreamHandler()
+        colored_formatter = colorlog.ColoredFormatter(
+            "%(log_color)s%(message)s",
+            log_colors=cast(Dict[str, str], ColorConfig.color_scheme),
+        )
+        stream_handler.setFormatter(colored_formatter)
+        root_logger.addHandler(stream_handler)
+
+
+def get_logging_config(
+    log_level: int = logging.DEBUG, log_file: Optional[str] = None
+) -> dict[str, Any]:
+    """Returns logging configuration."""
+
+    # Call the function to ensure root logger has a StreamHandler with the correct formatter
+    ensure_stream_handler_for_root()
+
     logging_config: LoggingConfig = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -142,23 +185,31 @@ def get_logging_config(
             "colored": {
                 "()": colorlog.ColoredFormatter,
                 "format": "%(log_color)s%(message)s",
-                "log_colors": color_scheme,
+                "log_colors": cast(Dict[str, str], ColorConfig.color_scheme),
             },
             "standard": {
-                "format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+                "format": "%(message)s",
             },
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
+                "level": log_level,  # Set handler level to the passed log_level
                 "formatter": "colored",
-                "level": log_level,
+                "stream": "ext://sys.stdout",
             },
-            # "cli_output": {
-            #     "class": "logging.StreamHandler",
-            #     "formatter": "colored",
-            #     "level": CLI_OUTPUT_LEVEL,
-            # },
+            "cli_output": {
+                "class": "logging.StreamHandler",
+                "formatter": "colored",
+                "level": CLI_OUTPUT_LEVEL,
+            },
+        },
+        "loggers": {
+            "automata": {
+                "handlers": ["console"],
+                "level": log_level,  # Set automata logger level to the passed log_level
+                "propagate": False,
+            }
         },
         "root": {"handlers": ["console"], "level": log_level},
     }
@@ -175,7 +226,7 @@ def get_logging_config(
     return cast(dict[str, Any], logging_config)
 
 
-def is_sorted(lst: List[Any]) -> bool:
+def is_sorted(lst):
     """Check if a list is sorted."""
 
     return all(a <= b for a, b in zip(lst, lst[1:]))
@@ -192,3 +243,7 @@ def calculate_similarity(
     magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
+
+
+# Enforce root logger has a StreamHandler with the correct formatter
+ensure_stream_handler_for_root()

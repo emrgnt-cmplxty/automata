@@ -11,6 +11,7 @@ from typing import Any
 import yaml
 from jsonschema import ValidationError, validate
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.config import ConfigCategory
 from automata.core.utils import get_config_fpath, get_logging_config
 

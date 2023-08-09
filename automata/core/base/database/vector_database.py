@@ -6,6 +6,8 @@ from typing import Dict, Generic, List, Optional, TypeVar, cast
 
 import jsonpickle
 
+import automata.core.utils  # pylint: disable=unused-import
+
 logger = logging.getLogger(__name__)
 
 K = TypeVar("K")

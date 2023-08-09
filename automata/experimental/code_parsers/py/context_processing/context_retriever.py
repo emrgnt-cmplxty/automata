@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Optional, Set
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.core import (
     AST_NO_RESULT_FOUND,
     get_docstring_from_node,

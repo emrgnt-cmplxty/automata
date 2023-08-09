@@ -12,6 +12,7 @@ from constants import (
     RETRIEVER_SYSTEM_PROMPT,
 )
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
 

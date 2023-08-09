@@ -15,6 +15,7 @@ from ast import get_docstring as get_ast_docstring
 from ast import unparse as pyast_unparse
 from typing import Optional
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.core import find_syntax_tree_node, get_node_without_docstrings
 
 logger = logging.getLogger(__name__)

@@ -5,6 +5,7 @@ Run evaluation for a list of tasks.
 import logging
 from typing import List, Optional
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
     AgentEvalResultDatabase,

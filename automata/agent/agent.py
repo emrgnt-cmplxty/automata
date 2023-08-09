@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Optional, Sequence
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.config import LLMProvider
 from automata.llm import (
     LLMChatMessage,

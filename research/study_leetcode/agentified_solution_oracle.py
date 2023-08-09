@@ -4,6 +4,7 @@ from typing import List
 
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import (
     AgentToolkitBuilder,
     AgentToolkitNames,

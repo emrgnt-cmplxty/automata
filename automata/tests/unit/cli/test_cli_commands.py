@@ -181,7 +181,7 @@ def test_configure_logging_quiet_libraries():
         )
         mock_dictConfig.assert_called_once_with({})
         assert (
-            mock_getLogger.call_count == 6
-        )  # 5 for external libraries, 1 for __name__
+            mock_getLogger.call_count == 7
+        )  # 6 for external libraries, 1 for __name__
 
         mock_logger.setLevel.assert_called_with(logging.INFO)

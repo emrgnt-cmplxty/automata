@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 
 from jinja2 import Template
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.config import DOC_GENERATION_TEMPLATE
 from automata.core import get_docstring_from_node
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider

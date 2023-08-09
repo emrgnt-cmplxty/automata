@@ -1,6 +1,7 @@
 """A class to handle the embedding of `Symbol` documents."""
 import logging
 
+import automata.core.utils  # pylint: disable=unused-import
 from automata.core.base import VectorDatabaseProvider
 from automata.experimental.symbol_embedding.symbol_doc_embedding_builder import (
     SymbolDocEmbeddingBuilder,
