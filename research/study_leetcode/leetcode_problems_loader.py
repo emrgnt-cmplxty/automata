@@ -20,7 +20,7 @@ class LeetCodeLoader:
     def get_problem_context(self, idx: int) -> str:
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
-        return f"Title:{row['question_title']}\n\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - {row['python3_snippet']}"
+        return f"Title:{row['question_title']}\n\nDescription:\n{row['description']}\n\nNote, your final solution MUST conform to the snippet shown here - ```python\\n{row['python3_snippet']}```"
 
     def get_problem_id_slug(self, idx: int) -> Tuple[int, str]:
         """Retrieve a problem by its index."""

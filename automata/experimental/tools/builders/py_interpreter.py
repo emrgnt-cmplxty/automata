@@ -94,6 +94,13 @@ class PyInterpreter:
         code = self._clean_markdown(code)
         try:
             ast.parse(code)
+            if self.code_context != PyInterpreter.DEFAULT_CODE_CONTEXT.split(
+                "\n"
+            ):
+                code = "\n".join(self.code_context) + "\n" + code
+                status, result = self._attempt_execution(code)
+                if not status:
+                    return result
             self.test_context.extend(code.split("\n"))
             return PyInterpreter.SUCCESS_STRING
         except Exception as e:
@@ -117,10 +124,11 @@ class PyInterpreter:
         return status, result
 
     def set_code_and_run_tests(self, code: str, overwrite: bool = True) -> str:
-        """Set hte code and then run the local tests"""
+        """Set the code and then run the local tests"""
         status, result = self.set_code(code, overwrite)
+        result = f"Code Exec Result:\n{result}"
         if status:
-            result += "\n" + self._run_tests()
+            result += "\n" + f"Test Exec Result:\n{self._run_tests()}"
         return result
 
     def _run_tests(self) -> str:

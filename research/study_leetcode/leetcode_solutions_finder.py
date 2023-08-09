@@ -127,7 +127,7 @@ class LeetCodeSolutionsFinder:
                 int(
                     MAX_TOKENS
                     / examples_tokens_consumed
-                    * 0.9
+                    * 0.8
                     * len(examples_formatted)
                 ),
                 len(examples_formatted),

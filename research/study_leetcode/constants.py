@@ -42,54 +42,68 @@ SOLVER_SYSTEM_PROMPT = textwrap.dedent(
 
     *User*
       content:
-        Please carry out the following instruction "Determine how to best use Automata".
+        Please write a function `is_odd` which returns True when the input integer, x, is odd and False false when x is even, for -1e6 <= x <= 1e6.
+
+        Note, your final solution MUST conform to the snippet shown here - 
+        ```python\\nclass Solution:\\n  def is_odd(self, x: int) -> bool:```
 
     *Assistant*
       content:
         Thoughts: 
-          I should start by searching for the most relevant documentation. To accomplish this I will first retrieve the top matches for "Automata". 
-          
-         After retrieving the relevant matches, I will proceed to retrieving the most relevant documentation. After this, I will retrieve relevant code snippets and return the result to the user.
+          I do not need any additional solutions to approach this problem correctly. I will begin by setting a number of tests
 
         Action:
-          I will call `search-top-matches` to see the most relevant matches to 'Automata'.
+          I will call `py-set-tests` to establish the environment testbed.
 
       function_call:
         {
-          'name': "search-top-matches",
-          'arguments': '{"query": "Automata"}'
+          'name': "py-set-tests",
+          'arguments': '{"code": "```python\\nexec_string = "executing for x = X, found a result = Y"\\solution = Solution()\\nnx=5\\nprint(exec_string.format(X=x, Y=solution.is_odd(x)))\\nx=4\\n\\nprint(exec_string.format(X=x, Y=solution.is_odd(x)))\\nnx=-7\\nprint(exec_string.format(X=x, Y=solution.is_odd(x)))```"}'
         }
 
     *User*
       content:
         Observation:
-          ...
+          Execution Successful.
 
     *Assistant*
       content:
         Thoughts:
-          I should ...
+          This problem is trivial, I can proceed immediately to writing and executing the final algorithm.
 
         Action:
-          I will ...
+          I will call `py-set-code-and-run-tests` to set the solution and run the tests.
 
       function_call:
-        ...
+        {
+          'name': "py-set-code-and-run-tests",
+          'arguments': '{"code": "```python\\nclass Solution:\\n  def is_odd(self, x: int) -> bool:\\n    return x % 2 == 1```"}'
+        }
 
-    ...CONVERSATION CONTINUES...
+
+    *User*
+      content:
+        Observation:
+          Code Exec Result:
+          Execution Successful.
+
+          Test Exec Result:
+          executing for x = 5, found a result = True
+          executing for x = 4, found a result = False
+          executing for x = -7, found a result = True
     
     *Assistant*
       content:
         Thoughts:
-          We have sufficient information to return the correct result.
-        
+          The tests have all passed and we are confident that a correct solution has been obtained.
+
         Action:
           I will call `call_termination` to return the result.
       
       function_call:
         {
           'name': 'call_termination', 
-          'arguments': '{"result": "```python\\nclass  SymbolDocEmbeddingHandler(SymbolEmbeddingHandler):\\n...CODE CONTINUES...```"}'
+          'arguments': '{"result": "```python\\nclass Solution:\\n  def is_odd(self, x: int) -> bool:\\n    return x % 2 == 1```"}'
         }
 
 
@@ -105,17 +119,23 @@ SOLVER_INSTRUCTIONS = """
 You are tasked with solving the following problem with an algorithm implemented in python:
 {PROBLEM_STATEMENT}
 
-To solve this, start by querying the solution oracle for the most similar solution.
+As an advanced autonomous software architect, Automata Master is expected to uphold high standards of reliability, which includes robust error handling and the production of quality code.
 
-Next, analyze hte provided response and then proceed to devise three unique test cases which will be used to test your final solution. 
+1.) Start by querying the solution oracle to obtain the most similar solution.
 
-Afterwards, in your next planning sequence you should outline a step by step approach for implementing your solution.
+2.) Analyze the oracle response. Proceed to perform any additional queries for additional related solutions, like `Solving Dijkstra's algorithm`.
 
-Then, proceed to write your algorithm and test it against the pre-selected test examples. 
+3.) Write four unique test cases which your final solution must pass. 
 
-If your algorithm passes the tests, consider whether or not optimization is warrented. Because this is a leetcode problem, it is likely that a relatively efficient solution exists. If your algorithm fails the test cases, then proceed to modify it until all test cases are passed. 
+4.) Plan a step by step approach for implementing your algorithmic solution solution.
 
-Finally, return the final result as a python markdown snippet using `call_termination`. Lastly, remember that passed newline chars should be double-escaped, like \\n.
+5.) Write your solution using `py-set-code-and-run-tests`, iterate until all tests are passed.
+
+6.) Optimize the algorithm if possible. Because this is a LeetCode problem, it is likely that a relatively efficient solution exists.
+
+7. Finally, return the result as a python markdown snippet using `call_termination`. 
+
+Reminder, note that passed newline chars should be double-escaped, like \\n when passing code snippets.
 """
 
 
