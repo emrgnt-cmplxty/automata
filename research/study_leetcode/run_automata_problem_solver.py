@@ -152,20 +152,22 @@ def main():  # sourcery skip: docstrings-for-functions
     )
     print(f"Final Cleaned Result:\n{cleaned_result}")
 
-    exception, test_result = test_stand.run_tests_for_example(
+    exception, test_results = test_stand.run_tests_for_example(
         index, cleaned_result
     )
 
-    reflection_message = solver.build_reflection_agent(
-        solution_agent,  # warning, this call mutates the solution agent
+    reflection_agent = solver.build_reflection_agent(
         loader.get_problem_header(index).split("Constraints")[0],
         result,
-        test_result,
+        test_results,
         exception,
+        solutions_finder,
     )
-    # reflection = solution_agent.reflexion()
+
+    reflection = reflection_agent.run()
+
     print(
-        f"~~~Testing~~~\n\nException:\n{exception}\nTest Result:\n{test_result}"
+        f"~~~Testing~~~\n\nException:\n{exception}\nTest Result:\n{test_results}"
     )
 
     def prep_for_leetcode(code: str) -> str:
