@@ -121,9 +121,9 @@ def main():  # sourcery skip: docstrings-for-functions
                 lowest_difficulty=args.lowest_difficulty_supported,
             )
 
-    print(
-        f"Running w/ problem at index {index} and context:\n\n{problem_context}"
-    )
+            print(
+                f"Running w/ problem at index {index} and context:\n\n{problem_context}"
+            )
 
             # Construcs an agent that will provide a solution to the
             # given LeetCode problem when ran
@@ -233,9 +233,9 @@ def main():  # sourcery skip: docstrings-for-functions
                 question_slug=loader.get_problem_slug(index),
             )
 
-        exception, test_results = test_stand.run_tests_for_example(
-            index, cleaned_result
-        )
+            exception, test_results = test_stand.run_tests_for_example(
+                index, cleaned_result
+            )
 
             status, reward, done, submission_result = env.step(sub)
             print(status, reward, done, submission_result)
