@@ -64,6 +64,7 @@ sphinx = "^4.5"
 sphinx-panels = "0.6.0" # Used on Linux
 sphinx-rtd-dark-mode = "1.2.4" # Used on Windows
 sphinx_panels = "0.6.0" # Used on Windows
+evalplus = { path = "research/evalplus" } # used for research
 
 
 [tool.pytest.ini_options]
