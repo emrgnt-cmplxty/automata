@@ -97,6 +97,7 @@ exclude = '''
     | build
     | scip-python
     | research/leetcode_hard_gym
+    | research/evalplus
     | local_tasks
   )/
 )
@@ -106,7 +107,7 @@ exclude = '''
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground|leetcode_hard_gym)/'
+exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground|leetcode_hard_gym|evalplus)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"
