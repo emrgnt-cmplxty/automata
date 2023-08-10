@@ -1230,6 +1230,20 @@ files = [
 devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
 
 [[package]]
+name = "fire"
+version = "0.5.0"
+description = "A library for automatically generating command line interfaces."
+optional = false
+python-versions = "*"
+files = [
+    {file = "fire-0.5.0.tar.gz", hash = "sha256:a6b0d49e98c8963910021f92bba66f65ab440da2982b78eb1bbf95a0a34aacc6"},
+]
+
+[package.dependencies]
+six = "*"
+termcolor = "*"
+
+[[package]]
 name = "flask"
 version = "2.3.2"
 description = "A simple framework for building complex web applications."
@@ -1498,6 +1512,22 @@ files = [
 
 [package.extras]
 test = ["Cython (>=0.29.24,<0.30.0)"]
+
+[[package]]
+name = "human-eval"
+version = "1.0.3"
+description = ""
+optional = false
+python-versions = "*"
+files = [
+    {file = "human-eval-1.0.3.tar.gz", hash = "sha256:03ee63d3fbbb6fecbc5dfae58381fc655004ad86caafeb141ca2169c63648766"},
+    {file = "human_eval-1.0.3-py3-none-any.whl", hash = "sha256:b4e2844c8655a2db4780f6092834cb6ab15c130c56ba0516b15028ccc413dbce"},
+]
+
+[package.dependencies]
+fire = "*"
+numpy = "*"
+tqdm = "*"
 
 [[package]]
 name = "humanfriendly"
@@ -5299,4 +5329,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "98f6f2b4813814740ddcceefb2a215a6d1adb22afc2fd930f020219b015edad5"
+content-hash = "567d19268486169ad701fc93fc9ea9d9aca0a4d1b0d0ee413be10ead216c3dc2"
