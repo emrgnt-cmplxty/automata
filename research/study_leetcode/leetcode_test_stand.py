@@ -131,8 +131,10 @@ class LeetCodeTestStand:
 
         # Extract the function from the string
         local_scope = {}
+        IMPORTS = "from collections import deque\nfrom math import inf\nfrom typing import Tuple, List\nimport heapq\n"
+
         try:
-            exec(function_string, globals(), local_scope)
+            exec(IMPORTS + function_string, globals(), local_scope)
         except Exception as e:
             return str(e), None
 
