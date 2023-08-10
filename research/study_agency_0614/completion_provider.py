@@ -4,15 +4,18 @@ from enum import Enum
 from typing import List, Optional, Tuple
 
 from constants import (
-    ADVANCED_SYSTEM_PROMPT,
-    BAD_SYSTEM_PROMPT,
-    VANILLA_SYSTEM_PROMPT,
+    ADVANCED_SYSTEM_PROMPT_RETURN_ONLY,
+    ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER,
+    BAD_SYSTEM_PROMPT_RETURN_ONLY,
+    VANILLA_SYSTEM_PROMPT_RETURN_ONLY,
 )
 
 from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
 from automata.llm import OpenAIChatCompletionProvider, OpenAIConversation
+from automata.singletons.dependency_factory import dependency_factory
 from automata.tools import Tool
+from automata.tools.agent_tool_factory import AgentToolFactory
 
 
 class RunMode(Enum):
@@ -23,7 +26,7 @@ class RunMode(Enum):
     ADVANCED_AGENT_RETURN_ONLY = "advanced-agent-return-only"
     BAD_AGENT_RETURN_ONLY = "bad-agent-return-only"
 
-    ADVANCED_AGENT_INTERPRETER = "advanced-agent-with-interpreter"
+    ADVANCED_AGENT_WITH_INTERPRETER = "advanced-agent-with-interpreter"
 
 
 class CompletionProvider:
@@ -46,8 +49,19 @@ class CompletionProvider:
         else:
             vanilla_system_prompt = self.get_system_prompt()
             vanilla_instructions = self.get_formatted_instruction(raw_prompt)
+            tools = []
+            if self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER:
+                toolkits = ["py-interpreter"]
+
+                tool_dependencies = (
+                    dependency_factory.build_dependencies_for_tools(toolkits)
+                )
+                tools = AgentToolFactory.build_tools(
+                    toolkits, **tool_dependencies
+                )
+
             raw_completion = self.generate_agent_completion(
-                vanilla_system_prompt, vanilla_instructions
+                vanilla_system_prompt, vanilla_instructions, tools
             )
         clean_completion = self.extract_code(raw_completion)
         return (raw_completion, clean_completion)
@@ -109,6 +123,7 @@ class CompletionProvider:
             if "```" in clean_completion
             else clean_completion
         )
+        clean_completion = clean_completion.replace("\\n", "\n")
         return clean_completion
 
     def get_system_prompt(self) -> str:
@@ -116,11 +131,13 @@ class CompletionProvider:
         if self.run_mode == RunMode.VANILLA:
             raise ValueError("Vanilla mode does not have a system prompt")
         elif self.run_mode == RunMode.VANILLA_AGENT_RETURN_ONLY:
-            return VANILLA_SYSTEM_PROMPT
+            return VANILLA_SYSTEM_PROMPT_RETURN_ONLY
         elif self.run_mode == RunMode.ADVANCED_AGENT_RETURN_ONLY:
-            return ADVANCED_SYSTEM_PROMPT
+            return ADVANCED_SYSTEM_PROMPT_RETURN_ONLY
         elif self.run_mode == RunMode.BAD_AGENT_RETURN_ONLY:
-            return BAD_SYSTEM_PROMPT
+            return BAD_SYSTEM_PROMPT_RETURN_ONLY
+        elif self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER:
+            return ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER
         else:
             raise ValueError(f"Invalid run mode: {self.run_mode}")
 
@@ -148,10 +165,33 @@ class CompletionProvider:
                         """
             ).format(PROMPT=raw_prompt)
 
-        else:
+        elif self.run_mode in [
+            RunMode.VANILLA_AGENT_RETURN_ONLY,
+            RunMode.ADVANCED_AGENT_RETURN_ONLY,
+            RunMode.BAD_AGENT_RETURN_ONLY,
+        ]:
             return textwrap.dedent(
                 """                
             Below is an instruction that describes a task. Immediately return a result as a markdown snippet which solves this task to the user using the `call_termination` function.
+
+            ### Instruction:
+            Complete the following Python code: 
+            Notes: respond with the entire complete function definition
+            do not add any comments, be as concise in your code as possible
+            use only built-in libraries, assume no additional imports other than those provided (if any).
+
+            code:
+            ```python
+            {PROMPT}
+            ```
+            """
+            ).format(PROMPT=raw_prompt)
+        else:
+            return textwrap.dedent(
+                """                
+            Below is an instruction that describes a task. 
+            
+            Before returning a result, use the py-interpreter tool to run the code and run tests over the code to ensure the correctness of your solution.
 
             ### Instruction:
             Complete the following Python code: 
