@@ -233,13 +233,9 @@ def main():  # sourcery skip: docstrings-for-functions
                 question_slug=loader.get_problem_slug(index),
             )
 
-    lang = ProgrammingLanguage.PYTHON3
-    sub = LeetCodeSubmission(
-        code=prep_for_leetcode(cleaned_result),
-        lang=lang,
-        question_id=loader.get_backend_problem_id(index),
-        question_slug=loader.get_problem_slug(index),
-    )
+        exception, test_results = test_stand.run_tests_for_example(
+            index, cleaned_result
+        )
 
             status, reward, done, submission_result = env.step(sub)
             print(status, reward, done, submission_result)
