@@ -1,11 +1,13 @@
 import logging
+import logging.config
 import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Type, Union
 
-import automata.core.utils  # pylint: disable=unused-import
+from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 Payload = Dict[str, Union[List[str], str, Dict[str, str]]]
 

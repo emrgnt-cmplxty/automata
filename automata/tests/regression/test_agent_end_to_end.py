@@ -1,12 +1,13 @@
 # TODO - Agent tests should depend on actions for verification, not specific output
 import logging
+import logging.config
 import random
 
 import pytest
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.cli.commands import configure_logging
 from automata.core.run_handlers import run_setup, run_with_eval
+from automata.core.utils import get_logging_config
 from automata.eval import OpenAIFunctionCallAction, SymbolSearchEvalResult
 from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 from automata.llm import OpenAIEmbeddingProvider
@@ -20,6 +21,7 @@ from automata.tasks import (
 )
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 EMBEDDING_PROVIDER = OpenAIEmbeddingProvider()
 BASIC_PARAMS = (

@@ -1,11 +1,13 @@
 """Defines concrete classes for manipulating directory structures."""
 import logging
+import logging.config
 import os
 from typing import Dict, List, Optional
 
-import automata.core.utils  # pylint: disable=unused-import
+from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class Node:

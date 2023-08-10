@@ -4,12 +4,13 @@ from typing import List, Tuple
 
 import jsonpickle
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.config import TASK_DB_PATH
 from automata.core.base import SQLDatabase
+from automata.core.utils import get_logging_config
 from automata.tasks.automata_task import AutomataTask
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class AutomataAgentTaskDatabase(SQLDatabase):

@@ -1,17 +1,18 @@
 import logging
+import logging.config
 from abc import ABC, abstractmethod
 from ast import AST, unparse
 from contextlib import contextmanager
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Optional, Set
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.core import (
     AST_NO_RESULT_FOUND,
     get_docstring_from_node,
     get_node_without_docstrings,
     get_node_without_imports,
 )
+from automata.core.utils import get_logging_config
 from automata.experimental.code_parsers.py.context_processing.context_utils import (
     get_all_attributes,
     get_all_classes,
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
     )
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class ContextComponent(Enum):

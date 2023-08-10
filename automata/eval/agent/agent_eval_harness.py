@@ -2,10 +2,11 @@
 import contextlib
 import json
 import logging
+import logging.config
 import uuid
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
-import automata.core.utils  # pylint: disable=unused-import
+from automata.core.utils import get_logging_config
 from automata.eval.agent.agent_eval import AgentEval, AgentEvalResult
 from automata.eval.agent.agent_eval_composite import (
     aggregate_agent_result,
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
     from automata.eval.agent.agent_eval_database import AgentEvalResultDatabase
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class AgentEvalSetLoader:

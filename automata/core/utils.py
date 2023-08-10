@@ -243,7 +243,3 @@ def calculate_similarity(
     magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
     magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
     return dot_product / (magnitude_a * magnitude_b)
-
-
-# Enforce root logger has a StreamHandler with the correct formatter
-ensure_stream_handler_for_root()

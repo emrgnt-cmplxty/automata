@@ -1,11 +1,12 @@
 """Defines the abstract base classes and enums for agent objects"""
 import logging
+import logging.config
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Optional, Sequence
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.config import LLMProvider
+from automata.core.utils import get_logging_config
 from automata.llm import (
     LLMChatMessage,
     LLMConversation,
@@ -15,6 +16,7 @@ from automata.llm import (
 from automata.tools import Tool
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class Agent(ABC):

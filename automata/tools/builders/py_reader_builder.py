@@ -1,11 +1,12 @@
 import logging
+import logging.config
 from typing import List, Optional
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.agent.agent import AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.openai_agent import OpenAIAgentToolkitBuilder
 from automata.code_parsers.py import PyReader
 from automata.config.config_base import LLMProvider
+from automata.core.utils import get_logging_config
 from automata.llm.providers.openai_llm import OpenAITool
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
@@ -13,6 +14,7 @@ from automata.singletons.toolkit_registry import (
 from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class PyReaderToolkitBuilder(AgentToolkitBuilder):

@@ -1,13 +1,14 @@
 """Symbol documentation embedding builder."""
 import logging
+import logging.config
 from copy import copy
 from typing import Any, Dict, List
 
 from jinja2 import Template
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.config import DOC_GENERATION_TEMPLATE
 from automata.core import get_docstring_from_node
+from automata.core.utils import get_logging_config
 from automata.embedding import EmbeddingBuilder, EmbeddingVectorProvider
 from automata.experimental.code_parsers import (
     ContextComponent,
@@ -19,6 +20,7 @@ from automata.symbol import Symbol, convert_to_ast_object
 from automata.symbol_embedding import SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class SymbolDocEmbeddingBuilder(EmbeddingBuilder):

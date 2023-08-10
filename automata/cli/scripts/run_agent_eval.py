@@ -3,10 +3,11 @@ Run evaluation for a list of tasks.
 """
 
 import logging
+import logging.config
 from typing import List, Optional
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.cli.cli_utils import initialize_py_module_loader
+from automata.core.utils import get_logging_config
 from automata.eval import (
     AgentEvalResultDatabase,
     AgentEvalSetLoader,
@@ -27,6 +28,7 @@ from automata.tasks import (
 from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 def run_eval_harness(

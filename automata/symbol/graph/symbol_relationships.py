@@ -1,14 +1,16 @@
 import logging
+import logging.config
 from typing import Any
 
 import networkx as nx
 from google.protobuf.json_format import MessageToDict  # type: ignore
 
-import automata.core.utils  # pylint: disable=unused-import
+from automata.core.utils import get_logging_config
 from automata.symbol.graph.symbol_graph_base import GraphProcessor
 from automata.symbol.symbol_parser import parse_symbol
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class RelationshipProcessor(GraphProcessor):

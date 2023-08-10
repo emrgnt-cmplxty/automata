@@ -3,15 +3,16 @@ import logging.config
 import time
 from typing import Any
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
+from automata.core.utils import get_logging_config
 from automata.memory_store import OpenAIAutomataConversationDatabase
 from automata.tasks.automata_task import AutomataTask
 from automata.tasks.task_base import ITaskExecution, Task, TaskStatus
 from automata.tasks.task_error import TaskGeneralError, TaskStateError
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class IAutomataTaskExecution(ITaskExecution):

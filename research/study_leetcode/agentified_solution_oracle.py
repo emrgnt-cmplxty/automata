@@ -1,16 +1,17 @@
 """Agentified solution oracle toolkit builder."""
 import logging
+import logging.config
 from typing import List
 
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
 
-import automata.core.utils  # pylint: disable=unused-import
 from automata.agent import (
     AgentToolkitBuilder,
     AgentToolkitNames,
     OpenAIAgentToolkitBuilder,
 )
 from automata.config import LLMProvider
+from automata.core.utils import get_logging_config
 from automata.llm import OpenAITool
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
@@ -18,6 +19,7 @@ from automata.singletons.toolkit_registry import (
 from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class AgentifiedSolutionOracleToolkitBuilder(AgentToolkitBuilder):

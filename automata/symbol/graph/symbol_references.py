@@ -1,9 +1,10 @@
 import logging
+import logging.config
 from typing import Any, Dict
 
 import networkx as nx
 
-import automata.core.utils  # pylint: disable=unused-import
+from automata.core.utils import get_logging_config
 from automata.symbol.graph.symbol_graph_base import GraphProcessor
 from automata.symbol.symbol_base import SymbolReference
 from automata.symbol.symbol_parser import parse_symbol
@@ -11,6 +12,7 @@ from automata.symbol.symbol_parser import parse_symbol
 from ..scip_pb2 import SymbolRole  # type: ignore
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class ReferenceProcessor(GraphProcessor):
