@@ -285,11 +285,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
 
     def get_next_assistant_completion(self) -> OpenAIChatMessage:
         """Get the next completion from the assistant."""
-
-        print(
-            "building the next completion from = ",
-            self.conversation.get_messages_for_next_completion(),
-        )
         if functions := [ele.to_dict() for ele in self.functions]:
             response = openai.ChatCompletion.create(
                 model=self.model,
