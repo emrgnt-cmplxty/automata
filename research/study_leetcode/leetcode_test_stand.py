@@ -74,7 +74,7 @@ class LeetCodeTestStand:
         elif annotation == Optional[TreeNode]:
             return array_to_binary_tree(
                 [
-                    int(x) if x != None else None
+                    int(x) if x is not None else None
                     for x in eval(value.replace("null", "None"))
                 ]
             )
@@ -125,16 +125,17 @@ class LeetCodeTestStand:
     def run_tests_for_example(
         self,
         example_index: int,
-        function_string: str,
+        code_string: str,
     ) -> Tuple[Optional[str], Optional[str]]:
         """Runs the test for a specific example using the given function string."""
 
         # Extract the function from the string
-        local_scope = {}
-        IMPORTS = "from collections import deque\nfrom math import inf\nfrom typing import Tuple, List\nimport heapq\n"
-
+        local_scope: Dict[str, str] = {}
+        IMPORTS = "\nfrom typing import Tuple, List\n"  # from collections import deque\nfrom math import inf\nfrom typing import Tuple, List\nimport heapq\nimport numpy as np"
+        print("IMPORTS = ", IMPORTS)
+        print("function_string = ", code_string)
         try:
-            exec(IMPORTS + function_string, globals(), local_scope)
+            exec(IMPORTS + code_string, globals(), local_scope)
         except Exception as e:
             return str(e), None
 
