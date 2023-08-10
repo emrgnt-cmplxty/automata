@@ -1,4 +1,3 @@
-import os
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest

@@ -6,17 +6,7 @@ from typing import Optional
 from agentified_solution_oracle import (
     AgentifiedSolutionOracleOpenAIToolkitBuilder,
 )
-from constants import (
-    EVAL_SYSTEM_PROMPT,
-    LEETCODE_PROBLEMS_PATH,
-    LEETCODE_SOLUTIONS_PATH,
-    LOWEST_DIFFICULTY_SUPPORTED,
-    MAX_CONTEXT_EXAMPLES,
-    MAX_NUM_EXAMPLES_TO_SCREEN,
-    SOLVER_INSTRUCTIONS,
-    SOLVER_SYSTEM_PROMPT,
-)
-from leetcode_problems_loader import LeetCodeLoader
+from constants import EVAL_SYSTEM_PROMPT, SOLVER_SYSTEM_PROMPT
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
 
 from automata.agent import OpenAIAutomataAgent
@@ -24,18 +14,13 @@ from automata.config import (
     OpenAIAutomataAgentConfig,
     OpenAIAutomataAgentConfigBuilder,
 )
-from automata.llm import (
-    FunctionCall,
-    OpenAIChatMessage,
-    OpenAIEmbeddingProvider,
-)
-from automata.tools.agent_tool_factory import AgentToolFactory
+from automata.llm import FunctionCall, OpenAIChatMessage
 
 
 class LeetCodeSolver:
     def __init__(self, num_examples: int = 0):
         # sourcery skip: docstrings-for-functions
-        self.results = {}
+        self.results: dict[int, bool] = {}
         self.count, self.success_count = 0, 0
         self.indices = list(range(num_examples))
         random.seed(0)
@@ -54,6 +39,7 @@ class LeetCodeSolver:
             .with_verbose(True)
             .with_tools(tools)  # type: ignore
             .with_system_template(system_prompt)
+            .with_model("gpt-4-0613")
             .build()
         )
 
@@ -63,10 +49,12 @@ class LeetCodeSolver:
         formatted_instructions: str,
         solutions_finder: LeetCodeSolutionsFinder,
         include_leetcode_best_old_solution: bool = True,
+        system_prompt: str = SOLVER_SYSTEM_PROMPT,
     ) -> OpenAIAutomataAgent:
         """Construct an agent to solve the given problem."""
 
-        config = self._get_agent_config(SOLVER_SYSTEM_PROMPT, solutions_finder)
+        config = self._get_agent_config(system_prompt, solutions_finder)
+        print("building an agent with config = ", config)
         agent = OpenAIAutomataAgent(formatted_instructions, config)
 
         if include_leetcode_best_old_solution:
@@ -144,6 +132,7 @@ class LeetCodeSolver:
         1. Identify the failed test cases and explain what the expected and actual results were.
         2. Analyze the specific parts of the code that might have led to these failed test cases.
         3. Provide a concise explanation of the nature of the errors without correcting the code or explaining the entire algorithm.
+        4. Consider how the algorithm could be made more efficient. Consider if it will time-out during LeetCode testing.
 
         Do not include the corrected code or a detailed explanation of the entire algorithm. Focus solely on the parts that have gone wrong.
         

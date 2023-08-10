@@ -48,7 +48,7 @@ from leetcode_env.leetcode_types import (  # type: ignore
     ProgrammingLanguage,
 )
 
-NUM_REFLECTIONS = 3
+NUM_REFLECTIONS = 5
 
 
 def main():  # sourcery skip: docstrings-for-functions
@@ -101,10 +101,8 @@ def main():  # sourcery skip: docstrings-for-functions
     embedding_provider = OpenAIEmbeddingProvider()
     test_stand = LeetCodeTestStand(loader=loader)
 
-    # for index in solver.indices:
-    index = solver.indices[0]
-
-    try:
+    for index in [solver.indices[20]]:
+        # try:
         problem_context = loader.get_problem_context(index)
         agent_message_buffer = []
 
@@ -235,9 +233,9 @@ def main():  # sourcery skip: docstrings-for-functions
         status, reward, done, submission_result = env.step(sub)
         print(status, reward, done, submission_result)
         solver.log_result(index, reward)
-    except:
-        print("Failed to run example")
-        solver.log_result(index, False)
+        # except:
+        #     print("Failed to run example")
+        #     solver.log_result(index, False)
 
 
 if __name__ == "__main__":
