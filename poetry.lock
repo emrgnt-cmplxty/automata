@@ -1230,6 +1230,20 @@ files = [
 devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
 
 [[package]]
+name = "fire"
+version = "0.5.0"
+description = "A library for automatically generating command line interfaces."
+optional = false
+python-versions = "*"
+files = [
+    {file = "fire-0.5.0.tar.gz", hash = "sha256:a6b0d49e98c8963910021f92bba66f65ab440da2982b78eb1bbf95a0a34aacc6"},
+]
+
+[package.dependencies]
+six = "*"
+termcolor = "*"
+
+[[package]]
 name = "flask"
 version = "2.3.2"
 description = "A simple framework for building complex web applications."
@@ -1500,6 +1514,22 @@ files = [
 test = ["Cython (>=0.29.24,<0.30.0)"]
 
 [[package]]
+name = "human-eval"
+version = "1.0.3"
+description = ""
+optional = false
+python-versions = "*"
+files = [
+    {file = "human-eval-1.0.3.tar.gz", hash = "sha256:03ee63d3fbbb6fecbc5dfae58381fc655004ad86caafeb141ca2169c63648766"},
+    {file = "human_eval-1.0.3-py3-none-any.whl", hash = "sha256:b4e2844c8655a2db4780f6092834cb6ab15c130c56ba0516b15028ccc413dbce"},
+]
+
+[package.dependencies]
+fire = "*"
+numpy = "*"
+tqdm = "*"
+
+[[package]]
 name = "humanfriendly"
 version = "10.0"
 description = "Human friendly output for text interfaces using Python"
@@ -1748,13 +1778,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "joblib"
-version = "1.3.1"
+version = "1.3.2"
 description = "Lightweight pipelining with Python functions"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "joblib-1.3.1-py3-none-any.whl", hash = "sha256:89cf0529520e01b3de7ac7b74a8102c90d16d54c64b5dd98cafcd14307fdf915"},
-    {file = "joblib-1.3.1.tar.gz", hash = "sha256:1f937906df65329ba98013dc9692fe22a4c5e4a648112de500508b18a21b41e3"},
+    {file = "joblib-1.3.2-py3-none-any.whl", hash = "sha256:ef4331c65f239985f3f2220ecc87db222f08fd22097a3dd5698f693875f8cbb9"},
+    {file = "joblib-1.3.2.tar.gz", hash = "sha256:92f865e621e17784e7955080b6d042489e3b8e294949cc44c6eac304f59772b1"},
 ]
 
 [[package]]
@@ -4666,13 +4696,13 @@ files = [
 
 [[package]]
 name = "tqdm"
-version = "4.65.2"
+version = "4.66.0"
 description = "Fast, Extensible Progress Meter"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tqdm-4.65.2-py3-none-any.whl", hash = "sha256:6c431f7dee4f57284c8f4bd2eb1d4af00d730d38cc6098bd79880bcbec676276"},
-    {file = "tqdm-4.65.2.tar.gz", hash = "sha256:5f7d8b4ac76016ce9d51a7f0ea30d30984888d97c474fdc4a4148abfb5ee76aa"},
+    {file = "tqdm-4.66.0-py3-none-any.whl", hash = "sha256:39d459c7140b7890174e69d4d68d6291bc774a55b4bc5d93c0b760798ac5a03e"},
+    {file = "tqdm-4.66.0.tar.gz", hash = "sha256:cc6e7e52202d894e66632c5c8a9330bd0e3ff35d2965c93ca832114a3d865362"},
 ]
 
 [package.dependencies]
@@ -5299,4 +5329,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "98f6f2b4813814740ddcceefb2a215a6d1adb22afc2fd930f020219b015edad5"
+content-hash = "567d19268486169ad701fc93fc9ea9d9aca0a4d1b0d0ee413be10ead216c3dc2"

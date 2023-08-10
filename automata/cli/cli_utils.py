@@ -4,9 +4,7 @@ This module contains utility functions for the CLI.
 
 import logging
 import os
-import pathlib
 import shutil
-import subprocess
 from typing import Any, List, Optional
 
 from questionary import Style, prompt

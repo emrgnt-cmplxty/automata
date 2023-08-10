@@ -27,7 +27,7 @@ class LeetCodeSolutionsFinder:
     def __init__(
         self,
         embedding_provider,
-        max_entry_id,
+        max_entry_id,  # Solutions are indexed along frontend problem id
         max_num_examples,
         num_examples_to_screen,
         solutions_data_path,
@@ -87,7 +87,9 @@ class LeetCodeSolutionsFinder:
         magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
         return dot_product / (magnitude_a * magnitude_b)
 
-    def find_best_match_and_explanation(self, query: str) -> str:
+    def find_best_match_and_explanation(
+        self, query: str, extra_context: str
+    ) -> str:
         """Find the best matching solution."""
         context_embedding = self.get_embedding(query)
 
@@ -142,7 +144,9 @@ class LeetCodeSolutionsFinder:
         )
 
         formatted_instructions = FETCHER_INSTRUCTIONS.format(
-            QUERY=query,
+            QUERY=query
+            if extra_context != ""
+            else f"{query}\n\nAnd the user provided extra instructions:\n{extra_context}",
             MAX_NUM_EXAMPLES=str(self.max_num_examples),
             FORMATTED_EXAMPLES=examples_formatted,
         )
@@ -177,8 +181,7 @@ class LeetCodeSolutionsFinder:
 
         selected_solution = solutions[selected] if selected else "None"
         final_result = (
-            "To assist you with solving the given problem, you have been",
-            f" provdied the following solution:\n{selected_solution}.\n",
-            f"\nThis problem was deemed useful because:\n{explanation}",
+            f"Selected solution:\n{selected_solution}.\n",
+            f"\nThis problem selected because:\n{explanation}",
         )
         return "".join(final_result)
