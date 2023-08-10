@@ -1,9 +1,11 @@
 import logging
+import logging.config
 import os
 
 import pytest
 
 from automata.core.run_handlers import initialize_automata
+from automata.core.utils import get_logging_config
 from automata.singletons.dependency_factory import (
     DependencyFactory,
     dependency_factory,
@@ -18,6 +20,7 @@ from automata.symbol_embedding.vector_databases import (
 )
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 @pytest.mark.regression

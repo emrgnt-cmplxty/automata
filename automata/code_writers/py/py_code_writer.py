@@ -1,13 +1,16 @@
 """Module containing functions to build SymbolDocEmbedding objects."""
 import ast
 import logging
+import logging.config
 import subprocess
 from typing import cast
 
 from automata.code_parsers.py.py_reader import PyReader
+from automata.core.utils import get_logging_config
 from automata.singletons.py_module_loader import py_module_loader
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class PyCodeWriter:

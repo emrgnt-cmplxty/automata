@@ -1,6 +1,7 @@
 """Implementation of the DependencyFactory singleton class."""
 # TODO - Move experimental features to an experimental loader.
 import logging
+import logging.config
 import os
 from functools import lru_cache
 from typing import Any, Dict, List, Set, Tuple
@@ -16,7 +17,7 @@ from automata.context_providers import (
     SymbolProviderSynchronizationContext,
 )
 from automata.core.base import Singleton
-from automata.core.utils import get_embedding_data_fpath
+from automata.core.utils import get_embedding_data_fpath, get_logging_config
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.code_parsers import (
     PyContextHandler,
@@ -45,6 +46,7 @@ from automata.tools import UnknownToolError
 from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class DependencyFactory(metaclass=Singleton):

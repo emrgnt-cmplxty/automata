@@ -3,6 +3,7 @@ import ast
 import contextlib
 import io
 import logging
+import logging.config
 from typing import List, Optional, Tuple
 
 # Import the entire symbol module so that we can properly patch convert_to_ast_object
@@ -12,6 +13,7 @@ from automata.agent import (
     OpenAIAgentToolkitBuilder,
 )
 from automata.config import LLMProvider
+from automata.core.utils import get_logging_config
 from automata.llm import OpenAITool
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
@@ -19,6 +21,7 @@ from automata.singletons.toolkit_registry import (
 from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class PyInterpreter:

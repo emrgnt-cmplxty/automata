@@ -2,17 +2,20 @@
 # sourcery skip: avoid-global-variables, no-relative-imports
 import argparse
 import logging
+import logging.config
 from typing import Any, Generator, List, Tuple
 
 import pandas as pd
 from constants import LEETCODE_SOLUTIONS_PATH
 
+from automata.core.utils import get_logging_config
 from automata.llm import OpenAIEmbeddingProvider
 
 # Specify the path to your JSON file
 PROBLEM_CHUNK_SIZE = 512
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 def chunks(lst: List, n: int) -> Generator[Tuple, Any, Any]:

@@ -1,12 +1,14 @@
 """The `AgentToolFactory` class is responsible for creating tools from a given agent tool name."""
 # TODO - Move experimental tools to a separate package
 import logging
+import logging.config
 from typing import Any, Dict, List, Sequence, Tuple
 
 from automata.agent import AgentToolkitNames
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
 from automata.config.config_base import LLMProvider
+from automata.core.utils import get_logging_config
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import SymbolSearch
@@ -14,6 +16,7 @@ from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.tools import Tool, UnknownToolError
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class AgentToolFactory:

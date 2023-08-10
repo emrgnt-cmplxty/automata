@@ -1,5 +1,6 @@
 """Finds issues from the associated leetcode solutions store"""
 import logging
+import logging.config
 from typing import Optional
 
 import numpy as np
@@ -14,8 +15,10 @@ from constants import (
 
 from automata.agent import OpenAIAutomataAgent
 from automata.config import OpenAIAutomataAgentConfigBuilder
+from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class LeetCodeSolutionsFinder:

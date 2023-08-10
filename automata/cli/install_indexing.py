@@ -138,6 +138,8 @@ def generate_local_indices(from_docker: bool = False) -> None:
 
     subprocess.run(command_string, check=True, shell=True)
 
+    shutil.rmtree(factory_path)
+
 
 def install_nvm_and_nodejs(version: str) -> List[str]:
     """

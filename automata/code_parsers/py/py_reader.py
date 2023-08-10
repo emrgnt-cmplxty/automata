@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import logging
+import logging.config
 from ast import (
     AST,
     AsyncFunctionDef,
@@ -16,8 +17,10 @@ from ast import unparse as pyast_unparse
 from typing import Optional
 
 from automata.core import find_syntax_tree_node, get_node_without_docstrings
+from automata.core.utils import get_logging_config
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class PyReader:

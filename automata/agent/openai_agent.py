@@ -1,4 +1,6 @@
 """Defines the concrete OpenAIAutomataAgent class."""
+import logging
+import logging.config
 import uuid
 from abc import ABC, abstractmethod
 from typing import Dict, Final, List, Optional, Sequence
@@ -12,7 +14,7 @@ from automata.agent.error import (
     AgentStopIterationError,
 )
 from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
-from automata.core.utils import format_text, load_config
+from automata.core.utils import format_text, get_logging_config, load_config
 from automata.llm import (
     FunctionCall,
     LLMChatMessage,
@@ -26,6 +28,9 @@ from automata.llm import (
     OpenAITool,
 )
 from automata.tools import ToolExecution, ToolExecutor
+
+logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class OpenAIAutomataAgent(Agent):
@@ -74,19 +79,19 @@ class OpenAIAutomataAgent(Agent):
         if self.completed or self.iteration_count > self.config.max_iterations:
             raise AgentStopIterationError
 
-        print(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
+        logger.info(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
         self.chat_provider.add_message(assistant_message, self.session_id)
         if not self.config.stream:
-            print(f"{assistant_message}\n")
-        print(f"\n{('-' * 120)}")
+            logger.info(f"{assistant_message}\n")
+        logger.info(f"\n{('-' * 120)}")
 
         self.iteration_count += 1
 
         user_message = self._get_next_user_response(assistant_message)
-        print(f"Latest User Message -- \n{user_message}\n")
+        logger.info(f"Latest User Message -- \n{user_message}\n")
         self.chat_provider.add_message(user_message, self.session_id)
-        print(f"\n{('-' * 120)}")
+        logger.info(f"\n{('-' * 120)}")
 
         return (assistant_message, user_message)
 
@@ -261,7 +266,7 @@ class OpenAIAutomataAgent(Agent):
                     content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
             except Exception as e:
-                print(f"Tool execution failed: {e}")
+                logger.info(f"Tool execution failed: {e}")
         return OpenAIChatMessage(
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}\n{self._get_iteration_status()}",
@@ -305,7 +310,7 @@ class OpenAIAutomataAgent(Agent):
             AgentError: If the agent fails to initialize.
         """
 
-        print(f"Setting up agent with tools = {self.config.tools}")
+        logger.info(f"Setting up agent with tools = {self.config.tools}")
         self._conversation.add_message(
             OpenAIChatMessage(
                 role="system", content=self.config.system_instruction
@@ -313,7 +318,7 @@ class OpenAIAutomataAgent(Agent):
             self.session_id,
         )
 
-        print(
+        logger.info(
             f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
         )
 
@@ -322,11 +327,11 @@ class OpenAIAutomataAgent(Agent):
                 {"user_input_instructions": self.instructions}
             )
         ):
-            print(
+            logger.info(
                 f"Adding the following initial mesasge to the conversation {message}"
             )
             self._conversation.add_message(message, self.session_id)
-            print(f"\n{('-' * 120)}")
+            logger.info(f"\n{('-' * 120)}")
 
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
@@ -339,7 +344,9 @@ class OpenAIAutomataAgent(Agent):
         self.tool_executor = ToolExecutor(ToolExecution(self.tools))
 
         self._initialized = True
-        print(f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n")
+        logger.info(
+            f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n"
+        )
 
     def _get_termination_tool(self) -> OpenAITool:
         """Gets the tool responsible for terminating the OpenAI agent."""

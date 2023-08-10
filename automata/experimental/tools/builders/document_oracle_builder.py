@@ -1,5 +1,6 @@
 """This module provides a toolkit builder for the document oracle."""
 import logging
+import logging.config
 import textwrap
 from typing import List
 
@@ -9,6 +10,7 @@ from automata.agent import (
     OpenAIAgentToolkitBuilder,
 )
 from automata.config.config_base import LLMProvider
+from automata.core.utils import get_logging_config
 from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import SymbolSearch
 from automata.llm import OpenAITool
@@ -18,6 +20,7 @@ from automata.singletons.toolkit_registry import (
 from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class DocumentOracleToolkitBuilder(AgentToolkitBuilder):

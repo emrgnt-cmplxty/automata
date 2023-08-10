@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import logging.config
 from ast import (
     AST,
     AsyncFunctionDef,
@@ -18,7 +19,10 @@ from ast import (
 from dataclasses import dataclass
 from typing import List, Optional
 
+from automata.core.utils import get_logging_config
+
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 AST_NO_RESULT_FOUND = "No result found."
 

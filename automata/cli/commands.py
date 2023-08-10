@@ -43,7 +43,9 @@ def configure_logging(log_level_str: str) -> None:
 
     root_logger = logging.getLogger()
     root_logger.setLevel(log_level)
-    logger.setLevel(log_level)
+    logging.getLogger(__name__).setLevel(
+        log_level
+    )  # Explicitly set the level for the current module's logger
 
     # External libraries we want to quiet down
     for library in ["urllib3", "matplotlib", "openai", "github", "asyncio"]:

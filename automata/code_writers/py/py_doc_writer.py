@@ -1,5 +1,6 @@
 """This module contains the PyDocWriter class, which is used to generate"""
 import logging
+import logging.config
 import os
 import re
 from typing import TYPE_CHECKING, Dict, List
@@ -8,12 +9,14 @@ import numpy as np
 import pypandoc
 
 from automata.code_parsers import DirectoryManager
+from automata.core.utils import get_logging_config
 
 if TYPE_CHECKING:
     from automata.symbol import Symbol
     from automata.symbol_embedding import SymbolDocEmbedding
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class PyDocWriter:

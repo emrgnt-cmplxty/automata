@@ -1,4 +1,5 @@
 import logging
+import logging.config
 from abc import ABC, abstractmethod
 from ast import AST, unparse
 from contextlib import contextmanager
@@ -11,6 +12,7 @@ from automata.core import (
     get_node_without_docstrings,
     get_node_without_imports,
 )
+from automata.core.utils import get_logging_config
 from automata.experimental.code_parsers.py.context_processing.context_utils import (
     get_all_attributes,
     get_all_classes,
@@ -25,6 +27,7 @@ if TYPE_CHECKING:
     )
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class ContextComponent(Enum):

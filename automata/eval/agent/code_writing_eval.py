@@ -1,15 +1,18 @@
 """Implements an evaluation for code writing ability."""
 import logging
+import logging.config
 from typing import Any, Dict, List, Optional
 
 import jsonpickle
 
 from automata.core.base import AutomataError
+from automata.core.utils import get_logging_config
 from automata.eval.agent.agent_eval import AgentEval
 from automata.eval.eval_base import Action, Payload, register_action
 from automata.llm import LLMChatMessage, OpenAIChatMessage
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class CodeExecutionError(AutomataError):

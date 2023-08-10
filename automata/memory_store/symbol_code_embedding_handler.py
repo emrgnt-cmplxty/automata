@@ -1,7 +1,9 @@
 import logging
+import logging.config
 from typing import List, Tuple
 
 from automata.core.base import VectorDatabaseProvider
+from automata.core.utils import get_logging_config
 from automata.symbol import Symbol
 from automata.symbol_embedding import (
     SymbolCodeEmbeddingBuilder,
@@ -9,6 +11,7 @@ from automata.symbol_embedding import (
 )
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class SymbolCodeEmbeddingHandler(SymbolEmbeddingHandler):

@@ -1,7 +1,9 @@
 """Contains `PyContextHandler` a class for handling the context associated to a symbol."""
 import logging
+import logging.config
 from typing import TYPE_CHECKING, Dict, List, Set
 
+from automata.core.utils import get_logging_config
 from automata.experimental.code_parsers.py.context_processing.context_retriever import (
     ContextComponent,
     PyContextRetriever,
@@ -12,6 +14,7 @@ if TYPE_CHECKING:
     from automata.symbol import Symbol
 
 logger = logging.getLogger(__name__)
+logging.config.dictConfig(get_logging_config())
 
 
 class PyContextHandlerConfig:
