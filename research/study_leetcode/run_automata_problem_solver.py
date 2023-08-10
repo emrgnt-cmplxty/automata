@@ -48,6 +48,8 @@ from leetcode_env.leetcode_types import (  # type: ignore
     ProgrammingLanguage,
 )
 
+NUM_REFLECTIONS = 3
+
 
 def main():  # sourcery skip: docstrings-for-functions
     # Argument parsing setup
@@ -97,102 +99,145 @@ def main():  # sourcery skip: docstrings-for-functions
 
     solver = LeetCodeSolver(num_examples)
     embedding_provider = OpenAIEmbeddingProvider()
-
     test_stand = LeetCodeTestStand(loader=loader)
 
     # for index in solver.indices:
     index = solver.indices[0]
-    reflexion_count = 0
 
-    # try:
-    problem_context = loader.get_problem_context(index)
-    agent_message_buffer = []
+    try:
+        problem_context = loader.get_problem_context(index)
+        agent_message_buffer = []
 
-    print(
-        f"Running w/ problem at index {index} and context:\n\n{problem_context}"
-    )
-
-    solutions_finder = LeetCodeSolutionsFinder(
-        embedding_provider,
-        max_entry_id=loader.get_frontend_problem_id(
-            index
-        ),  # Solutions are indexed along frontend problem id
-        max_num_examples=args.max_num_examples,
-        num_examples_to_screen=args.num_examples_to_screen,
-        solutions_data_path=args.solutions_data_path,
-        lowest_difficulty=args.lowest_difficulty_supported,
-    )
-
-    formatted_instructions = SOLVER_INSTRUCTIONS.format(
-        PROBLEM_STATEMENT=problem_context,
-        SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
-    )
-
-    # Construcs an agent that will provide a solution to the
-    # given LeetCode problem when ran
-
-    solution_agent = solver.construct_agent(
-        loader.get_problem_header(index),
-        formatted_instructions,
-        solutions_finder,
-        args.include_leetcode_best_old_solution,
-    )
-
-    # If a related solution was fetched, update the agent message buffer
-    # so that these messages will be included after reflexion in future iterations
-    if args.include_leetcode_best_old_solution:
-        agent_message_buffer = deepcopy(
-            solution_agent.conversation.messages[-2:]
+        print(
+            f"Running w/ problem at index {index} and context:\n\n{problem_context}"
         )
-        print(f"Storing an agent message buffer = {agent_message_buffer}")
-    result = solution_agent.run()
 
-    cleaned_result = (
-        result.split("```python")[1].split("```")[0].replace("\\n", "\n")
-    )
-    print(f"Final Cleaned Result:\n{cleaned_result}")
+        solutions_finder = LeetCodeSolutionsFinder(
+            embedding_provider,
+            max_entry_id=loader.get_frontend_problem_id(
+                index
+            ),  # Solutions are indexed along frontend problem id
+            max_num_examples=args.max_num_examples,
+            num_examples_to_screen=args.num_examples_to_screen,
+            solutions_data_path=args.solutions_data_path,
+            lowest_difficulty=args.lowest_difficulty_supported,
+        )
 
-    exception, test_results = test_stand.run_tests_for_example(
-        index, cleaned_result
-    )
+        formatted_instructions = SOLVER_INSTRUCTIONS.format(
+            PROBLEM_STATEMENT=problem_context,
+            SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+        )
 
-    reflection_agent = solver.build_reflection_agent(
-        loader.get_problem_header(index).split("Constraints")[0],
-        result,
-        test_results,
-        exception,
-        solutions_finder,
-    )
+        # Construcs an agent that will provide a solution to the
+        # given LeetCode problem when ran
 
-    reflection = reflection_agent.run()
+        solution_agent = solver.construct_agent(
+            loader.get_problem_header(index),
+            formatted_instructions,
+            solutions_finder,
+            args.include_leetcode_best_old_solution,
+        )
 
-    print(
-        f"~~~Testing~~~\n\nException:\n{exception}\nTest Result:\n{test_results}"
-    )
+        # If a related solution was fetched, update the agent message buffer
+        # so that these messages will be included after reflexion in future iterations
+        if args.include_leetcode_best_old_solution:
+            agent_message_buffer = deepcopy(
+                solution_agent.conversation.messages[-2:]
+            )
+            print(f"Storing an agent message buffer = {agent_message_buffer}")
+        result = solution_agent.run()
 
-    def prep_for_leetcode(code: str) -> str:
-        lines = code.split("\n")
-        modified_lines = ["class Solution():"]
-        for line in lines:
-            if line.startswith("def "):
-                line = "def " + line[4:].replace("(", "(self, ", 1)
-            modified_lines.append(f"  {line}")
-        return "\n".join(modified_lines)
+        cleaned_result = (
+            result.split("```python")[1].split("```")[0].replace("\\n", "\n")
+        )
+        print(f"Final Cleaned Result:\n{cleaned_result}")
 
-    lang = ProgrammingLanguage.PYTHON3
-    sub = LeetCodeSubmission(
-        code=prep_for_leetcode(cleaned_result),
-        lang=lang,
-        question_id=loader.get_backend_problem_id(index),
-        question_slug=loader.get_problem_slug(index),
-    )
+        exception, test_results = test_stand.run_tests_for_example(
+            index, cleaned_result
+        )
 
-    env = LeetCodeEnv()
+        for i in range(NUM_REFLECTIONS):
+            reflection_agent = solver.build_reflection_agent(
+                loader.get_problem_header(index).split("Constraints")[0],
+                result,
+                test_results,
+                exception,
+                solutions_finder,
+            )
 
-    status, reward, done, submission_result = env.step(sub)
-    solver.success_count += reward
-    print(status, reward, done, submission_result)
-    solver.log_result(index, reward)
+            reflection = reflection_agent.run()
+
+            solution_agent = solver.construct_agent(
+                loader.get_problem_header(index),
+                formatted_instructions,
+                solutions_finder,
+                False,
+            )
+
+            solution_agent.conversation.messages.extend(agent_message_buffer)
+
+            query_message = OpenAIChatMessage(
+                role="assistant",
+                content="Thoughts:\n  Excellent, the previous solution will be helpful in guiding our best solution. Further, we should query the solution history for additional information, this is a query we can only do once.\nAction:\n  I will now query the past solution history.",
+                function_call=FunctionCall(
+                    name="attempted-solution-history",
+                    arguments={
+                        "query": "Past solutions for 'Minimum Reverse Operations'"
+                    },
+                ),
+            )
+
+            solution_agent.conversation.messages.append(query_message)
+
+            response_message = OpenAIChatMessage(
+                role="user",
+                content=f"Previous Result:\n{result}\n\nTest Results:\n{test_results}\n\nExceptions:\n{exception}\n\nReflections:\n{reflection}",
+            )
+
+            solution_agent.conversation.messages.append(response_message)
+
+            result = solution_agent.run()
+
+            cleaned_result = (
+                result.split("```python")[1]
+                .split("```")[0]
+                .replace("\\n", "\n")
+            )
+            print(f"Final Cleaned Result:\n{cleaned_result}")
+
+            exception, test_results = test_stand.run_tests_for_example(
+                index, cleaned_result
+            )
+
+        print(
+            f"~~~Testing~~~\n\nException:\n{exception}\nTest Result:\n{test_results}"
+        )
+
+        def prep_for_leetcode(code: str) -> str:
+            lines = code.split("\n")
+            modified_lines = ["class Solution():"]
+            for line in lines:
+                if line.startswith("def "):
+                    line = "def " + line[4:].replace("(", "(self, ", 1)
+                modified_lines.append(f"  {line}")
+            return "\n".join(modified_lines)
+
+        lang = ProgrammingLanguage.PYTHON3
+        sub = LeetCodeSubmission(
+            code=prep_for_leetcode(cleaned_result),
+            lang=lang,
+            question_id=loader.get_backend_problem_id(index),
+            question_slug=loader.get_problem_slug(index),
+        )
+
+        env = LeetCodeEnv()
+
+        status, reward, done, submission_result = env.step(sub)
+        print(status, reward, done, submission_result)
+        solver.log_result(index, reward)
+    except:
+        print("Failed to run example")
+        solver.log_result(index, False)
 
 
 if __name__ == "__main__":
