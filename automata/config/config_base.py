@@ -65,6 +65,7 @@ class InstructionConfigVersion(PathEnum):
     """
 
     AGENT_INTRODUCTION = "agent-introduction"
+    PLUMB_BOT = "bad-introduction"
 
 
 class AgentConfigName(PathEnum):

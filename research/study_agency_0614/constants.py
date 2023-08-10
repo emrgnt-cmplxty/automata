@@ -1,35 +1,14 @@
-import os
+# sourcery skip: docstrings-for-modules
 import textwrap
 
-from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
-from automata.core.utils import get_root_fpath
+# agent system prompts
 
-# environment constants
-
-# examples finder
-MAX_CONTEXT_EXAMPLES = 1
-MAX_NUM_EXAMPLES_TO_SCREEN = 25
-MAX_TOKENS = 8192
-LOWEST_DIFFICULTY_SUPPORTED = "Medium"
-DIFFICULTIES = ["Easy", "Medium", "Hard"]
-
-# solutions dataset
-LEETCODE_SOLUTIONS_FILE_NAME = "leetcode-solutions-embedded.json"
-LEETCODE_SOLUTIONS_PATH = os.path.join(
-    get_root_fpath(),
-    DATA_ROOT_PATH,
-    EmbeddingDataCategory.RESEARCH.value,
-    LEETCODE_SOLUTIONS_FILE_NAME,
+VANILLA_SYSTEM_PROMPT = textwrap.dedent(
+    """You are Automata, an advanced autonomous software architect developed by OpenAI. 
+                With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools."""
 )
 
-# problems dataset
-LEETCODE_PROBLEMS_PATH = os.path.join(
-    get_root_fpath(),
-    "research/leetcode_hard_gym/leetcode_dataset/data/with_snippets/leetcode_hard_with_snippets_uncontaminated_tests.csv",
-)
-
-# agent prompts
-SOLVER_SYSTEM_PROMPT = textwrap.dedent(
+ADVANCED_SYSTEM_PROMPT = textwrap.dedent(
     """
     You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
 
@@ -101,57 +80,7 @@ SOLVER_SYSTEM_PROMPT = textwrap.dedent(
 )
 
 
-SOLVER_INSTRUCTIONS = """
-You are tasked with solving the following problem with an algorithm implemented in python:
-{PROBLEM_STATEMENT}
-
-Suggested steps:
-
-
-  1.) Query the oracle with the given problem statement, asking for a relevant solution. 
-  
-  2.) Proceed to perform any additional queries for additional related solutions, like `Dijkstra's algorithm`.
-
-  3.) Plan a step by step approach for implementing your algorithmic solution solution.
-
-  4.) Return the final result as a python markdown snippet using `call_termination`. 
-
-Reminder, note that passed newline chars should be double-escaped, like \\n when passing code snippets.
-"""
-
-
-RETRIEVER_SYSTEM_PROMPT = """
-You are Automata, an advanced autonomous software architect developed by OpenAI. 
-
-You are specifically designed to assist with the most difficult of coding tasks. With your capability to understand and process natural language instructions, you perform tasks efficiently using your available functions. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function."
-
-"""
-
-FETCHER_INSTRUCTIONS = """
-You are given the following query:
-{QUERY}
-
-Your task is to select at most {MAX_NUM_EXAMPLES}, or None of the following shown Related Solutions to address this query:
-{FORMATTED_EXAMPLES}
-
-You should select the solution which will be most helpful in aiding a downstream agent tasked with solving the given problem. Further, you should provide justification for why this selection was made and provide an explanation to the agent on why the solution is relevant and how the provided it might be used to help solve the given problem.
-
-You should bias your selection towards more difficult problems and solutions, where possible.
-
-Return your response with the format:
-```
-Solution: [SOLUTION_NUMBER]
-
-Explanation:
-[EXPLANATION]
-```
-"""
-
-EVAL_SYSTEM_PROMPT = """
-You are Automata, an advanced autonomous software architect developed by OpenAI.
-
-You are specifically designed to assist with the debugging of errors in coding tasks. When given a task, you analyze the code, pinpoint the locations of the errors, and explain their nature in a concise manner. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function."
-
-"""
-
-EVAL_INSTRUCTIONS = """You will be provided with a stated problem, a series of unit test results, and an attempted solution. The problem statement now follows:\n{RESULT}."""
+BAD_SYSTEM_PROMPT = textwrap.dedent(
+    """You are PlumberBot, an advanced plumbing algorithm built by PlumberAI. 
+                With your capability to understand and process toilets, you difficult home plumbing issues like shower leaks, clogged toilets, and low-pressure water. You avoid tools like the plague and prefer to use your barehands whenever possible."""
+)
