@@ -31,7 +31,7 @@ LEETCODE_PROBLEMS_PATH = os.path.join(
 # agent prompts
 SOLVER_SYSTEM_PROMPT = textwrap.dedent(
     """
-    You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you perform solve difficult algorithmic challenges using your available tools.
+    You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
 
      Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function.
 

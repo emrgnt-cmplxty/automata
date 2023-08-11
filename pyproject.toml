@@ -56,7 +56,7 @@ flask = "^2.3.2"
 responses = "^0.23.3"
 pytest-rerunfailures = "^12.0"
 questionary = "^1.10.0"
-human-eval = "^1.0.3"
+# evalplus = { path = "research/evalplus" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
@@ -97,6 +97,7 @@ exclude = '''
     | build
     | scip-python
     | research/leetcode_hard_gym
+    | research/evalplus
     | local_tasks
   )/
 )
@@ -106,7 +107,7 @@ exclude = '''
 # other mypy configurations go here
 # uncomment if this is being really annoying again
 ignore_missing_imports = true
-exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground|leetcode_hard_gym)/'
+exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground|leetcode_hard_gym|evalplus)/'
 
 [[tool.mypy.overrides]]
 module = "pytz.*"
