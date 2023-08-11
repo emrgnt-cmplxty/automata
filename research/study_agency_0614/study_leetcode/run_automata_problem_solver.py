@@ -8,14 +8,12 @@ import sys
 from copy import deepcopy
 from typing import Dict
 
-from constants import (
+from leetcode_constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
     LOWEST_DIFFICULTY_SUPPORTED,
     MAX_CONTEXT_EXAMPLES,
     MAX_NUM_EXAMPLES_TO_SCREEN,
-    SOLVER_INSTRUCTIONS,
-    SOLVER_SYSTEM_PROMPT,
 )
 from leetcode_problem_solver import LeetCodeSolver
 from leetcode_problems_loader import LeetCodeLoader
@@ -28,8 +26,6 @@ from automata.llm import (
     OpenAIChatMessage,
     OpenAIEmbeddingProvider,
 )
-from automata.singletons.dependency_factory import dependency_factory
-from automata.tools.agent_tool_factory import AgentToolFactory
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +96,7 @@ def main():  # sourcery skip: docstrings-for-functions
     solver = LeetCodeSolver(num_examples)
     embedding_provider = OpenAIEmbeddingProvider()
     test_stand = LeetCodeTestStand(loader=loader)
+    env = LeetCodeEnv()
 
     for index in solver.indices:
         try:

@@ -6,7 +6,7 @@ import logging.config
 from typing import Any, Generator, List, Tuple
 
 import pandas as pd
-from constants import LEETCODE_SOLUTIONS_PATH
+from leetcode_constants import LEETCODE_SOLUTIONS_PATH
 
 from automata.core.utils import get_logging_config
 from automata.llm import OpenAIEmbeddingProvider

@@ -22,7 +22,7 @@ class LeetCodeLoader:
         """Retrieve a problem by its index."""
         row = self.data.iloc[idx]
         description = row["description"]
-        ### We remove constraints since they are improperly formatted
+        # We remove constraints since they are improperly formatted
         description_ex_constraints = description.split("Constraints:")[
             0
         ].strip()
