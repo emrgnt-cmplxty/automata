@@ -56,6 +56,8 @@ flask = "^2.3.2"
 responses = "^0.23.3"
 pytest-rerunfailures = "^12.0"
 questionary = "^1.10.0"
+# TODO - Identify how to include this package
+# without breaking the build
 # evalplus = { path = "research/evalplus" }
 
 [tool.poetry.dev-dependencies]
