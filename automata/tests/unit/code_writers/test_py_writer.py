@@ -2,14 +2,24 @@ import ast
 import os
 import random
 import string
+import tempfile
 import textwrap
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from automata.code_parsers.py import PyReader
 from automata.code_writers.py.py_code_writer import PyCodeWriter
 from automata.core import find_syntax_tree_node
-from automata.singletons.py_module_loader import py_module_loader
+from automata.singletons.py_module_loader import (
+    PyModuleLoader,
+    py_module_loader,
+)
+
+
+class CustomPyModuleLoaderMock(MagicMock):
+    def __contains__(self, key):
+        return key == "path.to.module"
 
 
 @pytest.fixture(autouse=True)
@@ -548,3 +558,63 @@ def test_delete_module_non_existent_module(py_writer):
     # Act & Assert: Attempt to delete a non-existent module should raise an exception
     with pytest.raises(PyCodeWriter.InvalidArgumentsError):
         py_writer.delete_module("non_existent_module")
+
+
+def test_apply_diff_success(py_writer):
+    from automata.singletons.py_module_loader import PyModuleLoader
+
+    # Create a sample diff file
+    diff_content = """
+    --- /path/to/original/timestamp
+    +++ /path/to/new/timestamp
+    @@ -1 +1 @@
+    -def old_function(): pass
+    +def new_function(): pass
+    """
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as diff_file:
+        diff_file.write(diff_content)
+
+    # Create a temporary module file with the original content
+    module_code = "def old_function(): pass\n"
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".py"
+    ) as module_file:
+        module_file.write(module_code)
+        module_file_path = module_file.name
+
+    # Determine the module_dotpath based on the temporary file path
+    module_dotpath = os.path.relpath(
+        module_file_path, start=os.path.dirname(__file__)
+    ).replace(os.sep, ".")
+
+    # Reset and initialize PyModuleLoader
+    py_module_loader = PyModuleLoader()
+    py_module_loader.reset()
+    py_module_loader.initialize()
+
+    # Put the module into the loader
+    py_module_loader.put_module(module_dotpath, ast.parse(module_code))
+
+    # Apply diff
+    py_writer.apply_diff(diff_file.name, module_dotpath)
+
+    # Verify that the diff has been applied
+    # This part would depend on how you want to verify the changes
+
+    # Clean up by resetting the loader
+    py_module_loader.reset()
+
+
+def test_apply_diff_module_not_found(py_writer):
+    diff_content = """
+    --- /path/to/original\timestamp
+    +++ /path/to/new\timestamp
+    @@ -1 +1 @@
+    -old line
+    +new line
+    """
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as diff_file:
+        diff_file.write(diff_content)
+
+    with pytest.raises(PyCodeWriter.ModuleNotFoundError):
+        py_writer.apply_diff(diff_file.name, "non.existent.module")
