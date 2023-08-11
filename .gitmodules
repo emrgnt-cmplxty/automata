@@ -8,3 +8,6 @@
 [submodule "research/leetcode_hard_gym"]
 	path = research/leetcode_hard_gym
 	url = https://github.com/GammaTauAI/leetcode-hard-gym.git
+[submodule "research/evalplus"]
+	path = research/evalplus
+	url = git@github.com:evalplus/evalplus.git

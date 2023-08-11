@@ -28,6 +28,11 @@ SUPPORTED_MODEL_INFORMATION = {
         completion_token_cost=0.002,
         abs_max_tokens=4096,
     ),
+    "gpt-3.5-turbo-0613": ModelInformation(
+        prompt_token_cost=0.0015,
+        completion_token_cost=0.002,
+        abs_max_tokens=4096,
+    ),
     "gpt-3.5-turbo-16k": ModelInformation(
         prompt_token_cost=0.003,
         completion_token_cost=0.004,
