@@ -14,6 +14,7 @@ HUMANEVAL_SOLUTIONS_PATH = os.path.join(
     get_root_fpath(),
     DATA_ROOT_PATH,
     EmbeddingDataCategory.RESEARCH.value,
+    "human_eval_results",
     HUMANEVAL_SOLUTIONS_FILE_NAME,
 )
 

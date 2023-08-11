@@ -24,7 +24,7 @@ system_template: >
 
     *Assistant*
       content:
-        Thought: 
+        Thoughts: 
           I should start by searching for the most relevant documentation. To accomplish this I will first retrieve the top matches for "Automata". I will then retrieve the relevant documentation and code snippets, based on these results.
 
         Action:
@@ -43,7 +43,7 @@ system_template: >
 
     *Assistant*
       content:
-        Thought:
+        Thoughts:
           I should ...
 
         Action:
@@ -56,7 +56,7 @@ system_template: >
     
     *Assistant*
       content:
-        Thought:
+        Thoughts:
           We have sufficient information to return the correct result.
         
         Action:

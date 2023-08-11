@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import tiktoken
-from constants import (
+from leetcode_constants import (
     DIFFICULTIES,
     FETCHER_INSTRUCTIONS,
     MAX_TOKENS,

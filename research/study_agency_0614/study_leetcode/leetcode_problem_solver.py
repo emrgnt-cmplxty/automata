@@ -6,7 +6,7 @@ from typing import Optional
 from agentified_solution_oracle import (
     AgentifiedSolutionOracleOpenAIToolkitBuilder,
 )
-from constants import EVAL_SYSTEM_PROMPT, SOLVER_SYSTEM_PROMPT
+from leetcode_constants import EVAL_SYSTEM_PROMPT, SOLVER_SYSTEM_PROMPT
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
 
 from automata.agent import OpenAIAutomataAgent
