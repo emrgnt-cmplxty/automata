@@ -84,9 +84,8 @@ def main():  # sourcery skip: docstrings-for-functions
     loader = LeetCodeLoader(args.problems_data_path)
     env = LeetCodeEnv()
 
-    counter = 0
     correct = 0
-    for problem in input_problems:
+    for counter, problem in enumerate(input_problems, start=1):
         completion = problem["completion"]
         index = int(problem["task_id"].split("/")[1])
 
@@ -104,7 +103,6 @@ def main():  # sourcery skip: docstrings-for-functions
         status, reward, done, submission_result = env.step(sub)
         print(status, reward, done, submission_result)
         correct += int(reward)
-        counter += 1
         print(f"Fraction correct = {correct}/{counter}")
         time.sleep(5)
         # solver.log_result(index, reward)
