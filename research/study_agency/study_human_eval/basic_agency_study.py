@@ -1,5 +1,6 @@
 """Basic agency study, e.g. simple completion / agent generation"""
 import argparse
+import json
 import os
 
 from completion_provider import CompletionProvider, RunMode
@@ -17,6 +18,17 @@ HUMANEVAL_SOLUTIONS_PATH = os.path.join(
     "human_eval_results",
     HUMANEVAL_SOLUTIONS_FILE_NAME,
 )
+
+
+def load_existing_jsonl(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "r") as json_file:
+            return [json.loads(line) for line in json_file]
+    return []
+
+
+def load_existing_task_ids(existing_data):
+    return {entry["task_id"] for entry in existing_data}
 
 
 def main() -> None:
@@ -56,15 +68,28 @@ def main() -> None:
     num_samples = len(prompts)
     print(f"Number of samples: {num_samples}")
 
-    completion_seqs = []
     output_path = args.output_fpath.format(
         MODEL=args.model, TEMPERATURE=args.temperature, RUN_MODE=args.run_mode
     )
+
+    existing_data = load_existing_jsonl(output_path)
+    existing_task_ids = (
+        set() if args.overwrite else load_existing_task_ids(existing_data)
+    )
+
+    completion_seqs = existing_data or []
     if os.path.exists(output_path) and not args.overwrite:
         raise ValueError(f"Output path already exists: {output_path}")
 
     for i in tqdm(range(num_samples), ncols=0, total=num_samples):
         print(f"Loading sample i = {i}")
+
+        task_id = task_ids[i]
+        if task_id in existing_task_ids and not args.overwrite:
+            print(
+                f"Skipping task_id {task_id} as it already exists in the output file."
+            )
+            continue
 
         raw_prompt = prompts[i]
         print(f"Passing raw prompt ={raw_prompt}")
