@@ -63,7 +63,7 @@ def main() -> None:
     if os.path.exists(output_path) and not args.overwrite:
         raise ValueError(f"Output path already exists: {output_path}")
 
-    for i in tqdm(range(num_samples), ncols=0, total=num_samples):
+    for i in tqdm(range(0, 66), ncols=0, total=num_samples):
         print(f"Loading sample i = {i}")
 
         raw_prompt = prompts[i]
