@@ -5,6 +5,8 @@ import logging.config
 import subprocess
 from typing import cast
 
+from unidiff import PatchSet
+
 from automata.code_parsers.py.py_reader import PyReader
 from automata.core.utils import get_logging_config
 from automata.singletons.py_module_loader import py_module_loader
@@ -107,7 +109,7 @@ class PyCodeWriter:
             new_node_name = getattr(new_node, "name", None)
 
             # If the new node already exists in the module, remove the old node.
-            if new_node_name in nodes:
+            if new_node_name in nodes and nodes[new_node_name] in module.body:
                 module.body.remove(nodes[new_node_name])
 
             # Add the new node (either as an insert or an update)
@@ -151,3 +153,85 @@ class PyCodeWriter:
                 "Module does not exist in module dictionary."
             )
         py_module_loader.delete_module(module_dotpath)
+
+    def apply_diff(self, diff_file_path: str, module_dotpath: str) -> None:
+        """
+        Apply a diff file to the specified module.
+
+        Raises:
+            PyCodeWriter.ModuleNotFoundError: If the module is not found.
+            PyCodeWriter.InvalidArgumentsError: If the diff file is not valid.
+        """
+        if module_dotpath not in py_module_loader:
+            raise PyCodeWriter.ModuleNotFoundError(
+                "Module does not exist in module dictionary."
+            )
+
+        try:
+            self._process_diff_file(diff_file_path, module_dotpath)
+        except Exception as e:
+            raise PyCodeWriter.InvalidArgumentsError(
+                f"Failed to apply diff file: {e}"
+            ) from e
+
+    def _process_diff_file(
+        self, diff_file_path: str, module_dotpath: str
+    ) -> None:
+        """
+        Process a diff file and apply it to the specified module.
+
+        Raises:
+            PyCodeWriter.InvalidArgumentsError: If the diff file is not valid.
+            PyCodeWriter.ModuleNotFoundError: If the module is not found.
+        """
+        with open(diff_file_path, "r") as diff_file:
+            patch_set = PatchSet(diff_file)
+
+        module_ast = py_module_loader.fetch_ast_module(module_dotpath)
+        if module_ast is None:  # Handle the possibility of a None return
+            raise PyCodeWriter.ModuleNotFoundError(
+                f"Failed to fetch AST for module: {module_dotpath}"
+            )
+
+        source_code_lines = ast.unparse(module_ast).splitlines()
+
+        for patch in patch_set:
+            for hunk in patch:
+                original_lines = sum(
+                    bool(line.is_removed) for line in hunk
+                ) + sum(bool(line.is_context) for line in hunk)
+                new_lines = sum(bool(line.is_added) for line in hunk) + sum(
+                    bool(line.is_context) for line in hunk
+                )
+
+                if (
+                    original_lines
+                    != hunk.source_start + hunk.source_length - 1
+                    or new_lines != hunk.target_start + hunk.target_length - 1
+                ):
+                    raise PyCodeWriter.InvalidArgumentsError(
+                        "Hunk range information does not match the actual number of lines in the hunk."
+                    )
+
+                for line in hunk:
+                    if line.is_added:
+                        source_code_lines.insert(
+                            line.target_line_no - 1, line.value[1:]
+                        )
+                    elif line.is_removed:
+                        del source_code_lines[line.target_line_no - 1]
+
+        modified_source_code = "\n".join(source_code_lines)
+        modified_module = ast.parse(modified_source_code)
+
+        py_module_loader.put_module(module_dotpath, modified_module)
+
+        module_fpath = py_module_loader.fetch_existing_module_fpath_by_dotpath(
+            module_dotpath
+        )
+        if module_fpath is None:
+            raise PyCodeWriter.ModuleNotFoundError(
+                f"Failed to fetch file path for module: {module_dotpath}"
+            )
+
+        self._write_to_disk_and_format(module_fpath, modified_source_code)
