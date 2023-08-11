@@ -6,6 +6,12 @@ The following sections details the results, system prompts, instructions, and ag
 
 ## Results
 
+### GPT-3.5-03-01-turbo
+
+| Category                         | HumanEval | HumanEval+ |
+|----------------------------------|-----------|------------|
+| Zero-Shot                        | 64.63     | 53.04      |
+
 ### GPT-3.5-0613-turbo
 
 | Category                         | HumanEval | HumanEval+ |
@@ -13,7 +19,13 @@ The following sections details the results, system prompts, instructions, and ag
 | Zero-Shot                        | 62.20     | 54.88      |
 | Vanilla Agent, No Tools          | 64.02*    | 58.54*     |
 | Advanced Agent, No Tools         | 62.20*    | 56.71*     |
-| Advanced Agent, with Interpreter| 63.41*    | 55.49*     |
+| Advanced Agent, with Interpreter | 63.41*    | 55.49*     |
+
+### GPT-4-03-14-turbo
+
+| Category                         | HumanEval | HumanEval+ |
+|----------------------------------|-----------|------------|
+| Zero-Shot                        | 85.98     | 75.00      |
 
 ### GPT-4-0613-turbo
 
@@ -21,10 +33,11 @@ The following sections details the results, system prompts, instructions, and ag
 |----------------------------------|-----------|------------|
 | Zero-Shot                        | 81.71     | 76.22      |
 | Vanilla Agent, No Tools          | 82.93*    | 70.12*     |
+| Advanced Agent, No Tools         | 78.05*    | 73.78*     |
 
 ---
 
-The tabulated results showcase the performance of different configurations of the Large Language Models (LLMs) on the HumanEval dataset. Both GPT-3.5 and GPT-4 versions are evaluated across various modes, including Zero-Shot, Vanilla Agent, and Advanced Agent, with and without specific tools. The asterisk (*) denotes imputed values, where malformatted prompts are replaced with Zero-Shot solutions, leading to improved performance in some cases. These results provide insights into the capabilities of the models and their ability to handle complex algorithmic challenges.
+The tabulated results showcase the performance of different configurations of the Large Language Models (LLMs) on the HumanEval/HumanEval+ dataset. Both GPT-3.5 and GPT-4 versions are evaluated across various modes, including Zero-Shot, Vanilla Agent, and Advanced Agent, and with and without specific tools. The asterisk (*) denotes imputed values, where malformatted prompts are replaced with Zero-Shot solutions, leading to improved performance in some cases. These results provide insights into the capabilities of the models and their ability to handle complex algorithmic challenges.
 
 ## Approach Overview
 
