@@ -8,18 +8,21 @@ import sys
 from copy import deepcopy
 from typing import Dict
 
+from evalplus.data import write_jsonl
 from leetcode_constants import (
     LEETCODE_PROBLEMS_PATH,
     LEETCODE_SOLUTIONS_PATH,
     LOWEST_DIFFICULTY_SUPPORTED,
     MAX_CONTEXT_EXAMPLES,
     MAX_NUM_EXAMPLES_TO_SCREEN,
+    SOLVER_INSTRUCTIONS,
 )
 from leetcode_problem_solver import LeetCodeSolver
 from leetcode_problems_loader import LeetCodeLoader
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
 from leetcode_test_stand import LeetCodeTestStand
 
+from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
 from automata.core.utils import get_root_fpath
 from automata.llm import (
     FunctionCall,
@@ -44,7 +47,7 @@ from leetcode_env.leetcode_types import (  # type: ignore
     ProgrammingLanguage,
 )
 
-NUM_REFLECTIONS = 5
+NUM_REFLECTIONS = 1
 
 
 def main():  # sourcery skip: docstrings-for-functions
@@ -98,6 +101,24 @@ def main():  # sourcery skip: docstrings-for-functions
     test_stand = LeetCodeTestStand(loader=loader)
     env = LeetCodeEnv()
 
+    completion_seqs = []
+    model = "gpt-4-0613"
+    temperature = 0.7
+
+    LEETCODE_SOLUTIONS_OUTPUT_PATH = os.path.join(
+        get_root_fpath(),
+        DATA_ROOT_PATH,
+        EmbeddingDataCategory.RESEARCH.value,
+        "leetcode_results",
+    )
+
+    output_path = os.path.join(
+        LEETCODE_SOLUTIONS_OUTPUT_PATH,
+        "test_leetcode_model_eq_{MODEL}_temp_eq_{TEMPERATURE}_run_mode_eq_{RUN_MODE}_solutions.jsonl".format(
+            MODEL=model, TEMPERATURE=temperature, RUN_MODE="reflexion"
+        ),
+    )
+
     for index in solver.indices:
         try:
             problem_context = loader.get_problem_context(index)
@@ -124,6 +145,10 @@ def main():  # sourcery skip: docstrings-for-functions
 
             # Construcs an agent that will provide a solution to the
             # given LeetCode problem when ran
+            formatted_instructions = SOLVER_INSTRUCTIONS.format(
+                PROBLEM_STATEMENT=problem_context,
+                SHORTENED_PROBLEM_STATEMENT=f"{problem_context[:200]}...",
+            )
 
             solution_agent = solver.construct_agent(
                 loader.get_problem_header(index),
@@ -234,11 +259,21 @@ def main():  # sourcery skip: docstrings-for-functions
                 index, cleaned_result
             )
 
+            completion_seqs.append(
+                {
+                    "task_id": f"LeetCode-Hard/{index}",
+                    "completion": prep_for_leetcode(cleaned_result),
+                    "raw_completion": result,
+                }
+            )
+            print(f"Writing output to {output_path}")
+            write_jsonl(output_path, completion_seqs)
+
             status, reward, done, submission_result = env.step(sub)
             print(status, reward, done, submission_result)
             solver.log_result(index, reward)
-        except:
-            print("Failed to run example")
+        except Exception as e:
+            print(f"Failed to run example {e}")
             solver.log_result(index, False)
 
 

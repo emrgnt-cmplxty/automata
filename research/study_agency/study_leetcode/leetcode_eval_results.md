@@ -29,7 +29,7 @@ The following results showcase the scores obtained by different agents in the Py
 
 | Category                         | LeetCode-Hard |
 |----------------------------------|---------------|
-| Zero-Shot                        | 0.0           |
+| Zero-Shot                        | 2.43          |
 
 These results seem significantly worse than those reported by the recent Reflexion paper [1]. This needs further investigation.
 
