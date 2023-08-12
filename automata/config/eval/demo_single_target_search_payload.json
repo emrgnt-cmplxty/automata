@@ -3,7 +3,7 @@
         "template": {
             "input_function": {
                 "type": "FunctionCall",
-                "name": "llm-facilitated-search",
+                "name": "symbol-similarity-search",
                 "arguments": {
                     "query": "{query}"
                 }
@@ -18,7 +18,47 @@
             {
                 "query": "Which class is an abstract base class for building for agents?",
                 "result": "automata.agent.agent.Agent"
-            }        
+            },
+            {
+                "query": "Which class is an abstract base class for building agent tools?",
+                "result": "automata.agent.agent.AgentToolkitBuilder"
+            },
+            {
+                "query": "Which class enumerates the available agent tools?",
+                "result": "automata.agent.agent.AgentToolkitNames"
+            },
+            {
+                "query": "Which class represents a general agent error?",
+                "result": "automata.agent.error.AgentGeneralError"
+            },
+            {
+                "query": "Which class builds tools for an OpenAI agent?",
+                "result": "automata.agent.openai_agent.OpenAIAgentToolkitBuilder"
+            },
+            {
+                "query": "Which class manages an OpenAI agent lifecycle?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent"
+            },
+            {
+                "query": "Which method of the OpenAI agent is responsible for running the agent?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.run"
+            },
+            {
+                "query": "Which private method does the OpenAI agent call to perform setup?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent._setup"
+            },
+            {
+                "query": "Which class is responsible for executing instructions and reporting results back to the main system?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent"
+            },
+            {
+                "query": "Which method of the OpenAI agent is responsible for executing a single iteration of the task?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.__next__"
+            },
+            {
+                "query": "Which method of the OpenAI agent is responsible for running the agent and iterating through the tasks until a result is produced?",
+                "result": "automata.agent.openai_agent.OpenAIAutomataAgent.run"
+            }
         ]
     }
 ]

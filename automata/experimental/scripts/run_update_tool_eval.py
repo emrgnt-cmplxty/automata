@@ -293,6 +293,8 @@ def get_processed_paths(
     for item in data:
         for entry in item["entries"]:
             logger.info(f"Loading Entry {entry}")
+            if not isinstance(entry["result"], str):
+                continue
             processed_paths.add(entry["result"])
     return processed_paths
 
@@ -306,6 +308,7 @@ def filter_entries(
         item["entries"] = [
             entry
             for entry in item["entries"]
+            if isinstance(entry["result"], str)
             if entry["result"] in expected_symbol_dotpaths
         ]
     return data
@@ -409,6 +412,10 @@ def filter_and_log_symbols(
     missing_symbols_dotpaths = get_missing_symbols(
         processed_paths, expected_symbol_dotpaths
     )
+
+    missing_symbols_dotpaths = [
+        ele for ele in missing_symbols_dotpaths if "test" not in ele
+    ]
 
     logger.warning(
         f"We found {len(extra_symbol_dotpaths)} extra symbols = {extra_symbol_dotpaths}"

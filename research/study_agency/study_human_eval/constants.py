@@ -67,12 +67,6 @@ ADVANCED_SYSTEM_PROMPT_RETURN_ONLY = textwrap.dedent(
 )
 
 
-BAD_SYSTEM_PROMPT_RETURN_ONLY = textwrap.dedent(
-    """You are PlumberBot, an advanced plumbing algorithm built by PlumberAI. 
-                With your capability to understand and process toilets, you difficult home plumbing issues like shower leaks, clogged toilets, and low-pressure water. You avoid tools like the plague and prefer to use your barehands whenever possible."""
-)
-
-
 ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER = textwrap.dedent(
     """
     You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
@@ -116,7 +110,7 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER = textwrap.dedent(
         function_call:
           {
             'name': 'py-set-tests', 
-            'arguments': '{"code": "```python\nresult_1 = addTwoNumbers(ListNode([2,3,4]), ListNode([5,6,4]))\\nprint(f"Found {result_1}, expected [7,0,8]")\\nresult_2 = addTwoNumbers(ListNode([0]), ListNode([0]))\\nprint(f"Found {result_2}, expected [0]")\\nresult_3 = addTwoNumbers(ListNode([9,9,9]), ListNode([1]))\\nprint(f"Found {result_3}, expected [0,0,0,1]"}'
+            'arguments': '{"code": "```python\\nresult_1 = addTwoNumbers(ListNode([2,3,4]), ListNode([5,6,4]))\\nprint(f"Found {result_1}, expected [7,0,8]")\\nresult_2 = addTwoNumbers(ListNode([0]), ListNode([0]))\\nprint(f"Found {result_2}, expected [0]")\\nresult_3 = addTwoNumbers(ListNode([9,9,9]), ListNode([1]))\\nprint(f"Found {result_3}, expected [0,0,0,1]"}'
           }
 
               

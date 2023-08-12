@@ -87,6 +87,7 @@ def main():  # sourcery skip: docstrings-for-functions
     correct = 0
     for counter, problem in enumerate(input_problems, start=1):
         completion = problem["completion"]
+        print("raw completion = ", problem["raw_completion"])
         index = int(problem["task_id"].split("/")[1])
 
         print(
@@ -101,10 +102,20 @@ def main():  # sourcery skip: docstrings-for-functions
         )
 
         status, reward, done, submission_result = env.step(sub)
-        print(status, reward, done, submission_result)
+        print(status, reward, done)
+        print("submission_result = ", submission_result)
+        # print(
+        #     "submission_result['total_correct]=",
+        #     submission_result["total_correct"],
+        # )
+        # print(
+        #     "submission_result['total_testcases]=",
+        #     submission_result["total_testcases"],
+        # )
+
         correct += int(reward)
         print(f"Fraction correct = {correct}/{counter}")
-        time.sleep(5)
+        time.sleep(10)
         # solver.log_result(index, reward)
 
 

@@ -115,10 +115,14 @@ def main():  # sourcery skip: docstrings-for-functions
     output_path = args.solutions_output_data_path.format(
         MODEL=args.model, TEMPERATURE=args.temperature, RUN_MODE=args.run_mode
     )
+    print(f"Loading from {output_path}")
     existing_data = load_existing_jsonl(output_path)
+    print(f"existing_data = {existing_data}")
     existing_task_ids = (
         set() if args.overwrite else load_existing_task_ids(existing_data)
     )
+
+    print(f"existing_task_ids = {existing_task_ids}")
 
     completion_seqs = existing_data or []
     env = LeetCodeEnv()
@@ -166,7 +170,8 @@ def main():  # sourcery skip: docstrings-for-functions
             print(f"Writing output to {output_path}")
             write_jsonl(output_path, completion_seqs)
 
-        except Exception:
+        except Exception as e:
+            print(f"Failed with exception {e}")
             write_jsonl(output_path, completion_seqs)
             solver.log_result(index, False)
 

@@ -10,7 +10,7 @@ from tqdm import tqdm
 from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
 from automata.core.utils import get_root_fpath
 
-HUMANEVAL_SOLUTIONS_FILE_NAME = "test_human_eval_model_eq_{MODEL}_temp_eq_{TEMPERATURE}_run_mode_eq_{RUN_MODE}_solutions.jsonl"
+HUMANEVAL_SOLUTIONS_FILE_NAME = "test_human_eval_model_eq_{MODEL}_temp_eq_{TEMPERATURE}_run_mode_eq_{RUN_MODE}_solutions_take2.jsonl"
 HUMANEVAL_SOLUTIONS_PATH = os.path.join(
     get_root_fpath(),
     DATA_ROOT_PATH,
@@ -78,10 +78,11 @@ def main() -> None:
     )
 
     completion_seqs = existing_data or []
-    if os.path.exists(output_path) and not args.overwrite:
-        raise ValueError(f"Output path already exists: {output_path}")
+    # if os.path.exists(output_path) and not args.overwrite:
+    #     raise ValueError(f"Output path already exists: {output_path}")
 
-    for i in tqdm(range(num_samples), ncols=0, total=num_samples):
+    # for i in tqdm(range(num_samples), ncols=0, total=num_samples):
+    for i in tqdm(range(0, 60), ncols=0, total=num_samples):
         print(f"Loading sample i = {i}")
 
         task_id = task_ids[i]

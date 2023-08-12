@@ -6,7 +6,6 @@ from typing import List, Optional, Tuple
 from constants import (
     ADVANCED_SYSTEM_PROMPT_RETURN_ONLY,
     ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER,
-    BAD_SYSTEM_PROMPT_RETURN_ONLY,
     VANILLA_SYSTEM_PROMPT_RETURN_ONLY,
 )
 
@@ -24,7 +23,6 @@ class RunMode(Enum):
     VANILLA = "vanilla"
     VANILLA_AGENT_RETURN_ONLY = "vanilla-agent-return-only"
     ADVANCED_AGENT_RETURN_ONLY = "advanced-agent-return-only"
-    BAD_AGENT_RETURN_ONLY = "bad-agent-return-only"
 
     ADVANCED_AGENT_WITH_INTERPRETER = "advanced-agent-with-interpreter"
 
@@ -97,11 +95,6 @@ class CompletionProvider:
             .with_temperature(self.temperature)
         )
 
-        if self.run_mode == RunMode.BAD_AGENT_RETURN_ONLY:
-            config_builder = config_builder.with_instruction_version(  # type: ignore
-                "bad-introduction"
-            )
-
         agent = OpenAIAutomataAgent(instructions, config_builder.build())
 
         try:
@@ -134,8 +127,6 @@ class CompletionProvider:
             return VANILLA_SYSTEM_PROMPT_RETURN_ONLY
         elif self.run_mode == RunMode.ADVANCED_AGENT_RETURN_ONLY:
             return ADVANCED_SYSTEM_PROMPT_RETURN_ONLY
-        elif self.run_mode == RunMode.BAD_AGENT_RETURN_ONLY:
-            return BAD_SYSTEM_PROMPT_RETURN_ONLY
         elif self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER:
             return ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER
         else:
@@ -168,7 +159,6 @@ class CompletionProvider:
         elif self.run_mode in [
             RunMode.VANILLA_AGENT_RETURN_ONLY,
             RunMode.ADVANCED_AGENT_RETURN_ONLY,
-            RunMode.BAD_AGENT_RETURN_ONLY,
         ]:
             return textwrap.dedent(
                 """                
