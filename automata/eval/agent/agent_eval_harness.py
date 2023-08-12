@@ -40,8 +40,6 @@ class AgentEvalSetLoader:
 
         for payload in payloads:
             instructions = payload.get("instructions")
-            print("payload = ", payload)
-            print("instructions = ", instructions)
             expected_actions = payload.get("expected_actions")
 
             if not isinstance(instructions, str):

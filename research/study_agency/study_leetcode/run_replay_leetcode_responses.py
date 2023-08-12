@@ -103,20 +103,10 @@ def main():  # sourcery skip: docstrings-for-functions
 
         status, reward, done, submission_result = env.step(sub)
         print(status, reward, done)
-        print("submission_result = ", submission_result)
-        # print(
-        #     "submission_result['total_correct]=",
-        #     submission_result["total_correct"],
-        # )
-        # print(
-        #     "submission_result['total_testcases]=",
-        #     submission_result["total_testcases"],
-        # )
 
         correct += int(reward)
         print(f"Fraction correct = {correct}/{counter}")
         time.sleep(10)
-        # solver.log_result(index, reward)
 
 
 if __name__ == "__main__":

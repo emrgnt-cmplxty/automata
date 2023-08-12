@@ -117,12 +117,9 @@ def main():  # sourcery skip: docstrings-for-functions
     )
     print(f"Loading from {output_path}")
     existing_data = load_existing_jsonl(output_path)
-    print(f"existing_data = {existing_data}")
     existing_task_ids = (
         set() if args.overwrite else load_existing_task_ids(existing_data)
     )
-
-    print(f"existing_task_ids = {existing_task_ids}")
 
     completion_seqs = existing_data or []
     env = LeetCodeEnv()
