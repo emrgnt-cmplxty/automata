@@ -266,7 +266,13 @@ class OpenAIAutomataAgent(Agent):
                     content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
             except Exception as e:
-                logger.info(f"Tool execution failed: {e}")
+                failure_message = f"Tool execution failed: {e}"
+                logger.info(failure_message)
+                return OpenAIChatMessage(
+                    role="user",
+                    content=failure_message,
+                )
+
         return OpenAIChatMessage(
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}\n{self._get_iteration_status()}",

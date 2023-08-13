@@ -8,7 +8,6 @@ from typing import List, Optional
 from evalplus.data import write_jsonl
 
 from automata.cli.cli_utils import initialize_py_module_loader
-from automata.core.utils import get_root_fpath
 from automata.eval import (
     SymbolSearchAction,
     SymbolSearchEval,
@@ -87,11 +86,11 @@ def run_eval_harness(
 
                 logger.debug(f"Search Query: {expected_action.query}")
                 logger.debug(
-                    f"Truth Top Match: {expected_action.search_results[0]}\n"
+                    f"Truth Top Match: {expected_action.search_results[0]}\n"  # type: ignore
                 )
 
                 logger.debug(
-                    f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"
+                    f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"  # type: ignore
                 )
 
                 logger.debug(
@@ -103,8 +102,8 @@ def run_eval_harness(
                 {
                     "task_id": f"ContextCodeRetrieval/{counter}",
                     "query": expected_action.query,
-                    "truth_top_match": expected_action.search_results[0],
-                    "top_k_matches": observed_action.search_results[
+                    "truth_top_match": expected_action.search_results[0],  # type: ignore
+                    "top_k_matches": observed_action.search_results[  # type: ignore
                         :TOP_K_MATCHES
                     ],
                     "k": TOP_K_MATCHES,

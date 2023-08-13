@@ -29,6 +29,6 @@ echo 'running command', node scip-python/packages/pyright-scip/index index --pro
 # Note, output path below is relative
 node scip-python/packages/pyright-scip/index index --project-name $PROJECT_NAME --output $EMBEDDING_DATA_DIR/indices/$PROJECT_NAME.scip --target-only $TARGET_DIR
 
-poetry run automata run-code-embedding
+GRAPH_TYPE=dynamic poetry run automata run-code-embedding
 poetry run automata run-doc-embedding
 cd -

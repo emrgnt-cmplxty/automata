@@ -57,7 +57,6 @@ class LeetCodeSolver:
         """Construct an agent to solve the given problem."""
 
         config = self._get_agent_config(system_prompt, solutions_finder)
-        print("building an agent with config = ", config)
         agent = OpenAIAutomataAgent(formatted_instructions, config)
 
         if include_leetcode_best_old_solution:
