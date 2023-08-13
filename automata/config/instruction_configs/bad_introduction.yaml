@@ -1,8 +1,0 @@
-input_variables:
-  - initializer_dummy_tool
-  - user_input_instructions
-initial_messages:
-  - role: assistant
-    content: Hello, I am PlumbBot. How may I assist you today?
-  - role: user
-    content: Please carry out the following instruction "{user_input_instructions}"

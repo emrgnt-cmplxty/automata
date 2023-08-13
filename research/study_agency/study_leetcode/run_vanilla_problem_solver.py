@@ -7,13 +7,18 @@ import logging
 import os
 import sys
 
+from agentified_solution_oracle import (
+    AgentifiedSolutionOracleOpenAIToolkitBuilder,
+)
 from evalplus.data import write_jsonl
-from leetcode_constants import LEETCODE_PROBLEMS_PATH
+from leetcode_constants import LEETCODE_PROBLEMS_PATH, LEETCODE_SOLUTIONS_PATH
 from leetcode_problem_solver import LeetCodeSolver
 from leetcode_problems_loader import LeetCodeLoader
+from leetcode_solutions_finder import LeetCodeSolutionsFinder
 
 from automata.config import DATA_ROOT_PATH, EmbeddingDataCategory
 from automata.core.utils import get_root_fpath
+from automata.llm import OpenAIEmbeddingProvider
 
 # Get the absolute path of the leetcode directory
 leetcode_gym_location = os.path.join(
@@ -111,10 +116,12 @@ def main():  # sourcery skip: docstrings-for-functions
         model=args.model,
         temperature=args.temperature,
     )
+    embedding_provider = OpenAIEmbeddingProvider()
 
     output_path = args.solutions_output_data_path.format(
         MODEL=args.model, TEMPERATURE=args.temperature, RUN_MODE=args.run_mode
     )
+    print(f"Loading from {output_path}")
     existing_data = load_existing_jsonl(output_path)
     existing_task_ids = (
         set() if args.overwrite else load_existing_task_ids(existing_data)
@@ -138,11 +145,30 @@ def main():  # sourcery skip: docstrings-for-functions
         )
 
         try:
+            tools = []
+            if (
+                args.run_mode
+                == RunMode.ADVANCED_AGENT_WITH_INTERPRETER_AND_ORACLE.value
+            ):
+                solutions_finder = LeetCodeSolutionsFinder(
+                    embedding_provider,
+                    max_entry_id=loader.get_frontend_problem_id(
+                        index
+                    ),  # Solutions are indexed along frontend problem id
+                    max_num_examples=1,
+                    num_examples_to_screen=25,
+                    solutions_data_path=LEETCODE_SOLUTIONS_PATH,
+                    lowest_difficulty="Medium",
+                )
+                tools = AgentifiedSolutionOracleOpenAIToolkitBuilder(
+                    leetcode_solution_finder=solutions_finder
+                ).build_for_open_ai()  # type: ignore
+
             (
                 raw_completion,
                 clean_completion,
             ) = completion_provider.get_raw_and_cleaned_completions(
-                problem_context
+                problem_context, tools
             )
 
             sub = LeetCodeSubmission(
@@ -166,7 +192,8 @@ def main():  # sourcery skip: docstrings-for-functions
             print(f"Writing output to {output_path}")
             write_jsonl(output_path, completion_seqs)
 
-        except Exception:
+        except Exception as e:
+            print(f"Failed with exception {e}")
             write_jsonl(output_path, completion_seqs)
             solver.log_result(index, False)
 

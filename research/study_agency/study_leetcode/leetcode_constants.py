@@ -29,7 +29,7 @@ LEETCODE_PROBLEMS_PATH = os.path.join(
 )
 
 # agent prompts
-SOLVER_SYSTEM_PROMPT = textwrap.dedent(
+ADVANCED_SYSTEM_PROMPT_WITH_SOLUTION_ORACLE = textwrap.dedent(
     """
     You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
 
@@ -95,7 +95,7 @@ SOLVER_SYSTEM_PROMPT = textwrap.dedent(
       Note, the examples are only provided above to give necessary context around the operating procedure. In production, `# ... (Continued interaction) ...` will be replaced with actual conversation contents. 
       
       
-      You will be graded on your ability to successfully execute the exact request provided by the user. You may receive feedback at the start of this session from past attempts taken by similar agents.
+      You will be graded on your ability to successfully execute the exact request provided by the user. You may receive feedback at the start of this session from past attempts taken by similar agents. Be sure to return your response as a single function with the header shown in the snippet, e.g. `def addTwoNumbers` in the provided example.
 
     """
 )

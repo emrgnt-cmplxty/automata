@@ -5,6 +5,8 @@ Script to run evaluation for a list of tasks specified in a JSON file.
 import logging
 from typing import List, Optional
 
+from evalplus.data import write_jsonl
+
 from automata.cli.cli_utils import initialize_py_module_loader
 from automata.eval import (
     SymbolSearchAction,
@@ -64,7 +66,8 @@ def run_eval_harness(
         eval_loader.expected_actions,
         tool_execution,
     )
-    for result in output.results:
+    outputs = []
+    for counter, result in enumerate(output.results):
         if isinstance(result, SymbolSearchEvalResult):
             expected_action = result.expected_action
             if not isinstance(expected_action, SymbolSearchAction):
@@ -72,26 +75,43 @@ def run_eval_harness(
                     "Expected action must be a SymbolSearchAction."
                 )
 
-            logger.debug(f"Search Query: {expected_action.query}")
-            logger.debug(
-                f"Truth Top Match: {expected_action.search_results[0]}\n"
-            )
-
-            logger.debug("- Observed Results - \n")
             if observed_action := result.observed_action:
                 if not isinstance(observed_action, SymbolSearchAction):
                     raise ValueError(
                         "Observed action must be a SymbolSearchAction."
                     )
 
+            if not result.is_partial_match:
+                logger.debug("- Observed Results - \n")
+
+                logger.debug(f"Search Query: {expected_action.query}")
                 logger.debug(
-                    f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"
+                    f"Truth Top Match: {expected_action.search_results[0]}\n"  # type: ignore
                 )
-            logger.debug(
-                f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"
+
+                logger.debug(
+                    f"Top {TOP_K_MATCHES} Search Results: {observed_action.search_results[:TOP_K_MATCHES]}\n"  # type: ignore
+                )
+
+                logger.debug(
+                    f"Full Match: {result.is_full_match}\nPartial Match: {result.is_partial_match}"
+                )
+
+                logger.debug("=" * 150)
+            outputs.append(
+                {
+                    "task_id": f"ContextCodeRetrieval/{counter}",
+                    "query": expected_action.query,
+                    "truth_top_match": expected_action.search_results[0],  # type: ignore
+                    "top_k_matches": observed_action.search_results[  # type: ignore
+                        :TOP_K_MATCHES
+                    ],
+                    "k": TOP_K_MATCHES,
+                }
             )
 
-            logger.debug("=" * 150)
+    # TODO - Put output_filepath in commands.py upstream
+    write_jsonl(kwargs.get("output_filepath", "eval_results.jsonl"), outputs)
     logger.debug(output)
     logger.debug("=" * 150)
 

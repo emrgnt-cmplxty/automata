@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 from constants import (
     ADVANCED_SYSTEM_PROMPT_RETURN_ONLY,
     ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER,
-    BAD_SYSTEM_PROMPT_RETURN_ONLY,
+    ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER_AND_ORACLE,
     VANILLA_SYSTEM_PROMPT_RETURN_ONLY,
 )
 
@@ -24,9 +24,11 @@ class RunMode(Enum):
     VANILLA = "vanilla"
     VANILLA_AGENT_RETURN_ONLY = "vanilla-agent-return-only"
     ADVANCED_AGENT_RETURN_ONLY = "advanced-agent-return-only"
-    BAD_AGENT_RETURN_ONLY = "bad-agent-return-only"
 
     ADVANCED_AGENT_WITH_INTERPRETER = "advanced-agent-with-interpreter"
+    ADVANCED_AGENT_WITH_INTERPRETER_AND_ORACLE = (
+        "advanced-agent-with-interpreter-and-oracle"
+    )
 
 
 class CompletionProvider:
@@ -38,7 +40,7 @@ class CompletionProvider:
         self.temperature = temperature
 
     def get_raw_and_cleaned_completions(
-        self, raw_prompt: str
+        self, raw_prompt: str, additional_tools=[]
     ) -> Tuple[str, str]:
         """Returns the raw and cleaned completions for the given prompt"""
         if self.run_mode == RunMode.VANILLA:
@@ -50,7 +52,11 @@ class CompletionProvider:
             vanilla_system_prompt = self.get_system_prompt()
             vanilla_instructions = self.get_formatted_instruction(raw_prompt)
             tools = []
-            if self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER:
+            if (
+                self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER
+                or self.run_mode
+                == RunMode.ADVANCED_AGENT_WITH_INTERPRETER_AND_ORACLE
+            ):
                 toolkits = ["py-interpreter"]
 
                 tool_dependencies = (
@@ -59,7 +65,7 @@ class CompletionProvider:
                 tools = AgentToolFactory.build_tools(
                     toolkits, **tool_dependencies
                 )
-
+            tools += additional_tools
             raw_completion = self.generate_agent_completion(
                 vanilla_system_prompt, vanilla_instructions, tools
             )
@@ -97,11 +103,6 @@ class CompletionProvider:
             .with_temperature(self.temperature)
         )
 
-        if self.run_mode == RunMode.BAD_AGENT_RETURN_ONLY:
-            config_builder = config_builder.with_instruction_version(  # type: ignore
-                "bad-introduction"
-            )
-
         agent = OpenAIAutomataAgent(instructions, config_builder.build())
 
         try:
@@ -134,10 +135,13 @@ class CompletionProvider:
             return VANILLA_SYSTEM_PROMPT_RETURN_ONLY
         elif self.run_mode == RunMode.ADVANCED_AGENT_RETURN_ONLY:
             return ADVANCED_SYSTEM_PROMPT_RETURN_ONLY
-        elif self.run_mode == RunMode.BAD_AGENT_RETURN_ONLY:
-            return BAD_SYSTEM_PROMPT_RETURN_ONLY
         elif self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER:
             return ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER
+
+        elif (
+            self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER_AND_ORACLE
+        ):
+            return ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER_AND_ORACLE
         else:
             raise ValueError(f"Invalid run mode: {self.run_mode}")
 
@@ -168,7 +172,6 @@ class CompletionProvider:
         elif self.run_mode in [
             RunMode.VANILLA_AGENT_RETURN_ONLY,
             RunMode.ADVANCED_AGENT_RETURN_ONLY,
-            RunMode.BAD_AGENT_RETURN_ONLY,
         ]:
             return textwrap.dedent(
                 """                

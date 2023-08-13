@@ -35,7 +35,7 @@ logging.config.dictConfig(get_logging_config())
 class AgentifiedSearchToolkitBuilder(AgentToolkitBuilder):
     """Builds tools for agent facilitated search"""
 
-    TOP_N = 10
+    TOP_N = 20
     MODEL = "gpt-4"
     TEMPERATURE = 0.7
     STREAM = True

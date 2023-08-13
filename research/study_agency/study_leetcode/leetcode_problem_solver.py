@@ -6,7 +6,10 @@ from typing import Optional
 from agentified_solution_oracle import (
     AgentifiedSolutionOracleOpenAIToolkitBuilder,
 )
-from leetcode_constants import EVAL_SYSTEM_PROMPT, SOLVER_SYSTEM_PROMPT
+from leetcode_constants import (
+    ADVANCED_SYSTEM_PROMPT_WITH_SOLUTION_ORACLE,
+    EVAL_SYSTEM_PROMPT,
+)
 from leetcode_solutions_finder import LeetCodeSolutionsFinder
 
 from automata.agent import OpenAIAutomataAgent
@@ -49,12 +52,11 @@ class LeetCodeSolver:
         formatted_instructions: str,
         solutions_finder: LeetCodeSolutionsFinder,
         include_leetcode_best_old_solution: bool = True,
-        system_prompt: str = SOLVER_SYSTEM_PROMPT,
+        system_prompt: str = ADVANCED_SYSTEM_PROMPT_WITH_SOLUTION_ORACLE,
     ) -> OpenAIAutomataAgent:
         """Construct an agent to solve the given problem."""
 
         config = self._get_agent_config(system_prompt, solutions_finder)
-        print("building an agent with config = ", config)
         agent = OpenAIAutomataAgent(formatted_instructions, config)
 
         if include_leetcode_best_old_solution:

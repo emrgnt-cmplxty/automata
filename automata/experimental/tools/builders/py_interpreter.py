@@ -4,6 +4,7 @@ import contextlib
 import io
 import logging
 import logging.config
+import signal
 from typing import List, Optional, Tuple
 
 # Import the entire symbol module so that we can properly patch convert_to_ast_object
@@ -71,6 +72,15 @@ class PyInterpreter:
         exec_payload += "    global_exception = e\n"
         exec_payload += "    raise e"
 
+        def handler(signum, frame) -> TimeoutError:
+            raise TimeoutError("Execution timed out")
+
+        signal.signal(signal.SIGALRM, handler)
+        # TODO - move to decorator to enable cross-platform compatibility
+        # external dependency `timeout_decorator` is one potential choice
+
+        signal.alarm(5)  # Set a 5-second alarm
+
         try:
             with contextlib.redirect_stdout(output_buffer):
                 exec(exec_payload, {**globals()})
@@ -86,6 +96,8 @@ class PyInterpreter:
                 False,
                 f"Execution failed with error '{e}' after outputting {output_buffer.getvalue().strip() or None}",
             )
+        finally:
+            signal.alarm(0)  # Disable the alarm
 
     def set_tests(self, code: str, overwrite: bool = True) -> str:
         """Sets up the provided code and persists the context to the local execution buffer."""
