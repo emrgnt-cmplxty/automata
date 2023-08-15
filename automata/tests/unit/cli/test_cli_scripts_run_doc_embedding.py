@@ -91,7 +91,7 @@ def test_initialize_providers(
         "symbol_graph": symbol_graph_mock,
         "code_embedding_db": ChromaSymbolEmbeddingVectorDatabase_mock.return_value,
         "doc_embedding_db": ChromaSymbolEmbeddingVectorDatabase_mock.return_value,
-        "embedding_provider": OpenAIEmbeddingProvider_mock.return_value,
+        "embedding_provider": openai_embedding_provider_mock.return_value,
         "disable_synchronization": True,
     }
     set_overrides_mock.assert_called_once_with(**overrides)
