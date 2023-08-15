@@ -56,14 +56,14 @@ def symbol_doc_embedding_handler_mock():
 def test_initialize_providers(
     get_mock,
     set_overrides_mock,
-    OpenAIEmbeddingProvider_mock,
+    openai_embedding_provider_mock,
     ChromaSymbolEmbeddingVectorDatabase_mock,
     SymbolGraph_mock,
     symbol_graph_mock,
 ):
     SymbolGraph_mock.return_value = symbol_graph_mock
     ChromaSymbolEmbeddingVectorDatabase_mock.return_value = MagicMock()
-    OpenAIEmbeddingProvider_mock.return_value = MagicMock()
+    openai_embedding_provider_mock.return_value.return_value = MagicMock()
     symbol_code_embedding_handler = MagicMock()
     symbol_code_embedding_handler._get_sorted_supported_symbols.return_value = [
         FakeSymbol("symbol1"),
