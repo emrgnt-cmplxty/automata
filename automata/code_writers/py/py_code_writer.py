@@ -2,14 +2,16 @@
 import ast
 import logging
 import logging.config
+import os
 import subprocess
 from typing import cast
 
 from unidiff import PatchSet
 
 from automata.code_parsers.py.py_reader import PyReader
-from automata.core.utils import get_logging_config
+from automata.core.utils import get_logging_config, get_root_fpath
 from automata.singletons.py_module_loader import py_module_loader
+from automata.code_parsers.py.dotpath_map import convert_fpath_to_module_dotpath
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -162,76 +164,73 @@ class PyCodeWriter:
             PyCodeWriter.ModuleNotFoundError: If the module is not found.
             PyCodeWriter.InvalidArgumentsError: If the diff file is not valid.
         """
-        if module_dotpath not in py_module_loader:
-            raise PyCodeWriter.ModuleNotFoundError(
-                "Module does not exist in module dictionary."
-            )
+        # if module_dotpath not in py_module_loader:
+        #     raise PyCodeWriter.ModuleNotFoundError(
+        #         "Module does not exist in module dictionary."
+        #     )
 
-        try:
-            self._process_diff_file(diff_file_path, module_dotpath)
-        except Exception as e:
-            raise PyCodeWriter.InvalidArgumentsError(
-                f"Failed to apply diff file: {e}"
-            ) from e
+        # try:
+        #     self._process_diff_file(diff_file_path, module_dotpath)
+        # except Exception as e:
+        #     raise PyCodeWriter.InvalidArgumentsError(
+        #         f"Failed to apply diff file: {e}"
+        #     ) from e
+        
+        root_directory = get_root_fpath()
+        diff_module_dotpath = convert_fpath_to_module_dotpath(root_directory, diff_file_path, "")
+        module_dotpath = convert_fpath_to_module_dotpath(root_directory, module_dotpath, "")
+        logger.info(f"diff_module_dotpath: {diff_module_dotpath}")
+        logger.info(f"module_dotpath: {module_dotpath}")
+
+        # Use PyCodeWriter to save the edited content
+        py_reader = PyReader()
+        py_writer = PyCodeWriter(py_reader)
+        
+        script_content = py_reader.get_source_code(diff_module_dotpath)
+        diff_module_ast = ast.parse(script_content)
+
+        module = py_module_loader.fetch_ast_module(module_dotpath)
+        if module is None:
+            logger.error(f"Failed to fetch module for dotpath: {module_dotpath}")
+            return
+
+        py_writer.upsert_to_module(module, diff_module_ast)
+        py_writer.write_module_to_disk(module_dotpath)
+
+        logger.info(f"Processed and saved file: {diff_file_path} to module: {module_dotpath}")
 
     def _process_diff_file(
         self, diff_file_path: str, module_dotpath: str
     ) -> None:
         """
-        Process a diff file and apply it to the specified module.
+        Process a unidiff file and apply it to the specified module.
 
         Raises:
             PyCodeWriter.InvalidArgumentsError: If the diff file is not valid.
             PyCodeWriter.ModuleNotFoundError: If the module is not found.
         """
-        with open(diff_file_path, "r") as diff_file:
-            patch_set = PatchSet(diff_file)
+        # Read the diff file
+        with open(diff_file_path, 'r') as f:
+            lines = f.readlines()
 
-        module_ast = py_module_loader.fetch_ast_module(module_dotpath)
-        if module_ast is None:  # Handle the possibility of a None return
-            raise PyCodeWriter.ModuleNotFoundError(
-                f"Failed to fetch AST for module: {module_dotpath}"
-            )
+        # Process each line based on the cases
+        processed_lines = []
+        for line in lines:
+            if line.startswith('---') or line.startswith('+++') or line.startswith('-') or line.startswith('@@'):
+                continue  # skip the line
+            elif line.startswith(' '):
+                processed_lines.append(line[1:])
+            elif line.startswith('+') and not line.startswith('+++'):
+                processed_lines.append(line[1:])
+            else:
+                processed_lines.append(line)
 
-        source_code_lines = ast.unparse(module_ast).splitlines()
+        base_name = os.path.splitext(diff_file_path)[0]
+        new_file_path = f"{base_name}.py"
+        
+        with open(new_file_path, 'w') as f:
+            f.writelines(processed_lines)
 
-        for patch in patch_set:
-            for hunk in patch:
-                original_lines = sum(
-                    bool(line.is_removed) for line in hunk
-                ) + sum(bool(line.is_context) for line in hunk)
-                new_lines = sum(bool(line.is_added) for line in hunk) + sum(
-                    bool(line.is_context) for line in hunk
-                )
+        os.remove(diff_file_path)
 
-                if (
-                    original_lines
-                    != hunk.source_start + hunk.source_length - 1
-                    or new_lines != hunk.target_start + hunk.target_length - 1
-                ):
-                    raise PyCodeWriter.InvalidArgumentsError(
-                        "Hunk range information does not match the actual number of lines in the hunk."
-                    )
-
-                for line in hunk:
-                    if line.is_added:
-                        source_code_lines.insert(
-                            line.target_line_no - 1, line.value[1:]
-                        )
-                    elif line.is_removed:
-                        del source_code_lines[line.target_line_no - 1]
-
-        modified_source_code = "\n".join(source_code_lines)
-        modified_module = ast.parse(modified_source_code)
-
-        py_module_loader.put_module(module_dotpath, modified_module)
-
-        module_fpath = py_module_loader.fetch_existing_module_fpath_by_dotpath(
-            module_dotpath
-        )
-        if module_fpath is None:
-            raise PyCodeWriter.ModuleNotFoundError(
-                f"Failed to fetch file path for module: {module_dotpath}"
-            )
-
-        self._write_to_disk_and_format(module_fpath, modified_source_code)
+        logger.info(f"Processed changes to the diff file and saved to: {new_file_path}")

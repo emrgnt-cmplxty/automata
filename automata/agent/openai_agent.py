@@ -14,7 +14,7 @@ from automata.agent.error import (
     AgentStopIterationError,
 )
 from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
-from automata.core.utils import format_text, get_logging_config, load_config
+from automata.core.utils import format_text, load_config, get_logging_config
 from automata.llm import (
     FunctionCall,
     LLMChatMessage,

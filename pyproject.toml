@@ -60,6 +60,7 @@ human-eval = "^1.0.3"
 unidiff = "^0.7.5"
 
 # evalplus = { path = "research/evalplus" }
+diff-match-patch = "^20230430"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"

@@ -4,18 +4,23 @@ from typing import Dict, Iterable, Tuple
 
 
 def convert_fpath_to_module_dotpath(
-    root_abs_path: str, module_path: str, prefix: str
+    root_abs_path: str, file_path: str, prefix: str
 ) -> str:
-    """Converts a filepath to a module dotpath"""
+    """Converts a filepath to a module dotpath regardless of its extension."""
+    
     prefix = "" if prefix == "." else f"{prefix}."
-    return (
-        prefix
-        + (
-            os.path.relpath(module_path, root_abs_path).replace(
-                os.path.sep, "."
-            )
-        )[:-3]
-    )
+    rel_path = os.path.relpath(file_path, root_abs_path)
+    
+    if rel_path.startswith("./"):
+        rel_path = rel_path[2:]
+    elif rel_path == ".":
+        rel_path = ""
+    
+    rel_path_root, _ = os.path.splitext(rel_path)
+    
+    dotpath = prefix + rel_path_root.replace(os.path.sep, ".")
+    
+    return dotpath.lstrip('.')
 
 
 class DotPathMap:
