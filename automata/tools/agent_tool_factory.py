@@ -34,6 +34,7 @@ class AgentToolFactory:
             ("symbol_search", SymbolSearch),
             ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
         ],
+        AgentToolkitNames.WOLFRAM_ALPHA_ORACLE: [("wolfram_alpha_oracle", None)],
         AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
         AgentToolkitNames.PY_WRITER: [("py_writer", PyCodeWriter)],
         AgentToolkitNames.AGENTIFIED_SEARCH: [
