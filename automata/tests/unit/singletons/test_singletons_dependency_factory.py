@@ -4,6 +4,7 @@ import networkx as nx
 import pytest
 
 from automata.experimental.search import SymbolSearch
+from automata.experimental.tools.wolfram_alpha_oracle import WolframAlphaOracle
 from automata.singletons.dependency_factory import DependencyFactory
 
 

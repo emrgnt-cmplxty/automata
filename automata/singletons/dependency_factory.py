@@ -33,6 +33,7 @@ from automata.experimental.search import (
 from automata.experimental.symbol_embedding.symbol_doc_embedding_builder import (
     SymbolDocEmbeddingBuilder,
 )
+from automata.experimental.tools.wolfram_alpha_oracle import WolframAlphaOracle
 from automata.llm import OpenAIChatCompletionProvider, OpenAIEmbeddingProvider
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.symbol import ISymbolProvider, SymbolGraph
@@ -342,6 +343,11 @@ class DependencyFactory(metaclass=Singleton):
     def create_py_writer(self) -> PyCodeWriter:
         """Creates `PyCodeWriter` for use in all dependencies."""
         return PyCodeWriter(self.get("py_reader"))
+
+    @lru_cache()
+    def create_wolfram_alpha_oracle(self) -> WolframAlphaOracle:
+        """Creates and returns an instance of WolframAlphaOracle."""
+        return WolframAlphaOracle()
 
     def reset(self) -> None:
         """Resets the entire dependency cache."""

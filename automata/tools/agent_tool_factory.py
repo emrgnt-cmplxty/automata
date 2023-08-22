@@ -12,6 +12,7 @@ from automata.core.utils import get_logging_config
 from automata.embedding import EmbeddingSimilarityCalculator
 from automata.experimental.memory_store import SymbolDocEmbeddingHandler
 from automata.experimental.search import SymbolSearch
+from automata.experimental.tools.wolfram_alpha_oracle import WolframAlphaOracle
 from automata.memory_store import SymbolCodeEmbeddingHandler
 from automata.tools import Tool, UnknownToolError
 
@@ -34,7 +35,9 @@ class AgentToolFactory:
             ("symbol_search", SymbolSearch),
             ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
         ],
-        AgentToolkitNames.WOLFRAM_ALPHA_ORACLE: [("wolfram_alpha_oracle", None)],
+        AgentToolkitNames.WOLFRAM_ALPHA_ORACLE: [
+            ("wolfram_alpha_oracle", WolframAlphaOracle)
+        ],
         AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
         AgentToolkitNames.PY_WRITER: [("py_writer", PyCodeWriter)],
         AgentToolkitNames.AGENTIFIED_SEARCH: [
