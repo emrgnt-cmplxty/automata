@@ -59,6 +59,7 @@ questionary = "^1.10.0"
 # TODO - Identify how to include this package
 # without breaking the build
 # evalplus = { path = "research/evalplus" }
+requests = "^2.31.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
