@@ -9,6 +9,7 @@ automata = 'automata.cli.__main__:cli'
 notebook = "7.0.0"
 jupyter = "^1.0.0"
 sourcery = "^1.6.0"
+types-requests = "^2.31.0.2"
 
 [tool.poetry]
 name = "automata"
