@@ -142,3 +142,4 @@ class WolframAlphaOracle:
                         f"An error occurred while querying the Wolfram Alpha API: {e}"
                     ) from e
                 return None
+        return None
