@@ -31,10 +31,10 @@ class WolframAlphaToolkitBuilder:
             )
         ]
 
-    def query_wolfram_alpha(self, input_str: str, **kwargs) -> str:
+    def query_wolfram_alpha(self, query: str, **kwargs) -> str:
         """A wrapper function to query the Wolfram Alpha API."""
         oracle = WolframAlphaOracle()
-        if result := oracle.query(input_str, **kwargs):
+        if result := oracle.query(query, **kwargs):
             return result
         return "Failed to get data from Wolfram Alpha."
 
