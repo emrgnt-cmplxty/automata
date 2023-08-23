@@ -82,6 +82,14 @@ class Misc(Enum):
     UNITS = "units"
 
 
+class ErrorPrefixes(Enum):
+    """An enum for the 501 error prefixes of the Wolfram Alpha API."""
+
+    COULD_NOT_UNDERSTAND = "Wolfram|Alpha could not understand:"
+    COULD_NOT_GENERATE = "Wolfram|Alpha could not generate a result for:"
+    TIMEOUT = "Wolfram|Alpha was not able to generate a response in the allotted time for:"
+
+
 class WolframAlphaOracle:
     """Interface for querying the Wolfram Alpha API."""
 
@@ -89,11 +97,6 @@ class WolframAlphaOracle:
     MAX_RETRIES = 3
     BASE_DELAY = 1
     MAX_DELAY = 10
-    ERROR_PREFIX = "Wolfram|Alpha could not understand:"
-    ERROR_PREFIXES = [
-        "Wolfram|Alpha could not understand:",
-        "Wolfram|Alpha could not generate a result for:",
-    ]
 
     @classmethod
     def query(cls, input_str: str, **kwargs) -> Optional[str]:
@@ -108,6 +111,11 @@ class WolframAlphaOracle:
         while response_text and cls._has_error_prefix(response_text):
             if suggestion := cls._parse_for_suggestion(response_text):
                 response_text = cls._send_query(suggestion, **kwargs)
+            elif response_text.startswith(ErrorPrefixes.TIMEOUT.value):
+                return (
+                    response_text
+                    + "\n\nSuggestion: Try a more simplified or related query to get an answer."
+                )
             else:
                 return response_text
 
@@ -170,7 +178,7 @@ class WolframAlphaOracle:
     @classmethod
     def _has_error_prefix(cls, response_text: str) -> bool:
         return any(
-            response_text.startswith(prefix) for prefix in cls.ERROR_PREFIXES
+            response_text.startswith(prefix.value) for prefix in ErrorPrefixes
         )
 
     @classmethod
