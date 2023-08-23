@@ -110,6 +110,7 @@ class AgentToolkitNames(Enum):
     ADVANCED_CONTEXT_ORACLE = "advanced-context-oracle"
     DOCUMENT_ORACLE = "document-oracle"
     AGENTIFIED_SOLUTION_ORACLE = "agentified-solution-oracle"
+    WOLFRAM_ALPHA_ORACLE = "wolfram-alpha-oracle"
 
     # Core tools
     PY_READER = "py-reader"

@@ -413,9 +413,9 @@ def filter_and_log_symbols(
         processed_paths, expected_symbol_dotpaths
     )
 
-    missing_symbols_dotpaths = [
+    missing_symbols_dotpaths = {
         ele for ele in missing_symbols_dotpaths if "test" not in ele
-    ]
+    }
 
     logger.warning(
         f"We found {len(extra_symbol_dotpaths)} extra symbols = {extra_symbol_dotpaths}"
