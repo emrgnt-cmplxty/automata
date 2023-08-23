@@ -52,11 +52,10 @@ class CompletionProvider:
             vanilla_system_prompt = self.get_system_prompt()
             vanilla_instructions = self.get_formatted_instruction(raw_prompt)
             tools = []
-            if (
-                self.run_mode == RunMode.ADVANCED_AGENT_WITH_INTERPRETER
-                or self.run_mode
-                == RunMode.ADVANCED_AGENT_WITH_INTERPRETER_AND_ORACLE
-            ):
+            if self.run_mode in [
+                RunMode.ADVANCED_AGENT_WITH_INTERPRETER,
+                RunMode.ADVANCED_AGENT_WITH_INTERPRETER_AND_ORACLE,
+            ]:
                 toolkits = ["py-interpreter"]
 
                 tool_dependencies = (
