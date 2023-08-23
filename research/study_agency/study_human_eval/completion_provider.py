@@ -175,7 +175,7 @@ class CompletionProvider:
         ]:
             return textwrap.dedent(
                 """                
-            Below is an instruction that describes a task. Immediately return a result as a markdown snippet which solves this task to the user using the `call_termination` function.
+            Below is an instruction that describes a task. Immediately return a result as a markdown snippet which solves this task to the user using the `call-termination` function.
 
             ### Instruction:
             Complete the following Python code: 

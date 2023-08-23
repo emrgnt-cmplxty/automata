@@ -113,7 +113,7 @@ def mock_openai_response_with_completion_message():
                 "message": {
                     "role": "assistant",
                     "function_call": {
-                        "name": "call_termination",
+                        "name": "call-termination",
                         "arguments": '{"result": "Success"}',
                     },
                     "content": None,
@@ -189,7 +189,7 @@ def test_agent_saves_messages_to_database(
 
     assert saved_messages[-2].role == "assistant"
     assert saved_messages[-2].content is None
-    assert saved_messages[-2].function_call.name == "call_termination"
+    assert saved_messages[-2].function_call.name == "call-termination"
     assert saved_messages[-2].function_call.arguments == {"result": "Success"}
     assert saved_messages[-1].role == "user"
     assert "Success" in saved_messages[-1].content

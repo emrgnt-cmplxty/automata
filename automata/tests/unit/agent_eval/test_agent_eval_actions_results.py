@@ -38,7 +38,7 @@ def test_generate_function_eval_result_match(
     }
     assert result.extra_actions == [
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
+            name="call-termination", arguments={"result": "Success"}
         )
     ]
 
@@ -73,7 +73,7 @@ def test_generate_eval_result_no_match(
             name="function3", arguments={"arg3": "value3"}
         ),
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
+            name="call-termination", arguments={"result": "Success"}
         ),
     ]
 
@@ -100,7 +100,7 @@ def test_generate_eval_result_partial_match(
     }
     assert result.extra_actions == [
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
+            name="call-termination", arguments={"result": "Success"}
         ),
     ]
 
@@ -154,13 +154,13 @@ def test_generate_code_writing_eval_result_partial_match(
     mock_openai_chatcompletion_create, automata_agent, task_executor = setup
     mock_openai_chatcompletion_create.side_effect = [
         {
-            # TODO - Avoid having multiple call_terminations
+            # TODO - Avoid having multiple call-terminations
             "choices": [
                 {
                     "message": {
                         "role": "assistant",
                         "function_call": {
-                            "name": "call_termination",
+                            "name": "call-termination",
                             "arguments": '{"result": "```python\nx = 1```"}',
                         },
                         "content": None,
@@ -202,7 +202,7 @@ def test_composite_eval_result_match(
         EXPECTED_FUNCTION_ACTIONS[0],
         EXPECTED_CODE_ACTIONS[0],
         OpenAIFunctionCallAction(
-            name="call_termination",
+            name="call-termination",
             arguments={"result": "```python\nx = 1```"},
         ),
     ]
@@ -244,7 +244,7 @@ def test_composite_eval_no_match(
     }
     assert result.extra_actions == [
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
+            name="call-termination", arguments={"result": "Success"}
         )
     ]
 
@@ -273,7 +273,7 @@ def test_code_execution_error(composite_evaluator, tasks, setup):
     }
     assert result.extra_actions == [
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "Success"}
+            name="call-termination", arguments={"result": "Success"}
         )
     ]
 

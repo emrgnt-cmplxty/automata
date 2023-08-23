@@ -1,7 +1,7 @@
 from automata.eval import CodeWritingAction, OpenAIFunctionCallAction
 
 
-# TODO - cleanup hacky use of `call_termination` throughout tests here.
+# TODO - cleanup hacky use of `call-termination` throughout tests here.
 def mock_openai_response_with_function_completion_message_1():
     return {
         "choices": [
@@ -43,7 +43,7 @@ def mock_openai_response_with_function_completion_message_final():
                 "message": {
                     "role": "assistant",
                     "function_call": {
-                        "name": "call_termination",
+                        "name": "call-termination",
                         "arguments": '{"result": "Success"}',
                     },
                     "content": None,
@@ -78,7 +78,7 @@ def mock_openai_response_with_code_action_completion_message_x():
                     "role": "assistant",
                     "content": None,
                     "function_call": {
-                        "name": "call_termination",  # TODO - Avoid having multiple call_terminations
+                        "name": "call-termination",  # TODO - Avoid having multiple call-terminations
                         "arguments": '{"result": "```python\nx = 1```"}',
                     },
                 }
@@ -95,7 +95,7 @@ def mock_openai_response_with_code_action_completion_message_y():
                     "role": "assistant",
                     "content": None,
                     "function_call": {
-                        "name": "call_termination",  # TODO - Avoid having multiple call_terminations
+                        "name": "call-termination",  # TODO - Avoid having multiple call-terminations
                         "arguments": '{"result": "```python\nz = 3.14```"}',
                     },
                 }
@@ -112,7 +112,7 @@ def mock_openai_response_with_bad_code_action_completion_message_z():
                     "role": "assistant",
                     "content": None,
                     "function_call": {
-                        "name": "call_termination",  # TODO - Avoid having multiple call_terminations
+                        "name": "call-termination",  # TODO - Avoid having multiple call-terminations
                         "arguments": '{"result": "```python\nz = 3.1.4```"}',
                     },
                 }

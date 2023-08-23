@@ -29,7 +29,7 @@ class PyInterpreter:
     """This class provides an execution environment for the agent."""
 
     SUCCESS_STRING = "Execution successful."
-    DEFAULT_CODE_CONTEXT = "from typing import *\nfrom collections import *\n"
+    DEFAULT_CODE_CONTEXT = "from typing import *\nfrom collections import *\nimport numpy as np\nimport sympy as sp\n"
     DEFAULT_TEST_CONTEXT = ""
 
     def __init__(self):
@@ -175,9 +175,9 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools for the interpreter."""
         return [
             Tool(
-                name="py-set-tests",
+                name="py-set-and-run-tests",
                 function=self.py_interpreter.set_tests,
-                description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten. The user should note that using assertions in tests results in poor error reporting due to the code environment, for this reason it is better to raise exceptions directly. The user must call `print(...)` on any output they would like to see the output of returned. For instance, if your execution terminates with a variable x, to find out what x evaluates to you should end the code with `print(x)`.",
+                description="Sets up the provided Python markdown snippet in the test environment and executes the tests and previously provided code from `py-set-code-and-run-tests`. Sympy and Numpy have already been imported as `sp` and `np`, respectively.\n\nAny provided code will be parsed and persisted across interactions. If `overwrite` is set to true then the existing test code is overwritten. The user must call `print(...)` on any output they would like to see returned from the environment. For instance, if your execution terminates with a variable x, to find out what x evaluates to you should end the code with `print(x)`.",
             ),
             Tool(
                 name="py-set-code-and-run-tests",
@@ -202,7 +202,7 @@ class PyInterpreterOpenAIToolkitBuilder(
         properties = {
             "code": {
                 "type": "string",
-                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'. When providing tests, favor raising exceptions directly to asserting.",
+                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
             },
             "overwrite": {
                 "type": "string",

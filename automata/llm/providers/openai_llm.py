@@ -208,7 +208,7 @@ class OpenAIFunction:
 
         ->
         OpenAITool(
-            name="call_termination",
+            name="call-termination",
             description="Terminates the conversation.",
             properties={
                 "result": {
@@ -223,7 +223,7 @@ class OpenAIFunction:
 
         ```ts
         // Terminates the conversation.
-        type call_termination = (_: {
+        type call-termination = (_: {
         // The final result of the conversation.
         result: string,
         }) => any;

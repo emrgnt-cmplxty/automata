@@ -186,7 +186,7 @@ class FunctionCall(NamedTuple):
             return json_string
 
         if (
-            response_dict["name"] == "call_termination"
+            response_dict["name"] == "call-termination"
             and '"result":' in response_dict["arguments"]
         ):
             return cls(
@@ -226,12 +226,12 @@ class FunctionCall(NamedTuple):
             split_result = arguments.split('{"result":')
             if len(split_result) <= 1:
                 raise ValueError(
-                    "Invalid arguments for call_termination"
+                    "Invalid arguments for call-termination"
                 ) from e
             result_str = split_result[1].strip().replace('"}', "")
             if result_str[0] != '"':
                 raise ValueError(
-                    "Invalid format for call_termination arguments"
+                    "Invalid format for call-termination arguments"
                 ) from e
             result_str = result_str[1:]
             return {"result": result_str}

@@ -17,7 +17,7 @@ def test_tool_eval_loader(loader):
     assert loader.input_functions, "No function calls loaded"
     assert loader.expected_actions, "No expected actions loaded"
     assert (
-        loader.input_functions[0].name == "call_termination"
+        loader.input_functions[0].name == "call-termination"
     ), "Function call not loaded correctly"
     assert loader.input_functions[0].arguments == {
         "result": "True"

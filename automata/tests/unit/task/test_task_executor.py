@@ -106,7 +106,7 @@ def mock_openai_response_with_completion_message():
                 "message": {
                     "role": "assistant",
                     "function_call": {
-                        "name": "call_termination",
+                        "name": "call-termination",
                         "arguments": '{"result": "Success"}',
                     },
                     "content": None,
