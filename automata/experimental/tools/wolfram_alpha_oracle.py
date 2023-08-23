@@ -89,18 +89,32 @@ class WolframAlphaOracle:
     MAX_RETRIES = 3
     BASE_DELAY = 1
     MAX_DELAY = 10
+    ERROR_PREFIX = "Wolfram|Alpha could not understand:"
 
     @classmethod
     def query(cls, input_str: str, **kwargs) -> Optional[str]:
-        """Sends a query to the Wolfram Alpha API."""
+        """Constructs a query and sends it to the Wolfram Alpha API, checking for errors and suggestions."""
 
         app_id = os.environ.get("WOLFRAM_APP_ID")
         if not app_id:
             raise ValueError("WOLFRAM_APP_ID environment variable is not set.")
 
+        response_text = cls._send_query(input_str, **kwargs)
+
+        while response_text and cls._has_error_prefix(response_text):
+            if suggestion := cls._parse_for_suggestion(response_text):
+                response_text = cls._send_query(suggestion, **kwargs)
+            else:
+                break
+
+        return response_text
+
+    @classmethod
+    def _send_query(cls, input_str: str, **kwargs) -> Optional[str]:
+        """Sends a query to the Wolfram Alpha API."""
         params = {
             BasicParameters.INPUT.value: input_str,
-            BasicParameters.APPID.value: app_id,
+            BasicParameters.APPID.value: os.environ.get("WOLFRAM_APP_ID"),
         }
 
         for key, value in kwargs.items():
@@ -109,12 +123,28 @@ class WolframAlphaOracle:
         retries = 0
         delay = cls.BASE_DELAY
 
-        # Uses exponential backoff with jitter to retry requests as the Wolfram Alpha API does not support retries.
         while retries < cls.MAX_RETRIES:
             try:
                 response = requests.get(cls.BASE_URL, params=params)
                 response.raise_for_status()
                 return response.text
+            except requests.HTTPError as e:
+                # If the error is 501 and contains our error prefix, return the content
+                if response.status_code == 501 and cls._has_error_prefix(
+                    response.text
+                ):
+                    return response.text
+                elif retries < cls.MAX_RETRIES - 1:
+                    jitter = random.uniform(0, 0.1 * delay)
+                    time_to_wait = delay + jitter
+                    logger.warning(
+                        f"Error occurred: {e}. Retrying in {time_to_wait:.2f} seconds..."
+                    )
+                    time.sleep(time_to_wait)
+                    delay = min(2 * delay, cls.MAX_DELAY)
+                    retries += 1
+                else:
+                    raise
             except (
                 requests.ConnectionError,
                 requests.Timeout,
@@ -129,17 +159,22 @@ class WolframAlphaOracle:
                     time.sleep(time_to_wait)
                     delay = min(2 * delay, cls.MAX_DELAY)
                     retries += 1
-                elif isinstance(e, requests.ConnectionError):
-                    raise ConnectionError(
-                        f"Failed to connect to Wolfram Alpha API: {e}"
-                    ) from e
-                elif isinstance(e, requests.Timeout):
-                    raise TimeoutError(
-                        f"Request to Wolfram Alpha API timed out: {e}"
-                    ) from e
                 else:
-                    raise RuntimeError(
-                        f"An error occurred while querying the Wolfram Alpha API: {e}"
-                    ) from e
-                return None
+                    raise
+        return None
+
+    @classmethod
+    def _has_error_prefix(cls, response_text: str) -> bool:
+        return response_text.startswith(cls.ERROR_PREFIX)
+
+    @classmethod
+    def _parse_for_suggestion(cls, response_text: str) -> Optional[str]:
+        """Parse the response for a suggestion."""
+        lines = response_text.split("\n")
+        for line in lines:
+            if line.startswith("Things to try instead:"):
+                if suggestions := line.replace(
+                    "Things to try instead:", ""
+                ).split(","):
+                    return suggestions[0].strip()
         return None

@@ -27,7 +27,7 @@ class WolframAlphaToolkitBuilder:
             Tool(
                 name="wolfram-alpha-oracle",
                 function=self.query_wolfram_alpha,
-                description="A tool to query the Wolfram Alpha API and retrieve results.",
+                description="A tool to query the Wolfram Alpha API and retrieve results. This tool will often return a very comprehensive reply. If the tool fails, consider trying a simple request. E.g. instead of `Smallest even factor of 1200`, query for `factors of 1200`. Use the phrase `evaluate for x` whenever possible.",
             )
         ]
 
