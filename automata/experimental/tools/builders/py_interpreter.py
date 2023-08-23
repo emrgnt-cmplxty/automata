@@ -177,7 +177,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
             Tool(
                 name="py-set-tests",
                 function=self.py_interpreter.set_tests,
-                description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten. The user should note that using assertions in tests results in poor error reporting due to the code environment, for this reason it is better to raise exceptions directly.",
+                description="Sets up the provided Python markdown snippet in the test environment. The code is parsed and persisted across interactions. If `overwrite` is set to true then existing test code is overwritten. The user should note that using assertions in tests results in poor error reporting due to the code environment, for this reason it is better to raise exceptions directly. The user must call `print(...)` on any output they would like to see the output of returned. For instance, if your execution terminates with a variable x, to find out what x evaluates to you should end the code with `print(x)`.",
             ),
             Tool(
                 name="py-set-code-and-run-tests",
