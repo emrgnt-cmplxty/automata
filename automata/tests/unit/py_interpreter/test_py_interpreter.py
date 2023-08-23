@@ -168,7 +168,7 @@ def test_pyinterpreter_toolkit_builder_build():
     assert isinstance(tools[0], Tool)
     assert isinstance(tools[1], Tool)
 
-    assert tools[0].name == "py-set-tests"
+    assert tools[0].name == "py-set-and-run-tests"
     assert tools[1].name == "py-set-code-and-run-tests"
 
     # Testing the function is a bit tricky as we'd have to provide a valid code snippet
@@ -202,7 +202,7 @@ def test_pyinterpreter_toolkit_builder_build_for_open_ai():
     assert isinstance(tools[0], OpenAITool)
     assert isinstance(tools[1], OpenAITool)
 
-    assert tools[0].name == "py-set-tests"
+    assert tools[0].name == "py-set-and-run-tests"
     assert tools[1].name == "py-set-code-and-run-tests"
 
     # Testing the function is a bit tricky as we'd have to provide a valid code snippet

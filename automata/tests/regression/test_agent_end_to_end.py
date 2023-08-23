@@ -84,7 +84,7 @@ def test_basic_eval_tasks(
     assert eval_result.match_results == {}
     assert eval_result.extra_actions == [
         OpenAIFunctionCallAction(
-            name="call_termination", arguments={"result": "True"}
+            name="call-termination", arguments={"result": "True"}
         )
     ]
 
@@ -123,7 +123,7 @@ random_suffix = random.randint(0, 1000000)
             1,
             [
                 OpenAIFunctionCallAction(
-                    name="call_termination", arguments={"result": "True"}
+                    name="call-termination", arguments={"result": "True"}
                 )
             ],
         ),

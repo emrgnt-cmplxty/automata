@@ -130,7 +130,7 @@ class CodeWritingEval(AgentEval):
         if (
             not isinstance(message, OpenAIChatMessage)
             or not message.function_call
-            or message.function_call.name != "call_termination"
+            or message.function_call.name != "call-termination"
         ):
             return actions
 

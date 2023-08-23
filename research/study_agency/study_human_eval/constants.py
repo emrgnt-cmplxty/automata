@@ -12,7 +12,7 @@ ADVANCED_SYSTEM_PROMPT_RETURN_ONLY = textwrap.dedent(
     """
     You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
 
-     Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function.
+     Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call-termination` function.
 
     **Example Pattern**
 
@@ -54,7 +54,7 @@ ADVANCED_SYSTEM_PROMPT_RETURN_ONLY = textwrap.dedent(
           Action:
             function_call:
               {
-                'name': 'call_termination', 
+                'name': 'call-termination', 
                 'arguments': '{"result": "```python\\ndef addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\\n  # Final implementation goes here```"}'
               }
 
@@ -71,7 +71,7 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER = textwrap.dedent(
     """
     You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
 
-     Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function.
+     Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call-termination` function.
 
     **Example Pattern**
 
@@ -105,11 +105,11 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER = textwrap.dedent(
             After setting these test cases, I will proceed on to implement the solution in the interpreter environment.
 
           Action:
-            I will now call `py-set-tests` to set the initial test cases.
+            I will now call `py-set-and-run-tests` to set the initial test cases.
         
         function_call:
           {
-            'name': 'py-set-tests', 
+            'name': 'py-set-and-run-tests', 
             'arguments': '{"code": "```python\\nresult_1 = addTwoNumbers(ListNode([2,3,4]), ListNode([5,6,4]))\\nprint(f"Found {result_1}, expected [7,0,8]")\\nresult_2 = addTwoNumbers(ListNode([0]), ListNode([0]))\\nprint(f"Found {result_2}, expected [0]")\\nresult_3 = addTwoNumbers(ListNode([9,9,9]), ListNode([1]))\\nprint(f"Found {result_3}, expected [0,0,0,1]"}'
           }
 
@@ -149,11 +149,11 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER = textwrap.dedent(
               The provided algorithmic solution now runs in our test environment passes all test cases. I will now return the final result to the user.
 
           Action:
-              I will use `call_termination` and pass back an implementation of this algorithm to receive further feedback.
+              I will use `call-termination` and pass back an implementation of this algorithm to receive further feedback.
 
         function_call:
           {
-            'name': 'call_termination', 
+            'name': 'call-termination', 
             'arguments': '{"result": "```python\\ndef addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\\n  # Final implementation goes here```"}'
           }
 
@@ -170,7 +170,7 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER_AND_ORACLE = textwrap.dedent(
     """
     You are Automata, an advanced autonomous software architect developed by OpenAI. With your capability to understand and process natural language instructions, you solve difficult algorithmic challenges using your available tools.
 
-     Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call_termination` function.
+     Use ReAct and Chain-of-Thought reasoning to improve your likelihood of success, as shown below. When you have completed your task, return the final result to the user as soon as possible via the `call-termination` function.
 
     **Example Pattern**
 
@@ -221,11 +221,11 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER_AND_ORACLE = textwrap.dedent(
             After setting these test cases, I will proceed on to implement the solution in the interpreter environment.
 
           Action:
-            I will now call `py-set-tests` to set the initial test cases.
+            I will now call `py-set-and-run-tests` to set the initial test cases.
         
         function_call:
           {
-            'name': 'py-set-tests', 
+            'name': 'py-set-and-run-tests', 
             'arguments': '{"code": "```python\\nresult_1 = addTwoNumbers(ListNode([2,3,4]), ListNode([5,6,4]))\\nprint(f"Found {result_1}, expected [7,0,8]")\\nresult_2 = addTwoNumbers(ListNode([0]), ListNode([0]))\\nprint(f"Found {result_2}, expected [0]")\\nresult_3 = addTwoNumbers(ListNode([9,9,9]), ListNode([1]))\\nprint(f"Found {result_3}, expected [0,0,0,1]"}'
           }
               
@@ -264,11 +264,11 @@ ADVANCED_SYSTEM_PROMPT_WITH_INTERPRETER_AND_ORACLE = textwrap.dedent(
               The provided algorithmic solution now runs in our test environment passes all test cases. I will now return the final result to the user.
 
           Action:
-              I will use `call_termination` and pass back an implementation of this algorithm to receive further feedback.
+              I will use `call-termination` and pass back an implementation of this algorithm to receive further feedback.
 
         function_call:
           {
-            'name': 'call_termination', 
+            'name': 'call-termination', 
             'arguments': '{"result": "```python\\ndef addTwoNumbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\\n  # Final implementation goes here```"}'
           }
 

@@ -5,7 +5,7 @@
             "expected_actions": [
                 {
                     "type": "OpenAIFunctionCallAction",
-                    "name": "call_termination",
+                    "name": "call-termination",
                     "arguments": {"result": "{result}"}
                 }
             ]

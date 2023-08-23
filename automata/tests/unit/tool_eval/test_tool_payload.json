@@ -3,7 +3,7 @@
         "template": {
             "input_function": {
                 "type": "FunctionCall",
-                "name": "call_termination",
+                "name": "call-termination",
                 "arguments": {"result": "{result}"}
             },
             "expected_action": {

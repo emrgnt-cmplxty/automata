@@ -44,7 +44,7 @@ class OpenAIAutomataAgent(Agent):
     CONTINUE_PREFIX: Final = f"Continue...\n"
     OBSERVATION_MESSAGE: Final = "Observation:\n"
     GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{instructions}'"
-    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call_termination.\nRECALL, YOUR INSTRUCTIONS WERE '{instructions}."
+    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{instructions}."
 
     def __init__(
         self, instructions: str, config: OpenAIAutomataAgentConfig
@@ -363,7 +363,7 @@ class OpenAIAutomataAgent(Agent):
             return result
 
         return OpenAITool(
-            name="call_termination",
+            name="call-termination",
             description="Terminates the conversation.",
             properties={
                 "result": {
