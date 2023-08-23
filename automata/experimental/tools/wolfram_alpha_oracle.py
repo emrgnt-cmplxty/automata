@@ -90,6 +90,10 @@ class WolframAlphaOracle:
     BASE_DELAY = 1
     MAX_DELAY = 10
     ERROR_PREFIX = "Wolfram|Alpha could not understand:"
+    ERROR_PREFIXES = [
+        "Wolfram|Alpha could not understand:",
+        "Wolfram|Alpha could not generate a result for:",
+    ]
 
     @classmethod
     def query(cls, input_str: str, **kwargs) -> Optional[str]:
@@ -105,7 +109,7 @@ class WolframAlphaOracle:
             if suggestion := cls._parse_for_suggestion(response_text):
                 response_text = cls._send_query(suggestion, **kwargs)
             else:
-                break
+                return response_text
 
         return response_text
 
@@ -165,7 +169,9 @@ class WolframAlphaOracle:
 
     @classmethod
     def _has_error_prefix(cls, response_text: str) -> bool:
-        return response_text.startswith(cls.ERROR_PREFIX)
+        return any(
+            response_text.startswith(prefix) for prefix in cls.ERROR_PREFIXES
+        )
 
     @classmethod
     def _parse_for_suggestion(cls, response_text: str) -> Optional[str]:
