@@ -1,0 +1,36 @@
+[build-system]
+requires = ["poetry-core", "setuptools", "wheel"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+automata = 'automata.cli.__main__:cli'
+
+[tool.poetry.group.dev.dependencies]
+notebook = "7.0.0"
+jupyter = "^1.0.0"
+sourcery = "^1.6.0"
+
+[tool.poetry]
+name = "zero-shot-replication"
+version = "0.1.0"
+description = "Zero-Shot Replication Framework"
+authors = ["Owen Colegrove <owen@emergentagi.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+black = "^23.3.0"
+openai = "0.27.8"
+python-dotenv = "^1.0.0"
+
+[tool.black]
+line-length = 79
+
+[tool.mypy]
+# other mypy configurations go here
+# uncomment if this is being really annoying again
+ignore_missing_imports = true
+
+[tool.flake8]
+ignore = ["E501", "W503"]
