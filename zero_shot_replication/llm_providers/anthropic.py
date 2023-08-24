@@ -30,5 +30,6 @@ class AnthropicZeroShotProvider(LLMProvider):
             max_tokens_to_sample=AnthropicZeroShotProvider.MAX_TOKENS_TO_SAMPLE,
             stream=self.stream,
             prompt=formatted_prompt,
+            temperature=self.temperature,
         )  # type: ignore
         return completion.completion
