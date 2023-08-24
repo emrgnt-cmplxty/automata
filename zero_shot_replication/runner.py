@@ -85,7 +85,7 @@ if __name__ == "__main__":
             f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
         )
         raw_completion = llm_provider.get_completion(prompt)
-        if args.dataset == 'human-eval':
+        if args.dataset == "human-eval":
             # or other codegen
             completion = extract_code(raw_completion)
         else:

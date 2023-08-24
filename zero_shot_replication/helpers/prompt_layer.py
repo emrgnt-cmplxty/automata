@@ -1,6 +1,7 @@
 """Turns problems into prompts for the LLM Completion impl."""
 from zero_shot_replication.helpers.base import HUMAN_EVAL_TEMPLATE, ProblemType
 
+
 class PromptLayer:
     """A class to turn given problems into prompts for the LLM."""
 
@@ -26,4 +27,3 @@ class PromptLayer:
     def _get_GSM8K_prompt(problem: dict) -> str:
         # do zero shot
         return problem.get("question", None)
-    
