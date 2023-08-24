@@ -6,8 +6,7 @@ import openai
 from evalplus.data import write_jsonl
 
 from zero_shot_replication.datasets import get_dataset
-from zero_shot_replication.helpers.base import OUTPUT_FILE_NAME, ProblemType
-from zero_shot_replication.helpers.llm_providers import OpenAIZeroShotProvider
+from zero_shot_replication.helpers import OUTPUT_FILE_NAME, ProblemType
 from zero_shot_replication.helpers.utils import (
     extract_code,
     get_root_dir,
@@ -15,6 +14,7 @@ from zero_shot_replication.helpers.utils import (
     parse_arguments,
     prep_for_file_path,
 )
+from zero_shot_replication.llm_providers import ProviderManager
 
 
 def get_output_path(args: argparse.Namespace) -> str:
@@ -51,13 +51,10 @@ if __name__ == "__main__":
     out_path = get_output_path(args)
 
     # Build an LLM provider instance
-    llm_provider = None
-    if args.provider == "openai":
-        llm_provider = OpenAIZeroShotProvider(
-            model=args.model, temperature=args.temperature
-        )
-    else:
-        raise NotImplementedError("Provider not implemented.")
+    llm_provider = ProviderManager.get_provider(args.provider, args.model)
+
+    if not llm_provider:
+        raise NotImplementedError(f"Provider '{args.provider}' not supported.")
 
     # Get the corresponding dataset
     dataset = get_dataset(ProblemType(args.pset))

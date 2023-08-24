@@ -1,7 +1,7 @@
 import os
 from typing import Any, Generator, List, Tuple
 
-from zero_shot_replication.helpers.base import BaseDataset, ProblemType
+from zero_shot_replication.helpers import BaseDataset, ProblemType
 from zero_shot_replication.helpers.utils import (
     get_pset_inputs_dir,
     load_file_or_raise,
