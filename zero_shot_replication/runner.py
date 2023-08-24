@@ -61,8 +61,11 @@ if __name__ == "__main__":
 
     # Load existing results
     results = load_existing_jsonl(out_path)
-    exising_task_ids = {result["task_id"] for result in results}
 
+    try:
+        exising_task_ids = {result["task_id"] for result in results}
+    except KeyError:
+        exising_task_ids = {}
     # Run the experiment
     for task_id, problem in dataset.generator:
         if task_id in exising_task_ids:
@@ -103,3 +106,4 @@ if __name__ == "__main__":
         ) as e:  # Catch any OpenAI specific errors and general exceptions
             print(f"Error encountered for task_id {task_id}: {e}")
             continue
+        break
