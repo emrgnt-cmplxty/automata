@@ -1,3 +1,7 @@
-**/__pycache__/**
+# Local cruft and other
 .env
-zero_shot_replication/test.py
+*.bak
+**/__pycache__/**
+
+# Local sandbox environments
+playground/
