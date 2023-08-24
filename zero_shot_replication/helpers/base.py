@@ -7,6 +7,7 @@ class ProblemType(Enum):
     """Type of problem to generate"""
 
     HUMAN_EVAL = "human-eval"
+    GSM8K = "GSM8K"
     MATH = "math"
 
 

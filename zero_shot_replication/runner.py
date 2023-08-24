@@ -88,7 +88,12 @@ if __name__ == "__main__":
 
         try:
             raw_completion = llm_provider.get_completion(prompt)
-            completion = extract_code(raw_completion)
+            if args.dataset == "human-eval":
+                # or other codegen
+                completion = extract_code(raw_completion)
+            else:
+                completion = raw_completion
+            
             print(f"Extracted Completion:\n{completion}\n")
 
             result = {

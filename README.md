@@ -15,12 +15,23 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 - Python >= 3.10 and < 3.12
 - Poetry for package management
 
-## Dependencies
+## Min. Dependencies
 
 - openai: 0.27.8
 - python-dotenv: ^1.0.0
 - evalplus: ^0.1.6
 - black: ^23.3.0
+
+## Dev Dependencies
+
+- sourcery: "^1.6.0"
+- pre-commit: "^3.3.3"
+- mypy: "^1.5.1"
+- types-requests: "^2.31.0.2"
+- types-attrs: "^19.1.0"
+- isort: "5.12.0"
+- flake8: "6.1.0"
+- yapf: "0.40.1"
 
 ## Installation
 
@@ -30,6 +41,7 @@ Make sure you have [Poetry](https://python-poetry.org/) installed, then clone th
 git clone https://github.com/your-username/zero-shot-replication.git
 cd zero-shot-replication
 poetry install
+pre-commit install
 cp .env.example .env # Copy the example environment file
 # Edit the .env file to add your OpenAI API key
 ```
@@ -59,6 +71,7 @@ poetry run python runner.py --provider openai --dataset human-eval --model gpt-4
 | Leetcode Easy                    | X                    | X                    | 72.2-75.6        | [1,2]                                                                  |
 | Leetcode Medium                  | X                    | X                    | 26.2-38.7        | [1,2]                                                                  |
 | Leetcode Hard                    | X                    | X                    | 6.7-7            | [1,2]                                                                  |
+| GSM8K                            | X                    | X                    | 87.1             |                                                                        |
 | MATH |                  |                  |                | 
 | MATH, Level 5, Counting & Probability |                  |     25.5             |                | 
 

@@ -1,0 +1,30 @@
+repos:
+-   repo: local
+    hooks:
+    -   id: mypy-poetry
+        name: mypy (via poetry)
+        entry: poetry run mypy .
+        language: system
+        pass_filenames: false
+        types: [python]
+        
+    -   id: black-poetry
+        name: black (via poetry)
+        entry: poetry run black
+        language: system
+        pass_filenames: true
+        types: [python]
+
+    -   id: isort-poetry
+        name: isort (via poetry)
+        entry: poetry run isort
+        language: system
+        pass_filenames: true
+        types: [python]
+        
+    -   id: flake8-poetry
+        name: flake8 (via poetry)
+        entry: poetry run flake8
+        language: system
+        pass_filenames: true
+        types: [python]

@@ -1,4 +1,5 @@
 """Generates problems to be run in the runner."""
+import json
 from typing import Any, Generator, Tuple
 
 from evalplus.data import get_human_eval_plus
@@ -15,6 +16,14 @@ class ProblemGenerator:
 
     def __init__(self, problem_type: ProblemType) -> None:
         self.problem_type = problem_type
+
+    def _problem_with_task_id(self, problems: Generator[Any, None, None]) -> Generator[Tuple[str, Any], None, None]:
+        """Yield problems with auto-incrementing task_id."""
+        self.task_count = 0
+        for problem in problems:
+            yield (str(self.task_count), problem)
+            self.task_count += 1
+
     
 
     def _get_math_problems(self, level: str = None, randomize: bool = False) -> Generator[Tuple[str, Any], None, None]:
@@ -53,12 +62,20 @@ class ProblemGenerator:
             Generator[[task_id: str, problem: dict], None None]
 
         """
-        if self.problem_type == ProblemType.HUMAN_EVAL:
-            #  Fields on the yielded problem are ['task_id', 'prompt', 'entry_point', 'canonical_solution', 'test', 'contract', 'base_input', 'atol', 'plus_input']
-            yield from get_human_eval_plus().items()
-        elif self.problem_type == ProblemType.MATH:
-            # Fields on the yielded problem are ['problem', 'level', 'type', 'solution']
-            yield from self._get_math_problems()
-
-        else:
-            raise NotImplementedError("Problem type not implemented.")
+        match self.problem_type:
+            case ProblemType.HUMAN_EVAL:
+                #  Fields on the yielded problem are ['task_id', 'prompt', 'entry_point', 'canonical_solution', 'test', 'contract', 'base_input', 'atol', 'plus_input']
+                yield from get_human_eval_plus().items()
+            case ProblemType.GSM8K:
+                #  Fields on the yielded problem are ['question', 'answer']
+                filename = "datasets/inputs/GSM8K/all.jsonl"
+                with open(filename, "r", encoding="utf-8") as file:
+                    problems = (json.loads(line) for line in file if line)
+                    yield from self._problem_with_task_id(problems)
+            case ProblemType.MATH:
+                # Fields on the yielded problem are ['problem', 'level', 'type', 'solution']
+                yield from self._get_math_problems()
+            case _:
+                raise NotImplementedError(
+                    f"Problem type not implemented for {self.problem_type}."
+                )

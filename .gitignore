@@ -1,2 +1,7 @@
-**/__pycache__/**
+# Local cruft and other
 .env
+*.bak
+**/__pycache__/**
+
+# Local sandbox environments
+playground/
