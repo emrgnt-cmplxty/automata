@@ -25,6 +25,8 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 - python-leetcode: "1.2.1"
 - astunparse: "1.6.3"
 - anthropic: "0.3.10"
+- numpy: "^1.25.2"
+
 
 ## Dev Dependencies
 
