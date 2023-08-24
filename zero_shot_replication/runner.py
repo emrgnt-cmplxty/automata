@@ -106,4 +106,3 @@ if __name__ == "__main__":
         ) as e:  # Catch any OpenAI specific errors and general exceptions
             print(f"Error encountered for task_id {task_id}: {e}")
             continue
-        break
