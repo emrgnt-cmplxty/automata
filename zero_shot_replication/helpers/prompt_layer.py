@@ -9,7 +9,6 @@ class PromptLayer:
 
     def get_prompt(self, problem: dict) -> str:
         """Get a prompt for the given problem."""
-<<<<<<< HEAD:zero_shot_replication/prompt_layer.py
         match self.problem_type:
             case ProblemType.HUMAN_EVAL:
                 return self._get_human_eval_prompt(problem)
@@ -17,13 +16,6 @@ class PromptLayer:
                 return self._get_GSM8K_prompt(problem)
             case _:
                 raise NotImplementedError("Problem type not implemented.")
-=======
-
-        if self.problem_type == ProblemType.HUMAN_EVAL:
-            return self._get_human_eval_prompt(problem)
-        else:
-            raise NotImplementedError("Problem type not implemented.")
->>>>>>> 6240d63f5f1bd806b207fcf2d6adf4b37dca2e43:zero_shot_replication/helpers/prompt_layer.py
 
     @staticmethod
     def _get_human_eval_prompt(problem: dict) -> str:

@@ -1,5 +1,6 @@
 This is the entire Grade School Math 8K dataset.
 `train.jsonl` and `test.jsonl` are the original files from the repo.
+`all.jsonl` is just the 2 combined.
 
 ## Please use the below BibTeX entry to cite this dataset: ##
 

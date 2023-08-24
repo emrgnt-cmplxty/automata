@@ -3,13 +3,9 @@ from typing import Any, Generator, Tuple
 
 from evalplus.data import get_human_eval_plus
 
-<<<<<<< HEAD:zero_shot_replication/generators.py
-from zero_shot_replication.base import ProblemType
-import json
-=======
 from zero_shot_replication.helpers.base import ProblemType
 
->>>>>>> 6240d63f5f1bd806b207fcf2d6adf4b37dca2e43:zero_shot_replication/helpers/generators.py
+import json
 
 class ProblemGenerator:
     """A class for generating problems for the runner."""
