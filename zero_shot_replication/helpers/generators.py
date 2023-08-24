@@ -27,6 +27,7 @@ class ProblemGenerator:
     
 
     def _get_math_problems(self, level: str = None, randomize: bool = False) -> Generator[Tuple[str, Any], None, None]:
+        """Yield math problems from the MATH dataset."""
         base_path = "../datasets/inputs/MATH"
         
         all_files = []
@@ -74,7 +75,7 @@ class ProblemGenerator:
                     yield from self._problem_with_task_id(problems)
             case ProblemType.MATH:
                 # Fields on the yielded problem are ['problem', 'level', 'type', 'solution']
-                yield from self._get_math_problems()
+                yield from self._get_math_problems(randomize=True)
             case _:
                 raise NotImplementedError(
                     f"Problem type not implemented for {self.problem_type}."

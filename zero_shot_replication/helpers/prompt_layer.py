@@ -28,7 +28,7 @@ class PromptLayer:
     @staticmethod
     def _get_GSM8K_prompt(problem: dict) -> str:
         # do zero shot
-        return problem.get("question", None)
+        return problem.get("question")
 
     @staticmethod
     def _get_math_prompt(problem: dict) -> str:
