@@ -33,9 +33,6 @@ MATH_TEMPLATE = textwrap.dedent(
 Solve the following mathematical problem:
 {TASK_PROMPT}
 
-### Guidelines:
-- **Think Step by Step**: Break down the problem and provide a step-by-step reasoning for your solution.
-- **Verify Your Solution**: After arriving at a solution, ensure to verify its correctness within your reasoning process.
-- **Return the Final Solution**: Conclude with the final answer using `call-termination`. Ensure your solution is presented in BOXED LATEX format, e.g. `$\\boxed{{YOUR_SOLUTION}}$`.
+Ensure your solution is presented in BOXED LATEX format, e.g. `$\\boxed{{YOUR_SOLUTION}}$`.
 """
 )

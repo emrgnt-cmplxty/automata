@@ -40,7 +40,7 @@ class ProblemGenerator:
             with open(file_path, 'r') as f:
                 problem_details = json.load(f)
 
-                if problem_details.get('level') == level:
+                if level is None or problem_details.get('level') == level:
                     yield (os.path.basename(file_path), problem_details)
 
 
@@ -58,7 +58,7 @@ class ProblemGenerator:
             yield from get_human_eval_plus().items()
         elif self.problem_type == ProblemType.MATH:
             # Fields on the yielded problem are ['problem', 'level', 'type', 'solution']
-            yield from self._get_math_problems(level='Level 5')
+            yield from self._get_math_problems()
 
         else:
             raise NotImplementedError("Problem type not implemented.")
