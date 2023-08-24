@@ -6,7 +6,7 @@ import openai
 from evalplus.data import write_jsonl
 
 from zero_shot_replication.datasets import get_dataset
-from zero_shot_replication.helpers.base import ProblemType
+from zero_shot_replication.helpers.base import OUTPUT_FILE_NAME, ProblemType
 from zero_shot_replication.helpers.llm_providers import OpenAIZeroShotProvider
 from zero_shot_replication.helpers.utils import (
     extract_code,
@@ -14,10 +14,6 @@ from zero_shot_replication.helpers.utils import (
     load_existing_jsonl,
     parse_arguments,
     prep_for_file_path,
-)
-
-OUTPUT_FILE_NAME = (
-    "{PROVIDER}_{pset}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
 )
 
 
@@ -96,6 +92,7 @@ if __name__ == "__main__":
 
             result = {
                 **problem,
+                "task_id": task_id,
                 "completion": completion,
                 "raw_completion": raw_completion,
                 "actual_prompt": prompt,

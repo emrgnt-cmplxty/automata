@@ -1,0 +1,3 @@
+[submodule "zero_shot_replication/evals/leetcode_hard_gym"]
+	path = zero_shot_replication/evals/leetcode_hard_gym
+	url = https://github.com/emrgnt-cmplxty/leetcode-hard-gym
