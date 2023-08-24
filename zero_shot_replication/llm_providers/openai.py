@@ -1,23 +1,14 @@
-from abc import ABC, abstractmethod
-
 import openai
 
-
-class LLMProvider(ABC):
-    """An abstract class to provide completions from LLM providers."""
-
-    @abstractmethod
-    def get_completion(self, prompt: str) -> str:
-        """Abstract method to get a completion."""
-        pass
+from zero_shot_replication.llm_providers.base import LLMProvider
 
 
-class OpenAIZeroShotProvider:
+class OpenAIZeroShotProvider(LLMProvider):
     """A class to provide zero-shot completions from the OpenAI API."""
 
     def __init__(
         self,
-        model: str = "gpt-4",
+        model: str = "gpt-4-0613",
         temperature: float = 0.7,
         stream: bool = False,
     ) -> None:

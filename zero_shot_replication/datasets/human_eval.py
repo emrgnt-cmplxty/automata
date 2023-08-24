@@ -3,7 +3,7 @@ from typing import Any, Generator, List, Tuple
 
 from evalplus.data import get_human_eval_plus
 
-from zero_shot_replication.helpers.base import BaseDataset
+from zero_shot_replication.helpers import BaseDataset
 
 
 class HumanEvalDataset(BaseDataset):

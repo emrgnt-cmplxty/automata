@@ -1,7 +1,7 @@
 import textwrap
 from typing import Any, Generator, List, Tuple
 
-from zero_shot_replication.helpers.base import BaseDataset
+from zero_shot_replication.helpers import BaseDataset
 
 
 class MATHDataset(BaseDataset):
