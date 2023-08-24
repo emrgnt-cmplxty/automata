@@ -1,17 +1,19 @@
-import json
-import re
 import argparse
+import json
 import os
+import re
 
 
 def get_root_dir() -> str:
-    """Get the path to the root of the Automata python code directory."""
+    """Get the path to the root of the code repository."""
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(script_dir, "..")
+    return os.path.join(script_dir, "..", "..")
 
 
 def load_existing_jsonl(file_path: str) -> list[dict]:
+    """Load existing results from a jsonl file."""
+
     if os.path.exists(file_path):
         with open(file_path, "r") as json_file:
             return [json.loads(line) for line in json_file]
@@ -20,6 +22,7 @@ def load_existing_jsonl(file_path: str) -> list[dict]:
 
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
+
     parser = argparse.ArgumentParser(
         description="Parse Zero-Shot running commands"
     )
@@ -58,10 +61,13 @@ def parse_arguments() -> argparse.Namespace:
 
 def prep_for_file_path(in_path: str) -> str:
     """Prepare a string to be used in a file path."""
+
     return in_path.replace("-", "_").replace(".", "p")
 
 
 def extract_code(raw_response: str) -> str:
+    """Extract the code from a raw LLM response."""
+
     def _extract_unformatted(raw_response):
         # Extract the class definition as before
         class_definition_match = re.search(
