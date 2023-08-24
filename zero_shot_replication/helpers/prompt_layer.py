@@ -1,5 +1,5 @@
 """Turns problems into prompts for the LLM Completion impl."""
-from zero_shot_replication.helpers.base import HUMAN_EVAL_TEMPLATE, ProblemType
+from zero_shot_replication.helpers.base import HUMAN_EVAL_TEMPLATE, MATH_TEMPLATE, ProblemType
 
 
 class PromptLayer:
@@ -13,6 +13,8 @@ class PromptLayer:
 
         if self.problem_type == ProblemType.HUMAN_EVAL:
             return self._get_human_eval_prompt(problem)
+        elif self.problem_type == ProblemType.MATH:
+            return self._get_math_prompt(problem)
         else:
             raise NotImplementedError("Problem type not implemented.")
 
@@ -20,3 +22,7 @@ class PromptLayer:
     def _get_human_eval_prompt(problem: dict) -> str:
         """Get a prompt for a human eval problem."""
         return HUMAN_EVAL_TEMPLATE.format(CODE_PROMPT=problem["prompt"])
+    
+    @staticmethod
+    def _get_math_prompt(problem: dict) -> str:
+        return MATH_TEMPLATE.format(TASK_PROMPT=problem["problem"])
