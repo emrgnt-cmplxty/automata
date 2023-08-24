@@ -1,5 +1,5 @@
 """Turns problems into prompts for the LLM Completion impl."""
-from zero_shot_replication.base import ProblemType
+from zero_shot_replication.base import ProblemType, HUMAN_EVAL_TEMPLATE
 
 
 class PromptLayer:
@@ -18,4 +18,4 @@ class PromptLayer:
     @staticmethod
     def _get_human_eval_prompt(problem: dict) -> str:
         """Get a prompt for a human eval problem."""
-        return "This is a test, Return True"
+        return HUMAN_EVAL_TEMPLATE.format(CODE_PROMPT=problem["prompt"])

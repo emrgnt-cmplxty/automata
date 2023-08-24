@@ -13,6 +13,8 @@ from zero_shot_replication.utils import (
     get_root_dir,
     parse_arguments,
     prep_for_file_path,
+    load_existing_jsonl,
+    extract_code,
 )
 
 OUTPUT_FILE_NAME = "{PROVIDER}_{DATASET}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
@@ -66,16 +68,28 @@ if __name__ == "__main__":
     # Build a prompt layer instance
     prompt_layer = PromptLayer(ProblemType(args.dataset))
 
+    print("out_path = ", out_path)
+    results = load_existing_jsonl(out_path)
+    exising_task_ids = {result["task_id"] for result in results}
     for task_id, problem in problem_generator.generator:
+        if task_id in exising_task_ids:
+            print(
+                f"Continuing over existing task_id: {task_id} as it already exists."
+            )
         prompt = prompt_layer.get_prompt(problem)
 
         print(
             f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
         )
-        completion = llm_provider.get_completion(prompt)
-        print(f"Completion:\n{completion}\n")
+        raw_completion = llm_provider.get_completion(prompt)
+        completion = extract_code(completion)
+        print(f"Extracted Completion:\n{completion}\n")
 
-        result = {**problem, "completion": completion, "actual_prompt": prompt}
-        write_jsonl(out_path, [result])
-        if "1" in task_id:
-            break
+        result = {
+            **problem,
+            "completion": completion,
+            "raw_completion": raw_completion,
+            "actual_prompt": prompt,
+        }
+        results.append(result)
+        write_jsonl(out_path.replace(".jsonl", "_experiment.jsonl"), results)
