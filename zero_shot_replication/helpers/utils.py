@@ -3,12 +3,40 @@ import json
 import os
 import re
 
+import pandas as pd
+
+
+def load_file_or_raise(path: str):
+    """Utility function to load a file or raise an error if not found."""
+    try:
+        file_extension = os.path.splitext(path)[-1].lower()
+        if file_extension == ".csv":
+            return pd.read_csv(path)
+        elif file_extension == ".jsonl":
+            with open(path, "r", encoding="utf-8") as file:
+                return pd.DataFrame(
+                    json.loads(line) for line in file if line.strip()
+                )
+        else:
+            raise ValueError(f"Unsupported file format: {file_extension}")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(
+            f"Please check the expected data at {path}."
+        ) from e
+
 
 def get_root_dir() -> str:
     """Get the path to the root of the code repository."""
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(script_dir, "..", "..")
+
+
+def get_pset_inputs_dir() -> str:
+    """Get the path to the psets directory."""
+
+    pset_dir = os.path.dirname(os.path.realpath(__file__))
+    return os.path.join(pset_dir, "..", "..", "psets", "inputs")
 
 
 def load_existing_jsonl(file_path: str) -> list[dict]:
@@ -33,10 +61,10 @@ def parse_arguments() -> argparse.Namespace:
         help="Which provider to use for zero-shot completions?",
     )
     parser.add_argument(
-        "--dataset",
+        "--pset",
         type=str,
         default="human-eval",
-        help="Which dataset to run on?",
+        help="Which pset to run on?",
     )
     parser.add_argument(
         "--model",

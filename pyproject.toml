@@ -16,6 +16,7 @@ black = "^23.3.0"
 openai = "0.27.8"
 python-dotenv = "^1.0.0"
 evalplus = "^0.1.6"
+pandas = "^2.0.3"
 
 [tool.poetry.group.dev.dependencies]
 sourcery = "^1.6.0"
