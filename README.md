@@ -17,24 +17,25 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 
 ## Min. Dependencies
 
-- black: ^23.3.0
-- openai: 0.27.8
-- python-dotenv: ^1.0.0
-- evalplus: ^0.1.6
-- pandas: ^2.0.3
-- python-leetcode: "1.2.1"
-- astunparse: "1.6.3"
 - anthropic: "0.3.10"
+- astunparse: "1.6.3"
+- black: ^23.3.0
+- evalplus: ^0.1.6
+- numpy: "^1.25.2"
+- openai: 0.27.8
+- pandas: ^2.0.3
+- python-dotenv: ^1.0.0
+- python-leetcode: "1.2.1"
 
 ## Dev Dependencies
 
-- sourcery: "^1.6.0"
-- pre-commit: "^3.3.3"
+- flake8: "6.1.0"
+- isort: "5.12.0"
 - mypy: "^1.5.1"
+- pre-commit: "^3.3.3"
+- sourcery: "^1.6.0"
 - types-requests: "^2.31.0.2"
 - types-attrs: "^19.1.0"
-- isort: "5.12.0"
-- flake8: "6.1.0"
 - yapf: "0.40.1"
 
 ## Installation
@@ -68,17 +69,17 @@ poetry run python runner.py --provider openai --dataset human-eval --model gpt-4
 
 To see explicit commands ran to generate the reported results, check out the [commands.md](commands.md) menu.
 
-## Results
+## Results (all models accessed on 08/24)
 
-| Category                         | GPT-4-0314 (on 8/24) | GPT-4-0613 (on 8/24) | Quoted Baseline  | Sources
-|----------------------------------|----------------------|----------------------|------------------|------------------------------------------------------------------------|
-| HumanEval                        | 87.2                 | 84.1                 | 67               | [1]                                                                    |
-| EvalPlus                         | 79.2                 | 74.4                 | N/A              |                                                                        |
-| Leetcode Easy                    | 88.0                 | X                    | 72.2-75.6        | [1,2]                                                                  |
-| Leetcode Medium                  | 21.3                 | X                    | 26.2-38.7        | [1,2]                                                                  |
-| Leetcode Hard                    | 6.0                  | X                    | 6.7-7            | [1,2]                                                                  |
-| GSM8K                            | X                    | X                    | 87.1             |                                                                        |
-| MATH                             | 49.0                 | 46.4                 | 42.2              |[3]
+| Category         | gpt-3.5-turbo-0301 | gpt-3.5-turbo-0613 | Claude 2 | GPT-4-0314 | GPT-4-0613 | GPT-4 Baseline | Sources  |
+|------------------|--------------------|--------------------|----------|------------|------------|----------------|----------|
+| HumanEval        | 81.7               | XX                 | 65.2     | 87.2       | 84.1       | 67             | [1]      |
+| EvalPlus         | 71.3               | XX                 | 54.9     | 79.2       | 74.4       | N/A            |          |
+| Leetcode Easy    | XX                 | XX                 | XX       | 91.0       | 88.0       | 72.2-75.6      | [1,2]    |
+| Leetcode Medium  | XX                 | XX                 | XX       | 26.0       | 17.0       | 26.2-38.7      | [1,2]    |
+| Leetcode Hard    | XX                 | XX                 | XX       | 6.0        | 4.0        | 6.7-7          | [1,2]    |
+| GSM8K            | XX                 | XX                 | XX       | X          | X          | 87.1           |          |
+| MATH             | XX                 | XX                 | XX       | 49.0       | 46.4       | 42.2           | [3]      |
 
 ## License
 
