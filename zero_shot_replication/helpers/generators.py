@@ -5,12 +5,15 @@ from evalplus.data import get_human_eval_plus
 
 from zero_shot_replication.helpers.base import ProblemType
 
+import json
 
 class ProblemGenerator:
     """A class for generating problems for the runner."""
 
     def __init__(self, problem_type: ProblemType) -> None:
         self.problem_type = problem_type
+        # use for big files with no task_id
+        self.task_count = 0
 
     @property
     def generator(self) -> Generator[Tuple[str, Any], None, None]:
@@ -21,8 +24,19 @@ class ProblemGenerator:
             Generator[[task_id: str, problem: dict], None None]
 
         """
-        if self.problem_type == ProblemType.HUMAN_EVAL:
-            #  Fields on the yielded problem are ['task_id', 'prompt', 'entry_point', 'canonical_solution', 'test', 'contract', 'base_input', 'atol', 'plus_input']
-            yield from get_human_eval_plus().items()
-        else:
-            raise NotImplementedError("Problem type not implemented.")
+        match self.problem_type:
+            case ProblemType.HUMAN_EVAL:
+                #  Fields on the yielded problem are ['task_id', 'prompt', 'entry_point', 'canonical_solution', 'test', 'contract', 'base_input', 'atol', 'plus_input']
+                yield from get_human_eval_plus().items()
+            case ProblemType.GSM8K:
+                #  Fields on the yielded problem are ['question', 'answer']
+                filename = 'datasets/inputs/GSM8K/all.jsonl'
+                with open(filename, 'r', encoding='utf-8') as file:
+                    for line in file:
+                        try:
+                            self.task_count += 1
+                            yield (str(self.task_count), json.loads(line))
+                        except:
+                            continue
+            case _:
+                raise NotImplementedError(f"Problem type not implemented for {self.problem_type}.")

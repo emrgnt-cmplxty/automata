@@ -78,13 +78,18 @@ if __name__ == "__main__":
             print(
                 f"Continuing over existing task_id: {task_id} as it already exists."
             )
+            continue
         prompt = prompt_layer.get_prompt(problem)
 
         print(
             f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
         )
         raw_completion = llm_provider.get_completion(prompt)
-        completion = extract_code(raw_completion)
+        if args.dataset == 'human-eval':
+            # or other codegen
+            completion = extract_code(raw_completion)
+        else:
+            completion = raw_completion
         print(f"Extracted Completion:\n{completion}\n")
 
         result = {
