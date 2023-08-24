@@ -41,6 +41,7 @@ Make sure you have [Poetry](https://python-poetry.org/) installed, then clone th
 git clone https://github.com/your-username/zero-shot-replication.git
 cd zero-shot-replication
 poetry install
+pre-commit install
 cp .env.example .env # Copy the example environment file
 # Edit the .env file to add your OpenAI API key
 ```
