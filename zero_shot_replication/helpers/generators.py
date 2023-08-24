@@ -3,7 +3,7 @@ from typing import Any, Generator, Tuple
 
 from evalplus.data import get_human_eval_plus
 
-from zero_shot_replication.base import ProblemType
+from zero_shot_replication.helpers.base import ProblemType
 
 
 class ProblemGenerator:
@@ -18,8 +18,7 @@ class ProblemGenerator:
         Get a generator over the given problems
 
         Returns events of the form should be of the form:
-            Generator[task_id: str, problem: dict
-            problem: dict
+            Generator[[task_id: str, problem: dict], None None]
 
         """
         if self.problem_type == ProblemType.HUMAN_EVAL:
