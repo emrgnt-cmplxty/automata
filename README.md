@@ -17,10 +17,14 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 
 ## Min. Dependencies
 
+- black: ^23.3.0
 - openai: 0.27.8
 - python-dotenv: ^1.0.0
 - evalplus: ^0.1.6
-- black: ^23.3.0
+- pandas: ^2.0.3
+- python-leetcode: "1.2.1"
+- astunparse: "1.6.3"
+- anthropic: "0.3.10"
 
 ## Dev Dependencies
 
@@ -43,7 +47,7 @@ cd zero-shot-replication
 poetry install
 pre-commit install
 cp .env.example .env # Copy the example environment file
-# Edit the .env file to add your OpenAI API key
+# Edit the .env file to add your OpenAI API key, etc.
 ```
 
 ## Usage
@@ -61,6 +65,8 @@ poetry run python runner.py --provider openai --dataset human-eval --model gpt-4
 - `--model`: Model name to load from the provider (default: "gpt-3.5-turbo").
 - `--temperature`: Temperature parameter for the provided model (default: 0.7).
 - `--output_file_name`: Filename to override the default output file name with.
+
+To see explicit commands ran to generate the reported results, check out the [commands.md](commands.md) menu.
 
 ## Results
 
