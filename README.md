@@ -69,17 +69,17 @@ poetry run python runner.py --provider openai --dataset human-eval --model gpt-4
 
 To see explicit commands ran to generate the reported results, check out the [commands.md](commands.md) menu.
 
-## Results
+## Results (all models accessed on 08/24)
 
-| Category                         | GPT-4-0314 (on 8/24) | GPT-4-0613 (on 8/24) | Quoted Baseline  | Sources
-|----------------------------------|----------------------|----------------------|------------------|------------------------------------------------------------------------|
-| HumanEval                        | 87.2                 | 84.1                 | 67               | [1]                                                                    |
-| EvalPlus                         | 79.2                 | 74.4                 | N/A              |                                                                        |
-| Leetcode Easy                    | 88.0                 | 85.3                 | 72.2-75.6        | [1,2]                                                                  |
-| Leetcode Medium                  | 21.3                 | 17.6                 | 26.2-38.7        | [1,2]                                                                  |
-| Leetcode Hard                    | 6.0                  | 8.0                  | 6.7-7            | [1,2]                                                                  |
-| GSM8K                            | X                    | X                    | 87.1             |                                                                        |
-| MATH                             | 49.0                 | 46.4                 | 42.2             |[3]
+| Category         | gpt-3.5-turbo-0301 | gpt-3.5-turbo-0613 | Claude 2 | GPT-4-0314 | GPT-4-0613 | GPT-4 Baseline | Sources  |
+|------------------|--------------------|--------------------|----------|------------|------------|----------------|----------|
+| HumanEval        | 81.7               | XX                 | 65.2     | 87.2       | 84.1       | 67             | [1]      |
+| EvalPlus         | 71.3               | XX                 | 54.9     | 79.2       | 74.4       | N/A            |          |
+| Leetcode Easy    | XX                 | XX                 | XX       | 91.0       | 88.0       | 72.2-75.6      | [1,2]    |
+| Leetcode Medium  | XX                 | XX                 | XX       | 26.0       | 17.0       | 26.2-38.7      | [1,2]    |
+| Leetcode Hard    | XX                 | XX                 | XX       | 6.0        | 4.0        | 6.7-7          | [1,2]    |
+| GSM8K            | XX                 | XX                 | XX       | X          | X          | 87.1           |          |
+| MATH             | XX                 | XX                 | XX       | 49.0       | 46.4       | 42.2           | [3]      |
 
 ## License
 

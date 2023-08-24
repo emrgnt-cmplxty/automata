@@ -15,9 +15,9 @@ class LeetCodeDataset(BaseDataset):
     """A concrete class to provide LeetCode problems for the runner."""
 
     INPUT_FILE = "randomly_sampled_problems.csv"
-    N_HARD = 75
-    N_MEDIUM = 75
-    N_EASY = 75
+    N_HARD = 100
+    N_MEDIUM = 100
+    N_EASY = 100
 
     LEETCODE_EVAL_TEMPLATE = textwrap.dedent(
         """
