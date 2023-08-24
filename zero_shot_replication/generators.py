@@ -1,13 +1,9 @@
-from enum import Enum
+"""Generates problems to be run in the runner."""
 from typing import Any, Generator, Tuple
 
 from evalplus.data import get_human_eval_plus
 
-
-class ProblemType(Enum):
-    """Type of problem to generate"""
-
-    HUMAN_EVAL = "human-eval"
+from zero_shot_replication.base import ProblemType
 
 
 class ProblemGenerator:
