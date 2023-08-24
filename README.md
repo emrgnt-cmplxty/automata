@@ -74,9 +74,9 @@ To see explicit commands ran to generate the reported results, check out the [co
 |----------------------------------|----------------------|----------------------|------------------|------------------------------------------------------------------------|
 | HumanEval                        | 87.2                 | 84.1                 | 67               | [1]                                                                    |
 | EvalPlus                         | 79.2                 | 74.4                 | N/A              |                                                                        |
-| Leetcode Easy                    | X                    | X                    | 72.2-75.6        | [1,2]                                                                  |
-| Leetcode Medium                  | X                    | X                    | 26.2-38.7        | [1,2]                                                                  |
-| Leetcode Hard                    | X                    | X                    | 6.7-7            | [1,2]                                                                  |
+| Leetcode Easy                    | 88.0                 | X                    | 72.2-75.6        | [1,2]                                                                  |
+| Leetcode Medium                  | 21.3                 | X                    | 26.2-38.7        | [1,2]                                                                  |
+| Leetcode Hard                    | 6.0                  | X                    | 6.7-7            | [1,2]                                                                  |
 | GSM8K                            | X                    | X                    | 87.1             |                                                                        |
 | MATH                             | 49.0                 | 46.4                 | 42.2              |[3]
 

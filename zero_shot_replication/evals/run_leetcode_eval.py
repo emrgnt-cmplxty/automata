@@ -4,6 +4,7 @@ import logging
 import os
 from time import sleep
 
+import numpy as np
 import pandas as pd
 from evalplus.data import write_jsonl
 from leetcode_env.environment import LeetCodeEnv
@@ -110,7 +111,7 @@ def process_answers(
     logger: logging.Logger,
     out_path: str,
     session_manager: SessionManager,
-):
+) -> list[dict]:
     logger.info(f"Loding existing results from {out_path}...")
     new_results = read_existing_results(out_path)
     existing_frontend_ids = {result["task_id"] for result in new_results}
@@ -161,6 +162,7 @@ def process_answers(
 
         logger.info(f"Done processing task {solution.task_id}")
         write_jsonl(out_path, new_results)
+    return new_results
 
 
 def get_input_path(args: argparse.Namespace) -> str:
@@ -188,6 +190,26 @@ def get_input_path(args: argparse.Namespace) -> str:
     )
 
 
+def parse_results(results: list[dict]) -> dict:
+    parsed_results: dict = {"easy": [], "medium": [], "hard": []}
+
+    difficulty_map = {1: "easy", 2: "medium", 3: "hard"}
+
+    for result in results:
+        difficulty_key = difficulty_map.get(result["difficulty"])
+        if difficulty_key:
+            parsed_results[difficulty_key].append(result["reward"])
+
+    return parsed_results
+
+
+def display_parsed_results(parsed_results: dict) -> None:
+    for difficulty, rewards in parsed_results.items():
+        print(
+            f"{difficulty.capitalize()} Results Count = {len(rewards)} Pass Rate = {100 * np.mean(rewards):.2f}%"
+        )
+
+
 if __name__ == "__main__":
     args = parse_arguments()
     args.pset = "leetcode"
@@ -203,9 +225,12 @@ if __name__ == "__main__":
 
     session_manager = SessionManager()
 
-    process_answers(
+    results = process_answers(
         solutions,
         logger,
         output_path,
         session_manager,
     )
+
+    parsed = parse_results(results)
+    display_parsed_results(parsed)
