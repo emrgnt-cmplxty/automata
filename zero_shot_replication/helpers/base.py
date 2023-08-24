@@ -9,6 +9,7 @@ class ProblemType(Enum):
     HUMAN_EVAL = "human-eval"
     GSM8K = "GSM8K"
 
+
 HUMAN_EVAL_TEMPLATE = textwrap.dedent(
     """
 ### Instruction:
@@ -24,5 +25,3 @@ Use only built-in libraries and numpy, assume no additional imports other than t
 Do not add any comments, be as concise in your code as possible.
 """
 )
-
-

@@ -2,14 +2,6 @@
 requires = ["poetry-core", "setuptools", "wheel"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-automata = 'automata.cli.__main__:cli'
-
-[tool.poetry.group.dev.dependencies]
-notebook = "7.0.0"
-jupyter = "^1.0.0"
-sourcery = "^1.6.0"
-
 [tool.poetry]
 name = "zero-shot-replication"
 version = "0.1.0"
@@ -25,12 +17,20 @@ openai = "0.27.8"
 python-dotenv = "^1.0.0"
 evalplus = "^0.1.6"
 
+[tool.poetry.group.dev.dependencies]
+sourcery = "^1.6.0"
+pre-commit = "^3.3.3"
+mypy = "^1.5.1"
+types-requests = "^2.31.0.2"
+types-attrs = "^19.1.0"
+isort = "5.12.0"
+flake8 = "6.1.0"
+yapf = "0.40.1"
+
 [tool.black]
 line-length = 79
 
 [tool.mypy]
-# other mypy configurations go here
-# uncomment if this is being really annoying again
 ignore_missing_imports = true
 
 [tool.flake8]

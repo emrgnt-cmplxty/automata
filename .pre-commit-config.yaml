@@ -1,26 +1,30 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.1.1 
+-   repo: local
     hooks:
-      - id: mypy
-        additional_dependencies: [types-requests, types-attrs]
-  - repo: https://github.com/google/yapf
-    rev: v0.31.0
-    hooks:
-      - id: yapf
-        args: [--style, google]
-  - repo: https://github.com/psf/black
-    rev: 23.1.0 
-    hooks:
-      - id: black
-        language_version: python3.10 # Replace with your Python version
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0 
-    hooks:
-      - id: flake8
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0 
-    hooks:
-      - id: isort
-        language_version: python3.10 
+    -   id: mypy-poetry
+        name: mypy (via poetry)
+        entry: poetry run mypy .
+        language: system
+        pass_filenames: false
+        types: [python]
+        
+    -   id: black-poetry
+        name: black (via poetry)
+        entry: poetry run black
+        language: system
+        pass_filenames: true
+        types: [python]
 
+    -   id: isort-poetry
+        name: isort (via poetry)
+        entry: poetry run isort
+        language: system
+        pass_filenames: true
+        types: [python]
+        
+    -   id: flake8-poetry
+        name: flake8 (via poetry)
+        entry: poetry run flake8
+        language: system
+        pass_filenames: true
+        types: [python]

@@ -15,12 +15,23 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 - Python >= 3.10 and < 3.12
 - Poetry for package management
 
-## Dependencies
+## Min. Dependencies
 
 - openai: 0.27.8
 - python-dotenv: ^1.0.0
 - evalplus: ^0.1.6
 - black: ^23.3.0
+
+## Dev Dependencies
+
+- sourcery: "^1.6.0"
+- pre-commit: "^3.3.3"
+- mypy: "^1.5.1"
+- types-requests: "^2.31.0.2"
+- types-attrs: "^19.1.0"
+- isort: "5.12.0"
+- flake8: "6.1.0"
+- yapf: "0.40.1"
 
 ## Installation
 
