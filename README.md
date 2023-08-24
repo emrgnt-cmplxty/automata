@@ -59,6 +59,8 @@ poetry run python runner.py --provider openai --dataset human-eval --model gpt-4
 | Leetcode Easy                    | X                    | X                    | 72.2-75.6        | [1,2]                                                                  |
 | Leetcode Medium                  | X                    | X                    | 26.2-38.7        | [1,2]                                                                  |
 | Leetcode Hard                    | X                    | X                    | 6.7-7            | [1,2]                                                                  |
+| MATH |                  |                  |                | 
+| MATH, Level 5, Counting & Probability |                  |     25.5             |                | 
 
 ## License
 
