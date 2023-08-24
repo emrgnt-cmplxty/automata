@@ -17,26 +17,25 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 
 ## Min. Dependencies
 
-- black: ^23.3.0
-- openai: 0.27.8
-- python-dotenv: ^1.0.0
-- evalplus: ^0.1.6
-- pandas: ^2.0.3
-- python-leetcode: "1.2.1"
-- astunparse: "1.6.3"
 - anthropic: "0.3.10"
+- astunparse: "1.6.3"
+- black: ^23.3.0
+- evalplus: ^0.1.6
 - numpy: "^1.25.2"
-
+- openai: 0.27.8
+- pandas: ^2.0.3
+- python-dotenv: ^1.0.0
+- python-leetcode: "1.2.1"
 
 ## Dev Dependencies
 
-- sourcery: "^1.6.0"
-- pre-commit: "^3.3.3"
+- flake8: "6.1.0"
+- isort: "5.12.0"
 - mypy: "^1.5.1"
+- pre-commit: "^3.3.3"
+- sourcery: "^1.6.0"
 - types-requests: "^2.31.0.2"
 - types-attrs: "^19.1.0"
-- isort: "5.12.0"
-- flake8: "6.1.0"
 - yapf: "0.40.1"
 
 ## Installation
