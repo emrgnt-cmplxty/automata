@@ -37,7 +37,6 @@ poetry run python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4
 poetry run python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4-0614
 ```
 
-
 ## GMS8K
 
 ### GMS8K Generation
@@ -46,4 +45,13 @@ poetry run python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4
 poetry run python zero_shot_replication/runner.py --model=gpt-4-0314 --pset=gsm8k
 
 poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --pset=gsm8k
+```
+
+## MATH
+
+### Generation
+```bash
+poetry run python zero_shot_replication/runner.py --model=gpt-4-0314 --dataset=human-eval
+
+poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --dataset=human-eval
 ```
