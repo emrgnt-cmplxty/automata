@@ -32,7 +32,7 @@ poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --pset=leet
 ### LC Evaluation
 
 ```bash
-poetry python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4-0314
+poetry run python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4-0314
 
-poetry python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4-0614
+poetry run python zero_shot_replication/evals/run_leetcode_eval.py --model=gpt-4-0614
 ```
