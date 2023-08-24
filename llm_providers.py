@@ -1,4 +1,15 @@
+from abc import ABC, abstractmethod
+
 import openai
+
+
+class LLMProvider(ABC):
+    """An abstract class to provide completions from LLM providers."""
+
+    @abstractmethod
+    def get_completion(self, prompt: str) -> str:
+        """Abstract method to get a completion."""
+        pass
 
 
 class OpenAIZeroShotProvider:
