@@ -1,64 +1,25 @@
+"""Run the zero-shot replication."""
 import argparse
 import os
-from typing import Optional
 
-import dotenv
 import openai
 from evalplus.data import write_jsonl
 
-from zero_shot_replication.generators import ProblemGenerator, ProblemType
+from zero_shot_replication.base import ProblemType
+from zero_shot_replication.generators import ProblemGenerator
+from zero_shot_replication.prompt_layer import PromptLayer
 from zero_shot_replication.llm_providers import OpenAIZeroShotProvider
-from zero_shot_replication.utils import get_root_dir
-
-dotenv.load_dotenv()
+from zero_shot_replication.utils import (
+    get_root_dir,
+    parse_arguments,
+    prep_for_file_path,
+)
 
 OUTPUT_FILE_NAME = "{PROVIDER}_{DATASET}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
 
 
-def parse_arguments() -> argparse.Namespace:
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Parse Zero-Shot running commands"
-    )
-    parser.add_argument(
-        "--provider",
-        type=str,
-        default="openai",
-        help="Which provider to use for zero-shot completions?",
-    )
-    parser.add_argument(
-        "--dataset",
-        type=str,
-        default="human-eval",
-        help="Which dataset to run on?",
-    )
-    parser.add_argument(
-        "--model",
-        type=str,
-        default="gpt-3.5-turbo",
-        help="Model name to load from the provider.",
-    )
-    parser.add_argument(
-        "--temperature",
-        type=float,
-        default=0.7,
-        help="Temperature parameter for provided model.",
-    )
-    parser.add_argument(
-        "--output_file_name",
-        type=Optional[str],
-        default=None,
-        help="Filename to override the default output file name with.",
-    )
-
-    return parser.parse_args()
-
-
-def prep_for_file_path(in_path: str):
-    return in_path.replace("-", "_").replace(".", "p")
-
-
 def get_output_path(args: argparse.Namespace) -> str:
+    """Get the output path for the given arguments."""
     output_dir = os.path.join(
         get_root_dir(),
         "results",
@@ -91,17 +52,30 @@ if __name__ == "__main__":
     out_path = get_output_path(args)
 
     # Build an LLM provider instance
-    llm_provider = OpenAIZeroShotProvider(
-        model=args.model, temperature=args.temperature
-    )
+    llm_provider = None
+    if args.provider == "openai":
+        llm_provider = OpenAIZeroShotProvider(
+            model=args.model, temperature=args.temperature
+        )
+    else:
+        raise NotImplementedError("Provider not implemented.")
 
     # Build a problem generator instance
     problem_generator = ProblemGenerator(ProblemType(args.dataset))
 
+    # Build a prompt layer instance
+    prompt_layer = PromptLayer(ProblemType(args.dataset))
+
     for task_id, problem in problem_generator.generator:
-        completion = "A Test completion"
-        prompt = "A test prompt."
-        print(f"\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n")
+        prompt = prompt_layer.get_prompt(problem)
+
+        print(
+            f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
+        )
+        completion = llm_provider.get_completion(prompt)
+        print(f"Completion:\n{completion}\n")
+
         result = {**problem, "completion": completion, "actual_prompt": prompt}
         write_jsonl(out_path, [result])
-        break
+        if "1" in task_id:
+            break
