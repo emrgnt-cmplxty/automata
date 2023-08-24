@@ -8,6 +8,7 @@ class ProblemType(Enum):
 
     HUMAN_EVAL = "human-eval"
     GSM8K = "GSM8K"
+    MATH = "math"
 
 
 HUMAN_EVAL_TEMPLATE = textwrap.dedent(
@@ -23,5 +24,16 @@ Provide a response which completes the following Python code:
 Respond with the entire complete function definition, including a re-stated function definition.
 Use only built-in libraries and numpy, assume no additional imports other than those provided in the problem statement.
 Do not add any comments, be as concise in your code as possible.
+"""
+)
+
+MATH_TEMPLATE = textwrap.dedent(
+    """
+```markdown
+### Instruction:
+Solve the following mathematical problem:
+{TASK_PROMPT}
+
+Ensure your solution is presented in BOXED LATEX format, e.g. `$\\boxed{{YOUR_SOLUTION}}$`.
 """
 )

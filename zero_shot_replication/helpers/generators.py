@@ -6,6 +6,10 @@ from evalplus.data import get_human_eval_plus
 
 from zero_shot_replication.helpers.base import ProblemType
 
+import os
+import json
+import random
+
 
 class ProblemGenerator:
     """A class for generating problems for the runner."""
@@ -19,6 +23,35 @@ class ProblemGenerator:
         for problem in problems:
             yield (str(self.task_count), problem)
             self.task_count += 1
+
+    
+
+    def _get_math_problems(self, level: str = None, randomize: bool = False) -> Generator[Tuple[str, Any], None, None]:
+        base_path = "../datasets/inputs/MATH"
+        
+        all_files = []
+        
+        # Load all file paths into a list
+        for category in os.listdir(base_path):
+            category_path = os.path.join(base_path, category)
+            if os.path.isdir(category_path):
+                for file_name in os.listdir(category_path):
+                    file_path = os.path.join(category_path, file_name)
+                    all_files.append(file_path)
+        
+        # Shuffle the list if randomize is True
+        if randomize:
+            random.shuffle(all_files)
+        
+        # Iterate over the (potentially shuffled) list
+        for file_path in all_files:
+            # Load problems from the JSON file
+            with open(file_path, 'r') as f:
+                problem_details = json.load(f)
+
+                if level is None or problem_details.get('level') == level:
+                    yield (os.path.basename(file_path), problem_details)
+
 
     @property
     def generator(self) -> Generator[Tuple[str, Any], None, None]:
@@ -39,6 +72,9 @@ class ProblemGenerator:
                 with open(filename, "r", encoding="utf-8") as file:
                     problems = (json.loads(line) for line in file if line)
                     yield from self._problem_with_task_id(problems)
+            case ProblemType.MATH:
+                # Fields on the yielded problem are ['problem', 'level', 'type', 'solution']
+                yield from self._get_math_problems()
             case _:
                 raise NotImplementedError(
                     f"Problem type not implemented for {self.problem_type}."
