@@ -71,31 +71,25 @@ if __name__ == "__main__":
     print("out_path = ", out_path)
     results = load_existing_jsonl(out_path)
     exising_task_ids = {result["task_id"] for result in results}
-    new_results = []
-    counter = 0
     for task_id, problem in problem_generator.generator:
-        new_results.append(
-            {
-                **results[counter],
-                "completion": extract_code(results[counter]["completion"]),
-            }
-        )
-        counter += 1
-        print("new_results[completion] = ", new_results[-1]["completion"])
-        # if task_id in exising_task_ids:
-        #     print(
-        #         f"Continuing over existing task_id: {task_id} as it already exists."
-        #     )
-        # prompt = prompt_layer.get_prompt(problem)
+        if task_id in exising_task_ids:
+            print(
+                f"Continuing over existing task_id: {task_id} as it already exists."
+            )
+        prompt = prompt_layer.get_prompt(problem)
 
-        # print(
-        #     f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
-        # )
-        # completion = llm_provider.get_completion(prompt)
-        # print(f"Completion:\n{completion}\n")
-
-        # result = {**problem, "completion": completion, "actual_prompt": prompt}
-        # results.append(result)
-        write_jsonl(
-            out_path.replace(".jsonl", "_experiment.jsonl"), new_results
+        print(
+            f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
         )
+        raw_completion = llm_provider.get_completion(prompt)
+        completion = extract_code(completion)
+        print(f"Extracted Completion:\n{completion}\n")
+
+        result = {
+            **problem,
+            "completion": completion,
+            "raw_completion": raw_completion,
+            "actual_prompt": prompt,
+        }
+        results.append(result)
+        write_jsonl(out_path.replace(".jsonl", "_experiment.jsonl"), results)
