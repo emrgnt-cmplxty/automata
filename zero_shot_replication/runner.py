@@ -5,16 +5,16 @@ import os
 import openai
 from evalplus.data import write_jsonl
 
-from zero_shot_replication.base import ProblemType
-from zero_shot_replication.generators import ProblemGenerator
-from zero_shot_replication.prompt_layer import PromptLayer
-from zero_shot_replication.llm_providers import OpenAIZeroShotProvider
-from zero_shot_replication.utils import (
+from zero_shot_replication.helpers.base import ProblemType
+from zero_shot_replication.helpers.generators import ProblemGenerator
+from zero_shot_replication.helpers.llm_providers import OpenAIZeroShotProvider
+from zero_shot_replication.helpers.prompt_layer import PromptLayer
+from zero_shot_replication.helpers.utils import (
+    extract_code,
     get_root_dir,
+    load_existing_jsonl,
     parse_arguments,
     prep_for_file_path,
-    load_existing_jsonl,
-    extract_code,
 )
 
 OUTPUT_FILE_NAME = "{PROVIDER}_{DATASET}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
@@ -68,9 +68,11 @@ if __name__ == "__main__":
     # Build a prompt layer instance
     prompt_layer = PromptLayer(ProblemType(args.dataset))
 
-    print("out_path = ", out_path)
+    # Load existing results
     results = load_existing_jsonl(out_path)
     exising_task_ids = {result["task_id"] for result in results}
+
+    # Run the experiment
     for task_id, problem in problem_generator.generator:
         if int(task_id) > 2:
             break
@@ -85,11 +87,15 @@ if __name__ == "__main__":
             f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
         )
         raw_completion = llm_provider.get_completion(prompt)
+<<<<<<< HEAD
         if args.dataset == 'human-eval':
             # or other codegen
             completion = extract_code(raw_completion)
         else:
             completion = raw_completion
+=======
+        completion = extract_code(raw_completion)
+>>>>>>> 6240d63f5f1bd806b207fcf2d6adf4b37dca2e43
         print(f"Extracted Completion:\n{completion}\n")
 
         result = {
@@ -99,4 +105,4 @@ if __name__ == "__main__":
             "actual_prompt": prompt,
         }
         results.append(result)
-        write_jsonl(out_path.replace(".jsonl", "_experiment.jsonl"), results)
+        write_jsonl(out_path, results)
