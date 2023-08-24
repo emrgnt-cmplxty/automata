@@ -23,6 +23,7 @@ python = ">=3.10,<3.12"
 black = "^23.3.0"
 openai = "0.27.8"
 python-dotenv = "^1.0.0"
+evalplus = "^0.1.6"
 
 [tool.black]
 line-length = 79
