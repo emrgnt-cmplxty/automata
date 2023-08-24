@@ -1,5 +1,3 @@
 **/__pycache__/**
 .env
-__pycache__/
-zero_shot_replication/__pycache__/
 zero_shot_replication/test.py
