@@ -5,11 +5,11 @@ import os
 import openai
 from evalplus.data import write_jsonl
 
-from zero_shot_replication.base import ProblemType
-from zero_shot_replication.generators import ProblemGenerator
-from zero_shot_replication.prompt_layer import PromptLayer
-from zero_shot_replication.llm_providers import OpenAIZeroShotProvider
-from zero_shot_replication.utils import (
+from zero_shot_replication.helpers.base import ProblemType
+from zero_shot_replication.helpers.generators import ProblemGenerator
+from zero_shot_replication.helpers.prompt_layer import PromptLayer
+from zero_shot_replication.helpers.llm_providers import OpenAIZeroShotProvider
+from zero_shot_replication.helpers.utils import (
     get_root_dir,
     parse_arguments,
     prep_for_file_path,
