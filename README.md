@@ -39,7 +39,7 @@ cp .env.example .env # Copy the example environment file
 You can run the zero-shot replication by executing the `runner.py` file with various command-line arguments.
 
 ```bash
-poetry run python runner.py --provider openai --dataset human-eval --model gpt-3.5-turbo --temperature 0.7
+poetry run python runner.py --provider openai --dataset human-eval --model gpt-4-0613 --temperature 0.7
 ```
 
 ### Command-Line Arguments
@@ -50,10 +50,22 @@ poetry run python runner.py --provider openai --dataset human-eval --model gpt-3
 - `--temperature`: Temperature parameter for the provided model (default: 0.7).
 - `--output_file_name`: Filename to override the default output file name with.
 
+## Results
+
+| Category                         | GPT-4-0314 (on 8/24) | GPT-4-0613 (on 8/24) | Quoted Baseline  | Sources
+|----------------------------------|----------------------|----------------------|------------------|------------------------------------------------------------------------|
+| HumanEval                        | 87.2                 | 84.1                 | 67               | [1]                                                                    |
+| EvalPlus                         | 79.2                 | 74.4                 | N/A              |                                                                        |
+| Leetcode Easy                    | X                    | X                    | 72.2-75.6        | [1,2]                                                                  |
+| Leetcode Medium                  | X                    | X                    | 26.2-38.7        | [1,2]                                                                  |
+| Leetcode Hard                    | X                    | X                    | 6.7-7            | [1,2]                                                                  |
+
 ## License
 
 This project is licensed under the Apache-2.0 License.
 
-## Author
+## Sources
 
-Owen Colegrove <owen@emergentagi.com>
+[1] [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774)
+
+[2] [Sparks of Artificial General Intelligence](https://arxiv.org/pdf/2303.12712.pdf)

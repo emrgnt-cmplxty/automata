@@ -68,9 +68,11 @@ if __name__ == "__main__":
     # Build a prompt layer instance
     prompt_layer = PromptLayer(ProblemType(args.dataset))
 
-    print("out_path = ", out_path)
+    # Load existing results
     results = load_existing_jsonl(out_path)
     exising_task_ids = {result["task_id"] for result in results}
+
+    # Run the experiment
     for task_id, problem in problem_generator.generator:
         if task_id in exising_task_ids:
             print(
@@ -82,7 +84,7 @@ if __name__ == "__main__":
             f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
         )
         raw_completion = llm_provider.get_completion(prompt)
-        completion = extract_code(completion)
+        completion = extract_code(raw_completion)
         print(f"Extracted Completion:\n{completion}\n")
 
         result = {
@@ -92,4 +94,4 @@ if __name__ == "__main__":
             "actual_prompt": prompt,
         }
         results.append(result)
-        write_jsonl(out_path.replace(".jsonl", "_experiment.jsonl"), results)
+        write_jsonl(out_path, results)
