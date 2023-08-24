@@ -3,5 +3,15 @@
 *.bak
 **/__pycache__/**
 
+# Ignore LEETCODE problem set
+# due to Copyright, reproducers must 
+# scrape their own copy
+psets/LEETCODE
+
+# Generic ignore for results
+# We then hard-code inclusion for
+# completion-only results
+results/openai/leetcode
+
 # Local sandbox environments
 playground/

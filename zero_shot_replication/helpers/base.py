@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Generator, List, Tuple
 
+OUTPUT_FILE_NAME = (
+    "{PROVIDER}_{pset}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
+)
+
 
 class ProblemType(Enum):
     """Type of problem to generate"""
