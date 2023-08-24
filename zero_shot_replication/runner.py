@@ -19,6 +19,7 @@ from zero_shot_replication.llm_providers import ProviderManager
 
 def get_output_path(args: argparse.Namespace) -> str:
     """Get the output path for the given arguments."""
+
     output_dir = os.path.join(
         get_root_dir(),
         "results",
@@ -44,6 +45,7 @@ def get_output_path(args: argparse.Namespace) -> str:
 
 if __name__ == "__main__":
     """Run the zero-shot replication."""
+
     openai.api_key = os.getenv("OPENAI_API_KEY", "")
     args = parse_arguments()
 

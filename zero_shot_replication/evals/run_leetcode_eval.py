@@ -4,6 +4,7 @@ import logging
 import os
 from time import sleep
 
+import numpy as np
 import pandas as pd
 from evalplus.data import write_jsonl
 from leetcode_env.environment import LeetCodeEnv
@@ -25,11 +26,13 @@ TIMEOUT_WAIT = 10
 
 
 class SessionManager:
+    """A class to manage multiple LeetCodeEnv sessions."""
+
     sessions = os.environ["LEETCODE_SESSIONS"].split(",")
 
     SESSIONS = [f"SESSION_ID_{i}" for i in range(len(sessions))]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.counter = 0
         self.envs = []
         for index in range(len(self.SESSIONS)):
@@ -41,6 +44,8 @@ class SessionManager:
             self.envs.append(env)
 
     def set_env(self, index: int) -> None:
+        """Sets the environment variable for the given index."""
+
         session_id = self.SESSIONS[index % len(self.SESSIONS)]
         logger.info(f"Setting session_id = {session_id}")
         os.environ["LEETCODE_SESSION"] = self.sessions[
@@ -48,6 +53,8 @@ class SessionManager:
         ]
 
     def get_next_env(self) -> LeetCodeEnv:
+        """Gets the next LeetCodeEnv."""
+
         env = self.envs[self.counter % len(self.envs)]
         self.counter += 1
         return env
@@ -65,6 +72,7 @@ def read_existing_results(out_path: str) -> list[dict]:
 def _create_submission_result(
     solution: dict, extracted_code: str, status: str, reward: bool, done: str
 ) -> dict:
+    """Creates a submission result dict from the given inputs."""
     return {
         "task_id": solution["task_id"],
         "status": status,
@@ -82,6 +90,8 @@ def process_submission(
     session_manager: SessionManager,
     logger: logging.Logger,
 ) -> dict:
+    """A function to process a submission."""
+
     logger.info("Submitting code...")
     sub = LeetCodeSubmission(
         code=extracted_code,
@@ -105,12 +115,14 @@ def process_submission(
     )
 
 
-def process_answers(
+def process_solutions(
     solutions: pd.DataFrame,
     logger: logging.Logger,
     out_path: str,
     session_manager: SessionManager,
-):
+) -> list[dict]:
+    """A function to process answers."""
+
     logger.info(f"Loding existing results from {out_path}...")
     new_results = read_existing_results(out_path)
     existing_frontend_ids = {result["task_id"] for result in new_results}
@@ -161,6 +173,7 @@ def process_answers(
 
         logger.info(f"Done processing task {solution.task_id}")
         write_jsonl(out_path, new_results)
+    return new_results
 
 
 def get_input_path(args: argparse.Namespace) -> str:
@@ -188,6 +201,26 @@ def get_input_path(args: argparse.Namespace) -> str:
     )
 
 
+def parse_results(results: list[dict]) -> dict:
+    parsed_results: dict = {"easy": [], "medium": [], "hard": []}
+
+    difficulty_map = {1: "easy", 2: "medium", 3: "hard"}
+
+    for result in results:
+        difficulty_key = difficulty_map.get(result["difficulty"])
+        if difficulty_key:
+            parsed_results[difficulty_key].append(result["reward"])
+
+    return parsed_results
+
+
+def display_parsed_results(parsed_results: dict) -> None:
+    for difficulty, rewards in parsed_results.items():
+        print(
+            f"{difficulty.capitalize()} Results Count = {len(rewards)} Pass Rate = {100 * np.mean(rewards):.2f}%"
+        )
+
+
 if __name__ == "__main__":
     args = parse_arguments()
     args.pset = "leetcode"
@@ -203,9 +236,12 @@ if __name__ == "__main__":
 
     session_manager = SessionManager()
 
-    process_answers(
+    results = process_solutions(
         solutions,
         logger,
         output_path,
         session_manager,
     )
+
+    parsed = parse_results(results)
+    display_parsed_results(parsed)

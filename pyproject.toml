@@ -21,6 +21,7 @@ leetcode_env = { path = "zero_shot_replication/evals/leetcode_hard_gym" }
 python-leetcode = "1.2.1"
 astunparse = "1.6.3"
 anthropic = "^0.3.10"
+numpy = "^1.25.2"
 
 [tool.poetry.group.dev.dependencies]
 sourcery = "^1.6.0"
