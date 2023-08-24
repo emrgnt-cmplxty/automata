@@ -20,9 +20,7 @@ class ProviderManager:
             ],
             OpenAIZeroShotProvider,
         ),
-        ProviderConfig(
-            "anthropic", ["claude", "claude-2"], AnthropicZeroShotProvider
-        ),
+        ProviderConfig("anthropic", ["claude-2"], AnthropicZeroShotProvider),
     ]
 
     @staticmethod
