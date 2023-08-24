@@ -74,8 +74,6 @@ if __name__ == "__main__":
 
     # Run the experiment
     for task_id, problem in problem_generator.generator:
-        if int(task_id) > 2:
-            break
         if task_id in exising_task_ids:
             print(
                 f"Continuing over existing task_id: {task_id} as it already exists."
