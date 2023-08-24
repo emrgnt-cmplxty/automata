@@ -30,7 +30,10 @@ class OpenAIZeroShotProvider:
 
         response = openai.ChatCompletion.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt},
+            ],
             # functions=[],  # no functions for zero-shot
             temperature=self.temperature,
             stream=self.stream,
