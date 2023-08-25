@@ -10,86 +10,55 @@ from transformers import (
     TextIteratorStreamer,
 )
 
-CHECKPOINT = "meta-llama/Llama-2-7b-hf"
-DEFAULT_MAX_LENGTH = 128
-DEFAULT_TOP_P = 0.95
-
 
 class LocalLLamaModel:
-    def __init__(self, hf_access_token: str) -> None:
+    """A class to provide zero-shot completions from a local Llama model."""
+
+    DEFAULT_MAX_LENGTH = 128
+    # DEFAULT_TOP_P = 0.95
+
+    def __init__(
+        self, model: str, hf_access_token: str, max_output_length=None
+    ) -> None:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.tokenizer = None
-        self.pipeline = None
-        print("hf_access_token = ", hf_access_token)
         self.hf_access_token = hf_access_token
-
-    def load(self):
-        self.model = LlamaForCausalLM.from_pretrained(
-            CHECKPOINT,
-            use_auth_token=self.hf_access_token,
-            torch_dtype=torch.float16,
-            device_map="auto",
+        self.max_output_length = (
+            max_output_length or LocalLLamaModel.DEFAULT_MAX_LENGTH
         )
-
         self.tokenizer = LlamaTokenizer.from_pretrained(
-            CHECKPOINT,
+            model,
             device_map="auto",
             torch_dtype=torch.float16,
+            add_eos_token=True,
             use_auth_token=self.hf_access_token,
         )
+        self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
 
-    def stream_model(self, prompt: str, *args, **kwargs):
-        streamer = TextIteratorStreamer(self.tokenizer)
+        self.model = LlamaForCausalLM.from_pretrained(
+            model,
+            torch_dtype=torch.float16,
+            device_map="auto",
+            use_auth_token=self.hf_access_token,
+        )
+        self.model.to(self.device)
 
-        with torch.no_grad():
-            generation_config = GenerationConfig(
-                **kwargs,
-            )
-            inputs = self.tokenizer(
-                prompt,
-                return_tensors="pt",
-                max_length=DEFAULT_MAX_LENGTH,
-                truncation=True,
-                padding=True,
-            )
-            input_ids = inputs["input_ids"].to("cuda")
-            generation_kwargs = {
-                "input_ids": input_ids,
-                "generation_config": generation_config,
-                "return_dict_in_generate": True,
-                "output_scores": True,
-                "max_new_tokens": 1_024,  # generation_args["max_new_tokens"],
-                "streamer": streamer,
-            }
-            thread = Thread(
-                target=self.model.generate, kwargs=generation_kwargs
-            )
-            thread.start()
-
-            def inner():
-                yield from streamer
-                thread.join()
-
-        return inner()
-
-    # def predict(self, request: Dict):
-
-    #     if stream:
-    #         return self.stream_model(request)
-
-    #     with torch.no_grad():
-    #         try:
-    #             prompt = request.pop("prompt")
-    #             input_ids = self.tokenizer(
-    #                 prompt, return_tensors="pt"
-    #             ).input_ids.cuda()
-    #             output = self.model.generate(
-    #                 inputs=input_ids, **request["generate_args"]
-    #             )
-
-    #             return self.tokenizer.decode(output[0])
-    #         except Exception as exc:
-    #             return {"status": "error", "data": None, "message": str(exc)}
+    def get_completion(self, ipt: str, *args, **kwargs) -> str:
+        template = (
+            "The following is a conversation between a human and an AI assistant. "
+            "The AI assistant gives helpful, detailed, and polite answers to the user's questions.\n"
+            "[|Human|]: {instruction}\n\n[|AI|]:"
+        )
+        text = template.format_map(dict(instruction=ipt))
+        inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
+        outputs = self.model.generate(
+            **inputs,
+            max_new_tokens=self.max_output_length,
+            **kwargs,
+        )
+        batch_size, length = inputs.input_ids.shape
+        return self.tokenizer.decode(
+            outputs[0, length:], skip_special_tokens=True
+        )
 
 
 from zero_shot_replication.llm_providers.base import LLMProvider
@@ -112,8 +81,8 @@ class HuggingFaceZeroShotProvider(LLMProvider):
         self.temperature = temperature
         self.stream = stream
         self.hf_token = os.getenv("HF_TOKEN", "")
-        self.loaded_model = LocalLLamaModel(self.hf_token).load()
+        self.loaded_model = LocalLLamaModel(model, self.hf_token)
 
     def get_completion(self, prompt: str) -> str:
         """Get a completion from the Anthropic API based on the provided prompt."""
-        return self.loaded_model.stream_model(prompt)
+        return self.loaded_model.get_completion(prompt)
