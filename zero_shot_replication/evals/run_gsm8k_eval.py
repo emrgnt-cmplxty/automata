@@ -10,6 +10,7 @@ from zero_shot_replication.evals.eval_utils import (
     read_existing_results,
 )
 from zero_shot_replication.helpers.math_helpers import (
+    _strip_string,
     is_equiv,
     last_boxed_only_string,
     remove_boxed,
@@ -46,13 +47,29 @@ def process_problems_solutions(args: argparse.Namespace) -> None:
 
         answer = solution["answer"].split("####")[1].strip()
         attempt = remove_boxed(last_boxed_only_string(solution["completion"]))
-
         if not answer or not attempt:
             is_equivalent = False
         else:
+            try:
+                print("init strip = ", _strip_string(attempt))
+            except:
+                pass
+            if "=" in attempt:
+                attempt = attempt.split("=")[-1].strip()
+            attempt = attempt.replace(",", "")
+            attempt = attempt.replace("$", "")
+            attempt = attempt.replace("""\\""", "")
+            attempt = attempt.replace("'\/'", "")
+            attempt = attempt.split(" ")[0]
+            attempt = attempt.split("\n")[0]
+            print("before final strip, attempt = ", attempt)
+            attempt = _strip_string(attempt)
+            print("aftrer final strip, attempt = ", attempt)
+
             is_equivalent = is_equiv(answer, attempt) or is_equiv(
                 answer, attempt[::-1] if attempt else ""
             )
+        print(f"is_equivalent = {is_equivalent}")
 
         print(
             f"task_id={solution['task_id']}, answer={answer}, attempt={attempt}"

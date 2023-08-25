@@ -1,6 +1,10 @@
+import logging
+
 import openai
 
 from zero_shot_replication.llm_providers.base import LLMProvider
+
+logger = logging.getLogger(__name__)
 
 
 class OpenAIZeroShotProvider(LLMProvider):
@@ -18,7 +22,9 @@ class OpenAIZeroShotProvider(LLMProvider):
 
     def get_completion(self, prompt: str) -> str:
         """Get a completion from the OpenAI API based on the provided prompt."""
-
+        logger.info(
+            f"Getting completion from OpenAI API for model={self.model}"
+        )
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=[
