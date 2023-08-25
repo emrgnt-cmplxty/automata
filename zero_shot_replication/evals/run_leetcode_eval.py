@@ -128,7 +128,7 @@ def process_solutions(
             extracted_code = extract_code(solution.raw_completion)
 
             if solution.task_id in existing_frontend_ids:
-                logger.info(
+                logger.debug(
                     f"Skipping {solution.task_id} because it already exists"
                 )
                 continue
@@ -191,8 +191,9 @@ if __name__ == "__main__":
     args = parse_arguments()
     args.pset = "leetcode"
     results_input_path = get_input_path(args)
+    print(f"input_path = {results_input_path}")
 
-    logger = get_configured_logger(__name__, "DEBUG")
+    logger = get_configured_logger(__name__, "INFO")
     logger.info(f"Loading solutions from {results_input_path}")
     solutions = pd.DataFrame(load_file_or_raise(results_input_path))
 
