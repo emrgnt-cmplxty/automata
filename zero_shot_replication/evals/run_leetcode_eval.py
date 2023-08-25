@@ -167,15 +167,18 @@ def process_solutions(
     return new_results
 
 
-def parse_results(results: list[dict]) -> dict:
+def parse_results(results: list[dict], pset: str) -> dict:
     parsed_results: dict = {"easy": [], "medium": [], "hard": []}
 
+    # if pset == "leetcode":
     difficulty_map = {1: "easy", 2: "medium", 3: "hard"}
 
     for result in results:
         difficulty_key = difficulty_map.get(result["difficulty"])
         if difficulty_key:
             parsed_results[difficulty_key].append(result["reward"])
+    # else:
+    #     sparks_agi_problem_list =
 
     return parsed_results
 
@@ -189,9 +192,10 @@ def display_parsed_results(parsed_results: dict) -> None:
 
 if __name__ == "__main__":
     args = parse_arguments()
-    args.pset = "leetcode"
+    if args.pset != "leetcode-msft-sparks":
+        args.pset = "leetcode"
+
     results_input_path = get_input_path(args)
-    print(f"input_path = {results_input_path}")
 
     logger = get_configured_logger(__name__, "INFO")
     logger.info(f"Loading solutions from {results_input_path}")
@@ -210,5 +214,5 @@ if __name__ == "__main__":
         session_manager,
     )
 
-    parsed = parse_results(results)
+    parsed = parse_results(results, args.pset)
     display_parsed_results(parsed)
