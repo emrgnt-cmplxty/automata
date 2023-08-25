@@ -45,10 +45,17 @@ Make sure you have [Poetry](https://python-poetry.org/) installed, then clone th
 ```bash
 git clone https://github.com/your-username/zero-shot-replication.git
 cd zero-shot-replication
+git submodule update --init --recursive
 poetry install
-pre-commit install
 cp .env.example .env # Copy the example environment file
 # Edit the .env file to add your OpenAI API key, etc.
+
+
+# Optional
+
+# If developing, install the pre-commit hooks
+pre-commit install 
+
 ```
 
 ## Usage
@@ -75,11 +82,11 @@ To see explicit commands ran to generate the reported results, check out the [co
 |----------------------|--------------------|--------------------|----------|------------|------------|----------------|----------|
 | HumanEval            | 67.0               | 61.5               | 65.2     | 86.0       | 84.1       | 67             | [1]      |
 | EvalPlus             | 59.1               | 54.2               | 54.9     | 80.5       | 74.4       | N/A            |          |
-| LeetCode_100 Easy    | 83.0               | 80.0               | 73.0     | 91.0       | 88.0       | 72.2-75.6      | [1,2]    |
+<!-- | LeetCode_100 Easy    | 83.0               | 80.0               | 73.0     | 91.0       | 88.0       | 72.2-75.6      | [1,2]    |
 | LeetCode_100 Medium  | 16.0               | 16.0               | 16.0     | 26.0       | 21.0       | 26.2-38.7      | [1,2]    |
-| LeetCode_100 Hard    | 1.0                | 3.0                | 2.0      | 6.0        | 6.0        | 6.7-7          | [1,2]    |
+| LeetCode_100 Hard    | 1.0                | 3.0                | 2.0      | 6.0        | 6.0        | 6.7-7          | [1,2]    | -->
 | GSM8K                | 71.1               | 67.6               | 26.2     | 90.4       | 91.0       | 87.1           |          |
-| MATH                 | XX                 | XX                 | XX       | 49.0       | 46.4       | 42.2           | [3]      |
+<!-- | MATH                 | XX                 | XX                 | XX       | XX         | XX         | XX             | [3]      | -->
 
 ## License
 
