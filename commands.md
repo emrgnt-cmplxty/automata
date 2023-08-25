@@ -5,15 +5,7 @@
 ### HEval Generation
 
 ```bash
-poetry run python zero_shot_replication/runner.py --model=gpt-3.5-turbo-0301 --pset=human-eval
-
-poetry run python zero_shot_replication/runner.py --model=gpt-3.5-turbo-0613 --pset=human-eval
-
-poetry run python zero_shot_replication/runner.py --model=gpt-4-0314 --pset=human-eval
-
-poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --pset=human-eval
-
-poetry run python zero_shot_replication/runner.py --model=claude-2 --pset=human-eval --provider=anthropic
+poetry run python zero_shot_replication/runner.py --model=... --pset=human-eval
 ```
 
 ### HEval Evaluation
@@ -28,15 +20,7 @@ poetry run evalplus.evaluate --dataset humaneval --samples=... --parallel 4 --mi
 
 ```bash
 
-poetry run python zero_shot_replication/runner.py --model=gpt-3.5-turbo-0301 --pset=leetcode
-
-poetry run python zero_shot_replication/runner.py --model=gpt-3.5-turbo-0613 --pset=leetcode
-
-poetry run python zero_shot_replication/runner.py --model=gpt-4-0314 --pset=leetcode
-
-poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --pset=leetcode
-
-poetry run python zero_shot_replication/runner.py --model=claude-2 --pset=leetcode --provider=anthropic
+poetry run python zero_shot_replication/runner.py --model=... --pset=leetcode
 ```
 
 ### LC Evaluation
@@ -51,7 +35,13 @@ poetry run python zero_shot_replication/evals/run_leetcode_eval.py --model=...
 
 ```bash
 poetry run python zero_shot_replication/runner.py --model=... --pset=gsm8k
+```
 
+### GMS8K Eval
+
+```bash
+# run_MATH_eval can service both MATH and GMS8K
+poetry run python evals/run_gsm8k_eval.py --model=...
 ```
 
 ## MATH
@@ -63,7 +53,5 @@ poetry run python zero_shot_replication/runner.py --model=... --pset=math
 ```
 
 ```bash
-poetry run python evals/run_MATH_eval.py --solutions_file_path=../results/openai/MATH/gpt_4_0314/openai_math__model_eq_gpt_4_0314__temperature_eq_0p7.jsonl
-
-poetry run python evals/run_MATH_eval.py --solutions_file_path=../results/openai/MATH/gpt_4_0613/openai_math__model_eq_gpt_4_0613__temperature_eq_0p7.jsonl
+poetry run python zero_shot_replication/evals/run_math_eval.py  --model=...
 ```
