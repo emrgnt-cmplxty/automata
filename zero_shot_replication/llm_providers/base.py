@@ -4,6 +4,12 @@ from typing import List, Type
 
 
 class LLMProvider(ABC):
+    """An abstract class to provide a common interface for LLM providers."""
+
+    @abstractmethod
+    def __init__(self, model: str, temperature: float) -> None:
+        pass
+
     @abstractmethod
     def get_completion(self, prompt: str) -> str:
         pass
@@ -11,6 +17,8 @@ class LLMProvider(ABC):
 
 @dataclass
 class ProviderConfig:
+    """A dataclass to hold the configuration for a provider."""
+
     name: str
     models: List[str]
     llm_class: Type[LLMProvider]

@@ -100,7 +100,7 @@ def parse_arguments() -> argparse.Namespace:
 def prep_for_file_path(in_path: str) -> str:
     """Prepare a string to be used in a file path."""
 
-    return in_path.replace("-", "_").replace(".", "p")
+    return in_path.replace("-", "_").replace(".", "p").replace("/", "_")
 
 
 def extract_code(raw_response: str) -> str:

@@ -22,6 +22,9 @@ python-leetcode = "1.2.1"
 astunparse = "1.6.3"
 anthropic = "^0.3.10"
 numpy = "^1.25.2"
+transformers = "^4.32.0"
+torch = "^2.0.1"
+accelerate = "^0.22.0"
 
 [tool.poetry.group.dev.dependencies]
 sourcery = "^1.6.0"
