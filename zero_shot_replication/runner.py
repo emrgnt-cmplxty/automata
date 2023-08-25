@@ -49,9 +49,6 @@ if __name__ == "__main__":
     openai.api_key = os.getenv("OPENAI_API_KEY", "")
     args = parse_arguments()
 
-    # Get the output path
-    out_path = get_output_path(args)
-
     # Build an LLM provider instance
     llm_provider = ProviderManager.get_provider(
         args.provider, args.model, args.temperature
@@ -62,6 +59,9 @@ if __name__ == "__main__":
 
     # Get the corresponding dataset
     dataset = get_dataset(ProblemType(args.pset))
+
+    # Get the output path
+    out_path = get_output_path(args)
 
     # Load existing results
     results = load_existing_jsonl(out_path)

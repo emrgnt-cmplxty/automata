@@ -31,10 +31,11 @@ class ProviderManager:
         ProviderConfig(
             "huggingface",
             [
-                "facebook/opt-125m",  # for testing
-                "meta-llama/Llama-2-7b",
-                "meta-llama/Llama-2-13b",
-                "meta-llama/Llama-2-70b",
+                "llama-2-13b",
+                # "facebook/opt-125m",  # for testing
+                # "meta-llama/Llama-2-7b",
+                # "meta-llama/Llama-2-13b",
+                # "meta-llama/Llama-2-70b",
             ],
             HuggingFaceZeroShotProvider,
         ),
