@@ -18,7 +18,6 @@ class HuggingFaceZeroShotProvider(LLMProvider):
         temperature: float = 0.7,
         stream: bool = False,
     ) -> None:
-        print("model = ", model)
         self.model = model
         self.temperature = temperature
         self.stream = stream
@@ -40,7 +39,7 @@ class HuggingFaceZeroShotProvider(LLMProvider):
             top_k=10,
             num_return_sequences=1,
             eos_token_id=self.tokenizer.eos_token_id,
-            max_length=200,
+            max_length=HuggingFaceZeroShotProvider.MAX_TOKENS_TO_SAMPLE,
         )
         for seq in sequences:
             print(f"Result: {seq['generated_text']}")
