@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Zero-Shot Replication Framework is a minimal environment designed to replicate zero-shot results from past academic papers. It currently supports OpenAI models to generate completions for various datasets and provides tools for handling, evaluating, and storing these completions.
+The Zero-Shot Replication Framework is a minimal environment designed to replicate zero-shot results from past academic papers. It currently supports OpenAI, Anthropic, and HuggingFace models to generate completions for various datasets and provides tools for handling, evaluating, and storing these completions.
 
 ## Features
 
@@ -71,15 +71,15 @@ To see explicit commands ran to generate the reported results, check out the [co
 
 ## Results (all models accessed on 08/24)
 
-| Category         | gpt-3.5-turbo-0301 | gpt-3.5-turbo-0613 | Claude 2 | GPT-4-0314 | GPT-4-0613 | GPT-4 Baseline | Sources  |
-|------------------|--------------------|--------------------|----------|------------|------------|----------------|----------|
-| HumanEval        | 81.7               | XX                 | 65.2     | 87.2       | 84.1       | 67             | [1]      |
-| EvalPlus         | 71.3               | XX                 | 54.9     | 79.2       | 74.4       | N/A            |          |
-| Leetcode Easy    | XX                 | XX                 | XX       | 91.0       | 88.0       | 72.2-75.6      | [1,2]    |
-| Leetcode Medium  | XX                 | XX                 | XX       | 26.0       | 17.0       | 26.2-38.7      | [1,2]    |
-| Leetcode Hard    | XX                 | XX                 | XX       | 6.0        | 4.0        | 6.7-7          | [1,2]    |
-| GSM8K            | XX                 | XX                 | XX       | X          | X          | 87.1           |          |
-| MATH             | XX                 | XX                 | XX       | 49.0       | 46.4       | 42.2           | [3]      |
+| Category             | gpt-3.5-turbo-0301 | gpt-3.5-turbo-0613 | claude-2 | gpt-4-0314 | gpt-4-0613 | gpt-4 Baseline | Sources  |
+|----------------------|--------------------|--------------------|----------|------------|------------|----------------|----------|
+| HumanEval            | 81.7               | 61.5               | 65.2     | 87.2       | 84.1       | 67             | [1]      |
+| EvalPlus             | 71.3               | 54.2               | 54.9     | 79.2       | 74.4       | N/A            |          |
+| LeetCode_100 Easy    | XX                 | XX                 | 73.0     | 91.0       | 88.0       | 72.2-75.6      | [1,2]    |
+| LeetCode_100 Medium  | XX                 | XX                 | 16.0     | 26.0       | 17.0       | 26.2-38.7      | [1,2]    |
+| LeetCode_100 Hard    | XX                 | XX                 | 2.0      | 6.0        | 4.0        | 6.7-7          | [1,2]    |
+| GSM8K                | XX                 | XX                 | XX       | X          | X          | 87.1           |          |
+| MATH                 | XX                 | XX                 | XX       | 49.0       | 46.4       | 42.2           | [3]      |
 
 ## License
 

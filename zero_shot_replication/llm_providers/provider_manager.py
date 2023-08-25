@@ -5,6 +5,9 @@ from zero_shot_replication.llm_providers.base import (
     LLMProvider,
     ProviderConfig,
 )
+from zero_shot_replication.llm_providers.huggingface import (
+    HuggingFaceZeroShotProvider,
+)
 from zero_shot_replication.llm_providers.openai import OpenAIZeroShotProvider
 
 
@@ -25,14 +28,28 @@ class ProviderManager:
             ["claude-2", "claude-instant-1"],
             AnthropicZeroShotProvider,
         ),
+        ProviderConfig(
+            "huggingface",
+            [
+                "facebook/opt-125m",  # for testing
+                "meta-llama/Llama-2-7b",
+                "meta-llama/Llama-2-13b",
+                "meta-llama/Llama-2-70b",
+            ],
+            HuggingFaceZeroShotProvider,
+        ),
     ]
 
     @staticmethod
-    def get_provider(provider_name: str, model_name: str) -> LLMProvider:
+    def get_provider(
+        provider_name: str, model_name: str, temperature: float
+    ) -> LLMProvider:
         for provider in ProviderManager.PROVIDERS:
             if provider.name == provider_name:
                 if model_name in provider.models:
-                    return provider.llm_class()
+                    return provider.llm_class(
+                        model=model_name, temperature=temperature
+                    )
                 raise ValueError(
                     f"Model '{model_name}' not supported by provider '{provider_name}'"
                 )

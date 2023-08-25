@@ -53,7 +53,9 @@ if __name__ == "__main__":
     out_path = get_output_path(args)
 
     # Build an LLM provider instance
-    llm_provider = ProviderManager.get_provider(args.provider, args.model)
+    llm_provider = ProviderManager.get_provider(
+        args.provider, args.model, args.temperature
+    )
 
     if not llm_provider:
         raise NotImplementedError(f"Provider '{args.provider}' not supported.")
