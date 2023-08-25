@@ -15,10 +15,11 @@ class GSM8KDataset(BaseDataset):
     INPUT_FILE = "test.jsonl"
 
     GSM8K_TEMPLATE = textwrap.dedent(
-    """
+        """
     Solve the problem and put your answer in \\boxed{}. You are not allowed to use any code. The problem is: {QUESTION}
     """
     )
+
     @property
     def raw_prompt(selfdict) -> str:
         """Concrete method the raw prompt for a GSM8K problem."""
@@ -49,4 +50,4 @@ class GSM8KDataset(BaseDataset):
     def get_formatted_prompt(self, problem: dict) -> str:
         """Concrete method to get the formatted prompt for HumanEval problems."""
         # first {} is needed for the \\boxed{}
-        return self.raw_prompt.format('{}', QUESTION=problem.get("question"))
+        return self.raw_prompt.format("{}", QUESTION=problem.get("question"))

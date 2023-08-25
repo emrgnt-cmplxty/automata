@@ -1,4 +1,6 @@
-The 5,000 TEST examples for the MATH dataset.
+The 5,000 TEST examples for the MATH dataset modified to CSV format for easy use.
+
+CSV created with the MATH-scraper tool availible here: https://github.com/NolanTrem/MATH-Scraper.
 
 
 If you find this useful for your work, please cite
