@@ -41,7 +41,7 @@ poetry run python zero_shot_replication/runner.py --model=... --pset=gsm8k
 
 ```bash
 # run_MATH_eval can service both MATH and GMS8K
-poetry run python evals/run_MATH_eval.py --solutions_file_path=...
+poetry run python evals/run_gsm8k_eval.py --model=...
 ```
 
 ## MATH
@@ -53,5 +53,5 @@ poetry run python zero_shot_replication/runner.py --model=... --pset=math
 ```
 
 ```bash
-poetry run python zero_shot_replication/evals/run_math_eval.py --solutions_file_path=...
+poetry run python zero_shot_replication/evals/run_math_eval.py  --model=...
 ```

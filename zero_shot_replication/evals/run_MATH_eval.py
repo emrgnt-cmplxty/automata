@@ -22,6 +22,7 @@ from zero_shot_replication.helpers.utils import (
 
 def process_problems_solutions(args: argparse.Namespace) -> None:
     args = parse_arguments()
+    args.pset = "math"
 
     input_file_path = args.solutions_file_path or get_input_path(args)
     solutions = pd.DataFrame(load_file_or_raise(input_file_path))
