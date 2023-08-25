@@ -51,9 +51,9 @@ poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --pset=gsm8
 
 ### Generation
 ```bash
-poetry run python zero_shot_replication/runner.py --model=gpt-4-0314 --dataset=human-eval
+poetry run python runner.py --provider openai --pset math --model gpt-4-0314 --temperature 0.7
 
-poetry run python zero_shot_replication/runner.py --model=gpt-4-0613 --dataset=human-eval
+poetry run python runner.py --provider openai --pset math --model gpt-4-0613 --temperature 0.7
 ```
 
 ```bash

@@ -78,7 +78,7 @@ To see explicit commands ran to generate the reported results, check out the [co
 | Leetcode Medium                  | 21.3                 | X                    | 26.2-38.7        | [1,2]                                                                  |
 | Leetcode Hard                    | 6.0                  | X                    | 6.7-7            | [1,2]                                                                  |
 | GSM8K                            | X                    | X                    | 87.1             |                                                                        |
-| MATH                             | 49.0                 | 46.4                 | 42.2              |[3]
+| MATH                             | 49.0                 | 49.7                 | 42.2              |[3]
 
 ## License
 
