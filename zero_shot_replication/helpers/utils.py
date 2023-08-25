@@ -88,6 +88,11 @@ def parse_arguments() -> argparse.Namespace:
         default=None,
         help="Filename to override the default input file name with.",
     )
+    parser.add_argument(
+        "--solutions_file_path",
+        default=None,
+        help="Path to the solutions file to analyze",
+    )
 
     return parser.parse_args()
 
@@ -116,3 +121,7 @@ def get_configured_logger(name: str, log_level: str) -> logging.Logger:
         level=log_level, format="%(asctime)s - %(levelname)s - %(message)s"
     )
     return logging.getLogger(name)
+
+
+def get_root_fpath() -> str:
+    return os.path.dirname(os.path.abspath(__file__))

@@ -61,3 +61,9 @@ poetry run python zero_shot_replication/runner.py --model=... --pset=gsm8k
 ```bash
 poetry run python zero_shot_replication/runner.py --model=... --pset=math
 ```
+
+```bash
+poetry run python evals/run_MATH_eval.py --solutions_file_path=../results/openai/MATH/gpt_4_0314/openai_math__model_eq_gpt_4_0314__temperature_eq_0p7.jsonl
+
+poetry run python evals/run_MATH_eval.py --solutions_file_path=../results/openai/MATH/gpt_4_0613/openai_math__model_eq_gpt_4_0613__temperature_eq_0p7.jsonl
+```

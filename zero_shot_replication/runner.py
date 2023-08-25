@@ -63,7 +63,9 @@ if __name__ == "__main__":
 
     # Load existing results
     results = load_existing_jsonl(out_path)
-    exising_task_ids = {result["task_id"] for result in results}
+    exising_task_ids = {
+        result["task_id"] for result in results if "task_id" in result
+    }
 
     # Run the experiment
     for task_id, problem in dataset.generator:
