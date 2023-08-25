@@ -155,9 +155,16 @@ def is_equiv(str1, str2, verbose=False) -> bool:
         ss2 = _strip_string(str2)
         if verbose:
             print(ss1, ss2)
-        return ss1 == ss2
+        # Check if the two strings are equivalent
+        if ss1 == ss2:
+            return True
+        # Check if the attempt (ss2) ends with the correct answer (ss1)
+        if ss2.endswith(ss1):
+            return True
+        return False
     except Exception:
         return str1 == str2
+
 
 
 def remove_boxed(s) -> Optional[str]:
