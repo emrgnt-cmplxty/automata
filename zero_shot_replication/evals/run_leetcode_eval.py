@@ -1,5 +1,4 @@
 """A script for running evaluations on LeetCode problems."""
-import argparse
 import logging
 import os
 from time import sleep
@@ -10,14 +9,15 @@ from evalplus.data import write_jsonl
 from leetcode_env.environment import LeetCodeEnv
 from leetcode_env.leetcode_types import LeetCodeSubmission, ProgrammingLanguage
 
-from zero_shot_replication.helpers.base import OUTPUT_FILE_NAME
+from zero_shot_replication.evals.eval_utils import (
+    get_input_path,
+    read_existing_results,
+)
 from zero_shot_replication.helpers.utils import (
     extract_code,
     get_configured_logger,
-    get_root_dir,
     load_file_or_raise,
     parse_arguments,
-    prep_for_file_path,
 )
 
 USER_WAIT_TIME = 5  # seconds, per client
@@ -58,15 +58,6 @@ class SessionManager:
         env = self.envs[self.counter % len(self.envs)]
         self.counter += 1
         return env
-
-
-def read_existing_results(out_path: str) -> list[dict]:
-    """Reads existing results from out_path if it exists, otherwise returns empty list"""
-    return (
-        load_file_or_raise(out_path).to_dict(orient="records")
-        if os.path.exists(out_path)
-        else []
-    )
 
 
 def _create_submission_result(
@@ -174,31 +165,6 @@ def process_solutions(
         logger.info(f"Done processing task {solution.task_id}")
         write_jsonl(out_path, new_results)
     return new_results
-
-
-def get_input_path(args: argparse.Namespace) -> str:
-    """Get the output path for the given arguments."""
-    input_dir = os.path.join(
-        get_root_dir(),
-        "results",
-        prep_for_file_path(args.provider),
-        prep_for_file_path(args.pset),
-        prep_for_file_path(args.model),
-    )
-
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    return os.path.join(
-        input_dir,
-        args.input_file_name
-        or OUTPUT_FILE_NAME.format(
-            PROVIDER=prep_for_file_path(args.provider),
-            pset=prep_for_file_path(args.pset),
-            MODEL=prep_for_file_path(args.model),
-            TEMPERATURE=prep_for_file_path(str(args.temperature)),
-        ),
-    )
 
 
 def parse_results(results: list[dict]) -> dict:

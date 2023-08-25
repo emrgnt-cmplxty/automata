@@ -1,4 +1,7 @@
-def _fix_fracs(string):
+from typing import Optional
+
+
+def _fix_fracs(string: str) -> str:
     substrs = string.split("\\frac")
     new_str = substrs[0]
     if len(substrs) > 1:
@@ -10,7 +13,7 @@ def _fix_fracs(string):
             else:
                 try:
                     assert len(substr) >= 2
-                except:
+                except Exception:
                     return string
                 a = substr[0]
                 b = substr[1]
@@ -30,22 +33,22 @@ def _fix_fracs(string):
     return string
 
 
-def _fix_a_slash_b(string):
+def _fix_a_slash_b(string: str) -> str:
     if len(string.split("/")) != 2:
         return string
     a = string.split("/")[0]
     b = string.split("/")[1]
     try:
-        a = int(a)
-        b = int(b)
+        a_int = int(a)
+        b_int = int(b)
         assert string == "{}/{}".format(a, b)
-        new_string = "\\frac{" + str(a) + "}{" + str(b) + "}"
+        new_string = "\\frac{" + str(a_int) + "}{" + str(b_int) + "}"
         return new_string
-    except:
+    except Exception:
         return string
 
 
-def _remove_right_units(string):
+def _remove_right_units(string: str) -> str:
     # "\\text{ " only ever occurs (at least in the val set) when describing units
     if "\\text{ " in string:
         splits = string.split("\\text{ ")
@@ -55,7 +58,7 @@ def _remove_right_units(string):
         return string
 
 
-def _fix_sqrt(string):
+def _fix_sqrt(string: str) -> str:
     if "\\sqrt" not in string:
         return string
     splits = string.split("\\sqrt")
@@ -70,7 +73,7 @@ def _fix_sqrt(string):
     return new_string
 
 
-def _strip_string(string):
+def _strip_string(string: str) -> str:
     # linebreaks
     string = string.replace("\n", "")
     # print(string)
@@ -105,7 +108,7 @@ def _strip_string(string):
 
     # remove percentage
     string = string.replace("\\%", "")
-    string = string.replace("\%", "")
+    string = string.replace("\%", "")  # type: ignore
 
     # " 0." equivalent to " ." and "{0." equivalent to "{." Alternatively, add "0" if "." is the start of the string
     string = string.replace(" .", " 0.")
@@ -140,7 +143,7 @@ def _strip_string(string):
     return string
 
 
-def is_equiv(str1, str2, verbose=False):
+def is_equiv(str1, str2, verbose=False) -> bool:
     if str1 is None and str2 is None:
         print("WARNING: Both None")
         return True
@@ -153,5 +156,43 @@ def is_equiv(str1, str2, verbose=False):
         if verbose:
             print(ss1, ss2)
         return ss1 == ss2
-    except:
+    except Exception:
         return str1 == str2
+
+
+def remove_boxed(s) -> Optional[str]:
+    # match on 'oxed{' and '}' at the end
+    # we choose not to do \\boxed because
+    # the LLM could have made a trivial mistake.
+    left = "oxed{"
+    try:
+        assert s[: len(left)] == left
+        assert s[-1] == "}"
+        return s[len(left) : -1]
+    except Exception:
+        return None
+
+
+def last_boxed_only_string(string: str) -> Optional[str]:
+    idx = string.rfind("oxed{")
+    if idx < 0:
+        idx = string.rfind("\\fbox")
+    if idx < 0:
+        return None
+
+    i = idx
+    right_brace_idx = None
+    num_left_braces_open = 0
+    while i < len(string):
+        if string[i] == "{":
+            num_left_braces_open += 1
+        if string[i] == "}":
+            num_left_braces_open -= 1
+            if num_left_braces_open == 0:
+                right_brace_idx = i
+                break
+        i += 1
+
+    return (
+        None if right_brace_idx is None else string[idx : right_brace_idx + 1]
+    )

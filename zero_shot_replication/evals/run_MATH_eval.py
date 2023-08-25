@@ -1,112 +1,72 @@
 """Load and process math problems and solutions."""
 import argparse
-import json
 import logging
-import os
-from glob import glob
 
-import dotenv
-import numpy as np
-import openai
 import pandas as pd
+from evalplus.data import write_jsonl
 
-from zero_shot_replication.helpers.math_helpers import is_equiv
+from zero_shot_replication.evals.eval_utils import (
+    get_input_path,
+    read_existing_results,
+)
+from zero_shot_replication.helpers.math_helpers import (
+    is_equiv,
+    last_boxed_only_string,
+    remove_boxed,
+)
 from zero_shot_replication.helpers.utils import (
-    get_root_fpath,
-    load_existing_jsonl,
+    load_file_or_raise,
     parse_arguments,
 )
 
-# Constants
-MATH_RESULTS_FILE_NAME = "math_results_{MODEL}_{TEMPERATURE}_{RUN_MODE}.jsonl"
-MATH_RESULTS_DIR = os.path.join(
-    get_root_fpath(), "..", "..", "results", "openai", "MATH", "gpt_4_0314"
-)
-NUM_SAMPLES_DEFAULT = 250
-INPUTS = glob(os.path.join("data", "inputs", "MATH", "*", "*"))
-
-dotenv.load_dotenv()
-np.random.seed(4294967294)
-
-
-def load_existing_problems(output_path: str) -> tuple[list[dict], set[str]]:
-    existing_data = load_existing_jsonl(output_path)
-    return existing_data, {entry["problem"] for entry in existing_data}
-
-
-def load_inputs(existing_problems=None) -> pd.DataFrame:
-    indices = list(range(len(INPUTS)))
-    np.random.shuffle(indices)
-
-    results = []
-    for index in indices:
-        with open(INPUTS[index], "r") as f:
-            problem_data = json.loads(f.read())
-            if (
-                existing_problems
-                and problem_data["problem"] in existing_problems
-            ):
-                continue  # Skip problems that have already been observed
-            results.append(problem_data)
-
-    return pd.DataFrame(results)
-
-
-def remove_boxed(s) -> str:
-    left = "oxed{"
-    try:
-        assert s[: len(left)] == left
-        assert s[-1] == "}"
-        return s[len(left) : -1]
-    except Exception:
-        return None
-
-
-def last_boxed_only_string(string) -> str:
-    idx = string.rfind("oxed{")
-    if idx < 0:
-        idx = string.rfind("\\fbox")
-    if idx < 0:
-        return None
-
-    i = idx
-    right_brace_idx = None
-    num_left_braces_open = 0
-    while i < len(string):
-        if string[i] == "{":
-            num_left_braces_open += 1
-        if string[i] == "}":
-            num_left_braces_open -= 1
-            if num_left_braces_open == 0:
-                right_brace_idx = i
-                break
-        i += 1
-
-    return (
-        None if right_brace_idx is None else string[idx : right_brace_idx + 1]
-    )
-
 
 def process_problems_solutions(args: argparse.Namespace) -> None:
-    openai.api_key = os.getenv("OPENAI_API_KEY_LOCAL", "")
+    args = parse_arguments()
 
-    solutions_output_path = args.solutions_file_path
-    results, existing_problems = load_existing_problems(solutions_output_path)
+    input_file_path = args.solutions_file_path or get_input_path(args)
+    solutions = pd.DataFrame(load_file_or_raise(input_file_path))
+
+    output_path = input_file_path.replace(".jsonl", "_eval_results.jsonl")
+
+    print(f"Loading solutions from: {input_file_path}")
+
+    new_results = read_existing_results(output_path)
+    ## Uncomment after updating output files...
+    # existing_task_ids = {result["task_id"] for result in new_results}
+
     rewards = 0
-    for counter, result in enumerate(results):
-        print(result)
+    for loc in range(len(solutions)):
+        solution = solutions.iloc[loc]
 
-        answer = remove_boxed(last_boxed_only_string(result["solution"]))
-        attempt = remove_boxed(last_boxed_only_string(result["completion"]))
-        print(f"answer={answer}, attempt={attempt}")
+        ## Uncomment after updating output files...
+        # if solution["task_id"] in existing_task_ids:
+        #     print(
+        #         f"Skipping task_id {solution['task_id']} as it has already been processed."
+        #     )
+        #     continue
 
-        is_equivalent = is_equiv(answer, attempt) or is_equiv(
-            answer, attempt[::-1] if attempt else ""
-        )
-        rewards += float(is_equivalent)
-        print(f"is_equiv={is_equivalent}")
-        print(f"acc={rewards/(counter+1)}")
-        print(f"counter={counter}")
+        answer = remove_boxed(last_boxed_only_string(solution["solution"]))
+        attempt = remove_boxed(last_boxed_only_string(solution["completion"]))
+        if not answer or not attempt:
+            is_equivalent = False
+        else:
+            is_equivalent = is_equiv(answer, attempt) or is_equiv(
+                answer, attempt[::-1] if attempt else ""
+            )
+
+        ## Uncomment after updating output files...
+        # print(
+        #     f"task_id={solution['task_id']}, answer={answer}, attempt={attempt}"
+        # )
+
+        new_results.append({**solution, "reward": is_equivalent})
+
+    rewards = sum(entry["reward"] for entry in new_results)
+    print(
+        "\nEvaluating %s\nAccuracy %.2f percent\n"
+        % (input_file_path, 100 * rewards / float(len(new_results)))
+    )
+    write_jsonl(output_path, new_results)
 
 
 def main():
@@ -118,3 +78,72 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     main()
+
+
+# """Load and process math problems and solutions."""
+# import argparse
+# import logging
+
+# import pandas as pd
+
+# from zero_shot_replication.evals.eval_utils import (
+#     get_input_path,
+#     read_existing_results,
+# )
+# from zero_shot_replication.helpers.math_helpers import (
+#     is_equiv,
+#     last_boxed_only_string,
+#     remove_boxed,
+# )
+# from zero_shot_replication.helpers.utils import (
+#     load_file_or_raise,
+#     parse_arguments,
+# )
+
+
+# def process_problems_solutions(args: argparse.Namespace) -> None:
+#     args = parse_arguments()
+
+#     input_file_path = args.solutions_file_path or get_input_path(args)
+#     solutions = pd.DataFrame(load_file_or_raise(input_file_path))
+
+#     output_path = input_file_path.replace(".jsonl", "_eval_results.jsonl")
+
+#     print(f"Loading solutions from: {input_file_path}")
+
+#     new_results = read_existing_results(output_path)
+#     existing_task_ids = {result["task_id"] for result in new_results}
+
+#     rewards = 0
+#     for loc in range(len(solutions)):
+#         solution = solutions.iloc[loc]
+
+#         if solution["task_id"] in existing_task_ids:
+#             print(
+#                 f"Skipping task_id {solution['task_id']} as it has already been processed."
+#             )
+#             continue
+#         print(solution)
+
+#         answer = remove_boxed(last_boxed_only_string(solution["answer"]))
+#         attempt = remove_boxed(last_boxed_only_string(solution["completion"]))
+#         print(f"answer={answer}, attempt={attempt}")
+
+#         is_equivalent = is_equiv(answer, attempt) or is_equiv(
+#             answer, attempt[::-1] if attempt else ""
+#         )
+#         rewards += float(is_equivalent)
+#         print(f"is_equiv={is_equivalent}")
+#         print(f"acc={rewards/(loc+1)}")
+#         print(f"counter={loc}")
+
+
+# def main():
+#     args = parse_arguments()
+#     process_problems_solutions(args)
+
+
+# if __name__ == "__main__":
+#     logger = logging.getLogger(__name__)
+#     logger.setLevel(logging.INFO)
+#     main()
