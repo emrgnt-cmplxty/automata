@@ -25,6 +25,8 @@ numpy = "^1.25.2"
 transformers = "^4.32.0"
 torch = "^2.0.1"
 accelerate = "^0.22.0"
+sentencepiece = "^0.1.99"
+protobuf = "^4.24.1"
 
 [tool.poetry.group.dev.dependencies]
 sourcery = "^1.6.0"
