@@ -9,8 +9,8 @@ from zero_shot_replication.llm_providers.base import LLMProvider
 class LocalLLamaModel:
     """A class to provide zero-shot completions from a local Llama model."""
 
-    MAX_OUTPUT_LENGTH = 512
-    TOP_K = 10
+    MAX_OUTPUT_LENGTH = 2048
+    TOP_K = 40
 
     def __init__(
         self,
@@ -46,9 +46,9 @@ class LocalLLamaModel:
 
         output = self.model.generate(
             inputs["input_ids"],
-            #            temperature=self.temperature,
-            #            top_k=LocalLLamaModel.TOP_K,
-            #            do_sample=True,
+            temperature=self.temperature,
+            top_k=LocalLLamaModel.TOP_K,
+            do_sample=True,
             max_new_tokens=self.max_output_length,
         )
         output = output[0].to("cpu")
