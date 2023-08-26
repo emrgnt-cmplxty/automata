@@ -46,9 +46,9 @@ class LocalLLamaModel:
 
         output = self.model.generate(
             inputs["input_ids"],
-#            temperature=self.temperature,
-#            top_k=LocalLLamaModel.TOP_K,
-#            do_sample=True,
+            #            temperature=self.temperature,
+            #            top_k=LocalLLamaModel.TOP_K,
+            #            do_sample=True,
             max_new_tokens=self.max_output_length,
         )
         output = output[0].to("cpu")
@@ -75,4 +75,3 @@ class HuggingFaceZeroShotProvider(LLMProvider):
         print("completion = ", completion)
         print("completion, split = ", completion.split(prompt))
         return completion
-
