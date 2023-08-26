@@ -79,7 +79,7 @@ To see explicit commands ran to generate the reported results, check out the [co
 | LeetCode_100 Medium  | 19.0               | 16.0               | 16.0     | 26.0       | 21.0       | 26.2-38.7      | [1,2]    |
 | LeetCode_100 Hard    | 4.0                | 3.0                | 2.0      | 6.0        | 6.0        | 6.7-7          | [1,2]    |
 | GSM8K                | 71.1               | 67.6               | XX       | X          | X          | 87.1           |          |
-| MATH                 | XX                 | XX                 | XX       | 49.0       | 46.4       | 42.2           | [3]      |
+| MATH                 | XX                 | XX                 | 17.64    | Pending    | Pending | 42.2           | [3]      |
 
 ## License
 
