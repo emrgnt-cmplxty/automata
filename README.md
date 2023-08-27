@@ -10,7 +10,6 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 |----------------------|--------------------|--------------------|----------|------------|------------|------------------|----------------|----------|
 | *Standard Bench*     |                    |                    |          |            |            |                  |                |          |
 | HumanEval            | 67.0               | 61.5               | 65.2     | 86.0       | 84.1       | 70.7             | 67.0           | [1]      |
-| GSM8K                | 71.1               | 67.6               | Pend.    | 90.4       | 91.0       |                  | 87.1           | [2]      |
 | **LeetCodeSparks**   |                    |                    |          |            |            |                  |                | [1,2]    |
 | Easy                 | 60.0               | 76.2               | 52.4     | 76.2       | 61.2       | 38.1             | 68.2-75.6      | [1,2]*   |
 | Medium               | 15.0               | 22.0               | 9.8      | 19.5       | 31.7       | 12.2             | 26.7-40.0      | [1,2]*   |
@@ -19,14 +18,15 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 | Easy                 | 83.0               | 80.0               | 73.0     | 91.0       | 88.0       | 71.0             | N/A            |          |
 | Medium               | 16.0               | 16.0               | 16.0     | 26.0       | 21.0       | 9.0              | N/A            |          |
 | Hard                 | 1.0                | 3.0                | 2.0      | 6.0        | 6.0        | 2.0              | N/A            |          |
-| *Other*              |                    |                    |          |            |            |                  |                |          |
-| EvalPlus             | 59.1               | 54.2               | 54.9     | 80.5       | 74.4       | 60.3             | N/A            |          |
 
 **The gpt-4 LeetCodeSparks baseline is approximate, as we do not see a precise list of LeetCode problems listed in the referenced reports. We define 'LeetCodeSparks' as the 84 problems used for the human evaluation measurement mentioned in [2]*
 
 'LeetCode_100' is an expected out-of-sample dataset we introduce of 100 recent easy, medium, and hard LeetCode problems. The problems live in the range 2554-2818.
 
 <!-- | MATH                 | XX                 | XX                 | XX       | XX         | XX         | XX             | [3]      | -->
+<!-- | GSM8K                | 71.1               | 67.6               | Pend.    | 90.4       | 91.0       |                  | 87.1           | [2]      | -->
+<!-- | *Other*              |                    |                    |          |            |            |                  |                |          |
+| EvalPlus             | 59.1               | 54.2               | 54.9     | 80.5       | 74.4       | 60.3             | N/A            |          | -->
 
 ## Features
 
