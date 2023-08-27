@@ -40,6 +40,8 @@ class BaseDataset(ABC):
         pass
 
     @abstractmethod
-    def get_formatted_prompt(self, problem: dict) -> str:
+    def get_formatted_prompt(
+        self, problem: dict, completion: bool = False
+    ) -> str:
         """Abstract method the formatted prompt for a problems relating to this dataset."""
         pass

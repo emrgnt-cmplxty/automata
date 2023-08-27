@@ -6,6 +6,8 @@ from typing import List, Type
 class LLMProvider(ABC):
     """An abstract class to provide a common interface for LLM providers."""
 
+    instruct_based = True  # default is instruction-based LLM
+
     @abstractmethod
     def __init__(self, model: str, temperature: float) -> None:
         pass

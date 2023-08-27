@@ -47,7 +47,9 @@ class GSM8KDataset(BaseDataset):
         #  Fields on the yielded problem are ['question', 'answer']
         yield from problems.iterrows()
 
-    def get_formatted_prompt(self, problem: dict) -> str:
+    def get_formatted_prompt(
+        self, problem: dict, completion: bool = False
+    ) -> str:
         """Concrete method to get the formatted prompt for HumanEval problems."""
         # first {} is needed for the \\boxed{}
         return self.raw_prompt.format("{}", QUESTION=problem.get("question"))
