@@ -52,6 +52,10 @@ poetry run python evals/run_gsm8k_eval.py --model=...
 poetry run python runner.py --provider openai --pset math --model gpt-4-0314 --temperature 0.7
 
 poetry run python runner.py --provider openai --pset math --model gpt-4-0613 --temperature 0.7
+
+poetry run python runner.py --provider openai --pset math --model gpt-3.5-turbo-0301 --temperature 0.7
+
+poetry run python runner.py --provider openai --pset math --model gpt-3.5-turbo-0613 --temperature 0.7
 ```
 
 ```bash
