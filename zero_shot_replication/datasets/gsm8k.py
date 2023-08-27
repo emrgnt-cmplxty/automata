@@ -16,7 +16,7 @@ class GSM8KDataset(BaseDataset):
 
     GSM8K_TEMPLATE = textwrap.dedent(
         """
-    Solve the problem and put your answer in \\boxed{}. You are not allowed to use any code. The problem is: {QUESTION}
+    Solve the problem and put only your final answer in \\boxed{}. You are not allowed to use any code. The problem is: {QUESTION}
     """
     )
 

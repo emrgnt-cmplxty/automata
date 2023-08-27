@@ -19,6 +19,12 @@ def get_dataset(problem_type: ProblemType) -> BaseDataset:
             from zero_shot_replication.datasets.leetcode import LeetCodeDataset
 
             dataset = LeetCodeDataset()
+        case ProblemType.LEETCODE_MSFT_SPARKS:
+            from zero_shot_replication.datasets.leetcode_msft_sparks import (
+                LeetCodeMSFTSparksDataset,
+            )
+
+            dataset = LeetCodeMSFTSparksDataset()
         case ProblemType.GSM8K:
             from zero_shot_replication.datasets.gsm8k import GSM8KDataset
 

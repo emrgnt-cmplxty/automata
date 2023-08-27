@@ -1,4 +1,5 @@
 # Local cruft and other
+**/.DS_Store
 .env
 *.bak
 **/__pycache__/**
@@ -12,6 +13,9 @@ psets/LEETCODE
 # We then hard-code inclusion for
 # completion-only results
 results/openai/leetcode
+results/anthropic/leetcode
+results/openai/leetcode_msft_sparks
+results/anthropic/leetcode_msft_sparks
 
 # Local sandbox environments
 playground/
