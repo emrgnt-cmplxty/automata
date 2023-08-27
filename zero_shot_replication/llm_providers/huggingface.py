@@ -34,8 +34,8 @@ class LocalLLamaModel:
         )
         self.tokenizer = LlamaTokenizer.from_pretrained(
             model,
-            device_map="auto",
             torch_dtype=torch.float16,
+            device_map="auto",
             use_auth_token=self.hf_access_token,
         )
 
