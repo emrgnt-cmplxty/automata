@@ -13,6 +13,7 @@ class ProblemType(Enum):
 
     HUMAN_EVAL = "human-eval"
     LEETCODE = "leetcode"
+    LEETCODE_MSFT_SPARKS = "leetcode-msft-sparks"
     GSM8K = "gsm8k"
     MATH = "math"
 

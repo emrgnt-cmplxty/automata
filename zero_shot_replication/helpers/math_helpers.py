@@ -166,7 +166,6 @@ def is_equiv(str1, str2, verbose=False) -> bool:
         return str1 == str2
 
 
-
 def remove_boxed(s) -> Optional[str]:
     # match on 'oxed{' and '}' at the end
     # we choose not to do \\boxed because

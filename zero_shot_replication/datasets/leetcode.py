@@ -60,12 +60,12 @@ class LeetCodeDataset(BaseDataset):
     def generator(self) -> Generator[Tuple[str, Any], None, None]:
         """Concrete method to get a generator over the LeetCode problems"""
         problems = load_file_or_raise(self.input_paths[0])
+        problems = self.filter_problems_by_difficulty(problems)
+
         problems.index = [
             f"LeetCode/{int(frontend_question_id)}"
             for frontend_question_id in problems.frontend_question_id.values
         ]
-
-        problems = self.filter_problems_by_difficulty(problems)
 
         #  Fields on the yielded problem are:
         # ['Unnamed: 0', 'question_slug', 'question_title', 'frontend_question_id',
