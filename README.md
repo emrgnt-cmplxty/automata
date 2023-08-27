@@ -9,7 +9,7 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 | Category             | gpt-3.5-turbo-0301 | gpt-3.5-turbo-0613 | claude-2 | gpt-4-0314 | gpt-4-0613 | wizard-coder-34b | gpt-4 Baseline | Sources  |
 |----------------------|--------------------|--------------------|----------|------------|------------|------------------|----------------|----------|
 | *Standard Bench*     |                    |                    |          |            |            |                  |                |          |
-| HumanEval            | 67.0               | 61.5               | 65.2     | 86.0       | 84.1       | 71.0             | 67.0           | [1]      |
+| HumanEval            | 67.0               | 61.5               | 65.2     | 86.0       | 84.1       | 70.7             | 67.0           | [1]      |
 | GSM8K                | 71.1               | 67.6               | Pend.    | 90.4       | 91.0       |                  | 87.1           | [2]      |
 | **LeetCodeSparks**   |                    |                    |          |            |            |                  |                | [1,2]    |
 | Easy                 | 60.0               | 76.2               | 52.4     | 76.2       | 61.2       | 38.1             | 68.2-75.6      | [1,2]*   |
@@ -20,7 +20,7 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 | Medium               | 16.0               | 16.0               | 16.0     | 26.0       | 21.0       |                  | N/A            |          |
 | Hard                 | 1.0                | 3.0                | 2.0      | 6.0        | 6.0        | 2.0              | N/A            |          |
 | *Other*              |                    |                    |          |            |            |                  |                |          |
-| EvalPlus             | 59.1               | 54.2               | 54.9     | 80.5       | 74.4       |                  | N/A            |          |
+| EvalPlus             | 59.1               | 54.2               | 54.9     | 80.5       | 74.4       | 60.3             | N/A            |          |
 
 **The gpt-4 LeetCodeSparks baseline is approximate, as we do not see a precise list of LeetCode problems listed in the referenced reports. We define 'LeetCodeSparks' as the 84 problems used for the human evaluation measurement mentioned in [2]*
 

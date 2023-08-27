@@ -1,4 +1,5 @@
 # Local cruft and other
+**/.DS_Store
 .env
 *.bak
 **/__pycache__/**
