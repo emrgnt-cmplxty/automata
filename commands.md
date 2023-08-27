@@ -53,6 +53,10 @@ poetry run python runner.py --provider openai --pset math --model gpt-4-0314 --t
 
 poetry run python runner.py --provider openai --pset math --model gpt-4-0613 --temperature 0.7
 
+poetry run python runner.py --provider openai --pset math --model gpt-3.5-turbo-0301 --temperature 0.7
+
+poetry run python runner.py --provider openai --pset math --model gpt-3.5-turbo-0613 --temperature 0.7
+
 poetry run python runner.py --provider anthropic --pset math --model claude-2 --temperature 0.7 
 ```
 

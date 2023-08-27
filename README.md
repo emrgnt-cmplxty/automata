@@ -25,9 +25,6 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 'LeetCode_100' is an expected out-of-sample dataset we introduce of 100 recent easy, medium, and hard LeetCode problems. The problems live in the range 2554-2818.
 
 <!-- | MATH                 | XX                 | XX                 | XX       | XX         | XX         | XX             | [3]      | -->
-<!-- | GSM8K                | 71.1               | 67.6               | Pend.    | 90.4       | 91.0       |                  | 87.1           | [2]      | -->
-<!-- | *Other*              |                    |                    |          |            |            |                  |                |          |  -->
-
 
 ## Features
 
