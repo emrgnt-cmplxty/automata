@@ -16,7 +16,7 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 | Medium               | 15.0               | 22.0               | 9.8      | 19.5       | 31.7       | 12.2             | 26.7-40.0      | [1,2]*   |
 | Hard                 | 0.0                | 0.0                | 0.0      | 4.6        | 13.6       | 0.0              | 6.6-10.7       | [1,2]*   |
 | **LeetCode100**      |                    |                    |          |            |            |                  |                |          |
-| Easy                 | 83.0               | 80.0               | 73.0     | 91.0       | 88.0       |                  | N/A            |          |
+| Easy                 | 83.0               | 80.0               | 73.0     | 91.0       | 88.0       | 71.0             | N/A            |          |
 | Medium               | 16.0               | 16.0               | 16.0     | 26.0       | 21.0       | 9.0              | N/A            |          |
 | Hard                 | 1.0                | 3.0                | 2.0      | 6.0        | 6.0        | 2.0              | N/A            |          |
 | *Other*              |                    |                    |          |            |            |                  |                |          |
