@@ -34,8 +34,8 @@ class LocalLLamaModel:
         )
         self.tokenizer = LlamaTokenizer.from_pretrained(
             model,
-            device_map="auto",
             torch_dtype=torch.float16,
+            device_map="auto",
             use_auth_token=self.hf_access_token,
         )
 
@@ -48,9 +48,10 @@ class LocalLLamaModel:
         self.temperature = temperature
 
     def get_completion(self, prompt: str, *args, **kwargs) -> str:
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+        """Generate the completion from the local Llama model."""
+        # TODO - Move all configurations upstream
 
-        # TODO - Move to HF Configuration approach
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
 
         generation_config = GenerationConfig(
             temperature=self.temperature,
@@ -75,7 +76,7 @@ class LocalLLamaModel:
 
 
 class HuggingFaceZeroShotProvider(LLMProvider):
-    """A class to provide zero-shot completions from the Anthropic API."""
+    """A class to provide zero-shot completions from the HuggingFace API."""
 
     def __init__(
         self,
@@ -89,8 +90,9 @@ class HuggingFaceZeroShotProvider(LLMProvider):
 
     def get_completion(self, prompt: str) -> str:
         """Get a completion from the Anthropic API based on the provided prompt."""
-        # TODO - Consider more intelligent place for the '###Response:' string
+        # TODO - Consider more intelligent placing the '###Response:' string
         # This was added to match WizardCoder approach exactly.
+        # Luckily, it is naturally aligned with the structure of our prompt.
         prompt = f"{prompt}\n### Response:\n"
         completion = self.loaded_model.get_completion(prompt)
         if prompt in completion:

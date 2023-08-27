@@ -31,8 +31,8 @@ class ProviderManager:
         ProviderConfig(
             "huggingface",
             [
-                "meta-llama/Llama-2-7b-hf",
                 "WizardLM/WizardCoder-Python-34B-V1.0",
+                "meta-llama/Llama-2-7b-hf",
                 "meta-llama/Llama-2-13b-hf",
                 "meta-llama/Llama-2-70b-hf",
             ],
