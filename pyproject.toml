@@ -26,7 +26,11 @@ transformers = "^4.32.0"
 torch = "1.13.1"
 accelerate = "^0.22.0"
 sentencepiece = "^0.1.99"
-protobuf = "^4.24.1"
+protobuf = "~4.23.4"
+automata = {path = "zero_shot_replication/llm_providers/automata", optional=true}
+
+[tool.poetry.extras]
+automata = ["automata"]
 
 [tool.poetry.group.dev.dependencies]
 sourcery = "^1.6.0"
