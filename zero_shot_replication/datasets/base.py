@@ -1,6 +1,6 @@
 from typing import Optional
 
-from zero_shot_replication.helpers.base import BaseDataset, ProblemType
+from zero_shot_replication.core import BaseDataset, ProblemType
 
 
 def get_dataset(problem_type: ProblemType) -> BaseDataset:

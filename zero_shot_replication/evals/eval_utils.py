@@ -2,8 +2,8 @@
 import argparse
 import os
 
-from zero_shot_replication.helpers import OUTPUT_FILE_NAME
-from zero_shot_replication.helpers.utils import (
+from zero_shot_replication.core import OUTPUT_FILE_NAME
+from zero_shot_replication.core.utils import (
     get_root_dir,
     load_file_or_raise,
     prep_for_file_path,

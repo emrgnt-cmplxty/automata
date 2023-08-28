@@ -5,16 +5,18 @@ import os
 import openai
 from evalplus.data import write_jsonl
 
-from zero_shot_replication.datasets import get_dataset
-from zero_shot_replication.helpers import OUTPUT_FILE_NAME, ProblemType
-from zero_shot_replication.helpers.utils import (
+from zero_shot_replication.core import OUTPUT_FILE_NAME, ProblemType
+from zero_shot_replication.core.utils import (
     extract_code,
+    get_configured_logger,
     get_root_dir,
     load_existing_jsonl,
     parse_arguments,
     prep_for_file_path,
 )
-from zero_shot_replication.llm_providers import ProviderManager
+from zero_shot_replication.datasets import get_dataset
+from zero_shot_replication.llm_providers import ProviderManager, ProviderName
+from zero_shot_replication.model import ModelName
 
 
 def get_output_path(args: argparse.Namespace) -> str:
@@ -45,17 +47,24 @@ def get_output_path(args: argparse.Namespace) -> str:
 
 if __name__ == "__main__":
     """Run the zero-shot replication."""
-
+    # Setup
+    logger = get_configured_logger("zero_shot_replication", log_level="INFO")
     openai.api_key = os.getenv("OPENAI_API_KEY", "")
     args = parse_arguments()
 
-    # Build an LLM provider instance
-    llm_provider = ProviderManager.get_provider(
-        args.provider, args.model, args.temperature
+    provider = ProviderName(args.provider)
+    model = ModelName(args.model)
+
+    logger.info(
+        f"Loading ModelName={model.value} from ProviderName={provider.value}."
     )
 
-    if not llm_provider:
-        raise NotImplementedError(f"Provider '{args.provider}' not supported.")
+    # Build an LLM provider instance
+    llm_provider = ProviderManager.get_provider(
+        provider, model, temperature=args.temperature, stream=args.stream
+    )
+    # What mode should the prompt be in?
+    prompt_mode = llm_provider.model.prompt_mode
 
     # Get the corresponding dataset
     dataset = get_dataset(ProblemType(args.pset))
@@ -77,37 +86,33 @@ if __name__ == "__main__":
             )
             continue
 
-        prompt = dataset.get_formatted_prompt(
-            problem, completion=not llm_provider.instruct_based
-        )
+        prompt = dataset.get_formatted_prompt(problem, prompt_mode)
 
-        print(
-            f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
-        )
+        print(f"\n{'-'*200}\nTaskId:\n{task_id}\nPrompt:\n{prompt}\n")
 
-        try:
-            raw_completion = llm_provider.get_completion(prompt)
-            if args.pset in ["human-eval", "leetcode"]:
-                # or other codegen
-                completion = extract_code(raw_completion)
-            else:
-                completion = raw_completion
+        # try:
+        raw_completion = llm_provider.get_completion(prompt)
+        if args.pset in ["human-eval", "leetcode"]:
+            # or other codegen
+            completion = extract_code(raw_completion)
+        else:
+            completion = raw_completion
 
-            print(f"Extracted Completion:\n{completion}\n")
+        print(f"Extracted Completion:\n{completion}\n")
 
-            result = {
-                **problem,
-                "task_id": task_id,
-                "completion": completion,
-                "raw_completion": raw_completion,
-                "actual_prompt": prompt,
-            }
-            results.append(result)
-            write_jsonl(out_path, results)
+        result = {
+            **problem,
+            "task_id": task_id,
+            "completion": completion,
+            "raw_completion": raw_completion,
+            "actual_prompt": prompt,
+        }
+        results.append(result)
+        write_jsonl(out_path, results)
 
-        except (
-            openai.error.OpenAIError,
-            Exception,
-        ) as e:  # Catch any OpenAI specific errors and general exceptions
-            print(f"Error encountered for task_id {task_id}: {e}")
-            continue
+        # except (
+        #     openai.error.OpenAIError,
+        #     Exception,
+        # ) as e:  # Catch any OpenAI specific errors and general exceptions
+        #     print(f"Error encountered for task_id {task_id}: {e}")
+        #     continue
