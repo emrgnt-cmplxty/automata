@@ -56,7 +56,9 @@ class LeetCodeMSFTSparksDataset(BaseDataset):
         #    'elixir_snippet', 'dart_snippet', 'react_snippet']
         yield from problems.iterrows()
 
-    def get_formatted_prompt(self, problem: dict) -> str:
+    def get_formatted_prompt(
+        self, problem: dict, completion: bool = False
+    ) -> str:
         """Concrete method for the formatted prompt for LeetCode problems."""
         return self.raw_prompt.format(
             TASK_PROMPT=problem["raw_content"],

@@ -54,6 +54,8 @@ class MATHDataset(BaseDataset):
             # Convert the row to a dictionary and yield
             yield f"MATH/{int(index)}", problem.to_dict()
 
-    def get_formatted_prompt(self, problem: dict) -> str:
+    def get_formatted_prompt(
+        self, problem: dict, completion: bool = False
+    ) -> str:
         """Concrete method to get the formatted prompt for MATH problems."""
         return self.raw_prompt.format(TASK_PROMPT=problem["problem"])

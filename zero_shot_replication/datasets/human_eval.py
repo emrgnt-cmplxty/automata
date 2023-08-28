@@ -12,16 +12,21 @@ class HumanEvalDataset(BaseDataset):
     HUMAN_EVAL_TEMPLATE = textwrap.dedent(
         """
     ### Instruction:
-    Provide a response which completes the following Python code: 
+    Provide a response which completes the following Python code:
 
     ```python
     {CODE_PROMPT}
     ```
 
-    ### Notes: 
+    ### Notes:
     Respond with the entire complete function definition, including a re-stated function definition.
     Use only built-in libraries and numpy, assume no additional imports other than those provided in the problem statement.
     Do not add any comments, be as concise in your code as possible.
+    """
+    )
+    HUMAN_EVAL_TEMPLATE_COMPLETION = textwrap.dedent(
+        """
+    {CODE_PROMPT}
     """
     )
 
@@ -29,6 +34,11 @@ class HumanEvalDataset(BaseDataset):
     def raw_prompt(self) -> str:
         """Concrete property to get the raw prompt for a HumanEval problem."""
         return HumanEvalDataset.HUMAN_EVAL_TEMPLATE
+
+    @property
+    def raw_completion_prompt(self) -> str:
+        """Concrete property to get the raw completion prompt for a HumanEval problem."""
+        return HumanEvalDataset.HUMAN_EVAL_TEMPLATE_COMPLETION
 
     @property
     def input_paths(self) -> List[str]:
@@ -45,6 +55,13 @@ class HumanEvalDataset(BaseDataset):
         # 'canonical_solution', 'test', 'contract', 'base_input', 'atol', 'plus_input']
         yield from get_human_eval_plus().items()
 
-    def get_formatted_prompt(self, problem: dict) -> str:
+    def get_formatted_prompt(
+        self, problem: dict, completion: bool = False
+    ) -> str:
         """Concrete method to get the formatted prompt for HumanEval problems."""
-        return self.raw_prompt.format(CODE_PROMPT=problem["prompt"])
+        if completion:
+            return self.raw_completion_prompt.format(
+                CODE_PROMPT=problem["prompt"]
+            )
+        else:
+            return self.raw_prompt.format(CODE_PROMPT=problem["prompt"])

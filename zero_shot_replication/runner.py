@@ -77,7 +77,9 @@ if __name__ == "__main__":
             )
             continue
 
-        prompt = dataset.get_formatted_prompt(problem)
+        prompt = dataset.get_formatted_prompt(
+            problem, completion=not llm_provider.instruct_based
+        )
 
         print(
             f"\n{'-'*200}\nTaskId:\n{task_id}\n\nProblem:\n{problem}\n\nPrompt:\n{prompt}\n"
