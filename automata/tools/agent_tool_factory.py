@@ -9,11 +9,7 @@ from automata.code_parsers.py import PyReader
 from automata.code_writers.py import PyCodeWriter
 from automata.config.config_base import LLMProvider
 from automata.core.utils import get_logging_config
-from automata.embedding import EmbeddingSimilarityCalculator
-from automata.experimental.memory_store import SymbolDocEmbeddingHandler
-from automata.experimental.search import SymbolSearch
-from automata.experimental.tools.wolfram_alpha_oracle import WolframAlphaOracle
-from automata.memory_store import SymbolCodeEmbeddingHandler
+from automata.tools.core.wolfram_alpha_oracle import WolframAlphaOracle
 from automata.tools import Tool, UnknownToolError
 
 logger = logging.getLogger(__name__)
@@ -24,26 +20,11 @@ class AgentToolFactory:
     """The AgentToolFactory class is responsible for creating tools from a given agent tool name."""
 
     TOOLKIT_TYPE_TO_ARGS: Dict[AgentToolkitNames, List[Tuple[str, Any]]] = {
-        AgentToolkitNames.SYMBOL_SEARCH: [("symbol_search", SymbolSearch)],
-        AgentToolkitNames.ADVANCED_CONTEXT_ORACLE: [
-            ("symbol_search", SymbolSearch),
-            ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
-            ("symbol_code_embedding_handler", SymbolCodeEmbeddingHandler),
-            ("embedding_similarity_calculator", EmbeddingSimilarityCalculator),
-        ],
-        AgentToolkitNames.DOCUMENT_ORACLE: [
-            ("symbol_search", SymbolSearch),
-            ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
-        ],
         AgentToolkitNames.WOLFRAM_ALPHA_ORACLE: [
             ("wolfram_alpha_oracle", WolframAlphaOracle)
         ],
         AgentToolkitNames.PY_READER: [("py_reader", PyReader)],
         AgentToolkitNames.PY_WRITER: [("py_writer", PyCodeWriter)],
-        AgentToolkitNames.AGENTIFIED_SEARCH: [
-            ("symbol_search", SymbolSearch),
-            ("symbol_doc_embedding_handler", SymbolDocEmbeddingHandler),
-        ],
         AgentToolkitNames.PY_INTERPRETER: [],
     }
 

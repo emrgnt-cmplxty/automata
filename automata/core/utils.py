@@ -20,11 +20,6 @@ import numpy as np
 import openai
 import yaml
 
-from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
-
-if TYPE_CHECKING:
-    from automata.embedding.embedding_base import EmbeddingVectorProvider
-
 
 def set_openai_api_key(override_key: Optional[str] = None) -> None:
     """Sets the OpenAI API key from the environment variable OPENAI_API_KEY"""
@@ -138,7 +133,6 @@ class ColorScheme(TypedDict):
     WARNING: str
     ERROR: str
     CRITICAL: str
-    CLI_OUTPUT: str
 
 
 class ColorConfig:
@@ -150,7 +144,6 @@ class ColorConfig:
         "WARNING": "yellow",
         "ERROR": "red",
         "CRITICAL": "bold_red",
-        "CLI_OUTPUT": "bold_white",
     }
 
 
@@ -197,11 +190,6 @@ def get_logging_config(
                 "level": log_level,  # Set handler level to the passed log_level
                 "formatter": "colored",
                 "stream": "ext://sys.stdout",
-            },
-            "cli_output": {
-                "class": "logging.StreamHandler",
-                "formatter": "colored",
-                "level": CLI_OUTPUT_LEVEL,
             },
         },
         "loggers": {

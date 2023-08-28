@@ -1,4 +1,3 @@
-# sourcery skip: docstrings-for-modules
 from automata.agent.agent import Agent, AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.openai_agent import (
     OpenAIAgentToolkitBuilder,
