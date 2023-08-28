@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Generator, List, Tuple
 
+from zero_shot_replication.model.base import PromptMode
+
 OUTPUT_FILE_NAME = (
     "{PROVIDER}_{pset}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
 )
@@ -41,7 +43,9 @@ class BaseDataset(ABC):
 
     @abstractmethod
     def get_formatted_prompt(
-        self, problem: dict, completion: bool = False
+        self,
+        problem: dict,
+        prompt_mode: PromptMode = PromptMode.HUMAN_FEEDBACK,
     ) -> str:
         """Abstract method the formatted prompt for a problems relating to this dataset."""
         pass

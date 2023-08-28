@@ -5,18 +5,18 @@ import logging
 import pandas as pd
 from evalplus.data import write_jsonl
 
-from zero_shot_replication.evals.eval_utils import (
-    get_input_path,
-    read_existing_results,
-)
-from zero_shot_replication.helpers.math_helpers import (
+from zero_shot_replication.core import (
     is_equiv,
     last_boxed_only_string,
     remove_boxed,
 )
-from zero_shot_replication.helpers.utils import (
+from zero_shot_replication.core.utils import (
     load_file_or_raise,
     parse_arguments,
+)
+from zero_shot_replication.evals.eval_utils import (
+    get_input_path,
+    read_existing_results,
 )
 
 

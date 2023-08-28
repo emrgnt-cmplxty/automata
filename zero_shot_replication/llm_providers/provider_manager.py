@@ -1,62 +1,54 @@
-from zero_shot_replication.llm_providers.anthropic import (
+from zero_shot_replication.llm_providers.anthropic_provider import (
     AnthropicZeroShotProvider,
 )
 from zero_shot_replication.llm_providers.base import (
-    LLMProvider,
+    MODEL_SETS,
+    LargeLanguageModelProvider,
     ProviderConfig,
+    ProviderName,
 )
-from zero_shot_replication.llm_providers.huggingface import (
-    HuggingFaceZeroShotProvider,
+
+# from zero_shot_replication.llm_providers.hugging_face_provider import (
+#     HuggingFaceZeroShotProvider,
+# )
+from zero_shot_replication.llm_providers.openai_provider import (
+    OpenAIZeroShotProvider,
 )
-from zero_shot_replication.llm_providers.openai import OpenAIZeroShotProvider
+from zero_shot_replication.model import ModelName
 
 
 class ProviderManager:
     PROVIDERS = [
         ProviderConfig(
-            "openai",
-            [
-                "gpt-3.5-turbo-0301",
-                "gpt-3.5-turbo-0613",
-                "gpt-4-0314",
-                "gpt-4-0613",
-            ],
+            ProviderName.OPENAI,
+            MODEL_SETS[ProviderName.OPENAI],
             OpenAIZeroShotProvider,
         ),
         ProviderConfig(
-            "anthropic",
-            ["claude-2", "claude-instant-1"],
+            ProviderName.ANTHROPIC,
+            MODEL_SETS[ProviderName.ANTHROPIC],
             AnthropicZeroShotProvider,
         ),
-        ProviderConfig(
-            "huggingface",
-            [
-                "WizardLM/WizardCoder-Python-34B-V1.0",
-                "meta-llama/Llama-2-7b-hf",
-                "meta-llama/Llama-2-13b-hf",
-                "meta-llama/Llama-2-70b-hf",
-                "codellama/CodeLlama-7b-Python-hf",
-                "codellama/CodeLlama-13b-Python-hf",
-                "codellama/CodeLlama-7b-hf",
-                "codellama/CodeLlama-13b-hf",
-                "CodeLlama-7b-Python",
-                "CodeLlama-13b-Python",
-            ],
-            HuggingFaceZeroShotProvider,
-        ),
+        # ProviderConfig(
+        #     "hugging-face",
+        #     ,
+        #     HuggingFaceZeroShotProvider,
+        # ),
     ]
 
     @staticmethod
     def get_provider(
-        provider_name: str, model_name: str, temperature: float
-    ) -> LLMProvider:
+        provider_name: ProviderName, model_name: ModelName, *args, **kwargs
+    ) -> LargeLanguageModelProvider:
         for provider in ProviderManager.PROVIDERS:
-            if provider.name == provider_name:
-                if model_name in provider.models:
-                    return provider.llm_class(
-                        model=model_name, temperature=temperature
-                    )
+            if (
+                provider.name == provider_name
+                and model_name not in provider.models
+            ):
                 raise ValueError(
-                    f"Model '{model_name}' not supported by provider '{provider_name}'"
+                    f"Model '{model_name}' not supported by provider '{provider_name}'."
                 )
+            elif provider.name == provider_name:
+                return provider.llm_class(model_name, *args, **kwargs)
+
         raise ValueError(f"Provider '{provider_name}' not supported.")
