@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
+from zero_shot_replication.core import BaseDataset, PromptMode
+
 
 class ModelName(Enum):
     """An enum to hold the names of the models."""
@@ -30,23 +32,8 @@ class ModelName(Enum):
     CODE_LLAMA_13B = "CodeLlama-13b-Python"
     CODE_LLAMA_34B = "CodeLlama-34b-Python"
 
-    META_MODELS = [
-        LLAMA_2_7B_HF,
-        LLAMA_2_13B_HF,
-        LLAMA_2_70B_HF,
-        CODE_LLAMA_7B,
-        CODE_LLAMA_13B,
-        CODE_LLAMA_34B,
-    ]
-
     # Other HF Open Source Models
     WIZARD_LM_PYTHON_34B = "WizardLM/WizardCoder-Python-34B-V1.0"
-
-
-class PromptMode(Enum):
-    HUMAN_FEEDBACK = "human-feedback"
-    COMPLETION = "completion"
-    CLASSIFICATION = "classification"
 
 
 class LargeLanguageModel(ABC):
@@ -66,4 +53,9 @@ class LargeLanguageModel(ABC):
 
     @abstractmethod
     def get_completion(self, input: Any) -> str:
+        """Abstract method to get a completion from the provider."""
         pass
+
+    def get_formatted_prompt(self, problem: dict, dataset: BaseDataset) -> str:
+        """Default concrete method to get a formatted prompt for the provider."""
+        return dataset.get_formatted_prompt(problem, self.prompt_mode)

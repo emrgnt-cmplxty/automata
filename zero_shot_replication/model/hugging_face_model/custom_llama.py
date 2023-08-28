@@ -1,3 +1,20 @@
+import logging
+import os
+
+import torch
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    GenerationConfig,
+    LlamaForCausalLM,
+    LlamaTokenizer,
+    StoppingCriteria,
+    StoppingCriteriaList,
+)
+
+logger = logging.getLogger(__name__)
+
+
 class LocalLLamaModel:
     """A class to provide zero-shot completions from a local Llama model."""
 

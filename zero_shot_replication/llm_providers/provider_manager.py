@@ -7,10 +7,9 @@ from zero_shot_replication.llm_providers.base import (
     ProviderConfig,
     ProviderName,
 )
-
-# from zero_shot_replication.llm_providers.hugging_face_provider import (
-#     HuggingFaceZeroShotProvider,
-# )
+from zero_shot_replication.llm_providers.hugging_face_provider import (
+    HuggingFaceZeroShotProvider,
+)
 from zero_shot_replication.llm_providers.openai_provider import (
     OpenAIZeroShotProvider,
 )
@@ -29,11 +28,11 @@ class ProviderManager:
             MODEL_SETS[ProviderName.ANTHROPIC],
             AnthropicZeroShotProvider,
         ),
-        # ProviderConfig(
-        #     "hugging-face",
-        #     ,
-        #     HuggingFaceZeroShotProvider,
-        # ),
+        ProviderConfig(
+            ProviderName.HUGGING_FACE,
+            MODEL_SETS[ProviderName.HUGGING_FACE],
+            HuggingFaceZeroShotProvider,
+        ),
     ]
 
     @staticmethod

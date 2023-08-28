@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Generator, List, Tuple
 
-from zero_shot_replication.model.base import PromptMode
-
 OUTPUT_FILE_NAME = (
     "{PROVIDER}_{pset}__model_eq_{MODEL}__temperature_eq_{TEMPERATURE}.jsonl"
 )
@@ -18,6 +16,12 @@ class ProblemType(Enum):
     LEETCODE_MSFT_SPARKS = "leetcode-msft-sparks"
     GSM8K = "gsm8k"
     MATH = "math"
+
+
+class PromptMode(Enum):
+    HUMAN_FEEDBACK = "human-feedback"
+    COMPLETION = "completion"
+    CLASSIFICATION = "classification"
 
 
 class BaseDataset(ABC):
