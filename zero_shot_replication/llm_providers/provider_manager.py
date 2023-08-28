@@ -9,6 +9,7 @@ from zero_shot_replication.llm_providers.huggingface import (
     HuggingFaceZeroShotProvider,
 )
 from zero_shot_replication.llm_providers.openai import OpenAIZeroShotProvider
+from zero_shot_replication.llm_providers.automata import AutomataZeroShotProvider
 
 
 class ProviderManager:
@@ -43,6 +44,13 @@ class ProviderManager:
                 "CodeLlama-13b-Python",
             ],
             HuggingFaceZeroShotProvider,
+        ),
+        ProviderConfig(
+            "automata",
+            [
+                "gpt-4-0314",
+            ],
+            AutomataZeroShotProvider,
         ),
     ]
 
