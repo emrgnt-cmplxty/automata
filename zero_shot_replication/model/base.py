@@ -30,15 +30,6 @@ class ModelName(Enum):
     CODE_LLAMA_13B = "CodeLlama-13b-Python"
     CODE_LLAMA_34B = "CodeLlama-34b-Python"
 
-    META_MODELS = [
-        LLAMA_2_7B_HF,
-        LLAMA_2_13B_HF,
-        LLAMA_2_70B_HF,
-        CODE_LLAMA_7B,
-        CODE_LLAMA_13B,
-        CODE_LLAMA_34B,
-    ]
-
     # Other HF Open Source Models
     WIZARD_LM_PYTHON_34B = "WizardLM/WizardCoder-Python-34B-V1.0"
 

@@ -17,6 +17,11 @@ class AnthropicModel(LargeLanguageModel):
         stream: bool,
         max_tokens_to_sample: int,
     ) -> None:
+        if stream:
+            raise ValueError(
+                "Stream is not supported for Anthropic in this framework."
+            )
+
         super().__init__(
             model_name,
             temperature,
