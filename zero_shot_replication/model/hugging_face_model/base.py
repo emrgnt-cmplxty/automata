@@ -1,7 +1,4 @@
-from zero_shot_replication.model.base import (
-    LargeLanguageModel,
-    ModelName,
-)
+from zero_shot_replication.model.base import LargeLanguageModel, ModelName
 from zero_shot_replication.model.hugging_face_model.hf_llama import (
     HuggingFaceLlamaModel,
 )

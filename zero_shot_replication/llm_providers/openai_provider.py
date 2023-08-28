@@ -2,10 +2,7 @@
 import logging
 
 from zero_shot_replication.llm_providers.base import LargeLanguageModelProvider
-from zero_shot_replication.model import (
-    ModelName,
-    OpenAIModel,
-)
+from zero_shot_replication.model import ModelName, OpenAIModel
 
 logger = logging.getLogger(__name__)
 

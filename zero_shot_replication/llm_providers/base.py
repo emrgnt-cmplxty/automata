@@ -19,15 +19,15 @@ class LargeLanguageModelProvider(ABC):
     def __init__(self, model_name: ModelName, temperature: float) -> None:
         pass
 
-    @abstractmethod
-    def get_completion(self, prompt: str) -> str:
-        pass
-
     @property
     @abstractmethod
     def model(self) -> LargeLanguageModel:
         """Property to get the instance of LargeLanguageModel."""
+        pass
 
+    @abstractmethod
+    def get_completion(self, prompt: str) -> str:
+        """Abstract method to get a completion from the provider."""
         pass
 
 
