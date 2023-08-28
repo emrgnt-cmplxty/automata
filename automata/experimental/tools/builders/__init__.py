@@ -19,6 +19,11 @@ from automata.experimental.tools.builders.symbol_search_builder import (
     SymbolSearchOpenAIToolkitBuilder,
     SymbolSearchToolkitBuilder,
 )
+from automata.experimental.tools.builders.wolfram_alpha_oracle_builder import (
+    WolframAlphaOpenAIToolkitBuilder,
+    WolframAlphaToolkitBuilder,
+)
+
 
 __all__ = [
     "AgentifiedSearchToolkitBuilder",
@@ -31,4 +36,6 @@ __all__ = [
     "SymbolSearchOpenAIToolkitBuilder",
     "PyInterpreter",
     "PyInterpreterToolkitBuilder",
+    "WolframAlphaToolkitBuilder",
+    "WolframAlphaOpenAIToolkitBuilder",
 ]
