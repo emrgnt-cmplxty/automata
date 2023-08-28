@@ -323,7 +323,7 @@ types-protobuf = "4.23.0.2"
 
 [package.source]
 type = "directory"
-url = "zero_shot_replication/llm_providers/automata"
+url = "zero_shot_replication/automata"
 
 [[package]]
 name = "backcall"
@@ -5218,4 +5218,4 @@ automata = ["automata"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "fe46c2be593f44a80f7bdb54ef29bcac81b60baab2f6b485701c1f054ef6ca71"
+content-hash = "a85f8038b19e275512dd125108420016943a91cf4c69374fa0b071309fa361f3"

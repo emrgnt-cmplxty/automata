@@ -4,6 +4,8 @@
 *.bak
 **/__pycache__/**
 
+zero_shot_replication/automata
+
 # Ignore LEETCODE problem set
 # due to Copyright, reproducers must 
 # scrape their own copy

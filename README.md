@@ -50,8 +50,8 @@ The Zero-Shot Replication Framework is a minimal environment designed to replica
 - python-dotenv: ^1.0.0
 - python-leetcode: "1.2.1"
 
-# HF Dependencies
-
+## Extra Dependencies
+- automata
 - transformers: "^4.32.0"
 - torch: "1.13.1"
 - accelerate: "^0.22.0"
@@ -77,7 +77,7 @@ Make sure you have [Poetry](https://python-poetry.org/) installed, then clone th
 git clone https://github.com/your-username/zero-shot-replication.git
 cd zero-shot-replication
 git submodule update --init --recursive
-poetry install
+poetry install # to install automata, poetry install -E automata
 cp .env.example .env # Copy the example environment file
 # Edit the .env file to add your OpenAI API key, etc.
 
@@ -85,7 +85,10 @@ cp .env.example .env # Copy the example environment file
 # Optional
 
 # If developing, install the pre-commit hooks
-pre-commit install 
+# pre-commit install 
+
+# If using automata, install the repo
+# git submodule add -f https://github.com/emrgnt-cmplxty/zero-shot-replication.git zero_shot_replication/automata
 
 ```
 

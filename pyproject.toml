@@ -27,7 +27,7 @@ torch = "1.13.1"
 accelerate = "^0.22.0"
 sentencepiece = "^0.1.99"
 protobuf = "~4.23.4"
-automata = {path = "zero_shot_replication/llm_providers/automata", optional=true}
+automata = {path = "zero_shot_replication/automata", optional=true}
 
 [tool.poetry.extras]
 automata = ["automata"]

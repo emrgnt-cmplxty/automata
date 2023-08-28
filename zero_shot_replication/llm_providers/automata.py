@@ -1,11 +1,9 @@
 import logging
 import textwrap
-from automata.agent import OpenAIAutomataAgent
-from automata.config import OpenAIAutomataAgentConfig
-from automata.experimental.tools import PyInterpreterOpenAIToolkitBuilder
 from zero_shot_replication.llm_providers.base import LLMProvider
 
 logger = logging.getLogger(__name__)
+
 
 class AutomataZeroShotProvider(LLMProvider):
     """A class to provide zero-shot completions from Automata."""
@@ -72,6 +70,23 @@ class AutomataZeroShotProvider(LLMProvider):
         temperature: float = 0.7,
         stream: bool = False,
     ) -> None:
+        try:
+            import zero_shot_replication.automata  # noqa: F401
+        except ImportError as e:
+            raise ImportError(
+                "Automata is not installed. To install, run `https://github.com/emrgnt-cmplxty/automata.git zero_shot_replication/automata`"
+            ) from e
+
+        from zero_shot_replication.automata.agent import (
+            OpenAIAutomataAgent,
+        )
+        from zero_shot_replication.automata.config import (
+            OpenAIAutomataAgentConfig,
+        )
+        from zero_shot_replication.automata.experimental.tools import (
+            PyInterpreterOpenAIToolkitBuilder,
+        )
+
         self.model = model
         self.temperature = temperature
         self.stream = stream
@@ -81,7 +96,7 @@ class AutomataZeroShotProvider(LLMProvider):
             tools=PyInterpreterOpenAIToolkitBuilder().build_for_open_ai(),
             system_instruction=None,
             model=model,
-            temperature=temperature
+            temperature=temperature,
         )
 
     def get_completion(self, prompt: str) -> str:
