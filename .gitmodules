@@ -4,6 +4,3 @@
 [submodule "zero_shot_replication/llm_providers/automata"]
 	path = zero_shot_replication/llm_providers/automata
 	url = https://github.com/emrgnt-cmplxty/automata.git
-[submodule "automata"]
-	path = automata
-	url = https://github.com/emrgnt-cmplxty/automata.git
