@@ -61,6 +61,12 @@ def parse_arguments() -> argparse.Namespace:
         help="Which provider to use for zero-shot completions?",
     )
     parser.add_argument(
+        "--stream",
+        type=bool,
+        default=False,
+        help="If supported, should the LLM stream completions?",
+    )
+    parser.add_argument(
         "--pset",
         type=str,
         default="human-eval",

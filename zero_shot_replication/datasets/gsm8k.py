@@ -2,11 +2,12 @@ import os
 import textwrap
 from typing import Any, Generator, List, Tuple
 
-from zero_shot_replication.helpers import BaseDataset, ProblemType
-from zero_shot_replication.helpers.utils import (
+from zero_shot_replication.core import BaseDataset, ProblemType
+from zero_shot_replication.core.utils import (
     get_pset_inputs_dir,
     load_file_or_raise,
 )
+from zero_shot_replication.model.base import PromptMode
 
 
 class GSM8KDataset(BaseDataset):
@@ -48,7 +49,9 @@ class GSM8KDataset(BaseDataset):
         yield from problems.iterrows()
 
     def get_formatted_prompt(
-        self, problem: dict, completion: bool = False
+        self,
+        problem: dict,
+        prompt_mode: PromptMode = PromptMode.HUMAN_FEEDBACK,
     ) -> str:
         """Concrete method to get the formatted prompt for HumanEval problems."""
         # first {} is needed for the \\boxed{}

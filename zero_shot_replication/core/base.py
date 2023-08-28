@@ -18,6 +18,12 @@ class ProblemType(Enum):
     MATH = "math"
 
 
+class PromptMode(Enum):
+    HUMAN_FEEDBACK = "human-feedback"
+    COMPLETION = "completion"
+    CLASSIFICATION = "classification"
+
+
 class BaseDataset(ABC):
     """An abstract class to provide problems for the runner."""
 
@@ -41,7 +47,9 @@ class BaseDataset(ABC):
 
     @abstractmethod
     def get_formatted_prompt(
-        self, problem: dict, completion: bool = False
+        self,
+        problem: dict,
+        prompt_mode: PromptMode = PromptMode.HUMAN_FEEDBACK,
     ) -> str:
         """Abstract method the formatted prompt for a problems relating to this dataset."""
         pass

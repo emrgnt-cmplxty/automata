@@ -9,15 +9,15 @@ from evalplus.data import write_jsonl
 from leetcode_env.environment import LeetCodeEnv
 from leetcode_env.leetcode_types import LeetCodeSubmission, ProgrammingLanguage
 
-from zero_shot_replication.evals.eval_utils import (
-    get_input_path,
-    read_existing_results,
-)
-from zero_shot_replication.helpers.utils import (
+from zero_shot_replication.core.utils import (
     extract_code,
     get_configured_logger,
     load_file_or_raise,
     parse_arguments,
+)
+from zero_shot_replication.evals.eval_utils import (
+    get_input_path,
+    read_existing_results,
 )
 
 USER_WAIT_TIME = 5  # seconds, per client

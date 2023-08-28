@@ -2,13 +2,12 @@ import os
 import textwrap
 from typing import Any, Generator, List, Tuple
 
-import pandas as pd
-
-from zero_shot_replication.helpers import BaseDataset, ProblemType
-from zero_shot_replication.helpers.utils import (
+from zero_shot_replication.core import BaseDataset, ProblemType
+from zero_shot_replication.core.utils import (
     get_pset_inputs_dir,
     load_file_or_raise,
 )
+from zero_shot_replication.model.base import PromptMode
 
 
 class MATHDataset(BaseDataset):
@@ -55,7 +54,9 @@ class MATHDataset(BaseDataset):
             yield f"MATH/{int(index)}", problem.to_dict()
 
     def get_formatted_prompt(
-        self, problem: dict, completion: bool = False
+        self,
+        problem: dict,
+        prompt_mode: PromptMode = PromptMode.HUMAN_FEEDBACK,
     ) -> str:
         """Concrete method to get the formatted prompt for MATH problems."""
         return self.raw_prompt.format(TASK_PROMPT=problem["problem"])

@@ -3,7 +3,8 @@ from typing import Any, Generator, List, Tuple
 
 from evalplus.data import get_human_eval_plus
 
-from zero_shot_replication.helpers import BaseDataset
+from zero_shot_replication.core import BaseDataset
+from zero_shot_replication.model.base import PromptMode
 
 
 class HumanEvalDataset(BaseDataset):
@@ -22,6 +23,9 @@ class HumanEvalDataset(BaseDataset):
     Respond with the entire complete function definition, including a re-stated function definition.
     Use only built-in libraries and numpy, assume no additional imports other than those provided in the problem statement.
     Do not add any comments, be as concise in your code as possible.
+
+    ### Response:
+    
     """
     )
     HUMAN_EVAL_TEMPLATE_COMPLETION = textwrap.dedent(
@@ -56,12 +60,17 @@ class HumanEvalDataset(BaseDataset):
         yield from get_human_eval_plus().items()
 
     def get_formatted_prompt(
-        self, problem: dict, completion: bool = False
+        self,
+        problem: dict,
+        prompt_mode: PromptMode = PromptMode.HUMAN_FEEDBACK,
     ) -> str:
         """Concrete method to get the formatted prompt for HumanEval problems."""
-        if completion:
-            return self.raw_completion_prompt.format(
-                CODE_PROMPT=problem["prompt"]
-            )
-        else:
-            return self.raw_prompt.format(CODE_PROMPT=problem["prompt"])
+        match prompt_mode:
+            case PromptMode.HUMAN_FEEDBACK:
+                return self.raw_completion_prompt.format(
+                    CODE_PROMPT=problem["prompt"]
+                )
+            case PromptMode.COMPLETION:
+                return self.raw_prompt.format(CODE_PROMPT=problem["prompt"])
+            case _:
+                raise ValueError("Invalid prompt mode.")
