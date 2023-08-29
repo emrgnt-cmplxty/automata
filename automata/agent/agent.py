@@ -7,11 +7,7 @@ from typing import List, Optional, Sequence
 
 from automata.config import LLMProvider
 from automata.core.utils import get_logging_config
-from automata.llm import (
-    LLMChatMessage,
-    LLMConversation,
-    LLMIterationResult,
-)
+from automata.llm import LLMChatMessage, LLMConversation, LLMIterationResult
 from automata.tools import Tool
 
 logger = logging.getLogger(__name__)

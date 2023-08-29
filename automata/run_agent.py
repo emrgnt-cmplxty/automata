@@ -4,17 +4,17 @@ This script is used to run an agent with a given set of instructions and tools.
 
 import logging
 import logging.config
+from typing import Optional
 
 from automata.agent import OpenAIAutomataAgent
+from automata.config.openai_config import (
+    SUPPORTED_MODEL_INFORMATION,
+    OpenAIAutomataAgentConfig,
+)
+from automata.core.utils import get_logging_config
 from automata.tools.builders import (
     PyInterpreterOpenAIToolkitBuilder,
     WolframAlphaOpenAIToolkitBuilder,
-)
-
-from automata.core.utils import get_logging_config
-from automata.config.openai_config import (
-    OpenAIAutomataAgentConfig,
-    SUPPORTED_MODEL_INFORMATION,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,13 +26,13 @@ DEFAULT_ISSUES_PROMPT_SUFFIX = """You may use the context oracle (multiple times
 
 
 def create_default_config(
-    model="gpt-4",
-    stream=False,
-    verbose=True,
-    max_iterations=10,
-    system_instruction="You are a helpful assistant.",
-    abs_max_tokens=None,
-    tools=None,
+    model: str = "gpt-4",
+    stream: bool = False,
+    verbose: bool = True,
+    max_iterations: int = 10,
+    system_instruction: str = "You are a helpful assistant.",
+    abs_max_tokens: Optional[int] = None,
+    tools: Optional[list] = None,
     **kwargs,
 ) -> dict:
     """Creates a default configuration dictionary for the agent."""

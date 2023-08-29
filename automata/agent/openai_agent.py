@@ -1,22 +1,19 @@
 """Defines the concrete OpenAIAutomataAgent class."""
 import logging
 import logging.config
-import uuid
 from abc import ABC, abstractmethod
-from typing import Dict, Final, List, Optional, Sequence
+from typing import Final, List, Optional, Sequence
 
 from automata.agent import Agent, AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.error import (
-    AgentDatabaseError,
     AgentGeneralError,
     AgentMaxIterError,
     AgentResultError,
     AgentStopIterationError,
 )
 from automata.config import OpenAIAutomataAgentConfig
-from automata.core.utils import format_text, get_logging_config, load_config
+from automata.core.utils import get_logging_config
 from automata.llm import (
-    FunctionCall,
     LLMChatMessage,
     LLMConversation,
     LLMIterationResult,

@@ -6,7 +6,6 @@ from automata.tools.builders.wolfram_alpha_oracle_builder import (
     WolframAlphaOpenAIToolkitBuilder,
 )
 
-
 __all__ = [
     "PyInterpreterOpenAIToolkitBuilder",
     "WolframAlphaOpenAIToolkitBuilder",

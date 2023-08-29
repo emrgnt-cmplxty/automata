@@ -22,9 +22,7 @@ from automata.config.config_base import (
     LLMProvider,
     ModelInformation,
 )
-from automata.config.openai_config import (
-    OpenAIAutomataAgentConfig,
-)
+from automata.config.openai_config import OpenAIAutomataAgentConfig
 
 load_dotenv()
 

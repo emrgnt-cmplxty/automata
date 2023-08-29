@@ -1,7 +1,6 @@
 import logging
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
-import numpy as np
 import openai
 import tiktoken
 from termcolor import colored

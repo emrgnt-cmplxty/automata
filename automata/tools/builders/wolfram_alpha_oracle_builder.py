@@ -6,11 +6,11 @@ from typing import List
 
 from automata.agent import AgentToolkitNames, OpenAIAgentToolkitBuilder
 from automata.core.utils import get_logging_config
-from automata.tools.core.wolfram_alpha_oracle import WolframAlphaOracle
 from automata.llm import OpenAITool
 from automata.singletons.toolkit_registry import (
     OpenAIAutomataAgentToolkitRegistry,
 )
+from automata.tools.core.wolfram_alpha_oracle import WolframAlphaOracle
 from automata.tools.tool_base import Tool
 
 logger = logging.getLogger(__name__)
