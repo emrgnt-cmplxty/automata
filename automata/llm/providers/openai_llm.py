@@ -333,6 +333,8 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self, system_instruction: str, user_instructions: str
     ) -> None:
         """Initializes the conversation with the system instruction and the first user message."""
+        from automata.agent.openai_agent import OpenAIAutomataAgent
+
         self.add_message(
             OpenAIChatMessage(role="system", content=system_instruction),
         )
@@ -340,7 +342,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.add_message(
             OpenAIChatMessage(
                 role="assistant",
-                content="Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?",
+                content=OpenAIAutomataAgent.ASSISTANT_INTRO,
             ),
         )
 
@@ -354,7 +356,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.add_message(
             OpenAIChatMessage(
                 role="assistant",
-                content="Thoughts:\\nFirst, I will initialize myself. Then I will continue on to carefully consider the user task and carry out the necessary actions.\\nAction:\\nI will call `initializer` to initialize myself.",
+                content=OpenAIAutomataAgent.ASSISTANT_INITIALIZE_MESSAGE,
                 function_call=FunctionCall("initializer", {}),
             ),
         )
@@ -362,7 +364,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.add_message(
             OpenAIChatMessage(
                 role="user",
-                content="Continue...",
+                content=OpenAIAutomataAgent.CONTINUE_PREFIX,
             )
         )
 

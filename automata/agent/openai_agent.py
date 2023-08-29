@@ -38,7 +38,9 @@ class OpenAIAutomataAgent(Agent):
     instructions and manages interactions with various tools.
     """
 
-    CONTINUE_PREFIX: Final = f"Continue...\n"
+    ASSISTANT_INTRO: Final = "Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?"
+    ASSISTANT_INITIALIZE_MESSAGE: Final = "Thoughts:\\nFirst, I will initialize myself. Then I will continue on to carefully consider the user task and carry out the necessary actions.\\nAction:\\nI will call `initializer` to initialize myself."
+    CONTINUE_PREFIX: Final = "Continue...\n"
     OBSERVATION_MESSAGE: Final = "Observation:\n"
     GENERAL_SUFFIX_TEMPLATE: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{user_instructions}'"
     STOPPING_SUFFIX_TEMPLATE: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{user_instructions}."
