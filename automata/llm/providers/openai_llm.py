@@ -5,7 +5,6 @@ import openai
 import tiktoken
 from termcolor import colored
 
-from automata.core.utils import set_openai_api_key
 from automata.llm import (
     LLMChatCompletionProvider,
     LLMChatMessage,
@@ -249,6 +248,8 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         model: str = "gpt-4",
         temperature: float = 0.7,
         stream: bool = False,
+        system_instruction: str = "You are a helpful agent.",
+        user_instruction: str = "Use call-termination to return 'True'.",
         functions: List[OpenAIFunction] = [],
         conversation: OpenAIConversation = OpenAIConversation(),
     ) -> None:
@@ -258,7 +259,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.functions = functions
         self.conversation = conversation
         self.encoding = tiktoken.encoding_for_model(self.model)
-        set_openai_api_key()
+        self._initialize_messages(system_instruction, user_instruction)
 
     @property
     def approximate_tokens_consumed(self) -> int:
@@ -327,6 +328,43 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             )
         else:
             self.conversation.add_message(message)
+
+    def _initialize_messages(
+        self, system_instruction: str, user_instructions: str
+    ) -> None:
+        """Initializes the conversation with the system instruction and the first user message."""
+        self.add_message(
+            OpenAIChatMessage(role="system", content=system_instruction),
+        )
+
+        self.add_message(
+            OpenAIChatMessage(
+                role="assistant",
+                content="Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?",
+            ),
+        )
+
+        self.add_message(
+            OpenAIChatMessage(
+                role="user",
+                content=f"Please carry out the following instruction '{user_instructions}'",
+            )
+        )
+
+        self.add_message(
+            OpenAIChatMessage(
+                role="assistant",
+                content="Thoughts:\\nFirst, I will initialize myself. Then I will continue on to carefully consider the user task and carry out the necessary actions.\\nAction:\\nI will call `initializer` to initialize myself.",
+                function_call=FunctionCall("initializer", {}),
+            ),
+        )
+
+        self.add_message(
+            OpenAIChatMessage(
+                role="user",
+                content="Continue...",
+            )
+        )
 
     @staticmethod
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:

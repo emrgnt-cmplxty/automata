@@ -20,16 +20,6 @@ class PathEnum(Enum):
         return convert_kebab_to_snake_case(self.value)
 
 
-class InstructionConfigVersion(PathEnum):
-    """
-    InstructionConfigVersion: Enum of instruction versions.
-    Corresponds files in automata/configs/instruction_configs/*.yaml
-    """
-
-    AGENT_INTRODUCTION = "agent-introduction"
-    PLUMB_BOT = "bad-introduction"
-
-
 class LLMProvider(PathEnum):
     OPENAI = "openai"
 

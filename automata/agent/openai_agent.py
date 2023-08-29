@@ -22,6 +22,7 @@ from automata.llm import (
     OpenAIConversation,
     OpenAIFunction,
     OpenAITool,
+    FunctionCall,
 )
 from automata.tools import ToolExecution, ToolExecutor
 
@@ -39,14 +40,14 @@ class OpenAIAutomataAgent(Agent):
 
     CONTINUE_PREFIX: Final = f"Continue...\n"
     OBSERVATION_MESSAGE: Final = "Observation:\n"
-    GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{instructions}'"
-    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{instructions}."
+    GENERAL_SUFFIX_TEMPLATE: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{user_instructions}'"
+    STOPPING_SUFFIX_TEMPLATE: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{user_instructions}."
 
     def __init__(
-        self, instructions: str, config: OpenAIAutomataAgentConfig
+        self, user_instructions: str, config: OpenAIAutomataAgentConfig
     ) -> None:
         # sourcery skip: docstrings-for-functions
-        super().__init__(instructions)
+        super().__init__(user_instructions)
         self.config = config
         self.iteration_count = 0
         self.completed = False
@@ -109,13 +110,10 @@ class OpenAIAutomataAgent(Agent):
         """A concrete property for getting the tools associated with the agent."""
         tools = []
         for tool in self.config.tools:
-            print("tool = ", tool)
-
             if not isinstance(tool, OpenAITool):
                 raise ValueError(f"Invalid tool type: {type(tool)}")
             tools.append(tool)
         tools.append(self._get_termination_tool())
-        print("tools = ", tools)
         return tools
 
     @property
@@ -229,16 +227,16 @@ class OpenAIAutomataAgent(Agent):
             self.iteration_count != self.config.max_iterations
             and estimated_tokens_consumed < self.config.max_tokens
         ):
-            return OpenAIAutomataAgent.GENERAL_SUFFIX.format(
+            return OpenAIAutomataAgent.GENERAL_SUFFIX_TEMPLATE.format(
                 iteration_count=self.iteration_count,
                 max_iterations=self.config.max_iterations,
                 max_tokens=self.config.max_tokens,
                 estimated_tokens=estimated_tokens_consumed,
-                instructions=f"{self.instructions[:200]}...",
+                user_instructions=f"{self.user_instructions[:200]}...",
             )
         else:
-            return OpenAIAutomataAgent.STOPPING_SUFFIX.format(
-                instructions=f"{self.instructions[:200]}..."
+            return OpenAIAutomataAgent.STOPPING_SUFFIX_TEMPLATE.format(
+                user_instructions=f"{self.user_instructions[:200]}..."
             )
 
     def _setup(self) -> None:
@@ -254,17 +252,12 @@ class OpenAIAutomataAgent(Agent):
         logger.info(
             f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
         )
-
-        self._conversation.add_message(
-            OpenAIChatMessage(
-                role="system", content=self.config.system_instruction
-            ),
-        )
-
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
             temperature=self.config.temperature,
             stream=self.config.stream,
+            system_instruction=self.config.system_instruction,
+            user_instruction=self.user_instructions,
             conversation=self._conversation,
             functions=self.functions,
         )

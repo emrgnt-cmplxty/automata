@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 
 from automata.config.config_base import (
     AgentConfig,
-    InstructionConfigVersion,
     LLMProvider,
     ModelInformation,
 )
@@ -45,14 +44,8 @@ GRAPH_TYPE = os.getenv("GRAPH_TYPE", "dynamic")
 
 __all__ = [
     "AgentConfig",
-    "AgentConfigBuilder",
-    "AgentConfigName",
-    "ConfigCategory",
-    "EmbeddingDataCategory",
-    "InstructionConfigVersion",
     "LLMProvider",
     "ModelInformation",
-    "DOC_GENERATION_TEMPLATE",
     "OpenAIAutomataAgentConfig",
     "OpenAIAutomataAgentConfigBuilder",
 ]

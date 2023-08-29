@@ -22,8 +22,8 @@ class Agent(ABC):
     with other providers.
     """
 
-    def __init__(self, instructions: str) -> None:
-        self.instructions = instructions
+    def __init__(self, user_instructions: str) -> None:
+        self.user_instructions = user_instructions
         self.completed = False
 
         self._initialized = False

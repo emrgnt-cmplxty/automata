@@ -3,6 +3,7 @@ Utility functions for Automata.
 """
 import json
 import logging
+import logging.config
 import os
 from typing import (
     Any,
@@ -17,15 +18,6 @@ from typing import (
 import colorlog
 import openai
 import yaml
-
-
-def set_openai_api_key(override_key: Optional[str] = None) -> None:
-    """Sets the OpenAI API key from the environment variable OPENAI_API_KEY"""
-
-    if not openai.api_key:
-        from automata.config import OPENAI_API_KEY
-
-        openai.api_key = override_key or OPENAI_API_KEY
 
 
 def get_root_py_fpath() -> str:
@@ -159,6 +151,31 @@ def ensure_stream_handler_for_root() -> None:
         )
         stream_handler.setFormatter(colored_formatter)
         root_logger.addHandler(stream_handler)
+
+
+def configure_logging(log_level_str: str) -> None:
+    """Reconfigures the logging for the local project."""
+
+    log_level = logging.INFO
+    if log_level_str == "INFO":
+        log_level = logging.INFO
+    elif log_level_str == "DEBUG":
+        log_level = logging.DEBUG
+    else:
+        raise ValueError(f"Unknown log level: {log_level_str}")
+
+    logging_config = get_logging_config(log_level=log_level)
+    logging.config.dictConfig(logging_config)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+    logging.getLogger(__name__).setLevel(
+        log_level
+    )  # Explicitly set the level for the current module's logger
+
+    # External libraries we want to quiet down
+    for library in ["urllib3", "matplotlib", "openai", "github", "asyncio"]:
+        logging.getLogger(library).setLevel(logging.INFO)
 
 
 def get_logging_config(

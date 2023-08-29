@@ -3,7 +3,6 @@ from typing import Optional
 
 from automata.config import (
     AgentConfig,
-    InstructionConfigVersion,
     ModelInformation,
 )
 
@@ -45,8 +44,4 @@ class OpenAIAutomataAgentConfig(AgentConfig):
     """A class to hold the configuration for the Automata OpenAI Agent."""
 
     arbitrary_types_allowed = True
-
-    instruction_version: InstructionConfigVersion = (
-        InstructionConfigVersion.AGENT_INTRODUCTION
-    )
     system_instruction: Optional[str] = None

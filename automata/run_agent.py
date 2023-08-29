@@ -1,7 +1,10 @@
+# sourcery skip: avoid-global-variables
 """
 This script is used to run an agent with a given set of instructions and tools.
 """
-
+import argparse
+import os
+import openai
 import logging
 import logging.config
 from typing import Optional
@@ -20,10 +23,6 @@ from automata.tools.builders import (
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
 
-DEFAULT_ISSUES_PROMPT_PREFIX = """Provide a comprehensive explanation and full code implementation (in Markdown) which address the Github issue(s) that follow:"""
-
-DEFAULT_ISSUES_PROMPT_SUFFIX = """You may use the context oracle (multiple times if necessary) to ensure that you have proper context to answer this question. If you are tasked with writing code, then keep to the SOLID Principles Further, pay special attention to Dependency Inversion Principle and Dependency Injection."""
-
 
 def create_default_config(
     model: str = "gpt-4",
@@ -36,7 +35,6 @@ def create_default_config(
     **kwargs,
 ) -> dict:
     """Creates a default configuration dictionary for the agent."""
-    # Default configurations
     return {
         "model": model,
         "stream": stream,
@@ -52,29 +50,52 @@ def create_default_config(
 # Modify the main function
 def main(*args, **kwargs) -> str:
     """Run the agent with the given instructions and tools."""
-
-    instructions = (
-        kwargs.get("instructions")
-        or "This is a dummy instruction, return True."
+    user_instructions = kwargs.get(
+        "user_instructions", "This is a dummy instruction, return True."
     )
+    toolkits = kwargs.get("toolkits", "py-interpreter").split(",")
     tools = []
-    toolkits = kwargs.get("toolkits", "wolfram-alpha-oracle").split(",")
     if "wolfram-alpha-oracle" in toolkits:
         tools.extend(WolframAlphaOpenAIToolkitBuilder().build_for_open_ai())
-    elif "py-executor" in toolkits:
+    elif "py-interpreter" in toolkits:
         tools.extend(PyInterpreterOpenAIToolkitBuilder().build_for_open_ai())
 
-    agent_config_dict = create_default_config(
+    agent_config_vars = create_default_config(
         **kwargs,
         tools=tools,
     )
 
-    agent_config_obj = OpenAIAutomataAgentConfig(**agent_config_dict)
+    agent_config = OpenAIAutomataAgentConfig(**agent_config_vars)
 
-    agent = OpenAIAutomataAgent(instructions, config=agent_config_obj)
-    print("Running agent...")
+    agent = OpenAIAutomataAgent(user_instructions, config=agent_config)
     return agent.run()
 
 
 if __name__ == "__main__":
-    main()
+    """Run the agent with the given instructions and tools."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--user_instructions",
+        type=str,
+        default="This is a dummy instruction, return True.",
+        help="",
+    )
+    parser.add_argument(
+        "--toolkits",
+        type=str,
+        default="py-interpreter",
+        help="",
+    )
+    parser.add_argument(
+        "--log_level",
+        type=str,
+        default="INFO",
+        help="",
+    )
+
+    from automata.core.utils import configure_logging
+
+    openai.api_key = os.environ["OPENAI_API_KEY"]
+    args = parser.parse_args()
+    configure_logging(args.log_level)
+    main(**vars(args))
