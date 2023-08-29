@@ -23,13 +23,17 @@ from automata.tools.builders import (
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
 
+DEFAULT_SYSTEM_INSTRUCTION = (
+    "You are a helpful assistant, return your results with `call-termination`."
+)
+
 
 def create_default_config(
     model: str = "gpt-4",
-    stream: bool = False,
+    stream: bool = True,
     verbose: bool = True,
     max_iterations: int = 10,
-    system_instruction: str = "You are a helpful assistant.",
+    system_instruction: str = DEFAULT_SYSTEM_INSTRUCTION,
     abs_max_tokens: Optional[int] = None,
     tools: Optional[list] = None,
     **kwargs,
@@ -50,9 +54,7 @@ def create_default_config(
 # Modify the main function
 def main(*args, **kwargs) -> str:
     """Run the agent with the given instructions and tools."""
-    user_instructions = kwargs.get(
-        "user_instructions", "This is a dummy instruction, return True."
-    )
+    user_instructions = kwargs["user_instructions"]
     toolkits = kwargs.get("toolkits", "py-interpreter").split(",")
     tools = []
     if "wolfram-alpha-oracle" in toolkits:
@@ -75,9 +77,9 @@ if __name__ == "__main__":
     """Run the agent with the given instructions and tools."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--user_instructions",
+        "--user-instructions",
         type=str,
-        default="This is a dummy instruction, return True.",
+        default="This is a dummy instruction, return 'True' with call-termination..",
         help="",
     )
     parser.add_argument(
@@ -87,7 +89,7 @@ if __name__ == "__main__":
         help="",
     )
     parser.add_argument(
-        "--log_level",
+        "--log-level",
         type=str,
         default="INFO",
         help="",

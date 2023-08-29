@@ -17,7 +17,6 @@ from typing import (
 
 import colorlog
 import openai
-import yaml
 
 
 def get_root_py_fpath() -> str:
@@ -43,35 +42,6 @@ def get_config_fpath() -> str:
     """Get the path to the root of the Automata config directory."""
 
     return os.path.join(get_root_py_fpath(), "config")
-
-
-def load_config(
-    config_name: str,
-    file_name: str,
-    config_type: str = "yaml",
-    custom_decoder: Any = None,
-) -> Any:
-    """Loads a config file from the config directory"""
-
-    with open(
-        os.path.join(
-            get_config_fpath(), config_name, f"{file_name}.{config_type}"
-        ),
-        "r",
-    ) as file:
-        if config_type == "yaml":
-            return yaml.safe_load(file)
-        elif config_type == "json":
-            samples_json_string = file.read()
-            return json.loads(samples_json_string, object_hook=custom_decoder)
-
-
-def format_text(format_variables: Dict[str, str], input_text: str) -> str:
-    """Format expected strings into the config."""
-
-    for arg in format_variables:
-        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
-    return input_text
 
 
 def convert_kebab_to_snake_case(s: str) -> str:

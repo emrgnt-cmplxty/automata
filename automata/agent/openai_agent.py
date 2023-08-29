@@ -250,8 +250,9 @@ class OpenAIAutomataAgent(Agent):
             AgentError: If the agent fails to initialize.
         """
         logger.info(
-            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
+            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\nAnd with User Instruction -- \n\n{self.user_instructions}\n\n"
         )
+
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
             temperature=self.config.temperature,

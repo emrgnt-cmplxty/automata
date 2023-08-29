@@ -3,7 +3,7 @@ requires = ["poetry-core", "setuptools", "wheel"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "automata-slim"
+name = "automata"
 version = "0.1.0"
 description = "Automata: The Self-Coding Machine"
 authors = ["Owen Colegrove <owen@emergentagi.com>"]
@@ -12,49 +12,26 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-black = "^23.3.0"
 colorlog = "6.7.0"
-isort = "5.12.0"
-jinja2 = "3.1.2"
-jsonpickle = "3.0.1"
-jsonschema = "4.19.0"
-matplotlib = "3.7.2"
 numpy = "1.25.2"
 openai = "0.27.8"
-pandas = "2.0.3"
-protobuf = "4.23.4"
 pydantic = "^1.9.0"
-pypandoc = "1.11"
-pytest-mock = "3.11.1"
 python-dotenv = "1.0.0"
-scikit-learn = "1.2.2"
-scipy = "1.11.1"
 termcolor = "2.3.0"
 tiktoken = "0.4.0"
-types-protobuf = "4.23.0.2"
-GitPython = "3.1.32"
-PyGithub = "1.59.0"
-PyYAML = "6.0.1"
-chromadb = "^0.3.29"
-astunparse = "^1.6.3"
-ipykernel = "^6.24.0"
-pathlib = "^1.0.1"
-pytest-shutil = "^1.7.0"
-flask = "^2.3.2"
-responses = "^0.23.3"
-questionary = "^1.10.0"
 requests = "^2.31.0"
+sympy = "^1.12"
 
-[tool.pytest.ini_options]
-filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression and not evaluation' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=local_tasks/"
-markers = [
-    "regression: marks tests as regression tests",
-    "evaluation: mark a test as part of the evaluation suite",
-    "tool_name: description of tool_name marker",
-    "tool_description: description of the tool's functionality",
-    "performance: marks tests as performance tests",
-]    
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+isort = "5.12.0"
+flake8 = "6.1.0"
+mypy = "^1.5.1"
+pre-commit = "^3.3.3"
+types-requests = "^2.31.0.2"
+types-attrs = "^19.1.0"
+sourcery = "^1.6.0"
+yapf = "0.40.1"
 
 [tool.black]
 line-length = 79
