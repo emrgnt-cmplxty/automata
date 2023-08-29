@@ -3,7 +3,6 @@ from automata.llm.providers.openai_llm import (
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
     OpenAIConversation,
-    OpenAIEmbeddingProvider,
     OpenAIFunction,
     OpenAITool,
 )
@@ -13,7 +12,6 @@ __all__ = [
     "OpenAIChatCompletionProvider",
     "OpenAIChatMessage",
     "OpenAIConversation",
-    "OpenAIEmbeddingProvider",
     "OpenAIFunction",
     "OpenAITool",
 ]

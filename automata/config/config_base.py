@@ -58,7 +58,6 @@ class AgentConfig(ABC, BaseModel):
     max_token_percentage: float = 0.9
     max_tokens = int(0.9 * 8192)
     temperature: float = 0.7
-    session_id: Optional[str] = None
 
     class Config:
         arbitrary_types_allowed = True

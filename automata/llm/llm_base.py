@@ -14,8 +14,6 @@ from typing import (
 
 from pydantic import BaseModel
 
-from automata.core.base import Observer, SQLDatabase
-
 
 class LLMCompletionResult(BaseModel):
     """Base class for different types of LLM completion results."""
@@ -56,27 +54,11 @@ class LLMConversation(ABC):
         ) -> None:
             super().__init__(message)
 
-    def __init__(self) -> None:
-        self._observers: Set[Observer] = set()
-
     @property
     @abstractmethod
     def messages(self) -> Sequence[LLMChatMessage]:
         """Abstract property to get the conversation's messages."""
         pass
-
-    def register_observer(self, observer: Observer) -> None:
-        """Register an observer to the conversation."""
-        self._observers.add(observer)
-
-    def unregister_observer(self, observer: Observer) -> None:
-        """Unregister an observer from the conversation."""
-        self._observers.discard(observer)
-
-    def notify_observers(self, session_id: str) -> None:
-        """Notify all observers that the conversation has changed."""
-        for observer in self._observers:
-            observer.update((session_id, self))
 
     @abstractmethod
     def __len__(self) -> int:
@@ -99,26 +81,6 @@ class LLMConversation(ABC):
         pass
 
 
-class LLMConversationDatabaseProvider(Observer, SQLDatabase, ABC):
-    """Abstract base class for different types of database providers."""
-
-    def update(self, subject: Tuple[str, LLMConversation]) -> None:
-        """Concrete `Observer` method to update the database when the conversation changes."""
-        session_id, message = subject
-        if isinstance(message, LLMConversation):
-            self.save_message(session_id, message.get_latest_message())
-
-    @abstractmethod
-    def save_message(self, session_id: str, message: LLMChatMessage) -> None:
-        """An abstract method to save a message to the database."""
-        pass
-
-    @abstractmethod
-    def get_messages(self, session_id: str) -> List[LLMChatMessage]:
-        """An abstract method to get all messages with the original session id."""
-        pass
-
-
 class LLMChatCompletionProvider(ABC):
     """Abstract base class for different types of LLM chat completion providers."""
 
@@ -128,9 +90,7 @@ class LLMChatCompletionProvider(ABC):
         pass
 
     @abstractmethod
-    def add_message(
-        self, message: LLMChatMessage, session_id: Optional[str] = None
-    ) -> None:
+    def add_message(self, message: LLMChatMessage) -> None:
         """Abstract method to add a new message to the provider's buffer."""
         pass
 
@@ -140,9 +100,7 @@ class LLMChatCompletionProvider(ABC):
         pass
 
     @abstractmethod
-    def standalone_call(
-        self, prompt: str, session_id: Optional[str] = None
-    ) -> str:
+    def standalone_call(self, prompt: str) -> str:
         """
         This abstract function enables the utilization of the provider as a unique output LLM.
         For instance, the function exists to permit the user to engage the ChatProvider

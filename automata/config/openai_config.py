@@ -18,11 +18,6 @@ SUPPORTED_MODEL_INFORMATION = {
         completion_token_cost=0.004,
         abs_max_tokens=32_768,
     ),
-    "gpt-4-0314": ModelInformation(
-        prompt_token_cost=0.03,
-        completion_token_cost=0.06,
-        abs_max_tokens=8_192,
-    ),
     "gpt-4-0613": ModelInformation(
         prompt_token_cost=0.03,
         completion_token_cost=0.06,

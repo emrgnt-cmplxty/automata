@@ -7,7 +7,6 @@ import tiktoken
 from termcolor import colored
 
 from automata.core.utils import set_openai_api_key
-from automata.embedding import EmbeddingVectorProvider
 from automata.llm import (
     LLMChatCompletionProvider,
     LLMChatMessage,
@@ -134,19 +133,12 @@ class OpenAIConversation(LLMConversation):
     def messages(self) -> Sequence[LLMChatMessage]:
         return self._messages
 
-    def add_message(
-        self, message: LLMChatMessage, session_id: Optional[str]
-    ) -> None:
+    def add_message(self, message: LLMChatMessage) -> None:
         """Add a message to the conversation."""
 
         if not isinstance(message, OpenAIChatMessage):
             raise OpenAIIncorrectMessageTypeError(message)
         self._messages.append(message)
-
-        # Notify the observers whenever a new message is added to the conversation
-        # Only notify the observers if the session_id is not None
-        if session_id:
-            self.notify_observers(session_id)
 
     def get_messages_for_next_completion(self) -> List[Dict[str, Any]]:
         """Get the messages for the next completion."""
@@ -313,36 +305,29 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         """Reset the conversation."""
         self.conversation.reset_conversation()
 
-    def standalone_call(
-        self, prompt: str, session_id: Optional[str] = None
-    ) -> str:
+    def standalone_call(self, prompt: str) -> str:
         """Return the completion message based on the provided prompt."""
 
         if self.conversation.messages:
             raise ValueError(
                 "The conversation is not empty. Please call reset() before calling standalone_call()."
             )
-        self.add_message(
-            LLMChatMessage(role="user", content=prompt), session_id
-        )
+        self.add_message(LLMChatMessage(role="user", content=prompt))
         response = self.get_next_assistant_completion().content
         self.reset()
         if not response:
             raise ValueError("No response found")
         return response
 
-    def add_message(
-        self, message: LLMChatMessage, session_id: Optional[str] = None
-    ) -> None:
+    def add_message(self, message: LLMChatMessage) -> None:
         """Add a message to the conversation."""
 
         if not isinstance(message, OpenAIChatMessage):
             self.conversation.add_message(
                 OpenAIChatMessage(role=message.role, content=message.content),
-                session_id,
             )
         else:
-            self.conversation.add_message(message, session_id)
+            self.conversation.add_message(message)
 
     @staticmethod
     def _stream_message(response_summary: Any) -> OpenAIChatMessage:
@@ -435,33 +420,6 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
             if function_call["name"] is not None
             else None,
         )
-
-
-class OpenAIEmbeddingProvider(EmbeddingVectorProvider):
-    """A class to provide embeddings from the OpenAI API."""
-
-    def __init__(self, engine: str = "text-embedding-ada-002") -> None:
-        self.engine = engine
-        set_openai_api_key()
-
-    def build_embedding_vector(self, source: str) -> np.ndarray:
-        """Gets an embedding for the given source text."""
-        # wait to import build_embedding_vector to allow easy mocking of the function in automata.tests.
-        from openai.embeddings_utils import get_embedding
-
-        return np.array(get_embedding(source, engine=self.engine))
-
-    def batch_build_embedding_vector(
-        self, sources: List[str]
-    ) -> List[np.ndarray]:
-        """Builds embeddings for a batch of source texts."""
-
-        from openai.embeddings_utils import get_embeddings
-
-        return [
-            np.array(ele)
-            for ele in get_embeddings(sources, engine=self.engine)
-        ]
 
 
 class OpenAITool(Tool):

@@ -13,13 +13,12 @@ from automata.agent.error import (
     AgentResultError,
     AgentStopIterationError,
 )
-from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
+from automata.config import OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, get_logging_config, load_config
 from automata.llm import (
     FunctionCall,
     LLMChatMessage,
     LLMConversation,
-    LLMConversationDatabaseProvider,
     LLMIterationResult,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
@@ -54,7 +53,6 @@ class OpenAIAutomataAgent(Agent):
         self.config = config
         self.iteration_count = 0
         self.completed = False
-        self.session_id = self.config.session_id or str(uuid.uuid4())
         self._conversation = OpenAIConversation()
         self._setup()
 
@@ -62,7 +60,7 @@ class OpenAIAutomataAgent(Agent):
         return self
 
     def __repr__(self):
-        return f"OpenAIAutomataAgent(config={str(self.config)}, iteration_count={self.iteration_count}, completed={self.completed}, session_id={self.session_id}, _conversation={str(self._conversation)})"
+        return f"OpenAIAutomataAgent(config={str(self.config)}, iteration_count={self.iteration_count}, completed={self.completed}, _conversation={str(self._conversation)})"
 
     def __next__(self) -> LLMIterationResult:
         """
@@ -81,7 +79,7 @@ class OpenAIAutomataAgent(Agent):
 
         logger.info(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
-        self.chat_provider.add_message(assistant_message, self.session_id)
+        self.chat_provider.add_message(assistant_message)
         if not self.config.stream:
             logger.info(f"{assistant_message}\n")
         logger.info(f"\n{('-' * 120)}")
@@ -90,7 +88,7 @@ class OpenAIAutomataAgent(Agent):
 
         user_message = self._get_next_user_response(assistant_message)
         logger.info(f"Latest User Message -- \n{user_message}\n")
-        self.chat_provider.add_message(user_message, self.session_id)
+        self.chat_provider.add_message(user_message)
         logger.info(f"\n{('-' * 120)}")
 
         return (assistant_message, user_message)
@@ -114,15 +112,19 @@ class OpenAIAutomataAgent(Agent):
         """A concrete property for getting the tools associated with the agent."""
         tools = []
         for tool in self.config.tools:
+            print("tool = ", tool)
+
             if not isinstance(tool, OpenAITool):
                 raise ValueError(f"Invalid tool type: {type(tool)}")
             tools.append(tool)
         tools.append(self._get_termination_tool())
+        print("tools = ", tools)
         return tools
 
     @property
     def functions(self) -> List[OpenAIFunction]:
         """A concrete property for getting the functions associated with the agent."""
+
         return [ele.openai_function for ele in self.tools]
 
     def run(self) -> str:
@@ -176,69 +178,6 @@ class OpenAIAutomataAgent(Agent):
             return result
         else:
             raise ValueError("The agent did not produce a result.")
-
-    def set_database_provider(
-        self, provider: LLMConversationDatabaseProvider
-    ) -> None:
-        """Sets the database provider for the agent."""
-
-        if not isinstance(provider, LLMConversationDatabaseProvider):
-            raise AgentDatabaseError(
-                f"Invalid database provider type: {type(provider)}"
-            )
-        if self.database_provider:
-            raise AgentDatabaseError(
-                "The database provider has already been set."
-            )
-        self.database_provider = provider
-        # Log existing messages
-        for message in self.conversation.messages:
-            provider.save_message(self.session_id, message)
-        self._conversation.register_observer(provider)
-
-    def _build_initial_messages(
-        self, instruction_formatter: Dict[str, str]
-    ) -> Sequence[LLMChatMessage]:
-        """
-        Builds the initial messages for the agent's conversation.
-        The messages are built from the initial messages in the instruction config.
-        All messages are formatted using the given instruction_formatter.
-
-        TODO - Consider moving this logic to the conversation provider
-        """
-        if "user_input_instructions" not in instruction_formatter:
-            raise KeyError(
-                "The instruction formatter must have an entry for user_input_instructions."
-            )
-
-        messages_config = load_config(
-            ConfigCategory.INSTRUCTION.to_path(),
-            self.config.instruction_version.to_path(),
-        )
-        initial_messages = messages_config["initial_messages"]
-
-        input_messages = []
-        for message in initial_messages:
-            input_message = (
-                format_text(instruction_formatter, message["content"])
-                if "content" in message
-                else None
-            )
-            function_call = message.get("function_call")
-            input_messages.append(
-                OpenAIChatMessage(
-                    role=message["role"],
-                    content=input_message,
-                    function_call=FunctionCall(
-                        name=function_call["name"],
-                        arguments=function_call["arguments"],
-                    )
-                    if function_call
-                    else None,
-                )
-            )
-
-        return input_messages
 
     def _get_next_user_response(
         self, assistant_message: OpenAIChatMessage
@@ -315,29 +254,15 @@ class OpenAIAutomataAgent(Agent):
         Raises:
             AgentError: If the agent fails to initialize.
         """
-
-        logger.info(f"Setting up agent with tools = {self.config.tools}")
-        self._conversation.add_message(
-            OpenAIChatMessage(
-                role="system", content=self.config.system_instruction
-            ),
-            self.session_id,
-        )
-
         logger.info(
             f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
         )
 
-        for message in list(
-            self._build_initial_messages(
-                {"user_input_instructions": self.instructions}
-            )
-        ):
-            logger.info(
-                f"Adding the following initial mesasge to the conversation {message}"
-            )
-            self._conversation.add_message(message, self.session_id)
-            logger.info(f"\n{('-' * 120)}")
+        self._conversation.add_message(
+            OpenAIChatMessage(
+                role="system", content=self.config.system_instruction
+            ),
+        )
 
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
@@ -348,11 +273,7 @@ class OpenAIAutomataAgent(Agent):
         )
 
         self.tool_executor = ToolExecutor(ToolExecution(self.tools))
-
         self._initialized = True
-        logger.info(
-            f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n"
-        )
 
     def _get_termination_tool(self) -> OpenAITool:
         """Gets the tool responsible for terminating the OpenAI agent."""
