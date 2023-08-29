@@ -259,7 +259,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.functions = functions
         self.conversation = conversation
         self.encoding = tiktoken.encoding_for_model(self.model)
-        self._initialize_messages(system_instruction, user_instruction)
+        self._initialize_agent_messages(system_instruction, user_instruction)
 
     @property
     def approximate_tokens_consumed(self) -> int:
@@ -329,7 +329,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         else:
             self.conversation.add_message(message)
 
-    def _initialize_messages(
+    def _initialize_agent_messages(
         self, system_instruction: str, user_instructions: str
     ) -> None:
         """Initializes the conversation with the system instruction and the first user message."""
@@ -347,7 +347,7 @@ class OpenAIChatCompletionProvider(LLMChatCompletionProvider):
         self.add_message(
             OpenAIChatMessage(
                 role="user",
-                content=f"Please carry out the following instruction '{user_instructions}'",
+                content=user_instructions,
             )
         )
 
