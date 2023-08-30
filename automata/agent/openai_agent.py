@@ -252,7 +252,9 @@ class OpenAIAutomataAgent(Agent):
 
         if assistant_message.function_call:
             # Check if the function call is one of the recognized tools.
-            if not self.tool_executor.is_valid_tool(assistant_message.function_call.name):
+            if not self.tool_executor.is_valid_tool(
+                assistant_message.function_call.name
+            ):
                 error_message = f"Error: The requested function '{assistant_message.function_call.name}' is not recognized."
                 return OpenAIChatMessage(role="user", content=error_message)
 
@@ -276,7 +278,6 @@ class OpenAIAutomataAgent(Agent):
                     content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
             except Exception as e:
-                # Log the detailed error for debugging, but return a generic error message to the user
                 failure_message = "Tool execution failed. Please try again or contact support for assistance."
                 logger.error(f"Error during tool execution: {e}")
                 return OpenAIChatMessage(
@@ -295,13 +296,14 @@ class OpenAIAutomataAgent(Agent):
         Returns an error message if validation fails, otherwise returns None.
         """
         # Check for extraneous fields like 'message'
-        if hasattr(function_call, 'message'):
-            return "Error: Extraneous field 'message' detected in function call."
+        if hasattr(function_call, "message"):
+            return (
+                "Error: Extraneous field 'message' detected in function call."
+            )
 
         # TODO - update as other issues occur
 
         return None
-
 
     def _get_iteration_status(
         self, message_content: Optional[str] = None
