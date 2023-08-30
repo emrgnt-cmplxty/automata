@@ -28,6 +28,7 @@ from automata.llm import (
     OpenAITool,
 )
 from automata.tools import ToolExecution, ToolExecutor
+from automata.core.utils import retry
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -240,6 +241,7 @@ class OpenAIAutomataAgent(Agent):
 
         return input_messages
 
+    @retry(max_retries=5)
     def _get_next_user_response(
         self, assistant_message: OpenAIChatMessage
     ) -> OpenAIChatMessage:
