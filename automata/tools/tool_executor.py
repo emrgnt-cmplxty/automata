@@ -14,6 +14,11 @@ class IToolExecution(ABC):
     def execute(self, function_call: "FunctionCall") -> str:
         pass
 
+    @abstractmethod
+    def is_valid_tool(self, tool_name: str) -> bool:
+        """Check if the tool name exists within the known tools."""
+        pass
+
 
 class ToolExecution(IToolExecution):
     """Class for executing tools."""
@@ -29,6 +34,10 @@ class ToolExecution(IToolExecution):
                 f"No tool found for function call: {function_call.name}"
             )
 
+    def is_valid_tool(self, tool_name: str) -> bool:
+        """Check if the tool name exists within the known tools."""
+        return tool_name in self.tools
+
 
 class ToolExecutor:
     """Class for using IToolExecution behavior to execute a tool."""
@@ -38,3 +47,7 @@ class ToolExecutor:
 
     def execute(self, function_call: "FunctionCall") -> str:
         return self.execution.execute(function_call)
+
+    def is_valid_tool(self, tool_name: str) -> bool:
+        """Forward the call to ToolExecution's is_valid_tool method."""
+        return self.execution.is_valid_tool(tool_name)
