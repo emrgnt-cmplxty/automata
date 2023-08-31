@@ -252,6 +252,11 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
+        if assistant_message.function_call and assistant_message.function_call.name == "error-occurred":
+            error_msg = assistant_message.function_call.arguments["error"]
+            logger.error(f"OpenAI API Error: {error_msg}")
+            return OpenAIChatMessage(role="user", content=f"Error: {error_msg}")
+
         if assistant_message.function_call:
             # Check if the function call is one of the recognized tools.
             if not self.tool_executor.is_valid_tool(
@@ -297,13 +302,23 @@ class OpenAIAutomataAgent(Agent):
         Validates the structure of the function call.
         Returns an error message if validation fails, otherwise returns None.
         """
+
+        if function_call.name == "code":
+            function_call.name = "call-termination"
+
+            code_content = function_call.arguments.get("code", "")
+            function_call.arguments["result"] = f"```\n{code_content}\n```"
+
+            if "code" in function_call.arguments:
+                del function_call.arguments["code"]
+
+            logger.info(f"Corrected function call to: {function_call.name}")
+        
         # Check for extraneous fields like 'message'
         if hasattr(function_call, "message"):
             return (
                 "Error: Extraneous field 'message' detected in function call."
-            )
-
-        # TODO - update as other issues occur
+            )        
 
         return None
 
