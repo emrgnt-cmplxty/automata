@@ -12,6 +12,7 @@ from automata.agent.error import (
     AgentMaxIterError,
     AgentResultError,
     AgentStopIterationError,
+    OpenAPIError,
 )
 from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
 from automata.core.utils import format_text, get_logging_config, load_config
@@ -255,20 +256,20 @@ class OpenAIAutomataAgent(Agent):
         if assistant_message.function_call and assistant_message.function_call.name == "error-occurred":
             error_msg = assistant_message.function_call.arguments["error"]
             logger.error(f"OpenAI API Error: {error_msg}")
-            return OpenAIChatMessage(role="user", content=f"Error: {error_msg}")
+            raise OpenAPIError(error_msg)
+
 
         if assistant_message.function_call:
-            # Check if the function call is one of the recognized tools.
+            if validation_error := self._validate_function_call(
+                assistant_message.function_call
+            ):
+                return OpenAIChatMessage(role="user", content=validation_error)
+
             if not self.tool_executor.is_valid_tool(
                 assistant_message.function_call.name
             ):
                 error_message = f"Error: The requested function '{assistant_message.function_call.name}' is not recognized."
                 return OpenAIChatMessage(role="user", content=error_message)
-
-            if validation_error := self._validate_function_call(
-                assistant_message.function_call
-            ):
-                return OpenAIChatMessage(role="user", content=validation_error)
 
             try:
                 result = self.tool_executor.execute(
@@ -302,18 +303,19 @@ class OpenAIAutomataAgent(Agent):
         Validates the structure of the function call.
         Returns an error message if validation fails, otherwise returns None.
         """
-
+        
         if function_call.name == "code":
-            function_call.name = "call-termination"
-
             code_content = function_call.arguments.get("code", "")
             function_call.arguments["result"] = f"```\n{code_content}\n```"
-
             if "code" in function_call.arguments:
                 del function_call.arguments["code"]
-
+            function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
         
+        elif function_call.name == "call_termination":
+            function_call.name = "call-termination"
+            logger.info(f"Corrected function call to: {function_call.name}")
+
         # Check for extraneous fields like 'message'
         if hasattr(function_call, "message"):
             return (
