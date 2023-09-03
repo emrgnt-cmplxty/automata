@@ -4,6 +4,8 @@ Utility functions for Automata.
 import json
 import logging
 import os
+import time
+from functools import wraps
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -21,8 +23,6 @@ import colorlog
 import numpy as np
 import openai
 import yaml
-import time
-from functools import wraps
 
 from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
 
@@ -249,13 +249,19 @@ def calculate_similarity(
     return dot_product / (magnitude_a * magnitude_b)
 
 
-def retry(max_retries: int = 3, initial_delay: float = 1.0, max_delay: Optional[float] = None, allowed_exceptions: Tuple[Type[BaseException], ...] = ()) -> Any:
+def retry(
+    max_retries: int = 3,
+    initial_delay: float = 1.0,
+    max_delay: Optional[float] = None,
+    allowed_exceptions: Tuple[Type[BaseException], ...] = (),
+) -> Any:
     """
     Retry calling the decorated function using an exponential backoff.
     """
 
     def decorator(func: Any) -> Any:
         """A decorator for retrying a function or method in case of exceptions with exponential backoff."""
+
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
             """A wrapper for retrying a function or method in case of exceptions with exponential backoff."""

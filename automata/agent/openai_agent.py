@@ -15,7 +15,12 @@ from automata.agent.error import (
     OpenAPIError,
 )
 from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
-from automata.core.utils import format_text, get_logging_config, load_config
+from automata.core.utils import (
+    format_text,
+    get_logging_config,
+    load_config,
+    retry,
+)
 from automata.llm import (
     FunctionCall,
     LLMChatMessage,
@@ -29,7 +34,6 @@ from automata.llm import (
     OpenAITool,
 )
 from automata.tools import ToolExecution, ToolExecutor
-from automata.core.utils import retry
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -253,11 +257,13 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
-        if assistant_message.function_call and assistant_message.function_call.name == "error-occurred":
+        if (
+            assistant_message.function_call
+            and assistant_message.function_call.name == "error-occurred"
+        ):
             error_msg = assistant_message.function_call.arguments["error"]
             logger.error(f"OpenAI API Error: {error_msg}")
             raise OpenAPIError(error_msg)
-
 
         if assistant_message.function_call:
             if validation_error := self._validate_function_call(
@@ -303,7 +309,7 @@ class OpenAIAutomataAgent(Agent):
         Validates the structure of the function call.
         Returns an error message if validation fails, otherwise returns None.
         """
-        
+
         if function_call.name == "code":
             code_content = function_call.arguments.get("code", "")
             function_call.arguments["result"] = f"```\n{code_content}\n```"
@@ -311,7 +317,7 @@ class OpenAIAutomataAgent(Agent):
                 del function_call.arguments["code"]
             function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
-        
+
         elif function_call.name == "call_termination":
             function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
@@ -320,7 +326,7 @@ class OpenAIAutomataAgent(Agent):
         if hasattr(function_call, "message"):
             return (
                 "Error: Extraneous field 'message' detected in function call."
-            )        
+            )
 
         return None
 

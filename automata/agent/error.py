@@ -34,4 +34,5 @@ class AgentDatabaseError(AutomataError):
 
 class OpenAPIError(Exception):
     """An exception raised when there is an error with the OpenAPI specification."""
+
     pass
