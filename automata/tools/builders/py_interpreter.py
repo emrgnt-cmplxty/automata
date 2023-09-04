@@ -137,7 +137,7 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
                 name="py-update-and-run-env",
                 function=self.py_interpreter._update_env,
                 description="""
-                Extracts code from the provided as Python markdown snippets into the source and test code environment. Provided code is persisted across sessions, and when new code is not provided the existing context is used. The user must call `print(...)` on any output they would like to see returned from the environment and the user will include this in their next message. For instance, if your execution concludes with a variable `x`, then to see the result you should terminate with `print(x)`. Lastly, Further, it is recommended that tests include a print statement or assertion output since vanilla assertions will be non-descriptive. 
+                Extracts code from the provided as Python markdown snippets into the source and test code environment. Provided code is persisted across sessions, and when new code is not provided the existing context is used. The user must call `print(...)` on any output they would like to see returned from the environment and the user will include this in their next message. For instance, if your execution concludes with a variable `x`, then to see the result you should terminate with `print(x)`. Lastly, it is recommended that tests include a print statement or assertion output since vanilla assertions will be non-descriptive. 
                 """,
             ),
         ]
