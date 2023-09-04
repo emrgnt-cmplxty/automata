@@ -44,8 +44,8 @@ class OpenAIAutomataAgent(Agent):
     ASSISTANT_INITIALIZE_MESSAGE: Final = "Thoughts:\\nFirst, I will initialize myself. Then I will continue on to carefully consider the user task and carry out the necessary actions.\\nAction:\\nI will call `initializer` to initialize myself."
     CONTINUE_PREFIX: Final = "Continue...\n"
     OBSERVATION_MESSAGE: Final = "Observation:\n"
-    GENERAL_SUFFIX_TEMPLATE: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{user_instructions}'"
-    STOPPING_SUFFIX_TEMPLATE: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{user_instructions}."
+    GENERAL_SUFFIX_TEMPLATE: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.'"  # \nYour instructions are '{user_instructions}'"
+    STOPPING_SUFFIX_TEMPLATE: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination."  # \nRECALL, YOUR INSTRUCTIONS WERE '{user_instructions}."
 
     def __init__(
         self, user_instructions: str, config: OpenAIAutomataAgentConfig
@@ -189,11 +189,13 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
-        if assistant_message.function_call and assistant_message.function_call.name == "error-occurred":
+        if (
+            assistant_message.function_call
+            and assistant_message.function_call.name == "error-occurred"
+        ):
             error_msg = assistant_message.function_call.arguments["error"]
             logger.error(f"OpenAI API Error: {error_msg}")
             raise OpenAPIError(error_msg)
-
 
         if assistant_message.function_call:
             if validation_error := self._validate_function_call(
@@ -239,7 +241,7 @@ class OpenAIAutomataAgent(Agent):
         Validates the structure of the function call.
         Returns an error message if validation fails, otherwise returns None.
         """
-        
+
         if function_call.name == "code":
             code_content = function_call.arguments.get("code", "")
             function_call.arguments["result"] = f"```\n{code_content}\n```"
@@ -247,7 +249,7 @@ class OpenAIAutomataAgent(Agent):
                 del function_call.arguments["code"]
             function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
-        
+
         elif function_call.name == "call_termination":
             function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
@@ -256,7 +258,7 @@ class OpenAIAutomataAgent(Agent):
         if hasattr(function_call, "message"):
             return (
                 "Error: Extraneous field 'message' detected in function call."
-            )        
+            )
 
         return None
 
