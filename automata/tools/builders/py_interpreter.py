@@ -94,7 +94,9 @@ class PyInterpreter:
             signal.alarm(0)  # Disable the alarm
 
     def _update_env(
-        self, source_code: Optional[str], test_code: Optional[str]
+        self,
+        source_code: Optional[str] = None,
+        test_code: Optional[str] = None,
     ) -> str:
         """Updates the environment with the provided code."""
         if source_code:
