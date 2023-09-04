@@ -2,15 +2,6 @@
 requires = ["poetry-core", "setuptools", "wheel"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-automata = 'automata.cli.__main__:cli'
-
-[tool.poetry.group.dev.dependencies]
-notebook = "7.0.0"
-jupyter = "^1.0.0"
-sourcery = "^1.6.0"
-types-requests = "^2.31.0.2"
-
 [tool.poetry]
 name = "automata"
 version = "0.1.0"
@@ -21,65 +12,26 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-black = "^23.3.0"
-click = "8.1.6"
-codecov = "2.1.13"
 colorlog = "6.7.0"
-isort = "5.12.0"
-jinja2 = "3.1.2"
-jsonpickle = "3.0.1"
-jsonschema = "4.19.0"
-matplotlib = "3.7.2"
-networkx = "3.1"
 numpy = "1.25.2"
 openai = "0.27.8"
-pandas = "2.0.3"
-plotly = "5.15.0"
-protobuf = "4.23.4"
 pydantic = "^1.9.0"
-pypandoc = "1.11"
-pytest-mock = "3.11.1"
 python-dotenv = "1.0.0"
-scikit-learn = "1.2.2"
-scipy = "1.11.1"
 termcolor = "2.3.0"
 tiktoken = "0.4.0"
-types-protobuf = "4.23.0.2"
-GitPython = "3.1.32"
-PyGithub = "1.59.0"
-PyYAML = "6.0.1"
-chromadb = "^0.3.29"
-astunparse = "^1.6.3"
-ipykernel = "^6.24.0"
-pathlib = "^1.0.1"
-pytest-shutil = "^1.7.0"
-flask = "^2.3.2"
-responses = "^0.23.3"
-pytest-rerunfailures = "^12.0"
-questionary = "^1.10.0"
-# TODO - Identify how to include this package
-# without breaking the build
-# evalplus = { path = "research/evalplus" }
 requests = "^2.31.0"
+sympy = "^1.12"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.4"
-sphinx = "^4.5"
-sphinx-panels = "0.6.0" # Used on Linux
-sphinx-rtd-dark-mode = "1.2.4" # Used on Windows
-sphinx_panels = "0.6.0" # Used on Windows
-
-
-[tool.pytest.ini_options]
-filterwarnings = ["ignore::DeprecationWarning:jsonspec.*"]
-addopts = "-m 'not regression and not evaluation' --ignore=**/sample_modules/* --ignore=scip-python/ --ignore=local_tasks/"
-markers = [
-    "regression: marks tests as regression tests",
-    "evaluation: mark a test as part of the evaluation suite",
-    "tool_name: description of tool_name marker",
-    "tool_description: description of the tool's functionality",
-    "performance: marks tests as performance tests",
-]    
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+isort = "5.12.0"
+flake8 = "6.1.0"
+mypy = "^1.5.1"
+pre-commit = "^3.3.3"
+types-requests = "^2.31.0.2"
+types-attrs = "^19.1.0"
+sourcery = "^1.6.0"
+yapf = "0.40.1"
 
 [tool.black]
 line-length = 79
@@ -93,16 +45,6 @@ exclude = '''
     | \.mypy_cache
     | \.tox
     | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | random
-    | build
-    | scip-python
-    | research/leetcode_hard_gym
-    | research/evalplus
-    | local_tasks
   )/
 )
 '''
@@ -117,23 +59,8 @@ exclude = '(scip-python|__pycache__|local_tasks|sample_modules|playground|leetco
 module = "pytz.*"
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = "yaml"
-ignore_missing_imports = true
-
-[tool.coverage.run]
-source = ["."]
-omit = ["*/tests/*", "*/site-packages/*", "*/distutils/*", "*/venv/*", "setup.py", "conftest.py"]
-
-[tool.coverage.report]
-precision = 2
-omit = ["*/tests/*", "*/site-packages/*", "*/distutils/*", "*/venv/*", "setup.py", "conftest.py"]
-
 [tool.coverage.html]
 directory = "htmlcov/"
-
-[tool.codecov]
-require_ci_to_pass = true
 
 [tool.flake8]
 ignore = ["E501", "W503"]

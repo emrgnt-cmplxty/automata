@@ -1,39 +1,32 @@
 """Defines the concrete OpenAIAutomataAgent class."""
 import logging
 import logging.config
-import uuid
 from abc import ABC, abstractmethod
-from typing import Dict, Final, List, Optional, Sequence
+from typing import Final, List, Optional, Sequence
 
 from automata.agent import Agent, AgentToolkitBuilder, AgentToolkitNames
 from automata.agent.error import (
-    AgentDatabaseError,
     AgentGeneralError,
     AgentMaxIterError,
     AgentResultError,
     AgentStopIterationError,
     OpenAPIError,
 )
-from automata.config import ConfigCategory, OpenAIAutomataAgentConfig
-from automata.core.utils import (
-    format_text,
-    get_logging_config,
-    load_config,
-    retry,
-)
+from automata.config import OpenAIAutomataAgentConfig
+from automata.core.utils import get_logging_config
 from automata.llm import (
-    FunctionCall,
     LLMChatMessage,
     LLMConversation,
-    LLMConversationDatabaseProvider,
     LLMIterationResult,
     OpenAIChatCompletionProvider,
     OpenAIChatMessage,
     OpenAIConversation,
     OpenAIFunction,
     OpenAITool,
+    FunctionCall,
 )
 from automata.tools import ToolExecution, ToolExecutor
+from automata.core.utils import retry
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -47,20 +40,21 @@ class OpenAIAutomataAgent(Agent):
     instructions and manages interactions with various tools.
     """
 
-    CONTINUE_PREFIX: Final = f"Continue...\n"
+    ASSISTANT_INTRO: Final = "Hello, I am Automata, OpenAI's most skilled coding system. How may I assist you today?"
+    ASSISTANT_INITIALIZE_MESSAGE: Final = "Thoughts:\\nFirst, I will initialize myself. Then I will continue on to carefully consider the user task and carry out the necessary actions.\\nAction:\\nI will call `initializer` to initialize myself."
+    CONTINUE_PREFIX: Final = "Continue...\n"
     OBSERVATION_MESSAGE: Final = "Observation:\n"
-    GENERAL_SUFFIX: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{instructions}'"
-    STOPPING_SUFFIX: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{instructions}."
+    GENERAL_SUFFIX_TEMPLATE: Final = "STATUS NOTES\nYou have used {iteration_count} out of a maximum of {max_iterations} iterations.\nYou have used {estimated_tokens} out of a maximum of {max_tokens} tokens.\nYour instructions are '{user_instructions}'"
+    STOPPING_SUFFIX_TEMPLATE: Final = "STATUS NOTES:\nYOU HAVE EXCEEDED YOUR MAXIMUM ALLOWABLE ITERATIONS OR TOKENS, RETURN A RESULT NOW WITH call-termination.\nRECALL, YOUR INSTRUCTIONS WERE '{user_instructions}."
 
     def __init__(
-        self, instructions: str, config: OpenAIAutomataAgentConfig
+        self, user_instructions: str, config: OpenAIAutomataAgentConfig
     ) -> None:
         # sourcery skip: docstrings-for-functions
-        super().__init__(instructions)
+        super().__init__(user_instructions)
         self.config = config
         self.iteration_count = 0
         self.completed = False
-        self.session_id = self.config.session_id or str(uuid.uuid4())
         self._conversation = OpenAIConversation()
         self._setup()
 
@@ -68,7 +62,7 @@ class OpenAIAutomataAgent(Agent):
         return self
 
     def __repr__(self):
-        return f"OpenAIAutomataAgent(config={str(self.config)}, iteration_count={self.iteration_count}, completed={self.completed}, session_id={self.session_id}, _conversation={str(self._conversation)})"
+        return f"OpenAIAutomataAgent(config={str(self.config)}, iteration_count={self.iteration_count}, completed={self.completed}, _conversation={str(self._conversation)})"
 
     def __next__(self) -> LLMIterationResult:
         """
@@ -87,7 +81,7 @@ class OpenAIAutomataAgent(Agent):
 
         logger.info(f"\n{('-' * 120)}\nLatest Assistant Message -- \n")
         assistant_message = self.chat_provider.get_next_assistant_completion()
-        self.chat_provider.add_message(assistant_message, self.session_id)
+        self.chat_provider.add_message(assistant_message)
         if not self.config.stream:
             logger.info(f"{assistant_message}\n")
         logger.info(f"\n{('-' * 120)}")
@@ -96,7 +90,7 @@ class OpenAIAutomataAgent(Agent):
 
         user_message = self._get_next_user_response(assistant_message)
         logger.info(f"Latest User Message -- \n{user_message}\n")
-        self.chat_provider.add_message(user_message, self.session_id)
+        self.chat_provider.add_message(user_message)
         logger.info(f"\n{('-' * 120)}")
 
         return (assistant_message, user_message)
@@ -129,6 +123,7 @@ class OpenAIAutomataAgent(Agent):
     @property
     def functions(self) -> List[OpenAIFunction]:
         """A concrete property for getting the functions associated with the agent."""
+
         return [ele.openai_function for ele in self.tools]
 
     def run(self) -> str:
@@ -183,69 +178,6 @@ class OpenAIAutomataAgent(Agent):
         else:
             raise ValueError("The agent did not produce a result.")
 
-    def set_database_provider(
-        self, provider: LLMConversationDatabaseProvider
-    ) -> None:
-        """Sets the database provider for the agent."""
-
-        if not isinstance(provider, LLMConversationDatabaseProvider):
-            raise AgentDatabaseError(
-                f"Invalid database provider type: {type(provider)}"
-            )
-        if self.database_provider:
-            raise AgentDatabaseError(
-                "The database provider has already been set."
-            )
-        self.database_provider = provider
-        # Log existing messages
-        for message in self.conversation.messages:
-            provider.save_message(self.session_id, message)
-        self._conversation.register_observer(provider)
-
-    def _build_initial_messages(
-        self, instruction_formatter: Dict[str, str]
-    ) -> Sequence[LLMChatMessage]:
-        """
-        Builds the initial messages for the agent's conversation.
-        The messages are built from the initial messages in the instruction config.
-        All messages are formatted using the given instruction_formatter.
-
-        TODO - Consider moving this logic to the conversation provider
-        """
-        if "user_input_instructions" not in instruction_formatter:
-            raise KeyError(
-                "The instruction formatter must have an entry for user_input_instructions."
-            )
-
-        messages_config = load_config(
-            ConfigCategory.INSTRUCTION.to_path(),
-            self.config.instruction_version.to_path(),
-        )
-        initial_messages = messages_config["initial_messages"]
-
-        input_messages = []
-        for message in initial_messages:
-            input_message = (
-                format_text(instruction_formatter, message["content"])
-                if "content" in message
-                else None
-            )
-            function_call = message.get("function_call")
-            input_messages.append(
-                OpenAIChatMessage(
-                    role=message["role"],
-                    content=input_message,
-                    function_call=FunctionCall(
-                        name=function_call["name"],
-                        arguments=function_call["arguments"],
-                    )
-                    if function_call
-                    else None,
-                )
-            )
-
-        return input_messages
-
     @retry(max_retries=5)
     def _get_next_user_response(
         self, assistant_message: OpenAIChatMessage
@@ -257,13 +189,11 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
-        if (
-            assistant_message.function_call
-            and assistant_message.function_call.name == "error-occurred"
-        ):
+        if assistant_message.function_call and assistant_message.function_call.name == "error-occurred":
             error_msg = assistant_message.function_call.arguments["error"]
             logger.error(f"OpenAI API Error: {error_msg}")
             raise OpenAPIError(error_msg)
+
 
         if assistant_message.function_call:
             if validation_error := self._validate_function_call(
@@ -318,7 +248,7 @@ class OpenAIAutomataAgent(Agent):
         Validates the structure of the function call.
         Returns an error message if validation fails, otherwise returns None.
         """
-
+        
         if function_call.name == "code":
             code_content = function_call.arguments.get("code", "")
             function_call.arguments["result"] = f"```\n{code_content}\n```"
@@ -326,7 +256,7 @@ class OpenAIAutomataAgent(Agent):
                 del function_call.arguments["code"]
             function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
-
+        
         elif function_call.name == "call_termination":
             function_call.name = "call-termination"
             logger.info(f"Corrected function call to: {function_call.name}")
@@ -335,7 +265,7 @@ class OpenAIAutomataAgent(Agent):
         if hasattr(function_call, "message"):
             return (
                 "Error: Extraneous field 'message' detected in function call."
-            )
+            )        
 
         return None
 
@@ -354,16 +284,16 @@ class OpenAIAutomataAgent(Agent):
             self.iteration_count != self.config.max_iterations
             and estimated_tokens_consumed < self.config.max_tokens
         ):
-            return OpenAIAutomataAgent.GENERAL_SUFFIX.format(
+            return OpenAIAutomataAgent.GENERAL_SUFFIX_TEMPLATE.format(
                 iteration_count=self.iteration_count,
                 max_iterations=self.config.max_iterations,
                 max_tokens=self.config.max_tokens,
                 estimated_tokens=estimated_tokens_consumed,
-                instructions=f"{self.instructions[:200]}...",
+                user_instructions=f"{self.user_instructions[:200]}...",
             )
         else:
-            return OpenAIAutomataAgent.STOPPING_SUFFIX.format(
-                instructions=f"{self.instructions[:200]}..."
+            return OpenAIAutomataAgent.STOPPING_SUFFIX_TEMPLATE.format(
+                user_instructions=f"{self.user_instructions[:200]}..."
             )
 
     def _setup(self) -> None:
@@ -376,44 +306,22 @@ class OpenAIAutomataAgent(Agent):
         Raises:
             AgentError: If the agent fails to initialize.
         """
-
-        logger.info(f"Setting up agent with tools = {self.config.tools}")
-        self._conversation.add_message(
-            OpenAIChatMessage(
-                role="system", content=self.config.system_instruction
-            ),
-            self.session_id,
-        )
-
         logger.info(
-            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\n"
+            f"Initializing with System Instruction -- \n\n{self.config.system_instruction}\n\nAnd with User Instruction -- \n\n{self.user_instructions}\n\n"
         )
-
-        for message in list(
-            self._build_initial_messages(
-                {"user_input_instructions": self.instructions}
-            )
-        ):
-            logger.info(
-                f"Adding the following initial mesasge to the conversation {message}"
-            )
-            self._conversation.add_message(message, self.session_id)
-            logger.info(f"\n{('-' * 120)}")
 
         self.chat_provider = OpenAIChatCompletionProvider(
             model=self.config.model,
             temperature=self.config.temperature,
             stream=self.config.stream,
+            system_instruction=self.config.system_instruction,
+            user_instruction=self.user_instructions,
             conversation=self._conversation,
             functions=self.functions,
         )
 
         self.tool_executor = ToolExecutor(ToolExecution(self.tools))
-
         self._initialized = True
-        logger.info(
-            f"\n{('-' * 60)}\nSession ID: {self.session_id}\n{'-'* 60}\n\n"
-        )
 
     def _get_termination_tool(self) -> OpenAITool:
         """Gets the tool responsible for terminating the OpenAI agent."""
