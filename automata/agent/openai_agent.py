@@ -265,6 +265,15 @@ class OpenAIAutomataAgent(Agent):
                     role="user",
                     content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
+            except TypeError as te:
+                if "'code'" in str(te):
+                    failure_message = (
+                        f"Error was corrected during tool execution: {te}"
+                    )
+                else:
+                    failure_message = f"Tool execution failed: {te}"
+                logger.info(failure_message)
+                return OpenAIChatMessage(role="user", content=failure_message)
             except Exception as e:
                 failure_message = f"Tool execution failed: {e}"
                 logger.info(failure_message)
