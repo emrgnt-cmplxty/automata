@@ -1,7 +1,12 @@
+"""
+A class representing function call to be made by an Automata agent.
+"""
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Sequence
 
 from automata.tools.tool_base import Tool
+from automata.tools.tool_error import UnknownToolError
 
 if TYPE_CHECKING:
     from automata.llm import FunctionCall
@@ -12,6 +17,12 @@ class IToolExecution(ABC):
 
     @abstractmethod
     def execute(self, function_call: "FunctionCall") -> str:
+        """Execute the tool."""
+        pass
+
+    @abstractmethod
+    def is_valid_tool(self, tool_name: str) -> bool:
+        """Check if the tool name exists within the known tools."""
         pass
 
 
@@ -22,12 +33,17 @@ class ToolExecution(IToolExecution):
         self.tools = {tool.name: tool for tool in tools}
 
     def execute(self, function_call: "FunctionCall") -> str:
+        """Execute the tool."""
         if tool := self.tools.get(function_call.name):
             return tool.run(function_call.arguments)
         else:
-            raise Exception(
+            raise UnknownToolError(
                 f"No tool found for function call: {function_call.name}"
             )
+
+    def is_valid_tool(self, tool_name: str) -> bool:
+        """Check if the tool name exists within the known tools."""
+        return tool_name in self.tools
 
 
 class ToolExecutor:
@@ -37,4 +53,9 @@ class ToolExecutor:
         self.execution = execution
 
     def execute(self, function_call: "FunctionCall") -> str:
+        """Execute the tool."""
         return self.execution.execute(function_call)
+
+    def is_valid_tool(self, tool_name: str) -> bool:
+        """Forward the call to ToolExecution's is_valid_tool method."""
+        return self.execution.is_valid_tool(tool_name)

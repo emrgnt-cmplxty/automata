@@ -7,12 +7,7 @@ from typing import List, Optional, Sequence
 
 from automata.config import LLMProvider
 from automata.core.utils import get_logging_config
-from automata.llm import (
-    LLMChatMessage,
-    LLMConversation,
-    LLMConversationDatabaseProvider,
-    LLMIterationResult,
-)
+from automata.llm import LLMChatMessage, LLMConversation, LLMIterationResult
 from automata.tools import Tool
 
 logger = logging.getLogger(__name__)
@@ -27,12 +22,9 @@ class Agent(ABC):
     with other providers.
     """
 
-    def __init__(self, instructions: str) -> None:
-        self.instructions = instructions
+    def __init__(self, user_instructions: str) -> None:
+        self.user_instructions = user_instructions
         self.completed = False
-        self.database_provider: Optional[
-            LLMConversationDatabaseProvider
-        ] = None
 
         self._initialized = False
 
@@ -85,13 +77,6 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def set_database_provider(
-        self, provider: LLMConversationDatabaseProvider
-    ) -> None:
-        """An abstract method for setting the database provider for the agent."""
-        pass
-
-    @abstractmethod
     def _setup(self) -> None:
         """An abstract method for setting up the agent before running."""
         pass
@@ -105,18 +90,8 @@ class AgentToolkitNames(Enum):
     The associated builders are located in automata/core/agent/builder/*
     """
 
-    # Experimental / Research Tools
-    SYMBOL_SEARCH = "symbol-search"
-    ADVANCED_CONTEXT_ORACLE = "advanced-context-oracle"
-    DOCUMENT_ORACLE = "document-oracle"
-    AGENTIFIED_SOLUTION_ORACLE = "agentified-solution-oracle"
     WOLFRAM_ALPHA_ORACLE = "wolfram-alpha-oracle"
-
-    # Core tools
-    PY_READER = "py-reader"
-    PY_WRITER = "py-writer"
     PY_INTERPRETER = "py-interpreter"
-    AGENTIFIED_SEARCH = "agent-search"
 
 
 class AgentToolkitBuilder(ABC):

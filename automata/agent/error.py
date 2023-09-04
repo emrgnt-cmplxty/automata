@@ -30,3 +30,9 @@ class AgentDatabaseError(AutomataError):
     """An exception raised when the agent fails to set the database provider."""
 
     pass
+
+
+class OpenAPIError(Exception):
+    """An exception raised when there is an error with the OpenAPI specification."""
+
+    pass

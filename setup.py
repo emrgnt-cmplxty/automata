@@ -23,11 +23,7 @@ setup(
     packages=find_packages(),
     install_requires=read_requirements(),
     entry_points={
-        "console_scripts": [
-            # If you want to create command-line executables, you can define them here.
-            # e.g.: 'my-command=your_project_name.framework.main:main',
-            "automata=automata.cli.__main__:cli",
-        ],
+        "console_scripts": [],
     },
     python_requires=">=3.10",  # Adjust this to your desired minimum Python version
 )

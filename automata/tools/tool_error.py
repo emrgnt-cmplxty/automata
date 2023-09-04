@@ -1,3 +1,7 @@
+"""
+Tool errors for the automata package.
+"""
+
 # TODO -  Why does the below produce circular import error?
 # from automata.core.base import AutomataError
 
