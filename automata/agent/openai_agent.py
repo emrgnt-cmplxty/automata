@@ -10,6 +10,7 @@ from automata.agent.error import (
     AgentMaxIterError,
     AgentResultError,
     AgentStopIterationError,
+    OpenAPIError,
 )
 from automata.config import OpenAIAutomataAgentConfig
 from automata.core.utils import get_logging_config
@@ -25,6 +26,7 @@ from automata.llm import (
     FunctionCall,
 )
 from automata.tools import ToolExecution, ToolExecutor
+from automata.core.utils import retry
 
 logger = logging.getLogger(__name__)
 logging.config.dictConfig(get_logging_config())
@@ -176,6 +178,7 @@ class OpenAIAutomataAgent(Agent):
         else:
             raise ValueError("The agent did not produce a result.")
 
+    @retry(max_retries=5)
     def _get_next_user_response(
         self, assistant_message: OpenAIChatMessage
     ) -> OpenAIChatMessage:
@@ -186,7 +189,24 @@ class OpenAIAutomataAgent(Agent):
         Otherwise, the user is prompted to continue the conversation.
         """
 
+        if assistant_message.function_call and assistant_message.function_call.name == "error-occurred":
+            error_msg = assistant_message.function_call.arguments["error"]
+            logger.error(f"OpenAI API Error: {error_msg}")
+            raise OpenAPIError(error_msg)
+
+
         if assistant_message.function_call:
+            if validation_error := self._validate_function_call(
+                assistant_message.function_call
+            ):
+                return OpenAIChatMessage(role="user", content=validation_error)
+
+            if not self.tool_executor.is_valid_tool(
+                assistant_message.function_call.name
+            ):
+                error_message = f"Error: The requested function '{assistant_message.function_call.name}' is not recognized."
+                return OpenAIChatMessage(role="user", content=error_message)
+
             try:
                 result = self.tool_executor.execute(
                     assistant_message.function_call
@@ -202,8 +222,8 @@ class OpenAIAutomataAgent(Agent):
                     content=f"{OpenAIAutomataAgent.OBSERVATION_MESSAGE}{result}\n{function_iteration_message}",
                 )
             except Exception as e:
-                failure_message = f"Tool execution failed: {e}"
-                logger.info(failure_message)
+                failure_message = "Tool execution failed. Please try again or contact support for assistance."
+                logger.error(f"Error during tool execution: {e}")
                 return OpenAIChatMessage(
                     role="user",
                     content=failure_message,
@@ -213,6 +233,32 @@ class OpenAIAutomataAgent(Agent):
             role="user",
             content=f"{OpenAIAutomataAgent.CONTINUE_PREFIX}\n{self._get_iteration_status()}",
         )
+
+    def _validate_function_call(self, function_call):
+        """
+        Validates the structure of the function call.
+        Returns an error message if validation fails, otherwise returns None.
+        """
+        
+        if function_call.name == "code":
+            code_content = function_call.arguments.get("code", "")
+            function_call.arguments["result"] = f"```\n{code_content}\n```"
+            if "code" in function_call.arguments:
+                del function_call.arguments["code"]
+            function_call.name = "call-termination"
+            logger.info(f"Corrected function call to: {function_call.name}")
+        
+        elif function_call.name == "call_termination":
+            function_call.name = "call-termination"
+            logger.info(f"Corrected function call to: {function_call.name}")
+
+        # Check for extraneous fields like 'message'
+        if hasattr(function_call, "message"):
+            return (
+                "Error: Extraneous field 'message' detected in function call."
+            )        
+
+        return None
 
     def _get_iteration_status(
         self, message_content: Optional[str] = None

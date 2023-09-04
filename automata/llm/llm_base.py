@@ -159,7 +159,7 @@ class FunctionCall(NamedTuple):
                 ),
             )
         except Exception as e:
-            # TODO - put robust infra sot his bubbles back up to the agent
+            # TODO - put robust infra so this bubbles back up to the agent
             return cls(
                 name="error-occurred",
                 arguments={"error": f"Error occurred: {e}"},

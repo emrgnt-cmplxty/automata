@@ -10,6 +10,8 @@ from typing import (
     Dict,
     List,
     Optional,
+    Tuple,
+    Type,
     TypedDict,
     Union,
     cast,
@@ -17,6 +19,8 @@ from typing import (
 
 import colorlog
 import openai
+import time
+from functools import wraps
 
 
 def get_root_py_fpath() -> str:
@@ -203,3 +207,30 @@ def is_sorted(lst: list) -> bool:
     """Check if a list is sorted."""
 
     return all(a <= b for a, b in zip(lst, lst[1:]))
+
+
+def retry(max_retries: int = 3, initial_delay: float = 1.0, max_delay: Optional[float] = None, allowed_exceptions: Tuple[Type[BaseException], ...] = ()) -> Any:
+    """
+    Retry calling the decorated function using an exponential backoff.
+    """
+
+    def decorator(func: Any) -> Any:
+        """A decorator for retrying a function or method in case of exceptions with exponential backoff."""
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> Any:
+            """A wrapper for retrying a function or method in case of exceptions with exponential backoff."""
+            delay = initial_delay
+            for _ in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except allowed_exceptions or Exception as e:
+                    if _ == max_retries - 1:
+                        raise e
+                    time.sleep(delay)
+                    delay *= 2.0
+                    if max_delay:
+                        delay = min(delay, max_delay)
+
+        return wrapper
+
+    return decorator
