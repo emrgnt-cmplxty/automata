@@ -159,10 +159,10 @@ class PyInterpreterOpenAIToolkitBuilder(
             },
             "test_code": {
                 "type": "string",
-                "description": "The given test code, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
+                "description": "The given test code, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'. NOTE, DO NOT re-supply tests unless you would like to alter those passed previously.",
             },
         }
-        required = ["code"]
+        required = []
 
         return [
             OpenAITool(
