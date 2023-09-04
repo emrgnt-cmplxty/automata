@@ -153,14 +153,13 @@ class PyInterpreterOpenAIToolkitBuilder(
 
         # Predefined properties and required parameters
         properties = {
-            "code": {
+            "source_code": {
                 "type": "string",
-                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
+                "description": "The given source code, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
             },
-            "overwrite": {
+            "test_code": {
                 "type": "string",
-                "description": "Specifies whether or not the given code should overwrite the existing code in the interpreter.",
-                "default": "True",
+                "description": "The given source code, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
             },
         }
         required = ["code"]
