@@ -98,9 +98,9 @@ class PyInterpreter:
     ) -> str:
         """Updates the environment with the provided code."""
         if source_code:
-            self.source_code = source_code
+            self.source_code = self._extract_code(source_code)
         if test_code:
-            self.test_code = test_code
+            self.test_code = self._extract_code(test_code)
 
         exec_result, source_result = self._attempt_execution(self.source_code)
         if not exec_result:
@@ -115,8 +115,8 @@ class PyInterpreter:
         return PyInterpreter.SUCCESS_STRING
 
     @staticmethod
-    def _clean_markdown(code: str) -> str:
-        """Clean the markdown code to be executable."""
+    def _extract_code(code: str) -> str:
+        """Extracts the cleaned markdown code to be executable."""
         if "```python" in code:
             code = code.split("```python")[1]
         return code.split("```")[0]
