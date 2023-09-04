@@ -105,16 +105,19 @@ class PyInterpreter:
             self.test_code = self._extract_code(test_code)
 
         exec_result, source_result = self._attempt_execution(self.source_code)
+        output = f"Executing Source Code...\n{exec_result}"
         if not exec_result:
             return f"Source code execution failed with {source_result}."
 
         exec_result, test_result = self._attempt_execution(
             f"{self.source_code}\n{self.test_code}"
         )
+        output += f"Executing Tests...\n{exec_result}"
+
         if not exec_result:
             return f"Test code execution failed with {test_result}."
 
-        return PyInterpreter.SUCCESS_STRING
+        return output
 
     @staticmethod
     def _extract_code(code: str) -> str:
