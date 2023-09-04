@@ -29,26 +29,21 @@ class PyInterpreter:
 
     SUCCESS_STRING = "Execution successful."
     DEFAULT_CODE_CONTEXT = "from typing import *\nfrom collections import *\nimport numpy as np\nimport sympy as sp\n"
-    DEFAULT_TEST_CONTEXT = ""
 
     def __init__(self):
-        self.code_context: List[
-            str
-        ] = PyInterpreter.DEFAULT_CODE_CONTEXT.split("\n")
-
-        self.test_context: List[
-            str
-        ] = PyInterpreter.DEFAULT_TEST_CONTEXT.split("\n")
+        self.source_code = ""
+        self.test_code = ""
 
     def __repr__(self) -> str:
-        return f"PyInterpreter(code_context={self.code_context}, test_context={self.test_context})"
+        return f"PyInterpreter(source_code={self.source_code}, test_code={self.test_code})"
 
-    def _attempt_execution(self, code: str) -> Tuple[bool, str]:
+    def _attempt_execution(self, provided_code: str) -> Tuple[bool, str]:
         """Attempts to execute the provided code."""
         output_buffer = io.StringIO()
         try:
             return self._execute_code(
-                "\n".join(self.code_context) + "\n" + code, output_buffer
+                PyInterpreter.DEFAULT_CODE_CONTEXT + "\n" + provided_code,
+                output_buffer,
             )
         except Exception as e:
             error_message = str(e) or "Unknown error occurred."
@@ -98,67 +93,32 @@ class PyInterpreter:
         finally:
             signal.alarm(0)  # Disable the alarm
 
-    def set_tests(self, code: str, overwrite: bool = True) -> str:
-        """Sets up the provided code and persists the context to the local execution buffer."""
-        # Add extra handling for string input
-        if isinstance(overwrite, str):
-            overwrite = overwrite.lower() == "true"
-        if overwrite:
-            self.test_context = []
-        code = self._clean_markdown(code)
-        try:
-            result: Optional[str] = None
-            ast.parse(code)
-            if self.code_context != PyInterpreter.DEFAULT_CODE_CONTEXT.split(
-                "\n"
-            ):
-                code = "\n".join(self.code_context) + "\n" + code
-                status, result = self._attempt_execution(code)
-                if not status:
-                    return result
-            self.test_context.extend(code.split("\n"))
-            return (
-                f"{PyInterpreter.SUCCESS_STRING}\nresult = {result}"
-                if result is not None
-                else PyInterpreter.SUCCESS_STRING
-            )
-        except Exception as e:
-            return f"Execution failed with error '{e}'."
+    def _update_env(
+        self,
+        source_code: Optional[str] = None,
+        test_code: Optional[str] = None,
+    ) -> str:
+        """Updates the environment with the provided code."""
+        if source_code:
+            self.source_code = self._extract_code(source_code)
+        if test_code:
+            self.test_code = self._extract_code(test_code)
 
-    def set_code(self, code: str, overwrite: bool = True) -> Tuple[bool, str]:
-        """Sets up the provided code and persists the context to the local execution buffer."""
-        # Add extra handling for string input
-        if isinstance(overwrite, str):
-            overwrite = overwrite.lower() == "true"
-        if overwrite:
-            self.code_context = [
-                str(ele)
-                for ele in PyInterpreter.DEFAULT_CODE_CONTEXT.split("\n")
-            ]
+        exec_result, source_result = self._attempt_execution(self.source_code)
+        if not exec_result:
+            return f"Source code execution failed with {source_result}."
 
-        code = self._clean_markdown(code)
-        status, result = self._attempt_execution(code)
-        if status:
-            self.code_context.extend(code.split("\n"))
-        return status, result
+        exec_result, test_result = self._attempt_execution(
+            f"{self.source_code}\n{self.test_code}"
+        )
+        if not exec_result:
+            return f"Test code execution failed with {test_result}."
 
-    def set_code_and_run_tests(self, code: str, overwrite: bool = True) -> str:
-        """Set the code and then run the local tests"""
-        status, result = self.set_code(code, overwrite)
-        result = f"Code Exec Result:\n{result}"
-        if status:
-            result += "\n" + f"Test Exec Result:\n{self._run_tests()}"
-        return result
-
-    def _run_tests(self) -> str:
-        """Runs the internal test code."""
-        code = "\n".join(self.test_context)
-        _, result = self._attempt_execution(code)
-        return result
+        return PyInterpreter.SUCCESS_STRING
 
     @staticmethod
-    def _clean_markdown(code: str) -> str:
-        """Clean the markdown code to be executable."""
+    def _extract_code(code: str) -> str:
+        """Extracts the cleaned markdown code to be executable."""
         if "```python" in code:
             code = code.split("```python")[1]
         return code.split("```")[0]
@@ -174,14 +134,11 @@ class PyInterpreterToolkitBuilder(AgentToolkitBuilder):
         """Builds the tools for the interpreter."""
         return [
             Tool(
-                name="py-set-and-run-tests",
-                function=self.py_interpreter.set_tests,
-                description="Sets up the provided Python markdown snippet in the test environment and executes the tests and previously provided code from `py-set-code-and-run-tests`. Sympy and Numpy have already been imported as `sp` and `np`, respectively.\n\nAny provided code will be parsed and persisted across interactions. If `overwrite` is set to true then the existing test code is overwritten. The user must call `print(...)` on any output they would like to see returned from the environment. For instance, if your execution terminates with a variable x, to find out what x evaluates to you should end the code with `print(x)`.",
-            ),
-            Tool(
-                name="py-set-code-and-run-tests",
-                function=self.py_interpreter.set_code_and_run_tests,
-                description="Sets up the provided Python markdown snippet in the local source environment. The code is executed and its context is persisted in the source environment across interactions. After successfully executing the provided code, the provided tests are then ran. If `overwrite` is set to true then existing source code environment is overwritten (but not the tests).",
+                name="py-update-and-run-env",
+                function=self.py_interpreter._update_env,
+                description="""
+                Extracts code from the provided as Python markdown snippets into the source and test code environment. Provided code is persisted across sessions, and when new code is not provided the existing context is used. The user must call `print(...)` on any output they would like to see returned from the environment and the user will include this in their next message. For instance, if your execution concludes with a variable `x`, then to see the result you should terminate with `print(x)`.
+                """,
             ),
         ]
 
@@ -198,17 +155,16 @@ class PyInterpreterOpenAIToolkitBuilder(
 
         # Predefined properties and required parameters
         properties = {
-            "code": {
+            "source_code": {
                 "type": "string",
-                "description": "The given Python code to execute, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
+                "description": "The given source code, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'.",
             },
-            "overwrite": {
+            "test_code": {
                 "type": "string",
-                "description": "Specifies whether or not the given code should overwrite the existing code in the interpreter.",
-                "default": "True",
+                "description": "The given test code, formatted as a markdown snippet, e.g. ```python\\n[CODE]``` and with newlines separated by the double-escaped newline char '\\n'. NOTE, DO NOT re-supply tests unless you would like to alter those passed previously.",
             },
         }
-        required = ["code"]
+        required = []
 
         return [
             OpenAITool(
