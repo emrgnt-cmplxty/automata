@@ -1,5 +1,0 @@
-sphinx # Necessary on Windows
-sphinx-panels # Used on Linux
-sphinx-rtd-dark-mode==1.2.4 # Used on Linux
-sphinx_panels # Used on Windows
-sphinx_rtd_dark_mode # Used on Windows

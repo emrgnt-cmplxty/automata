@@ -3,11 +3,9 @@ Utility functions for Automata.
 """
 import json
 import logging
+import logging.config
 import os
-import time
-from functools import wraps
 from typing import (
-    TYPE_CHECKING,
     Any,
     Dict,
     List,
@@ -20,23 +18,9 @@ from typing import (
 )
 
 import colorlog
-import numpy as np
 import openai
-import yaml
-
-from automata.cli.cli_output_logger import CLI_OUTPUT_LEVEL
-
-if TYPE_CHECKING:
-    from automata.embedding.embedding_base import EmbeddingVectorProvider
-
-
-def set_openai_api_key(override_key: Optional[str] = None) -> None:
-    """Sets the OpenAI API key from the environment variable OPENAI_API_KEY"""
-
-    if not openai.api_key:
-        from automata.config import OPENAI_API_KEY
-
-        openai.api_key = override_key or OPENAI_API_KEY
+import time
+from functools import wraps
 
 
 def get_root_py_fpath() -> str:
@@ -62,35 +46,6 @@ def get_config_fpath() -> str:
     """Get the path to the root of the Automata config directory."""
 
     return os.path.join(get_root_py_fpath(), "config")
-
-
-def load_config(
-    config_name: str,
-    file_name: str,
-    config_type: str = "yaml",
-    custom_decoder: Any = None,
-) -> Any:
-    """Loads a config file from the config directory"""
-
-    with open(
-        os.path.join(
-            get_config_fpath(), config_name, f"{file_name}.{config_type}"
-        ),
-        "r",
-    ) as file:
-        if config_type == "yaml":
-            return yaml.safe_load(file)
-        elif config_type == "json":
-            samples_json_string = file.read()
-            return json.loads(samples_json_string, object_hook=custom_decoder)
-
-
-def format_text(format_variables: Dict[str, str], input_text: str) -> str:
-    """Format expected strings into the config."""
-
-    for arg in format_variables:
-        input_text = input_text.replace(f"{{{arg}}}", format_variables[arg])
-    return input_text
 
 
 def convert_kebab_to_snake_case(s: str) -> str:
@@ -142,7 +97,6 @@ class ColorScheme(TypedDict):
     WARNING: str
     ERROR: str
     CRITICAL: str
-    CLI_OUTPUT: str
 
 
 class ColorConfig:
@@ -154,7 +108,6 @@ class ColorConfig:
         "WARNING": "yellow",
         "ERROR": "red",
         "CRITICAL": "bold_red",
-        "CLI_OUTPUT": "bold_white",
     }
 
 
@@ -172,6 +125,31 @@ def ensure_stream_handler_for_root() -> None:
         )
         stream_handler.setFormatter(colored_formatter)
         root_logger.addHandler(stream_handler)
+
+
+def configure_logging(log_level_str: str) -> None:
+    """Reconfigures the logging for the local project."""
+
+    log_level = logging.INFO
+    if log_level_str == "INFO":
+        log_level = logging.INFO
+    elif log_level_str == "DEBUG":
+        log_level = logging.DEBUG
+    else:
+        raise ValueError(f"Unknown log level: {log_level_str}")
+
+    logging_config = get_logging_config(log_level=log_level)
+    logging.config.dictConfig(logging_config)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+    logging.getLogger(__name__).setLevel(
+        log_level
+    )  # Explicitly set the level for the current module's logger
+
+    # External libraries we want to quiet down
+    for library in ["urllib3", "matplotlib", "openai", "github", "asyncio"]:
+        logging.getLogger(library).setLevel(logging.INFO)
 
 
 def get_logging_config(
@@ -202,11 +180,6 @@ def get_logging_config(
                 "formatter": "colored",
                 "stream": "ext://sys.stdout",
             },
-            "cli_output": {
-                "class": "logging.StreamHandler",
-                "formatter": "colored",
-                "level": CLI_OUTPUT_LEVEL,
-            },
         },
         "loggers": {
             "automata": {
@@ -230,38 +203,19 @@ def get_logging_config(
     return cast(dict[str, Any], logging_config)
 
 
-def is_sorted(lst):
+def is_sorted(lst: list) -> bool:
     """Check if a list is sorted."""
 
     return all(a <= b for a, b in zip(lst, lst[1:]))
 
 
-def calculate_similarity(
-    content_a: str, content_b: str, provider: "EmbeddingVectorProvider"
-) -> float:
-    """Calculate the similarity between two strings."""
-
-    embedding_a = provider.build_embedding_vector(content_a)
-    embedding_b = provider.build_embedding_vector(content_b)
-    dot_product = np.dot(embedding_a, embedding_b)
-    magnitude_a = np.sqrt(np.dot(embedding_a, embedding_a))
-    magnitude_b = np.sqrt(np.dot(embedding_b, embedding_b))
-    return dot_product / (magnitude_a * magnitude_b)
-
-
-def retry(
-    max_retries: int = 3,
-    initial_delay: float = 1.0,
-    max_delay: Optional[float] = None,
-    allowed_exceptions: Tuple[Type[BaseException], ...] = (),
-) -> Any:
+def retry(max_retries: int = 3, initial_delay: float = 1.0, max_delay: Optional[float] = None, allowed_exceptions: Tuple[Type[BaseException], ...] = ()) -> Any:
     """
     Retry calling the decorated function using an exponential backoff.
     """
 
     def decorator(func: Any) -> Any:
         """A decorator for retrying a function or method in case of exceptions with exponential backoff."""
-
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
             """A wrapper for retrying a function or method in case of exceptions with exponential backoff."""
