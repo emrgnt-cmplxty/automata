@@ -384,6 +384,13 @@ class OpenAIAutomataAgent(Agent):
             function=terminate,
         )
 
+    def reset(self):
+        """Resets the agent to its initial state."""
+        self.iteration_count = 0
+        self.completed = False
+        self._conversation = OpenAIConversation()
+        self._setup()
+
 
 class OpenAIAgentToolkitBuilder(AgentToolkitBuilder, ABC):
     """OpenAIAgentToolkitBuilder is an abstract class for building OpenAI agent tools."""
